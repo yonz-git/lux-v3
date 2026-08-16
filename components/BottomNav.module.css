@@ -57,8 +57,9 @@
   padding: 0 var(--space-md);
   border-radius: var(--radius-lg);
 
-  /* hover and small colour changes are duration/fast per board 04b */
-  transition: opacity var(--duration-fast) var(--ease-standard);
+  /* duration/base to match the button's hover fade, so both controls soften at
+     the same pace */
+  transition: opacity var(--duration-base) var(--ease-standard);
 }
 
 .item[data-active="true"] {

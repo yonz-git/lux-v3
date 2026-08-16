@@ -37,12 +37,21 @@ Only **00 — Welcome** is implemented so far.
 5. **Buttons are `Button` (Regular 15/22)** — deliberately Regular, never Medium.
 6. **Never hand-build a button.** Use `components/Button.tsx`. The two stacked
    drop shadows are part of the component; a hand-rolled gradient div loses them.
-6a. **State colours come from the component variants, not from same-named
-   tokens.** Primary's hover variant (37:13) is a SOLID `bg/surface-frost`
-   #eef6f7 with a `text/primary` label — the button **lights up**, it does not
-   darken. The `button/bg-hover-start` / `-end` tokens in 02 Color describe a
-   darker sage gradient the component does not use. When a token and a variant
-   disagree, **the variant wins** — it is what ships. Check the variant first.
+6a. **Read button states from the SHOWCASE, not from the variant names.** The
+   variant names in set 37:23 are swapped and the `button/bg-*` tokens describe a
+   treatment the component never uses. The truth is
+   `08 · Components — Buttons` → `row/Primary` (160:15), whose columns are
+   labelled Default / Hover / Disabled:
+
+   | State | Cell | Treatment |
+   | --- | --- | --- |
+   | Default | 160:17 | `gradient/brand` #bbd3d9 → #637073, label `text/on-brand` |
+   | **Hover** | **160:23** | **the same gradient at opacity 0.4 — no colour change** |
+   | Disabled | 160:20 | solid `bg/surface-frost` #eef6f7, label `text/muted` |
+
+   The variant *named* `State=Disabled` (37:9) carries opacity 0.4 and is the
+   hover design; the variant *named* `State=Hover` (37:13) is the disabled
+   design. Ignore the `button/bg-hover-*` and `button/bg-pressed-*` tokens.
 7. **The bottom nav is fixed and identical on every screen**: 24px from the
    bottom, horizontally centred, `--z-nav`, 380 wide on mobile and 598 on
    desktop. `active="none"` is a real state (welcome, intro, onboarding), not a

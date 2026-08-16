@@ -1,35 +1,32 @@
-/* Button — Figma component set 37:23 (Style x State).
+/* Button — Figma component set 37:23, read from the Buttons showcase
+   (08 · Components — Buttons, row/Primary 160:15), which is the visual truth.
+   The variant NAMES in the set are swapped, so do not trust them:
 
-   COLOUR comes from the component variants, not from the button/bg-* tokens.
-   Those two sources disagree and the component is what ships:
+     Default  cell 160:17 — gradient/brand #bbd3d9 -> #637073, label text/on-brand
+     Hover    cell 160:23 — the SAME gradient at node opacity 0.4
+     Disabled cell 160:20 — SOLID bg/surface-frost #eef6f7, label text/muted
 
-     Style=Primary, State=Default (37:5)
-       gradient/brand, left to right, #bbd3d9 -> #637073, label text/on-brand
-     Style=Primary, State=Hover (37:13)
-       SOLID bg/surface-frost #eef6f7, label text/primary #2e2a3f
+   The variant named `State=Disabled` (37:9) carries opacity 0.4 and is the
+   hover design; the variant named `State=Hover` (37:13) is the disabled design.
+   Hover therefore changes NO colour — the whole control softens, shadows
+   included, because node opacity in Figma fades the drop shadows too.
 
-   So Primary does NOT darken on hover — it lights up to a frosted near-white
-   with dark text. The `button/bg-hover-start` / `-end` tokens in 02 Color
-   describe a darker sage gradient that the component does not use; do not
-   reach for them here.
+   MOTION — board 04b (389:200): "LUX motion is calm. Nothing snaps."
+   The board assigns duration/fast (120ms) to hover, but a 100% -> 40% fade
+   reads better at duration/base (200ms), which is what is used here.
 
-   Pressed has no variant in the set, so it follows board 04b (389:200):
-   overlay state/pressed-overlay at 14%, and "No scale transform — LUX does not
-   bounce." Disabled likewise follows the board, because the component's
-   Disabled variant is still identical to Default.
-
-   MOTION — board 04b: "LUX motion is calm. Nothing snaps." Hover and small
-   colour changes use duration/fast (120ms) with ease/standard.
-
-   The gradient endpoints go through the registered --grad-start / --grad-end
-   properties from globals.css so the colour actually interpolates; assigning a
-   whole new linear-gradient() to `background` would snap instead. Hover drives
-   both endpoints to the same colour, which fades the gradient out to the flat
-   frosted surface rather than cutting to it. */
+   The gradient endpoints run through the registered --grad-start / --grad-end
+   properties from globals.css so the disabled state's gradient -> flat change
+   interpolates instead of snapping; CSS cannot transition background-image. */
 
 .button {
   --grad-start: var(--color-button-bg-default-start);
   --grad-end: var(--color-button-bg-default-end);
+  /* The hover cell sits at 0.4. That is numerically the same as
+     opacity/disabled, but this is a hover, not a disabled state — there is no
+     `opacity/hover` token in Figma yet, so the intent is named locally rather
+     than pointing at a token whose name would mislead the next reader. */
+  --button-hover-opacity: 0.4;
 
   position: relative;
   display: inline-flex;
@@ -44,15 +41,17 @@
   color: var(--color-button-label-default);
   background: linear-gradient(90deg, var(--grad-start) 0%, var(--grad-end) 100%);
   box-shadow: var(--shadow-button);
+  opacity: 1;
 
-  transition: --grad-start var(--duration-fast) var(--ease-standard),
-    --grad-end var(--duration-fast) var(--ease-standard),
-    color var(--duration-fast) var(--ease-standard),
-    box-shadow var(--duration-fast) var(--ease-standard);
+  transition: opacity var(--duration-base) var(--ease-standard),
+    --grad-start var(--duration-base) var(--ease-standard),
+    --grad-end var(--duration-base) var(--ease-standard),
+    color var(--duration-base) var(--ease-standard),
+    box-shadow var(--duration-base) var(--ease-standard);
 }
 
-/* the pressed overlay — opacity interpolates, so the press reads as a settle
-   rather than a switch */
+/* the pressed overlay — board 04b: state/pressed-overlay at 14%, and
+   "No scale transform — LUX does not bounce." */
 .button::after {
   content: "";
   position: absolute;
@@ -64,21 +63,27 @@
   transition: opacity var(--duration-fast) var(--ease-standard);
 }
 
+/* Hover: the control softens to 40%. No colour change. */
 .button:hover:not(:disabled) {
-  --grad-start: var(--color-bg-surface-frost);
-  --grad-end: var(--color-bg-surface-frost);
-  color: var(--color-text-primary);
+  opacity: var(--button-hover-opacity);
+}
+
+/* Pressed returns the control to full strength and adds the overlay, so the
+   press still reads while the pointer is also hovering. The set has no
+   State=Pressed variant, so this follows board 04b rather than a variant. */
+.button:active:not(:disabled) {
+  opacity: 1;
 }
 
 .button:active:not(:disabled)::after {
   opacity: 1;
 }
 
+/* Disabled: solid bg/surface-frost with a text/muted label (showcase 160:20) */
 .button:disabled {
-  --grad-start: var(--color-state-disabled-bg);
-  --grad-end: var(--color-state-disabled-bg);
-  color: var(--color-text-disabled);
-  box-shadow: none;
+  --grad-start: var(--color-bg-surface-frost);
+  --grad-end: var(--color-bg-surface-frost);
+  color: var(--color-text-muted);
   cursor: not-allowed;
 }
 
@@ -86,16 +91,13 @@
    a tap */
 @media (hover: none) {
   .button:hover:not(:disabled) {
-    --grad-start: var(--color-button-bg-default-start);
-    --grad-end: var(--color-button-bg-default-end);
-    color: var(--color-button-label-default);
+    opacity: 1;
   }
 }
 
-/* Secondary and Ghost exist in the Figma set; add them here when a screen needs
-   them rather than approximating. Note that Ghost's hover variant still
-   references `bg/accent-mint`, a variable that is no longer in 02 Color — that
-   needs resolving in Figma before Ghost is implemented. */
+/* Secondary and Ghost exist in the Figma set; add them when a screen needs one.
+   Note that Ghost's hover variant still references `bg/accent-mint`, a variable
+   no longer in 02 Color — resolve that in Figma first. */
 
 .full {
   width: 100%;
