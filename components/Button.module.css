@@ -1,9 +1,37 @@
 /* Button — Figma component set 37:23 (Style x State).
-   The sage gradient runs left to right, light start to dark end. The two
-   stacked drop shadows are part of the component: a button without them reads
-   flat, which is exactly the bug that hand-built buttons keep reintroducing. */
+
+   COLOUR comes from the component variants, not from the button/bg-* tokens.
+   Those two sources disagree and the component is what ships:
+
+     Style=Primary, State=Default (37:5)
+       gradient/brand, left to right, #bbd3d9 -> #637073, label text/on-brand
+     Style=Primary, State=Hover (37:13)
+       SOLID bg/surface-frost #eef6f7, label text/primary #2e2a3f
+
+   So Primary does NOT darken on hover — it lights up to a frosted near-white
+   with dark text. The `button/bg-hover-start` / `-end` tokens in 02 Color
+   describe a darker sage gradient that the component does not use; do not
+   reach for them here.
+
+   Pressed has no variant in the set, so it follows board 04b (389:200):
+   overlay state/pressed-overlay at 14%, and "No scale transform — LUX does not
+   bounce." Disabled likewise follows the board, because the component's
+   Disabled variant is still identical to Default.
+
+   MOTION — board 04b: "LUX motion is calm. Nothing snaps." Hover and small
+   colour changes use duration/fast (120ms) with ease/standard.
+
+   The gradient endpoints go through the registered --grad-start / --grad-end
+   properties from globals.css so the colour actually interpolates; assigning a
+   whole new linear-gradient() to `background` would snap instead. Hover drives
+   both endpoints to the same colour, which fades the gradient out to the flat
+   frosted surface rather than cutting to it. */
 
 .button {
+  --grad-start: var(--color-button-bg-default-start);
+  --grad-end: var(--color-button-bg-default-end);
+
+  position: relative;
   display: inline-flex;
   align-items: center;
   justify-content: center;
@@ -14,41 +42,60 @@
   border-radius: var(--radius-full);
 
   color: var(--color-button-label-default);
-  background: var(--gradient-brand);
+  background: linear-gradient(90deg, var(--grad-start) 0%, var(--grad-end) 100%);
   box-shadow: var(--shadow-button);
 
-  transition: background var(--duration-base) var(--ease-standard),
-    box-shadow var(--duration-base) var(--ease-standard),
-    transform var(--duration-fast) var(--ease-standard);
+  transition: --grad-start var(--duration-fast) var(--ease-standard),
+    --grad-end var(--duration-fast) var(--ease-standard),
+    color var(--duration-fast) var(--ease-standard),
+    box-shadow var(--duration-fast) var(--ease-standard);
+}
+
+/* the pressed overlay — opacity interpolates, so the press reads as a settle
+   rather than a switch */
+.button::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  background: var(--color-state-pressed-overlay);
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity var(--duration-fast) var(--ease-standard);
 }
 
 .button:hover:not(:disabled) {
-  background: linear-gradient(
-    90deg,
-    var(--color-button-bg-hover-start) 0%,
-    var(--color-button-bg-hover-end) 100%
-  );
+  --grad-start: var(--color-bg-surface-frost);
+  --grad-end: var(--color-bg-surface-frost);
+  color: var(--color-text-primary);
 }
 
-.button:active:not(:disabled) {
-  background: linear-gradient(
-    90deg,
-    var(--color-button-bg-pressed-start) 0%,
-    var(--color-button-bg-pressed-end) 100%
-  );
-  transform: translateY(1px);
-  box-shadow: 0 2px 6px -2px rgba(46, 36, 71, 0.22);
+.button:active:not(:disabled)::after {
+  opacity: 1;
 }
 
 .button:disabled {
-  background: var(--color-button-bg-disabled);
-  color: var(--color-button-label-disabled);
+  --grad-start: var(--color-state-disabled-bg);
+  --grad-end: var(--color-state-disabled-bg);
+  color: var(--color-text-disabled);
   box-shadow: none;
   cursor: not-allowed;
 }
 
-/* Secondary and Ghost exist in the Figma set; add them here when a screen
-   needs them rather than approximating with opacity. */
+/* a touch device has no hover; leaving the rule on makes the state stick after
+   a tap */
+@media (hover: none) {
+  .button:hover:not(:disabled) {
+    --grad-start: var(--color-button-bg-default-start);
+    --grad-end: var(--color-button-bg-default-end);
+    color: var(--color-button-label-default);
+  }
+}
+
+/* Secondary and Ghost exist in the Figma set; add them here when a screen needs
+   them rather than approximating. Note that Ghost's hover variant still
+   references `bg/accent-mint`, a variable that is no longer in 02 Color — that
+   needs resolving in Figma before Ghost is implemented. */
 
 .full {
   width: 100%;

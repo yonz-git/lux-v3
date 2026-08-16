@@ -57,7 +57,8 @@
   padding: 0 var(--space-md);
   border-radius: var(--radius-lg);
 
-  transition: opacity var(--duration-base) var(--ease-standard);
+  /* hover and small colour changes are duration/fast per board 04b */
+  transition: opacity var(--duration-fast) var(--ease-standard);
 }
 
 .item[data-active="true"] {
@@ -65,11 +66,23 @@
 }
 
 .item:hover {
-  opacity: 0.75;
+  opacity: 0.8;
 }
 
 .item[data-active="true"]:hover {
   opacity: 1;
+}
+
+/* pointer-only: a touch device has no hover, and leaving it on means the state
+   sticks after a tap */
+@media (hover: none) {
+  .item:hover {
+    opacity: 0.5;
+  }
+
+  .item[data-active="true"]:hover {
+    opacity: 1;
+  }
 }
 
 .label {

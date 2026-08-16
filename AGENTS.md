@@ -37,6 +37,12 @@ Only **00 — Welcome** is implemented so far.
 5. **Buttons are `Button` (Regular 15/22)** — deliberately Regular, never Medium.
 6. **Never hand-build a button.** Use `components/Button.tsx`. The two stacked
    drop shadows are part of the component; a hand-rolled gradient div loses them.
+6a. **State colours come from the component variants, not from same-named
+   tokens.** Primary's hover variant (37:13) is a SOLID `bg/surface-frost`
+   #eef6f7 with a `text/primary` label — the button **lights up**, it does not
+   darken. The `button/bg-hover-start` / `-end` tokens in 02 Color describe a
+   darker sage gradient the component does not use. When a token and a variant
+   disagree, **the variant wins** — it is what ships. Check the variant first.
 7. **The bottom nav is fixed and identical on every screen**: 24px from the
    bottom, horizontally centred, `--z-nav`, 380 wide on mobile and 598 on
    desktop. `active="none"` is a real state (welcome, intro, onboarding), not a
@@ -69,6 +75,30 @@ differently.
 **checkboxes** and keep `role="checkbox"`. Selecting one clears every other box;
 selecting a normal option clears the exclusives. Never swap them to radios —
 mixing shapes in one group tells the user the whole group is single-select.
+
+## Motion — board 04b (389:200)
+
+"LUX motion is calm. Nothing snaps."
+
+| Token | Value | Use |
+| --- | --- | --- |
+| `--duration-fast` | 120ms | **hover, focus, small colour changes** |
+| `--duration-base` | 200ms | selection, chips, rows, toggles |
+| `--duration-slow` | 320ms | sheets, overlays, page-level reveals |
+| `--duration-slower` | 480ms | orb and hero entrances |
+
+`--ease-standard` is the default for anything that enters and settles.
+
+- **Pressed never uses a transform** — "LUX does not bounce." Overlay
+  `state/pressed-overlay` at 14% instead.
+- **CSS cannot interpolate `background-image`.** Swapping one `linear-gradient()`
+  for another snaps, which breaks "nothing snaps". Drive the registered
+  `--grad-start` / `--grad-end` properties (declared in `globals.css`) instead —
+  registered `<color>` properties do interpolate.
+- **Wrap every `:hover` rule's counterpart in `@media (hover: none)`** so the
+  state does not stick after a tap on touch devices.
+- `prefers-reduced-motion` already collapses all durations globally; don't
+  special-case it per component.
 
 ## Translate, don't transcribe
 

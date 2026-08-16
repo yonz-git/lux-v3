@@ -10,6 +10,31 @@
   box-sizing: border-box;
 }
 
+/* ============================================================================
+   Animatable gradient stops
+
+   CSS cannot interpolate `background-image`, so swapping one `linear-gradient()`
+   for another snaps instantly no matter what `transition` says. The Motion board
+   (04b · 389:200) is explicit that "nothing snaps", so the gradient endpoints are
+   registered as typed custom properties instead. Registered `<color>` properties
+   DO interpolate, which lets a gradient surface transition properly.
+
+   Declared here rather than in tokens.css because these are not Figma variables;
+   they are the plumbing that makes the button/bg-* tokens animatable.
+   ========================================================================== */
+
+@property --grad-start {
+  syntax: "<color>";
+  inherits: false;
+  initial-value: #bbd3d9;
+}
+
+@property --grad-end {
+  syntax: "<color>";
+  inherits: false;
+  initial-value: #637073;
+}
+
 html,
 body {
   margin: 0;
