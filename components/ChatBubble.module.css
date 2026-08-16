@@ -1,8 +1,13 @@
 /* Chat bubble — Figma Spec/Chat Bubble (47:12) on board 06 · Core.
+
+   A bubble is a fill plus two shadows. NO BORDER — every reference bubble in the
+   design system (lux-bubble 270:112, user-bubble 270:129, and both welcome
+   bubbles 359:619 / 359:630) has no stroke. Frosted *rows* and *cards* do carry
+   a 1px border/subtle; bubbles do not. Do not merge the two recipes.
+
    Three corners at --radius-bubble (30), the sender-side corner at
    --radius-bubble-tail (1). AI sits left with the tail top-left; the user sits
-   right with the tail top-right. The tail corner is the whole tell — four equal
-   corners is wrong. */
+   right with the tail top-right. */
 
 .row {
   display: flex;
@@ -25,7 +30,6 @@
   max-width: min(100%, 322px);
   padding: 12px var(--space-xl) 14px;
 
-  border: var(--border-width-hairline) solid var(--color-border-subtle);
   border-radius: var(--radius-bubble);
   box-shadow: var(--shadow-chat-bubble);
   backdrop-filter: blur(var(--blur-card));
@@ -46,8 +50,9 @@
 
 @media (min-width: 1024px) {
   .bubble {
+    /* wider ceiling for the conversational turns on the question screens;
+       short prompts such as Welcome's still hug their text */
     max-width: min(100%, 520px);
-    padding: 14px var(--space-xl);
   }
 }
 

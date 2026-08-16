@@ -131,8 +131,12 @@ button {
 @media (min-width: 1024px) {
   .screen {
     background: var(--gradient-canvas-desktop);
-    padding: var(--space-4xl) var(--margin-desktop)
-      calc(var(--space-2xl) + var(--size-nav-height) + var(--space-lg));
+    /* 120 top = 40 page padding + the 40 empty header row + the 40 spacer that
+       every desktop screen carries above its content.
+       No bottom reservation: on desktop the nav floats over the content region
+       rather than sitting in the layout flow, which is how the Figma frame is
+       built, and it is what puts the hero at the right height. */
+    padding: 120px var(--margin-desktop) 0;
   }
 }
 

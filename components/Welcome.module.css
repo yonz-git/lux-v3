@@ -2,14 +2,30 @@
    Figma: mobile 453:2337 (440x957), desktop 463:2412 (1440x900).
 
    This is a translation, not a transcription. The Figma frames are fixed-height
-   canvases, so their internal spacers are artefacts of 957 / 900. On the web the
-   viewport is fluid, so the composition is expressed as intent: the hero and the
-   actions form one vertically-centred group, with a responsive gap between them.
+   canvases, so the composition is expressed as intent while component sizes,
+   radii, type and colour stay exact.
 
    Welcome is the first screen of the flow, so it has NO back control and NO
    progress track. On desktop it also keeps NO card fill and NO stroke — the orb,
    bubble, button and disclaimer float directly on the gradient. Adding a visible
-   card here is a regression. */
+   card here is a regression.
+
+   POSITIONING
+   The group is not simply centred: it sits low. Figma achieves that with fixed
+   spacers, which only work at one canvas height. Here the free space is split
+   between two zero-basis flex spacers whose grow factors are the exact Figma
+   distances above and below the content:
+
+     mobile   266 above : 70 below   (content 306..772 in the 0..842 region)
+     desktop  209 above : 136 below  (content 329..764 in the 120..900 region)
+
+   That reproduces the design exactly at the design heights and degrades
+   proportionally on shorter viewports, instead of pushing the CTA and the
+   disclaimer underneath the fixed nav.
+
+   The internal rhythm is hand-tuned in Figma rather than taken from the spacing
+   scale (23 / 94 / 13 on desktop, 19 / 163 / 24 on mobile), so those are written
+   as literals rather than snapped to the nearest token. */
 
 .welcome {
   flex: 1;
@@ -18,15 +34,29 @@
   display: flex;
   flex-direction: column;
   align-items: center;
-  justify-content: center;
-  gap: clamp(var(--space-5xl), 12vh, var(--space-9xl));
+  justify-content: flex-start;
+  gap: 0;
+}
+
+.spacerTop,
+.spacerBottom {
+  flex-shrink: 1;
+  flex-basis: 0;
+  width: 100%;
+}
+
+.spacerTop {
+  flex-grow: 266;
+}
+.spacerBottom {
+  flex-grow: 70;
 }
 
 .hero {
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: var(--space-xl);
+  gap: var(--space-xl); /* Figma 19 */
   width: 100%;
 }
 
@@ -34,8 +64,11 @@
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: var(--space-lg);
+  gap: var(--space-2xl); /* Figma 24: button bottom to disclaimer top */
   width: 100%;
+  /* bubble bottom to button top is 163 at the 957 design height, and shrinks
+     first on short viewports */
+  margin-top: clamp(var(--space-2xl), 17vh, 163px);
 }
 
 .cta {
@@ -51,12 +84,24 @@
 
 @media (min-width: 1024px) {
   .welcome {
-    max-width: var(--width-card-focus);
-    gap: var(--space-3xl);
+    max-width: var(--width-card-focus); /* 640 */
+  }
+
+  .spacerTop {
+    flex-grow: 209;
+  }
+  .spacerBottom {
+    flex-grow: 136;
   }
 
   .hero {
-    gap: var(--space-3xl);
+    gap: 23px;
+  }
+
+  .actions {
+    gap: 13px;
+    /* 23 gap + 94 spacer + 23 gap between the bubble and the CTA group */
+    margin-top: 140px;
   }
 
   .cta {

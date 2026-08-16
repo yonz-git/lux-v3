@@ -41,10 +41,12 @@ Only **00 — Welcome** is implemented so far.
    bottom, horizontally centred, `--z-nav`, 380 wide on mobile and 598 on
    desktop. `active="none"` is a real state (welcome, intro, onboarding), not a
    fallback.
-8. **Chat bubbles carry an asymmetric tail corner.** Three corners at
-   `--radius-bubble` (30), the sender-side corner at `--radius-bubble-tail` (1).
-   AI = tail top-left, sits left. User = tail top-right, sits right. Four equal
-   corners is wrong.
+8. **Chat bubbles carry an asymmetric tail corner, and NO border.** Three corners
+   at `--radius-bubble` (30), the sender-side corner at `--radius-bubble-tail`
+   (1). AI = tail top-left, sits left. User = tail top-right, sits right. Four
+   equal corners is wrong. A bubble is a **fill plus two shadows** — every
+   reference bubble in the design system has no stroke. Frosted *rows* and
+   *cards* do carry a 1px `border/subtle`; **do not merge the two recipes.**
 9. **Frosted surfaces always get a solid fallback** under
    `prefers-reduced-transparency`, and a translucent fill always needs its inner
    shadow or it reads flat.
