@@ -1,0 +1,69 @@
+/* 00 — Welcome
+   Figma: mobile 453:2337 (440x957), desktop 463:2412 (1440x900).
+
+   This is a translation, not a transcription. The Figma frames are fixed-height
+   canvases, so their internal spacers are artefacts of 957 / 900. On the web the
+   viewport is fluid, so the composition is expressed as intent: the hero and the
+   actions form one vertically-centred group, with a responsive gap between them.
+
+   Welcome is the first screen of the flow, so it has NO back control and NO
+   progress track. On desktop it also keeps NO card fill and NO stroke — the orb,
+   bubble, button and disclaimer float directly on the gradient. Adding a visible
+   card here is a regression. */
+
+.welcome {
+  flex: 1;
+  width: 100%;
+  max-width: 392px; /* 440 - (2 x margin/mobile) */
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: clamp(var(--space-5xl), 12vh, var(--space-9xl));
+}
+
+.hero {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--space-xl);
+  width: 100%;
+}
+
+.actions {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--space-lg);
+  width: 100%;
+}
+
+.cta {
+  width: 100%;
+  max-width: 338px; /* the Welcome CTA is narrower than the content column */
+}
+
+.disclaimer {
+  color: var(--color-text-secondary);
+  text-align: center;
+  max-width: 376px;
+}
+
+@media (min-width: 1024px) {
+  .welcome {
+    max-width: var(--width-card-focus);
+    gap: var(--space-3xl);
+  }
+
+  .hero {
+    gap: var(--space-3xl);
+  }
+
+  .cta {
+    max-width: 376px;
+  }
+
+  .disclaimer {
+    max-width: 484px;
+  }
+}

@@ -1,0 +1,182 @@
+@import "./tokens.css";
+
+/* ============================================================================
+   Reset + primitives
+   ========================================================================== */
+
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+html,
+body {
+  margin: 0;
+  padding: 0;
+}
+
+html {
+  -webkit-text-size-adjust: 100%;
+}
+
+body {
+  font-family: var(--font-family-sans);
+  font-weight: var(--font-weight-regular);
+  color: var(--color-text-primary);
+  background: var(--color-gradient-canvas-mid);
+  -webkit-font-smoothing: antialiased;
+  text-rendering: optimizeLegibility;
+}
+
+button {
+  font: inherit;
+  color: inherit;
+  border: 0;
+  background: none;
+  cursor: pointer;
+}
+
+:focus-visible {
+  outline: none;
+  box-shadow: var(--shadow-focus-ring);
+}
+
+/* ============================================================================
+   Type ramp — one class per Figma text style.
+   Every piece of text in the app uses one of these, mirroring the design-system
+   rule that every text node carries a text style.
+   Weights: Light (Metric only), Regular (Body 1/2/3, Button, Button Small),
+   Medium (everything else). SemiBold and Bold are not in the ramp.
+   ========================================================================== */
+
+.t-h1,
+.t-h2,
+.t-h3,
+.t-h4,
+.t-h5,
+.t-h6,
+.t-body1,
+.t-body2,
+.t-body3,
+.t-label,
+.t-label-sm,
+.t-caption,
+.t-overline,
+.t-button,
+.t-button-sm,
+.t-metric1,
+.t-metric2,
+.t-display1,
+.t-display2 {
+  margin: 0;
+}
+
+.t-h1 { font-size: var(--font-size-3xl); line-height: var(--line-height-3xl); font-weight: var(--font-weight-medium); }
+.t-h2 { font-size: var(--font-size-2xl); line-height: var(--line-height-2xl); font-weight: var(--font-weight-medium); }
+.t-h3 { font-size: var(--font-size-xl);  line-height: var(--line-height-xl);  font-weight: var(--font-weight-medium); }
+.t-h4 { font-size: var(--font-size-lg);  line-height: var(--line-height-md);  font-weight: var(--font-weight-medium); }
+.t-h5 { font-size: var(--font-size-md);  line-height: var(--line-height-sm);  font-weight: var(--font-weight-medium); }
+.t-h6 { font-size: var(--font-size-sm);  line-height: var(--line-height-xl);  font-weight: var(--font-weight-medium); }
+
+.t-body1 { font-size: var(--font-size-md); line-height: var(--line-height-md); font-weight: var(--font-weight-regular); }
+.t-body2 { font-size: var(--font-size-sm); line-height: var(--line-height-sm); font-weight: var(--font-weight-regular); }
+.t-body3 { font-size: var(--font-size-xs); line-height: var(--line-height-xs); font-weight: var(--font-weight-regular); }
+
+.t-label    { font-size: var(--font-size-xs);  line-height: var(--line-height-xl); font-weight: var(--font-weight-medium); }
+.t-label-sm { font-size: var(--font-size-3xs); line-height: var(--line-height-3xs); font-weight: var(--font-weight-medium); }
+.t-caption  { font-size: var(--font-size-3xs); line-height: var(--line-height-3xs); font-weight: var(--font-weight-regular); }
+.t-overline {
+  font-size: var(--font-size-2xs);
+  line-height: var(--line-height-2xs);
+  font-weight: var(--font-weight-medium);
+  letter-spacing: var(--tracking-wide);
+  text-transform: uppercase;
+}
+
+.t-button    { font-size: 15px; line-height: var(--line-height-xs); font-weight: var(--font-weight-regular); }
+.t-button-sm { font-size: var(--font-size-xs); line-height: var(--line-height-xs); font-weight: var(--font-weight-regular); }
+
+.t-metric1 { font-size: var(--font-size-4xl); line-height: var(--line-height-4xl); font-weight: var(--font-weight-light); }
+.t-metric2 { font-size: var(--font-size-3xl); line-height: var(--line-height-2xl); font-weight: var(--font-weight-light); }
+.t-display1 { font-size: var(--font-size-6xl); line-height: var(--line-height-6xl); font-weight: var(--font-weight-medium); }
+.t-display2 { font-size: var(--font-size-5xl); line-height: var(--line-height-5xl); font-weight: var(--font-weight-medium); }
+
+/* --- .t-label uses --line-height-xl (20px is not in the line-height scale;
+       Figma's Label style is Medium 14/20). Kept explicit here so the value
+       is not silently wrong. */
+.t-label { line-height: 20px; }
+.t-h6 { line-height: 24px; }
+
+/* ============================================================================
+   The screen shell
+   Mobile = the canvas gradient, full viewport, with the bottom nav reserved.
+   Desktop swaps to the desktop gradient and a centred content column.
+   ========================================================================== */
+
+.screen {
+  position: relative;
+  min-height: 100dvh;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  background: var(--gradient-canvas-mobile);
+  background-attachment: fixed;
+  /* the fixed nav sits 24px from the bottom and is 75 tall; 16 of clearance
+     above it is the same reservation the Figma screens make (24+75+16). */
+  padding: var(--space-4xl) var(--margin-mobile)
+    calc(var(--space-2xl) + var(--size-nav-height) + var(--space-lg));
+}
+
+@media (min-width: 1024px) {
+  .screen {
+    background: var(--gradient-canvas-desktop);
+    padding: var(--space-4xl) var(--margin-desktop)
+      calc(var(--space-2xl) + var(--size-nav-height) + var(--space-lg));
+  }
+}
+
+/* ============================================================================
+   Frosted surfaces
+   Always provide a solid fallback: a translucent fill with no backdrop blur
+   behind it reads as washed-out, and some users disable transparency.
+   ========================================================================== */
+
+.frosted-row {
+  background: var(--color-surface-frost-light);
+  border: var(--border-width-hairline) solid var(--color-border-subtle);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-frosted-row);
+  backdrop-filter: blur(var(--blur-card));
+  -webkit-backdrop-filter: blur(var(--blur-card));
+}
+
+@media (prefers-reduced-transparency: reduce) {
+  .frosted-row {
+    background: var(--color-bg-surface-frost);
+    backdrop-filter: none;
+    -webkit-backdrop-filter: none;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+}
+
+.visually-hidden {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  margin: -1px;
+  padding: 0;
+  overflow: hidden;
+  clip-path: inset(50%);
+  white-space: nowrap;
+  border: 0;
+}

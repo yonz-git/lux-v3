@@ -1,0 +1,60 @@
+/* Chat bubble — Figma Spec/Chat Bubble (47:12) on board 06 · Core.
+   Three corners at --radius-bubble (30), the sender-side corner at
+   --radius-bubble-tail (1). AI sits left with the tail top-left; the user sits
+   right with the tail top-right. The tail corner is the whole tell — four equal
+   corners is wrong. */
+
+.row {
+  display: flex;
+  width: 100%;
+}
+
+.row[data-align="left"] {
+  justify-content: flex-start;
+}
+.row[data-align="right"] {
+  justify-content: flex-end;
+}
+/* 00 Welcome is a centred hero, so its bubble is centred at both breakpoints,
+   matching the design-system welcome reference. It keeps the top-left tail. */
+.row[data-align="center"] {
+  justify-content: center;
+}
+
+.bubble {
+  max-width: min(100%, 322px);
+  padding: 12px var(--space-xl) 14px;
+
+  border: var(--border-width-hairline) solid var(--color-border-subtle);
+  border-radius: var(--radius-bubble);
+  box-shadow: var(--shadow-chat-bubble);
+  backdrop-filter: blur(var(--blur-card));
+  -webkit-backdrop-filter: blur(var(--blur-card));
+
+  color: var(--color-text-primary);
+}
+
+.bubble[data-from="ai"] {
+  background: var(--color-surface-frost-light);
+  border-top-left-radius: var(--radius-bubble-tail);
+}
+
+.bubble[data-from="user"] {
+  background: var(--color-bg-bubble-user);
+  border-top-right-radius: var(--radius-bubble-tail);
+}
+
+@media (min-width: 1024px) {
+  .bubble {
+    max-width: min(100%, 520px);
+    padding: 14px var(--space-xl);
+  }
+}
+
+@media (prefers-reduced-transparency: reduce) {
+  .bubble[data-from="ai"] {
+    background: var(--color-bg-surface-frost);
+    backdrop-filter: none;
+    -webkit-backdrop-filter: none;
+  }
+}

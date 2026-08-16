@@ -1,0 +1,55 @@
+/* Button — Figma component set 37:23 (Style x State).
+   The sage gradient runs left to right, light start to dark end. The two
+   stacked drop shadows are part of the component: a button without them reads
+   flat, which is exactly the bug that hand-built buttons keep reintroducing. */
+
+.button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--space-sm);
+
+  min-height: var(--size-control-lg);
+  padding: var(--space-md) var(--space-2xl);
+  border-radius: var(--radius-full);
+
+  color: var(--color-button-label-default);
+  background: var(--gradient-brand);
+  box-shadow: var(--shadow-button);
+
+  transition: background var(--duration-base) var(--ease-standard),
+    box-shadow var(--duration-base) var(--ease-standard),
+    transform var(--duration-fast) var(--ease-standard);
+}
+
+.button:hover:not(:disabled) {
+  background: linear-gradient(
+    90deg,
+    var(--color-button-bg-hover-start) 0%,
+    var(--color-button-bg-hover-end) 100%
+  );
+}
+
+.button:active:not(:disabled) {
+  background: linear-gradient(
+    90deg,
+    var(--color-button-bg-pressed-start) 0%,
+    var(--color-button-bg-pressed-end) 100%
+  );
+  transform: translateY(1px);
+  box-shadow: 0 2px 6px -2px rgba(46, 36, 71, 0.22);
+}
+
+.button:disabled {
+  background: var(--color-button-bg-disabled);
+  color: var(--color-button-label-disabled);
+  box-shadow: none;
+  cursor: not-allowed;
+}
+
+/* Secondary and Ghost exist in the Figma set; add them here when a screen
+   needs them rather than approximating with opacity. */
+
+.full {
+  width: 100%;
+}

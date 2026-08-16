@@ -1,0 +1,78 @@
+/* Bottom-Nav-Bar — Figma component set 410:258 (Active x Size, 8 variants).
+   The nav is FIXED: identical placement on every screen, 24px from the bottom,
+   horizontally centred, above everything else. */
+
+.nav {
+  position: fixed;
+  left: 50%;
+  transform: translateX(-50%);
+  bottom: var(--space-2xl);
+  z-index: var(--z-nav);
+
+  width: var(--size-nav-width-mobile);
+  height: var(--size-nav-height);
+  max-width: calc(100vw - (var(--margin-mobile) * 2));
+
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 6px 14px;
+
+  border-radius: var(--radius-full);
+  background: var(--color-surface-frost-nav);
+  box-shadow: var(--shadow-nav);
+  backdrop-filter: blur(var(--blur-card));
+  -webkit-backdrop-filter: blur(var(--blur-card));
+}
+
+@media (min-width: 1024px) {
+  .nav {
+    width: var(--size-nav-width-desktop);
+    max-width: none;
+  }
+}
+
+@media (prefers-reduced-transparency: reduce) {
+  .nav {
+    background: var(--color-bg-nav);
+    backdrop-filter: none;
+    -webkit-backdrop-filter: none;
+  }
+}
+
+.item {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--space-2xs);
+
+  /* the active treatment is opacity only — same colour, same weight.
+     1.0 active, 0.5 inactive, exactly as the component encodes it. */
+  opacity: 0.5;
+  color: var(--color-icon-default);
+
+  min-width: var(--size-touch-target);
+  min-height: var(--size-touch-target);
+  justify-content: center;
+  padding: 0 var(--space-md);
+  border-radius: var(--radius-lg);
+
+  transition: opacity var(--duration-base) var(--ease-standard);
+}
+
+.item[data-active="true"] {
+  opacity: 1;
+}
+
+.item:hover {
+  opacity: 0.75;
+}
+
+.item[data-active="true"]:hover {
+  opacity: 1;
+}
+
+.label {
+  color: var(--color-text-primary);
+  white-space: nowrap;
+}
