@@ -165,14 +165,23 @@ mixing shapes in one group tells the user the whole group is single-select.
 - **CSS cannot interpolate `background-image`.** Swapping one `linear-gradient()`
   for another snaps. The registered `--grad-start` / `--grad-end` properties
   (declared in `globals.css`) make the gradient addressable from both states.
-- ⚠️ **NEVER transition a property that differs between enabled and disabled.**
-  On `Button`, transitioning `--grad-start`/`--grad-end` *or* `color` left the
-  computed value STUCK at the disabled colour after the button became enabled —
-  it stayed visually disabled until something forced a reflow. Verified: both
-  read their stale value 1.5s after enabling, then corrected on reflow.
-  `Button` therefore transitions **only `opacity`**, which is safe because the
-  disabled state does not change opacity (disabled is a solid pale fill, not a
-  fade) and hover is an opacity fade. Nothing is lost.
+- ⚠️ **A "stuck" transition in the preview pane is almost always the HIDDEN TAB,
+  not your CSS.** The Browser pane reports `document.visibilityState === "hidden"`,
+  and Chromium freezes rAF and CSS transitions there — 0 frames in 400ms.
+  Computed values then sit at the START of the transition indefinitely and jump
+  to the end on a forced reflow, which looks exactly like a stuck property. I
+  misdiagnosed this once and stripped `Button`'s transitions for nothing.
+  **To verify motion in the pane, inspect `element.getAnimations()`** — check the
+  `CSSTransition`/`CSSAnimation` exists with the expected duration and easing,
+  then call `.finish()` and assert the end state. Do not rely on sleeping and
+  re-reading `getComputedStyle`.
+- **Entrance reveals: the rule that NAMES an animation must live in
+  `globals.css`, never in a CSS Module.** Modules localize `@keyframes` names, so
+  `animation: lux-fade-in …` inside a module compiles to a scoped name that does
+  not match the global keyframes — it resolves to nothing and no animation runs,
+  while still reporting a duration in `getComputedStyle`. Use the `[data-reveal]`
+  / `[data-reveal-stagger]` hooks. A module may safely set `animation-delay`,
+  which carries no name.
 - **Wrap every `:hover` rule's counterpart in `@media (hover: none)`** so the
   state does not stick after a tap on touch devices.
 - `prefers-reduced-motion` already collapses all durations globally; don't

@@ -201,6 +201,66 @@ button {
   }
 }
 
+/* ============================================================================
+   Entrance reveal
+
+   Board 04b: "LUX motion is calm. Nothing snaps." Content arrives with a fade
+   rather than appearing instantly — duration/slow (320ms) is the board's value
+   for page-level reveals, duration/base (200ms) for something revealed inside a
+   screen the user just acted on (the "Other" field, a capture confirmation).
+
+   `both` holds the from-state before the delay elapses, so a staggered child
+   never flashes at full opacity first.
+
+   prefers-reduced-motion is handled globally below — do not special-case it.
+   ========================================================================== */
+
+@keyframes lux-fade-in {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+.reveal {
+  animation: lux-fade-in var(--duration-slow) var(--ease-standard) both;
+}
+
+/* revealed by a user action rather than by arriving on the screen */
+.reveal-quick {
+  animation: lux-fade-in var(--duration-base) var(--ease-standard) both;
+}
+
+/* the orb and hero entrances get the slower curve */
+.reveal-hero {
+  animation: lux-fade-in var(--duration-slower) var(--ease-standard) both;
+}
+
+/* ⚠️ THESE RULES MUST LIVE HERE, NOT IN A CSS MODULE. CSS Modules localize
+   @keyframes names, so `animation: lux-fade-in ...` written inside a module
+   compiles to a SCOPED name that does not match the global keyframes above —
+   the declaration then resolves to nothing and no animation runs at all, while
+   still reporting a duration in getComputedStyle. Verified: the module asked
+   for `QuestionScreen-module__…__lux-fade-in` and only `lux-fade-in` existed.
+   Keep any rule that NAMES an animation global; a module may safely set
+   animation-delay, which carries no name. */
+
+[data-reveal] > * {
+  animation: lux-fade-in var(--duration-slow) var(--ease-standard) both;
+}
+
+/* Each block fades in just after the one above it. 40ms reads as a sequence
+   without turning a five-block screen into a performance. Applied to DIRECT
+   children only, so a ten-row option list arrives as one block rather than ten
+   cascading rows. */
+[data-reveal-stagger] > *:nth-child(1) { animation-delay: 0ms; }
+[data-reveal-stagger] > *:nth-child(2) { animation-delay: 40ms; }
+[data-reveal-stagger] > *:nth-child(3) { animation-delay: 80ms; }
+[data-reveal-stagger] > *:nth-child(4) { animation-delay: 120ms; }
+[data-reveal-stagger] > *:nth-child(n + 5) { animation-delay: 160ms; }
+
 @media (prefers-reduced-motion: reduce) {
   *,
   *::before,

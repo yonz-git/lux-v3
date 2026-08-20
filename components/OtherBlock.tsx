@@ -51,6 +51,7 @@ export function OtherBlock({
       />
       {selected && (
         <TextField
+          className="reveal-quick"
           ref={inputRef}
           value={value}
           placeholder={placeholder}

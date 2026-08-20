@@ -45,7 +45,7 @@ export function QuestionScreen({
 
   return (
     <main className="screen" data-layout="flow">
-      <div className={styles.shell}>
+      <div className={styles.shell} data-reveal>
         <ScreenHeader backHref={prevHref(id)} />
 
         <div className={styles.progressWrap}>
@@ -53,7 +53,13 @@ export function QuestionScreen({
         </div>
 
         <div className={styles.card}>
-          <div className={styles.content}>{children}</div>
+          {/* keyed on the step so the reveal replays on navigation — React
+              reconciles by component type, and every screen renders this same
+              QuestionScreen, so without a key the DOM is reused and the
+              animation never re-runs. */}
+          <div className={styles.content} data-reveal data-reveal-stagger key={id}>
+            {children}
+          </div>
 
           <div className={styles.spacer} aria-hidden="true" />
 

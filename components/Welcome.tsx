@@ -14,7 +14,7 @@ export function Welcome() {
             and below the group, so it sits low without fixed offsets */}
         <div className={styles.spacerTop} aria-hidden="true" />
 
-        <div className={styles.hero}>
+        <div className={`${styles.hero} reveal-hero`}>
           <Orb size="var(--size-orb-lg)" />
           {/* centred rather than left, because Welcome is a hero composition —
               see the note in ChatBubble.module.css */}
@@ -23,7 +23,7 @@ export function Welcome() {
           </ChatBubble>
         </div>
 
-        <div className={styles.actions}>
+        <div className={`${styles.actions} reveal-hero`}>
           <Button className={styles.cta} href="/investigation/start">
             Start investigating
           </Button>

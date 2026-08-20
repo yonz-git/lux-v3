@@ -31,7 +31,9 @@ export function SelfieCapture() {
 
       <div className={styles.viewfinder} data-captured={captured}>
         <span className={styles.guide} aria-hidden="true" />
-        {captured && <p className={`${styles.captured} t-label`}>Photo captured</p>}
+        {captured && (
+          <p className={`${styles.captured} reveal-quick t-label`}>Photo captured</p>
+        )}
       </div>
 
       <div className={styles.controls}>
