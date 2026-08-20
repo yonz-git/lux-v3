@@ -153,7 +153,20 @@ button {
     calc(var(--space-2xl) + var(--size-nav-height) + var(--space-lg));
 }
 
+/* Flow screens carry their own header row and progress track, so they do not
+   need the empty 40px header allowance that Welcome reserves. Without this they
+   sit 80px too low on desktop. */
+.screen[data-layout="flow"] {
+  padding-bottom: calc(
+    var(--space-2xl) + var(--size-nav-height) + var(--space-lg)
+  );
+}
+
 @media (min-width: 1024px) {
+  .screen[data-layout="flow"] {
+    padding-top: var(--space-4xl);
+  }
+
   .screen {
     background: var(--gradient-canvas-desktop);
     /* 120 top = 40 page padding + the 40 empty header row + the 40 spacer that

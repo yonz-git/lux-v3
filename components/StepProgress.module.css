@@ -1,0 +1,25 @@
+/* Figma `progress`: 4px tall (size/progress-track), track border/subtle,
+   fill bg/brand, all four corners radius/full on BOTH the track and the fill. */
+
+.track {
+  width: 100%;
+  height: var(--size-progress-track);
+  border-radius: var(--radius-full);
+  background: var(--color-border-subtle);
+  overflow: hidden;
+}
+
+.fill {
+  height: 100%;
+  border-radius: var(--radius-full);
+  background: var(--color-bg-brand);
+  transition: width var(--duration-base) var(--ease-standard);
+}
+
+@media (min-width: 1024px) {
+  .track {
+    /* the desktop track is a fixed 400 centred, not the full content width */
+    width: 400px;
+    margin-inline: auto;
+  }
+}

@@ -19,7 +19,10 @@ it. Screens are built in Figma first, then translated.
 9 screens x 2 breakpoints, in flow order, with a `HANDOFF — GETTING STARTED`
 annotation panel above the mobile row that documents every recipe below.
 
-Only **00 — Welcome** is implemented so far.
+**Built so far:** `00 — Welcome`, `01 — Start investigation`, `02a — Skin type`.
+Routes live under `/investigation/<step>`; `lib/flow.ts` owns the step order,
+the 1-based track position and the Figma frame ids for every screen, so no
+screen hardcodes its own progress.
 
 ## Non-negotiables
 
@@ -37,21 +40,21 @@ Only **00 — Welcome** is implemented so far.
 5. **Buttons are `Button` (Regular 15/22)** — deliberately Regular, never Medium.
 6. **Never hand-build a button.** Use `components/Button.tsx`. The two stacked
    drop shadows are part of the component; a hand-rolled gradient div loses them.
-6a. **Read button states from the SHOWCASE, not from the variant names.** The
-   variant names in set 37:23 are swapped and the `button/bg-*` tokens describe a
-   treatment the component never uses. The truth is
-   `08 · Components — Buttons` → `row/Primary` (160:15), whose columns are
-   labelled Default / Hover / Disabled:
+6a. **Button `State` variant names are DISPUTED — do not "fix" either source.**
+   Two in-file authorities disagree and the question is open:
+   - The set `37:23` is self-consistent AS NAMED: across Primary, Secondary and
+     Ghost, `Disabled` is a node-opacity **0.4 fade** and `Hover` is a **fill
+     change** (Primary `37:13` solid `#eef6f7`; Ghost `37:19` solid `#bdd1d2`).
+   - The showcase `08 · Components — Buttons` → `row/Primary` (160:15) labels its
+     columns Default / Hover / Disabled in an order that makes the 0.4 fade
+     HOVER and the solid pale one DISABLED.
 
-   | State | Cell | Treatment |
-   | --- | --- | --- |
-   | Default | 160:17 | `gradient/brand` #bbd3d9 → #637073, label `text/on-brand` |
-   | **Hover** | **160:23** | **the same gradient at opacity 0.4 — no colour change** |
-   | Disabled | 160:20 | solid `bg/surface-frost` #eef6f7, label `text/muted` |
+   `Button.module.css` currently implements the SHOWCASE reading (hover = fade
+   to 0.4, disabled = solid pale). If the variant names win instead, the two
+   swap. Ignore `button/bg-hover-*` and `button/bg-pressed-*` either way — the
+   component never uses them — and note `Style=Secondary, State=Hover` is
+   missing from the set entirely.
 
-   The variant *named* `State=Disabled` (37:9) carries opacity 0.4 and is the
-   hover design; the variant *named* `State=Hover` (37:13) is the disabled
-   design. Ignore the `button/bg-hover-*` and `button/bg-pressed-*` tokens.
 7. **The bottom nav is fixed and identical on every screen**: 24px from the
    bottom, horizontally centred, `--z-nav`, 380 wide on mobile and 598 on
    desktop. `active="none"` is a real state (welcome, intro, onboarding), not a
@@ -62,6 +65,18 @@ Only **00 — Welcome** is implemented so far.
    equal corners is wrong. A bubble is a **fill plus two shadows** — every
    reference bubble in the design system has no stroke. Frosted *rows* and
    *cards* do carry a 1px `border/subtle`; **do not merge the two recipes.**
+8a. **Bubbles are OPAQUE** — `--color-bg-bubble-ai` (#edf8fb) and
+   `--color-bg-bubble-user` (#bdd1d2), no backdrop blur and no
+   reduced-transparency fallback. They used to be built on
+   `surface/frost-light` @55%, which let the canvas gradient through, so a
+   bubble low on a screen rendered darker than one near the top. **Never put a
+   translucent surface on a bubble.** Padding is 14/18 mobile, 14/22 desktop.
+
+8b. **A Figma stroke does not add to a frame's height; a CSS border does.** With
+   `box-sizing: border-box`, a 56-tall row with `padding: 15px` plus a 1px
+   border renders 58. Give these rows `min-height` and drop the vertical
+   padding — they are flex + centred, so they render identically and stay
+   exactly on the Figma height.
 9. **Frosted surfaces always get a solid fallback** under
    `prefers-reduced-transparency`, and a translucent fill always needs its inner
    shadow or it reads flat.

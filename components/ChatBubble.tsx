@@ -16,16 +16,23 @@ import styles from "./ChatBubble.module.css";
 export function ChatBubble({
   from,
   align,
+  full,
   children,
 }: {
   from: "ai" | "user";
   align?: "left" | "right" | "center";
+  /** span the whole content column instead of hugging the text */
+  full?: boolean;
   children: ReactNode;
 }) {
   const resolvedAlign = align ?? (from === "ai" ? "left" : "right");
   return (
     <div className={styles.row} data-align={resolvedAlign}>
-      <div className={`${styles.bubble} t-body2`} data-from={from}>
+      <div
+        className={`${styles.bubble} t-body2`}
+        data-from={from}
+        data-full={full ? "true" : undefined}
+      >
         {children}
       </div>
     </div>

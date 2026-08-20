@@ -1,4 +1,5 @@
 import type { ButtonHTMLAttributes } from "react";
+import Link from "next/link";
 import styles from "./Button.module.css";
 
 /**
@@ -15,16 +16,27 @@ export function Button({
   children,
   fullWidth,
   className,
+  href,
   ...rest
-}: ButtonHTMLAttributes<HTMLButtonElement> & { fullWidth?: boolean }) {
+}: ButtonHTMLAttributes<HTMLButtonElement> & {
+  fullWidth?: boolean;
+  /** render as a link when the action is navigation, so it behaves like one */
+  href?: string;
+}) {
+  const cls = [styles.button, fullWidth && styles.full, "t-button", className]
+    .filter(Boolean)
+    .join(" ");
+
+  if (href) {
+    return (
+      <Link href={href} className={cls}>
+        {children}
+      </Link>
+    );
+  }
+
   return (
-    <button
-      type="button"
-      className={[styles.button, fullWidth && styles.full, "t-button", className]
-        .filter(Boolean)
-        .join(" ")}
-      {...rest}
-    >
+    <button type="button" className={cls} {...rest}>
       {children}
     </button>
   );

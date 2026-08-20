@@ -49,3 +49,33 @@ export function ProductsIcon({ className }: IconProps) {
     </svg>
   );
 }
+
+/* --------------------------------------------------------------------------
+   Line icons — Figma `Icon / *` (244:74 chevron-left, 244:96 plus, …).
+   2px round-capped strokes in currentColor, so a surface controls the colour.
+   ⚠️ Most LUX icons are STROKE-drawn: a fills-only recolour silently does
+   nothing. That is why these use `stroke="currentColor"` and no fill.
+   -------------------------------------------------------------------------- */
+
+const line = {
+  width: "var(--size-icon-md)",
+  height: "var(--size-icon-md)",
+  display: "block" as const,
+  flex: "none" as const,
+};
+
+export function ChevronLeftIcon({ className }: IconProps) {
+  return (
+    <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" style={line} className={className} aria-hidden="true">
+      <path d="M15 5L9 12L15 19" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
+    </svg>
+  );
+}
+
+export function PlusIcon({ className }: IconProps) {
+  return (
+    <svg viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg" style={{ ...line, width: "var(--size-icon-sm)", height: "var(--size-icon-sm)" }} className={className} aria-hidden="true">
+      <path d="M10 3.5V16.5M3.5 10H16.5" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" />
+    </svg>
+  );
+}

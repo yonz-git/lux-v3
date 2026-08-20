@@ -1,0 +1,33 @@
+/* 02a — Skin type. Figma mobile 484:722 / desktop 489:902.
+   Conversation turns are 12 apart; the option group starts 20 below the prompt
+   and its rows are 12 apart (spacing/md — 14 and 18 were drift and corrected). */
+
+.acknowledgement {
+  margin-top: var(--space-md);
+}
+
+.prompt {
+  margin-top: var(--space-md);
+}
+
+.options {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-md);
+  margin-top: var(--space-xl);
+}
+
+@media (min-width: 1024px) {
+  /* the acknowledgement is padding; the recap carries state */
+  .acknowledgement {
+    display: none;
+  }
+
+  /* two explicit columns so DOM order reads across the row like a 1fr 1fr grid,
+     rather than wrapping with ragged slack */
+  .options {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: var(--space-md);
+  }
+}

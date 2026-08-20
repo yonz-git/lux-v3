@@ -24,12 +24,7 @@ export function Welcome() {
         </div>
 
         <div className={styles.actions}>
-          <Button
-            className={styles.cta}
-            // 01 — Start investigation is not built yet; wire this to a route
-            // when it lands.
-            onClick={() => {}}
-          >
+          <Button className={styles.cta} href="/investigation/start">
             Start investigating
           </Button>
           <p className={`${styles.disclaimer} t-caption`}>

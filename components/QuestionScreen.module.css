@@ -1,0 +1,78 @@
+/* The shared shell for the investigation question screens.
+   Figma mobile: padding 58/24/115/24, header -> 12 -> track -> 32 -> content
+                 -> flex -> Continue (62) -> fixed nav.
+   Figma desktop: padding 40/80/0/80, header -> progress-wrap (padTop 16) ->
+                 40 -> ONE centred frosted card (920) holding content + Continue.
+
+   Translated, not transcribed: the fixed spacer frames become flex, so the
+   composition holds on viewports the 957/900 canvases never anticipated. */
+
+.shell {
+  flex: 1;
+  width: 100%;
+  max-width: 392px; /* 440 - 2 x margin/mobile */
+  display: flex;
+  flex-direction: column;
+}
+
+.progressWrap {
+  padding-top: var(--space-md); /* 12 */
+}
+
+.card {
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+  margin-top: var(--space-3xl); /* 32 */
+}
+
+.content {
+  display: flex;
+  flex-direction: column;
+}
+
+/* pushes Continue to the bottom of the viewport on mobile; on desktop the card
+   hugs its content so this collapses to a fixed gap instead */
+.spacer {
+  flex: 1 1 auto;
+  min-height: var(--space-2xl);
+}
+
+@media (min-width: 1024px) {
+  .shell {
+    max-width: var(--width-content-max); /* 1280 */
+  }
+
+  .progressWrap {
+    padding-top: var(--space-lg); /* 16 */
+  }
+
+  .card {
+    flex: none;
+    align-self: center;
+    width: 100%;
+    max-width: var(--width-card-form); /* 920 */
+    margin-top: var(--space-4xl); /* 40 */
+    padding: var(--space-5xl); /* 48 */
+
+    border-radius: var(--radius-3xl);
+    background: var(--color-surface-card-desktop);
+    border: var(--border-width-hairline) solid var(--color-border-subtle);
+    box-shadow: var(--shadow-frosted-card-desktop);
+    backdrop-filter: blur(var(--blur-card-desktop));
+    -webkit-backdrop-filter: blur(var(--blur-card-desktop));
+  }
+
+  .spacer {
+    flex: none;
+    min-height: var(--space-3xl); /* 32 */
+  }
+}
+
+@media (min-width: 1024px) and (prefers-reduced-transparency: reduce) {
+  .card {
+    background: var(--color-bg-surface-frost);
+    backdrop-filter: none;
+    -webkit-backdrop-filter: none;
+  }
+}

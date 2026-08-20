@@ -1,0 +1,34 @@
+/* Figma `header-row`: HORIZONTAL, SPACE_BETWEEN, counter CENTER, 38 tall
+   (the height comes from the Save & exit button, the tallest child). */
+
+.row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  width: 100%;
+  min-height: var(--size-control-sm);
+}
+
+.back {
+  /* the icon is 24 in Figma, but the tap area must stay 44 at every breakpoint,
+     so the target is padded outwards rather than the glyph being scaled up */
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: var(--size-touch-target);
+  height: var(--size-touch-target);
+  margin-left: calc((var(--size-icon-md) - var(--size-touch-target)) / 2);
+  color: var(--color-icon-default);
+  border-radius: var(--radius-full);
+  transition: opacity var(--duration-fast) var(--ease-standard);
+}
+
+.back:hover {
+  opacity: 0.7;
+}
+
+@media (hover: none) {
+  .back:hover {
+    opacity: 1;
+  }
+}

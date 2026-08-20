@@ -26,20 +26,28 @@
   justify-content: center;
 }
 
+.bubble[data-full="true"] {
+  max-width: 100%;
+  width: 100%;
+}
+
 .bubble {
   max-width: min(100%, 322px);
-  padding: 12px var(--space-xl) 14px;
+  /* Padding 14/18 — the value 29 of the 43 bubbles in the file use. Two other
+     values exist and both are drift, not intent:
+       18/20  the DS reference bubble + the written spec — used by nothing else
+       12/20/14/20 and 12/9/12/9  the two 00 Welcome bubbles; the desktop one's
+       9px side padding is clearly a mistake.
+     Flagged in Figma rather than reproduced here. */
+  padding: 14px 18px;
 
   border-radius: var(--radius-bubble);
   box-shadow: var(--shadow-chat-bubble);
-  backdrop-filter: blur(var(--blur-card));
-  -webkit-backdrop-filter: blur(var(--blur-card));
-
   color: var(--color-text-primary);
 }
 
 .bubble[data-from="ai"] {
-  background: var(--color-surface-frost-light);
+  background: var(--color-bg-bubble-ai);
   border-top-left-radius: var(--radius-bubble-tail);
 }
 
@@ -52,14 +60,14 @@
   .bubble {
     /* wider ceiling for the conversational turns on the question screens;
        short prompts such as Welcome's still hug their text */
-    max-width: min(100%, 520px);
+    max-width: min(100%, 586px);
+    /* the desktop bubbles are 14/22 — same vertical, wider sides */
+    padding: 14px 22px;
   }
 }
 
-@media (prefers-reduced-transparency: reduce) {
-  .bubble[data-from="ai"] {
-    background: var(--color-bg-surface-frost);
-    backdrop-filter: none;
-    -webkit-backdrop-filter: none;
-  }
-}
+/* No prefers-reduced-transparency fallback: as of the 18 Aug design-system pass
+   bubbles are OPAQUE (bg/bubble-ai #EDF8FB, bg/bubble-user #BDD1D2). They were
+   built on surface/frost-light @55%, which let the canvas gradient through, so
+   a bubble low on the screen rendered darker than one near the top. Do not put
+   a translucent surface back on a bubble. */

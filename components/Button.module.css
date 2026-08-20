@@ -39,6 +39,8 @@
   border-radius: var(--radius-full);
 
   color: var(--color-button-label-default);
+  /* the component can render as <a>; links carry an underline by default */
+  text-decoration: none;
   background: linear-gradient(90deg, var(--grad-start) 0%, var(--grad-end) 100%);
   box-shadow: var(--shadow-button);
   opacity: 1;

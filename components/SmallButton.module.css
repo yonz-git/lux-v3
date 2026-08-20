@@ -1,0 +1,35 @@
+/* Small Button / Secondary — Figma 225:60.
+   Fill is a linear gradient #deeff3 -> #b7c6ca (not a flat white), radius full,
+   padding 8/16, gap 6, and the same --shadow-button as the primary Button.
+
+   Hover: the component's Hover variant (225:61) changes ONLY the label colour,
+   #3b305c -> #2e2a3f. It does not restyle the fill, so neither does this. */
+
+.button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--space-xs);
+
+  min-height: var(--size-control-sm);
+  padding: var(--space-sm) var(--space-lg);
+  border-radius: var(--radius-full);
+
+  color: var(--color-text-brand);
+  background: linear-gradient(90deg, #deeff3 0%, #b7c6ca 100%);
+  box-shadow: var(--shadow-button);
+  text-decoration: none;
+  white-space: nowrap;
+
+  transition: color var(--duration-fast) var(--ease-standard);
+}
+
+.button:hover {
+  color: var(--color-text-primary);
+}
+
+@media (hover: none) {
+  .button:hover {
+    color: var(--color-text-brand);
+  }
+}
