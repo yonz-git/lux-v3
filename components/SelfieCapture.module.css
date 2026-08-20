@@ -1,0 +1,91 @@
+/* 03b — Selfie capture. Figma mobile 487:834 / desktop 490:1041.
+   viewfinder 392x400: surface/data + the frosted-data effect + radius/2xl —
+   the one sage surface in an otherwise light flow, because it stands in for a
+   camera feed. Guide oval 190x250, 2px effect/rim-highlight at 90%. */
+
+.viewfinder {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  aspect-ratio: 392 / 400;
+  max-height: 400px;
+  margin-top: var(--space-xl);
+
+  border-radius: var(--radius-2xl);
+  background: var(--color-surface-data);
+  box-shadow: var(--shadow-frosted-data);
+  backdrop-filter: blur(var(--blur-card));
+  -webkit-backdrop-filter: blur(var(--blur-card));
+}
+
+.guide {
+  width: calc(190 / 392 * 100%);
+  height: calc(250 / 400 * 100%);
+  /* effect/rim-highlight already carries its 90% alpha — adding opacity on top
+     would multiply the two, the same trap as binding a translucent colour
+     variable to a paint in Figma. */
+  border: var(--border-width-thick) solid var(--color-effect-rim-highlight);
+  border-radius: 50%;
+}
+
+/* WHITE text: this is a sage surface, so it takes the on-data colours */
+.captured {
+  position: absolute;
+  bottom: var(--space-xl);
+  color: var(--color-text-on-data);
+}
+
+.controls {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--space-lg);
+  margin-top: var(--space-xl);
+}
+
+.shutter {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 72px;
+  height: 72px;
+  padding: var(--space-sm);
+
+  border-radius: var(--radius-full);
+  background: var(--color-bg-glass);
+  border: var(--border-width-hairline) solid var(--color-border-glass);
+  box-shadow: var(--shadow-md);
+
+  transition: opacity var(--duration-fast) var(--ease-standard);
+}
+
+.shutter:hover {
+  opacity: 0.8;
+}
+
+@media (hover: none) {
+  .shutter:hover {
+    opacity: 1;
+  }
+}
+
+.shutterCore {
+  width: 56px;
+  height: 56px;
+  border-radius: var(--radius-full);
+  background: var(--color-effect-rim-highlight);
+}
+
+.helper {
+  color: var(--color-text-secondary);
+  text-align: center;
+}
+
+@media (prefers-reduced-transparency: reduce) {
+  .viewfinder {
+    backdrop-filter: none;
+    -webkit-backdrop-filter: none;
+  }
+}

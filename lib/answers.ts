@@ -11,7 +11,11 @@ export type Answers = Partial<{
   "skin-type": string;
   tendencies: string[];
   conditions: string[];
+  /** free text for the "Other" option on 02c — required once Other is ticked */
+  conditionsOther: string;
   symptoms: string[];
+  /** free text for the "Other" option on 03a — required once Other is ticked */
+  symptomsOther: string;
   location: string[];
   selfie: string;
   timing: { onset?: string; status?: string; date?: string };

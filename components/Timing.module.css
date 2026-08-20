@@ -1,0 +1,70 @@
+/* 03c — Timing. Figma mobile 488:851 / desktop 491:1031.
+   Three labelled fields, each `label` + control with a gap of 8, separated by 24.
+   The tallest screen in the flow (1221 in Figma); here it simply scrolls. */
+
+.field {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-sm);
+  margin-top: var(--space-2xl);
+}
+
+.field:first-of-type {
+  margin-top: var(--space-2xl);
+}
+
+.label {
+  color: var(--color-text-primary);
+}
+
+/* the Figma `date-field` is 52 tall, slightly shorter than a row, with the
+   same frosted recipe */
+.date {
+  width: 100%;
+  min-height: 52px;
+  padding: 0 18px;
+
+  border-radius: var(--radius-lg);
+  background: var(--color-surface-frost-light);
+  border: var(--border-width-hairline) solid var(--color-border-subtle);
+  box-shadow: var(--shadow-frosted-row);
+  backdrop-filter: blur(var(--blur-card));
+  -webkit-backdrop-filter: blur(var(--blur-card));
+
+  color: var(--color-text-primary);
+  font-family: inherit;
+
+  transition: border-color var(--duration-fast) var(--ease-standard);
+}
+
+.date:hover {
+  border-color: var(--color-border-default);
+}
+
+@media (hover: none) {
+  .date:hover {
+    border-color: var(--color-border-subtle);
+  }
+}
+
+.options {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-md);
+}
+
+@media (min-width: 1024px) {
+  .options {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: var(--gutter-desktop);
+  }
+}
+
+@media (prefers-reduced-transparency: reduce) {
+  .date {
+    background: var(--color-bg-surface-frost);
+    backdrop-filter: none;
+    -webkit-backdrop-filter: none;
+  }
+}

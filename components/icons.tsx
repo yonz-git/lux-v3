@@ -79,3 +79,12 @@ export function PlusIcon({ className }: IconProps) {
     </svg>
   );
 }
+
+export function CameraIcon({ className }: IconProps) {
+  return (
+    <svg viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg" style={{ ...line, width: "var(--size-icon-sm)", height: "var(--size-icon-sm)" }} className={className} aria-hidden="true">
+      <path d="M2.5 6.5A1.5 1.5 0 0 1 4 5h1.6a1 1 0 0 0 .83-.45l.64-.95A1 1 0 0 1 7.9 3.2h4.2a1 1 0 0 1 .83.4l.64.95a1 1 0 0 0 .83.45H16A1.5 1.5 0 0 1 17.5 6.5v8A1.5 1.5 0 0 1 16 16H4a1.5 1.5 0 0 1-1.5-1.5v-8Z" stroke="currentColor" strokeWidth="1.4" strokeLinejoin="round" />
+      <circle cx="10" cy="10.2" r="2.8" stroke="currentColor" strokeWidth="1.4" />
+    </svg>
+  );
+}

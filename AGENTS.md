@@ -19,8 +19,11 @@ it. Screens are built in Figma first, then translated.
 9 screens x 2 breakpoints, in flow order, with a `HANDOFF — GETTING STARTED`
 annotation panel above the mobile row that documents every recipe below.
 
-**Built so far:** `00 — Welcome`, `01 — Start investigation`, `02a — Skin type`,
-`02b — Skin tendencies`. Routes live under `/investigation/<step>`;
+**Built so far:** the whole GETTING STARTED flow — `00 — Welcome`,
+`01 — Start investigation`, `02a — Skin type`, `02b — Skin tendencies`,
+`02c — Known conditions`, `03a — Observable symptoms`, `03b — Location`,
+`03b — Selfie capture`, `03c — Timing`. Step 8 (PRODUCTS) is a deliberate
+placeholder route, not a screen. Routes live under `/investigation/<step>`;
 `lib/flow.ts` owns the step order, the 1-based track position, the Figma frame
 ids AND each step's `isComplete` rule.
 
@@ -115,6 +118,18 @@ answer being absent (deep links) rather than rendering an empty bubble.
 10. **Breakpoints: mobile-first, desktop at `min-width: 1024px`.** Never write a
     440px or 1440px media query — those are the Figma canvas widths, not
     breakpoints.
+
+## Things the design system does not have, faked here
+
+Each of these is composed from tokens in Figma too, so the code is not inventing
+a treatment — but there is no component to keep them in sync, and that is the
+risk. All are on the missing-from-the-DS list.
+
+| Need | Here | Note |
+| --- | --- | --- |
+| Text input | `components/TextField.tsx` | `Search Field` (248:70) exists but is search-specific. `other-input` on 02c/03a and the 03c date field are all hand-composed in Figma. |
+| Face-region picker | `components/FaceDiagram.tsx` | The region coordinates ARE the design — "Cheeks (L)" only means the left cheek because of where it sits. Stored as % of the 392x300 card so it scales. |
+| Camera shutter | `SelfieCapture.module.css` | No shutter component. The viewfinder is a placeholder, not `getUserMedia` — wiring a real camera would make the prototype demand a permission just to walk the flow. |
 
 ## Selection controls — the shape is the contract
 

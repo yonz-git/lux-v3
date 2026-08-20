@@ -302,6 +302,15 @@
   /* effect style surface/chat-bubble */
   --shadow-chat-bubble: 0 4px 12px rgba(24, 32, 42, 0.04),
     inset 2px 4px 8px rgba(0, 0, 0, 0.1);
+  /* effect styles shadow/sm · shadow/md · shadow/lg — the neutral elevation
+     ramp. Previously unexported; the selfie shutter is the first thing to use
+     one. */
+  --shadow-sm: 0 2px 6px 0 rgba(46, 36, 71, 0.06);
+  --shadow-md: 0 8px 24px -4px rgba(46, 36, 71, 0.1);
+  --shadow-lg: 0 16px 48px -8px rgba(46, 36, 71, 0.14);
+  /* effect style surface/frosted-data — the sage data card. Background blur is
+     applied separately via --blur-card. */
+  --shadow-frosted-data: 0 12px 32px -8px rgba(46, 36, 71, 0.12);
   /* effect style surface/frosted-card-desktop — the big desktop page card.
      The background blur is applied separately via --blur-card-desktop. */
   --shadow-frosted-card-desktop: 0 16px 40px -4px rgba(24, 32, 42, 0.05),

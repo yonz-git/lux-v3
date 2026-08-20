@@ -1,0 +1,20 @@
+/* 03a — Observable symptoms. Figma mobile 486:785 / desktop 490:965.
+   options gap 12 (spacing/md); on desktop two explicit columns. */
+
+.options {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-md);
+  margin-top: var(--space-xl);
+}
+
+@media (min-width: 1024px) {
+  .options {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: var(--gutter-desktop);
+    /* the other-block grows when its field appears; start-aligning stops the
+       whole row stretching to match it */
+    align-items: start;
+  }
+}

@@ -1,0 +1,6 @@
+/* Figma `other-block`: VERTICAL, gap spacing/sm (8). */
+.block {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-sm);
+}
