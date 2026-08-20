@@ -275,6 +275,56 @@ button {
   animation: lux-fade-in var(--duration-slower) var(--ease-standard) backwards;
 }
 
+/* ============================================================================
+   Orb entrance — from the "Spiral Assemble" timeline (Figma 670:31, Brand page)
+
+   That timeline animates three wordmark letters (L, U, X) flying in and
+   assembling. Mapped onto the orb's single sphere it takes the X track's shape:
+   rotate -180 -> 0, scale 0.5 -> 1, fade in, on the authored
+   cubic-bezier(0.16, 1, 0.3, 1). The L and U tracks were NOT used — they carry a
+   negative scaleY, which is how those glyph vectors happen to be drawn in Figma
+   and would flip the orb.
+
+   TWO animations rather than one keyframe set, because the authored opacity ramp
+   is much faster than the transform (150ms against 700ms). Merging them would
+   split the transform's easing across an intermediate keyframe and distort the
+   expo curve.
+
+   Figma reports `repeat: Infinity` because it loops timelines for preview. This
+   is an ENTRANCE, so it plays once.
+
+   ⚠️ 700ms is longer than `duration/slower` (480), the motion board's value for
+   orb and hero entrances. The authored timing is kept because it is what was
+   designed; if the board is the authority, scale both durations by 480/700.
+   ========================================================================== */
+
+@keyframes lux-orb-spiral {
+  from {
+    transform: rotate(-180deg) scale(0.5);
+  }
+  to {
+    transform: rotate(0deg) scale(1);
+  }
+}
+
+@keyframes lux-orb-appear {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+.orb-assemble {
+  /* rotate and scale about the sphere's own centre, not the SVG origin */
+  transform-box: fill-box;
+  transform-origin: center;
+  animation:
+    lux-orb-appear 150ms ease-out 240ms backwards,
+    lux-orb-spiral 700ms cubic-bezier(0.16, 1, 0.3, 1) 240ms backwards;
+}
+
 /* ⚠️ THESE RULES MUST LIVE HERE, NOT IN A CSS MODULE. CSS Modules localize
    @keyframes names, so `animation: lux-fade-in ...` written inside a module
    compiles to a SCOPED name that does not match the global keyframes above —

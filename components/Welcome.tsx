@@ -15,7 +15,7 @@ export function Welcome() {
         <div className={styles.spacerTop} aria-hidden="true" />
 
         <div className={`${styles.hero} reveal-hero`}>
-          <Orb size="var(--size-orb-lg)" />
+          <Orb size="var(--size-orb-lg)" animateIn />
           {/* centred rather than left, because Welcome is a hero composition —
               see the note in ChatBubble.module.css */}
           <ChatBubble from="ai" align="center">

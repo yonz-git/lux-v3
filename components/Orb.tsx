@@ -7,13 +7,26 @@
  * redraw it by hand.
  *
  * Size comes from the `size/orb-*` tokens: sm 48, md 80, lg 129, xl 140.
+ *
+ * `animateIn` plays the "Spiral Assemble" entrance (Figma 670:31, Brand page) on
+ * the sphere as it appears — see `.orb-assemble` in globals.css.
+ *
+ * ⚠️ THE AUTHORED Y TRANSLATE IS OMITTED. The timeline moves its element 50px
+ * before settling, but this SVG clips to a 129x129 clipPath and the sphere sits
+ * inside a filter with a FIXED region, so a translated circle gets cropped
+ * mid-flight. Rotate and scale stay inside the existing bounds. If the full
+ * travel is wanted, animate the whole <svg> instead of the circle — nothing
+ * clips at that level, though the mark would then travel with the sphere.
  */
 export function Orb({
   size = "var(--size-orb-lg)",
   className,
+  animateIn,
 }: {
   size?: string;
   className?: string;
+  /** play the Spiral Assemble entrance on the sphere */
+  animateIn?: boolean;
 }) {
   return (
     <svg
@@ -29,7 +42,13 @@ export function Orb({
     >
       <g clipPath="url(#lux_orb_clip)">
         <g filter="url(#lux_orb_filter)">
-          <circle cx="65" cy="65" r="57" fill="url(#lux_orb_sphere)" />
+          <circle
+            cx="65"
+            cy="65"
+            r="57"
+            fill="url(#lux_orb_sphere)"
+            className={animateIn ? "orb-assemble" : undefined}
+          />
         </g>
         <path
           d="M49.7919 51.9738C52.066 51.0909 52.7689 50.3434 60.3787 47.0662C65.7441 45.021 69.0841 46.2348 70.9634 48.5002C73.9414 52.0902 71.7688 56.8824 66.7638 57.8195C63.3896 58.2752 61.6939 57.1301 58.4879 54.6918C55.8873 52.7398 51.9802 52.0545 49.7919 51.9738Z"
