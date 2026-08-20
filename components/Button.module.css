@@ -45,11 +45,27 @@
   box-shadow: var(--shadow-button);
   opacity: 1;
 
-  transition: opacity var(--duration-base) var(--ease-standard),
-    --grad-start var(--duration-base) var(--ease-standard),
-    --grad-end var(--duration-base) var(--ease-standard),
-    color var(--duration-base) var(--ease-standard),
-    box-shadow var(--duration-base) var(--ease-standard);
+  /* ⚠️ DO NOT transition --grad-start / --grad-end. Transitioning a registered
+     custom property that feeds background-image leaves the computed value STUCK
+     at the old colour when :disabled stops matching — the button stays visually
+     disabled after it is enabled, and only a forced reflow corrects it. Verified
+     in-browser: --grad-start read rgb(238,246,247) 1.5s after the button became
+     enabled, then snapped to rgb(187,211,217) on reflow.
+
+     Nothing is lost by dropping it: HOVER IS AN OPACITY FADE and never changes
+     the gradient at all, so the only gradient change is enabled <-> disabled,
+     where an instant swap is correct. The registered properties stay because
+     they are what make the gradient addressable from the two states. */
+  /* ONLY opacity is transitioned, and that is deliberate.
+     Any property that DIFFERS between enabled and disabled gets stuck at its
+     old computed value when the `disabled` attribute flips — the button stays
+     visually disabled after becoming enabled until something forces a reflow.
+     Verified in-browser for both --grad-start and color (each read its stale
+     value 1.5s after enabling, then corrected on a forced reflow).
+     Opacity is safe because the disabled state does NOT change it: per the
+     showcase, disabled is a solid pale fill, not a fade. Hover is the only
+     thing that animates here, and hover is an opacity fade. */
+  transition: opacity var(--duration-base) var(--ease-standard);
 }
 
 /* the pressed overlay — board 04b: state/pressed-overlay at 14%, and

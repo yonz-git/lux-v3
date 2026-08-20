@@ -19,10 +19,34 @@ it. Screens are built in Figma first, then translated.
 9 screens x 2 breakpoints, in flow order, with a `HANDOFF — GETTING STARTED`
 annotation panel above the mobile row that documents every recipe below.
 
-**Built so far:** `00 — Welcome`, `01 — Start investigation`, `02a — Skin type`.
-Routes live under `/investigation/<step>`; `lib/flow.ts` owns the step order,
-the 1-based track position and the Figma frame ids for every screen, so no
-screen hardcodes its own progress.
+**Built so far:** `00 — Welcome`, `01 — Start investigation`, `02a — Skin type`,
+`02b — Skin tendencies`. Routes live under `/investigation/<step>`;
+`lib/flow.ts` owns the step order, the 1-based track position, the Figma frame
+ids AND each step's `isComplete` rule.
+
+## The prototype starts EMPTY — and Continue is gated
+
+**Nothing is pre-selected, on any screen.** The Figma frames show options already
+chosen because a comp has to show a filled-in state; the prototype is the thing
+the user actually drives. If you port a screen and it renders with something
+selected, that is a bug.
+
+**`Continue` is DISABLED until the step is answered**, then becomes available.
+The rule lives on the step in `lib/flow.ts` (`isComplete`), never in the screen,
+so a new screen cannot forget it. `QuestionScreen` reads it and owns the button.
+
+Answers live in `components/InvestigationProvider.tsx` (React context +
+localStorage, so the flow is genuinely resumable — that is why the escape hatch
+says "Save & exit"). Read them with `useInvestigation()`.
+
+**⚠️ USE THE UPDATER FORM FOR ANY TOGGLE:**
+`setAnswer("start", (prev) => toggleMulti(prev ?? [], option))`. Passing a value
+computed from the `answers` you read during render uses a snapshot, so two
+toggles in the same tick silently lose the first.
+
+Screens ECHO earlier answers rather than hardcoding the comp's copy — 02a recaps
+the symptoms picked on 01, 02b shows the skin type picked on 02a. Guard for the
+answer being absent (deep links) rather than rendering an empty bubble.
 
 ## Non-negotiables
 
@@ -116,9 +140,16 @@ mixing shapes in one group tells the user the whole group is single-select.
 - **Pressed never uses a transform** — "LUX does not bounce." Overlay
   `state/pressed-overlay` at 14% instead.
 - **CSS cannot interpolate `background-image`.** Swapping one `linear-gradient()`
-  for another snaps, which breaks "nothing snaps". Drive the registered
-  `--grad-start` / `--grad-end` properties (declared in `globals.css`) instead —
-  registered `<color>` properties do interpolate.
+  for another snaps. The registered `--grad-start` / `--grad-end` properties
+  (declared in `globals.css`) make the gradient addressable from both states.
+- ⚠️ **NEVER transition a property that differs between enabled and disabled.**
+  On `Button`, transitioning `--grad-start`/`--grad-end` *or* `color` left the
+  computed value STUCK at the disabled colour after the button became enabled —
+  it stayed visually disabled until something forced a reflow. Verified: both
+  read their stale value 1.5s after enabling, then corrected on reflow.
+  `Button` therefore transitions **only `opacity`**, which is safe because the
+  disabled state does not change opacity (disabled is a solid pale fill, not a
+  fade) and hover is an opacity fade. Nothing is lost.
 - **Wrap every `:hover` rule's counterpart in `@media (hover: none)`** so the
   state does not stick after a tap on touch devices.
 - `prefers-reduced-motion` already collapses all durations globally; don't

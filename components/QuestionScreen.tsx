@@ -7,6 +7,7 @@ import { ScreenHeader } from "./ScreenHeader";
 import { StepProgress } from "./StepProgress";
 import { Button } from "./Button";
 import { BottomNav } from "./BottomNav";
+import { useInvestigation } from "./InvestigationProvider";
 import { type StepId, stepFor, prevHref, nextHref } from "@/lib/flow";
 
 /**
@@ -21,21 +22,26 @@ import { type StepId, stepFor, prevHref, nextHref } from "@/lib/flow";
  * On desktop the content and the Continue button move INSIDE one centred
  * frosted card (`width/card-form`, 920). On mobile there is no card: the content
  * sits on the gradient and Continue is pushed to the bottom by a flex spacer.
+ * Continue is full-width on mobile and 280 centred on desktop — verified across
+ * all nine GETTING STARTED desktop frames.
+ *
+ * ⚠️ CONTINUE IS DISABLED UNTIL THE STEP IS ANSWERED. The rule lives on the step
+ * in `lib/flow.ts`, not in the screen, so a new screen cannot forget it.
  */
 export function QuestionScreen({
   id,
   children,
-  continueDisabled,
   continueLabel = "Continue",
 }: {
   id: StepId;
   children: ReactNode;
-  continueDisabled?: boolean;
   continueLabel?: string;
 }) {
   const router = useRouter();
-  const { step } = stepFor(id);
+  const { answers } = useInvestigation();
+  const { step, isComplete } = stepFor(id);
   const next = nextHref(id);
+  const canContinue = isComplete(answers);
 
   return (
     <main className="screen" data-layout="flow">
@@ -51,9 +57,12 @@ export function QuestionScreen({
 
           <div className={styles.spacer} aria-hidden="true" />
 
+          {/* width is owned by .continue, not Button's `fullWidth`: both are
+              single-class selectors, so `fullWidth` would win or lose on bundle
+              order rather than intent. 100% on mobile, 280 centred on desktop. */}
           <Button
-            fullWidth
-            disabled={continueDisabled}
+            className={styles.continue}
+            disabled={!canContinue}
             onClick={() => next && router.push(next)}
           >
             {continueLabel}

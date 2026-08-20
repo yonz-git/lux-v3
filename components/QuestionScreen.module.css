@@ -31,6 +31,10 @@
   flex-direction: column;
 }
 
+.continue {
+  width: 100%;
+}
+
 /* pushes Continue to the bottom of the viewport on mobile; on desktop the card
    hugs its content so this collapses to a fixed gap instead */
 .spacer {
@@ -66,6 +70,13 @@
   .spacer {
     flex: none;
     min-height: var(--space-3xl); /* 32 */
+  }
+
+  /* every GETTING STARTED desktop frame puts Continue at 280x62, centred —
+     not stretched to the card width */
+  .continue {
+    width: 280px;
+    align-self: center;
   }
 }
 
