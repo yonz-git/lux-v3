@@ -32,10 +32,14 @@ export function QuestionScreen({
   id,
   children,
   continueLabel = "Continue",
+  gapBeforeContinue,
 }: {
   id: StepId;
   children: ReactNode;
   continueLabel?: string;
+  /** desktop-only gap between the content and Continue, in px. Defaults to the
+   *  card's own 32; 01 uses 104 because Figma adds an extra spacer there. */
+  gapBeforeContinue?: number;
 }) {
   const router = useRouter();
   const { answers } = useInvestigation();
@@ -61,7 +65,15 @@ export function QuestionScreen({
             {children}
           </div>
 
-          <div className={styles.spacer} aria-hidden="true" />
+          <div
+            className={styles.spacer}
+            aria-hidden="true"
+            style={
+              gapBeforeContinue
+                ? ({ "--continue-gap": `${gapBeforeContinue}px` } as React.CSSProperties)
+                : undefined
+            }
+          />
 
           {/* width is owned by .continue, not Button's `fullWidth`: both are
               single-class selectors, so `fullWidth` would win or lose on bundle

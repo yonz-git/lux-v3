@@ -33,7 +33,7 @@ export function StartInvestigation() {
   const selected = answers.start ?? [];
 
   return (
-    <QuestionScreen id="start">
+    <QuestionScreen id="start" gapBeforeContinue={104}>
       <section className={styles.disclaimer}>
         <p className={`${styles.disclaimerLabel} t-overline`}>Disclaimer</p>
         <p className={`${styles.disclaimerBody} t-body3`}>

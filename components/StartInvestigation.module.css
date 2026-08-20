@@ -78,10 +78,23 @@
 }
 
 @media (min-width: 1024px) {
+  /* Figma 476:2670 — the desktop card is gap 48 with its children CENTRED. */
   .question,
   .chips,
   .other {
-    margin-top: var(--space-3xl); /* the desktop card's 32 gap */
+    margin-top: var(--space-5xl); /* 48 */
+  }
+
+  .question {
+    text-align: center;
+  }
+
+  .disclaimer {
+    padding: 18px var(--space-2xl); /* 24 sides on desktop, 20 on mobile */
+  }
+
+  .chips {
+    gap: var(--space-md); /* 12 on desktop, 10 on mobile */
   }
 }
 

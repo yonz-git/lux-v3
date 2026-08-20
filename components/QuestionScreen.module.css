@@ -63,7 +63,8 @@
 
   .spacer {
     flex: none;
-    min-height: var(--space-3xl); /* 32 */
+    /* the card's own gap, unless a screen asks for more */
+    min-height: var(--continue-gap, var(--space-3xl));
   }
 
   /* every GETTING STARTED desktop frame puts Continue at 280x62, centred —
