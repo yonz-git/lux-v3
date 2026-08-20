@@ -35,9 +35,17 @@ selected, that is a bug.
 The rule lives on the step in `lib/flow.ts` (`isComplete`), never in the screen,
 so a new screen cannot forget it. `QuestionScreen` reads it and owns the button.
 
-Answers live in `components/InvestigationProvider.tsx` (React context +
-localStorage, so the flow is genuinely resumable — that is why the escape hatch
-says "Save & exit"). Read them with `useInvestigation()`.
+Answers live in `components/InvestigationProvider.tsx` — React context,
+**in memory only**. Read them with `useInvestigation()`.
+
+⚠️ **DO NOT PERSIST THE ANSWER STORE.** An earlier build wrote to localStorage
+on the reasoning that "Save & exit" implies a resumable flow. The effect was
+that opening the prototype showed a previous visit's selections still ticked,
+which reads exactly like the screens shipping pre-filled — the opposite of the
+rule above. Answers carry across steps because `app/investigation/layout.tsx`
+keeps the provider mounted through client-side navigation, which is all the flow
+needs. Real resumability belongs to a backend, not to a store that silently
+reproduces stale answers.
 
 **⚠️ USE THE UPDATER FORM FOR ANY TOGGLE:**
 `setAnswer("start", (prev) => toggleMulti(prev ?? [], option))`. Passing a value

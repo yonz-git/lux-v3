@@ -9,24 +9,28 @@ import {
   useState,
 } from "react";
 import type { Answers } from "@/lib/answers";
-import { STORAGE_KEY } from "@/lib/answers";
+import { LEGACY_STORAGE_KEY } from "@/lib/answers";
 
 /**
  * The investigation's answer store.
  *
- * The flow is RESUMABLE — that is why the escape hatch says "Save & exit" and
- * not "Skip" — so answers persist to localStorage rather than living only in
- * memory. Without this each screen kept its own useState and answers were lost
- * the moment you navigated.
+ * ⚠️ IN MEMORY ONLY — DO NOT PERSIST THIS.
  *
- * HYDRATION: storage is read in an effect, never during render, so the first
- * client render matches the server's. The cost is that Continue is briefly
- * disabled on a resumed session before the effect runs; `ready` exposes that so
- * a screen can avoid flashing stale content if it ever needs to.
+ * Answers carry across the steps because `app/investigation/layout.tsx` wraps
+ * every step, so the provider stays mounted through client-side navigation.
+ * That is all the flow needs: 02a can recap what was chosen on 01, and 02b can
+ * echo the skin type from 02a.
+ *
+ * It deliberately does NOT persist. An earlier version wrote to localStorage on
+ * the reasoning that "Save & exit" implies a resumable flow — but the effect was
+ * that opening the prototype showed options already selected from a previous
+ * visit, which reads as though the screens ship pre-filled. For a prototype the
+ * expectation is a clean slate every time: **nothing is selected until the user
+ * selects it.** Real resumability belongs to a real backend, not to a store that
+ * silently reproduces stale answers.
  */
 type Ctx = {
   answers: Answers;
-  ready: boolean;
   /**
    * Accepts a value or an updater. ⚠️ USE THE UPDATER FOR ANY TOGGLE. Computing
    * the next value from the `answers` you read during render uses a snapshot,
@@ -48,26 +52,16 @@ export function InvestigationProvider({
   children: React.ReactNode;
 }) {
   const [answers, setAnswers] = useState<Answers>({});
-  const [ready, setReady] = useState(false);
 
+  // one-time cleanup: an earlier build persisted answers, and that data would
+  // otherwise sit in visitors' browsers forever doing nothing
   useEffect(() => {
     try {
-      const raw = window.localStorage.getItem(STORAGE_KEY);
-      if (raw) setAnswers(JSON.parse(raw) as Answers);
+      window.localStorage.removeItem(LEGACY_STORAGE_KEY);
     } catch {
-      // a corrupt or unavailable store must not break the flow — start empty
+      // storage unavailable (private mode) — nothing to clean up
     }
-    setReady(true);
   }, []);
-
-  useEffect(() => {
-    if (!ready) return;
-    try {
-      window.localStorage.setItem(STORAGE_KEY, JSON.stringify(answers));
-    } catch {
-      // private mode / quota — the flow still works for this session
-    }
-  }, [answers, ready]);
 
   const setAnswer = useCallback<Ctx["setAnswer"]>((key, value) => {
     setAnswers((prev) => ({
@@ -82,8 +76,8 @@ export function InvestigationProvider({
   const reset = useCallback(() => setAnswers({}), []);
 
   const value = useMemo(
-    () => ({ answers, ready, setAnswer, reset }),
-    [answers, ready, setAnswer, reset]
+    () => ({ answers, setAnswer, reset }),
+    [answers, setAnswer, reset]
   );
 
   return (

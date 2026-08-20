@@ -55,7 +55,13 @@ export function toggleMulti(current: string[], option: string): string[] {
     : [...withoutExclusives, option];
 }
 
-/** The storage key is versioned so a shape change cannot resurrect stale answers. */
-export const STORAGE_KEY = "lux.investigation.v1";
+/**
+ * ⚠️ NOT a storage key any more — answers are held IN MEMORY only.
+ * Kept solely so the provider can delete data written by an earlier build that
+ * did persist; opening the prototype then showed a previous visit's selections
+ * as though the screens shipped pre-filled. Remove this once it has shipped for
+ * long enough that no stale data remains.
+ */
+export const LEGACY_STORAGE_KEY = "lux.investigation.v1";
 
 export type AnswerKey = keyof Answers & StepId;
