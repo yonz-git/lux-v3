@@ -23,7 +23,15 @@
 
 .question {
   color: var(--color-text-primary);
-  margin-top: var(--space-lg);
+}
+
+/* The content stack. Figma mobile 476:2542 spaces these four blocks 60 apart —
+   off the spacing scale there too, so it is written as a literal rather than
+   snapped to 48 or 64. Desktop (476:2670) keeps the card's own 32 gap. */
+.question,
+.chips,
+.other {
+  margin-top: 60px;
 }
 
 .chips {
@@ -31,7 +39,6 @@
   flex-wrap: wrap;
   /* 10 is the Chip grid gap in Figma and is off the spacing scale there too */
   gap: 10px;
-  margin-top: var(--space-lg);
 }
 
 .other {
@@ -43,7 +50,6 @@
      does not push the row to 58 */
   min-height: 56px;
   padding: 0 18px;
-  margin-top: var(--space-lg);
   text-align: left;
 
   border-radius: var(--radius-lg);
@@ -69,6 +75,14 @@
 
 .otherLabel {
   color: var(--color-text-secondary);
+}
+
+@media (min-width: 1024px) {
+  .question,
+  .chips,
+  .other {
+    margin-top: var(--space-3xl); /* the desktop card's 32 gap */
+  }
 }
 
 @media (prefers-reduced-transparency: reduce) {

@@ -85,9 +85,14 @@
   --color-border-highlight: rgba(255, 255, 255, 0.9);
   --color-bg-glass: rgba(255, 255, 255, 0.5);
   --color-bg-glass-strong: rgba(255, 255, 255, 0.72);
-  --color-bg-nav: rgba(156, 174, 175, 0.55);
+  /* SOLID nav background — the prefers-reduced-transparency fallback for
+     surface/frost-nav. Same colour, no alpha; a fallback must not be
+     translucent. Was #9caeaf @55%, a different hue AND translucent. */
+  --color-bg-nav: #dde8eb;
   --color-surface-frost-light: rgba(244, 254, 255, 0.55);
-  --color-surface-frost-nav: rgba(221, 232, 235, 0.17);
+  /* The nav pill. 83% — NOT the old 17%, which let the Continue button read
+     straight through the bar. */
+  --color-surface-frost-nav: rgba(221, 232, 235, 0.83);
   --color-surface-card-desktop: rgba(237, 248, 251, 0.55);
   --color-surface-data: rgba(125, 167, 169, 0.44);
   --color-surface-data-strong: rgba(125, 167, 169, 0.62);

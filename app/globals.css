@@ -127,6 +127,23 @@ button {
 .t-display1 { font-size: var(--font-size-6xl); line-height: var(--line-height-6xl); font-weight: var(--font-weight-medium); }
 .t-display2 { font-size: var(--font-size-5xl); line-height: var(--line-height-5xl); font-weight: var(--font-weight-medium); }
 
+/* Responsive heading steps — the mobile→desktop translation table on board
+   02 steps a title up one ramp entry at 1024. Declared here with the rest of
+   the ramp so a screen never writes a raw font-size of its own. */
+.t-h4-h3 {
+  font-size: var(--font-size-lg);
+  line-height: var(--line-height-md);
+  font-weight: var(--font-weight-medium);
+  margin: 0;
+}
+
+@media (min-width: 1024px) {
+  .t-h4-h3 {
+    font-size: var(--font-size-xl);
+    line-height: var(--line-height-xl);
+  }
+}
+
 /* --- .t-label uses --line-height-xl (20px is not in the line-height scale;
        Figma's Label style is Medium 14/20). Kept explicit here so the value
        is not silently wrong. */

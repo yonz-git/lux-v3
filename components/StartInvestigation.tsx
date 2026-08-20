@@ -42,7 +42,7 @@ export function StartInvestigation() {
         </p>
       </section>
 
-      <h1 className={`${styles.question} t-h5`}>
+      <h1 className={`${styles.question} t-h4-h3`}>
         What is currently happening to your skin?
       </h1>
 

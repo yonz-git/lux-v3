@@ -108,6 +108,12 @@ answer being absent (deep links) rather than rendering an empty bubble.
    bottom, horizontally centred, `--z-nav`, 380 wide on mobile and 598 on
    desktop. `active="none"` is a real state (welcome, intro, onboarding), not a
    fallback.
+7a. ⚠️ **The nav is `surface/frost-nav` `#dde8eb @83%` — NOT 17%.** It used to be
+   17%, which is barely a tint: the Continue button and the last option rows read
+   straight through the bar. Frosted does not mean see-through. The
+   `prefers-reduced-transparency` fallback is `bg/nav`, now the SAME colour fully
+   opaque (`#dde8eb`) — it used to be `#9caeaf @55%`, a different hue *and* still
+   translucent, which is not a fallback at all.
 8. **Chat bubbles carry an asymmetric tail corner, and NO border.** Three corners
    at `--radius-bubble` (30), the sender-side corner at `--radius-bubble-tail`
    (1). AI = tail top-left, sits left. User = tail top-right, sits right. Four
