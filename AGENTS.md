@@ -126,6 +126,15 @@ answer being absent (deep links) rather than rendering an empty bubble.
    border renders 58. Give these rows `min-height` and drop the vertical
    padding — they are flex + centred, so they render identically and stay
    exactly on the Figma height.
+8c. ⚠️ **A GRADIENT + A BORDER NEEDS `background-origin: border-box`.**
+   `background-origin` defaults to `padding-box` while `background-clip` defaults
+   to `border-box`, so a gradient is **sized to the padding box but painted into
+   the border box**. Add a border and the outermost 1px of every edge has no
+   gradient on it — the drop shadow shows through as a thin dark notch at the
+   widest point of each rounded end. It is subtle, and it looks like a rendering
+   glitch rather than a CSS mistake. Only background IMAGES are affected; a flat
+   `background-color` is not, which is why the frosted rows never showed it.
+
 9. **Frosted surfaces always get a solid fallback** under
    `prefers-reduced-transparency`, and a translucent fill always needs its inner
    shadow or it reads flat.

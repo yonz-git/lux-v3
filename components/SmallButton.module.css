@@ -17,6 +17,9 @@
 
   color: var(--color-text-brand);
   background: linear-gradient(90deg, #deeff3 0%, #b7c6ca 100%);
+  /* immune to the border-box/padding-box gradient seam if this ever gains a
+     border in a non-disabled state — see the note in Button.module.css */
+  background-origin: border-box;
   box-shadow: var(--shadow-button);
   text-decoration: none;
   white-space: nowrap;

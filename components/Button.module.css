@@ -42,6 +42,16 @@
   /* the component can render as <a>; links carry an underline by default */
   text-decoration: none;
   background: linear-gradient(90deg, var(--grad-start) 0%, var(--grad-end) 100%);
+  /* ⚠️ REQUIRED because this button has a border.
+     background-origin defaults to padding-box while background-clip defaults to
+     border-box, so a gradient is SIZED to the padding box but PAINTED into the
+     border box. With the 1px border above, the outermost 1px of each edge then
+     has no gradient on it and the drop shadow shows through — a thin dark notch
+     at the widest point of each rounded end. Sizing the gradient to the border
+     box makes it cover everything it is painted into.
+     Only affects background IMAGES; a flat background-color is unaffected,
+     which is why the frosted rows never showed this. */
+  background-origin: border-box;
   /* The DISABLED cell (160:20/160:21) carries a 1px border/default stroke that
      the default cell does not. Declared transparent in every state so the box
      never changes size between them and the colour can transition. */
