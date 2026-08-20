@@ -75,20 +75,27 @@ answer being absent (deep links) rather than rendering an empty bubble.
 5. **Buttons are `Button` (Regular 15/22)** — deliberately Regular, never Medium.
 6. **Never hand-build a button.** Use `components/Button.tsx`. The two stacked
    drop shadows are part of the component; a hand-rolled gradient div loses them.
-6a. **Button `State` variant names are DISPUTED — do not "fix" either source.**
-   Two in-file authorities disagree and the question is open:
-   - The set `37:23` is self-consistent AS NAMED: across Primary, Secondary and
-     Ghost, `Disabled` is a node-opacity **0.4 fade** and `Hover` is a **fill
-     change** (Primary `37:13` solid `#eef6f7`; Ghost `37:19` solid `#bdd1d2`).
-   - The showcase `08 · Components — Buttons` → `row/Primary` (160:15) labels its
-     columns Default / Hover / Disabled in an order that makes the 0.4 fade
-     HOVER and the solid pale one DISABLED.
+6a. **⚠️ THE BUTTON `State` VARIANT NAMES ARE SWAPPED — trust the SHOWCASE.**
+   Settled 18 Aug 2026: the user pointed at showcase cell `160:20` as "the
+   disabled button", and that cell instances the variant *named*
+   `Style=Primary, State=Hover` (`37:13`). So the showcase column order
+   (Default / Hover / Disabled) is authoritative and the names in set `37:23`
+   are inverted for Primary.
 
-   `Button.module.css` currently implements the SHOWCASE reading (hover = fade
-   to 0.4, disabled = solid pale). If the variant names win instead, the two
-   swap. Ignore `button/bg-hover-*` and `button/bg-pressed-*` either way — the
-   component never uses them — and note `Style=Secondary, State=Hover` is
-   missing from the set entirely.
+   | Column | Cell | Instances | Treatment |
+   | --- | --- | --- | --- |
+   | Default | `160:17` | `37:5` Default | `gradient/brand` #bbd3d9 → #637073, label `text/on-brand`, NO stroke |
+   | **Hover** | `160:23` | `37:9` *named Disabled* | the same gradient at node **opacity 0.4** — no colour change |
+   | **Disabled** | `160:20` | `37:13` *named Hover* | solid `bg/surface-frost` #eef6f7 + **1px `border/default` #cbcdd4** + label `text/muted` #9a9aa5, both shadows kept, opacity 1 |
+
+   ⚠️ **The disabled state carries a 1px `border/default` stroke that the
+   enabled button does not.** Easy to miss and easy to omit. `Button.module.css`
+   declares the border transparent in every state so the box never changes size
+   and the colour can transition.
+
+   Ignore `button/bg-hover-*` and `button/bg-pressed-*` either way — the
+   component never uses them — and note `Style=Secondary, State=Hover` is still
+   missing from the set.
 
 7. **The bottom nav is fixed and identical on every screen**: 24px from the
    bottom, horizontally centred, `--z-nav`, 380 wide on mobile and 598 on

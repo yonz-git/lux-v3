@@ -42,6 +42,10 @@
   /* the component can render as <a>; links carry an underline by default */
   text-decoration: none;
   background: linear-gradient(90deg, var(--grad-start) 0%, var(--grad-end) 100%);
+  /* The DISABLED cell (160:20/160:21) carries a 1px border/default stroke that
+     the default cell does not. Declared transparent in every state so the box
+     never changes size between them and the colour can transition. */
+  border: var(--border-width-hairline) solid transparent;
   box-shadow: var(--shadow-button);
   opacity: 1;
 
@@ -54,6 +58,7 @@
      ease/standard, landing on the brand gradient with a white label. */
   transition: opacity var(--duration-base) var(--ease-standard),
     color var(--duration-base) var(--ease-standard),
+    border-color var(--duration-base) var(--ease-standard),
     --grad-start var(--duration-base) var(--ease-standard),
     --grad-end var(--duration-base) var(--ease-standard);
 }
@@ -87,10 +92,15 @@
   opacity: 1;
 }
 
-/* Disabled: solid bg/surface-frost with a text/muted label (showcase 160:20) */
+/* Disabled — read off the showcase cell 160:20 (Button instance 160:21):
+     solid bg/surface-frost #eef6f7
+     1px border/default #cbcdd4  <- easy to miss; the enabled button has no stroke
+     label text/muted #9a9aa5
+     BOTH drop shadows retained, and node opacity stays 1 */
 .button:disabled {
   --grad-start: var(--color-bg-surface-frost);
   --grad-end: var(--color-bg-surface-frost);
+  border-color: var(--color-border-default);
   color: var(--color-text-muted);
   cursor: not-allowed;
 }
