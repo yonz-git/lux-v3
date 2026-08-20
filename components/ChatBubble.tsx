@@ -17,19 +17,22 @@ export function ChatBubble({
   from,
   align,
   full,
+  className,
   children,
 }: {
   from: "ai" | "user";
   align?: "left" | "right" | "center";
   /** span the whole content column instead of hugging the text */
   full?: boolean;
+  /** applied to the bubble itself, not the row — e.g. an entrance animation */
+  className?: string;
   children: ReactNode;
 }) {
   const resolvedAlign = align ?? (from === "ai" ? "left" : "right");
   return (
     <div className={styles.row} data-align={resolvedAlign}>
       <div
-        className={`${styles.bubble} t-body2`}
+        className={[styles.bubble, "t-body2", className].filter(Boolean).join(" ")}
         data-from={from}
         data-full={full ? "true" : undefined}
       >

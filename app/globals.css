@@ -396,6 +396,40 @@ button {
     lux-mark-x 700ms cubic-bezier(0.16, 1, 0.3, 1) 240ms backwards;
 }
 
+/* ============================================================================
+   The AI's question — Welcome
+
+   Lands LAST, after the orb has finished assembling (940ms) and after the CTA.
+   The beat of silence before it is the point: the orb comes together, pauses,
+   then asks. A question that arrives with everything else reads as decoration;
+   one that arrives after a pause reads as someone actually asking.
+
+   800ms is slow on purpose — the whole entrance is unhurried, and the board's
+   own line is "LUX motion is calm. Nothing snaps."
+
+   The bubble hangs from `top center`, directly under the orb, and drops the last
+   10px into place while scaling up from 0.94 — it emerges from the speaker
+   rather than fading in on the spot. No overshoot: LUX does not bounce, so this
+   settles rather than springs.
+   ========================================================================== */
+
+@keyframes lux-bubble-ask {
+  from {
+    opacity: 0;
+    transform: translateY(-10px) scale(0.94);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+.bubble-ask {
+  /* hangs from the orb above it, so there is no lateral drift as it scales */
+  transform-origin: top center;
+  animation: lux-bubble-ask 800ms var(--ease-standard) 1000ms backwards;
+}
+
 /* ⚠️ THESE RULES MUST LIVE HERE, NOT IN A CSS MODULE. CSS Modules localize
    @keyframes names, so `animation: lux-fade-in ...` written inside a module
    compiles to a SCOPED name that does not match the global keyframes above —

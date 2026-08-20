@@ -14,11 +14,11 @@ export function Welcome() {
             and below the group, so it sits low without fixed offsets */}
         <div className={styles.spacerTop} aria-hidden="true" />
 
-        <div className={`${styles.hero} reveal-hero`}>
+        <div className={styles.hero}>
           <Orb size="var(--size-orb-lg)" animateIn />
           {/* centred rather than left, because Welcome is a hero composition —
               see the note in ChatBubble.module.css */}
-          <ChatBubble from="ai" align="center">
+          <ChatBubble from="ai" align="center" className="bubble-ask">
             How is your skin feeling today?
           </ChatBubble>
         </div>
