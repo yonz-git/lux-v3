@@ -75,18 +75,22 @@ answer being absent (deep links) rather than rendering an empty bubble.
 5. **Buttons are `Button` (Regular 15/22)** — deliberately Regular, never Medium.
 6. **Never hand-build a button.** Use `components/Button.tsx`. The two stacked
    drop shadows are part of the component; a hand-rolled gradient div loses them.
-6a. **⚠️ THE BUTTON `State` VARIANT NAMES ARE SWAPPED — trust the SHOWCASE.**
-   Settled 18 Aug 2026: the user pointed at showcase cell `160:20` as "the
-   disabled button", and that cell instances the variant *named*
-   `Style=Primary, State=Hover` (`37:13`). So the showcase column order
-   (Default / Hover / Disabled) is authoritative and the names in set `37:23`
-   are inverted for Primary.
+6a. **Button states — the variant names are CORRECT as of 21 Aug 2026.**
+   Primary's Hover and Disabled names used to be swapped; they were renamed with
+   **no visual change** (verified pixel-identical). The names and the showcase
+   `row/Primary` (`160:15`) now agree, so **any older note saying "trust the
+   showcase, not the variant names" is stale.** Secondary and Ghost were always
+   named correctly.
 
-   | Column | Cell | Instances | Treatment |
+   | State | Variant | Cell | Treatment |
    | --- | --- | --- | --- |
-   | Default | `160:17` | `37:5` Default | `gradient/brand` #bbd3d9 → #637073, label `text/on-brand`, NO stroke |
-   | **Hover** | `160:23` | `37:9` *named Disabled* | the same gradient at node **opacity 0.4** — no colour change |
-   | **Disabled** | `160:20` | `37:13` *named Hover* | **`state/disabled-bg` #eef6f7 @51%** + **1px `border/default` #cbcdd4** + label `text/muted` #9a9aa5, both shadows kept, opacity 1 |
+   | Default | `37:5` | `160:17` | `gradient/brand` #bbd3d9 → #637073, label `text/on-brand`, NO stroke |
+   | **Hover** | `37:9` | `160:23` | the same gradient at node **opacity 0.4** — no colour change |
+   | **Disabled** | `37:13` | `160:20` | **`state/disabled-bg` #eef6f7 @51%** + **1px `border/default` #cbcdd4** + label `text/muted` #9a9aa5, both shadows kept, opacity 1 |
+
+   Ignore `button/bg-hover-*` and `button/bg-pressed-*` — the component has never
+   used them. There is no `State=Pressed` for any style, and
+   `Style=Secondary, State=Hover` is still missing from the set.
 
    ⚠️ **The disabled state carries a 1px `border/default` stroke that the
    enabled button does not.** Easy to miss and easy to omit. `Button.module.css`

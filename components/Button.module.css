@@ -1,15 +1,16 @@
-/* Button — Figma component set 37:23, read from the Buttons showcase
-   (08 · Components — Buttons, row/Primary 160:15), which is the visual truth.
-   The variant NAMES in the set are swapped, so do not trust them:
+/* Button — Figma component set 37:23.
 
-     Default  cell 160:17 — gradient/brand #bbd3d9 -> #637073, label text/on-brand
-     Hover    cell 160:23 — the SAME gradient at node opacity 0.4
-     Disabled cell 160:20 — SOLID bg/surface-frost #eef6f7, label text/muted
+     Default  37:5  gradient/brand #bbd3d9 -> #637073, label text/on-brand
+     Hover    37:9  the SAME gradient at node opacity 0.4 — no colour change
+     Disabled 37:13 state/disabled-bg #eef6f7 @51% + a 1px border/default stroke
+                    the enabled button does NOT have + label text/muted, opacity 1
 
-   The variant named `State=Disabled` (37:9) carries opacity 0.4 and is the
-   hover design; the variant named `State=Hover` (37:13) is the disabled design.
-   Hover therefore changes NO colour — the whole control softens, shadows
-   included, because node opacity in Figma fades the drop shadows too.
+   Hover changes NO colour — the whole control softens, shadows included, because
+   node opacity in Figma fades the drop shadows too.
+
+   The Primary Hover and Disabled variant NAMES were swapped in Figma until
+   21 Aug 2026 and are now correct. Any older note saying "read the showcase, not
+   the variant names" is stale — the names and the showcase agree.
 
    MOTION — board 04b (389:200): "LUX motion is calm. Nothing snaps."
    The board assigns duration/fast (120ms) to hover, but a 100% -> 40% fade
@@ -22,10 +23,10 @@
 .button {
   --grad-start: var(--color-button-bg-default-start);
   --grad-end: var(--color-button-bg-default-end);
-  /* The hover cell sits at 0.4. That is numerically the same as
-     opacity/disabled, but this is a hover, not a disabled state — there is no
-     `opacity/hover` token in Figma yet, so the intent is named locally rather
-     than pointing at a token whose name would mislead the next reader. */
+  /* Hover sits at 0.4. That is numerically the same as opacity/disabled, but
+     this is a hover, not a disabled state — there is no `opacity/hover` token in
+     Figma yet, so the intent is named locally rather than pointing at a token
+     whose name would mislead the next reader. */
   --button-hover-opacity: 0.4;
 
   position: relative;
