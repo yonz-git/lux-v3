@@ -29,27 +29,33 @@ export function SelfieCapture() {
         Take a photo of the affected area.
       </ChatBubble>
 
-      <div className={styles.viewfinder} data-captured={captured}>
-        <span className={styles.guide} aria-hidden="true" />
-        {captured && (
-          <p className={`${styles.captured} reveal-quick t-label`}>Photo captured</p>
-        )}
-      </div>
+      {/* On desktop these sit SIDE BY SIDE — Figma 490:1041 wraps them in a
+          `columns` row (viewfinder 420 left, controls 364 right, gap 40) with
+          the controls vertically centred. Stacking them made the card 118 too
+          tall and pushed Continue under the fixed nav. */}
+      <div className={styles.columns}>
+        <div className={styles.viewfinder} data-captured={captured}>
+          <span className={styles.guide} aria-hidden="true" />
+          {captured && (
+            <p className={`${styles.captured} reveal-quick t-label`}>Photo captured</p>
+          )}
+        </div>
 
-      <div className={styles.controls}>
-        <button
-          type="button"
-          className={styles.shutter}
-          aria-label={captured ? "Retake photo" : "Capture photo"}
-          onClick={() => setAnswer("selfie", captured ? undefined : "captured")}
-        >
-          <span className={styles.shutterCore} aria-hidden="true" />
-        </button>
-        <p className={`${styles.helper} t-body3`}>
-          {captured
-            ? "Tap the shutter again to retake."
-            : "Position your face in the oval and tap to capture."}
-        </p>
+        <div className={styles.controls}>
+          <button
+            type="button"
+            className={styles.shutter}
+            aria-label={captured ? "Retake photo" : "Capture photo"}
+            onClick={() => setAnswer("selfie", captured ? undefined : "captured")}
+          >
+            <span className={styles.shutterCore} aria-hidden="true" />
+          </button>
+          <p className={`${styles.helper} t-body3-body2`}>
+            {captured
+              ? "Tap the shutter again to retake."
+              : "Position your face in the oval and tap to capture."}
+          </p>
+        </div>
       </div>
     </QuestionScreen>
   );

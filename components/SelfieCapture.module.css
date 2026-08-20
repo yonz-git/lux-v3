@@ -3,15 +3,23 @@
    the one sage surface in an otherwise light flow, because it stands in for a
    camera feed. Guide oval 190x250, 2px effect/rim-highlight at 90%. */
 
+.columns {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--space-xl);
+  margin-top: var(--space-xl);
+}
+
 .viewfinder {
   position: relative;
+  flex: none;
   display: flex;
   align-items: center;
   justify-content: center;
   width: 100%;
   aspect-ratio: 392 / 400;
   max-height: 400px;
-  margin-top: var(--space-xl);
 
   border-radius: var(--radius-2xl);
   background: var(--color-surface-data);
@@ -20,9 +28,14 @@
   -webkit-backdrop-filter: blur(var(--blur-card));
 }
 
+/* ⚠️ THE GUIDE IS A PORTRAIT OVAL — never let it take its width from the
+   viewfinder. Sizing BOTH axes as a percentage made it stretch into a wide
+   ellipse the moment the viewfinder was wider than it is tall, which is exactly
+   what happened on desktop. Height drives it and aspect-ratio derives the width,
+   so the face shape survives any container size. */
 .guide {
-  width: calc(190 / 392 * 100%);
   height: calc(250 / 400 * 100%);
+  aspect-ratio: 190 / 250;
   /* effect/rim-highlight already carries its 90% alpha — adding opacity on top
      would multiply the two, the same trap as binding a translucent colour
      variable to a paint in Figma. */
@@ -42,7 +55,6 @@
   flex-direction: column;
   align-items: center;
   gap: var(--space-lg);
-  margin-top: var(--space-xl);
 }
 
 .shutter {
@@ -81,6 +93,35 @@
 .helper {
   color: var(--color-text-secondary);
   text-align: center;
+}
+
+@media (min-width: 1024px) {
+  /* Figma 490:1041 — `columns`: viewfinder 420 left, controls 364 right,
+     gap 40, controls vertically centred against the 340-tall viewfinder. */
+  .columns {
+    flex-direction: row;
+    justify-content: center;
+    align-items: center;
+    gap: var(--space-4xl);
+  }
+
+  /* the desktop viewfinder is a FIXED 420x340, not the full card width, and
+     its oval is 170x240 */
+  .viewfinder {
+    width: 420px;
+    aspect-ratio: 420 / 340;
+    max-height: none;
+  }
+
+  .guide {
+    height: calc(240 / 340 * 100%);
+    aspect-ratio: 170 / 240;
+  }
+
+  .controls {
+    width: 364px;
+    gap: var(--space-2xl); /* 24 on desktop, 16 on mobile */
+  }
 }
 
 @media (prefers-reduced-transparency: reduce) {

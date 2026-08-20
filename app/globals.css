@@ -144,6 +144,20 @@ button {
   }
 }
 
+.t-body3-body2 {
+  font-size: var(--font-size-xs);
+  line-height: var(--line-height-xs);
+  font-weight: var(--font-weight-regular);
+  margin: 0;
+}
+
+@media (min-width: 1024px) {
+  .t-body3-body2 {
+    font-size: var(--font-size-sm);
+    line-height: var(--line-height-sm);
+  }
+}
+
 /* --- .t-label uses --line-height-xl (20px is not in the line-height scale;
        Figma's Label style is Medium 14/20). Kept explicit here so the value
        is not silently wrong. */
@@ -226,8 +240,14 @@ button {
    for page-level reveals, duration/base (200ms) for something revealed inside a
    screen the user just acted on (the "Other" field, a capture confirmation).
 
-   `both` holds the from-state before the delay elapses, so a staggered child
-   never flashes at full opacity first.
+   ⚠️ `backwards`, NOT `both`. Backwards holds the from-state during the delay so
+   a staggered child never flashes at full opacity first — which is the only
+   part we need. `both` adds `forwards`, which keeps the animation in effect
+   after it ends, and an opacity animation that is still in effect leaves a
+   PERSISTENT STACKING CONTEXT on the element. Every revealed block then painted
+   in DOM order regardless of z-index, so a popover inside an early block
+   rendered underneath the blocks below it. Opacity 1 is the natural state, so
+   forwards buys nothing and costs that.
 
    prefers-reduced-motion is handled globally below — do not special-case it.
    ========================================================================== */
@@ -242,17 +262,17 @@ button {
 }
 
 .reveal {
-  animation: lux-fade-in var(--duration-slow) var(--ease-standard) both;
+  animation: lux-fade-in var(--duration-slow) var(--ease-standard) backwards;
 }
 
 /* revealed by a user action rather than by arriving on the screen */
 .reveal-quick {
-  animation: lux-fade-in var(--duration-base) var(--ease-standard) both;
+  animation: lux-fade-in var(--duration-base) var(--ease-standard) backwards;
 }
 
 /* the orb and hero entrances get the slower curve */
 .reveal-hero {
-  animation: lux-fade-in var(--duration-slower) var(--ease-standard) both;
+  animation: lux-fade-in var(--duration-slower) var(--ease-standard) backwards;
 }
 
 /* ⚠️ THESE RULES MUST LIVE HERE, NOT IN A CSS MODULE. CSS Modules localize
@@ -265,7 +285,7 @@ button {
    animation-delay, which carries no name. */
 
 [data-reveal] > * {
-  animation: lux-fade-in var(--duration-slow) var(--ease-standard) both;
+  animation: lux-fade-in var(--duration-slow) var(--ease-standard) backwards;
 }
 
 /* Each block fades in just after the one above it. 40ms reads as a sequence

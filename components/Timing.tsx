@@ -4,6 +4,7 @@ import styles from "./Timing.module.css";
 import { QuestionScreen } from "./QuestionScreen";
 import { ChatBubble } from "./ChatBubble";
 import { OptionRow } from "./OptionRow";
+import { DateField } from "./DateField";
 import { useInvestigation } from "./InvestigationProvider";
 
 /**
@@ -14,9 +15,9 @@ import { useInvestigation } from "./InvestigationProvider";
  * library has no single-select Chip variant; adding one is the alternative if
  * the pill look is ever wanted back.
  *
- * The date uses a native <input type="date"> rather than a bespoke picker: the
- * Figma `date-field` is a hand-composed frame, and a real date input gives the
- * prototype a working calendar and correct mobile keyboards for free.
+ * The date uses `DateField`, not a native <input type="date">: the native popup
+ * is drawn by the browser and cannot be styled, so it rendered as a stock white
+ * Chrome calendar in the middle of the LUX flow.
  *
  * All three fields are required, so Continue stays disabled until the date, the
  * onset and the status are all answered.
@@ -43,16 +44,14 @@ export function Timing() {
         When did this start and how quickly did it appear?
       </ChatBubble>
 
-      <div className={styles.field}>
+      <div className={`${styles.field} ${styles.fieldWithPopover}`}>
         <label className="t-label" htmlFor="start-date">
           Approximate start date
         </label>
-        <input
+        <DateField
           id="start-date"
-          type="date"
-          className={`${styles.date} t-body2`}
-          value={timing.date ?? ""}
-          onChange={(e) => set({ date: e.target.value })}
+          value={timing.date}
+          onChange={(date) => set({ date })}
         />
       </div>
 

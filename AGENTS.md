@@ -156,6 +156,7 @@ risk. All are on the missing-from-the-DS list.
 
 | Need | Here | Note |
 | --- | --- | --- |
+| Date picker | `components/DateField.tsx` | `<input type="date">`'s popup is drawn by the browser and **cannot be styled** — no token or class reaches inside it. It rendered as a stock white Chrome calendar mid-flow. The DS has no calendar component either, so this is composed from tokens. |
 | Text input | `components/TextField.tsx` | `Search Field` (248:70) exists but is search-specific. `other-input` on 02c/03a and the 03c date field are all hand-composed in Figma. |
 | Face-region picker | `components/FaceDiagram.tsx` | The region coordinates ARE the design — "Cheeks (L)" only means the left cheek because of where it sits. Stored as % of the 392x300 card so it scales. |
 | Camera shutter | `SelfieCapture.module.css` | No shutter component. The viewfinder is a placeholder, not `getUserMedia` — wiring a real camera would make the prototype demand a permission just to walk the flow. |
@@ -204,6 +205,17 @@ mixing shapes in one group tells the user the whole group is single-select.
   `CSSTransition`/`CSSAnimation` exists with the expected duration and easing,
   then call `.finish()` and assert the end state. Do not rely on sleeping and
   re-reading `getComputedStyle`.
+- ⚠️ **Reveals use `animation-fill-mode: backwards`, NOT `both`.** `both` adds
+  `forwards`, which keeps the animation in effect after it ends — and an opacity
+  animation still in effect leaves a **persistent stacking context**. Every
+  revealed block then paints in DOM order regardless of `z-index`, so a popover
+  inside an early block renders *underneath* the blocks below it. That is exactly
+  how the date picker ended up behind the radio rows. Opacity 1 is the natural
+  end state, so `forwards` buys nothing and costs that. `backwards` still holds
+  the from-state during a stagger delay, which is the only part needed.
+- **Anything that opens a popover gets `position: relative; z-index: 1` on its
+  own block**, so its layering does not depend on nothing else in the stack ever
+  creating a stacking context.
 - **Entrance reveals: the rule that NAMES an animation must live in
   `globals.css`, never in a CSS Module.** Modules localize `@keyframes` names, so
   `animation: lux-fade-in …` inside a module compiles to a scoped name that does

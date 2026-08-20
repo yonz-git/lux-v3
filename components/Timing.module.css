@@ -9,8 +9,12 @@
   margin-top: var(--space-2xl);
 }
 
-.field:first-of-type {
-  margin-top: var(--space-2xl);
+/* The date field owns a popover, so it must sit above the fields below it.
+   Without this it depends on nothing else in the stack creating a stacking
+   context — which is exactly how the calendar ended up rendering underneath. */
+.fieldWithPopover {
+  position: relative;
+  z-index: 1;
 }
 
 .label {
