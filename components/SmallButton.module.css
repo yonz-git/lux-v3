@@ -33,3 +33,19 @@
     color: var(--color-text-brand);
   }
 }
+
+/* Disabled — matching `Small Button / * / Disabled` (225:59 / 225:62), which now
+   use the same recipe as the large button: state/disabled-bg #eef6f7 @51%, a 1px
+   border/default stroke, a text/muted label, and node opacity 1. Nothing in the
+   flow disables a small button yet; this exists so the first one that does is
+   already right. */
+.button:disabled {
+  background: var(--color-state-disabled-bg);
+  border: var(--border-width-hairline) solid var(--color-border-default);
+  color: var(--color-text-muted);
+  cursor: not-allowed;
+}
+
+.button:disabled:hover {
+  color: var(--color-text-muted);
+}

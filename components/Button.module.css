@@ -93,13 +93,16 @@
 }
 
 /* Disabled — read off the showcase cell 160:20 (Button instance 160:21):
-     solid bg/surface-frost #eef6f7
-     1px border/default #cbcdd4  <- easy to miss; the enabled button has no stroke
-     label text/muted #9a9aa5
-     BOTH drop shadows retained, and node opacity stays 1 */
+     state/disabled-bg  #eef6f7 @51%  <- TRANSLUCENT, not the opaque #eef6f7
+     1px border/default #cbcdd4       <- easy to miss; the enabled button has no stroke
+     label text/muted   #9a9aa5
+     BOTH drop shadows retained, and node opacity stays 1.
+
+   The fill is translucent so the disabled button softens against whatever is
+   behind it — noticeably better on the sage tray than an opaque pale fill. */
 .button:disabled {
-  --grad-start: var(--color-bg-surface-frost);
-  --grad-end: var(--color-bg-surface-frost);
+  --grad-start: var(--color-state-disabled-bg);
+  --grad-end: var(--color-state-disabled-bg);
   border-color: var(--color-border-default);
   color: var(--color-text-muted);
   cursor: not-allowed;

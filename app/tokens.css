@@ -94,7 +94,11 @@
   --color-effect-rim-highlight: rgba(255, 255, 255, 0.9);
   --color-state-hover-overlay: rgba(46, 42, 63, 0.08);
   --color-state-pressed-overlay: rgba(46, 42, 63, 0.14);
-  --color-state-disabled-bg: #c6cfd0;
+  /* The disabled button surface. #eef6f7 at 51% (#eef6f782) — translucent, so
+     it sits softer on the canvas gradient than the opaque #eef6f7 did, and it
+     picks up whatever surface is behind it (visibly better on the sage tray).
+     Repointed from #c6cfd0, which nothing used. */
+  --color-state-disabled-bg: rgba(238, 246, 247, 0.51);
   --color-feedback-success: var(--color-green-500);
   --color-feedback-success-subtle: var(--color-green-100);
   --color-feedback-warning: var(--color-rose-500);

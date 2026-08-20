@@ -86,12 +86,19 @@ answer being absent (deep links) rather than rendering an empty bubble.
    | --- | --- | --- | --- |
    | Default | `160:17` | `37:5` Default | `gradient/brand` #bbd3d9 → #637073, label `text/on-brand`, NO stroke |
    | **Hover** | `160:23` | `37:9` *named Disabled* | the same gradient at node **opacity 0.4** — no colour change |
-   | **Disabled** | `160:20` | `37:13` *named Hover* | solid `bg/surface-frost` #eef6f7 + **1px `border/default` #cbcdd4** + label `text/muted` #9a9aa5, both shadows kept, opacity 1 |
+   | **Disabled** | `160:20` | `37:13` *named Hover* | **`state/disabled-bg` #eef6f7 @51%** + **1px `border/default` #cbcdd4** + label `text/muted` #9a9aa5, both shadows kept, opacity 1 |
 
    ⚠️ **The disabled state carries a 1px `border/default` stroke that the
    enabled button does not.** Easy to miss and easy to omit. `Button.module.css`
    declares the border transparent in every state so the box never changes size
    and the colour can transition.
+
+   ⚠️ **The disabled surface is TRANSLUCENT** — `state/disabled-bg`
+   (`#eef6f7 @51%`), not the opaque `bg/surface-frost`. It reads too bright on
+   screen when opaque, and translucency lets it soften against whatever is
+   behind it (visibly better on the sage check tray). **Every** disabled button
+   uses it — Primary, Secondary, Back and both Small Buttons — with node
+   opacity 1. Secondary used to be a 0.4 node fade; that is gone.
 
    Ignore `button/bg-hover-*` and `button/bg-pressed-*` either way — the
    component never uses them — and note `Style=Secondary, State=Hover` is still

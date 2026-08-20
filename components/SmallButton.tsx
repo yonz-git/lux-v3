@@ -35,7 +35,8 @@ export function SmallButton({ label, arrow = true, href, className, ...rest }: P
   );
   const cls = [styles.button, className].filter(Boolean).join(" ");
 
-  if (href) {
+  // a disabled control must not stay a link — links are not disableable
+  if (href && !rest.disabled) {
     return (
       <Link href={href} className={cls}>
         {content}
