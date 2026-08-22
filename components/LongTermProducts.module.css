@@ -1,0 +1,150 @@
+/* 04a — Long-term products, and the method sheet on top of it.
+   empty:  bubble -> 12 -> bubble -> 24 -> empty-state -> 16 -> add-product
+           -> 16 -> skip-link
+   filled: bubble -> 24 -> added-products (gap 12) -> 16 -> add-product
+           -> 12 -> count */
+
+.secondBubble {
+  margin-top: var(--space-md); /* 12 */
+}
+
+.list {
+  margin: var(--space-2xl) 0 0; /* 24 */
+  padding: 0;
+  list-style: none;
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-md);
+}
+
+.emptyWrap {
+  margin-top: var(--space-2xl); /* 24 */
+}
+
+.addWrap {
+  margin-top: var(--space-lg); /* 16 */
+}
+
+/* the filled state's readout, muted and left-aligned */
+.count {
+  margin-top: var(--space-md); /* 12 */
+  color: var(--color-text-muted);
+}
+
+/* the empty state's inline skip — Label in text/brand, centred.
+   The 8px of padding is the tap target; the margin gives it back so the label
+   still lands exactly 16 below the row above, as the comp draws it. */
+.skip {
+  margin-top: calc(var(--space-lg) - var(--space-sm));
+  width: 100%;
+  padding: var(--space-sm) 0;
+  color: var(--color-text-brand);
+  border-radius: var(--radius-sm);
+  transition: opacity var(--duration-fast) var(--ease-standard);
+}
+
+.skip:hover {
+  opacity: 0.7;
+}
+
+@media (hover: none) {
+  .skip:hover {
+    opacity: 1;
+  }
+}
+
+
+/* --- the method sheet's contents ------------------------------------------- */
+
+.methods {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-md);
+}
+
+/* 70 tall on mobile / 78 on desktop, padding 14/18, gap 12, radius/lg.
+   surface/data-strong on a sage tray, with the frosted-row inner shadow — a
+   translucent surface with no inner shadow reads flat. NO border: the tray's
+   cards sit on sage, where border/subtle would be invisible anyway. */
+.method {
+  display: flex;
+  align-items: center;
+  gap: var(--space-md);
+  width: 100%;
+  /* 14/18 stays 14 here: a method card sits on sage and carries NO border, so
+     there is nothing to subtract */
+  min-height: 70px;
+  padding: 14px 18px;
+  text-align: left;
+
+  border-radius: var(--radius-lg);
+  background: var(--color-surface-data-strong);
+  box-shadow: var(--shadow-frosted-row);
+
+  transition: background-color var(--duration-fast) var(--ease-standard);
+}
+
+.method:hover {
+  background: var(--color-surface-data);
+}
+
+@media (hover: none) {
+  .method:hover {
+    background: var(--color-surface-data-strong);
+  }
+}
+
+/* WHITE, because the surface is sage. Both fill and stroke ride currentColor. */
+.methodIcon,
+.methodChevron {
+  flex: none;
+  display: inline-flex;
+  color: var(--color-icon-on-data);
+}
+
+.methodCopy {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2xs);
+}
+
+.methodTitle {
+  color: var(--color-text-on-data);
+}
+
+.methodSubtitle {
+  color: var(--color-text-on-data-muted);
+}
+
+/* display:block so the line box is exactly the 20 of `Label`; a button's
+   default inline-block layout renders 22 */
+.cancel {
+  display: block;
+  width: 100%;
+  color: var(--color-text-on-data-secondary);
+  border-radius: var(--radius-sm);
+  transition: opacity var(--duration-fast) var(--ease-standard);
+}
+
+.cancel:hover {
+  opacity: 0.7;
+}
+
+@media (hover: none) {
+  .cancel:hover {
+    opacity: 1;
+  }
+}
+
+
+@media (min-width: 1024px) {
+  .method {
+    min-height: 78px;
+  }
+}

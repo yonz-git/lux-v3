@@ -1,0 +1,115 @@
+/* The modal tray.
+   Mobile  (576:1376 `bottom-sheet`): full width, x=0, radius 28/28/0/0, docked
+           to the bottom edge, padding 12/20/28/20, gap 20, children centred.
+   Desktop (583:1786 `method-dialog`): width/card-focus 640, radius/3xl on all
+           four corners, NO grabber, padding 48, gap 20.
+   Both: surface/data-strong + BACKGROUND_BLUR 28 + the sheet drop shadow.
+
+   ⚠️ --z-sheet (400) is ABOVE --z-nav (200). The tray covers the nav on purpose;
+   this is the only layer in LUX that outranks it.
+
+   ⚠️ THE ENTRANCE LIVES IN globals.css, NOT HERE. CSS Modules localize
+   @keyframes names, so `animation: lux-sheet-in ...` written in this file would
+   compile to a scoped name with no matching keyframes — it resolves to nothing
+   and no animation runs, while getComputedStyle still reports a duration. The
+   rules hang off the [data-tray] hooks instead. */
+
+.scrim {
+  position: fixed;
+  inset: 0;
+  z-index: var(--z-sheet);
+  background: var(--color-state-pressed-overlay);
+}
+
+.tray {
+  position: fixed;
+  z-index: var(--z-sheet);
+  left: 0;
+  right: 0;
+  bottom: 0;
+
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--space-xl);
+  /* Figma 12/20/28/20. 28 is off the spacing scale (2xl is 24, 3xl 32) at the
+     bottom edge, the same way the 28 radius is — written as a literal rather
+     than snapped to a token that would be quietly wrong. */
+  padding: var(--space-md) var(--space-xl) 28px;
+
+  /* Figma's radius 28 is off the radius scale at both ends (2xl is 24, 3xl 32).
+     Written as a literal rather than snapped to a token that would be quietly
+     wrong — the same call `Chip`'s 10/16 padding gets. */
+  border-radius: 28px 28px 0 0;
+  background: var(--color-surface-data-strong);
+  box-shadow: var(--shadow-sheet-mobile);
+  /* NOT optional: surface/data-strong is 62% translucent and the nav underneath
+     reads straight through an unblurred tray */
+  backdrop-filter: blur(var(--blur-card));
+  -webkit-backdrop-filter: blur(var(--blur-card));
+}
+
+/* 40x5, border/glass, fully rounded */
+.grabber {
+  width: 40px;
+  height: 5px;
+  border-radius: var(--radius-full);
+  background: var(--color-border-glass);
+}
+
+/* WHITE text — this is a sage surface */
+.title {
+  width: 100%;
+  color: var(--color-text-on-data);
+}
+
+@media (min-width: 1024px) {
+  /* a docked sheet becomes a centred dialog */
+  .tray {
+    left: 50%;
+    right: auto;
+    bottom: auto;
+    /* Centred in the FULL viewport: `method-dialog` sits at y=274 in a 900 frame,
+       which is (900 − 352) / 2. ⚠️ design.md's modal rule centres a tray in the
+       region ABOVE the nav instead — that rule exists for the CHECK dialogs,
+       where a 725-tall tray would otherwise slide under it. This one is 352 and
+       clears the nav by 175 either way, so the comp's own placement is kept.
+       The max-height is the guard: a tray tall enough to reach the nav scrolls
+       inside itself rather than disappearing behind it. */
+    top: 50%;
+    transform: translate(-50%, -50%);
+    max-height: calc(
+      100dvh - var(--size-nav-height) - var(--space-2xl) * 2 - var(--space-4xl)
+    );
+    overflow-y: auto;
+
+    width: 100%;
+    max-width: var(--width-card-focus); /* 640 */
+    padding: var(--space-5xl);
+    border-radius: var(--radius-3xl);
+    box-shadow: var(--shadow-sheet-desktop);
+  }
+
+  .grabber {
+    display: none;
+  }
+}
+
+@media (prefers-reduced-transparency: reduce) {
+  .tray {
+    /* ⚠️ THE DESIGN SYSTEM HAS NO OPAQUE SAGE. `surface/data-strong` is 62% and
+       there is no solid counterpart the way `bg/nav` is the solid counterpart to
+       `surface/frost-nav`. Without a blur a 62% modal shows the screen behind
+       it — which is the exact failure this fallback exists to prevent — so the
+       tray is composited: the same sage over `bg/canvas`, the opaque sage the
+       app already sits on. Two semantic tokens, no invented colour. A real
+       `surface/data-opaque` belongs in Figma. */
+    background: linear-gradient(
+        var(--color-surface-data-strong),
+        var(--color-surface-data-strong)
+      ),
+      var(--color-bg-canvas);
+    backdrop-filter: none;
+    -webkit-backdrop-filter: none;
+  }
+}

@@ -1,6 +1,7 @@
 import type { Metadata, Viewport } from "next";
 import { Figtree } from "next/font/google";
 import "./globals.css";
+import { InvestigationProvider } from "@/components/InvestigationProvider";
 
 /**
  * Figtree is the LUX typeface. Poppins was used early on and must not come back.
@@ -34,7 +35,14 @@ export default function RootLayout({
 }) {
   return (
     <html lang="en" className={figtree.variable}>
-      <body>{children}</body>
+      {/* The answer store wraps the WHOLE app, not just /investigation.
+          The PRODUCTS hub (/products) reads the same products the add flow
+          writes, and it is reached from the bottom nav rather than from inside
+          the flow — a provider scoped to /investigation would hand it an empty
+          list every time. Still IN MEMORY ONLY: a reload starts clean. */}
+      <body>
+        <InvestigationProvider>{children}</InvestigationProvider>
+      </body>
     </html>
   );
 }

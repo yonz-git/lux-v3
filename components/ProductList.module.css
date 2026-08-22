@@ -1,0 +1,135 @@
+/* The PRODUCTS list primitives.
+
+   row    76 tall (94 when the name wraps to two lines), padding 14/18, gap 12,
+          radius/lg, surface/frost-light + 1px border/subtle + the frosted-row
+          inner shadow. Identical at both breakpoints — only the column it sits
+          in gets wider.
+   add    52 tall, padding 15/0, gap 8, centred, same surface.
+   empty  padding 32/0, gap 16, radius/2xl, border/default, centred.
+
+   A frosted surface without its inner shadow reads flat — that is the single
+   easiest thing to forget on a new screen. */
+
+.row {
+  display: flex;
+  align-items: center;
+  gap: var(--space-md);
+  width: 100%;
+  /* ⚠️ FIGMA PADDING MINUS THE BORDER. Figma's 14/18 around a 48px thumb is a
+     76-tall row; the same 14 in CSS with box-sizing: border-box renders 82,
+     because a Figma stroke does not add to a frame's height and a CSS border
+     does. Subtracting the border lands on 76 exactly — and unlike a bare
+     min-height it still grows to the comp's 94 when the name wraps to two
+     lines. min-height is kept as the floor for a one-line row. */
+  min-height: 76px;
+  padding: calc(14px - var(--border-width-hairline)) 18px;
+  text-align: left;
+
+  border-radius: var(--radius-lg);
+  background: var(--color-surface-frost-light);
+  border: var(--border-width-hairline) solid var(--color-border-subtle);
+  box-shadow: var(--shadow-frosted-row);
+  backdrop-filter: blur(var(--blur-card));
+  -webkit-backdrop-filter: blur(var(--blur-card));
+}
+
+.row[data-interactive] {
+  transition: border-color var(--duration-fast) var(--ease-standard);
+}
+
+.row[data-interactive]:hover {
+  border-color: var(--color-border-default);
+}
+
+@media (hover: none) {
+  .row[data-interactive]:hover {
+    border-color: var(--color-border-subtle);
+  }
+}
+
+/* `copy` — VERTICAL, gap 2, and it takes the slack so the trailing slot stays
+   pinned right */
+.copy {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2xs);
+}
+
+.name {
+  color: var(--color-text-primary);
+}
+
+.meta {
+  color: var(--color-text-muted);
+}
+
+/* --- add-product / add-more ------------------------------------------------ */
+
+.add {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--space-sm);
+  width: 100%;
+  min-height: 52px;
+  color: var(--color-text-primary);
+
+  border-radius: var(--radius-lg);
+  background: var(--color-surface-frost-light);
+  border: var(--border-width-hairline) solid var(--color-border-subtle);
+  box-shadow: var(--shadow-frosted-row);
+  backdrop-filter: blur(var(--blur-card));
+  -webkit-backdrop-filter: blur(var(--blur-card));
+
+  transition: border-color var(--duration-fast) var(--ease-standard);
+}
+
+.add:hover {
+  border-color: var(--color-border-default);
+}
+
+@media (hover: none) {
+  .add:hover {
+    border-color: var(--color-border-subtle);
+  }
+}
+
+.plus {
+  color: var(--color-text-primary);
+}
+
+/* --- empty-state ------------------------------------------------------------ */
+
+.empty {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--space-lg);
+  /* Figma 32/0 around a 22-tall line is 86; minus the border to stay there */
+  padding: calc(var(--space-3xl) - var(--border-width-hairline)) 0;
+
+  border-radius: var(--radius-2xl);
+  background: var(--color-surface-frost-light);
+  /* border/default, NOT border/subtle — see ProductList.tsx */
+  border: var(--border-width-hairline) solid var(--color-border-default);
+  box-shadow: var(--shadow-frosted-row);
+  backdrop-filter: blur(var(--blur-card));
+  -webkit-backdrop-filter: blur(var(--blur-card));
+}
+
+.emptyLabel {
+  color: var(--color-text-muted);
+  text-align: center;
+}
+
+@media (prefers-reduced-transparency: reduce) {
+  .row,
+  .add,
+  .empty {
+    background: var(--color-bg-surface-frost);
+    backdrop-filter: none;
+    -webkit-backdrop-filter: none;
+  }
+}

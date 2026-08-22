@@ -1,0 +1,34 @@
+/* Tag — Figma 256:85. 26 tall, padding 5/12, radius/full.
+
+     Neutral  fill #eef6f7 + 1px border/subtle, label text/secondary
+     Brand    fill bg/brand, NO stroke,          label text/on-brand
+
+   ⚠️ Neutral's fill is bound to the PRIMITIVE `neutral/100` in Figma, which is
+   the one binding in this component that breaks the semantic-token rule. Here it
+   points at `bg/surface-frost`, the semantic token that resolves to exactly that
+   value — same pixel, correct layer. Worth repointing in Figma. */
+
+.tag {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  /* Figma is 26 tall with padding 5/12. A Figma stroke does not add height but
+     a CSS border does, so min-height owns the box and the vertical padding is
+     dropped — the content is centred, so it renders identically at 26. */
+  min-height: 26px;
+  padding: 0 var(--space-md);
+  border-radius: var(--radius-full);
+  border: var(--border-width-hairline) solid transparent;
+  white-space: nowrap;
+}
+
+.tag[data-variant="neutral"] {
+  background: var(--color-bg-surface-frost);
+  border-color: var(--color-border-subtle);
+  color: var(--color-text-secondary);
+}
+
+.tag[data-variant="brand"] {
+  background: var(--color-bg-brand);
+  color: var(--color-text-on-brand);
+}

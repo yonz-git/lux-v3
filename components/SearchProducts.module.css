@@ -1,0 +1,28 @@
+/* 04 — Search by name. Figma mobile 576:1428 / desktop 582:1707.
+   page-title -> 20 -> Search Field -> 20 -> results-list (gap 12). */
+
+.field {
+  margin-top: var(--space-xl); /* 20 */
+}
+
+.results {
+  margin-top: var(--space-xl); /* 20 */
+}
+
+.list {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-md);
+}
+
+/* 20px in Figma, not the 24 icon size — the row's trailing chevron is the
+   smaller `Icon / chevron-right` instance */
+.chevron {
+  flex: none;
+  width: var(--size-icon-sm);
+  height: var(--size-icon-sm);
+  color: var(--color-text-primary);
+}

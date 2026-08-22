@@ -33,6 +33,10 @@ export function QuestionScreen({
   children,
   continueLabel = "Continue",
   gapBeforeContinue,
+  continueWidth = "compact",
+  footer,
+  onContinue,
+  contentGap,
 }: {
   id: StepId;
   children: ReactNode;
@@ -40,6 +44,37 @@ export function QuestionScreen({
   /** desktop-only gap between the content and Continue, in px. Defaults to the
    *  card's own 32; 01 uses 104 because Figma adds an extra spacer there. */
   gapBeforeContinue?: number;
+  /**
+   * How wide Continue is ON DESKTOP. `compact` is 280 centred, which is what
+   * every GETTING STARTED desktop frame uses.
+   *
+   * ⚠️ `full` exists because the eight PRODUCTS add-flow desktop frames stretch
+   * Continue to the full 824 card width instead — consistently, on all eight.
+   * That is a real inconsistency between the two sections in Figma, not a
+   * transcription slip, so it is expressed rather than normalised away. Mobile
+   * is full-width in both sections.
+   */
+  continueWidth?: "compact" | "full";
+  /**
+   * An extra control ABOVE Continue, inside the same footer — `04a — Long-term
+   * products · filled` puts a secondary "Done" there. Continue stays the last
+   * thing in the footer at both breakpoints.
+   */
+  footer?: ReactNode;
+  /**
+   * Run just before Continue navigates — `04 — Confirm product` uses it to
+   * commit the product it has been drafting. Kept as a hook on the shell rather
+   * than a bespoke button on the screen, so Continue stays the one control that
+   * both gates on `isComplete` and moves the flow.
+   */
+  onContinue?: () => void;
+  /**
+   * The gap between the progress track and the content, in px. Defaults to 32,
+   * which is what every screen that OPENS WITH A CHAT BUBBLE uses. The four
+   * PRODUCTS screens that open with a page title use 24 instead — a heading
+   * carries its own optical weight, so the comps let it sit closer to the track.
+   */
+  contentGap?: number;
 }) {
   const router = useRouter();
   const { answers } = useInvestigation();
@@ -56,7 +91,14 @@ export function QuestionScreen({
           <StepProgress step={step} />
         </div>
 
-        <div className={styles.card}>
+        <div
+          className={styles.card}
+          style={
+            contentGap != null
+              ? ({ "--content-gap": `${contentGap}px` } as React.CSSProperties)
+              : undefined
+          }
+        >
           {/* keyed on the step so the reveal replays on navigation — React
               reconciles by component type, and every screen renders this same
               QuestionScreen, so without a key the DOM is reused and the
@@ -78,13 +120,19 @@ export function QuestionScreen({
           {/* width is owned by .continue, not Button's `fullWidth`: both are
               single-class selectors, so `fullWidth` would win or lose on bundle
               order rather than intent. 100% on mobile, 280 centred on desktop. */}
-          <Button
-            className={styles.continue}
-            disabled={!canContinue}
-            onClick={() => next && router.push(next)}
-          >
-            {continueLabel}
-          </Button>
+          <div className={styles.footer} data-width={continueWidth}>
+            {footer}
+            <Button
+              className={styles.continue}
+              disabled={!canContinue}
+              onClick={() => {
+                onContinue?.();
+                if (next) router.push(next);
+              }}
+            >
+              {continueLabel}
+            </Button>
+          </div>
         </div>
       </div>
 

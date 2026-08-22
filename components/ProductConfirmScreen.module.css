@@ -1,0 +1,63 @@
+/* 04 — Confirm product / 04 — Product match.
+   title -> 20 -> [bubble -> 20] -> product-card -> 24 -> question block
+         -> 24 -> duration block.
+   Each block is `label` + control with a gap of 12 (question) or 8 (duration),
+   which is what the two comps draw. */
+
+.bubbleWrap {
+  margin-top: var(--space-xl); /* 20 */
+}
+
+.cardWrap {
+  margin-top: var(--space-xl); /* 20 */
+}
+
+.block {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-md);
+  margin-top: var(--space-2xl); /* 24 */
+}
+
+.block:last-child {
+  gap: var(--space-sm); /* the duration block's label sits 8 above its options */
+}
+
+.label {
+  color: var(--color-text-secondary);
+}
+
+/* two equal buttons side by side, gap 12 — 190 each in a 392 column */
+.answers {
+  display: flex;
+  gap: var(--space-md);
+}
+
+.answer {
+  flex: 1;
+  min-width: 0;
+}
+
+.options {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-md);
+}
+
+.missing {
+  margin-top: var(--space-xl);
+  color: var(--color-text-secondary);
+}
+
+@media (min-width: 1024px) {
+  /* Figma `options · single-select` becomes two explicit columns: col-1 holds
+     the even indices, col-2 the odd, so DOM order reads across the row exactly
+     as a CSS grid places it. Column gap is gutter/desktop (24); the rows inside
+     a column keep their own 12. */
+  .options {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    column-gap: var(--gutter-desktop);
+    row-gap: var(--space-md);
+  }
+}

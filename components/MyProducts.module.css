@@ -1,0 +1,100 @@
+/* My Products. Figma empty 579:1574 / 583:1863, filled 579:1607 / 583:1889.
+
+   empty:  orb 129 -> 16 spacer -> title -> description -> 16 spacer -> CTA,
+           the whole block centred, no card at either breakpoint.
+   filled: heading (+ subtitle) -> 24 -> category rows 56 tall, gap 12. */
+
+.empty {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--space-lg); /* 16 */
+  text-align: center;
+  color: var(--color-text-primary);
+}
+
+/* ⚠️ 48 UNDER THE ORB AND 48 ABOVE THE CTA, not the block's own 16. Figma puts
+   a named 16-tall `spacer` frame in both places, so with the 16 gap on either
+   side of it the real distance is 48 — the orb and the button each get room,
+   while the title and its description stay tight at 16. Reading the gap alone
+   and ignoring the spacer children makes the block 64 too short. */
+.empty > svg {
+  margin-bottom: var(--space-3xl); /* + the 16 gap = 48 */
+}
+
+ /* full width of the 392 column on mobile, the full 640 body on desktop — this
+    is the screen's only action, so it is not the 280 a flow footer uses */
+.emptyCta {
+  width: 100%;
+  margin-top: var(--space-3xl); /* + the 16 gap = 48 */
+}
+
+.emptyText {
+  color: var(--color-text-secondary);
+}
+
+.categories {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-md);
+}
+
+/* 56 tall, padding 16/18, gap 12 — min-height owns the box so the 1px border
+   does not push it to 58 */
+.category {
+  display: flex;
+  align-items: center;
+  gap: var(--space-md);
+  min-height: 56px;
+  padding: 0 18px;
+  text-decoration: none;
+
+  border-radius: var(--radius-lg);
+  background: var(--color-surface-frost-light);
+  border: var(--border-width-hairline) solid var(--color-border-subtle);
+  box-shadow: var(--shadow-frosted-row);
+  backdrop-filter: blur(var(--blur-card));
+  -webkit-backdrop-filter: blur(var(--blur-card));
+
+  transition: border-color var(--duration-fast) var(--ease-standard);
+}
+
+.category:hover {
+  border-color: var(--color-border-default);
+}
+
+@media (hover: none) {
+  .category:hover {
+    border-color: var(--color-border-subtle);
+  }
+}
+
+/* the name takes the slack so the count and chevron stay pinned right */
+.categoryName {
+  flex: 1;
+  min-width: 0;
+  color: var(--color-text-primary);
+}
+
+.count {
+  flex: none;
+  color: var(--color-text-muted);
+}
+
+.chevron {
+  flex: none;
+  width: var(--size-icon-sm);
+  height: var(--size-icon-sm);
+  color: var(--color-text-primary);
+}
+
+@media (prefers-reduced-transparency: reduce) {
+  .category {
+    background: var(--color-bg-surface-frost);
+    backdrop-filter: none;
+    -webkit-backdrop-filter: none;
+  }
+}

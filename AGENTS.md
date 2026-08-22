@@ -15,17 +15,55 @@ source of truth and it lives in Figma, not here. This repo is the prototype of
 it. Screens are built in Figma first, then translated.
 
 **Figma file:** `wIftBhzkn8E4wjZwgdH71n`
-**Screens page:** `06. Screen Designs` (`453:2252`) — the GETTING STARTED flow is
-9 screens x 2 breakpoints, in flow order, with a `HANDOFF — GETTING STARTED`
-annotation panel above the mobile row that documents every recipe below.
+**Screens page:** `06. Screen Designs` (`453:2252`). Each section has a
+`HANDOFF — *` annotation panel beside its mobile row documenting every recipe.
 
-**Built so far:** the whole GETTING STARTED flow — `00 — Welcome`,
-`01 — Start investigation`, `02a — Skin type`, `02b — Skin tendencies`,
-`02c — Known conditions`, `03a — Observable symptoms`, `03b — Location`,
-`03b — Selfie capture`, `03c — Timing`. Step 8 (PRODUCTS) is a deliberate
-placeholder route, not a screen. Routes live under `/investigation/<step>`;
+**Built so far:** GETTING STARTED and PRODUCTS.
+
+- **GETTING STARTED** — `00 — Welcome`, `01 — Start investigation`,
+  `02a — Skin type`, `02b — Skin tendencies`, `02c — Known conditions`,
+  `03a — Observable symptoms`, `03b — Location`, `03b — Selfie capture`,
+  `03c — Timing`. Routes under `/investigation/<step>`.
+- **PRODUCTS** — all 12 screens x 2 breakpoints. Six add-flow screens under
+  `/investigation/products*` (step 8/8, nav `check`) and three hub routes under
+  `/products*` (nav `products`).
+
 `lib/flow.ts` owns the step order, the 1-based track position, the Figma frame
-ids AND each step's `isComplete` rule.
+ids AND each step's `isComplete` rule. `lib/products.ts` owns the product
+catalogue, the three periods and the duration→period mapping.
+
+### PRODUCTS — the route map
+
+| Route | Figma mobile / desktop | Notes |
+| --- | --- | --- |
+| `/investigation/products` | `574:1342` / `582:1612` | intro; replaced the old placeholder |
+| `/investigation/products/long-term` | `574:1391` / `582:1662` (+ filled `578:1557` / `582:1918`) | one screen, two states, plus the method sheet |
+| `/investigation/products/search` | `576:1428` / `582:1707` | |
+| `/investigation/products/confirm` | `577:1430` / `582:1768` | |
+| `/investigation/products/scan` | `577:1498` / `582:1819` | |
+| `/investigation/products/match` | `578:1482` / `582:1862` | |
+| `/products/added` | `579:1540` / `583:1832` | HUB — nav `products`, no header |
+| `/products` | `579:1574` / `583:1863` (+ filled `579:1607` / `583:1889`) | HUB landing, no back chevron |
+| `/products/[bucket]` | `581:1593` / `583:1924` | HUB pushed view |
+
+**⚠️ STEP 8 IS A FORK, NOT A LINE.** "Add product" opens a method sheet offering
+search or scan; the two branches rejoin at `Product added`. The three screens
+whose array neighbour is the wrong answer name their own `back` / `next` on the
+step in `lib/flow.ts` rather than the order being fudged.
+
+**⚠️ HUB vs FLOW — the header tells you which, and `HubScreen` vs
+`QuestionScreen` encodes it.** A screen is an investigation step if and only if
+it carries BOTH a progress track AND `Save & exit`. Hub screens carry neither,
+their nav reads `products`, and a hub LANDING has no back chevron either
+(nothing to go back to). `Product added` is a hub screen even though it is
+reached from inside the flow — its wireframe id is `11:*`, not `8:*`.
+
+**⚠️ ONLY THE LONG-TERM PERIOD IS DESIGNED.** The intro promises three time
+periods; Recent and New addition are drawn nowhere, at either breakpoint or in
+the wireframes. Continue from the bucket screen therefore ends step 8 at
+`/products`. `BucketProductsList` is bucket-derived so all three hub categories
+link somewhere real, and `bucketFor()` maps the duration answer to a period so
+the hub can ever show a non-zero Recent. See the comments on both.
 
 ## The prototype starts EMPTY — and Continue is gated
 
@@ -39,16 +77,19 @@ The rule lives on the step in `lib/flow.ts` (`isComplete`), never in the screen,
 so a new screen cannot forget it. `QuestionScreen` reads it and owns the button.
 
 Answers live in `components/InvestigationProvider.tsx` — React context,
-**in memory only**. Read them with `useInvestigation()`.
+**in memory only**. Read them with `useInvestigation()`. It is provided from
+`app/layout.tsx`, i.e. app-wide: the PRODUCTS hub under `/products` reads the
+same products step 8 writes and is reached from the nav rather than from inside
+the flow, so a provider scoped to `/investigation` handed it an empty list.
 
 ⚠️ **DO NOT PERSIST THE ANSWER STORE.** An earlier build wrote to localStorage
 on the reasoning that "Save & exit" implies a resumable flow. The effect was
 that opening the prototype showed a previous visit's selections still ticked,
 which reads exactly like the screens shipping pre-filled — the opposite of the
-rule above. Answers carry across steps because `app/investigation/layout.tsx`
-keeps the provider mounted through client-side navigation, which is all the flow
-needs. Real resumability belongs to a backend, not to a store that silently
-reproduces stale answers.
+rule above. Answers carry across steps because the root layout keeps the
+provider mounted through client-side navigation, which is all the flow needs.
+Real resumability belongs to a backend, not to a store that silently reproduces
+stale answers.
 
 **⚠️ USE THE UPDATER FORM FOR ANY TOGGLE:**
 `setAnswer("start", (prev) => toggleMulti(prev ?? [], option))`. Passing a value
@@ -151,6 +192,35 @@ answer being absent (deep links) rather than rendering an empty bubble.
 10. **Breakpoints: mobile-first, desktop at `min-width: 1024px`.** Never write a
     440px or 1440px media query — those are the Figma canvas widths, not
     breakpoints.
+11. ⚠️ **THE FOCUS RING IS AN `outline`, NOT A `box-shadow`.** `focus/ring` is a
+    2px stroke, so `box-shadow: 0 0 0 2px` renders it exactly — until the focused
+    element has a box-shadow of its own. CSS Modules load AFTER `globals.css`, so
+    at equal specificity `.button`'s `--shadow-button` and every frosted row's
+    `--shadow-frosted-row` simply won, and **the ring silently disappeared on
+    almost every control in the app**. Measured on the PRODUCTS "Add more
+    products" row: `:focus-visible` matched and the computed shadow was the inner
+    shadow alone. An outline is a separate property, composes with any shadow,
+    and follows `border-radius`. `--shadow-focus-ring` is still exported because
+    it is a real Figma effect style, but nothing should need it.
+12. ⚠️ **FIGMA PADDING MINUS THE BORDER, for any box whose height is
+    content-driven.** Rule 8b's `min-height` fix works for a fixed-height row but
+    freezes a row that must grow — a product row is 76 with a one-line name and
+    94 with two. Since a Figma stroke does not add to a frame's height and a CSS
+    border does, write `padding: calc(14px - var(--border-width-hairline))` and
+    the box lands on the design height in BOTH states. Used by `ProductList`,
+    `ProductCard`, `AddProductsIntro`'s note and the accordion card.
+13. ⚠️ **THE UA `button` PADDING IS `1px 6px`, NOT ZERO.** A text-only button
+    styled to a Figma height renders 2px too tall for no visible reason. The
+    global reset zeroes it; every LUX button declares its own.
+14. ⚠️ **`Size=Desktop` OPTION ROWS ARE 58, NOT 56.** design.md and the component
+    notes both say the Size property changes "only the label type"; that is
+    wrong. The row hugs vertically (17 + label + 17), so `H6` (24) gives 58 where
+    `Label` (20) gives 56. Verified on the component set itself and on every
+    desktop frame in both sections.
+15. ⚠️ **DESKTOP CHAT BUBBLES ARE `Body 1` (18/28), NOT `Body 2`.** `ChatBubble`
+    said so in its own doc comment from the start while the CSS held `t-body2` at
+    both breakpoints, so every desktop bubble came out 2px short per line. Use
+    `t-body2-body1`. A one-line desktop bubble is 56 tall, not 54.
 
 ## Things the design system does not have, faked here
 
@@ -163,7 +233,11 @@ risk. All are on the missing-from-the-DS list.
 | Date picker | `components/DateField.tsx` | `<input type="date">`'s popup is drawn by the browser and **cannot be styled** — no token or class reaches inside it. It rendered as a stock white Chrome calendar mid-flow. The DS has no calendar component either, so this is composed from tokens. |
 | Text input | `components/TextField.tsx` | `Search Field` (248:70) exists but is search-specific. `other-input` on 02c/03a and the 03c date field are all hand-composed in Figma. |
 | Face-region picker | `components/FaceDiagram.tsx` | The region coordinates ARE the design — "Cheeks (L)" only means the left cheek because of where it sits. Stored as % of the 392x300 card so it scales. |
-| Camera shutter | `SelfieCapture.module.css` | No shutter component. The viewfinder is a placeholder, not `getUserMedia` — wiring a real camera would make the prototype demand a permission just to walk the flow. |
+| Camera shutter | `SelfieCapture.module.css`, `ScanProduct.module.css` | No shutter component. Both viewfinders are placeholders, not `getUserMedia` — wiring a real camera would make the prototype demand a permission just to walk the flow. |
+| Modal tray | `components/Sheet.tsx` | `Bottom Sheet` (255:91) has no background blur and a fixed light content slot, so every tray in the file is hand-composed from the recipe. There is also **no scrim token** — `state/pressed-overlay` at 14% is the only darkening value LUX has and it is weak for a modal. |
+| Accordion | `components/BucketProductsList.tsx` | No accordion component. Composed from the frosted card recipe. |
+| Product imagery | `components/ProductThumb.tsx`, `ProductCard` | **No product or bottle icon exists outside the bottom nav**, so every thumb and image well in the file shows a camera glyph. Replace it in the DS first, not here. |
+| Opaque sage | `Sheet.module.css` | `surface/data-strong` is 62% and has no solid counterpart the way `bg/nav` is `surface/frost-nav`'s. The `prefers-reduced-transparency` tray composites the same sage over `bg/canvas`. |
 
 ## Selection controls — the shape is the contract
 
@@ -240,10 +314,31 @@ flex, `100dvh`, `clamp()` — and keep the tokens exact. Component sizes, radii,
 type and colour must match Figma to the pixel; page-level whitespace should
 adapt.
 
+## Design-system changes made from here (Figma first, then re-exported)
+
+Rule 1 says a value missing from `tokens.css` is missing in Figma too — add the
+variable there first. Three were added while building PRODUCTS:
+
+| Figma | Token | Why |
+| --- | --- | --- |
+| `02 Color` → `button/bg-secondary` | `--color-button-bg-secondary` | `Style=Secondary, State=Default` (37:11) painted a loose `#ffffffdb` and was the last unbound fill in the Button set. Bound with `paint.opacity = 1` so the variable's own alpha is not multiplied. |
+| effect style `surface/sheet-mobile` | `--shadow-sheet-mobile` | Every modal tray in the file carried raw effects; there was no style to point at. Holds the `BACKGROUND_BLUR 28` as well, so applying it is one call. |
+| effect style `surface/sheet-desktop` | `--shadow-sheet-desktop` | The desktop counterpart — `0 12 40 spread -8 @18%`, downward. |
+
+Applied to `04 — Add product · method sheet` (576:1376) and the desktop
+`method dialog` (583:1786) and verified byte-identical to the raw effects they
+replaced. **The CHECK section's `bottom-sheet` / `check-dialog` frames still
+carry raw effects** — pointing them at the same two styles is a clean follow-up.
+
+⚠️ **A style REPLACES a node's whole effect list, and assigning `effects`
+afterwards DETACHES the style.** Re-adding a background blur "on top" of a
+freshly-applied shadow style silently unlinks it and drops the shadow. Put the
+whole treatment in the style instead.
+
 ## Before you call a screen done
 
 - `npm run build` and `npm run typecheck` both clean.
 - Compare against the Figma frame at 440 and at 1440.
 - Check computed values in the browser rather than eyeballing a screenshot.
-- Keyboard: focus is visible on every interactive element (`:focus-visible`
-  ring is `--shadow-focus-ring`). Never remove it.
+- Keyboard: focus is visible on every interactive element. **The ring is an
+  `outline`, not a `box-shadow`** — see the non-negotiable below. Never remove it.

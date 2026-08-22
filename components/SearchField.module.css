@@ -1,0 +1,77 @@
+/* Search Field — Figma 248:70. 50 tall, padding 12/16, gap 12, radius/full,
+   fill surface/frost-nav (#dde8eb @83%) + the frosted-row inner shadow.
+
+   ⚠️ NO BORDER. The field is the same frosted surface as the nav pill, and like
+   the nav pill it carries an inner shadow instead of a stroke — that is what
+   separates it from a frosted ROW, which does have a 1px border/subtle. */
+
+.field {
+  display: flex;
+  align-items: center;
+  gap: var(--space-md);
+  width: 100%;
+  /* Figma is 50 tall with padding 12/16 — min-height owns the box so the input's
+     own line box can never push it past 50 */
+  min-height: 50px;
+  padding: 0 var(--space-lg);
+
+  border-radius: var(--radius-full);
+  background: var(--color-surface-frost-nav);
+  box-shadow: var(--shadow-frosted-row);
+  backdrop-filter: blur(var(--blur-card));
+  -webkit-backdrop-filter: blur(var(--blur-card));
+}
+
+/* The ring goes on the PILL, not the input inside it: a 2px outline drawn tight
+   around a borderless input in the middle of a rounded field reads as a glitch.
+   `.input` sets `outline: none` for exactly this reason, and 2px of offset lifts
+   the ring clear of the pill's own edge. */
+.field:focus-within {
+  outline: var(--border-width-focus) solid var(--color-border-focus);
+  outline-offset: 2px;
+}
+
+.icon {
+  flex: none;
+  color: var(--color-text-muted);
+}
+
+.input {
+  flex: 1;
+  min-width: 0;
+  border: 0;
+  background: none;
+  outline: none;
+  color: var(--color-text-primary);
+  font-family: inherit;
+}
+
+.input::placeholder {
+  color: var(--color-text-muted);
+}
+
+/* the browser's own clear affordance would sit beside ours */
+.input::-webkit-search-cancel-button {
+  display: none;
+}
+
+/* a 44px touch target around a 24px glyph is offset by HALF the difference —
+   all of it would push the icon 10px inside the field's content edge */
+.clear {
+  flex: none;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: var(--size-touch-target);
+  height: var(--size-touch-target);
+  margin: 0 calc((var(--size-icon-md) - var(--size-touch-target)) / 2);
+  border-radius: var(--radius-full);
+}
+
+@media (prefers-reduced-transparency: reduce) {
+  .field {
+    background: var(--color-bg-nav);
+    backdrop-filter: none;
+    -webkit-backdrop-filter: none;
+  }
+}

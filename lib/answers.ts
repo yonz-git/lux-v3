@@ -1,4 +1,5 @@
 import type { StepId } from "./flow";
+import type { ProductDraft, SavedProduct } from "./products";
 
 /**
  * Everything the user has answered so far.
@@ -19,7 +20,18 @@ export type Answers = Partial<{
   location: string[];
   selfie: string;
   timing: { onset?: string; status?: string; date?: string };
-  products: string[];
+  /** step 8 — the products the user has added, and what the hub reads */
+  products: SavedProduct[];
+  /** the product currently being added: search -> confirm, or scan -> match */
+  productDraft: ProductDraft;
+  /**
+   * `04 — Scan product`'s capture, mirroring `selfie`. The viewfinder is a
+   * placeholder, so this only records THAT a capture happened — which is what
+   * unlocks Continue and reveals the match.
+   */
+  scan: string;
+  /** what `04 — Search by name` currently has typed in it */
+  productQuery: string;
 }>;
 
 /**

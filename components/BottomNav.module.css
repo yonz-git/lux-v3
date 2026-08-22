@@ -50,6 +50,9 @@
      1.0 active, 0.5 inactive, exactly as the component encodes it. */
   opacity: 0.5;
   color: var(--color-icon-default);
+  /* an item can render as <a> once its section exists; links carry an
+     underline by default */
+  text-decoration: none;
 
   min-width: var(--size-touch-target);
   min-height: var(--size-touch-target);

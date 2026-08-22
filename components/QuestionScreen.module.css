@@ -23,7 +23,7 @@
   display: flex;
   flex-direction: column;
   flex: 1;
-  margin-top: var(--space-3xl); /* 32 */
+  margin-top: var(--content-gap, var(--space-3xl)); /* 32 by default */
 }
 
 .content {
@@ -34,6 +34,15 @@
 .spacer {
   flex: 1 1 auto;
   min-height: var(--space-2xl);
+}
+
+/* Continue, plus whatever sits above it — `04a — Long-term products · filled`
+   stacks a secondary "Done" over Continue with a 12 gap (Figma `footer-actions`,
+   578:1557). With no `footer` child this collapses to Continue alone. */
+.footer {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-md);
 }
 
 @media (min-width: 1024px) {
@@ -50,7 +59,9 @@
     align-self: center;
     width: 100%;
     max-width: var(--width-card-form); /* 920 */
-    margin-top: var(--space-4xl); /* 40 */
+    margin-top: var(--space-4xl); /* 40 — desktop's spacer is 40 on every frame,
+                                     title-first or not, so --content-gap is
+                                     deliberately mobile-only */
     padding: var(--space-5xl); /* 48 */
 
     border-radius: var(--radius-3xl);
@@ -68,8 +79,9 @@
   }
 
   /* every GETTING STARTED desktop frame puts Continue at 280x62, centred —
-     not stretched to the card width */
-  .continue {
+     not stretched to the card width. The PRODUCTS add-flow frames stretch it to
+     the full 824 card width instead, which is what data-width="full" is. */
+  .footer[data-width="compact"] .continue {
     width: 280px;
     align-self: center;
   }

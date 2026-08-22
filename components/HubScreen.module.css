@@ -1,0 +1,156 @@
+/* The PRODUCTS hub shell.
+
+   Mobile: heading -> 24 -> body, or (Product added) flex -> body -> flex ->
+           footer. Nothing here is 392 wide by accident — it is 440 minus two
+           margin/mobile.
+   Desktop: `card` puts the heading and body inside one centred 920 frosted card,
+            32 below the header; `plain` floats a 640 column on the gradient with
+            the heading at the top of the full 1280 column. */
+
+.shell {
+  flex: 1;
+  width: 100%;
+  max-width: 392px; /* 440 - 2 x margin/mobile */
+  display: flex;
+  flex-direction: column;
+}
+
+/* Figma `header-row` on `Long-term products list` is 24 tall, not 38 — there is
+   no Save & exit button to set the height, only a chevron and a text action. */
+.header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  width: 100%;
+  height: var(--size-icon-md);
+  margin-bottom: var(--space-2xl); /* 24 */
+}
+
+/* A 44 tap target around a 24 glyph is offset by HALF the difference — all of it
+   would push the icon 10px inside the content edge.
+   ⚠️ THE NEGATIVE MARGIN GOES ON ALL FOUR SIDES, not just the left. This header
+   row is 24 tall in the comp; letting a 44-tall target set the height pushed
+   everything below it 20px down. The target still measures 44 — it simply
+   overflows the row symmetrically instead of inflating it. */
+.back {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: var(--size-touch-target);
+  height: var(--size-touch-target);
+  margin: calc((var(--size-icon-md) - var(--size-touch-target)) / 2);
+  color: var(--color-icon-default);
+  border-radius: var(--radius-full);
+  transition: opacity var(--duration-fast) var(--ease-standard);
+}
+
+.back:hover {
+  opacity: 0.7;
+}
+
+@media (hover: none) {
+  .back:hover {
+    opacity: 1;
+  }
+}
+
+.heading {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-xs); /* 4 */
+  color: var(--color-text-primary);
+}
+
+.subtitle {
+  color: var(--color-text-secondary);
+}
+
+.body {
+  display: flex;
+  flex-direction: column;
+}
+
+/* the heading is the body's first child on a card screen, so the 24 that
+   separates it from the content lives here rather than on the heading.
+   ⚠️ SCOPED TO THE HEADING'S SIBLING INSIDE THE BODY. As `> :not(:first-child)`
+   it also put 24 between a screen's own blocks, silently overriding the 16 the
+   comps give `add-more`; as a bare `.heading + *` it then hit the flexible
+   spacer on a `plain` screen, whose heading sits OUTSIDE the body — which threw
+   the centred hero 12px off. Every other gap belongs to the screen. */
+.body > .heading + * {
+  margin-top: var(--space-2xl);
+}
+
+/* the two equal spacers that centre a hero block */
+.flex {
+  flex: 1 1 0;
+}
+
+.footer {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-md);
+  width: 100%;
+}
+
+@media (min-width: 1024px) {
+  .shell {
+    max-width: var(--width-content-max); /* 1280 */
+    align-items: stretch;
+  }
+
+  /* the trailing spacer drops below the footer, so the body and the footer are
+     centred together as one group */
+  .flex[data-tail] {
+    order: 1;
+  }
+
+  /* ⚠️ THE 32 BELONGS TO THE CARD, NOT THE HEADER. Every desktop hub frame puts
+     a 32 spacer directly above the card — `Long-term products list` after its
+     header row, `My Products — filled` where there is no header row at all. As a
+     margin on the header it simply vanished on the screen that has none, and the
+     card started 32 too high. */
+  .header {
+    margin-bottom: 0;
+  }
+
+  .body[data-layout="card"] {
+    margin-top: var(--space-3xl); /* 32 */
+    align-self: center;
+    width: 100%;
+    max-width: var(--width-card-form); /* 920 */
+    padding: var(--space-5xl); /* 48 */
+
+    border-radius: var(--radius-3xl);
+    background: var(--color-surface-card-desktop);
+    border: var(--border-width-hairline) solid var(--color-border-subtle);
+    box-shadow: var(--shadow-frosted-card-desktop);
+    backdrop-filter: blur(var(--blur-card-desktop));
+    -webkit-backdrop-filter: blur(var(--blur-card-desktop));
+  }
+
+  /* ⚠️ NO CARD FILL AND NO STROKE on an empty state or a confirmation. The
+     content floats directly on the gradient, the way `desktop-welcome` does.
+     Adding a visible card here is a regression, not a tidy-up. */
+  .body[data-layout="plain"] {
+    align-self: center;
+    width: 100%;
+    max-width: var(--width-card-focus); /* 640 */
+  }
+
+  /* `Product added — desktop` puts its two buttons in a 400-wide column,
+     narrower than the 640 body above them */
+  .footer {
+    align-self: center;
+    max-width: 400px;
+    margin-top: var(--space-4xl); /* 40 */
+  }
+}
+
+@media (min-width: 1024px) and (prefers-reduced-transparency: reduce) {
+  .body[data-layout="card"] {
+    background: var(--color-bg-surface-frost);
+    backdrop-filter: none;
+    -webkit-backdrop-filter: none;
+  }
+}

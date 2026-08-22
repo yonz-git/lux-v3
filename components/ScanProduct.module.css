@@ -1,0 +1,143 @@
+/* 04 — Scan product. Figma mobile 577:1498 / desktop 582:1819.
+   title -> 20 -> viewfinder 392x380 -> 20 -> capture-copy -> 20 -> shutter
+         -> 16 -> alt-link.
+
+   Unlike the selfie, this screen does NOT go two-column on desktop: the comp
+   keeps one stacked column and simply widens the viewfinder to 824x380. */
+
+.viewfinder {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  aspect-ratio: 392 / 380;
+  max-height: 380px;
+  margin-top: var(--space-xl); /* 20 */
+
+  border-radius: var(--radius-2xl);
+  background: var(--color-surface-data);
+  box-shadow: var(--shadow-frosted-data);
+  backdrop-filter: blur(var(--blur-card));
+  -webkit-backdrop-filter: blur(var(--blur-card));
+}
+
+/* label-guide 300x200, 2px dashed effect/rim-highlight, radius/lg.
+   ⚠️ Height drives it and aspect-ratio derives the width — sizing BOTH axes as
+   a percentage is what flattened the selfie's oval on desktop. */
+.guide {
+  height: calc(200 / 380 * 100%);
+  aspect-ratio: 300 / 200;
+  /* effect/rim-highlight already carries its 90% alpha; an extra opacity here
+     would multiply the two */
+  border: var(--border-width-thick) dashed var(--color-effect-rim-highlight);
+  border-radius: var(--radius-lg);
+}
+
+/* WHITE — this is a sage surface */
+.captured {
+  position: absolute;
+  bottom: var(--space-xl);
+  color: var(--color-text-on-data);
+}
+
+.copy {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--space-sm);
+  margin-top: var(--space-xl); /* 20 */
+  text-align: center;
+  color: var(--color-text-primary);
+}
+
+.helper {
+  color: var(--color-text-secondary);
+}
+
+.shutterRow {
+  display: flex;
+  justify-content: center;
+  margin-top: var(--space-xl); /* 20 */
+}
+
+/* the same hand-composed shutter as the selfie capture — the design system has
+   no shutter component. If a third capture surface ever appears, make it one. */
+.shutter {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 72px;
+  height: 72px;
+  padding: var(--space-sm);
+
+  border-radius: var(--radius-full);
+  background: var(--color-bg-glass);
+  border: var(--border-width-hairline) solid var(--color-border-glass);
+  box-shadow: var(--shadow-md);
+
+  transition: opacity var(--duration-fast) var(--ease-standard);
+}
+
+.shutter:hover {
+  opacity: 0.8;
+}
+
+@media (hover: none) {
+  .shutter:hover {
+    opacity: 1;
+  }
+}
+
+.shutterCore {
+  /* ⚠️ flex:none, or the shutter's 8px padding plus its 1px border shrink the
+     core to 54 — a flex child's width is a basis, not a floor. */
+  flex: none;
+  width: 56px;
+  height: 56px;
+  border-radius: var(--radius-full);
+  background: var(--color-effect-rim-highlight);
+}
+
+/* the 8px of padding is the tap target; the margin gives it back so the label
+   still lands exactly 16 below the shutter row */
+.alt {
+  width: 100%;
+  margin-top: calc(var(--space-lg) - var(--space-sm));
+  padding: var(--space-sm) 0;
+  color: var(--color-text-brand);
+  border-radius: var(--radius-sm);
+  transition: opacity var(--duration-fast) var(--ease-standard);
+}
+
+.alt:hover {
+  opacity: 0.7;
+}
+
+@media (hover: none) {
+  .alt:hover {
+    opacity: 1;
+  }
+}
+
+
+@media (min-width: 1024px) {
+  /* 824x380 in the comp — a fixed height with a full-width box, not the mobile
+     aspect ratio stretched */
+  .viewfinder {
+    aspect-ratio: auto;
+    height: 380px;
+    max-height: none;
+  }
+
+  .guide {
+    height: 200px;
+  }
+}
+
+@media (prefers-reduced-transparency: reduce) {
+  .viewfinder {
+    backdrop-filter: none;
+    -webkit-backdrop-filter: none;
+  }
+}

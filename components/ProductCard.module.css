@@ -1,0 +1,63 @@
+/* product-card — Figma 577:1430 / 578:1482. radius/2xl, padding 20, gap 12,
+   surface/frost-light + 1px border/subtle + the frosted-row inner shadow.
+   Identical at both breakpoints; only the column it sits in gets wider. */
+
+.card {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: var(--space-md);
+  /* Figma 20 all round; minus the 1px border to land on the comp's 280 */
+  padding: calc(var(--space-xl) - var(--border-width-hairline));
+
+  border-radius: var(--radius-2xl);
+  background: var(--color-surface-frost-light);
+  border: var(--border-width-hairline) solid var(--color-border-subtle);
+  box-shadow: var(--shadow-frosted-row);
+  backdrop-filter: blur(var(--blur-card));
+  -webkit-backdrop-filter: blur(var(--blur-card));
+}
+
+.badge {
+  display: inline-flex;
+}
+
+/* 352x140 in a 392 column — i.e. the card's full inner width, 140 tall.
+   Driving the height and letting width fill keeps the well the same shape in the
+   824-wide desktop card, where a percentage on both axes would stretch it. */
+.image {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  height: 140px;
+  border-radius: var(--radius-lg);
+  /* OPAQUE — it stands in for a photograph */
+  background: var(--color-bg-surface-frost);
+}
+
+.glyph {
+  width: var(--size-icon-md);
+  height: var(--size-icon-md);
+  color: var(--color-text-primary);
+}
+
+.name {
+  color: var(--color-text-primary);
+}
+
+.size {
+  color: var(--color-text-muted);
+}
+
+.description {
+  color: var(--color-text-secondary);
+}
+
+@media (prefers-reduced-transparency: reduce) {
+  .card {
+    background: var(--color-bg-surface-frost);
+    backdrop-filter: none;
+    -webkit-backdrop-filter: none;
+  }
+}
