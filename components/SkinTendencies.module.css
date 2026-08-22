@@ -36,6 +36,12 @@
   .options {
     display: grid;
     grid-template-columns: 1fr 1fr;
-    gap: var(--gutter-desktop);
+    /* ⚠️ COLUMN GAP 24, ROW GAP 12 — not one value for both. Every two-column
+       desktop option grid in Figma is a HORIZONTAL `options` frame with
+       itemSpacing 24 holding two VERTICAL `col-*` frames with itemSpacing 12.
+       Verified on 02a, 02b, 02c, 03a and 04 Confirm product. A single `gap`
+       made the rows 24 apart here and the columns 12 apart on 02a. */
+    column-gap: var(--gutter-desktop);
+    row-gap: var(--space-md);
   }
 }

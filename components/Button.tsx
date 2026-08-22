@@ -8,22 +8,35 @@ import styles from "./Button.module.css";
  * The label style is `Button` (Regular 15/22). Buttons in LUX are deliberately
  * Regular weight, never Medium.
  *
- * Only Style=Primary is implemented, because that is all 00 Welcome needs.
- * Secondary and Ghost are defined in Figma — add them when a screen calls for
- * one, rather than faking a variant here.
+ * Primary and Secondary are implemented. Ghost is defined in Figma but no built
+ * screen uses one, and its Hover variant still references `bg/accent-mint`, a
+ * variable no longer in `02 Color` — resolve that in Figma before adding it
+ * here rather than faking the variant.
+ *
+ * ⚠️ `Style=Secondary, State=Hover` DOES NOT EXIST in the set. Secondary's
+ * hover is the same 40% softening as Primary's, because that is the only hover
+ * treatment the component has ever had — see Button.module.css.
  */
 export function Button({
   children,
+  variant = "primary",
   fullWidth,
   className,
   href,
   ...rest
 }: ButtonHTMLAttributes<HTMLButtonElement> & {
+  variant?: "primary" | "secondary";
   fullWidth?: boolean;
   /** render as a link when the action is navigation, so it behaves like one */
   href?: string;
 }) {
-  const cls = [styles.button, fullWidth && styles.full, "t-button", className]
+  const cls = [
+    styles.button,
+    variant === "secondary" && styles.secondary,
+    fullWidth && styles.full,
+    "t-button",
+    className,
+  ]
     .filter(Boolean)
     .join(" ");
 

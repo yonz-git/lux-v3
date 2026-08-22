@@ -84,6 +84,9 @@
 }
 
 .shutterCore {
+  /* ⚠️ flex:none, or the shutter's 8px padding plus its 1px border shrink the
+     core to 54 — a flex child's width is a basis, not a floor. */
+  flex: none;
   width: 56px;
   height: 56px;
   border-radius: var(--radius-full);

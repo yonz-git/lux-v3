@@ -104,3 +104,46 @@ export function ChevronDownIcon({ className }: IconProps) {
     </svg>
   );
 }
+
+/* --------------------------------------------------------------------------
+   PRODUCTS icons — `Icon / search` and `Icon / close` come out of the
+   `Search Field` component (248:70); the tick is the glyph inside
+   `Product added`'s check-circle (579:1540).
+
+   Paths are the Figma vectors' own coordinates, offset into the icon box, not
+   redrawn by eye.
+   -------------------------------------------------------------------------- */
+
+export function SearchIcon({ className }: IconProps) {
+  return (
+    <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" style={line} className={className} aria-hidden="true">
+      <circle cx="10" cy="10" r="7" stroke="currentColor" strokeWidth="1.5" />
+      <path d="M17 17L21 21" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" />
+    </svg>
+  );
+}
+
+export function CloseIcon({ className }: IconProps) {
+  return (
+    <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" style={line} className={className} aria-hidden="true">
+      <path d="M6 6L18 18M18 6L6 18" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" />
+    </svg>
+  );
+}
+
+/**
+ * The tick inside `Product added`'s 64px check-circle. 28px in Figma.
+ *
+ * ⚠️ The Figma vector carries BOTH a `feedback/success` fill and a
+ * `text/primary` STROKE, and an open path renders as its stroke — so the tick
+ * is dark, not green. That reads as a slip (the fill says what was meant), but
+ * it is what the comp draws at both breakpoints, so it is what is drawn here.
+ * Flagged rather than quietly corrected.
+ */
+export function SuccessCheckIcon({ className }: IconProps) {
+  return (
+    <svg viewBox="0 0 28 28" fill="none" xmlns="http://www.w3.org/2000/svg" style={{ ...line, width: "28px", height: "28px" }} className={className} aria-hidden="true">
+      <path d="M5 13L10 18L20 6" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
+    </svg>
+  );
+}

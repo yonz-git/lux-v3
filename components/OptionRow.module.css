@@ -53,10 +53,21 @@
 }
 
 @media (min-width: 1024px) {
-  /* Size=Desktop changes the label type and nothing else */
+  /* Size=Desktop swaps the label style: `Label` (Medium 14/20) -> `H6`
+     (Medium 16/24). */
   .label {
     font-size: var(--font-size-sm);
     line-height: 24px;
+  }
+
+  /* ⚠️ AND THAT MAKES THE ROW 58, NOT 56. design.md and the component notes both
+     say "Size changes ONLY the label type — geometry is identical at both", and
+     that is wrong: the row hugs its content vertically (17 + label + 17), so a
+     24-tall label gives 58 where a 20-tall one gives 56. Verified against the
+     component set itself — all three Size=Desktop variants are 58 — and against
+     every desktop frame in both sections (02a, 02b, 03c, 04 Confirm). */
+  .row {
+    min-height: 58px;
   }
 }
 

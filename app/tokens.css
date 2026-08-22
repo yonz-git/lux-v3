@@ -122,6 +122,10 @@
   --color-button-label-default: #ffffff;
   --color-button-label-disabled: #8b9698;
   --color-button-border-focused: var(--color-indigo-600);
+  /* The Secondary button surface. Added to `02 Color` on 21 Aug 2026 while
+     building PRODUCTS: `Style=Secondary, State=Default` (37:11) painted a loose
+     #ffffffdb and was the last unbound fill in the Button set. */
+  --color-button-bg-secondary: rgba(255, 255, 255, 0.86);
   --color-gradient-canvas-start: #dce7ea;
   --color-gradient-canvas-mid: #cedee2;
   --color-gradient-canvas-end-mobile: #acc5cc;
@@ -327,6 +331,14 @@
   /* effect style surface/frosted-row — inner shadow only. A frosted row
      without this reads flat. */
   --shadow-frosted-row: inset 2px 4px 9px rgba(0, 0, 0, 0.2);
+  /* effect styles surface/sheet-mobile · surface/sheet-desktop — the modal tray
+     shadows. Added to Figma on 21 Aug 2026: every tray in the file carried raw
+     effects and there was no style to point at. The BACKGROUND_BLUR 28 that the
+     styles also carry is applied here as --blur-card, since backdrop-filter is
+     a separate CSS property from box-shadow.
+     A mobile sheet docks to the bottom edge, so its shadow lifts UPWARD. */
+  --shadow-sheet-mobile: 0 -8px 32px rgba(0, 0, 0, 0.12);
+  --shadow-sheet-desktop: 0 12px 40px -8px rgba(0, 0, 0, 0.18);
   /* the Bottom-Nav-Bar's own effects */
   --shadow-nav: 0 2px 12px rgba(0, 0, 0, 0.08),
     inset 0 0 12px rgba(0, 0, 0, 0.2);

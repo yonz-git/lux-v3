@@ -127,9 +127,43 @@
   }
 }
 
-/* Secondary and Ghost exist in the Figma set; add them when a screen needs one.
-   Note that Ghost's hover variant still references `bg/accent-mint`, a variable
-   no longer in 02 Color — resolve that in Figma first. */
+/* ---------------------------------------------------------------------------
+   Style=Secondary (37:11) — first needed by PRODUCTS: "No, search again",
+   "Done", "View my products".
+
+     fill    button/bg-secondary  white @86%
+     stroke  1px border/default   #cbcdd4  <- the enabled SECONDARY has a stroke,
+                                              unlike the enabled Primary
+     label   text/primary         #2e2a3f
+     BOTH drop shadows, identical to Primary. Radius, padding and height are
+     identical too — only the surface and label differ.
+
+   Secondary rides the same --grad-* plumbing rather than a flat
+   background-color, so the disabled transition interpolates exactly as
+   Primary's does; a flat colour would have to cross-fade a background-image and
+   would snap.
+
+   ⚠️ Disabled is the SAME treatment for both styles (37:15 == 37:13): the
+   translucent state/disabled-bg, the border/default stroke and a text/muted
+   label. Secondary used to be a 0.4 node fade in Figma; that is gone — 0.4 is
+   the hover treatment.
+   -------------------------------------------------------------------------- */
+.secondary {
+  --grad-start: var(--color-button-bg-secondary);
+  --grad-end: var(--color-button-bg-secondary);
+  color: var(--color-text-primary);
+  border-color: var(--color-border-default);
+}
+
+.secondary:disabled {
+  --grad-start: var(--color-state-disabled-bg);
+  --grad-end: var(--color-state-disabled-bg);
+  color: var(--color-text-muted);
+}
+
+/* Ghost exists in the Figma set; add it when a screen needs one. Note that
+   Ghost's hover variant still references `bg/accent-mint`, a variable no longer
+   in 02 Color — resolve that in Figma first. */
 
 .full {
   width: 100%;

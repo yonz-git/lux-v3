@@ -61,7 +61,12 @@
     /* wider ceiling for the conversational turns on the question screens;
        short prompts such as Welcome's still hug their text */
     max-width: min(100%, 586px);
-    /* the desktop bubbles are 14/22 — same vertical, wider sides */
+    /* the desktop bubbles are 14/22 — same vertical, wider sides.
+       ⚠️ PRODUCTS' desktop bubbles keep the mobile 14/18 instead. That is a real
+       inconsistency between the two sections in Figma, not a transcription slip;
+       22 is kept here because it is what the nine GETTING STARTED desktop frames
+       were verified against, and 4px of side padding on a full-width bubble does
+       not move anything. Resolve it in Figma rather than forking the component. */
     padding: 14px 22px;
   }
 }

@@ -58,13 +58,31 @@ button {
   font: inherit;
   color: inherit;
   border: 0;
+  /* ⚠️ THE UA DEFAULT IS `1px 6px`, AND IT IS NOT ZERO. A text-only button
+     styled to a Figma height then renders 2px too tall for no visible reason —
+     the sheet's "Cancel" measured 22 against a 20-tall `Label` line box. Every
+     button in LUX declares whatever padding it needs, so zeroing it here is a
+     reset, not a restriction. */
+  padding: 0;
   background: none;
   cursor: pointer;
 }
 
+/* ⚠️ THE RING IS AN `outline`, NOT A `box-shadow` — and it has to be.
+   `focus/ring` is a 2px stroke, so a 0-spread box-shadow renders it exactly...
+   until the focused element sets a box-shadow of its own. CSS Modules load AFTER
+   globals.css, so `.button`'s `--shadow-button` and every frosted row's
+   `--shadow-frosted-row` simply won the cascade at equal specificity and the ring
+   vanished — measured on the PRODUCTS "Add more products" row: `:focus-visible`
+   matched, and the computed shadow was the inner shadow alone.
+   An outline is a separate property, so it composes with any shadow and cannot be
+   clobbered by one. Modern browsers follow border-radius, so it renders
+   identically to the effect style. `--shadow-focus-ring` stays exported — it is a
+   real Figma effect style — but nothing should need it now.
+   NEVER put this back as a box-shadow. */
 :focus-visible {
-  outline: none;
-  box-shadow: var(--shadow-focus-ring);
+  outline: var(--border-width-focus) solid var(--color-border-focus);
+  outline-offset: 0;
 }
 
 /* ============================================================================
@@ -144,6 +162,34 @@ button {
   }
 }
 
+.t-h3-h2 {
+  font-size: var(--font-size-xl);
+  line-height: var(--line-height-xl);
+  font-weight: var(--font-weight-medium);
+  margin: 0;
+}
+
+@media (min-width: 1024px) {
+  .t-h3-h2 {
+    font-size: var(--font-size-2xl);
+    line-height: var(--line-height-2xl);
+  }
+}
+
+.t-body2-body1 {
+  font-size: var(--font-size-sm);
+  line-height: var(--line-height-sm);
+  font-weight: var(--font-weight-regular);
+  margin: 0;
+}
+
+@media (min-width: 1024px) {
+  .t-body2-body1 {
+    font-size: var(--font-size-md);
+    line-height: var(--line-height-md);
+  }
+}
+
 .t-body3-body2 {
   font-size: var(--font-size-xs);
   line-height: var(--line-height-xs);
@@ -186,16 +232,33 @@ button {
 
 /* Flow screens carry their own header row and progress track, so they do not
    need the empty 40px header allowance that Welcome reserves. Without this they
-   sit 80px too low on desktop. */
-.screen[data-layout="flow"] {
+   sit 80px too low on desktop. `hub` is the same padding for the PRODUCTS hub
+   screens, named separately because a hub screen is deliberately NOT a flow
+   step — no progress track, no Save & exit — and that distinction is a rule. */
+.screen[data-layout="flow"],
+.screen[data-layout="hub"] {
   padding-bottom: calc(
     var(--space-2xl) + var(--size-nav-height) + var(--space-lg)
   );
 }
 
 @media (min-width: 1024px) {
-  .screen[data-layout="flow"] {
+  .screen[data-layout="flow"],
+  .screen[data-layout="hub"] {
     padding-top: var(--space-4xl);
+  }
+
+  /* ⚠️ NO BOTTOM RESERVATION FOR A HUB SCREEN ON DESKTOP. The desktop frames let
+     the nav float over the content region rather than sitting in the layout
+     flow, so a screen that CENTRES its body must centre it in the whole column —
+     reserving 115 for the nav pushed `My Products — empty`'s hero 46px above
+     where the comp puts it. Mobile keeps the reservation: there the nav really
+     does sit in the flow.
+     ⚠️ THIS CANNOT LIVE IN HubScreen.module.css. `.screen` is a global class, so
+     a module would hash the selector and it would match nothing — the same trap
+     that hides a module's @keyframes. */
+  .screen[data-layout="hub"] {
+    padding-bottom: 0;
   }
 
   .screen {
@@ -460,6 +523,43 @@ button {
     animation-duration: 0.01ms !important;
     animation-iteration-count: 1 !important;
     transition-duration: 0.01ms !important;
+  }
+}
+
+/* ============================================================================
+   The modal tray's entrance — Sheet.tsx.
+
+   Board 04b puts sheets and overlays on duration/slow (320ms). The mobile sheet
+   rises the last 16px into place as it fades; the desktop dialog only fades,
+   because it is centred with a translate() of its own and an animated transform
+   would fight it.
+
+   ⚠️ NAMED HERE, NOT IN Sheet.module.css. A module would localize the keyframes
+   name and the declaration would resolve to nothing.
+   ========================================================================== */
+
+@keyframes lux-sheet-in {
+  from {
+    opacity: 0;
+    transform: translateY(16px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+[data-tray="scrim"] {
+  animation: lux-fade-in var(--duration-slow) var(--ease-standard) backwards;
+}
+
+[data-tray="tray"] {
+  animation: lux-sheet-in var(--duration-slow) var(--ease-standard) backwards;
+}
+
+@media (min-width: 1024px) {
+  [data-tray="tray"] {
+    animation-name: lux-fade-in;
   }
 }
 
