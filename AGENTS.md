@@ -32,10 +32,21 @@ what changed and why — keep writing them.
 
 **Built so far:** GETTING STARTED and PRODUCTS.
 
-- **GETTING STARTED** — `00 — Welcome`, `01 — Start investigation`,
-  `02a — Skin type`, `02b — Skin tendencies`, `02c — Known conditions`,
-  `03a — Observable symptoms`, `03b — Location`, `03b — Selfie capture`,
-  `03c — Timing`. Routes under `/investigation/<step>`.
+- **GETTING STARTED** — `00 — Welcome` at `/`, then four of the five track
+  steps: `01 — Start investigation` (step 1), `02a — Skin type` (2),
+  `02c — Known conditions` (3) and `03c — Timing` (4), with
+  `03b — Selfie capture` hanging off step 1 as an optional side path that
+  SHARES its track position. Routes under `/investigation/<step>`. PRODUCTS is
+  step 5.
+
+  **⚠️ NINE DESIGNED SCREENS ARE FIVE STEPS.** `02b — Skin tendencies` merged
+  into `02a` and `03b — Location` merged into `01` — one screen each, and
+  Continue gates on BOTH answers where it used to gate two separate steps.
+  `03a — Observable symptoms` was dropped entirely. All three are decided-here
+  flow changes with no matching Figma frame yet, flagged in the doc comments on
+  `SkinType.tsx` and `StartInvestigation.tsx`; the frame ids of both halves are
+  kept there so the next person can find what each came from. The track reads
+  1/5, not 1/8, and `TOTAL_STEPS` is the only place that number lives.
 - **PRODUCTS** — ONE add-flow screen under `/investigation/products` (step 5/5,
   nav `check`) and two hub routes under `/products*` (nav `products`). It was
   twelve screens; see the remap below.
