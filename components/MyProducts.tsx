@@ -7,7 +7,13 @@ import { Button } from "./Button";
 import { Orb } from "./Orb";
 import { ChevronRightIcon } from "./icons";
 import { useInvestigation } from "./InvestigationProvider";
-import { BUCKETS, BUCKET_LIST_TITLE, countIn, type SavedProduct } from "@/lib/products";
+import {
+  BUCKETS,
+  BUCKET_LIST_TITLE,
+  UNSORTED_BUCKET,
+  countIn,
+  type SavedProduct,
+} from "@/lib/products";
 
 /**
  * My Products — the PRODUCTS hub landing. ONE screen in two states:
@@ -32,6 +38,17 @@ export function MyProducts() {
   const { answers } = useInvestigation();
   const products: SavedProduct[] = answers.products ?? [];
 
+  // ⚠️ THE THREE DESIGNED PERIODS ALWAYS, "Not sure" ONLY WHEN IT HAS SOMETHING.
+  // The comp shows all three periods and a category that disappears when it
+  // empties makes the list look like it lost something — but `Not sure` is a
+  // fourth group with no frame at all (see UNSORTED_BUCKET), so it appears only
+  // once the user has actually given that answer. Showing an empty one would
+  // advertise a category nobody asked for.
+  const categories = [
+    ...BUCKETS,
+    ...(countIn(products, UNSORTED_BUCKET.id) > 0 ? [UNSORTED_BUCKET] : []),
+  ];
+
   if (products.length === 0) {
     return (
       <HubScreen title="My Products" layout="plain" center>
@@ -55,11 +72,8 @@ export function MyProducts() {
       subtitle={`${products.length} product${products.length === 1 ? "" : "s"} added`}
       layout="card"
     >
-      {/* every period is listed, including the empty ones — the comp shows all
-          three, and a category that disappears when it empties would make the
-          list look like it lost something */}
       <ul className={styles.categories}>
-        {BUCKETS.map((b) => (
+        {categories.map((b) => (
           <li key={b.id}>
             <Link href={`/products/${b.id}`} className={styles.category}>
               <span className={`${styles.categoryName} t-h6`}>

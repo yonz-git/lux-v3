@@ -1,18 +1,48 @@
-/* Figma `face-diagram-card`: 392x300, frost-light + 1px border/subtle +
-   radius/2xl + the frosted-row inner shadow. The face outline is a 168x214
-   ellipse at 112,40 stroked 1.25 in text/primary. */
+/* Figma `face-diagram-card`: 392x300, frost-light + radius/2xl + the
+   frosted-row inner shadow. The face outline is a 168x214
+   ellipse at 112,40 stroked 1.25 in text/primary.
+   ⚠️ PROTOTYPE-ONLY MERGE, NOT YET REFLECTED IN FIGMA — see FaceDiagram.tsx.
+   The 392x300 ratio now belongs to .diagram alone; .card wraps it plus the
+   location chip row and grows to fit both, padded like every other frosted
+   card in the file rather than snapped to the comp's fixed height. */
 
 .card {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-md);
+  width: 100%;
+  padding: var(--space-md);
+
+  border-radius: var(--radius-2xl);
+  background: var(--color-surface-data);
+  box-shadow: var(--shadow-frosted-row);
+  -webkit-backdrop-filter: blur(var(--blur-card));
+  backdrop-filter: blur(var(--blur-card));
+}
+
+.diagram {
   position: relative;
   width: 100%;
   aspect-ratio: 392 / 300;
+  /* ⚠️ The 392x300 box is taller than the drawn face — "Chin / jaw", the
+     lowest region, bottoms out around y=241 of 300, leaving ~20% of the
+     box as dead air below it before .card's own gap even starts. That
+     dead air can't be trimmed by shrinking the aspect ratio (every region
+     is positioned as a % of this exact 392x300 box, so resizing it would
+     rescale and distort the face). A negative margin-bottom pulls .chips
+     up into that dead air instead, without moving anything absolutely
+     positioned inside .diagram. -9% (of width, which is how percentage
+     margins resolve, and this box's width IS its own reference) roughly
+     halves the visual gap to the location chips below. */
+  margin-bottom: -9%;
+}
 
-  border-radius: var(--radius-2xl);
-  background: var(--color-surface-frost-light);
-  border: var(--border-width-hairline) solid var(--color-border-subtle);
-  box-shadow: var(--shadow-frosted-row);
-  backdrop-filter: blur(var(--blur-card));
-  -webkit-backdrop-filter: blur(var(--blur-card));
+.chips {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  /* 10 is the Chip grid gap in Figma and is off the spacing scale there too */
+  gap: 10px;
 }
 
 .outline {
@@ -28,44 +58,47 @@
 
 .region {
   position: absolute;
+  /* `left` is the region's CENTRE (see FaceDiagram.tsx), not its edge — the
+     pill is sized to its own label, not to Figma's fixed region width, so a
+     wider diagram (desktop's card is 920 vs mobile's 392, see QuestionScreen
+     .card) can't stretch it into a lot of extra padding-looking whitespace. */
+  transform: translateX(-50%);
   display: inline-flex;
   align-items: center;
   justify-content: center;
   min-height: 26px;
-  padding: 5px 10px;
+  padding: 5px var(--space-sm);
 
   border-radius: var(--radius-lg);
-  background: var(--color-surface-frost-light);
-  border: var(--border-width-hairline) solid var(--color-border-subtle);
+  /* ⚠️ OPAQUE, not surface/frost-light. The chip sits ON a frost-light card, so
+     at 55% it was the same fill over the same fill and the pill had almost no
+     edge. bg/frost-light is that colour at full strength. */
+  background: var(--color-bg-frost-light);
   color: var(--color-text-primary);
   white-space: nowrap;
 
   transition: background-color var(--duration-base) var(--ease-standard),
-    color var(--duration-base) var(--ease-standard),
-    border-color var(--duration-base) var(--ease-standard);
+    color var(--duration-base) var(--ease-standard);
 }
 
 .region[data-selected="true"] {
   background: var(--color-bg-brand);
   color: var(--color-text-on-brand);
-  border-color: transparent;
 }
 
-.region:hover[data-selected="false"] {
-  border-color: var(--color-border-brand);
-}
-
-@media (hover: none) {
-  .region:hover[data-selected="false"] {
-    border-color: var(--color-border-subtle);
+@media (min-width: 1024px) {
+  .chips {
+    gap: var(--space-md); /* 12 on desktop, 10 on mobile — matches .chips in StartInvestigation.module.css */
   }
 }
 
 @media (prefers-reduced-transparency: reduce) {
-  .card,
-  .region[data-selected="false"] {
-    background: var(--color-bg-surface-frost);
-    backdrop-filter: none;
+  /* the regions are opaque now, so only the card needs a fallback — and it gets
+     the right one: frost-light at full strength rather than bg/surface-frost,
+     which is a different colour */
+  .card {
+    background: var(--color-bg-frost-light);
     -webkit-backdrop-filter: none;
+    backdrop-filter: none;
   }
 }

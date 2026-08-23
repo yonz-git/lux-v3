@@ -1,11 +1,17 @@
-/* Figma `progress`: 4px tall (size/progress-track), track border/subtle,
-   fill bg/brand, all four corners radius/full on BOTH the track and the fill. */
+/* Figma `progress`: 4px tall (size/progress-track), track bg/progress-track,
+   fill bg/brand, all four corners radius/full on BOTH the track and the fill.
+
+   ⚠️ THE TRACK IS `bg/progress-track` (#ecf8f9), NOT `border/subtle`. It
+   borrowed the hairline colour until 22 Aug 2026, which meant the track could
+   not be retuned without moving every frosted-row border with it. All 34 tracks
+   in Figma and the App Kit `Step Progress` component (252:82) now bind the new
+   token — that component had been bound to the PRIMITIVE neutral/200. */
 
 .track {
   width: 100%;
   height: var(--size-progress-track);
   border-radius: var(--radius-full);
-  background: var(--color-border-subtle);
+  background: var(--color-bg-progress-track);
   overflow: hidden;
 }
 

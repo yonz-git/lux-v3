@@ -23,11 +23,11 @@
 .button {
   --grad-start: var(--color-button-bg-default-start);
   --grad-end: var(--color-button-bg-default-end);
-  /* Hover sits at 0.4. That is numerically the same as opacity/disabled, but
-     this is a hover, not a disabled state — there is no `opacity/hover` token in
-     Figma yet, so the intent is named locally rather than pointing at a token
-     whose name would mislead the next reader. */
-  --button-hover-opacity: 0.4;
+  /* The disabled fade. `opacity/disabled` in Figma — the same 0.4 that used to
+     be the hover treatment, now that hover no longer needs it. */
+  --button-disabled-opacity: var(--opacity-disabled);
+  /* How long the hover takes. */
+  --button-hover-duration: var(--duration-hover);
 
   position: relative;
   display: inline-flex;
@@ -43,20 +43,6 @@
   /* the component can render as <a>; links carry an underline by default */
   text-decoration: none;
   background: linear-gradient(90deg, var(--grad-start) 0%, var(--grad-end) 100%);
-  /* ⚠️ REQUIRED because this button has a border.
-     background-origin defaults to padding-box while background-clip defaults to
-     border-box, so a gradient is SIZED to the padding box but PAINTED into the
-     border box. With the 1px border above, the outermost 1px of each edge then
-     has no gradient on it and the drop shadow shows through — a thin dark notch
-     at the widest point of each rounded end. Sizing the gradient to the border
-     box makes it cover everything it is painted into.
-     Only affects background IMAGES; a flat background-color is unaffected,
-     which is why the frosted rows never showed this. */
-  background-origin: border-box;
-  /* The DISABLED cell (160:20/160:21) carries a 1px border/default stroke that
-     the default cell does not. Declared transparent in every state so the box
-     never changes size between them and the colour can transition. */
-  border: var(--border-width-hairline) solid transparent;
   box-shadow: var(--shadow-button);
   opacity: 1;
 
@@ -67,11 +53,18 @@
      <color> properties DO interpolate. Verified: flipping the state creates
      three CSSTransitions (--grad-start, --grad-end, color), each 200ms on
      ease/standard, landing on the brand gradient with a white label. */
-  transition: opacity var(--duration-base) var(--ease-standard),
-    color var(--duration-base) var(--ease-standard),
-    border-color var(--duration-base) var(--ease-standard),
-    --grad-start var(--duration-base) var(--ease-standard),
-    --grad-end var(--duration-base) var(--ease-standard);
+  transition: opacity var(--button-hover-duration) var(--ease-standard),
+    color var(--button-hover-duration) var(--ease-standard),
+    border-color var(--button-hover-duration) var(--ease-standard),
+    --grad-start var(--button-hover-duration) var(--ease-standard),
+    --grad-end var(--button-hover-duration) var(--ease-standard);
+}
+
+/* The label sits in its own element so a future hover treatment can target it
+   without touching the pill — the gradient reversal alone doesn't need this,
+   but keeping the label as its own node costs nothing. */
+.label {
+  display: inline-block;
 }
 
 /* the pressed overlay — board 04b: state/pressed-overlay at 14%, and
@@ -87,78 +80,96 @@
   transition: opacity var(--duration-fast) var(--ease-standard);
 }
 
-/* Hover: the control softens to 40%. No colour change. */
+/* ---------------------------------------------------------------------------
+   HOVER — the gradient runs end for end. Settled 22 Aug 2026.
+
+   This REPLACES the 0.4 node fade that used to be State=Hover. The fade dimmed
+   the two drop shadows along with the fill, so hover landed on a pale,
+   low-elevation treatment — which is what "unavailable" looks like. Hover and
+   disabled were converging on the same picture. Reversing the gradient keeps
+   the control at full strength and full elevation, so it cannot be mistaken for
+   a button you can't press.
+
+   ⚠️ THIS ONLY WORKS BECAUSE OF THE --grad-* PLUMBING. CSS cannot interpolate
+   `background-image`, so swapping one `linear-gradient()` for another would
+   snap — and board 04b is explicit that nothing snaps. The endpoints are
+   registered <color> properties (globals.css), so swapping which token feeds
+   which end cross-fades the two colours through each other.
+   -------------------------------------------------------------------------- */
 .button:hover:not(:disabled) {
-  opacity: var(--button-hover-opacity);
+  --grad-start: var(--color-button-bg-default-end);
+  --grad-end: var(--color-button-bg-default-start);
 }
 
-/* Pressed returns the control to full strength and adds the overlay, so the
-   press still reads while the pointer is also hovering. The set has no
-   State=Pressed variant, so this follows board 04b rather than a variant. */
-.button:active:not(:disabled) {
-  opacity: 1;
-}
-
+/* Pressed adds the overlay — board 04b: state/pressed-overlay at 14% and
+   "No scale transform — LUX does not bounce." The set has no State=Pressed
+   variant, so this follows the board rather than a variant. */
 .button:active:not(:disabled)::after {
   opacity: 1;
 }
 
-/* Disabled — read off the showcase cell 160:20 (Button instance 160:21):
-     state/disabled-bg  #eef6f7 @51%  <- TRANSLUCENT, not the opaque #eef6f7
-     1px border/default #cbcdd4       <- easy to miss; the enabled button has no stroke
-     label text/muted   #9a9aa5
-     BOTH drop shadows retained, and node opacity stays 1.
+/* ---------------------------------------------------------------------------
+   DISABLED — the 0.4 node fade, inherited from the old hover. Settled
+   22 Aug 2026.
 
-   The fill is translucent so the disabled button softens against whatever is
-   behind it — noticeably better on the sage tray than an opaque pale fill. */
+   The fade moved here the moment hover stopped using it. It was disabled's
+   treatment until 18 Aug, when it was replaced by `state/disabled-bg` + a 1px
+   `border/default` + a `text/muted` label — for one stated reason: a 0.4 fade
+   was the HOVER treatment and having it mean two things was the drift. That
+   collision is gone, and a fade that dims the fill AND both drop shadows is the
+   most legible "not available" the system has.
+
+   One consequence worth knowing: this is a node-level fade, so it takes the
+   label and the shadows with it and nothing needs recolouring. `state/disabled-bg`,
+   `border/default` on a button and `text/muted` as a button label are no longer
+   part of the button recipe at all.
+   -------------------------------------------------------------------------- */
 .button:disabled {
-  --grad-start: var(--color-state-disabled-bg);
-  --grad-end: var(--color-state-disabled-bg);
-  border-color: var(--color-border-default);
-  color: var(--color-text-muted);
+  opacity: var(--button-disabled-opacity);
   cursor: not-allowed;
 }
 
-/* a touch device has no hover; leaving the rule on makes the state stick after
+/* a touch device has no hover; leaving the rules on makes the state stick after
    a tap */
 @media (hover: none) {
   .button:hover:not(:disabled) {
-    opacity: 1;
+    --grad-start: var(--color-button-bg-default-start);
+    --grad-end: var(--color-button-bg-default-end);
   }
 }
 
 /* ---------------------------------------------------------------------------
-   Style=Secondary (37:11) — first needed by PRODUCTS: "No, search again",
-   "Done", "View my products".
+   Style=Secondary (37:11) — "No, search again", "Done", "View my products".
 
-     fill    button/bg-secondary  white @86%
-     stroke  1px border/default   #cbcdd4  <- the enabled SECONDARY has a stroke,
-                                              unlike the enabled Primary
+     fill    gradient/secondary   #deeff3 -> #b7c6ca
      label   text/primary         #2e2a3f
-     BOTH drop shadows, identical to Primary. Radius, padding and height are
-     identical too — only the surface and label differ.
+     BOTH drop shadows, identical to Primary. Radius, padding and height too.
+     NO border — the app does not use border-width-hairline anywhere.
 
-   Secondary rides the same --grad-* plumbing rather than a flat
-   background-color, so the disabled transition interpolates exactly as
-   Primary's does; a flat colour would have to cross-fade a background-image and
-   would snap.
-
-   ⚠️ Disabled is the SAME treatment for both styles (37:15 == 37:13): the
-   translucent state/disabled-bg, the border/default stroke and a text/muted
-   label. Secondary used to be a 0.4 node fade in Figma; that is gone — 0.4 is
-   the hover treatment.
+   ⚠️ SECONDARY WAS A FLAT WHITE UNTIL 22 AUG 2026. It now carries the gradient
+   `Small Button / Secondary` already used, so Secondary reads the same at both
+   sizes — and, more to the point, it has something to REVERSE on hover. Before
+   this it had no gradient and no Hover variant at all, so it was the one style
+   the button system could not express.
    -------------------------------------------------------------------------- */
 .secondary {
-  --grad-start: var(--color-button-bg-secondary);
-  --grad-end: var(--color-button-bg-secondary);
+  --grad-start: var(--color-button-bg-secondary-start);
+  --grad-end: var(--color-button-bg-secondary-end);
   color: var(--color-text-primary);
-  border-color: var(--color-border-default);
 }
 
-.secondary:disabled {
-  --grad-start: var(--color-state-disabled-bg);
-  --grad-end: var(--color-state-disabled-bg);
-  color: var(--color-text-muted);
+/* the same reversal Primary gets — the base .button:hover swaps the PRIMARY
+   endpoints, so Secondary has to name its own */
+.secondary:hover:not(:disabled) {
+  --grad-start: var(--color-button-bg-secondary-end);
+  --grad-end: var(--color-button-bg-secondary-start);
+}
+
+@media (hover: none) {
+  .secondary:hover:not(:disabled) {
+    --grad-start: var(--color-button-bg-secondary-start);
+    --grad-end: var(--color-button-bg-secondary-end);
+  }
 }
 
 /* Ghost exists in the Figma set; add it when a screen needs one. Note that

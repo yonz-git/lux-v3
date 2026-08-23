@@ -1,0 +1,444 @@
+/* The add-product tray's contents — Sheet body for the method sheet
+   (mobile 576:1376, desktop dialog 583:1786), opened from `Your products`.
+   It is now the ONLY entry to the add flow: the intro's three bucket rows and
+   the separate long-term screen that used to open it are both gone. */
+
+.methods {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-md);
+}
+
+/* 70 tall on mobile / 78 on desktop, padding 14/18, gap 12, radius/lg.
+   surface/data-strong on a sage tray, with the frosted-row inner shadow — a
+   translucent surface with no inner shadow reads flat. NO border: the tray's
+   cards sit on sage, where border/subtle would be invisible anyway.
+   ⚠️ NEEDS ITS OWN BACKDROP BLUR, same as every other frosted surface in the
+   file (rule 9) — `surface/data-strong` at 62% with no blur just reads as a
+   flat, slightly darker rectangle on the tray rather than frosted glass. The
+   tray's own blur only softens what is BEHIND the tray, not what is behind
+   this card. */
+.method {
+  display: flex;
+  align-items: center;
+  gap: var(--space-md);
+  width: 100%;
+  /* 14/18 stays 14 here: a method card sits on sage and carries NO border, so
+     there is nothing to subtract */
+  min-height: 70px;
+  padding: 14px 18px;
+  text-align: left;
+
+  border-radius: var(--radius-lg);
+  background: var(--color-surface-data-strong);
+  box-shadow: var(--shadow-frosted-row);
+  -webkit-backdrop-filter: blur(var(--blur-card));
+  backdrop-filter: blur(var(--blur-card));
+
+  transition: background-color var(--duration-fast) var(--ease-standard);
+}
+
+.method:hover {
+  background: var(--color-surface-data);
+}
+
+@media (hover: none) {
+  .method:hover {
+    background: var(--color-surface-data-strong);
+  }
+}
+
+@media (prefers-reduced-transparency: reduce) {
+  .method {
+    -webkit-backdrop-filter: none;
+    backdrop-filter: none;
+  }
+}
+
+/* WHITE, because the surface is sage. Both fill and stroke ride currentColor. */
+.methodIcon,
+.methodChevron {
+  flex: none;
+  display: inline-flex;
+  color: var(--color-icon-on-data);
+}
+
+.methodCopy {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2xs);
+}
+
+.methodTitle {
+  color: var(--color-text-on-data);
+}
+
+.methodSubtitle {
+  color: var(--color-text-on-data-muted);
+}
+
+@media (min-width: 1024px) {
+  .method {
+    min-height: 78px;
+  }
+}
+
+/* ---------------------------------------------------------------------------
+   The three views the tray grows into once a method is picked. None of these
+   have a Figma frame of their own — they are the routed search / scan /
+   confirm screens' own content, recomposed to sit directly in the tray
+   instead of on a `QuestionScreen` card. Loose text that sat on the app's
+   light canvas there uses `on-data` tokens here, because it now sits directly
+   on the sage tray; anything already packaged as its own frosted card
+   (`ProductRow`, `ProductCard`, `OptionRow`) keeps its own colours unchanged —
+   those cards are self-contained regardless of what they sit on.
+   ------------------------------------------------------------------------- */
+
+.searchView,
+.scanView,
+.confirmView {
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+}
+
+.searchView {
+  gap: var(--space-lg);
+}
+
+/* --- the search dropdown (NOT IN FIGMA — see SearchView's doc comment) -----
+   One panel hanging off the search pill, replacing the free-standing
+   `ProductRow` cards that used to sit in a capped `.searchResultsScroll`
+   region. Shared by both search instances: the tray's top-level search view
+   and the confirm view's embedded "search again" / "add another" field.
+
+   ⚠️ IN FLOW, NOT ABSOLUTELY POSITIONED. The mobile tray is docked to the
+   bottom edge and sized by its content, so an overlaid panel would open past
+   the bottom of the viewport. In flow the tray grows upward to hold it. The
+   negative top margin is what buys the overlay READING — it eats half the
+   view's 16 gap so the panel sits 8 under the pill and hangs off it, rather
+   than floating as an unrelated block. */
+.dropdown {
+  /* narrower than the bar it hangs from, the way a menu is */
+  margin: calc(var(--space-sm) - var(--space-lg)) var(--space-sm) 0;
+  padding: var(--space-sm);
+
+  border-radius: var(--radius-2xl);
+  background: var(--color-surface-frost-light);
+  /* the frosted inner shadow (rule 9 — a translucent fill without it reads
+     flat) PLUS a real drop shadow, because this panel is meant to read as
+     sitting ABOVE the tray's content rather than in it */
+  box-shadow: var(--shadow-frosted-row), var(--shadow-lg);
+  -webkit-backdrop-filter: blur(var(--blur-card));
+  backdrop-filter: blur(var(--blur-card));
+
+  /* caps itself and scrolls internally so a long list can never grow the tray
+     far enough to push the search field out of reach — the job
+     `.searchResultsScroll` used to do, moved onto the panel. Scrollbar hidden
+     the same way `.tray` hides its own: the scroll stays, the OS chrome
+     doesn't. */
+  max-height: 296px;
+  overflow-y: auto;
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+}
+
+.dropdown::-webkit-scrollbar {
+  display: none;
+}
+
+.results {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2xs);
+}
+
+/* A row on the panel's own fill — no card of its own. 48 thumb + 8/12 padding
+   is a 64-tall row; it grows when a two-line name wraps, same as ProductRow. */
+.result {
+  display: flex;
+  align-items: center;
+  gap: var(--space-md);
+  width: 100%;
+  padding: var(--space-sm) var(--space-md);
+  text-align: left;
+
+  border-radius: var(--radius-md);
+  transition: background-color var(--duration-fast) var(--ease-standard);
+}
+
+.result:hover {
+  background: var(--color-state-hover-overlay);
+}
+
+@media (hover: none) {
+  .result:hover {
+    background: none;
+  }
+}
+
+.resultCopy {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2xs);
+}
+
+/* Open Beauty Facts names run long and arbitrary — clamped rather than left to
+   wrap a dropdown row to four lines. */
+.resultName {
+  color: var(--color-text-primary);
+  display: -webkit-box;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 2;
+  line-clamp: 2;
+  overflow: hidden;
+}
+
+.resultMeta {
+  color: var(--color-text-muted);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+/* "Searching…" / "No products match …" — the panel's own one-line states.
+   `EmptyBox` would be a second frosted card inside a frosted panel. */
+.dropdownNote {
+  padding: var(--space-lg) var(--space-md);
+  color: var(--color-text-muted);
+  text-align: center;
+}
+
+@media (prefers-reduced-transparency: reduce) {
+  .dropdown {
+    background: var(--color-bg-surface-frost);
+    -webkit-backdrop-filter: none;
+    backdrop-filter: none;
+  }
+}
+
+/* --- scan ------------------------------------------------------------------ */
+
+.scanView {
+  align-items: center;
+  gap: var(--space-lg);
+}
+
+.viewfinder {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  aspect-ratio: 392 / 300;
+  max-height: 300px;
+
+  border-radius: var(--radius-2xl);
+  background: var(--color-surface-data);
+  box-shadow: var(--shadow-frosted-data);
+  -webkit-backdrop-filter: blur(var(--blur-card));
+  backdrop-filter: blur(var(--blur-card));
+}
+
+.guide {
+  height: calc(160 / 300 * 100%);
+  aspect-ratio: 300 / 200;
+  border: var(--border-width-thick) dashed var(--color-effect-rim-highlight);
+  border-radius: var(--radius-lg);
+}
+
+.captured {
+  position: absolute;
+  bottom: var(--space-lg);
+  color: var(--color-text-on-data);
+}
+
+.scanCopy {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--space-sm);
+  text-align: center;
+  color: var(--color-text-on-data);
+}
+
+.scanHelper {
+  color: var(--color-text-on-data-secondary);
+}
+
+.shutterRow {
+  display: flex;
+  justify-content: center;
+}
+
+.shutter {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 64px;
+  height: 64px;
+  padding: var(--space-sm);
+
+  border-radius: var(--radius-full);
+  background: var(--color-bg-glass);
+  box-shadow: var(--shadow-md);
+
+  transition: opacity var(--duration-fast) var(--ease-standard);
+}
+
+.shutter:hover {
+  opacity: 0.8;
+}
+
+@media (hover: none) {
+  .shutter:hover {
+    opacity: 1;
+  }
+}
+
+.shutterCore {
+  flex: none;
+  width: 48px;
+  height: 48px;
+  border-radius: var(--radius-full);
+  background: var(--color-effect-rim-highlight);
+}
+
+.scanAlt {
+  padding: var(--space-sm) 0;
+  color: var(--color-text-on-data-secondary);
+  border-radius: var(--radius-sm);
+  transition: opacity var(--duration-fast) var(--ease-standard);
+}
+
+.scanAlt:hover {
+  opacity: 0.7;
+}
+
+@media (hover: none) {
+  .scanAlt:hover {
+    opacity: 1;
+  }
+}
+
+/* --- confirm ----------------------------------------------------------------- */
+
+.confirmView {
+  gap: var(--space-2xl);
+}
+
+/* The duration radios. `OptionRow` is a self-contained light card, so it needs
+   no on-data adjustment to sit on the sage tray — see the section note above.
+   12 between rows, matching every other option group in the app. */
+.durationOptions {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-md);
+}
+
+.confirmBlock {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-md);
+}
+
+.confirmLabel {
+  color: var(--color-text-on-data-secondary);
+}
+
+.confirmAnswers {
+  display: flex;
+  gap: var(--space-md);
+}
+
+.confirmAnswer {
+  flex: 1;
+  min-width: 0;
+}
+
+/* --- added products (not in Figma — see the ConfirmView doc comment) -------
+   The quick-add "Recent +" / "New addition +" rows that used to live under
+   this list are GONE, along with the `.bucketRow` recipe they duplicated from
+   the intro. They were the only route to those two groups, they only appeared
+   once a product had already been added, and the group they set was thrown
+   away and re-derived from a duration anyway. The duration question above
+   replaces all of it. */
+
+.addedList {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-md);
+}
+
+/* THE SAME FROSTED CIRCLE AS STEP 01's "Other" FIELD — `StartInvestigation`'s
+   `.otherClear`, the clear button on the free-text description. The design
+   system has no clear/remove control at all, so both are composed from the
+   Chip's language sized down to 20: a hairline `border/subtle` ring on
+   `surface/frost-light`, glyph in `text/muted`. Keep the two in step; if one
+   moves, move the other.
+
+   Self-contained on ProductRow's own light card — not an on-data colour, even
+   though the row sits on the sage tray. */
+.removeButton {
+  position: relative;
+  flex: none;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 20px;
+  height: 20px;
+
+  border: var(--border-width-hairline) solid var(--color-border-subtle);
+  border-radius: var(--radius-full);
+  background: var(--color-surface-frost-light);
+  color: var(--color-text-muted);
+  transition: color var(--duration-fast) var(--ease-standard);
+}
+
+/* ⚠️ THE 44 TOUCH TARGET SURVIVES THE SHRINK, as a transparent ::after rather
+   than as the button's own box. `.otherClear` is a bare 20px control and that
+   is under the minimum everywhere; this row is the one place in the tray where
+   a tap DESTROYS something, so the hit area is kept and only the visible circle
+   is 20. Same principle as `Sheet`'s back chevron — the glyph keeps its size,
+   the hit area overhangs into space that is padding anyway. */
+.removeButton::after {
+  content: "";
+  position: absolute;
+  inset: calc((20px - var(--size-touch-target)) / 2);
+}
+
+.removeButton:hover {
+  color: var(--color-text-primary);
+}
+
+@media (hover: none) {
+  .removeButton:hover {
+    color: var(--color-text-muted);
+  }
+}
+
+/* ⚠️ `!important` IS REQUIRED, and this rule did nothing without it. `icons.tsx`
+   sizes every glyph through an inline `style` object, and an inline style beats
+   any external stylesheet rule at equal or higher specificity — so the old
+   `width: var(--size-icon-sm)` here was silently ignored and the X rendered at
+   the inline 24px, not the 20 this file claimed. Same trap, same fix, same
+   ratio as `.otherClearIcon`: 20/36 of the CloseIcon's default 24. */
+.removeIcon {
+  width: calc(24px * 20 / 36) !important;
+  height: calc(24px * 20 / 36) !important;
+}
+

@@ -43,6 +43,15 @@ body {
 
 html {
   -webkit-text-size-adjust: 100%;
+  /* the page still scrolls (e.g. a long search-results list pushes past the
+     viewport) — only the OS scrollbar chrome is hidden, to stay consistent
+     with the frosted, chrome-free surfaces everywhere else in the app. */
+  scrollbar-width: none; /* Firefox */
+  -ms-overflow-style: none; /* legacy Edge */
+}
+
+html::-webkit-scrollbar {
+  display: none; /* Chrome, Safari, Chromium Edge */
 }
 
 body {
@@ -115,20 +124,68 @@ button {
   margin: 0;
 }
 
-.t-h1 { font-size: var(--font-size-3xl); line-height: var(--line-height-3xl); font-weight: var(--font-weight-medium); }
-.t-h2 { font-size: var(--font-size-2xl); line-height: var(--line-height-2xl); font-weight: var(--font-weight-medium); }
-.t-h3 { font-size: var(--font-size-xl);  line-height: var(--line-height-xl);  font-weight: var(--font-weight-medium); }
-.t-h4 { font-size: var(--font-size-lg);  line-height: var(--line-height-md);  font-weight: var(--font-weight-medium); }
-.t-h5 { font-size: var(--font-size-md);  line-height: var(--line-height-sm);  font-weight: var(--font-weight-medium); }
-.t-h6 { font-size: var(--font-size-sm);  line-height: var(--line-height-xl);  font-weight: var(--font-weight-medium); }
+.t-h1 {
+  font-size: var(--font-size-3xl);
+  line-height: var(--line-height-3xl);
+  font-weight: var(--font-weight-medium);
+}
+.t-h2 {
+  font-size: var(--font-size-2xl);
+  line-height: var(--line-height-2xl);
+  font-weight: var(--font-weight-medium);
+}
+.t-h3 {
+  font-size: var(--font-size-xl);
+  line-height: var(--line-height-xl);
+  font-weight: var(--font-weight-medium);
+}
+.t-h4 {
+  font-size: var(--font-size-lg);
+  line-height: var(--line-height-md);
+  font-weight: var(--font-weight-medium);
+}
+.t-h5 {
+  font-size: var(--font-size-md);
+  line-height: var(--line-height-sm);
+  font-weight: var(--font-weight-medium);
+}
+.t-h6 {
+  font-size: var(--font-size-sm);
+  line-height: var(--line-height-xl);
+  font-weight: var(--font-weight-medium);
+}
 
-.t-body1 { font-size: var(--font-size-md); line-height: var(--line-height-md); font-weight: var(--font-weight-regular); }
-.t-body2 { font-size: var(--font-size-sm); line-height: var(--line-height-sm); font-weight: var(--font-weight-regular); }
-.t-body3 { font-size: var(--font-size-xs); line-height: var(--line-height-xs); font-weight: var(--font-weight-regular); }
+.t-body1 {
+  font-size: var(--font-size-md);
+  line-height: var(--line-height-md);
+  font-weight: var(--font-weight-regular);
+}
+.t-body2 {
+  font-size: var(--font-size-sm);
+  line-height: var(--line-height-sm);
+  font-weight: var(--font-weight-regular);
+}
+.t-body3 {
+  font-size: var(--font-size-xs);
+  line-height: var(--line-height-xs);
+  font-weight: var(--font-weight-regular);
+}
 
-.t-label    { font-size: var(--font-size-xs);  line-height: var(--line-height-xl); font-weight: var(--font-weight-medium); }
-.t-label-sm { font-size: var(--font-size-3xs); line-height: var(--line-height-3xs); font-weight: var(--font-weight-medium); }
-.t-caption  { font-size: var(--font-size-3xs); line-height: var(--line-height-3xs); font-weight: var(--font-weight-regular); }
+.t-label {
+  font-size: var(--font-size-xs);
+  line-height: var(--line-height-xl);
+  font-weight: var(--font-weight-medium);
+}
+.t-label-sm {
+  font-size: var(--font-size-3xs);
+  line-height: var(--line-height-3xs);
+  font-weight: var(--font-weight-medium);
+}
+.t-caption {
+  font-size: var(--font-size-3xs);
+  line-height: var(--line-height-3xs);
+  font-weight: var(--font-weight-regular);
+}
 .t-overline {
   font-size: var(--font-size-2xs);
   line-height: var(--line-height-2xs);
@@ -137,13 +194,37 @@ button {
   text-transform: uppercase;
 }
 
-.t-button    { font-size: 15px; line-height: var(--line-height-xs); font-weight: var(--font-weight-regular); }
-.t-button-sm { font-size: var(--font-size-xs); line-height: var(--line-height-xs); font-weight: var(--font-weight-regular); }
+.t-button {
+  font-size: 17px;
+  line-height: var(--line-height-xs);
+  font-weight: var(--font-weight-regular);
+}
+.t-button-sm {
+  font-size: var(--font-size-xs);
+  line-height: var(--line-height-xs);
+  font-weight: var(--font-weight-regular);
+}
 
-.t-metric1 { font-size: var(--font-size-4xl); line-height: var(--line-height-4xl); font-weight: var(--font-weight-light); }
-.t-metric2 { font-size: var(--font-size-3xl); line-height: var(--line-height-2xl); font-weight: var(--font-weight-light); }
-.t-display1 { font-size: var(--font-size-6xl); line-height: var(--line-height-6xl); font-weight: var(--font-weight-medium); }
-.t-display2 { font-size: var(--font-size-5xl); line-height: var(--line-height-5xl); font-weight: var(--font-weight-medium); }
+.t-metric1 {
+  font-size: var(--font-size-4xl);
+  line-height: var(--line-height-4xl);
+  font-weight: var(--font-weight-light);
+}
+.t-metric2 {
+  font-size: var(--font-size-3xl);
+  line-height: var(--line-height-2xl);
+  font-weight: var(--font-weight-light);
+}
+.t-display1 {
+  font-size: var(--font-size-6xl);
+  line-height: var(--line-height-6xl);
+  font-weight: var(--font-weight-medium);
+}
+.t-display2 {
+  font-size: var(--font-size-5xl);
+  line-height: var(--line-height-5xl);
+  font-weight: var(--font-weight-medium);
+}
 
 /* Responsive heading steps — the mobile→desktop translation table on board
    02 steps a title up one ramp entry at 1024. Declared here with the rest of
@@ -207,8 +288,12 @@ button {
 /* --- .t-label uses --line-height-xl (20px is not in the line-height scale;
        Figma's Label style is Medium 14/20). Kept explicit here so the value
        is not silently wrong. */
-.t-label { line-height: 20px; }
-.t-h6 { line-height: 24px; }
+.t-label {
+  line-height: 20px;
+}
+.t-h6 {
+  line-height: 24px;
+}
 
 /* ============================================================================
    The screen shell
@@ -280,18 +365,17 @@ button {
 
 .frosted-row {
   background: var(--color-surface-frost-light);
-  border: var(--border-width-hairline) solid var(--color-border-subtle);
   border-radius: var(--radius-lg);
   box-shadow: var(--shadow-frosted-row);
-  backdrop-filter: blur(var(--blur-card));
   -webkit-backdrop-filter: blur(var(--blur-card));
+  backdrop-filter: blur(var(--blur-card));
 }
 
 @media (prefers-reduced-transparency: reduce) {
   .frosted-row {
     background: var(--color-bg-surface-frost);
-    backdrop-filter: none;
     -webkit-backdrop-filter: none;
+    backdrop-filter: none;
   }
 }
 
@@ -493,6 +577,52 @@ button {
   animation: lux-bubble-ask 800ms var(--ease-standard) 1000ms backwards;
 }
 
+/* 00 Welcome swaps its opening question for the follow-up line in place,
+   rather than stacking both: the question is pushed up and out as the reply
+   rises from below into the same spot — one continuous motion, not two
+   unrelated fades. --duration-slower (the orb/hero-entrance curve) so the
+   swap reads as calm and deliberate rather than a quick cut. */
+@keyframes lux-bubble-push-out {
+  from {
+    opacity: 1;
+    transform: translateY(0);
+  }
+  to {
+    opacity: 0;
+    transform: translateY(-28px);
+  }
+}
+
+@keyframes lux-bubble-push-in {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* the question bubble: plays its normal entrance, holds, then is pushed up
+   and out. `both` (not `backwards`) because this end state must persist —
+   the bubble stays gone, not just pre-animation. */
+.bubble-ask-exit {
+  transform-origin: top center;
+  animation:
+    lux-bubble-ask 800ms var(--ease-standard) 1000ms backwards,
+    lux-bubble-push-out var(--duration-slower) var(--ease-standard) 4000ms both;
+}
+
+/* the reply bubble: `backwards` holds the 0% keyframe (opacity 0) for the
+   full delay, so it is invisible on landing without needing display:none —
+   then rises into the question bubble's spot at the same moment the
+   question bubble starts leaving. */
+.bubble-swap-in {
+  transform-origin: top center;
+  animation: lux-bubble-push-in var(--duration-slower) var(--ease-standard) 4000ms backwards;
+}
+
 /* ⚠️ THESE RULES MUST LIVE HERE, NOT IN A CSS MODULE. CSS Modules localize
    @keyframes names, so `animation: lux-fade-in ...` written inside a module
    compiles to a SCOPED name that does not match the global keyframes above —
@@ -510,11 +640,21 @@ button {
    without turning a five-block screen into a performance. Applied to DIRECT
    children only, so a ten-row option list arrives as one block rather than ten
    cascading rows. */
-[data-reveal-stagger] > *:nth-child(1) { animation-delay: 0ms; }
-[data-reveal-stagger] > *:nth-child(2) { animation-delay: 40ms; }
-[data-reveal-stagger] > *:nth-child(3) { animation-delay: 80ms; }
-[data-reveal-stagger] > *:nth-child(4) { animation-delay: 120ms; }
-[data-reveal-stagger] > *:nth-child(n + 5) { animation-delay: 160ms; }
+[data-reveal-stagger] > *:nth-child(1) {
+  animation-delay: 0ms;
+}
+[data-reveal-stagger] > *:nth-child(2) {
+  animation-delay: 40ms;
+}
+[data-reveal-stagger] > *:nth-child(3) {
+  animation-delay: 80ms;
+}
+[data-reveal-stagger] > *:nth-child(4) {
+  animation-delay: 120ms;
+}
+[data-reveal-stagger] > *:nth-child(n + 5) {
+  animation-delay: 160ms;
+}
 
 @media (prefers-reduced-motion: reduce) {
   *,
@@ -561,6 +701,62 @@ button {
   [data-tray="tray"] {
     animation-name: lux-fade-in;
   }
+}
+
+/* ============================================================================
+   Target size — WCAG 2.5.8 (AA): an interactive target is at least 24x24.
+
+   LUX's inline text controls are drawn smaller than that on purpose: the
+   `Edit` in a hub header is 25x20 in the comp, and the `Edit` / `Remove` pair
+   on an accordion card is 20 tall. Growing the box would move the design, so
+   the TARGET grows instead — a pseudo-element expands the clickable area
+   outwards while the text stays exactly where Figma puts it. 2.5.8 measures the
+   target, not the ink.
+
+   Applied via a class rather than to every small button, so it is a deliberate
+   opt-in and stays greppable.
+   ========================================================================== */
+
+.tap-target {
+  position: relative;
+}
+
+.tap-target::after {
+  content: "";
+  position: absolute;
+  /* whatever it takes to clear 24 in both directions, centred on the text */
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  min-width: 24px;
+  min-height: 24px;
+  width: 100%;
+  height: 100%;
+}
+
+/* ============================================================================
+   Focus not obscured — WCAG 2.4.11 (AA)
+
+   The nav is fixed 24px from the bottom and 75 tall. Tabbing to a control near
+   the end of a long screen scrolled it to the viewport edge, i.e. underneath
+   the nav pill. scroll-margin keeps the browser's own scroll-into-view clear of
+   it — and of the top edge, for symmetry.
+   ========================================================================== */
+
+/* ⚠️ NOT SCOPED TO :focus-visible. scroll-margin has to be in effect at the
+   moment the browser scrolls the element into view, and tying it to a state
+   that is resolved around the same time is a race worth not having. It only
+   affects scroll-into-view, so carrying it unconditionally costs nothing. */
+button,
+a,
+input,
+select,
+textarea,
+[tabindex] {
+  scroll-margin-bottom: calc(
+    var(--space-2xl) + var(--size-nav-height) + var(--space-lg)
+  );
+  scroll-margin-top: var(--space-2xl);
 }
 
 .visually-hidden {

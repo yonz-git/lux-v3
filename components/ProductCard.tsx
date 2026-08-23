@@ -2,6 +2,7 @@ import styles from "./ProductCard.module.css";
 import { Tag } from "./Tag";
 import { CameraIcon } from "./icons";
 import { fullName, type CatalogProduct } from "@/lib/products";
+import { useProductPhoto } from "@/lib/useProductPhoto";
 
 /**
  * The big product card on `04 — Confirm product` (577:1430) and
@@ -11,10 +12,14 @@ import { fullName, type CatalogProduct } from "@/lib/products";
  * size, and — on Confirm only — a description. Product match adds a "N% match"
  * `Tag` above the image and drops the description.
  *
- * ⚠️ THE IMAGE WELL IS A PLACEHOLDER. There is no product imagery in the file
- * and no product icon in the design system, so both comps draw a camera glyph on
- * `bg/surface-frost`. The well is OPAQUE — it stands in for a photograph, and a
- * frosted one would show the canvas gradient through the "image".
+ * ⚠️ THE IMAGE WELL WAS A PLACEHOLDER. There was no product imagery in the
+ * file and no product icon in the design system, so both comps draw a camera
+ * glyph on `bg/surface-frost` — still the fallback here when `product` has no
+ * `imageUrl`. A product sourced from Open Beauty Facts (a live search result,
+ * or a scan match run through `useEnrichedProduct`) carries a real photo,
+ * which fills the same OPAQUE well instead. It stays opaque either way — a
+ * frosted well would show the canvas gradient through the photo. Same
+ * broken/near-blank fallback as ProductThumb, via `useProductPhoto`.
  */
 export function ProductCard({
   product,
@@ -26,6 +31,8 @@ export function ProductCard({
   matchScore?: number;
   showDescription?: boolean;
 }) {
+  const { showPhoto, onLoad, onError } = useProductPhoto(product.imageUrl);
+
   return (
     <div className={styles.card}>
       {matchScore != null && (
@@ -35,13 +42,26 @@ export function ProductCard({
       )}
 
       <div className={styles.image} aria-hidden="true">
-        <CameraIcon className={styles.glyph} />
+        {showPhoto ? (
+          <img
+            src={product.imageUrl}
+            alt=""
+            className={styles.photo}
+            onLoad={onLoad}
+            onError={onError}
+          />
+        ) : (
+          <CameraIcon className={styles.glyph} />
+        )}
       </div>
 
       <p className={`${styles.name} t-h5`}>{fullName(product)}</p>
       <p className={`${styles.size} t-label-sm`}>{product.size}</p>
       {showDescription && product.description && (
-        <p className={`${styles.description} t-body3`}>{product.description}</p>
+        <div className={styles.ingredients}>
+          <p className={`${styles.ingredientsLabel} t-label-sm`}>Ingredients</p>
+          <p className={`${styles.description} t-body3`}>{product.description}</p>
+        </div>
       )}
     </div>
   );

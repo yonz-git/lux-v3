@@ -56,8 +56,19 @@
   --color-bg-surface-frost: var(--color-neutral-100);
   --color-bg-brand: var(--color-indigo-700);
   --color-bg-brand-hover: var(--color-indigo-800);
-  --color-bg-bubble-ai: var(--color-blue-50);
-  --color-bg-bubble-user: var(--color-sage-300);
+  /* ⚠️ A DIRECT VALUE, NOT `var(--color-blue-50)`. Changed to #dbeded on
+     22 Aug 2026. It pairs with --color-bg-bubble-user (#cadfdf) on the same
+     hue — both G == B — differing only in lightness, so the two are held the
+     same way rather than one aliasing a ramp. `blue/50` (#edf8fb) existed only
+     for this bubble and is now unreferenced; retune, repurpose or delete it. */
+  --color-bg-bubble-ai: #dbeded;
+  /* ⚠️ A DIRECT VALUE, NOT `var(--color-sage-300)`. Changed to #cadfdf on
+     22 Aug 2026. It used to alias sage/300, which `bg/canvas` ALSO uses — so
+     retuning the primitive would have moved the app background with the bubble.
+     Nearest ramp value is sage/200 (#cddddb), distance 5: the same step,
+     slightly cooler, so this is not a new ramp step either. Matches the Figma
+     variable, which holds the value directly for the same reason. */
+  --color-bg-bubble-user: #cadfdf;
   --color-text-primary: var(--color-neutral-800);
   --color-text-secondary: var(--color-neutral-600);
   --color-text-muted: var(--color-neutral-400);
@@ -88,11 +99,27 @@
   /* SOLID nav background — the prefers-reduced-transparency fallback for
      surface/frost-nav. Same colour, no alpha; a fallback must not be
      translucent. Was #9caeaf @55%, a different hue AND translucent. */
-  --color-bg-nav: #dde8eb;
+  --color-bg-nav: #dbeded;
+  /* bg/frost-light — the OPAQUE counterpart of surface/frost-light
+     (#f4feff @55%), the same relationship bg/nav has to surface/frost-nav.
+     Added 22 Aug 2026 for the face-diagram region chips, which sit ON a
+     frost-light card and dissolved into it at 55%. Also the correct
+     prefers-reduced-transparency fallback for frost-light surfaces, which until
+     now fell back to bg/surface-frost (#eef6f7) — a different colour. */
+  --color-bg-frost-light: #f4feff;
+  /* bg/progress-track — the UNFILLED part of the step-progress track.
+     Added 22 Aug 2026. It used to borrow border/subtle: a hairline colour doing
+     duty as a fill, which meant the track could not be tuned without moving
+     every frosted-row border with it. The filled part is still bg/brand. */
+  --color-bg-progress-track: #ecf8f9;
   --color-surface-frost-light: rgba(244, 254, 255, 0.55);
   /* The nav pill. 83% — NOT the old 17%, which let the Continue button read
      straight through the bar. */
-  --color-surface-frost-nav: rgba(221, 232, 235, 0.83);
+  /* #dbedede0 — set 22 Aug 2026 (was #dde8eb @83%). Shares its colour with
+     bg/bubble-ai, so the nav sits on the same hue as the AI bubble.
+     ⚠️ THE SEARCH FIELD BINDS THIS TOO, in Figma and here — the frosted pill is
+     one surface used by two components, so they move together by design. */
+  --color-surface-frost-nav: rgba(219, 237, 237, 0.878);
   --color-surface-card-desktop: rgba(237, 248, 251, 0.55);
   --color-surface-data: rgba(125, 167, 169, 0.44);
   --color-surface-data-strong: rgba(125, 167, 169, 0.62);
@@ -125,7 +152,15 @@
   /* The Secondary button surface. Added to `02 Color` on 21 Aug 2026 while
      building PRODUCTS: `Style=Secondary, State=Default` (37:11) painted a loose
      #ffffffdb and was the last unbound fill in the Button set. */
+  /* ⚠️ ORPHANED 22 Aug 2026. Secondary was a flat white until it was given
+     gradient/secondary; nothing binds this any more. Kept only so the next
+     re-export does not silently resurrect it — retune, repurpose or delete. */
   --color-button-bg-secondary: rgba(255, 255, 255, 0.86);
+  /* The Secondary gradient, mirroring button/bg-default-start / -end for
+     Primary. Taken from Small Button / Secondary, which already used it, so
+     Secondary now reads the same at both sizes. Hover swaps the two ends. */
+  --color-button-bg-secondary-start: #deeff3;
+  --color-button-bg-secondary-end: #b7c6ca;
   --color-gradient-canvas-start: #dce7ea;
   --color-gradient-canvas-mid: #cedee2;
   --color-gradient-canvas-end-mobile: #acc5cc;
@@ -279,6 +314,11 @@
   --duration-base: 200ms;
   --duration-slow: 320ms;
   --duration-slower: 480ms;
+  /* duration/hover — added to `09 Motion` on 22 Aug 2026 with the new button
+     hover. 400 sits deliberately between slow (320) and slower (480): the
+     gradient reversing end for end needs longer to read than a colour tweak,
+     and shorter than a hero entrance. */
+  --duration-hover: 400ms;
   --duration-breath-phase: 4000ms;
   --ease-standard: cubic-bezier(0.2, 0, 0, 1);
   --ease-decelerate: cubic-bezier(0, 0, 0, 1);

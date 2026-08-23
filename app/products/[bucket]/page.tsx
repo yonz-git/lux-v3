@@ -1,19 +1,20 @@
 import { notFound } from "next/navigation";
 import { BucketProductsList } from "@/components/BucketProductsList";
-import { BUCKETS, type BucketId } from "@/lib/products";
+import { ALL_BUCKETS, type BucketId } from "@/lib/products";
 
 /**
- * A period's product list — `Long-term products list` (581:1593 / 583:1924).
+ * A group's product list — `Long-term products list` (581:1593 / 583:1924).
  *
- * Only the long-term list is drawn, but `My Products` links to all three
- * periods and the screen is entirely bucket-derived, so one dynamic route
- * serves them rather than two of the three links going nowhere.
+ * Only the long-term list is drawn, but `My Products` links to every group the
+ * user can reach and the screen is entirely bucket-derived, so one dynamic
+ * route serves them all rather than the sibling links going nowhere.
  *
- * `/products/added` is a static sibling and wins over this segment, so the
- * confirmation screen is never mistaken for a bucket named "added".
+ * ALL_BUCKETS, not BUCKETS: `/products/not-sure` has to resolve too. The hub
+ * only links to it once it is non-empty, but a route that 404s for a group the
+ * store can genuinely hold is a trap for anyone who bookmarks it.
  */
 export function generateStaticParams() {
-  return BUCKETS.map((b) => ({ bucket: b.id }));
+  return ALL_BUCKETS.map((b) => ({ bucket: b.id }));
 }
 
 export default async function Page({
@@ -22,6 +23,6 @@ export default async function Page({
   params: Promise<{ bucket: string }>;
 }) {
   const { bucket } = await params;
-  if (!BUCKETS.some((b) => b.id === bucket)) notFound();
+  if (!ALL_BUCKETS.some((b) => b.id === bucket)) notFound();
   return <BucketProductsList bucket={bucket as BucketId} />;
 }

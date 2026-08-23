@@ -18,8 +18,8 @@
   border-radius: var(--radius-full);
   background: var(--color-surface-frost-nav);
   box-shadow: var(--shadow-frosted-row);
-  backdrop-filter: blur(var(--blur-card));
   -webkit-backdrop-filter: blur(var(--blur-card));
+  backdrop-filter: blur(var(--blur-card));
 }
 
 /* The ring goes on the PILL, not the input inside it: a 2px outline drawn tight
@@ -71,7 +71,7 @@
 @media (prefers-reduced-transparency: reduce) {
   .field {
     background: var(--color-bg-nav);
-    backdrop-filter: none;
     -webkit-backdrop-filter: none;
+    backdrop-filter: none;
   }
 }

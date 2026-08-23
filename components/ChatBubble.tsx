@@ -23,6 +23,7 @@ export function ChatBubble({
   align,
   full,
   className,
+  "aria-hidden": ariaHidden,
   children,
 }: {
   from: "ai" | "user";
@@ -31,11 +32,17 @@ export function ChatBubble({
   full?: boolean;
   /** applied to the bubble itself, not the row — e.g. an entrance animation */
   className?: string;
+  /**
+   * Hide the bubble from assistive tech. Only for a bubble whose text is already
+   * announced by something else — 00 Welcome marks its question up as the page
+   * `<h1>`, so the bubble would otherwise read it out a second time.
+   */
+  "aria-hidden"?: boolean;
   children: ReactNode;
 }) {
   const resolvedAlign = align ?? (from === "ai" ? "left" : "right");
   return (
-    <div className={styles.row} data-align={resolvedAlign}>
+    <div className={styles.row} data-align={resolvedAlign} aria-hidden={ariaHidden}>
       <div
         className={[styles.bubble, "t-body2-body1", className].filter(Boolean).join(" ")}
         data-from={from}

@@ -22,8 +22,8 @@ import { type StepId, stepFor, prevHref, nextHref } from "@/lib/flow";
  * On desktop the content and the Continue button move INSIDE one centred
  * frosted card (`width/card-form`, 920). On mobile there is no card: the content
  * sits on the gradient and Continue is pushed to the bottom by a flex spacer.
- * Continue is full-width on mobile and 280 centred on desktop — verified across
- * all nine GETTING STARTED desktop frames.
+ * Continue is full-width on mobile and 280 centred on desktop, on every
+ * investigation screen — GETTING STARTED and PRODUCTS add-flow alike.
  *
  * ⚠️ CONTINUE IS DISABLED UNTIL THE STEP IS ANSWERED. The rule lives on the step
  * in `lib/flow.ts`, not in the screen, so a new screen cannot forget it.
@@ -33,10 +33,10 @@ export function QuestionScreen({
   children,
   continueLabel = "Continue",
   gapBeforeContinue,
-  continueWidth = "compact",
   footer,
   onContinue,
   contentGap,
+  titleVisible,
 }: {
   id: StepId;
   children: ReactNode;
@@ -44,17 +44,6 @@ export function QuestionScreen({
   /** desktop-only gap between the content and Continue, in px. Defaults to the
    *  card's own 32; 01 uses 104 because Figma adds an extra spacer there. */
   gapBeforeContinue?: number;
-  /**
-   * How wide Continue is ON DESKTOP. `compact` is 280 centred, which is what
-   * every GETTING STARTED desktop frame uses.
-   *
-   * ⚠️ `full` exists because the eight PRODUCTS add-flow desktop frames stretch
-   * Continue to the full 824 card width instead — consistently, on all eight.
-   * That is a real inconsistency between the two sections in Figma, not a
-   * transcription slip, so it is expressed rather than normalised away. Mobile
-   * is full-width in both sections.
-   */
-  continueWidth?: "compact" | "full";
   /**
    * An extra control ABOVE Continue, inside the same footer — `04a — Long-term
    * products · filled` puts a secondary "Done" there. Continue stays the last
@@ -75,10 +64,20 @@ export function QuestionScreen({
    * carries its own optical weight, so the comps let it sit closer to the track.
    */
   contentGap?: number;
+  /**
+   * Render the step's title as visible copy instead of visually-hidden.
+   *
+   * ⚠️ EVERY SCREEN GETS AN `<h1>` EITHER WAY — the four PRODUCTS screens that
+   * show a title just show the same string the others hide. Before this there
+   * was no heading on any flow screen at all: the question lives in a chat
+   * bubble, which is a div, so a screen-reader user had nothing to navigate by.
+   * The string comes from the step, so a new screen cannot forget it.
+   */
+  titleVisible?: boolean;
 }) {
   const router = useRouter();
   const { answers } = useInvestigation();
-  const { step, isComplete } = stepFor(id);
+  const { step, isComplete, title } = stepFor(id);
   const next = nextHref(id);
   const canContinue = isComplete(answers);
 
@@ -104,6 +103,13 @@ export function QuestionScreen({
               QuestionScreen, so without a key the DOM is reused and the
               animation never re-runs. */}
           <div className={styles.content} data-reveal data-reveal-stagger key={id}>
+            <h1
+              className={
+                titleVisible ? `${styles.title} t-h4-h3` : "visually-hidden"
+              }
+            >
+              {title}
+            </h1>
             {children}
           </div>
 
@@ -120,7 +126,7 @@ export function QuestionScreen({
           {/* width is owned by .continue, not Button's `fullWidth`: both are
               single-class selectors, so `fullWidth` would win or lose on bundle
               order rather than intent. 100% on mobile, 280 centred on desktop. */}
-          <div className={styles.footer} data-width={continueWidth}>
+          <div className={styles.footer}>
             {footer}
             <Button
               className={styles.continue}

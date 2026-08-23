@@ -1,25 +1,11 @@
-/* 01 — Start investigation. Figma mobile 476:2542 / desktop 476:2670.
-   The content column is a 16px stack: disclaimer card, question, chip grid,
-   other-row. */
-
-.disclaimer {
-  display: flex;
-  flex-direction: column;
-  gap: var(--space-sm);
-  padding: 18px var(--space-xl);
-
-  border-radius: var(--radius-lg);
-  background: var(--color-surface-frost-light);
-  border: var(--border-width-hairline) solid var(--color-border-subtle);
-  box-shadow: var(--shadow-frosted-row);
-  backdrop-filter: blur(var(--blur-card));
-  -webkit-backdrop-filter: blur(var(--blur-card));
-}
-
-.disclaimerLabel,
-.disclaimerBody {
-  color: var(--color-text-secondary);
-}
+/* 01 + 03b combined — Start investigation and Location. Figma mobile
+   476:2542+476:2802 / desktop 476:2670+476:2934. The content column is a 16px
+   stack: disclaimer card, question, chip grid, face diagram, location chip
+   grid, other-row, take-a-photo button.
+   ⚠️ THE OTHER-ROW SITS AFTER THE LOCATION CHIPS NOW, not right under the
+   symptom chip grid as Figma draws it — a prototype-only reorder, not yet
+   reflected back in Figma. It still gets its margin-top from the shared
+   .question/.chips/.other rule below regardless of what precedes it. */
 
 .question {
   color: var(--color-text-primary);
@@ -28,7 +14,6 @@
 /* The content stack. Figma mobile 476:2542 spaces these four blocks 60 apart —
    off the spacing scale there too, so it is written as a literal rather than
    snapped to 48 or 64. Desktop (476:2670) keeps the card's own 32 gap. */
-.question,
 .chips,
 .other {
   margin-top: 60px;
@@ -37,49 +22,92 @@
 .chips {
   display: flex;
   flex-wrap: wrap;
+  justify-content: center;
   /* 10 is the Chip grid gap in Figma and is off the spacing scale there too */
   gap: 10px;
 }
 
-.other {
+/* .other is now just the spacing wrapper — it holds either the collapsed
+   button or the revealed TextField, so the margin-top rule above stays on one
+   selector regardless of which is showing. */
+
+.otherButton {
   display: flex;
   align-items: center;
   gap: var(--space-sm);
   width: 100%;
-  /* see OptionRow: min-height instead of vertical padding, so the 1px border
-     does not push the row to 58 */
   min-height: 56px;
   padding: 0 18px;
   text-align: left;
 
   border-radius: var(--radius-lg);
   background: var(--color-surface-frost-light);
-  border: var(--border-width-hairline) solid var(--color-border-subtle);
   box-shadow: var(--shadow-frosted-row);
-  backdrop-filter: blur(var(--blur-card));
   -webkit-backdrop-filter: blur(var(--blur-card));
+  backdrop-filter: blur(var(--blur-card));
   color: var(--color-text-primary);
-
-  transition: border-color var(--duration-base) var(--ease-standard);
 }
 
-.other:hover {
-  border-color: var(--color-border-default);
+.otherFieldWrap {
+  position: relative;
 }
 
-@media (hover: none) {
-  .other:hover {
-    border-color: var(--color-border-subtle);
-  }
+/* No design-system component for a clear button on a free-text field — this is
+   composed from the same frosted-circle language as a Chip, sized down. */
+.otherClear {
+  position: absolute;
+  top: 50%;
+  right: 10px;
+  transform: translateY(-50%);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 20px;
+  height: 20px;
+
+  border: var(--border-width-hairline) solid var(--color-border-subtle);
+  border-radius: var(--radius-full);
+  background: var(--color-surface-frost-light);
+  color: var(--color-text-muted);
+
+  transition: color var(--duration-fast) var(--ease-standard);
+}
+
+.otherClear:hover {
+  color: var(--color-text-primary);
+}
+
+/* icon scaled down by the same ratio as the button itself, 20/36 of the
+   CloseIcon's default 24px (`size-icon-md`).
+   ⚠️ `!important` IS REQUIRED HERE. `icons.tsx` sets width/height via an
+   inline `style` object, and inline styles beat any external stylesheet rule
+   at equal or higher specificity — a plain class here is silently ignored.
+   Verified: without `!important` the SVG still computed to 24px inside a
+   20px circle. Scoped to this one icon only. */
+.otherClearIcon {
+  width: calc(24px * 20 / 36) !important;
+  height: calc(24px * 20 / 36) !important;
 }
 
 .otherLabel {
   color: var(--color-text-secondary);
 }
 
+/* ---- Location half of the merge (formerly Location.module.css) --------- */
+
+.diagram {
+  margin-top: var(--space-xl);
+}
+
+/* a real Secondary Button (Button.module.css `.secondary` owns the visual
+   recipe) — this class is just the spacing that used to live on the
+   hand-built frosted row. */
+.takePhoto {
+  margin-top: var(--space-lg);
+}
+
 @media (min-width: 1024px) {
   /* Figma 476:2670 — the desktop card is gap 48 with its children CENTRED. */
-  .question,
   .chips,
   .other {
     margin-top: var(--space-5xl); /* 48 */
@@ -89,20 +117,41 @@
     text-align: center;
   }
 
-  .disclaimer {
-    padding: 18px var(--space-2xl); /* 24 sides on desktop, 20 on mobile */
-  }
-
   .chips {
     gap: var(--space-md); /* 12 on desktop, 10 on mobile */
+  }
+
+  .diagram {
+    /* the diagram does not need the full 824 card width to read */
+    max-width: 480px;
+    /* ⚠️ CENTRED — a deliberate departure from the comp, which left-aligns it at
+       the card's content edge (Figma 476:2934 puts face-diagram-card at x=308,
+       the same x as everything else in the card).
+       ⚠️ `width: 100%` IS LOAD-BEARING. Auto inline margins on a flex item
+       OVERRIDE the default stretch, so `margin-inline: auto` alone dropped the
+       item to its content width — and its only child is `width: 100%` of that,
+       so the whole diagram collapsed to 3px. The explicit width restores the
+       size, max-width caps it, and the auto margins centre what is left. */
+    width: 100%;
+    margin-inline: auto;
+  }
+
+  /* Match Continue's desktop footprint (QuestionScreen.module.css
+     `.footer .continue`) — 280 centred, not the full
+     824 card width `fullWidth` gives it on mobile. Element+class beats
+     Button.module.css's single `.full` class on specificity, so this wins
+     regardless of import order. */
+  a.takePhoto {
+    width: 180px;
+    align-self: center;
   }
 }
 
 @media (prefers-reduced-transparency: reduce) {
   .disclaimer,
-  .other {
+  .otherButton {
     background: var(--color-bg-surface-frost);
-    backdrop-filter: none;
     -webkit-backdrop-filter: none;
+    backdrop-filter: none;
   }
 }

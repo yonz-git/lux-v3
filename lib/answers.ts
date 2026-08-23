@@ -6,6 +6,10 @@ import type { ProductDraft, SavedProduct } from "./products";
  *
  * Keyed by StepId so a screen and its answer cannot drift apart. Single-select
  * steps store a string, multi-select steps store an array.
+ *
+ * ⚠️ `tendencies` is the one exception: it lives under the `skin-type` step
+ * (both questions are asked on that one screen — see SkinType.tsx) but keeps
+ * its own answer key since it is a separate multi-select answer.
  */
 export type Answers = Partial<{
   start: string[];
@@ -14,23 +18,21 @@ export type Answers = Partial<{
   conditions: string[];
   /** free text for the "Other" option on 02c — required once Other is ticked */
   conditionsOther: string;
-  symptoms: string[];
-  /** free text for the "Other" option on 03a — required once Other is ticked */
-  symptomsOther: string;
   location: string[];
   selfie: string;
-  timing: { onset?: string; status?: string; date?: string };
-  /** step 8 — the products the user has added, and what the hub reads */
+  timing: { status?: string; date?: string };
+  /** step 5 — the products the user has added, and what the hub reads */
   products: SavedProduct[];
-  /** the product currently being added: search -> confirm, or scan -> match */
+  /** the product currently being added, while the add-product tray walks it
+   *  from "is this it?" to "how long have you used it?" */
   productDraft: ProductDraft;
   /**
-   * `04 — Scan product`'s capture, mirroring `selfie`. The viewfinder is a
+   * The scan view's capture, mirroring `selfie`. The viewfinder is a
    * placeholder, so this only records THAT a capture happened — which is what
    * unlocks Continue and reveals the match.
    */
   scan: string;
-  /** what `04 — Search by name` currently has typed in it */
+  /** what the tray's search field currently has typed in it */
   productQuery: string;
 }>;
 

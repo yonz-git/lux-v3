@@ -10,9 +10,21 @@ This block is written and re-added by `next dev` — verify at `node_modules/nex
 
 # LUX — working rules for this repo
 
-LUX is an AI-guided skincare **investigation** web app. The design system is the
-source of truth and it lives in Figma, not here. This repo is the prototype of
-it. Screens are built in Figma first, then translated.
+LUX is an AI-guided skincare **investigation** web app. The design system —
+tokens, components, type, colour — is the source of truth and it lives in Figma.
+
+**⚠️ THE PROTOTYPE LEADS ON FLOW.** Screens used to be built in Figma first and
+translated here. That still holds for every VISUAL decision: a component's size,
+radius, type and colour must match Figma to the pixel, and inventing a treatment
+is drift. It no longer holds for the SHAPE OF A FLOW — what the steps are, what
+order they run in, and what each one asks. Those get decided here, in the thing
+that can actually be walked, and Figma catches up. The PRODUCTS remap below is
+the first change made under that rule, and the reason for it: the designed flow
+walked three time periods across six screens, two of those periods were never
+drawn, and the three rows meant to select a period all silently selected the
+same one. None of that is visible in a comp; all of it is obvious in one minute
+of clicking. Flows that have diverged carry a `⚠️ NOT IN FIGMA` comment naming
+what changed and why — keep writing them.
 
 **Figma file:** `wIftBhzkn8E4wjZwgdH71n`
 **Screens page:** `06. Screen Designs` (`453:2252`). Each section has a
@@ -24,46 +36,64 @@ it. Screens are built in Figma first, then translated.
   `02a — Skin type`, `02b — Skin tendencies`, `02c — Known conditions`,
   `03a — Observable symptoms`, `03b — Location`, `03b — Selfie capture`,
   `03c — Timing`. Routes under `/investigation/<step>`.
-- **PRODUCTS** — all 12 screens x 2 breakpoints. Six add-flow screens under
-  `/investigation/products*` (step 8/8, nav `check`) and three hub routes under
-  `/products*` (nav `products`).
+- **PRODUCTS** — ONE add-flow screen under `/investigation/products` (step 5/5,
+  nav `check`) and two hub routes under `/products*` (nav `products`). It was
+  twelve screens; see the remap below.
 
 `lib/flow.ts` owns the step order, the 1-based track position, the Figma frame
 ids AND each step's `isComplete` rule. `lib/products.ts` owns the product
-catalogue, the three periods and the duration→period mapping.
+catalogue, the groups and the duration→group mapping.
 
 ### PRODUCTS — the route map
 
-| Route | Figma mobile / desktop | Notes |
-| --- | --- | --- |
-| `/investigation/products` | `574:1342` / `582:1612` | intro; replaced the old placeholder |
-| `/investigation/products/long-term` | `574:1391` / `582:1662` (+ filled `578:1557` / `582:1918`) | one screen, two states, plus the method sheet |
-| `/investigation/products/search` | `576:1428` / `582:1707` | |
-| `/investigation/products/confirm` | `577:1430` / `582:1768` | |
-| `/investigation/products/scan` | `577:1498` / `582:1819` | |
-| `/investigation/products/match` | `578:1482` / `582:1862` | |
-| `/products/added` | `579:1540` / `583:1832` | HUB — nav `products`, no header |
-| `/products` | `579:1574` / `583:1863` (+ filled `579:1607` / `583:1889`) | HUB landing, no back chevron |
-| `/products/[bucket]` | `581:1593` / `583:1924` | HUB pushed view |
+| Route                     | Figma mobile / desktop                                     | Notes                                                |
+| ------------------------- | ---------------------------------------------------------- | ---------------------------------------------------- |
+| `/investigation/products` | `574:1342` / `582:1612` (+ list `574:1391`, `578:1557`)    | step 5. `YourProducts` + the add-product tray on top |
+| `/products`               | `579:1574` / `583:1863` (+ filled `579:1607` / `583:1889`) | HUB landing, no back chevron                         |
+| `/products/[bucket]`      | `581:1593` / `583:1924`                                    | HUB pushed view, serves every group                  |
 
-**⚠️ STEP 8 IS A FORK, NOT A LINE.** "Add product" opens a method sheet offering
-search or scan; the two branches rejoin at `Product added`. The three screens
-whose array neighbour is the wrong answer name their own `back` / `next` on the
-step in `lib/flow.ts` rather than the order being fudged.
+**⚠️ STEP 5 IS ONE SCREEN AND ONE TRAY — the twelve-screen flow is gone.** The
+design walked three time PERIODS in sequence: an intro promising them, a
+per-period list screen, and four routed add screens (`search` → `confirm`,
+`scan` → `match`) rejoining at `Product added`. What actually shipped from that
+was broken in four ways at once — the intro's three period rows all opened the
+tray without setting a period so everything filed under Long term; `bucketFor()`
+and `durationForBucket()` sat in one module as mutual inverses with no answer to
+which was authoritative; two of the three promised periods were never drawn at
+either breakpoint; and Recent was unreachable until you already owned a
+long-term product. Deleted: `AddProductsIntro`, `LongTermProducts`,
+`SearchProducts`, `ScanProduct`, `ProductConfirmScreen`, `ProductAdded`, and the
+six routes under them.
+
+**The shape now: add a product, say how long you have used it, the app sorts.**
+`Your products` is one list with one `Add product` row. The tray runs
+method → search-or-scan → "is this it?" → **"how long have you used it?"** → added,
+without ever navigating. That last question is the ONLY input to `bucketFor()`,
+and it is asked with the product on screen — because how long you have used
+something is a fact about that product, not a mode you enter before searching.
+
+**⚠️ THE LIST GROUPS ITSELF, LIVE.** `groupProducts()` splits the added products
+and omits empty groups; `YourProducts` renders a flat list while everything sits
+in one group and grows headers the moment a second fills. The user watches the
+sorting happen, which is why there is no end-of-step "here's how I sorted them"
+screen — that screen would only show a result already seen. The HUB is the
+opposite case on purpose: it always lists all three designed periods including
+the empty ones, because there a missing row reads as a lost category.
+
+**⚠️ "Not sure" IS A FOURTH GROUP, AND IT IS NOT IN FIGMA.** With no period mode
+left to stand in, `bucketFor("Not sure", current)`'s fallback had nothing to read
+`current` from. Binning it into Long term was the tempting fix and it is wrong:
+for a flare investigation, "I don't know how long" is diagnostically different
+from "months", and correlating products against step 4's flare date is the whole
+point. `UNSORTED_BUCKET` is kept OUT of `BUCKETS` and appended by `MyProducts`
+only when non-empty, so the hub still always shows exactly the three designed
+periods. `/products/not-sure` resolves — `ALL_BUCKETS`, not `BUCKETS`.
 
 **⚠️ HUB vs FLOW — the header tells you which, and `HubScreen` vs
 `QuestionScreen` encodes it.** A screen is an investigation step if and only if
 it carries BOTH a progress track AND `Save & exit`. Hub screens carry neither,
 their nav reads `products`, and a hub LANDING has no back chevron either
-(nothing to go back to). `Product added` is a hub screen even though it is
-reached from inside the flow — its wireframe id is `11:*`, not `8:*`.
-
-**⚠️ ONLY THE LONG-TERM PERIOD IS DESIGNED.** The intro promises three time
-periods; Recent and New addition are drawn nowhere, at either breakpoint or in
-the wireframes. Continue from the bucket screen therefore ends step 8 at
-`/products`. `BucketProductsList` is bucket-derived so all three hub categories
-link somewhere real, and `bucketFor()` maps the duration answer to a period so
-the hub can ever show a non-zero Recent. See the comments on both.
+(nothing to go back to).
 
 ## The prototype starts EMPTY — and Continue is gated
 
@@ -79,7 +109,7 @@ so a new screen cannot forget it. `QuestionScreen` reads it and owns the button.
 Answers live in `components/InvestigationProvider.tsx` — React context,
 **in memory only**. Read them with `useInvestigation()`. It is provided from
 `app/layout.tsx`, i.e. app-wide: the PRODUCTS hub under `/products` reads the
-same products step 8 writes and is reached from the nav rather than from inside
+same products step 5 writes and is reached from the nav rather than from inside
 the flow, so a provider scoped to `/investigation` handed it an empty list.
 
 ⚠️ **DO NOT PERSIST THE ANSWER STORE.** An earlier build wrote to localStorage
@@ -102,10 +132,8 @@ answer being absent (deep links) rather than rendering an empty bubble.
 
 ## Non-negotiables
 
-1. **`app/tokens.css` is generated from the Figma variables. Never hand-edit a
-   value there and never hardcode a colour, radius, spacing or font size in a
-   component.** If a value you need is missing, it is missing in Figma too — add
-   the variable there first, then re-export.
+1. \*\*`app/tokens.css` is generated from the Figma variables. Might have been edited with claude code.
+
 2. **Never reference the `01 Primitives` block** (`--color-indigo-*`,
    `--color-sage-*`, …) from a component. Bind to the semantic tokens.
 3. **Every piece of text uses a `t-*` class** from `globals.css`, one per Figma
@@ -113,78 +141,70 @@ answer being absent (deep links) rather than rendering an empty bubble.
 4. **Weights are Light / Regular / Medium only.** SemiBold and Bold are not in
    the ramp. `--font-weight-semibold` and `--font-weight-bold` exist as tokens
    but using them is drift.
-5. **Buttons are `Button` (Regular 15/22)** — deliberately Regular, never Medium.
-6. **Never hand-build a button.** Use `components/Button.tsx`. The two stacked
-   drop shadows are part of the component; a hand-rolled gradient div loses them.
-6a. **Button states — the variant names are CORRECT as of 21 Aug 2026.**
-   Primary's Hover and Disabled names used to be swapped; they were renamed with
-   **no visual change** (verified pixel-identical). The names and the showcase
-   `row/Primary` (`160:15`) now agree, so **any older note saying "trust the
-   showcase, not the variant names" is stale.** Secondary and Ghost were always
-   named correctly.
 
-   | State | Variant | Cell | Treatment |
-   | --- | --- | --- | --- |
-   | Default | `37:5` | `160:17` | `gradient/brand` #bbd3d9 → #637073, label `text/on-brand`, NO stroke |
-   | **Hover** | `37:9` | `160:23` | the same gradient at node **opacity 0.4** — no colour change |
-   | **Disabled** | `37:13` | `160:20` | **`state/disabled-bg` #eef6f7 @51%** + **1px `border/default` #cbcdd4** + label `text/muted` #9a9aa5, both shadows kept, opacity 1 |
+   **One rule for every style:** hover runs the gradient END FOR END at full
+   strength; disabled fades the whole control to `opacity/disabled` (0.4).
 
-   Ignore `button/bg-hover-*` and `button/bg-pressed-*` — the component has never
-   used them. There is no `State=Pressed` for any style, and
-   `Style=Secondary, State=Hover` is still missing from the set.
+   | Style     | Default                                             | Hover                                                                 | Disabled                    |
+   | --------- | --------------------------------------------------- | --------------------------------------------------------------------- | --------------------------- |
+   | Primary   | `37:5` `gradient/brand`                             | `37:9` `gradient/brand-hover`                                         | `37:13` same gradient @ 0.4 |
+   | Secondary | `37:11` `gradient/secondary` + 1px `border/default` | `749:3338` `gradient/secondary-hover`                                 | `37:15` same gradient @ 0.4 |
+   | Ghost     | `37:17` no fill                                     | `37:19` ⚠️ still `bg/accent-mint`, a variable no longer in `02 Color` | `37:21` @ 0.4               |
 
-   ⚠️ **The disabled state carries a 1px `border/default` stroke that the
-   enabled button does not.** Easy to miss and easy to omit. `Button.module.css`
-   declares the border transparent in every state so the box never changes size
-   and the colour can transition.
+   **Motion:** `duration/hover` (**400ms**, a new `09 Motion` variable) on
+   `ease/standard`, driving the gradient reversal. The Figma set carries this as
+   a real **hover interaction** (`Default → Hover`, Smart Animate, 400ms), so the
+   prototype plays the reversal rather than only showing the end state.
 
-   ⚠️ **The disabled surface is TRANSLUCENT** — `state/disabled-bg`
-   (`#eef6f7 @51%`), not the opaque `bg/surface-frost`. It reads too bright on
-   screen when opaque, and translucency lets it soften against whatever is
-   behind it (visibly better on the sage check tray). **Every** disabled button
-   uses it — Primary, Secondary, Back and both Small Buttons — with node
-   opacity 1. Secondary used to be a 0.4 node fade; that is gone.
+   ⚠️ **The gradient reversal only animates because of the `--grad-*` plumbing.**
+   CSS cannot interpolate `background-image`, so swapping one `linear-gradient()`
+   for another snaps. The endpoints are registered `<color>` properties in
+   `globals.css`; swapping which token feeds which end cross-fades them.
 
-   Ignore `button/bg-hover-*` and `button/bg-pressed-*` either way — the
-   component never uses them — and note `Style=Secondary, State=Hover` is still
-   missing from the set.
+   **Same rule applied to** `Small Button / Primary` (`225:58` reversed, `225:59`
+   faded), `Small Button / Secondary` (`225:61` reversed — it had been a
+   _lightened_ gradient, a third treatment nothing else used; `225:62` faded) and
+   `Back button/Disabled` (`239:65`). Every disabled control in the file is now
+   its own default at 0.4.
 
-7. **The bottom nav is fixed and identical on every screen**: 24px from the
+5. **The bottom nav is fixed and identical on every screen**: 24px from the
    bottom, horizontally centred, `--z-nav`, 380 wide on mobile and 598 on
    desktop. `active="none"` is a real state (welcome, intro, onboarding), not a
    fallback.
-7a. ⚠️ **The nav is `surface/frost-nav` `#dde8eb @83%` — NOT 17%.** It used to be
+   7a. ⚠️ **The nav is `surface/frost-nav` `#dde8eb @83%` — NOT 17%.** It used to be
    17%, which is barely a tint: the Continue button and the last option rows read
    straight through the bar. Frosted does not mean see-through. The
    `prefers-reduced-transparency` fallback is `bg/nav`, now the SAME colour fully
-   opaque (`#dde8eb`) — it used to be `#9caeaf @55%`, a different hue *and* still
+   opaque (`#dde8eb`) — it used to be `#9caeaf @55%`, a different hue _and_ still
    translucent, which is not a fallback at all.
-8. **Chat bubbles carry an asymmetric tail corner, and NO border.** Three corners
+6. **Chat bubbles carry an asymmetric tail corner, and NO border.** Three corners
    at `--radius-bubble` (30), the sender-side corner at `--radius-bubble-tail`
    (1). AI = tail top-left, sits left. User = tail top-right, sits right. Four
    equal corners is wrong. A bubble is a **fill plus two shadows** — every
-   reference bubble in the design system has no stroke. Frosted *rows* and
-   *cards* do carry a 1px `border/subtle`; **do not merge the two recipes.**
-8a. **Bubbles are OPAQUE** — `--color-bg-bubble-ai` (#edf8fb) and
-   `--color-bg-bubble-user` (#bdd1d2), no backdrop blur and no
+   reference bubble in the design system has no stroke. Frosted _rows_ and
+   _cards_ do carry a 1px `border/subtle`; **do not merge the two recipes.**
+   8a. **Bubbles are OPAQUE** — `--color-bg-bubble-ai` (**#dbeded**) and
+   `--color-bg-bubble-user` (**#cadfdf**), both changed 22 Aug 2026. They are a
+   PAIR on one hue — G == B on both — differing only in lightness, and both hold
+   their value DIRECTLY rather than aliasing a ramp. No backdrop blur and no
    reduced-transparency fallback. They used to be built on
    `surface/frost-light` @55%, which let the canvas gradient through, so a
    bubble low on a screen rendered darker than one near the top. **Never put a
    translucent surface on a bubble.** Padding is 14/18 mobile, 14/22 desktop.
 
 8b. **A Figma stroke does not add to a frame's height; a CSS border does.** With
-   `box-sizing: border-box`, a 56-tall row with `padding: 15px` plus a 1px
-   border renders 58. Give these rows `min-height` and drop the vertical
-   padding — they are flex + centred, so they render identically and stay
-   exactly on the Figma height.
+`box-sizing: border-box`, a 56-tall row with `padding: 15px` plus a 1px
+border renders 58. Give these rows `min-height` and drop the vertical
+padding — they are flex + centred, so they render identically and stay
+exactly on the Figma height.
 8c. ⚠️ **A GRADIENT + A BORDER NEEDS `background-origin: border-box`.**
-   `background-origin` defaults to `padding-box` while `background-clip` defaults
-   to `border-box`, so a gradient is **sized to the padding box but painted into
-   the border box**. Add a border and the outermost 1px of every edge has no
-   gradient on it — the drop shadow shows through as a thin dark notch at the
-   widest point of each rounded end. It is subtle, and it looks like a rendering
-   glitch rather than a CSS mistake. Only background IMAGES are affected; a flat
-   `background-color` is not, which is why the frosted rows never showed it.
+`background-origin` defaults to `padding-box` while `background-clip` defaults
+to `border-box`, so a gradient is **sized to the padding box but painted into
+the border box**. Add a border and the outermost 1px of every edge has no
+gradient on it — the drop shadow shows through as a thin dark notch at the
+widest point of each rounded end. It is subtle, and it looks like a rendering
+glitch rather than a CSS mistake. Only background IMAGES are affected; a flat
+`background-color` is not, which is why the frosted rows never showed it.
 
 9. **Frosted surfaces always get a solid fallback** under
    `prefers-reduced-transparency`, and a translucent fill always needs its inner
@@ -208,7 +228,7 @@ answer being absent (deep links) rather than rendering an empty bubble.
     94 with two. Since a Figma stroke does not add to a frame's height and a CSS
     border does, write `padding: calc(14px - var(--border-width-hairline))` and
     the box lands on the design height in BOTH states. Used by `ProductList`,
-    `ProductCard`, `AddProductsIntro`'s note and the accordion card.
+    `ProductCard` and the accordion card.
 13. ⚠️ **THE UA `button` PADDING IS `1px 6px`, NOT ZERO.** A text-only button
     styled to a Figma height renders 2px too tall for no visible reason. The
     global reset zeroes it; every LUX button declares its own.
@@ -228,27 +248,28 @@ Each of these is composed from tokens in Figma too, so the code is not inventing
 a treatment — but there is no component to keep them in sync, and that is the
 risk. All are on the missing-from-the-DS list.
 
-| Need | Here | Note |
-| --- | --- | --- |
-| Date picker | `components/DateField.tsx` | `<input type="date">`'s popup is drawn by the browser and **cannot be styled** — no token or class reaches inside it. It rendered as a stock white Chrome calendar mid-flow. The DS has no calendar component either, so this is composed from tokens. |
-| Text input | `components/TextField.tsx` | `Search Field` (248:70) exists but is search-specific. `other-input` on 02c/03a and the 03c date field are all hand-composed in Figma. |
-| Face-region picker | `components/FaceDiagram.tsx` | The region coordinates ARE the design — "Cheeks (L)" only means the left cheek because of where it sits. Stored as % of the 392x300 card so it scales. |
-| Camera shutter | `SelfieCapture.module.css`, `ScanProduct.module.css` | No shutter component. Both viewfinders are placeholders, not `getUserMedia` — wiring a real camera would make the prototype demand a permission just to walk the flow. |
-| Modal tray | `components/Sheet.tsx` | `Bottom Sheet` (255:91) has no background blur and a fixed light content slot, so every tray in the file is hand-composed from the recipe. There is also **no scrim token** — `state/pressed-overlay` at 14% is the only darkening value LUX has and it is weak for a modal. |
-| Accordion | `components/BucketProductsList.tsx` | No accordion component. Composed from the frosted card recipe. |
-| Product imagery | `components/ProductThumb.tsx`, `ProductCard` | **No product or bottle icon exists outside the bottom nav**, so every thumb and image well in the file shows a camera glyph. Replace it in the DS first, not here. |
-| Opaque sage | `Sheet.module.css` | `surface/data-strong` is 62% and has no solid counterpart the way `bg/nav` is `surface/frost-nav`'s. The `prefers-reduced-transparency` tray composites the same sage over `bg/canvas`. |
+| Need               | Here                                                 | Note                                                                                                                                                                                                                                                                                                                                                                              |
+| ------------------ | ---------------------------------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Date picker        | `components/DateField.tsx`                           | `<input type="date">`'s popup is drawn by the browser and **cannot be styled** — no token or class reaches inside it. It rendered as a stock white Chrome calendar mid-flow. The DS has no calendar component either, so this is composed from tokens.                                                                                                                            |
+| Text input         | `components/TextField.tsx`                           | `Search Field` (248:70) exists but is search-specific. `other-input` on 02c/03a and the 03c date field are all hand-composed in Figma.                                                                                                                                                                                                                                            |
+| Face-region picker | `components/FaceDiagram.tsx`                         | The region coordinates ARE the design — "Cheeks (L)" only means the left cheek because of where it sits. Stored as % of the 392x300 card so it scales. ⚠️ The region chips are `bg/frost-light` (OPAQUE) as of 22 Aug 2026: they sit ON a frost-light card, so at 55% it was the same fill over the same fill and the pill had almost no edge. Selected stays `bg/brand` + white. |
+| Camera shutter     | `SelfieCapture.module.css`, `AddProductMethodSheet.module.css` | No shutter component. Both viewfinders are placeholders, not `getUserMedia` — wiring a real camera would make the prototype demand a permission just to walk the flow.                                                                                                                                                                                                            |
+| Modal tray         | `components/Sheet.tsx`                               | `Bottom Sheet` (255:91) has no background blur and a fixed light content slot, so every tray in the file is hand-composed from the recipe. There is also **no scrim token** — `state/pressed-overlay` at 14% is the only darkening value LUX has and it is weak for a modal.                                                                                                      |
+| Accordion          | `components/BucketProductsList.tsx`                  | No accordion component. Composed from the frosted card recipe.                                                                                                                                                                                                                                                                                                                    |
+| Search dropdown    | `AddProductMethodSheet.module.css` `.dropdown`        | `Search Field` (248:70) has no results popup, and the comps drew results as free-standing `ProductRow` cards on a routed screen. One frosted panel tucked 8 under the pill and inset 8 either side, capped at 296 with its own scroll. ⚠️ IN FLOW, NOT ABSOLUTE — the mobile tray is docked to the bottom edge and hugs its content, so an overlaid panel would open off the bottom of the viewport. |
+| Product imagery    | `components/ProductThumb.tsx`, `ProductCard`         | **No product or bottle icon exists outside the bottom nav**, so every thumb and image well in the file shows a camera glyph. Replace it in the DS first, not here.                                                                                                                                                                                                                |
+| Opaque sage        | `Sheet.module.css`                                   | `surface/data-strong` is 62% and has no solid counterpart the way `bg/nav` is `surface/frost-nav`'s. The `prefers-reduced-transparency` tray composites the same sage over `bg/canvas`.                                                                                                                                                                                           |
 
 ## Selection controls — the shape is the contract
 
 Not a style choice. It maps to the ARIA role and screen readers announce them
 differently.
 
-| Control | Shape | Cardinality | Role |
-| --- | --- | --- | --- |
-| Radio row | circle | exactly one | `role="radio"` |
-| Checkbox row | square | zero or more | `role="checkbox"` |
-| Chip | pill | zero or more, short labels | `role="checkbox"` |
+| Control      | Shape  | Cardinality                | Role              |
+| ------------ | ------ | -------------------------- | ----------------- |
+| Radio row    | circle | exactly one                | `role="radio"`    |
+| Checkbox row | square | zero or more               | `role="checkbox"` |
+| Chip         | pill   | zero or more, short labels | `role="checkbox"` |
 
 **Exclusive options** ("None", "Not sure", "Prefer not to say") stay
 **checkboxes** and keep `role="checkbox"`. Selecting one clears every other box;
@@ -259,12 +280,12 @@ mixing shapes in one group tells the user the whole group is single-select.
 
 "LUX motion is calm. Nothing snaps."
 
-| Token | Value | Use |
-| --- | --- | --- |
-| `--duration-fast` | 120ms | **hover, focus, small colour changes** |
-| `--duration-base` | 200ms | selection, chips, rows, toggles |
-| `--duration-slow` | 320ms | sheets, overlays, page-level reveals |
-| `--duration-slower` | 480ms | orb and hero entrances |
+| Token               | Value | Use                                    |
+| ------------------- | ----- | -------------------------------------- |
+| `--duration-fast`   | 120ms | **hover, focus, small colour changes** |
+| `--duration-base`   | 200ms | selection, chips, rows, toggles        |
+| `--duration-slow`   | 320ms | sheets, overlays, page-level reveals   |
+| `--duration-slower` | 480ms | orb and hero entrances                 |
 
 `--ease-standard` is the default for anything that enters and settles.
 
@@ -287,7 +308,7 @@ mixing shapes in one group tells the user the whole group is single-select.
   `forwards`, which keeps the animation in effect after it ends — and an opacity
   animation still in effect leaves a **persistent stacking context**. Every
   revealed block then paints in DOM order regardless of `z-index`, so a popover
-  inside an early block renders *underneath* the blocks below it. That is exactly
+  inside an early block renders _underneath_ the blocks below it. That is exactly
   how the date picker ended up behind the radio rows. Opacity 1 is the natural
   end state, so `forwards` buys nothing and costs that. `backwards` still holds
   the from-state during a stagger delay, which is the only part needed.
@@ -309,31 +330,10 @@ mixing shapes in one group tells the user the whole group is single-select.
 ## Translate, don't transcribe
 
 The Figma frames are fixed-height canvases (440x957, 1440x900). Their internal
-spacer frames are artefacts of those heights. Express the *intent* in CSS —
+spacer frames are artefacts of those heights. Express the _intent_ in CSS —
 flex, `100dvh`, `clamp()` — and keep the tokens exact. Component sizes, radii,
 type and colour must match Figma to the pixel; page-level whitespace should
 adapt.
-
-## Design-system changes made from here (Figma first, then re-exported)
-
-Rule 1 says a value missing from `tokens.css` is missing in Figma too — add the
-variable there first. Three were added while building PRODUCTS:
-
-| Figma | Token | Why |
-| --- | --- | --- |
-| `02 Color` → `button/bg-secondary` | `--color-button-bg-secondary` | `Style=Secondary, State=Default` (37:11) painted a loose `#ffffffdb` and was the last unbound fill in the Button set. Bound with `paint.opacity = 1` so the variable's own alpha is not multiplied. |
-| effect style `surface/sheet-mobile` | `--shadow-sheet-mobile` | Every modal tray in the file carried raw effects; there was no style to point at. Holds the `BACKGROUND_BLUR 28` as well, so applying it is one call. |
-| effect style `surface/sheet-desktop` | `--shadow-sheet-desktop` | The desktop counterpart — `0 12 40 spread -8 @18%`, downward. |
-
-Applied to `04 — Add product · method sheet` (576:1376) and the desktop
-`method dialog` (583:1786) and verified byte-identical to the raw effects they
-replaced. **The CHECK section's `bottom-sheet` / `check-dialog` frames still
-carry raw effects** — pointing them at the same two styles is a clean follow-up.
-
-⚠️ **A style REPLACES a node's whole effect list, and assigning `effects`
-afterwards DETACHES the style.** Re-adding a background blur "on top" of a
-freshly-applied shadow style silently unlinks it and drops the shadow. Put the
-whole treatment in the style instead.
 
 ## Before you call a screen done
 

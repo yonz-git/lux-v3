@@ -2,6 +2,11 @@
    Three labelled fields, each `label` + control with a gap of 8, separated by 24.
    The tallest screen in the flow (1221 in Figma); here it simply scrolls. */
 
+.question {
+  color: var(--color-text-primary);
+  text-align: center;
+}
+
 .field {
   display: flex;
   flex-direction: column;
@@ -30,25 +35,12 @@
 
   border-radius: var(--radius-lg);
   background: var(--color-surface-frost-light);
-  border: var(--border-width-hairline) solid var(--color-border-subtle);
   box-shadow: var(--shadow-frosted-row);
-  backdrop-filter: blur(var(--blur-card));
   -webkit-backdrop-filter: blur(var(--blur-card));
+  backdrop-filter: blur(var(--blur-card));
 
   color: var(--color-text-primary);
   font-family: inherit;
-
-  transition: border-color var(--duration-fast) var(--ease-standard);
-}
-
-.date:hover {
-  border-color: var(--color-border-default);
-}
-
-@media (hover: none) {
-  .date:hover {
-    border-color: var(--color-border-subtle);
-  }
 }
 
 .options {
@@ -68,7 +60,7 @@
 @media (prefers-reduced-transparency: reduce) {
   .date {
     background: var(--color-bg-surface-frost);
-    backdrop-filter: none;
     -webkit-backdrop-filter: none;
+    backdrop-filter: none;
   }
 }

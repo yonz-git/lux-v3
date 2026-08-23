@@ -34,8 +34,15 @@
   gap: var(--space-xl);
   /* Figma 12/20/28/20. 28 is off the spacing scale (2xl is 24, 3xl 32) at the
      bottom edge, the same way the 28 radius is — written as a literal rather
-     than snapped to a token that would be quietly wrong. */
-  padding: var(--space-md) var(--space-xl) 28px;
+     than snapped to a token that would be quietly wrong.
+
+     ⚠️ THE TOP IS 8, NOT FIGMA'S 12 — page-level whitespace, not a component
+     size (rule "translate, don't transcribe"). The comp has no grabber row at
+     all; the built tray does, and at 12 plus a full 20 gap under it the first
+     real content started 37px down. See `.grabber` for the other half of that.
+     The back-chevron header this also used to pay for is gone — `Cancel` at
+     the foot of the tray replaced it. */
+  padding: var(--space-sm) var(--space-xl) 28px;
 
   /* Figma's radius 28 is off the radius scale at both ends (2xl is 24, 3xl 32).
      Written as a literal rather than snapped to a token that would be quietly
@@ -45,8 +52,52 @@
   box-shadow: var(--shadow-sheet-mobile);
   /* NOT optional: surface/data-strong is 62% translucent and the nav underneath
      reads straight through an unblurred tray */
-  backdrop-filter: blur(var(--blur-card));
   -webkit-backdrop-filter: blur(var(--blur-card));
+  backdrop-filter: blur(var(--blur-card));
+
+  /* THE TRAY CAN EXPAND. AddProductMethodSheet grows this well past its
+     original two-card content (a search field + results, a viewfinder, a
+     confirm card). Docked to the bottom edge, so it has to cap its own height
+     and scroll internally rather than push past the top of the viewport. */
+  max-height: calc(100dvh - var(--space-4xl));
+  overflow-y: auto;
+  /* a search results list is the thing most likely to push the tray into this
+     scroll state — an OS scrollbar cutting into the frosted sage surface
+     reads like a bug, so scroll is kept, the chrome is not. */
+  scrollbar-width: none; /* Firefox */
+  -ms-overflow-style: none; /* legacy Edge */
+}
+
+.tray::-webkit-scrollbar {
+  display: none; /* Chrome, Safari, Chromium Edge */
+}
+
+/* THE TRAY'S ONE WAY OUT, on every view — it used to be the method view's own
+   button (`AddProductMethodSheet`'s `.cancel`) while every other view had none,
+   and a back chevron in a header row above the content did a different job
+   again. `Sheet` renders it now, so it cannot be forgotten by a new view.
+
+   display:block so the line box is exactly the 20 of `Label`; a button's
+   default inline-block layout renders 22. */
+.cancel {
+  display: block;
+  width: 100%;
+  /* full WHITE `text/on-data`, not the 85% `on-data-secondary` — this is now
+     the tray's only dismissal rather than one of two, and a de-emphasised
+     label for the sole way out reads as disabled on a sage surface. */
+  color: var(--color-text-on-data);
+  border-radius: var(--radius-sm);
+  transition: opacity var(--duration-fast) var(--ease-standard);
+}
+
+.cancel:hover {
+  opacity: 0.7;
+}
+
+@media (hover: none) {
+  .cancel:hover {
+    opacity: 1;
+  }
 }
 
 /* 40x5, border/glass, fully rounded */
@@ -55,12 +106,10 @@
   height: 5px;
   border-radius: var(--radius-full);
   background: var(--color-border-glass);
-}
-
-/* WHITE text — this is a sage surface */
-.title {
-  width: 100%;
-  color: var(--color-text-on-data);
+  /* the grabber is an affordance attached to the tray's top edge, not the
+     first item of a 20-gap content stack. Cancels most of the tray's row-gap
+     so what follows sits 12 below it. */
+  margin-bottom: calc(var(--space-md) - var(--space-xl));
 }
 
 @media (min-width: 1024px) {
@@ -104,12 +153,13 @@
        tray is composited: the same sage over `bg/canvas`, the opaque sage the
        app already sits on. Two semantic tokens, no invented colour. A real
        `surface/data-opaque` belongs in Figma. */
-    background: linear-gradient(
+    background:
+      linear-gradient(
         var(--color-surface-data-strong),
         var(--color-surface-data-strong)
       ),
       var(--color-bg-canvas);
-    backdrop-filter: none;
-    -webkit-backdrop-filter: none;
+    -webkit-backdrop-filter: blur(7px);
+    backdrop-filter: blur(7px);
   }
 }

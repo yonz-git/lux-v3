@@ -1,6 +1,5 @@
 /* 02c — Known conditions. Figma mobile 476:2566 / desktop 476:2695.
-   The content column is a 12-gap stack; the exclusives sit under a divider that
-   uses a tighter 4px wrapper here than the 16 on 02b. */
+   The content column is a 12-gap stack. */
 
 .heading {
   display: flex;
@@ -8,8 +7,10 @@
   gap: var(--space-md);
 }
 
-.helper {
-  color: var(--color-text-secondary);
+.question {
+  color: var(--color-text-primary);
+  text-align: center;
+  margin-bottom: var(--space-xl);
 }
 
 .optionsBlock {
@@ -23,33 +24,6 @@
   display: flex;
   flex-direction: column;
   gap: var(--space-md);
-}
-
-/* border/default, not border/subtle — subtle is invisible on the gradient */
-.divider {
-  width: 100%;
-  height: var(--border-width-hairline);
-  margin: var(--space-xs) 0;
-  border: 0;
-  background: var(--color-border-default);
-}
-
-.skip {
-  align-self: flex-start;
-  margin-top: var(--space-lg);
-  padding: var(--space-sm) 0;
-  color: var(--color-text-brand);
-  text-align: left;
-}
-
-.skip:hover {
-  opacity: 0.7;
-}
-
-@media (hover: none) {
-  .skip:hover {
-    opacity: 1;
-  }
 }
 
 @media (min-width: 1024px) {

@@ -123,10 +123,9 @@
 
     border-radius: var(--radius-3xl);
     background: var(--color-surface-card-desktop);
-    border: var(--border-width-hairline) solid var(--color-border-subtle);
     box-shadow: var(--shadow-frosted-card-desktop);
-    backdrop-filter: blur(var(--blur-card-desktop));
     -webkit-backdrop-filter: blur(var(--blur-card-desktop));
+    backdrop-filter: blur(var(--blur-card-desktop));
   }
 
   /* ⚠️ NO CARD FILL AND NO STROKE on an empty state or a confirmation. The
@@ -138,11 +137,12 @@
     max-width: var(--width-card-focus); /* 640 */
   }
 
-  /* `Product added — desktop` puts its two buttons in a 400-wide column,
-     narrower than the 640 body above them */
+  /* Match the 280 compact footer width `QuestionScreen` uses for its Continue
+     button on desktop, so a hub footer button reads the same size as a flow
+     footer button. */
   .footer {
     align-self: center;
-    max-width: 400px;
+    max-width: 280px;
     margin-top: var(--space-4xl); /* 40 */
   }
 }
@@ -150,7 +150,7 @@
 @media (min-width: 1024px) and (prefers-reduced-transparency: reduce) {
   .body[data-layout="card"] {
     background: var(--color-bg-surface-frost);
-    backdrop-filter: none;
     -webkit-backdrop-filter: none;
+    backdrop-filter: none;
   }
 }

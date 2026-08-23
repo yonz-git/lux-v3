@@ -3,12 +3,17 @@
    the one sage surface in an otherwise light flow, because it stands in for a
    camera feed. Guide oval 190x250, 2px effect/rim-highlight at 90%. */
 
+.question {
+  color: var(--color-text-primary);
+  text-align: center;
+}
+
 .columns {
   display: flex;
   flex-direction: column;
   align-items: center;
   gap: var(--space-xl);
-  margin-top: var(--space-xl);
+  margin-top: var(--space-2xl);
 }
 
 .viewfinder {
@@ -24,8 +29,8 @@
   border-radius: var(--radius-2xl);
   background: var(--color-surface-data);
   box-shadow: var(--shadow-frosted-data);
-  backdrop-filter: blur(var(--blur-card));
   -webkit-backdrop-filter: blur(var(--blur-card));
+  backdrop-filter: blur(var(--blur-card));
 }
 
 /* ⚠️ THE GUIDE IS A PORTRAIT OVAL — never let it take its width from the
@@ -67,7 +72,6 @@
 
   border-radius: var(--radius-full);
   background: var(--color-bg-glass);
-  border: var(--border-width-hairline) solid var(--color-border-glass);
   box-shadow: var(--shadow-md);
 
   transition: opacity var(--duration-fast) var(--ease-standard);
@@ -102,7 +106,7 @@
   /* Figma 490:1041 — `columns`: viewfinder 420 left, controls 364 right,
      gap 40, controls vertically centred against the 340-tall viewfinder. */
   .columns {
-    flex-direction: row;
+    flex-direction: column;
     justify-content: center;
     align-items: center;
     gap: var(--space-4xl);
@@ -129,7 +133,7 @@
 
 @media (prefers-reduced-transparency: reduce) {
   .viewfinder {
-    backdrop-filter: none;
     -webkit-backdrop-filter: none;
+    backdrop-filter: none;
   }
 }

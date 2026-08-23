@@ -26,9 +26,16 @@
   justify-content: center;
 }
 
+/* `full` spans the content column. A screen may retune that span with two
+   custom properties on the bubble: --bubble-width (set it to `fit-content` to
+   hug the text again) and --bubble-max (the ceiling that hug is capped at).
+   Properties rather than competing width/max-width declarations, because this
+   rule is class + attribute and a screen's module class would lose the
+   specificity contest — and CSS Modules load in bundle order, so it would lose
+   unpredictably. */
 .bubble[data-full="true"] {
-  max-width: 100%;
-  width: 100%;
+  max-width: var(--bubble-max, 100%);
+  width: var(--bubble-width, 100%);
 }
 
 .bubble {

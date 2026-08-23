@@ -21,8 +21,8 @@
   border-radius: var(--radius-full);
   background: var(--color-surface-frost-nav);
   box-shadow: var(--shadow-nav);
-  backdrop-filter: blur(var(--blur-card));
   -webkit-backdrop-filter: blur(var(--blur-card));
+  backdrop-filter: blur(var(--blur-card));
 }
 
 @media (min-width: 1024px) {
@@ -35,8 +35,8 @@
 @media (prefers-reduced-transparency: reduce) {
   .nav {
     background: var(--color-bg-nav);
-    backdrop-filter: none;
     -webkit-backdrop-filter: none;
+    backdrop-filter: none;
   }
 }
 

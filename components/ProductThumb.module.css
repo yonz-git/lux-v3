@@ -1,19 +1,27 @@
-/* product-thumb — 48x48, radius/md, bg/surface-frost + 1px border/subtle.
-   It is OPAQUE, not frosted: it stands in for a photograph, and a translucent
-   photo well would show the canvas gradient through the "image". */
+/* product-thumb — 48x48, radius/md, bg/surface-frost. It is OPAQUE, not
+   frosted: it stands in for a photograph, and a translucent photo well would
+   show the canvas gradient through the "image". */
 
 .thumb {
   flex: none;
   display: inline-flex;
   align-items: center;
   justify-content: center;
+  overflow: hidden;
   width: var(--size-control-md);
   height: var(--size-control-md);
   border-radius: var(--radius-md);
   background: var(--color-bg-surface-frost);
-  border: var(--border-width-hairline) solid var(--color-border-subtle);
 }
 
 .glyph {
   color: var(--color-icon-muted);
+}
+
+/* a real Open Beauty Facts photo fills the well the camera glyph otherwise
+   placeholds — see the component doc comment */
+.photo {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
 }

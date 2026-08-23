@@ -1,11 +1,15 @@
 /**
  * The investigation flow.
  *
- * ⚠️ THE FLOW IS 8 STEPS, NOT 7. Products sits between 03c Timing and
- * 05 Investigating, and every add-flow screen shows a progress track. Leaving
- * this at 7 would make Timing display a full track with product screens still
- * to come. Verified against Figma: the track fill on 01 is 49/392 (1/8) and on
- * 02a is 98/392 (2/8).
+ * ⚠️ THE FLOW IS 5 STEPS, NOT 8. It was 8 until Skin type (02a) and Skin
+ * tendencies (02b) were combined onto one screen at `skin-type`, Observable
+ * symptoms (03a) was dropped entirely, and Start investigation (01) and
+ * Location (03b) were combined onto one screen at `start` — all three
+ * prototype-only changes with no matching Figma frame yet (see the doc
+ * comments on `components/SkinType.tsx` and `components/StartInvestigation.tsx`).
+ * Products still sits between Timing and Investigating and shows a progress
+ * track, so it keeps its own step — it is just ONE screen now rather than six
+ * (see the step itself). Verified: the track fill on 01 is 1/5, not 1/8.
  *
  * A screen belongs to this flow if and only if it carries BOTH a progress track
  * AND `Save & exit` — those two together mean "resumable step". Hub screens
@@ -13,23 +17,15 @@
  */
 import type { Answers } from "./answers";
 
-export const TOTAL_STEPS = 8;
+export const TOTAL_STEPS = 5;
 
 export type StepId =
   | "start"
   | "skin-type"
-  | "tendencies"
   | "conditions"
-  | "symptoms"
-  | "location"
   | "selfie"
   | "timing"
-  | "products"
-  | "products-bucket"
-  | "products-search"
-  | "products-confirm"
-  | "products-scan"
-  | "products-match";
+  | "products";
 
 export type Step = {
   id: StepId;
@@ -38,6 +34,20 @@ export type Step = {
   href: string;
   /** Figma frame ids, so the next person can diff code against the design. */
   figma: { mobile: string; desktop: string };
+  /**
+   * The screen's name, and its `<h1>`.
+   *
+   * ⚠️ EVERY SCREEN NEEDS ONE. Most of these screens pose their question inside
+   * a chat bubble, which is a div — so before this there was no heading on any
+   * flow screen at all, and a screen-reader user landing on one got no page
+   * title and nothing to navigate by (WCAG 1.3.1 / 2.4.6). The four screens that
+   * show a title visibly render this same string; the rest render it
+   * visually-hidden. One source of truth either way, and it lives on the step
+   * for the same reason `isComplete` does — a new screen cannot forget it.
+   *
+   * These are the Figma frame names, not new copy.
+   */
+  title: string;
   /**
    * Whether this step has been answered. Drives the Continue button: it stays
    * DISABLED until the required answer exists, and only then becomes available.
@@ -50,53 +60,54 @@ export type Step = {
   /**
    * Where back and Continue go when the array neighbour is the wrong answer.
    *
-   * ⚠️ STEP 8 IS NOT A LINE, IT IS A FORK: "Add product" opens a method sheet
-   * offering search or scan, and the two branches rejoin at `Product added`.
-   * The neighbour default is right for a linear flow and wrong here, so the two
-   * branch screens name their own edges instead of the order being fudged.
+   * ⚠️ PRODUCTS USED TO BE A FORK AND IS A LINE AGAIN. "Add product" opened a
+   * method sheet whose search and scan branches rejoined at `Product added`,
+   * across six routed screens sharing one track position. The whole add flow
+   * now happens inside the tray on one screen, so nothing forks and only
+   * `products` still names its own `next` — the last step in the array has no
+   * neighbour to fall through to.
    */
   back?: string;
   next?: string;
 };
 
 export const STEPS: Step[] = [
-  { id: "start",      step: 1, href: "/investigation/start",      figma: { mobile: "476:2542", desktop: "476:2670" }, isComplete: (a) => (a.start?.length ?? 0) > 0 },
-  { id: "skin-type",  step: 2, href: "/investigation/skin-type",  figma: { mobile: "484:722",  desktop: "489:902"  }, isComplete: (a) => Boolean(a["skin-type"]) },
-  { id: "tendencies", step: 3, href: "/investigation/tendencies", figma: { mobile: "485:755",  desktop: "489:960"  }, isComplete: (a) => (a.tendencies?.length ?? 0) > 0 },
+  // Start (01, 476:2542/476:2670) and Location (03b, 476:2802/476:2934)
+  // combined onto one screen — see components/StartInvestigation.tsx. Continue
+  // needs both answers, which used to gate two separate steps. Selfie still
+  // shares this step number: it is a sub-step reached from "Take a photo", not
+  // a step of its own.
+  // Continue skips straight to skin-type: selfie is an OPTIONAL side path off
+  // "Take a photo", not a stop on the main line. Making Continue pass through
+  // it too would give the user two controls for the same "move on" action.
+  { id: "start",      step: 1, href: "/investigation/start",      title: "Start investigation", figma: { mobile: "476:2542", desktop: "476:2670" }, isComplete: (a) => (a.start?.length ?? 0) > 0 && (a.location?.length ?? 0) > 0, next: "/investigation/skin-type" },
+  { id: "selfie",     step: 1, href: "/investigation/selfie",     title: "Selfie capture", figma: { mobile: "487:834",  desktop: "490:1041" }, isComplete: (a) => Boolean(a.selfie) },
+  // Skin type (02a, 484:722/489:902) and Skin tendencies (02b, 485:755/489:960)
+  // combined onto one screen — see components/SkinType.tsx. Continue needs
+  // both answers, which used to gate two separate steps.
+  { id: "skin-type",  step: 2, href: "/investigation/skin-type",  title: "Skin type", figma: { mobile: "484:722",  desktop: "489:902"  }, isComplete: (a) => Boolean(a["skin-type"]) && (a.tendencies?.length ?? 0) > 0 },
     // 02c is genuinely OPTIONAL — the screen says "This is optional — skip if you
   // prefer" and carries a "Skip this question" link — so Continue is available
   // from the start. The only requirement is that a ticked "Other" is filled in.
-  { id: "conditions", step: 4, href: "/investigation/conditions", figma: { mobile: "476:2566", desktop: "476:2695" }, isComplete: (a) => otherIsFilled(a.conditions, a.conditionsOther) },
-    { id: "symptoms",   step: 5, href: "/investigation/symptoms",   figma: { mobile: "486:785",  desktop: "490:965"  }, isComplete: (a) => (a.symptoms?.length ?? 0) > 0 && otherIsFilled(a.symptoms, a.symptomsOther) },
-  { id: "location",   step: 6, href: "/investigation/location",   figma: { mobile: "476:2802", desktop: "476:2934" }, isComplete: (a) => (a.location?.length ?? 0) > 0 },
-  { id: "selfie",     step: 6, href: "/investigation/selfie",     figma: { mobile: "487:834",  desktop: "490:1041" }, isComplete: (a) => Boolean(a.selfie) },
-  { id: "timing",     step: 7, href: "/investigation/timing",     figma: { mobile: "488:851",  desktop: "491:1031" }, isComplete: (a) => Boolean(a.timing?.date && a.timing?.onset && a.timing?.status) },
+  { id: "conditions", step: 3, href: "/investigation/conditions", title: "Known conditions", figma: { mobile: "476:2566", desktop: "476:2695" }, isComplete: (a) => otherIsFilled(a.conditions, a.conditionsOther) },
+  { id: "timing",     step: 4, href: "/investigation/timing",     title: "Timing", figma: { mobile: "488:851",  desktop: "491:1031" }, isComplete: (a) => Boolean(a.timing?.date && a.timing?.status) },
 
-  // ---- Step 8: PRODUCTS ---------------------------------------------------
-  // Six screens share one track position, the way Selfie shares Location's.
-  // Every one of them carries a progress track AND `Save & exit`, which is the
-  // signature of a resumable investigation step; the four PRODUCTS screens that
-  // carry neither (`Product added`, `My Products`, `Long-term products list`)
-  // are hub screens under /products and are deliberately NOT in this array.
+  // ---- Step 5: PRODUCTS ---------------------------------------------------
+  // ⚠️ ONE SCREEN NOW, NOT SIX. `Add products intro`, `Long-term products` and
+  // the four routed add-flow screens (`search`, `confirm`, `scan`, `match`)
+  // shared this one track position; all six are gone. The briefing merged into
+  // the list screen and the entire add flow — method, search-or-scan, confirm,
+  // duration — plays out inside `AddProductMethodSheet` without ever leaving
+  // the page. `Product added` went with them: it existed to announce a
+  // navigation that no longer happens.
   //
-  // The two "nothing to answer" screens are complete on arrival rather than
-  // gating Continue on a selection: the intro is a briefing, and the bucket
-  // screen offers "None — skip to next" in so many words. That is the same call
-  // 02c makes, and it belongs here rather than in the screen.
-  { id: "products",         step: 8, href: "/investigation/products",           figma: { mobile: "574:1342", desktop: "582:1612" }, isComplete: () => true },
-  { id: "products-bucket",  step: 8, href: "/investigation/products/long-term", figma: { mobile: "574:1391", desktop: "582:1662" }, isComplete: () => true,
-    // ⚠️ The designed flow continues to the Recent and New addition periods,
-    // and neither is drawn — at either breakpoint, or in the wireframes. Rather
-    // than invent two screens, Continue ends step 8 at the Products hub, which
-    // is built and is where "Done" goes too. The real destination once
-    // INVESTIGATION lands is `05 — Investigating`.
-    next: "/products" },
-  { id: "products-search",  step: 8, href: "/investigation/products/search",    figma: { mobile: "576:1428", desktop: "582:1707" }, isComplete: (a) => Boolean(a.productDraft) },
-  { id: "products-confirm", step: 8, href: "/investigation/products/confirm",   figma: { mobile: "577:1430", desktop: "582:1768" }, isComplete: (a) => Boolean(a.productDraft?.confirmed && a.productDraft?.duration), next: "/products/added" },
-  // the scan branch starts back at the bucket screen's method sheet, not at
-  // Confirm — Confirm is the other branch's leaf
-  { id: "products-scan",    step: 8, href: "/investigation/products/scan",      figma: { mobile: "577:1498", desktop: "582:1819" }, isComplete: (a) => Boolean(a.scan), back: "/investigation/products/long-term" },
-  { id: "products-match",   step: 8, href: "/investigation/products/match",     figma: { mobile: "578:1482", desktop: "582:1862" }, isComplete: (a) => Boolean(a.productDraft?.confirmed && a.productDraft?.duration), next: "/products/added" },
+  // Complete on arrival rather than gating Continue on a product: the step is
+  // genuinely optional and the screen says so ("None — skip to next"). Same
+  // call 02c makes, and it belongs here rather than in the screen.
+  //
+  // Continue ends step 5 at the Products hub. The real destination once
+  // INVESTIGATION lands is `05 — Investigating`.
+  { id: "products", step: 5, href: "/investigation/products", title: "Your products", figma: { mobile: "574:1342", desktop: "582:1612" }, isComplete: () => true, next: "/products" },
 ];
 
 /**
@@ -105,7 +116,6 @@ export const STEPS: Step[] = [
  * only so the Figma frame ids stay next to the flow they belong to.
  */
 export const PRODUCT_HUB_SCREENS = {
-  added: { href: "/products/added", figma: { mobile: "579:1540", desktop: "583:1832" } },
   hub: { href: "/products", figma: { mobile: "579:1574", desktop: "583:1863" }, filled: { mobile: "579:1607", desktop: "583:1889" } },
   bucketList: { href: "/products/long-term", figma: { mobile: "581:1593", desktop: "583:1924" } },
 } as const;

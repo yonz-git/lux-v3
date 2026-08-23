@@ -28,15 +28,19 @@ export function ProductRow({
   meta,
   trailing,
   onClick,
+  imageUrl,
 }: {
   name: string;
   meta: string;
   trailing?: ReactNode;
   onClick?: () => void;
+  /** a real product photo, when the row's product came from Open Beauty
+   *  Facts — see ProductThumb */
+  imageUrl?: string;
 }) {
   const inner = (
     <>
-      <ProductThumb />
+      <ProductThumb imageUrl={imageUrl} />
       <span className={styles.copy}>
         <span className={`${styles.name} t-h6`}>{name}</span>
         <span className={`${styles.meta} t-label-sm`}>{meta}</span>
@@ -81,11 +85,8 @@ export function AddProductRow({
 
 /**
  * The "nothing here yet" box — a frosted panel with a single muted line.
- *
- * ⚠️ It carries `border/default`, not `border/subtle` like every other frosted
- * row on these screens, and radius/2xl rather than radius/lg. That is what
- * `empty-state` (574:1391) draws: a stronger outline around an empty area reads
- * as a placeholder rather than as a row that failed to load.
+ * radius/2xl rather than radius/lg, which is what `empty-state` (574:1391)
+ * draws.
  */
 export function EmptyBox({ children }: { children: ReactNode }) {
   return (

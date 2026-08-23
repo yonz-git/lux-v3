@@ -2,10 +2,16 @@
    Fill is a linear gradient #deeff3 -> #b7c6ca (not a flat white), radius full,
    padding 8/16, gap 6, and the same --shadow-button as the primary Button.
 
-   Hover: the component's Hover variant (225:61) changes ONLY the label colour,
-   #3b305c -> #2e2a3f. It does not restyle the fill, so neither does this. */
+   Hover: non-negotiable #4 lists Small Button / Secondary (225:61) under the
+   SAME "gradient runs end for end" rule as the large Button — not a label
+   recolour. Uses the same --grad-start/--grad-end plumbing (registered in
+   globals.css) so the reversal cross-fades instead of snapping, on
+   duration/hover (400ms) per the Motion note. */
 
 .button {
+  --grad-start: var(--color-button-bg-secondary-start);
+  --grad-end: var(--color-button-bg-secondary-end);
+
   display: inline-flex;
   align-items: center;
   justify-content: center;
@@ -16,7 +22,7 @@
   border-radius: var(--radius-full);
 
   color: var(--color-text-brand);
-  background: linear-gradient(90deg, #deeff3 0%, #b7c6ca 100%);
+  background: linear-gradient(90deg, var(--grad-start) 0%, var(--grad-end) 100%);
   /* immune to the border-box/padding-box gradient seam if this ever gains a
      border in a non-disabled state — see the note in Button.module.css */
   background-origin: border-box;
@@ -24,31 +30,36 @@
   text-decoration: none;
   white-space: nowrap;
 
-  transition: color var(--duration-fast) var(--ease-standard);
+  transition: --grad-start var(--duration-hover) var(--ease-standard),
+    --grad-end var(--duration-hover) var(--ease-standard);
 }
 
-.button:hover {
-  color: var(--color-text-primary);
+.button:hover:not(:disabled) {
+  --grad-start: var(--color-button-bg-secondary-end);
+  --grad-end: var(--color-button-bg-secondary-start);
 }
 
 @media (hover: none) {
-  .button:hover {
-    color: var(--color-text-brand);
+  .button:hover:not(:disabled) {
+    --grad-start: var(--color-button-bg-secondary-start);
+    --grad-end: var(--color-button-bg-secondary-end);
   }
 }
 
-/* Disabled — matching `Small Button / * / Disabled` (225:59 / 225:62), which now
-   use the same recipe as the large button: state/disabled-bg #eef6f7 @51%, a 1px
-   border/default stroke, a text/muted label, and node opacity 1. Nothing in the
-   flow disables a small button yet; this exists so the first one that does is
-   already right. */
+/* Disabled — matching `Small Button / * / Disabled` (225:59 / 225:62) after the
+   22 Aug 2026 swap: the whole control at opacity/disabled (0.4), i.e. its own
+   Default faded. Nothing recoloured — a node fade takes the gradient, the label
+   and both drop shadows with it, which is why the state/disabled-bg +
+   border/default + text/muted recipe is gone from here too.
+   Nothing in the flow disables a small button yet; this exists so the first one
+   that does is already right. */
 .button:disabled {
-  background: var(--color-state-disabled-bg);
-  border: var(--border-width-hairline) solid var(--color-border-default);
-  color: var(--color-text-muted);
+  opacity: var(--opacity-disabled);
   cursor: not-allowed;
 }
 
+/* the fade must not fight the reversal */
 .button:disabled:hover {
-  color: var(--color-text-muted);
+  --grad-start: var(--color-button-bg-secondary-start);
+  --grad-end: var(--color-button-bg-secondary-end);
 }

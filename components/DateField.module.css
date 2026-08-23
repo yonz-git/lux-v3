@@ -1,13 +1,13 @@
 /* Date field + calendar.
 
    The trigger mirrors Figma's `date-field` (03c Timing): 52 tall, padding 0/18,
-   surface/frost-light + 1px border/subtle + radius/lg + the frosted-row inner
-   shadow, value in Body 2, chevron-down on the right.
+   surface/frost-light + radius/lg + the frosted-row inner shadow, value in
+   Body 2, chevron-down on the right.
 
    The panel is NOT in the design system — there is no calendar component yet.
    It is composed from tokens: an OPAQUE surface (a floating panel over content
-   must not be see-through — the same lesson as the nav at 17%), border/default,
-   radius/2xl and shadow/lg for elevation. */
+   must not be see-through — the same lesson as the nav at 17%), radius/2xl and
+   shadow/lg for elevation. */
 
 .root {
   position: relative;
@@ -27,23 +27,11 @@
 
   border-radius: var(--radius-lg);
   background: var(--color-surface-frost-light);
-  border: var(--border-width-hairline) solid var(--color-border-subtle);
   box-shadow: var(--shadow-frosted-row);
-  backdrop-filter: blur(var(--blur-card));
   -webkit-backdrop-filter: blur(var(--blur-card));
+  backdrop-filter: blur(var(--blur-card));
 
   color: var(--color-text-primary);
-  transition: border-color var(--duration-fast) var(--ease-standard);
-}
-
-.trigger:hover {
-  border-color: var(--color-border-default);
-}
-
-@media (hover: none) {
-  .trigger:hover {
-    border-color: var(--color-border-subtle);
-  }
 }
 
 .value[data-placeholder="true"] {
@@ -68,7 +56,6 @@
   border-radius: var(--radius-2xl);
   /* opaque on purpose — see the note at the top of this file */
   background: var(--color-bg-surface-frost);
-  border: var(--border-width-hairline) solid var(--color-border-default);
   box-shadow: var(--shadow-lg);
 }
 
@@ -169,7 +156,6 @@
   justify-content: space-between;
   margin-top: var(--space-lg);
   padding-top: var(--space-md);
-  border-top: var(--border-width-hairline) solid var(--color-border-subtle);
 }
 
 .action {
@@ -191,7 +177,7 @@
 @media (prefers-reduced-transparency: reduce) {
   .trigger {
     background: var(--color-bg-surface-frost);
-    backdrop-filter: none;
     -webkit-backdrop-filter: none;
+    backdrop-filter: none;
   }
 }

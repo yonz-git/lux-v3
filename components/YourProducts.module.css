@@ -1,0 +1,107 @@
+/* Step 5 — `Your products`. The briefing bubbles from `04 — Add products`
+   (574:1342) and the list from `04a — Long-term products` (574:1391 empty,
+   578:1557 filled), on one screen.
+
+   empty:  title -> bubble -> 12 -> bubble -> 24 -> empty-state -> 16
+           -> add-product -> 16 -> skip-link
+   filled: title -> bubble -> 12 -> bubble -> 24 -> list -> 16 -> add-product
+           -> 12 -> count */
+
+.stackedBubble {
+  margin-top: var(--space-md); /* 12 */
+}
+
+/* ⚠️ NOT IN FIGMA — the briefing bubbles span the whole column in the comps,
+   which is right at 392 and wrong inside the 920 desktop card: three full-width
+   bubbles under a centred title read as three paragraphs of page copy, not as
+   someone talking.
+
+   EACH BUBBLE HUGS ITS OWN TEXT, capped at 70% of the column. A fixed 70% is
+   what a full-width bubble already is, only narrower — the one-line first
+   bubble still ended in half a bubble of empty fill, which is exactly what
+   makes a bubble look mis-sized. `fit-content` sizes to the text and the cap
+   only bites on the two paragraphs, which is where the ragged right edge the
+   eye reads as speech comes from.
+
+   MOBILE IS UNTOUCHED — 70% of 392 is 274, which re-wraps the second bubble
+   from three lines to five for no gain. */
+@media (min-width: 1024px) {
+  .briefBubble {
+    --bubble-width: fit-content;
+    --bubble-max: 70%;
+  }
+}
+
+.listWrap {
+  margin-top: var(--space-2xl); /* 24 */
+}
+
+.list {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-md);
+}
+
+/* --- live grouping --------------------------------------------------------
+   NOT IN FIGMA. No screen in the file shows more than one period at a time,
+   because the designed flow walked the periods one per screen. The header is
+   composed from the same pairing the hub and the old intro's bucket rows use —
+   a group name in H6 beside its window in Label sm — so it reads as the same
+   object rather than a new one. */
+
+.group + .group {
+  margin-top: var(--space-2xl); /* 24 */
+}
+
+.groupHeader {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: var(--space-md);
+  margin: 0 0 var(--space-md); /* 12 down to the first row */
+  padding: 0 var(--space-2xs);
+}
+
+.groupName {
+  color: var(--color-text-primary);
+}
+
+.groupWindow {
+  flex: none;
+  color: var(--color-text-muted);
+}
+
+.addWrap {
+  margin-top: var(--space-lg); /* 16 */
+}
+
+/* the filled state's readout, muted and left-aligned */
+.count {
+  margin-top: var(--space-md); /* 12 */
+  color: var(--color-text-muted);
+}
+
+/* the empty state's inline skip — Label in text/brand, centred.
+   The 8px of padding is the tap target; the margin gives it back so the label
+   still lands exactly 16 below the row above, as the comp draws it. */
+.skip {
+  margin-top: calc(var(--space-lg) - var(--space-sm));
+  width: 100%;
+  padding: var(--space-sm) 0;
+  color: var(--color-text-brand);
+  border-radius: var(--radius-sm);
+  transition: opacity var(--duration-fast) var(--ease-standard);
+}
+
+.skip:hover {
+  opacity: 0.7;
+}
+
+@media (hover: none) {
+  .skip:hover {
+    opacity: 1;
+  }
+}

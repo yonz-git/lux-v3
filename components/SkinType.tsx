@@ -5,38 +5,50 @@ import { QuestionScreen } from "./QuestionScreen";
 import { ChatBubble } from "./ChatBubble";
 import { OptionRow } from "./OptionRow";
 import { useInvestigation } from "./InvestigationProvider";
+import { toggleMulti } from "@/lib/answers";
 
 /**
- * 02a — Skin type. Figma mobile 484:722, desktop 489:902. Step 2/8.
+ * 02a+02b combined — Skin type and Skin tendencies on one screen. Step 3/6.
  *
- * SINGLE-SELECT, so these are Radio rows (circle = exactly one). The wireframe
- * drew pills here; the design system contract wins.
+ * ⚠️ THIS IS A PROTOTYPE-ONLY MERGE, NOT YET REFLECTED IN FIGMA. The two
+ * questions were separate frames (02a `484:722`/`489:902` and 02b
+ * `485:755`/`489:960`); per the "Figma first" rule this combination needs a
+ * matching Figma frame before it is really done. Both frame ids are kept below
+ * so the next person can find what each half came from.
  *
- * On desktop the AI's conversational acknowledgement is dropped and only the
- * user's recap bubble is kept — the acknowledgement is padding, the recap
- * carries state. Mobile keeps both turns.
+ * Skin type is SINGLE-SELECT (radio, circle = exactly one). Tendencies is
+ * MULTI-SELECT (checkbox, square = zero or more) — "None" and "Not sure" are
+ * exclusive answers about the list rather than items in it, so they stay
+ * checkboxes but clear every other tendency when picked; see toggleMulti().
  *
- * NOTHING starts selected — the Figma frame shows "Combination" chosen because a
- * comp has to show a filled-in state. Continue stays disabled until a choice is
- * made.
+ * Continue stays disabled until BOTH questions are answered.
+ *
+ * NOTHING starts selected — the Figma frames show options already chosen
+ * because a comp has to show a filled-in state.
  */
-const OPTIONS = ["Dry", "Combination", "Oily", "Normal or balanced", "Not sure"];
+const SKIN_TYPES = ["Dry", "Combination", "Oily", "Normal or balanced", "Not sure"];
+const TENDENCIES = ["Sensitive", "Acne-prone"];
+const EXCLUSIVES = ["None", "Not sure"];
 
 export function SkinType() {
   const { answers, setAnswer } = useInvestigation();
-  const value = answers["skin-type"] ?? null;
-  const symptoms = answers.start ?? [];
+  const skinType = answers["skin-type"] ?? null;
+  const tendencies = answers.tendencies ?? [];
+
+  const tendencyRow = (label: string) => (
+    <OptionRow
+      key={label}
+      control="checkbox"
+      label={label}
+      selected={tendencies.includes(label)}
+      onSelect={() =>
+        setAnswer("tendencies", (prev) => toggleMulti(prev ?? [], label))
+      }
+    />
+  );
 
   return (
     <QuestionScreen id="skin-type">
-      {/* the recap echoes what the user actually chose on 01, rather than the
-          fixed sentence the comp shows */}
-      {symptoms.length > 0 && (
-        <ChatBubble from="user">
-          I&rsquo;ve been getting {formatList(symptoms).toLowerCase()}.
-        </ChatBubble>
-      )}
-
       <div className={styles.acknowledgement}>
         <ChatBubble from="ai">
           Thanks for sharing that. Let me ask a few questions about your skin
@@ -44,36 +56,39 @@ export function SkinType() {
         </ChatBubble>
       </div>
 
-      {/* The question itself is an AI bubble on this screen, unlike 01 where it
-          is an H5 heading. Transcribed from Figma as-is — see the note in the
-          session report about that inconsistency. */}
-      <div className={styles.prompt}>
-        <ChatBubble from="ai" full>
-          Which description fits your skin most often?
-        </ChatBubble>
-      </div>
+      <h1 className={`${styles.prompt} ${styles.question} t-h4-h3`}>
+        Which description fits your skin most often?
+      </h1>
 
       <div
-        className={styles.options}
+        className={styles.typeOptions}
         role="radiogroup"
         aria-label="Which description fits your skin most often?"
       >
-        {OPTIONS.map((o) => (
+        {SKIN_TYPES.map((o) => (
           <OptionRow
             key={o}
             control="radio"
             label={o}
-            selected={value === o}
+            selected={skinType === o}
             onSelect={() => setAnswer("skin-type", o)}
           />
         ))}
       </div>
+
+      <h1 className={`${styles.prompt} ${styles.tendenciesPrompt} ${styles.question} t-h4-h3`}>
+        Do any of these usually apply?
+      </h1>
+
+      <div
+        className={styles.optionsBlock}
+        role="group"
+        aria-label="Do any of these usually apply?"
+      >
+        <div className={styles.tendencyOptions}>{TENDENCIES.map(tendencyRow)}</div>
+        <hr className={styles.divider} />
+        <div className={styles.tendencyOptions}>{EXCLUSIVES.map(tendencyRow)}</div>
+      </div>
     </QuestionScreen>
   );
-}
-
-/** "Redness, itching and dryness" — the recap reads as a sentence, not a list. */
-function formatList(items: string[]): string {
-  if (items.length === 1) return items[0];
-  return `${items.slice(0, -1).join(", ")} and ${items[items.length - 1]}`;
 }

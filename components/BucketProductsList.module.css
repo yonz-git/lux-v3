@@ -2,8 +2,8 @@
    header (chevron + Edit) -> 24 -> heading -> 24 -> accordion-stack (gap 12)
    -> 16 -> add-more.
 
-   Card: radius/2xl, padding 16/18, surface/frost-light + 1px border/subtle +
-   the frosted-row inner shadow. Gap 12 collapsed, 16 expanded. */
+   Card: radius/2xl, padding 16/18, surface/frost-light + the frosted-row
+   inner shadow. Gap 12 collapsed, 16 expanded. */
 
 /* no vertical padding: the header row is 24 tall in the comp, and padding here
    would grow it */
@@ -41,15 +41,13 @@
   display: flex;
   flex-direction: column;
   gap: var(--space-md); /* 12 collapsed */
-  /* Figma 16/18; minus the 1px border to land on the comp's 98 collapsed */
-  padding: calc(var(--space-lg) - var(--border-width-hairline)) 18px;
+  padding: var(--space-lg) 18px;
 
   border-radius: var(--radius-2xl);
   background: var(--color-surface-frost-light);
-  border: var(--border-width-hairline) solid var(--color-border-subtle);
   box-shadow: var(--shadow-frosted-row);
-  backdrop-filter: blur(var(--blur-card));
   -webkit-backdrop-filter: blur(var(--blur-card));
+  backdrop-filter: blur(var(--blur-card));
 }
 
 .card[data-open="true"] {
@@ -174,7 +172,7 @@
 @media (prefers-reduced-transparency: reduce) {
   .card {
     background: var(--color-bg-surface-frost);
-    backdrop-filter: none;
     -webkit-backdrop-filter: none;
+    backdrop-filter: none;
   }
 }

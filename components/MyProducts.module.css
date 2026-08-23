@@ -42,8 +42,7 @@
   gap: var(--space-md);
 }
 
-/* 56 tall, padding 16/18, gap 12 — min-height owns the box so the 1px border
-   does not push it to 58 */
+/* 56 tall, padding 16/18, gap 12 */
 .category {
   display: flex;
   align-items: center;
@@ -54,22 +53,9 @@
 
   border-radius: var(--radius-lg);
   background: var(--color-surface-frost-light);
-  border: var(--border-width-hairline) solid var(--color-border-subtle);
   box-shadow: var(--shadow-frosted-row);
-  backdrop-filter: blur(var(--blur-card));
   -webkit-backdrop-filter: blur(var(--blur-card));
-
-  transition: border-color var(--duration-fast) var(--ease-standard);
-}
-
-.category:hover {
-  border-color: var(--color-border-default);
-}
-
-@media (hover: none) {
-  .category:hover {
-    border-color: var(--color-border-subtle);
-  }
+  backdrop-filter: blur(var(--blur-card));
 }
 
 /* the name takes the slack so the count and chevron stay pinned right */
@@ -94,7 +80,7 @@
 @media (prefers-reduced-transparency: reduce) {
   .category {
     background: var(--color-bg-surface-frost);
-    backdrop-filter: none;
     -webkit-backdrop-filter: none;
+    backdrop-filter: none;
   }
 }

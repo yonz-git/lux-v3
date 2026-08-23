@@ -1,20 +1,59 @@
-/* 02a — Skin type. Figma mobile 484:722 / desktop 489:902.
-   Conversation turns are 12 apart; the option group starts 20 below the prompt
-   and its rows are 12 apart (spacing/md — 14 and 18 were drift and corrected). */
+/* 02a+02b combined — Skin type (484:722 / 489:902) and Skin tendencies
+   (485:755 / 489:960) on one screen. See the doc comment in SkinType.tsx —
+   this merge has no matching Figma frame yet.
+
+   Conversation turns are 12 apart; each option group starts 20 below its
+   prompt and its rows are 12 apart (spacing/md — 14 and 18 were drift and
+   corrected). The tendencies block keeps its own divider recipe: the
+   exclusive options ("None", "Not sure") sit in a second group under a
+   border/default divider — border/subtle is invisible against the canvas
+   gradient. */
 
 .acknowledgement {
   margin-top: var(--space-md);
 }
 
 .prompt {
-  margin-top: var(--space-md);
+  margin-top: var(--space-xl);
 }
 
-.options {
+/* extra clearance above the second question so it doesn't read as glued to
+   the skin-type rows above it */
+.tendenciesPrompt {
+  margin-top: var(--space-3xl);
+}
+
+.question {
+  color: var(--color-text-primary);
+  text-align: center;
+}
+
+.typeOptions {
   display: flex;
   flex-direction: column;
   gap: var(--space-md);
   margin-top: var(--space-xl);
+}
+
+.optionsBlock {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-lg);
+  margin-top: var(--space-xl);
+}
+
+.tendencyOptions {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-md);
+}
+
+.divider {
+  width: 100%;
+  height: var(--border-width-hairline);
+  margin: 0;
+  border: 0;
+  background: var(--color-border-default);
 }
 
 @media (min-width: 1024px) {
@@ -25,7 +64,8 @@
 
   /* two explicit columns so DOM order reads across the row like a 1fr 1fr grid,
      rather than wrapping with ragged slack */
-  .options {
+  .typeOptions,
+  .tendencyOptions {
     display: grid;
     grid-template-columns: 1fr 1fr;
     /* ⚠️ COLUMN GAP 24, ROW GAP 12 — not one value for both. Every two-column

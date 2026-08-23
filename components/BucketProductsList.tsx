@@ -23,11 +23,13 @@ import {
  * A hub PUSHED view: a back chevron, no `Save & exit`, no progress track, and a
  * text "Edit" in the header's right-hand slot.
  *
- * ⚠️ ONE COMPONENT SERVES ALL THREE PERIODS. Only the long-term list is drawn,
- * but the screen's content is entirely `bucket`-derived — title, rows, count —
- * and `My Products` links to all three categories. Rendering the other two from
- * the same component follows the design rather than inventing anything; giving
- * long-term its own hardcoded screen would make the sibling links dead.
+ * ⚠️ ONE COMPONENT SERVES EVERY GROUP. Only the long-term list is drawn, but
+ * the screen's content is entirely `bucket`-derived — title, rows, count — and
+ * `My Products` links to each category. Rendering the others from the same
+ * component follows the design rather than inventing anything; giving long-term
+ * its own hardcoded screen would make the sibling links dead. That now includes
+ * `not-sure`, the fourth group (see UNSORTED_BUCKET), which needs no extra code
+ * here for exactly that reason.
  *
  * ⚠️ NEITHER "Edit" HAS A DESTINATION. The design defines no edit screen — not
  * in the comps and not in the wireframes — so both the header action and the
@@ -46,7 +48,7 @@ export function BucketProductsList({ bucket }: { bucket: BucketId }) {
       subtitle={`${products.length} product${products.length === 1 ? "" : "s"}`}
       backHref="/products"
       action={
-        <button type="button" className={`${styles.headerAction} t-label`}>
+        <button type="button" className={`${styles.headerAction} t-label tap-target`}>
           Edit
         </button>
       }
@@ -73,7 +75,7 @@ export function BucketProductsList({ bucket }: { bucket: BucketId }) {
       <div className={styles.addMore}>
         <AddProductRow
           label="Add more products"
-          onClick={() => router.push("/investigation/products/long-term")}
+          onClick={() => router.push("/investigation/products")}
         />
       </div>
     </HubScreen>
@@ -110,7 +112,7 @@ function AccordionCard({
         aria-controls={panelId}
         onClick={() => setOpen((o) => !o)}
       >
-        <ProductThumb />
+        <ProductThumb imageUrl={product.imageUrl} />
         <span className={styles.copy}>
           <span className={`${styles.name} t-h6`}>{fullName(product)}</span>
           <span className={`${styles.size} t-label-sm`}>{product.size}</span>
@@ -131,10 +133,10 @@ function AccordionCard({
           </dl>
 
           <div className={styles.actions}>
-            <button type="button" className={`${styles.edit} t-label`}>
+            <button type="button" className={`${styles.edit} t-label tap-target`}>
               Edit
             </button>
-            <button type="button" className={`${styles.remove} t-label`} onClick={onRemove}>
+            <button type="button" className={`${styles.remove} t-label tap-target`} onClick={onRemove}>
               Remove
             </button>
           </div>
