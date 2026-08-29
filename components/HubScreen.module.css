@@ -81,6 +81,14 @@
   margin-top: var(--space-2xl);
 }
 
+/* On mobile a grid screen is just the stack, 24 below the page heading — the
+   same distance `card` gets from `.body > .heading + *`, but owed by the body
+   itself because a grid screen's heading sits outside it. The gaps BETWEEN the
+   blocks are not uniform (24/16/16/24/8), so they stay with the screen. */
+.body[data-layout="grid"] {
+  margin-top: var(--space-2xl); /* 24 */
+}
+
 /* the two equal spacers that centre a hero block */
 .flex {
   flex: 1 1 0;
@@ -135,6 +143,30 @@
     align-self: center;
     width: 100%;
     max-width: var(--width-card-focus); /* 640 */
+  }
+
+  /* ⚠️ A DASHBOARD GRID, NOT A CARD — see HubScreen.tsx. The full 1280 in two
+     columns a gutter/desktop apart: col-1 fixed 640, col-2 FILL (616). The
+     screen places its own children; this only draws the columns.
+
+     `align-items: start` matters — without it a card that spans several rows
+     stretches its neighbours to match, and the calendar is much taller than the
+     profile card beside it. Rows stay at their natural height. */
+  .body[data-layout="grid"] {
+    display: grid;
+    grid-template-columns: 640px 1fr;
+    gap: var(--gutter-desktop); /* 24 */
+    align-items: start;
+    width: 100%;
+    /* the comp puts a 32 spacer between the page heading and the columns,
+       where mobile uses 24 */
+    margin-top: var(--space-3xl); /* 32 */
+
+    /* The nav reservation is NOT here — `.screen[data-layout="hub"]` in
+       globals.css now reserves for every hub screen whose body flows, which is
+       every one that does not set `center`. It used to live on this rule alone,
+       which fixed the dashboard and left `Check results` and a long
+       `My Products — filled` rendering behind the nav. */
   }
 
   /* Match the 280 compact footer width `QuestionScreen` uses for its Continue

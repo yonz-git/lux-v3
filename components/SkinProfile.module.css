@@ -1,0 +1,61 @@
+/* card · your skin profile — Figma 552:1241 / 554:1399.
+
+   Overline label -> 16 -> the two pairs -> 16 -> 1px border/glass divider
+   -> 16 -> details. The 16s are DataCard's own gap; nothing here re-states it. */
+
+.label {
+  /* Overline is uppercase in the type class itself, so the JSX carries normal
+     sentence case and the CSS does the shouting. */
+  color: var(--color-text-on-data-muted);
+}
+
+.pairs {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  margin: 0;
+}
+
+.pair {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2xs); /* 2 */
+  min-width: 0;
+}
+
+.pair[data-align="end"] {
+  align-items: flex-end;
+  text-align: right;
+}
+
+.pairLabel {
+  color: var(--color-text-on-data-muted);
+}
+
+.pairValue {
+  margin: 0;
+  color: var(--color-text-on-data);
+}
+
+/* ⚠️ border/glass, NOT border/subtle — the handoff's rule for a divider on a
+   data card. border/subtle is a hairline for LIGHT surfaces and disappears
+   entirely against sage. Drawn as a 1px filled box rather than a border so it
+   cannot pick up a border-box height surprise (rule 8b). */
+.divider {
+  height: var(--border-width-hairline);
+  background: var(--color-border-glass);
+}
+
+.details {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2xs); /* 2 */
+}
+
+.current {
+  color: var(--color-text-on-data);
+}
+
+.started {
+  color: var(--color-text-on-data-muted);
+}

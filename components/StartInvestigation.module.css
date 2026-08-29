@@ -4,27 +4,44 @@
    grid, other-row, take-a-photo button.
    ⚠️ THE OTHER-ROW SITS AFTER THE LOCATION CHIPS NOW, not right under the
    symptom chip grid as Figma draws it — a prototype-only reorder, not yet
-   reflected back in Figma. It still gets its margin-top from the shared
-   .question/.chips/.other rule below regardless of what precedes it. */
+   reflected back in Figma. Because it closes the screen rather than continuing
+   the symptom question, it takes the BETWEEN-question gap below, not the
+   within-question one. */
 
 .question {
   color: var(--color-text-primary);
 }
 
-/* The content stack. Figma mobile 476:2542 spaces these four blocks 60 apart —
-   off the spacing scale there too, so it is written as a literal rather than
-   snapped to 48 or 64. Desktop (476:2670) keeps the card's own 32 gap. */
-.chips,
-.other {
-  margin-top: 60px;
-}
-
+/* ⚠️ NOT IN FIGMA — THE STACK IS TWO-LEVEL NOW, NOT ONE FLAT GAP.
+   Figma mobile 476:2542 spaces the top-level blocks 60 apart (off the spacing
+   scale there too) and desktop 476:2670 uses 48. Both were applied as ONE gap
+   to every block, which put the stack's WIDEST interval INSIDE a single
+   question — the title and its own chips — and its NARROWEST, 20, at the
+   boundary BETWEEN the two questions this screen merges. Measured on the
+   rendered page: 60 / 20 / 60 / 16 mobile, 48 / 20 / 48 / 16 desktop. Proximity
+   was telling the user that the symptom chips and the face diagram were one
+   group and that the title belonged to nothing.
+   Two levels instead, so the merge reads as the two questions it is:
+     WITHIN a question   20
+     BETWEEN questions   40 mobile / 48 desktop
+   Desktop keeps the comp's 48 and mobile drops to 40 — more air where there is
+   more room, which is the way round the old pair had backwards. Desktop's total
+   inter-block height is unchanged at 132, so the card does not move; mobile
+   loses 40 of the 92px by which the screen overflowed its own 957 canvas. */
 .chips {
+  margin-top: var(--space-xl); /* 20 — same question as the title above it */
   display: flex;
   flex-wrap: wrap;
   justify-content: center;
   /* 10 is the Chip grid gap in Figma and is off the spacing scale there too */
   gap: 10px;
+}
+
+/* A new question starts at the face diagram, and the two "tell us more"
+   controls close the screen — both are group boundaries. */
+.diagram,
+.other {
+  margin-top: var(--space-4xl); /* 40 */
 }
 
 /* .other is now just the spacing wrapper — it holds either the collapsed
@@ -93,11 +110,9 @@
   color: var(--color-text-secondary);
 }
 
-/* ---- Location half of the merge (formerly Location.module.css) --------- */
-
-.diagram {
-  margin-top: var(--space-xl);
-}
+/* ---- Location half of the merge (formerly Location.module.css) ---------
+   (.diagram's own gap now lives with the stack rules at the top of the file,
+   so the two group boundaries stay written next to each other.) */
 
 /* a real Secondary Button (Button.module.css `.secondary` owns the visual
    recipe) — this class is just the spacing that used to live on the
@@ -107,8 +122,11 @@
 }
 
 @media (min-width: 1024px) {
-  /* Figma 476:2670 — the desktop card is gap 48 with its children CENTRED. */
-  .chips,
+  /* Figma 476:2670 — the desktop card is gap 48 with its children CENTRED.
+     48 is the BETWEEN-question gap here; .chips keeps the 20 it inherits from
+     the mobile rule, because the title and its chips are one group at every
+     width. */
+  .diagram,
   .other {
     margin-top: var(--space-5xl); /* 48 */
   }

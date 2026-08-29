@@ -1,0 +1,73 @@
+/* Check — start (601:1952) / Check — no profile — desktop (606:2183).
+
+   heading -> 20 -> skin-profile strip -> flex -> hero -> flex -> nav.
+
+   The hero is the established LUX empty-state block, and its spacing is the
+   `My Products — empty` one exactly: a 16 gap throughout, with a named 16-tall
+   spacer frame above the title and above the CTA, so those two distances are 48
+   and the title/description pair stays tight at 16. */
+
+.profile {
+  margin-top: var(--space-xl); /* 20 */
+}
+
+.hero {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--space-lg); /* 16 */
+  text-align: center;
+  color: var(--color-text-primary);
+}
+
+/* + the 16 gap = the comp's 48 */
+.hero > svg {
+  margin-bottom: var(--space-3xl); /* 32 */
+}
+
+.text {
+  color: var(--color-text-secondary);
+}
+
+/* + the 16 gap = the comp's 48 */
+.cta {
+  width: 100%;
+  margin-top: var(--space-3xl); /* 32 */
+}
+
+/* ⚠️ 376 ON DESKTOP, NOT THE 280 `Progress — empty` USES. Both are "the empty
+   state's one action" and the two comps disagree; each is reproduced rather
+   than normalised to whichever was drawn first. Worth resolving in Figma. */
+@media (min-width: 1024px) {
+  .cta {
+    width: 376px;
+  }
+}
+
+/* `link · View previous checks` — Body 3 in text/brand, centred, no underline
+   until it is interacted with. A text link is right here: it is the secondary
+   path off a screen whose primary action is already a Button. */
+.link {
+  color: var(--color-text-brand);
+  text-decoration: none;
+  transition: opacity var(--duration-fast) var(--ease-standard);
+}
+
+.link:hover {
+  opacity: 0.7;
+  text-decoration: underline;
+}
+
+@media (hover: none) {
+  .link:hover {
+    opacity: 1;
+    text-decoration: none;
+  }
+}
+
+/* the roadmap line — see CheckScreen.tsx. Deliberately quiet: text/muted, and
+   pushed away from the actions so it does not read as one of them. */
+.roadmap {
+  margin-top: var(--space-md); /* + the 16 gap = 28 */
+  color: var(--color-text-muted);
+}

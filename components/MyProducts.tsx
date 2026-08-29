@@ -7,6 +7,7 @@ import { Button } from "./Button";
 import { Orb } from "./Orb";
 import { ChevronRightIcon } from "./icons";
 import { useInvestigation } from "./InvestigationProvider";
+import { ownedProducts } from "@/lib/demo";
 import {
   BUCKETS,
   BUCKET_LIST_TITLE,
@@ -36,7 +37,10 @@ import {
  */
 export function MyProducts() {
   const { answers } = useInvestigation();
-  const products: SavedProduct[] = answers.products ?? [];
+  /* ⚠️ THE SEEDED LIBRARY WHEN THE USER OWNS NOTHING — see lib/demo.ts. The hub
+     greeted a portfolio visitor with "No products added yet", which is the same
+     empty-readout problem `/progress` and `/check` had. */
+  const products: SavedProduct[] = ownedProducts(answers);
 
   // ⚠️ THE THREE DESIGNED PERIODS ALWAYS, "Not sure" ONLY WHEN IT HAS SOMETHING.
   // The comp shows all three periods and a category that disappears when it

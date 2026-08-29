@@ -225,6 +225,55 @@ export const CATALOG: CatalogProduct[] = [
     size: "1 fl oz",
     description: "High-strength blemish formula",
   },
+
+  /* ---- Added for CHECK ----------------------------------------------------
+     The products the CHECK comps name — the search list on `Check — add
+     products` (602:1972) and the five analysis cards on `Check results`
+     (476:2841). Same principle as the entries above: the catalogue is what the
+     comps actually name, so the screens show the designed products rather than
+     invented placeholders. See lib/check.ts for what makes them score. */
+  {
+    id: "paulas-choice-niacinamide-serum",
+    name: "Niacinamide Serum",
+    brand: "Paula's Choice",
+    size: "0.67 fl oz",
+    description: "20% niacinamide concentrate for enlarged pores",
+  },
+  {
+    id: "good-molecules-niacinamide-toner",
+    name: "Niacinamide Brightening Toner",
+    brand: "Good Molecules",
+    size: "3.7 fl oz",
+    description: "Brightening toner with niacinamide",
+  },
+  {
+    id: "cerave-niacinamide-body-lotion",
+    name: "Niacinamide Body Lotion",
+    brand: "CeraVe",
+    size: "8 oz",
+    description: "Body lotion with niacinamide and ceramides",
+  },
+  {
+    id: "lrp-retinol-b3-serum",
+    name: "Retinol B3 Serum",
+    brand: "La Roche-Posay",
+    size: "1 fl oz",
+    description: "Pure retinol serum with vitamin B3",
+  },
+  {
+    id: "paulas-choice-bha-exfoliant",
+    name: "BHA Exfoliant",
+    brand: "Paula's Choice",
+    size: "4 fl oz",
+    description: "Skin Perfecting 2% BHA liquid exfoliant",
+  },
+  {
+    id: "cerave-foaming-cleanser",
+    name: "Foaming Cleanser",
+    brand: "CeraVe",
+    size: "12 fl oz",
+    description: "Foaming facial cleanser for normal to oily skin",
+  },
 ];
 
 /**
@@ -253,16 +302,121 @@ export function resultMeta(p: CatalogProduct): string {
 }
 
 /**
- * A forgiving substring search over brand + name, so "cerave moist" matches the
- * four products the comp shows. Every term must appear somewhere.
+ * Fold a string down to something typeable: lowercase, diacritics stripped,
+ * punctuation collapsed to spaces. Digits and `%` survive because half this
+ * catalogue is named with them ("Niacinamide 10% + Zinc 1%", "12 oz pump").
+ *
+ * ⚠️ THIS IS WHY "la roche posay" FINDS `La Roche-Posay`. The old search
+ * compared raw lowercased strings, so a hyphen in the brand made the unhyphened
+ * spelling — the one people actually type — depend on the term happening to
+ * fall on the right side of it.
  */
-export function searchCatalog(query: string): CatalogProduct[] {
-  const terms = query.trim().toLowerCase().split(/\s+/).filter(Boolean);
+function normalizeForSearch(value: string): string {
+  return value
+    .normalize("NFD")
+    .replace(/[\u0300-\u036f]/g, "")
+    .toLowerCase()
+    .replace(/[^a-z0-9%]+/g, " ")
+    .trim();
+}
+
+/** The fields a term can match, most identifying first. */
+const FIELD_WEIGHT = {
+  /** the product's own name — what someone is most likely typing */
+  name: 40,
+  brand: 30,
+  /** ⚠️ SIZE IS SEARCHABLE, and it was not. `resultMeta` puts it on every row
+      precisely because the catalogue holds a 16 oz and a 12 oz CeraVe
+      Moisturizing Cream that are identical on brand alone — so the one field
+      that exists to tell two rows apart was the one field you could see and
+      not type. "16 oz" returned nothing. */
+  size: 16,
+  /** what the product CONTAINS — see `extraTerms` below */
+  ingredient: 12,
+} as const;
+
+type SearchField = keyof typeof FIELD_WEIGHT;
+
+function scoreTerm(term: string, fields: Record<SearchField, string>): number {
+  let best = 0;
+  for (const field of Object.keys(FIELD_WEIGHT) as SearchField[]) {
+    const hay = fields[field];
+    if (!hay.includes(term)) continue;
+    const weight = FIELD_WEIGHT[field];
+    /* A term that starts a word beats one buried mid-word: typing "cream"
+       should rank `Moisturizing Cream` over a product that merely mentions it.
+       `\b` is unreliable here because the haystack is already space-collapsed,
+       so test the space-delimited boundary directly. */
+    const atWordStart = hay === term || hay.startsWith(`${term}`) || hay.includes(` ${term}`);
+    best = Math.max(best, atWordStart ? weight * 2 : weight);
+  }
+  return best;
+}
+
+/**
+ * A forgiving search over brand, name, size and — when the caller supplies them
+ * — the product's ingredients. Every term must still match somewhere, so the
+ * result stays an AND like the comp's; what changed is WHERE a term may match
+ * and in WHAT ORDER the hits come back.
+ *
+ * ⚠️ INGREDIENTS COME FROM THE CALLER, NOT FROM THIS MODULE. `lib/check.ts`
+ * owns the actives model and already imports this file, so reaching the other
+ * way would be a cycle. It is also the right split by meaning: "what do I own
+ * with retinol in it" is a COMPATIBILITY question, which is why `/check/new`
+ * passes `checkSearchTerms` and the PRODUCTS tray does not.
+ *
+ * ⚠️ IT USED TO HALF-WORK BY ACCIDENT. `retinol` and `niacinamide` returned
+ * hits only because those words sit in product NAMES, while `salicylic` — the
+ * highest-penalty active in the model, and the one `/check/results` flags in
+ * the demo — returned nothing at all. Search that works for two ingredients and
+ * silently fails on the third reads as broken data rather than as a missing
+ * feature.
+ */
+export function searchCatalog(
+  query: string,
+  extraTerms?: (product: CatalogProduct) => string[]
+): CatalogProduct[] {
+  const terms = normalizeForSearch(query).split(" ").filter(Boolean);
   if (terms.length === 0) return [];
-  return CATALOG.filter((p) => {
-    const haystack = `${p.brand} ${p.name}`.toLowerCase();
-    return terms.every((t) => haystack.includes(t));
-  });
+
+  const scored: { product: CatalogProduct; score: number }[] = [];
+
+  for (const product of CATALOG) {
+    const fields: Record<SearchField, string> = {
+      name: normalizeForSearch(product.name),
+      brand: normalizeForSearch(product.brand),
+      size: normalizeForSearch(product.size),
+      ingredient: normalizeForSearch((extraTerms?.(product) ?? []).join(" ")),
+    };
+
+    let total = 0;
+    let matchedAll = true;
+    for (const term of terms) {
+      const s = scoreTerm(term, fields);
+      if (s === 0) {
+        matchedAll = false;
+        break;
+      }
+      total += s;
+    }
+    if (!matchedAll) continue;
+
+    /* the whole query as one phrase, so "moisturizing cream" ranks the two
+       actual Moisturizing Creams above anything that merely holds both words */
+    if (`${fields.brand} ${fields.name}`.includes(terms.join(" "))) total += 60;
+
+    scored.push({ product, score: total });
+  }
+
+  /* ⚠️ STABLE TIEBREAK, NOT CATALOGUE ORDER. Equal-scoring rows fall back to
+     the order they are declared in, which is arbitrary; sorting equal hits by
+     name keeps the list from reshuffling as the query grows a character. */
+  return scored
+    .sort(
+      (a, b) =>
+        b.score - a.score || fullName(a.product).localeCompare(fullName(b.product))
+    )
+    .map((s) => s.product);
 }
 
 export function countIn(products: SavedProduct[], bucket: BucketId): number {

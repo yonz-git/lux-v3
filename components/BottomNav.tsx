@@ -18,18 +18,23 @@ import { ProgressIcon, CheckIcon, ProductsIcon } from "./icons";
  * Size is handled by CSS (380 mobile / 598 desktop) rather than a prop, since
  * on the web the breakpoint decides, not the caller.
  *
- * ⚠️ ONLY THE SECTIONS THAT EXIST ARE LINKS. Products landed with the PRODUCTS
- * build, so that item is a real `next/link` carrying `aria-current="page"` when
- * it is the active section. Progress and Check have no hub screen yet, so they
- * stay inert buttons — a link to a 404 would be worse than a control that has
- * not been wired. Give each one an `href` here as its section lands.
+ * ⚠️ ALL THREE SECTIONS ARE LINKS NOW. Products, Progress and Check each have a
+ * landing, so every item is a real `next/link` carrying `aria-current="page"`
+ * when it is the active section, and the inert-button branch below is dead
+ * code kept only for the next section that lands before its screen does.
+ *
+ * ⚠️ `Check` IS THE COMPATIBILITY CHECK, NOT THE DAILY CHECK-IN. The section
+ * nominally owns both — the PROGRESS handoff puts `Check-in chat` here — but
+ * the check-in is not built, so `/check` offers the compatibility check and
+ * names the other as coming. Progress's `Check in today` is still inert for the
+ * same reason; wire both in one pass.
  */
 
 export type NavSection = "none" | "progress" | "check" | "products";
 
 const items = [
-  { id: "progress", label: "Progress", Icon: ProgressIcon, href: null },
-  { id: "check", label: "Check", Icon: CheckIcon, href: null },
+  { id: "progress", label: "Progress", Icon: ProgressIcon, href: "/progress" },
+  { id: "check", label: "Check", Icon: CheckIcon, href: "/check" },
   { id: "products", label: "Products", Icon: ProductsIcon, href: "/products" },
 ] as const;
 

@@ -1,0 +1,78 @@
+/* Check — add products (602:1972) and its selection / no-results states.
+
+   title -> 24 (HubScreen) -> skin-profile -> 20 -> Search Field -> 20 -> list.
+   The 24 above the strip is HubScreen's `.heading + *` rule; everything below
+   is this screen's. */
+
+.search {
+  margin-top: var(--space-xl); /* 20 */
+}
+
+/* ⚠️ NOT IN FIGMA — the comp has one unlabelled list because it only ever shows
+   search results. With "Your products" above the catalogue search, the list
+   changes meaning between the two and has to say which it is. `Label` in
+   text/secondary is the section-label treatment `Check results` already uses
+   for "Risky ingredients", so this is not a new style. */
+.sectionLabel {
+  margin-top: var(--space-xl); /* 20 */
+  color: var(--color-text-secondary);
+}
+
+.list {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-md); /* 12 */
+  margin: var(--space-md) 0 0;
+  padding: 0;
+  list-style: none;
+}
+
+/* `empty-state` (651:2574) — frost-light + 1px border/DEFAULT (not subtle, the
+   heavier stroke: this box has to hold its own edge with no rows around it) +
+   radius/2xl + the frosted-row inner shadow. Padding 32/24, gap 8. */
+.emptyBox {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--space-sm); /* 8 */
+  margin-top: var(--space-md); /* 12 */
+  /* rule 12: the Figma padding minus the border */
+  padding: calc(var(--space-3xl) - var(--border-width-hairline))
+    calc(var(--space-2xl) - var(--border-width-hairline));
+  text-align: center;
+
+  border: var(--border-width-hairline) solid var(--color-border-default);
+  border-radius: var(--radius-2xl);
+  background: var(--color-surface-frost-light);
+  box-shadow: var(--shadow-frosted-row);
+  -webkit-backdrop-filter: blur(var(--blur-card));
+  backdrop-filter: blur(var(--blur-card));
+}
+
+.emptyTitle {
+  color: var(--color-text-primary);
+}
+
+.emptyText {
+  color: var(--color-text-secondary);
+}
+
+.manual {
+  width: 100%;
+  margin-top: var(--space-lg); /* 16 */
+}
+
+/* The bar is `position: fixed`, so it occupies no space in the flow and would
+   sit on top of the last row. This reserves its height plus the gap it keeps
+   from the nav, on top of the nav reservation the screen already carries. */
+.barSpacer {
+  height: calc(54px + var(--space-md));
+}
+
+@media (prefers-reduced-transparency: reduce) {
+  .emptyBox {
+    background: var(--color-bg-surface-frost);
+    -webkit-backdrop-filter: none;
+    backdrop-filter: none;
+  }
+}

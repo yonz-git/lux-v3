@@ -1,0 +1,126 @@
+/* PROGRESS. Figma empty 551:1196 / 551:1231, active 552:1236 / 554:1252.
+
+   MOBILE — one column, and the gaps are NOT uniform, which is why they are
+   written per block rather than as a gap on the body:
+     heading -> 24 -> profile -> 16 -> calendar -> 16 -> trend
+             -> 24 -> Check in today -> 8 -> last-check-in
+   (the leading 24 belongs to HubScreen's grid body, not to the profile.)
+
+   DESKTOP — the handoff's 1280 dashboard grid, NOT a page card:
+     col-1  640 fixed   calendar, spanning the full height of the column
+     col-2  616 fill    profile / trend / CTA / caption, a uniform 24 apart
+   Both gutters are gutter/desktop (24). HubScreen's `grid` layout owns the two
+   columns; this file only places the children in them. */
+
+.calendar {
+  margin-top: var(--space-lg); /* 16 */
+}
+
+.trend {
+  margin-top: var(--space-lg); /* 16 */
+}
+
+/* ⚠️ WIDTH IS SET HERE, NOT VIA Button's `fullWidth`. `.full` and `.cta` are
+   both single-class selectors, so which one wins depends on the order the two
+   CSS modules happen to land in the bundle — the same trap that silently ate
+   the focus ring (non-negotiable 11). Owning the width outright means there is
+   nothing to lose a specificity race against. */
+.cta {
+  width: 100%;
+  margin-top: var(--space-2xl); /* 24 */
+}
+
+.lastCheckIn {
+  margin-top: var(--space-sm); /* 8 */
+  color: var(--color-text-secondary);
+  text-align: center;
+}
+
+@media (min-width: 1024px) {
+  /* the column gap is the grid's; every mobile margin goes */
+  .calendar,
+  .trend,
+  .cta,
+  .lastCheckIn {
+    margin-top: 0;
+  }
+
+  .profile {
+    grid-column: 2;
+    grid-row: 1;
+  }
+
+  /* col-1 is one card that runs the height of the column beside it. `start`
+     alignment on the grid keeps it its natural height rather than stretching
+     the calendar to match col-2. */
+  .calendar {
+    grid-column: 1;
+    grid-row: 1 / span 4;
+  }
+
+  .trend {
+    grid-column: 2;
+    grid-row: 2;
+  }
+
+  /* 376 is the comp's own width for this button. Not a token and not the 280 a
+     flow footer uses — written as a literal rather than snapped to something
+     that would be quietly wrong.
+
+     ⚠️ CENTRED IN col-2, NOT LEFT-ALIGNED — NOT IN FIGMA. `554:1433` sits at
+     x=0 of the column, hard against the trend card's left edge, while the
+     `Last check-in` caption directly beneath it is centred across the full 616.
+     That left the screen's one action visibly off-axis from its own caption.
+     Centring it lines the two up and puts the primary action on the column's
+     axis. Decided here; the comp has not caught up. */
+  .cta {
+    grid-column: 2;
+    grid-row: 3;
+    width: 376px;
+    justify-self: center;
+  }
+
+  .lastCheckIn {
+    grid-column: 2;
+    grid-row: 4;
+  }
+}
+
+/* ---------------------------------------------------------------------------
+   Progress — empty
+
+   orb -> 32 -> title -> 12 -> description -> 32 -> CTA, the block centred.
+   The spacers are named frames in the comp and there is no gap on the stack, so
+   these are the literal distances — unlike `My Products — empty`, where a 16
+   gap sits either side of a 16 spacer and the real distance is 48.
+   -------------------------------------------------------------------------- */
+
+.empty {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  color: var(--color-text-primary);
+}
+
+.empty > svg {
+  margin-bottom: var(--space-3xl); /* 32 */
+}
+
+.emptyText {
+  margin-top: var(--space-md); /* 12 */
+  color: var(--color-text-secondary);
+}
+
+/* full width of the 392 column on mobile; the comp narrows it to 280 on
+   desktop rather than letting it span the whole 640 block */
+.emptyCta {
+  width: 100%;
+  margin-top: var(--space-3xl); /* 32 */
+}
+
+@media (min-width: 1024px) {
+  .emptyCta {
+    width: 280px;
+  }
+}

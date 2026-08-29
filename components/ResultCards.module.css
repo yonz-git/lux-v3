@@ -1,0 +1,220 @@
+/* The synthesis cards on 06 — Results (548:1134) and Check results.
+   All three sit on `DataCard`, which owns the sage surface, the 20/24 padding
+   and the 16 gap. Everything here is contents. */
+
+.sectionLabel {
+  color: var(--color-text-on-data-muted);
+}
+
+/* ---- card · investigation summary (548:1165) ----------------------------- */
+
+/* three equal columns, 12 apart — flex-1 rather than a grid so a two-stat
+   variant still fills the card */
+.stats {
+  display: flex;
+  align-items: flex-start;
+  gap: var(--space-md); /* 12 */
+  margin: 0;
+  width: 100%;
+}
+
+/* ⚠️ column-reverse: the DOM is <dt> then <dd>, as a description list requires,
+   and the comp shows the figure above its label. See ResultCards.tsx. */
+.stat {
+  display: flex;
+  flex-direction: column-reverse;
+  gap: var(--space-2xs); /* 2 */
+  flex: 1;
+  min-width: 0;
+}
+
+.statValue {
+  margin: 0;
+  color: var(--color-text-on-data);
+}
+
+.statLabel {
+  color: var(--color-text-on-data-muted);
+}
+
+/* ---- card · ingredients of concern (549:1139) ---------------------------- */
+
+.concerns {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-lg); /* 16 */
+  margin: 0;
+  padding: 0;
+  width: 100%;
+  list-style: none;
+}
+
+.concernItem {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-lg);
+}
+
+/* border/glass, never border/subtle — a divider on a data card */
+.divider {
+  height: var(--border-width-hairline);
+  background: var(--color-border-glass);
+}
+
+.concern {
+  display: flex;
+  align-items: stretch;
+  gap: var(--space-md); /* 12 */
+}
+
+/* 4 wide, full height of the entry, radius/full */
+.accent {
+  flex: none;
+  width: 4px;
+  border-radius: var(--radius-full);
+  background: var(--color-text-on-data-muted);
+}
+
+.accent[data-likelihood="high"] {
+  background: var(--color-feedback-warning);
+}
+
+.concernBody {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: var(--space-sm); /* 8 */
+  flex: 1;
+  min-width: 0;
+}
+
+.concernName {
+  color: var(--color-text-on-data);
+}
+
+/* sits 2 under the name, inside the 8 gap — the comp pairs them tighter than
+   the rest of the entry */
+.foundIn {
+  margin-top: calc(var(--space-2xs) - var(--space-sm)); /* 2 - 8 */
+  color: var(--color-text-on-data-muted);
+}
+
+.concernText {
+  color: var(--color-text-on-data-secondary);
+}
+
+/* ---- card · what to do next (549:1163) ----------------------------------- */
+
+/* ⚠️ surface/data-strong, NOT a light card. The handoff's rule for a nested
+   emphasis block: a sage card inside a light card is a LUX pattern, the reverse
+   is not. */
+.emphasis {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: var(--space-md); /* 12 */
+  width: 100%;
+  padding: var(--space-xl); /* 20 */
+  border-radius: var(--radius-lg);
+  background: var(--color-surface-data-strong);
+  box-shadow: var(--shadow-frosted-data);
+  -webkit-backdrop-filter: blur(var(--blur-card));
+  backdrop-filter: blur(var(--blur-card));
+}
+
+/* ⚠️ WHITE, BY EXPLICIT REQUEST — AND IT DOES NOT MEET AA. Everything else on a
+   sage surface was moved to the ink (see the SURFACE SYSTEM B block in
+   globals.css); this one nested emphasis block was asked to stay white.
+
+   Measured on `/check/results`: the block is `surface/data-strong` nested INSIDE
+   a `surface/data` card, so the sage stacks twice and composites to
+   rgb(141,177,179). White on that is **2.32:1** against a 4.5:1 requirement.
+   The ink measures 5.95:1 on the same surface.
+
+   There is no in-system way to make white legitimate here: the sage ramp stops
+   at `sage/400` (#a7c0c1), so a dark-sage emphasis surface — the treatment that
+   would make white both correct and emphatic — would be a colour outside the
+   ramp. Raise that in Figma if this block should keep white; a `sage/700` is
+   the missing token. */
+.emphasisTitle,
+.emphasisText {
+  color: var(--color-text-on-data-inverse);
+}
+
+.notes {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-sm);
+  margin: 0;
+  padding: 0;
+  width: 100%;
+  list-style: none;
+}
+
+.note {
+  color: var(--color-text-on-data-secondary);
+}
+
+.schedule {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-md); /* 12 */
+  width: 100%;
+}
+
+.scheduleLabel {
+  color: var(--color-text-on-data-muted);
+}
+
+.timeline {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-md); /* 12 */
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.node {
+  display: flex;
+  align-items: flex-start;
+  gap: var(--space-md); /* 12 */
+}
+
+/* 10px dot, sitting 4 down so it centres on the first line of a 24 row */
+.dot {
+  flex: none;
+  width: 10px;
+  height: 10px;
+  margin-top: 7px;
+  border-radius: var(--radius-full);
+  border: var(--border-width-thin) solid var(--color-border-glass);
+}
+
+.dot[data-current] {
+  background: var(--color-text-on-data);
+  border-color: var(--color-text-on-data);
+}
+
+.nodeText {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2xs); /* 2 */
+  flex: 1;
+  min-width: 0;
+}
+
+.week {
+  color: var(--color-text-on-data);
+}
+
+.nodeNote {
+  color: var(--color-text-on-data-muted);
+}
+
+.actions {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-md); /* 12 */
+  width: 100%;
+}

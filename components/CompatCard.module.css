@@ -1,0 +1,170 @@
+/* analysis/… — Figma 476:2857 collapsed, 476:2864 expanded.
+
+   Collapsed is 56 tall: 16 + a 24 header row + 16. Expanded keeps that header
+   and adds 14 -> bar(6) -> 8 -> summary -> 14 -> label -> 8 -> tags -> 14 ->
+   recommendation. */
+
+.card {
+  /* --band is the one colour that changes between the three states, so the
+     pill, the score and the bar fill all read from it and cannot drift apart. */
+  --band: var(--color-feedback-success);
+  --band-subtle: var(--color-feedback-success-subtle);
+
+  width: 100%;
+  /* rule 12: Figma padding minus the border, so a one-line row lands on 56 and
+     a two-line one grows honestly */
+  padding: calc(var(--space-lg) - var(--border-width-hairline))
+    calc(18px - var(--border-width-hairline));
+
+  border: var(--border-width-hairline) solid var(--color-border-subtle);
+  border-radius: var(--radius-lg);
+  background: var(--color-surface-frost-light);
+  box-shadow: var(--shadow-frosted-row);
+  -webkit-backdrop-filter: blur(var(--blur-card));
+  backdrop-filter: blur(var(--blur-card));
+}
+
+.card[data-band="risky"] {
+  --band: var(--color-feedback-warning);
+  --band-subtle: var(--color-feedback-warning-subtle);
+}
+
+.card[data-band="avoid"] {
+  --band: var(--color-feedback-error);
+  --band-subtle: var(--color-feedback-error-subtle);
+}
+
+/* the <h3> is structure for the outline, not a visual element */
+.heading {
+  margin: 0;
+  font: inherit;
+}
+
+.toggle {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-md);
+  width: 100%;
+  /* ⚠️ the UA button padding is 1px 6px, not zero (non-negotiable 13) */
+  padding: 0;
+  text-align: left;
+  color: inherit;
+}
+
+.name {
+  flex: 1;
+  min-width: 0;
+  color: var(--color-text-primary);
+}
+
+.score {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  flex: none;
+}
+
+/* 26 tall: 5 + 16 + 5 */
+.pill {
+  padding: 5px 14px;
+  border-radius: var(--radius-full);
+  background: var(--band);
+  color: var(--color-text-on-brand);
+  white-space: nowrap;
+}
+
+.percent {
+  color: var(--band);
+}
+
+.chevron {
+  width: var(--size-icon-sm); /* 20 */
+  height: var(--size-icon-sm);
+  color: var(--color-icon-default);
+  transition: transform var(--duration-base) var(--ease-standard);
+}
+
+.card[data-open] .chevron {
+  transform: rotate(180deg);
+}
+
+.bar {
+  height: 6px;
+  margin-top: 14px;
+  overflow: hidden;
+  border-radius: var(--radius-full);
+  background: var(--color-surface-frost-light);
+}
+
+.fill {
+  display: block;
+  height: 100%;
+  border-radius: var(--radius-full);
+  background: var(--band);
+}
+
+.summary {
+  margin-top: var(--space-sm); /* 8 */
+  color: var(--color-text-secondary);
+}
+
+.sectionLabel {
+  margin-top: 14px;
+  color: var(--color-text-secondary);
+}
+
+.tags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-sm); /* 8 */
+  margin: var(--space-sm) 0 0;
+  padding: 0;
+  list-style: none;
+}
+
+/* 28 tall: 6 + 16 + 6. The subtle band tint behind the band colour — the one
+   place the -subtle feedback tokens are used. */
+.tag {
+  padding: 6px var(--space-md); /* 6 / 12 */
+  border-radius: var(--radius-full);
+  background: var(--band-subtle);
+  color: var(--band);
+  white-space: nowrap;
+}
+
+/* ⚠️ A NESTED BLOCK WITH NO BORDER. Every other frosted surface on this screen
+   carries a 1px border/subtle; this one is fill + inner shadow only, which is
+   what keeps it reading as part of the card rather than as another card. */
+.recommendation {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  margin-top: 14px;
+  padding: 14px var(--space-lg); /* 14 / 16 */
+  border-radius: var(--radius-md); /* 12 */
+  background: var(--color-surface-frost-light);
+  box-shadow: var(--shadow-frosted-row);
+}
+
+.recTitle {
+  color: var(--color-text-primary);
+}
+
+.recBody {
+  color: var(--color-text-secondary);
+}
+
+@media (prefers-reduced-transparency: reduce) {
+  .card,
+  .recommendation {
+    background: var(--color-bg-surface-frost);
+    -webkit-backdrop-filter: none;
+    backdrop-filter: none;
+  }
+
+  /* the track has to stay distinguishable from the card it sits on */
+  .bar {
+    background: var(--color-border-subtle);
+  }
+}

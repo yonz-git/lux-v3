@@ -8,7 +8,7 @@ import { useInvestigation } from "./InvestigationProvider";
 import { toggleMulti } from "@/lib/answers";
 
 /**
- * 02a+02b combined — Skin type and Skin tendencies on one screen. Step 3/6.
+ * 02a+02b combined — Skin type and Skin tendencies on one screen. Step 2/5.
  *
  * ⚠️ THIS IS A PROTOTYPE-ONLY MERGE, NOT YET REFLECTED IN FIGMA. The two
  * questions were separate frames (02a `484:722`/`489:902` and 02b

@@ -1,0 +1,90 @@
+/* card · symptom trend — Figma 553:1239 / 554:1412.
+
+   H5 title -> 16 (DataCard's gap) -> chart -> 16 -> x-axis -> 16 -> summary.
+   The chart row is a 20-wide y-axis, an 8 gap, then the plot filling the rest.
+   Everything is 110 tall. */
+
+.title {
+  color: var(--color-text-on-data);
+}
+
+.chart {
+  display: flex;
+  align-items: flex-start;
+  gap: var(--space-sm); /* 8 */
+}
+
+/* The three ticks are spread top to bottom, so their 16-tall boxes centre on
+   8 / 55 / 102 — which is the mapping the component plots against. */
+.yAxis {
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  align-items: flex-end;
+  width: 20px;
+  height: 110px;
+  flex: none;
+  color: var(--color-text-on-data-muted);
+}
+
+/* ⚠️ THE 4px INLINE PADDING IS THE DOT'S RADIUS. The dots are centred on 0% and
+   100% of `.plot`, so without it half of the first and last would hang outside
+   the plot box. Padding the canvas and insetting the plot by the same 4 puts
+   both end dots fully inside, which is what the comp draws (its first point
+   centres at x=8 in a 324-wide canvas whose content starts at 4). */
+.canvas {
+  position: relative;
+  flex: 1;
+  min-width: 0;
+  height: 110px;
+  padding-inline: 4px;
+}
+
+.plot {
+  position: absolute;
+  inset: 0 4px;
+}
+
+/* preserveAspectRatio="none" on a 0 0 100 110 viewBox makes y map 1:1 to the
+   110px height while x stretches to whatever the card is wide — so the plotted
+   y values are literal pixels and x is a percentage. The stroke is kept at 2
+   by vector-effect on the polyline itself. */
+.line {
+  display: block;
+  width: 100%;
+  height: 100%;
+  overflow: visible;
+  /* the trend line is WHITE on a data card — the handoff's rule. currentColor
+     so the stroke follows it. */
+  color: var(--color-text-on-data);
+}
+
+.point {
+  position: absolute;
+  width: 8px;
+  height: 8px;
+  /* left/top are the point's CENTRE, set inline from the data */
+  transform: translate(-50%, -50%);
+  border-radius: var(--radius-full);
+  background: var(--color-text-on-data);
+}
+
+/* 28 = the y-axis (20) plus the chart's gap (8), so the labels start where the
+   plot does rather than where the card does. */
+.xAxis {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  margin: 0;
+  padding-left: 28px;
+  color: var(--color-text-on-data-muted);
+  white-space: nowrap;
+}
+
+.summary {
+  color: var(--color-text-on-data-secondary);
+}
+
+.empty {
+  color: var(--color-text-on-data-secondary);
+}

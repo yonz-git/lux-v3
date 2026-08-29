@@ -1,0 +1,142 @@
+/* card · calendar — Figma 552:1255 / 554:1260.
+
+   H5 month + 20px arrows -> 16 (DataCard's gap) -> the grid -> 16 -> legend.
+
+   The grid: a 20-tall weekday header, then week rows 32 tall with 4 between —
+   see the doc comment on the component for why every row is 32 even though two
+   rows in the Figma frames measure taller. */
+
+.header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.month {
+  color: var(--color-text-on-data);
+}
+
+.arrows {
+  display: flex;
+  align-items: center;
+  gap: var(--space-sm); /* 8 */
+}
+
+/* The glyph is 20 in the comp, but a 20 tap target is not one. The button
+   measures 44 and absorbs the difference with a negative margin on all four
+   sides, exactly as HubScreen's back chevron does — the 26-tall header row must
+   not grow to fit it. */
+.arrow {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: var(--size-touch-target);
+  height: var(--size-touch-target);
+  margin: calc((var(--size-icon-sm) - var(--size-touch-target)) / 2);
+  /* ⚠️ the UA button padding is 1px 6px, not zero (non-negotiable 13) */
+  padding: 0;
+  border-radius: var(--radius-full);
+  color: var(--color-icon-on-data);
+  transition: opacity var(--duration-fast) var(--ease-standard);
+}
+
+.arrowIcon {
+  width: var(--size-icon-sm); /* 20 */
+  height: var(--size-icon-sm);
+}
+
+.arrow:hover {
+  opacity: 0.7;
+}
+
+@media (hover: none) {
+  .arrow:hover {
+    opacity: 1;
+  }
+}
+
+/* table-layout: fixed is what makes the seven columns equal (352/7 = 50.2857 in
+   the mobile comp) without a single width being written down. */
+.grid {
+  width: 100%;
+  table-layout: fixed;
+  border-collapse: collapse;
+}
+
+.weekdayCell {
+  /* 16 of text + 4 = the comp's 20-tall header row */
+  padding: 0 0 var(--space-xs);
+  font-weight: inherit;
+}
+
+.weekday {
+  display: block;
+  color: var(--color-text-on-data-muted);
+}
+
+/* 4 above EVERY row, including the first — which is also the 4 the comp puts
+   between the header row and week 1. With the 32 disc that makes each row 36
+   and every gap 4, with no :first-child special case. */
+.cell {
+  height: 32px;
+  padding: var(--space-xs) 0 0;
+  text-align: center;
+}
+
+.day {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 32px;
+  height: 32px;
+  border-radius: var(--radius-full);
+  /* the unremarkable days sit back at 85% so the checked-in discs carry the
+     card; on-data-muted would drop them below the weekday header */
+  color: var(--color-text-on-data-secondary);
+}
+
+/* the accent on a data card is indigo bg/brand — the handoff's rule for
+   check-ins, timeline dots and meter fills alike */
+.day[data-checked-in] {
+  background: var(--color-bg-brand);
+  color: var(--color-text-on-data);
+}
+
+.day[data-today] {
+  border: var(--border-width-thin) solid var(--color-border-glass); /* 1.5 */
+  color: var(--color-text-on-data);
+}
+
+.legend {
+  display: flex;
+  align-items: center;
+  gap: var(--space-lg); /* 16 */
+  margin: 0;
+}
+
+.legendItem {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-sm); /* 8 */
+}
+
+.dot {
+  width: 10px;
+  height: 10px;
+  border-radius: var(--radius-full);
+  flex: none;
+}
+
+/* the legend keys mirror the two day states exactly: filled indigo for checked
+   in, the same 1.5 glass ring for today */
+.dot[data-checked-in] {
+  background: var(--color-bg-brand);
+}
+
+.dot[data-today] {
+  border: var(--border-width-thin) solid var(--color-border-glass);
+}
+
+.legendLabel {
+  color: var(--color-text-on-data-muted);
+}

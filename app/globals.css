@@ -35,6 +35,65 @@
   initial-value: #637073;
 }
 
+/* ==========================================================================
+   SURFACE SYSTEM B TEXT — dark, not white.
+
+   ⚠️ NOT IN FIGMA, AND WHITE CANNOT BE MADE TO WORK HERE. `surface/data` is
+   `#7da7a9 @44%` and `surface/data-strong` is the same hue at 62%, which
+   composite over the canvas to roughly rgb(170,194,198) and rgb(152,183,187).
+   Measured on `/check/results`, 38 of 59 text nodes failed WCAG AA — the
+   overlines and 12px stat labels at 1.49:1 and the body and metrics at 1.86:1,
+   against a 4.5:1 requirement. The basket bar measured 1.93:1 and the basket
+   sheet 1.64–2.13:1. At 1.5:1 the labels are barely present.
+
+   Even at 100% opacity `#7da7a9` gives white only 2.63:1, so no alpha of white
+   passes on this hue. Darkening the text is the only fix that keeps the sage
+   surface; the alternative is a genuinely dark sage, i.e. redesigning System B.
+
+   ⚠️ REDEFINED GLOBALLY, BECAUSE THERE IS NO DARK SAGE SURFACE TO EXEMPT. This
+   was first scoped to the two card roots on the assumption that the tray sat on
+   a scrim and the camera viewfinders were dark placeholders. Both were wrong:
+   `state/pressed-overlay` is 14%, which barely darkens anything, and BOTH
+   viewfinders (`SelfieCapture`, `AddProductMethodSheet`) are the same light
+   `surface/data`. Every surface in the app that reads these tokens is light
+   sage, so the exception list was empty and the scoping bought nothing.
+
+   ⚠️ THE THREE TIERS CANNOT BE BUILT FROM ALPHA. Every tier has to clear 4.5:1
+   because the muted tier styles 12–13px LABELS, and the ink at 82% already
+   fails (4.43:1). So `-secondary` and `-muted` share one value and the
+   hierarchy is carried by size, weight and the overline's tracking, which is
+   where it was already doing most of the work. Worst case measured across both
+   surface alphas and the full gradient range:
+
+     ink        #2e2a3f   6.28:1 – 8.12:1
+     sage ink   #354446   4.61:1 – 5.97:1
+
+   ⚠️ DECLARED HERE, NOT IN `tokens.css` — that file is generated from the Figma
+   variables and this is a correction to them. Raise it in Figma; it is a token
+   bug there too, not a code-side preference.
+
+   Still white on purpose: the `border/glass` divider inside a data card, and
+   `text/on-brand` on the indigo check-in discs (which passes). `SymptomTrend`'s
+   white line is a graphical object at ~2.6:1 against the card — the one open
+   System B contrast question.
+   ========================================================================== */
+
+:root {
+  --color-text-on-data: var(--color-text-primary);
+  /* sage-tinted rather than gray: secondary text on a coloured surface takes
+     that surface's hue, and a neutral gray reads as dirt on this one. */
+  --color-text-on-data-secondary: #354446;
+  --color-text-on-data-muted: #354446;
+  --color-icon-on-data: var(--color-text-primary);
+
+  /* ⚠️ THE ONE SAGE SURFACE THAT KEPT ITS WHITE, by explicit request:
+     `ResultCards`' nested emphasis block. It does NOT meet AA — 2.32:1 — and
+     the reasoning is on `.emphasisTitle` there. Named rather than left as a raw
+     `#fff` in the module so the exception is greppable and so the module is not
+     reaching into the primitives block, which non-negotiable 2 forbids. */
+  --color-text-on-data-inverse: #ffffff;
+}
+
 html,
 body {
   margin: 0;
@@ -190,7 +249,24 @@ button {
   font-size: var(--font-size-2xs);
   line-height: var(--line-height-2xs);
   font-weight: var(--font-weight-medium);
-  letter-spacing: var(--tracking-wide);
+  /* ⚠️ 1.82px, NOT `--tracking-wide` (0.71px). Figma's Overline style carries
+     letterSpacing 14 as a PERCENTAGE of the 13px size — 1.82px — and the token
+     export wrote the raw number into `--tracking-widest: 14px`, which is
+     nonsense at this size, so the class reached for the nearest plausible token
+     instead. Measured against the frame: "YOUR SKIN PROFILE" is 152 wide, which
+     is 1.82 tracking, not 0.71.
+
+     Written as a literal because there is no correct token to bind to: a
+     percentage tracking resolves to a different px value at every font size, so
+     `--tracking-widest` cannot serve both this and anything else. The same
+     export bug is in `--tracking-tight`/`--tracking-wider` and left alone —
+     .t-h3 and .t-label-sm come out within 0.3px either way, and every shipped
+     screen already renders with them. Fix it properly when tokens.css is next
+     regenerated, by emitting percentages as px per style.
+
+     Safe to correct here: PROGRESS's data-card section labels are the first
+     thing in the app to use .t-overline at all. */
+  letter-spacing: 1.82px;
   text-transform: uppercase;
 }
 
@@ -333,16 +409,33 @@ button {
     padding-top: var(--space-4xl);
   }
 
-  /* ⚠️ NO BOTTOM RESERVATION FOR A HUB SCREEN ON DESKTOP. The desktop frames let
-     the nav float over the content region rather than sitting in the layout
-     flow, so a screen that CENTRES its body must centre it in the whole column —
-     reserving 115 for the nav pushed `My Products — empty`'s hero 46px above
-     where the comp puts it. Mobile keeps the reservation: there the nav really
-     does sit in the flow.
+  /* ⚠️ NO BOTTOM RESERVATION FOR A **CENTRED** HUB SCREEN ON DESKTOP. The desktop
+     frames let the nav float over the content region rather than sitting in the
+     layout flow, so a screen that CENTRES its body must centre it in the whole
+     column — reserving 115 for the nav pushed `My Products — empty`'s hero 46px
+     above where the comp puts it. Mobile keeps the reservation: there the nav
+     really does sit in the flow.
+
+     ⚠️ A HUB SCREEN WHOSE BODY *FLOWS* STILL HAS TO CLEAR THE NAV. This rule
+     used to apply to every hub screen, which is wrong for the ones that are
+     lists: their last row lands wherever the content ends, and with no
+     reservation it renders behind the nav pill. Measured on `Check results` —
+     the 94% card and the nav were on top of each other — and latent on
+     `My Products — filled` for any list long enough to reach the bottom.
+     `data-center` is set by HubScreen for exactly the screens the 0 is for.
+
+     24 (the nav's offset from the bottom) + 75 (the nav) + 40 of clearance.
+
      ⚠️ THIS CANNOT LIVE IN HubScreen.module.css. `.screen` is a global class, so
      a module would hash the selector and it would match nothing — the same trap
      that hides a module's @keyframes. */
   .screen[data-layout="hub"] {
+    padding-bottom: calc(
+      var(--space-2xl) + var(--size-nav-height) + var(--space-4xl)
+    );
+  }
+
+  .screen[data-layout="hub"][data-center] {
     padding-bottom: 0;
   }
 
@@ -353,7 +446,7 @@ button {
        No bottom reservation: on desktop the nav floats over the content region
        rather than sitting in the layout flow, which is how the Figma frame is
        built, and it is what puts the hero at the right height. */
-    padding: 120px var(--margin-desktop) 0;
+    padding: var(--space-9xl) var(--margin-desktop) 0; /* 120 */
   }
 }
 
@@ -541,6 +634,80 @@ button {
   animation:
     lux-orb-appear 150ms ease-out 240ms backwards,
     lux-mark-x 700ms cubic-bezier(0.16, 1, 0.3, 1) 240ms backwards;
+}
+
+/* ============================================================================
+   The orb THINKING — Check — analyzing (605:2163).
+
+   ⚠️ NOT IN FIGMA. The handoff calls this screen the section's brand moment,
+   "the orb visibly doing the work", and clones it from `05 — Investigating` —
+   but the orb it clones is STATIC. A still avatar over a moving progress bar
+   says the bar is working and the AI is not, which is backwards: the bar is the
+   only part of this screen that is a literal countdown.
+
+   ⚠️ IT IS THE MARK, NOT A SPINNER. The entrance already treats L, U and X as
+   three tracks on a 0 / 120 / 240ms stagger; thinking is that same wave, held
+   and looped instead of resolved once. A ring or a spinner around the orb would
+   be a second, unrelated motion idea competing with the progress bar for the
+   same job — and the orb is the one thing on this screen that is LUX.
+
+   ⚠️ THE SPHERE MAY NOT TRAVEL. Orb.tsx: the sphere sits in a filter with a
+   fixed region and the group is clipped to 129x129. The breath is scale(1.02)
+   about the sphere's own centre — 1.1px on a 57px radius, well inside the 8px
+   margin — and no translation at all.
+
+   `prefers-reduced-motion` is handled globally below: it collapses the duration
+   and forces one iteration, so both animations must END on their resting value.
+   They do — opacity 1 and scale 1 — and the screen simply shows a still orb.
+   ========================================================================== */
+
+@keyframes lux-orb-breathe {
+  from {
+    transform: scale(1);
+  }
+  to {
+    transform: scale(1.02);
+  }
+}
+
+/* Down to 0.4 and back, never to 0 — a mark that disappears reads as a render
+   bug on a screen whose whole job is to look like it is working. */
+@keyframes lux-orb-think {
+  0%,
+  100% {
+    opacity: 1;
+  }
+  45% {
+    opacity: 0.4;
+  }
+}
+
+.orb-breathe,
+.orb-think-l,
+.orb-think-u,
+.orb-think-x {
+  transform-box: fill-box;
+  transform-origin: center;
+}
+
+.orb-breathe {
+  /* alternate, so the sphere eases back out rather than snapping to 1 */
+  animation: lux-orb-breathe 1300ms var(--ease-standard) infinite alternate;
+}
+
+.orb-think-l,
+.orb-think-u,
+.orb-think-x {
+  animation: lux-orb-think 1400ms var(--ease-standard) infinite;
+}
+
+/* the entrance's own stagger, reused — the wave travels L → U → X */
+.orb-think-u {
+  animation-delay: 120ms;
+}
+
+.orb-think-x {
+  animation-delay: 240ms;
 }
 
 /* ============================================================================

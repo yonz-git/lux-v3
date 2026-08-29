@@ -1,0 +1,246 @@
+/* The check basket — tray-bar (650:2513) and bottom-sheet (604:2103). */
+
+/* ---------------------------------------------------------------------------
+   The docked bar
+
+   Figma puts it at y = (frameH − 99) − 12 − 54, i.e. 12 above the nav, which is
+   itself 24 from the bottom edge and 75 tall. Written as that sum so it tracks
+   the nav tokens rather than a magic 111.
+   -------------------------------------------------------------------------- */
+
+.bar {
+  position: fixed;
+  left: 50%;
+  transform: translateX(-50%);
+  bottom: calc(var(--space-2xl) + var(--size-nav-height) + var(--space-md));
+  /* ⚠️ BELOW THE NAV. The bar is not a modal — only `Sheet` outranks the nav. */
+  z-index: var(--z-sticky);
+
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-md); /* 12 */
+
+  width: var(--size-nav-width-mobile); /* 392 on the comp; the nav's 380 + the
+     12 the comp's 392 exceeds it by is page-level — matching the nav width
+     keeps the bar and the pill beneath it on one edge, which reads better than
+     the comp's 6px overhang either side. See AGENTS.md. */
+  max-width: calc(100vw - (var(--margin-mobile) * 2));
+  min-height: 54px;
+  padding: 14px var(--space-xl); /* 14 / 20 */
+
+  border-radius: var(--radius-full);
+  background: var(--color-surface-data-strong);
+  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.12),
+    var(--shadow-frosted-row);
+  -webkit-backdrop-filter: blur(var(--blur-card));
+  backdrop-filter: blur(var(--blur-card));
+
+  color: var(--color-text-on-data);
+  text-align: left;
+  transition: opacity var(--duration-fast) var(--ease-standard);
+}
+
+.bar:hover {
+  opacity: 0.9;
+}
+
+/* Below two products the bar states the goal instead of offering an action, so
+   it renders as a <p> and must not look pressable — no hover, and the label
+   steps back to on-data-secondary. It still carries the full surface: the point
+   is that the SAME element fills up as you add. */
+.bar[data-quiet] {
+  margin: 0;
+  color: var(--color-text-on-data-secondary);
+  cursor: default;
+}
+
+.bar[data-quiet]:hover {
+  opacity: 1;
+}
+
+@media (hover: none) {
+  .bar:hover {
+    opacity: 1;
+  }
+}
+
+.barLabel {
+  flex: 1;
+  min-width: 0;
+}
+
+/* points UP, because the sheet opens upward */
+.barChevron {
+  flex: none;
+  width: var(--size-icon-md);
+  height: var(--size-icon-md);
+  transform: rotate(180deg);
+  color: var(--color-icon-on-data);
+}
+
+@media (min-width: 1024px) {
+  .bar {
+    width: var(--width-card-focus); /* 640 */
+    max-width: none;
+  }
+}
+
+@media (prefers-reduced-transparency: reduce) {
+  .bar {
+    background: linear-gradient(
+        var(--color-surface-data-strong),
+        var(--color-surface-data-strong)
+      ),
+      var(--color-bg-canvas);
+    -webkit-backdrop-filter: none;
+    backdrop-filter: none;
+  }
+}
+
+/* ---------------------------------------------------------------------------
+   The expanded sheet. `Sheet` owns the surface, padding, radius and the 20 gap;
+   everything here is its contents.
+   -------------------------------------------------------------------------- */
+
+.sheetTitle {
+  width: 100%;
+  color: var(--color-text-on-data);
+}
+
+.basket {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-sm); /* 8 */
+  width: 100%;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+/* the connector and the row share one <li>, so the 8 gap falls either side of
+   the "and" exactly as the comp's flat stack does */
+.basketItem {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-sm);
+}
+
+.and {
+  text-align: center;
+  color: var(--color-text-on-data-muted);
+}
+
+/* 50 tall: 12 + 26 + 12 */
+.item {
+  display: flex;
+  align-items: center;
+  gap: var(--space-md); /* 12 */
+  padding: 12px var(--space-lg); /* 12 / 16 */
+  border-radius: var(--radius-lg);
+  background: var(--color-surface-data-strong);
+  box-shadow: var(--shadow-frosted-row);
+}
+
+.itemLabel {
+  flex: 1;
+  min-width: 0;
+  color: var(--color-text-on-data);
+}
+
+/* A 20 glyph needs a 44 target; the negative margin keeps the 50-tall row at 50
+   — the same trick HubScreen's back chevron uses. */
+.remove {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  flex: none;
+  width: var(--size-touch-target);
+  height: var(--size-touch-target);
+  margin: calc((var(--size-icon-sm) - var(--size-touch-target)) / 2);
+  padding: 0;
+  border-radius: var(--radius-full);
+  color: var(--color-icon-on-data);
+  transition: opacity var(--duration-fast) var(--ease-standard);
+}
+
+.remove:hover {
+  opacity: 0.7;
+}
+
+@media (hover: none) {
+  .remove:hover {
+    opacity: 1;
+  }
+}
+
+.removeIcon {
+  width: var(--size-icon-sm); /* 20 */
+  height: var(--size-icon-sm);
+}
+
+/* 56 tall, centred, and the ONE element in the tray with a stroke: 1px
+   border/glass. The comp's dashed "+ Add another product" outline became this —
+   LUX has no dashed pattern. */
+.addAnother {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--space-sm); /* 8 */
+  width: 100%;
+  /* rule 12: Figma padding minus the border, so the box lands on 56 */
+  padding: calc(15px - var(--border-width-hairline)) 0;
+  border: var(--border-width-hairline) solid var(--color-border-glass);
+  border-radius: var(--radius-lg);
+  background: var(--color-surface-data-strong);
+  box-shadow: var(--shadow-frosted-row);
+  color: var(--color-text-on-data);
+  transition: opacity var(--duration-fast) var(--ease-standard);
+}
+
+.addAnother:hover {
+  opacity: 0.85;
+}
+
+@media (hover: none) {
+  .addAnother:hover {
+    opacity: 1;
+  }
+}
+
+/* ⚠️ ICONS ON SAGE ARE `icon/on-data` ON STROKES TOO. Most LUX icons are
+   stroke-drawn, so a fills-only recolour silently does nothing — the handoff
+   calls this out. These icons take `currentColor` on the stroke, so setting
+   colour here is enough. */
+.plus {
+  flex: none;
+  width: var(--size-icon-sm);
+  height: var(--size-icon-sm);
+  color: var(--color-icon-on-data);
+}
+
+.count {
+  width: 100%;
+  text-align: center;
+  color: var(--color-text-on-data-muted);
+}
+
+.divider {
+  width: 100%;
+  height: var(--border-width-hairline);
+  background: var(--color-border-glass);
+}
+
+.submit {
+  width: 100%;
+}
+
+/* sits directly under the disabled CTA, so the reason is next to the control it
+   explains rather than at the top of the tray */
+.helper {
+  width: 100%;
+  text-align: center;
+  color: var(--color-text-on-data-muted);
+  /* cancels most of Sheet's 20 gap — the helper belongs to the button */
+  margin-top: calc(var(--space-sm) - var(--space-xl));
+}

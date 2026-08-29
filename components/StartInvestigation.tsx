@@ -39,6 +39,14 @@ import { stepFor } from "@/lib/flow";
  * NOTHING starts selected. The Figma frames show options already chosen
  * because a comp has to show a filled-in state; the prototype starts empty and
  * Continue stays disabled until a symptom AND a location are both picked.
+ *
+ * ⚠️ `gapBeforeContinue` IS 48, NOT THE COMP'S 104. Figma 476:2670 draws an
+ * extra spacer above Continue, but 957 and 900 are fixed canvases and that
+ * spacer is an artefact of them (AGENTS.md, "translate, don't transcribe").
+ * Measured at 1600x868: the 104 put Continue at y 1002 and the card's bottom
+ * edge off-screen too, so a laptop user saw neither the primary action nor any
+ * cue that one existed below the fold. 48 is the card's own between-block gap
+ * and is on the spacing scale, which 104 never was.
  */
 const SYMPTOMS = [
   "Redness",
@@ -120,7 +128,7 @@ export function StartInvestigation() {
   };
 
   return (
-    <QuestionScreen id="start" gapBeforeContinue={104}>
+    <QuestionScreen id="start" gapBeforeContinue={48}>
       <h1 className={`${styles.question} t-h4-h3`}>
         What is currently happening to your skin?
       </h1>

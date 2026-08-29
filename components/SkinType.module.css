@@ -7,7 +7,22 @@
    corrected). The tendencies block keeps its own divider recipe: the
    exclusive options ("None", "Not sure") sit in a second group under a
    border/default divider — border/subtle is invisible against the canvas
-   gradient. */
+   gradient.
+
+   ⚠️ NOT IN FIGMA — THE INTERVALS ARE A LADDER NOW, AND IT USED TO INVERT.
+   This screen merges two Figma frames, so it carries two question groups, and
+   the spacing has to say which rows belong to which question. Measured before:
+   12 inside a sub-group, 20 from a prompt to its own rows, 32 between the two
+   QUESTIONS — but 16 either side of the tendencies divider, which with the
+   1px rule is 33px of whitespace. The widest interval on the screen sat INSIDE
+   question 2 while the boundary BETWEEN the two questions was narrower. The
+   ladder is monotonic now:
+     12  rows inside one sub-group
+     20  a prompt to its own rows
+     25  across the tendencies divider (12 + 1px rule + 12)
+     40  between the two questions (48 on desktop)
+   40/48 is the same between-question value `StartInvestigation` uses, so the
+   two merged screens in this flow separate their groups by the same amount. */
 
 .acknowledgement {
   margin-top: var(--space-md);
@@ -17,10 +32,10 @@
   margin-top: var(--space-xl);
 }
 
-/* extra clearance above the second question so it doesn't read as glued to
-   the skin-type rows above it */
+/* the boundary between the two questions — the widest interval on the screen,
+   which is the whole point of the ladder above */
 .tendenciesPrompt {
-  margin-top: var(--space-3xl);
+  margin-top: var(--space-4xl); /* 40 */
 }
 
 .question {
@@ -38,7 +53,11 @@
 .optionsBlock {
   display: flex;
   flex-direction: column;
-  gap: var(--space-lg);
+  /* 12, not 16 — the divider is a DESIGNED cue (see the recipe note above), so
+     it should sit tight to both halves and reinforce the split rather than
+     stand in for spacing that isn't there. 12 + 1px rule + 12 = 25 across the
+     split, which stays under the 40 that separates the two questions. */
+  gap: var(--space-md);
   margin-top: var(--space-xl);
 }
 
@@ -60,6 +79,21 @@
   /* the acknowledgement is padding; the recap carries state */
   .acknowledgement {
     display: none;
+  }
+
+  /* ⚠️ HIDING THE BUBBLE LEAVES ITS SIBLING'S MARGIN BEHIND. `.prompt` still
+     carries margin-top 20, so with the bubble display:none the first VISIBLE
+     element sat 20 below the card's 48 padding — a 68 top inset where every
+     other screen in the flow opens flush on 48. Adjacent-sibling selector on
+     purpose: the real first child is QuestionScreen's visually-hidden <h1>,
+     which is also an h1, so :first-child and :first-of-type both miss. */
+  .acknowledgement + .prompt {
+    margin-top: 0;
+  }
+
+  /* the between-question boundary widens with the card, as on StartInvestigation */
+  .tendenciesPrompt {
+    margin-top: var(--space-5xl); /* 48 */
   }
 
   /* two explicit columns so DOM order reads across the row like a 1fr 1fr grid,

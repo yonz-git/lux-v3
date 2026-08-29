@@ -1,0 +1,50 @@
+/* The sage data card — SURFACE SYSTEM B. See DataCard.tsx for the full recipe
+   and for why it is not the frosted-row recipe with a different fill. */
+
+.card {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-lg); /* 16 */
+
+  /* padding spacing/xl on mobile, spacing/2xl on desktop — the ONLY thing that
+     changes between the breakpoints. The handoff is explicit that the desktop
+     cards are clones of the verified mobile ones, so nothing inside them steps
+     up: card internals stay at the mobile type scale and only the page title,
+     subtitle and AI bubble grow. */
+  padding: var(--space-xl); /* 20 */
+  border-radius: var(--radius-2xl); /* 24 */
+
+  /* ⚠️ NO BORDER. A data card has no stroke — see the doc comment. */
+  background: var(--color-surface-data);
+  box-shadow: var(--shadow-frosted-data);
+  -webkit-backdrop-filter: blur(var(--blur-card));
+  backdrop-filter: blur(var(--blur-card));
+
+  /* the ink by default, so everything inside opts DOWN to on-data-secondary or
+     on-data-muted rather than each value having to opt up */
+  color: var(--color-text-on-data);
+}
+
+@media (min-width: 1024px) {
+  .card {
+    padding: var(--space-2xl); /* 24 */
+  }
+}
+
+@media (prefers-reduced-transparency: reduce) {
+  .card {
+    /* ⚠️ THE DESIGN SYSTEM STILL HAS NO OPAQUE SAGE — the same gap `Sheet`
+       documents for surface/data-strong. surface/data is 44%, so without the
+       blur behind it the canvas gradient reads straight through and the white
+       text loses its contrast. Composited from the two semantic tokens the app
+       already owns rather than inventing a colour: the same sage over
+       bg/canvas. A real `surface/data-opaque` belongs in Figma. */
+    background: linear-gradient(
+        var(--color-surface-data),
+        var(--color-surface-data)
+      ),
+      var(--color-bg-canvas);
+    -webkit-backdrop-filter: none;
+    backdrop-filter: none;
+  }
+}

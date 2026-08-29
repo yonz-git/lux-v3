@@ -1,0 +1,118 @@
+/* Check — previous checks (652:2554). Rows 74 tall, padding 18/16, gap 12. */
+
+.list {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-md); /* 12 */
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.row {
+  display: flex;
+  align-items: center;
+  gap: var(--space-md); /* 12 */
+  width: 100%;
+  /* rule 12: Figma padding minus the border, so a one-line date lands on 74 */
+  padding: calc(var(--space-lg) - var(--border-width-hairline))
+    calc(18px - var(--border-width-hairline));
+  text-align: left;
+
+  border: var(--border-width-hairline) solid var(--color-border-subtle);
+  border-radius: var(--radius-lg);
+  background: var(--color-surface-frost-light);
+  box-shadow: var(--shadow-frosted-row);
+  -webkit-backdrop-filter: blur(var(--blur-card));
+  backdrop-filter: blur(var(--blur-card));
+  transition: opacity var(--duration-fast) var(--ease-standard);
+}
+
+.row:hover {
+  opacity: 0.85;
+}
+
+@media (hover: none) {
+  .row:hover {
+    opacity: 1;
+  }
+}
+
+.copy {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2xs); /* 2 */
+  flex: 1;
+  min-width: 0;
+}
+
+.date {
+  color: var(--color-text-primary);
+}
+
+.count {
+  color: var(--color-text-muted);
+}
+
+/* 26 tall: 5 + 16 + 5 — the same pill CompatCard draws, on the check's WORST
+   band. Kept here rather than shared: the two live on different surfaces and
+   sharing would mean a component whose only job is a background colour. */
+.pill {
+  flex: none;
+  padding: 5px 14px;
+  border-radius: var(--radius-full);
+  color: var(--color-text-on-brand);
+  white-space: nowrap;
+}
+
+.pill[data-band="risky"] {
+  background: var(--color-feedback-warning);
+}
+
+.pill[data-band="avoid"] {
+  background: var(--color-feedback-error);
+}
+
+.chevron {
+  flex: none;
+  width: var(--size-icon-sm); /* 20 */
+  height: var(--size-icon-sm);
+  color: var(--color-icon-default);
+}
+
+/* the empty state — the handoff says to reuse the Check — no profile block */
+.empty {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--space-lg);
+  text-align: center;
+  color: var(--color-text-primary);
+}
+
+.empty > svg {
+  margin-bottom: var(--space-3xl); /* + the 16 gap = 48 */
+}
+
+.emptyText {
+  color: var(--color-text-secondary);
+}
+
+.emptyCta {
+  width: 100%;
+  margin-top: var(--space-3xl); /* + the 16 gap = 48 */
+}
+
+@media (min-width: 1024px) {
+  .emptyCta {
+    width: 376px;
+  }
+}
+
+@media (prefers-reduced-transparency: reduce) {
+  .row {
+    background: var(--color-bg-surface-frost);
+    -webkit-backdrop-filter: none;
+    backdrop-filter: none;
+  }
+}

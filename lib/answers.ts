@@ -1,5 +1,6 @@
 import type { StepId } from "./flow";
 import type { ProductDraft, SavedProduct } from "./products";
+import type { SavedCheck } from "./check";
 
 /**
  * Everything the user has answered so far.
@@ -34,6 +35,24 @@ export type Answers = Partial<{
   scan: string;
   /** what the tray's search field currently has typed in it */
   productQuery: string;
+
+  /* ---- CHECK — the compatibility check off the Check tab -------------------
+     ⚠️ NOT AN INVESTIGATION STEP, and it has no `StepId`. CHECK carries no
+     progress track and no `Save & exit`, which is exactly what makes it not one
+     — see lib/check.ts. It lives in this store anyway because the store is the
+     app's only state and the basket has to survive the walk from /check/new to
+     /check/analyzing to /check/results. */
+
+  /** catalogue ids in the basket being built on /check/new */
+  checkBasket: string[];
+  /** what /check/new's search field has typed in it */
+  checkQuery: string;
+  /** checks the user has actually run, newest first. The seeded history in
+   *  lib/check.ts sits BELOW these rather than in here — a demo row is not
+   *  something the user did. */
+  checks: SavedCheck[];
+  /** which check /check/results is showing; absent means the newest */
+  viewingCheck: string;
 }>;
 
 /**

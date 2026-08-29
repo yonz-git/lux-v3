@@ -1,0 +1,102 @@
+/* Check results (476:2841), reordered to 06 — Results (548:1134).
+
+   title -> 24 (HubScreen) -> AI bubble -> 24 -> skin-profile -> 16 -> summary
+   -> 16 -> ingredients -> 16 -> what to do next -> 16 -> compared-products
+   -> 14 -> analysis cards, 12 apart.
+
+   The 16 between the sage cards is `06 — Results`' own spacing; the 14 and 12
+   inside the product block are this screen's. */
+
+/* the AI bubble spans the column (548:1141 is a full-width ai-bubble-row) */
+.bubble {
+  width: 100%;
+}
+
+/* The 24 under the AI bubble, which nothing else owned. `.block` starts at the
+   summary card and `SkinProfileStrip` has no margin of its own, so the strip sat
+   flush against the bubble at 0 while every other gap on the screen was 16 or
+   24 — the verdict and the profile read as one fused block. Same idiom
+   `CheckScreen` uses for its own strip.
+
+   ⚠️ IT IS 24 AND THE CARDS BELOW ARE 16, DELIBERATELY. The bubble is the AI's
+   voice and everything under it is the data; the wider interval is the seam
+   between them, and 476:2841 draws it that way. Flattening this to 16 for
+   tidiness would remove the only cadence change on the screen. */
+.profile {
+  margin-top: var(--space-2xl); /* 24 */
+}
+
+/* every block after the skin-profile strip */
+.block {
+  margin-top: var(--space-lg); /* 16 */
+}
+
+/* `compared-products` (476:2851) — 56 tall, padding 18/16, the frosted row
+   recipe. Not a ProductRow: no thumb, and the trailing slot is a link. */
+.compared {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-md);
+  width: 100%;
+  min-height: 56px;
+  /* rule 8b: fixed-height row, so min-height + no vertical padding rather than
+     padding that a border would add to */
+  padding: 0 18px;
+
+  border: var(--border-width-hairline) solid var(--color-border-subtle);
+  border-radius: var(--radius-lg);
+  background: var(--color-surface-frost-light);
+  box-shadow: var(--shadow-frosted-row);
+  -webkit-backdrop-filter: blur(var(--blur-card));
+  backdrop-filter: blur(var(--blur-card));
+}
+
+.comparedLabel {
+  flex: 1;
+  min-width: 0;
+  color: var(--color-text-primary);
+}
+
+/* A <button> now, not a link — it discloses the tray rather than navigating.
+   ⚠️ the UA button padding is 1px 6px, not zero (non-negotiable 13). */
+.edit {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-lg); /* the comp sets the chevron 36 from the label's start */
+  flex: none;
+  padding: 0;
+  color: var(--color-text-primary);
+  text-decoration: none;
+  transition: opacity var(--duration-fast) var(--ease-standard);
+}
+
+.edit:hover {
+  opacity: 0.7;
+}
+
+@media (hover: none) {
+  .edit:hover {
+    opacity: 1;
+  }
+}
+
+.editIcon {
+  width: var(--size-icon-sm); /* 20 */
+  height: var(--size-icon-sm);
+}
+
+.cards {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-md); /* 12 */
+  margin-top: 14px;
+}
+
+@media (prefers-reduced-transparency: reduce) {
+  .compared {
+    background: var(--color-bg-surface-frost);
+    -webkit-backdrop-filter: none;
+    backdrop-filter: none;
+  }
+}

@@ -1,0 +1,38 @@
+/* skin-profile — Figma 601:1957. 86 tall: 18 + 18 (Overline) + 6 + 26 (Body 2)
+   + 18. Padding 18/20, gap 6. The one System B element on a CHECK screen. */
+
+.card {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  width: 100%;
+  padding: 18px var(--space-xl); /* 18 / 20 */
+  border-radius: var(--radius-2xl); /* 24 */
+
+  /* ⚠️ NO BORDER — a data card has no stroke. See DataCard.tsx. */
+  background: var(--color-surface-data);
+  box-shadow: var(--shadow-frosted-data);
+  -webkit-backdrop-filter: blur(var(--blur-card));
+  backdrop-filter: blur(var(--blur-card));
+}
+
+.label {
+  color: var(--color-text-on-data-muted);
+}
+
+.value {
+  color: var(--color-text-on-data);
+}
+
+@media (prefers-reduced-transparency: reduce) {
+  .card {
+    /* the same composite DataCard uses — the DS still has no opaque sage */
+    background: linear-gradient(
+        var(--color-surface-data),
+        var(--color-surface-data)
+      ),
+      var(--color-bg-canvas);
+    -webkit-backdrop-filter: none;
+    backdrop-filter: none;
+  }
+}

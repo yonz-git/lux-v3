@@ -42,7 +42,9 @@ export function QuestionScreen({
   children: ReactNode;
   continueLabel?: string;
   /** desktop-only gap between the content and Continue, in px. Defaults to the
-   *  card's own 32; 01 uses 104 because Figma adds an extra spacer there. */
+   *  card's own 32; 01 uses 48. It used to pass 104, transcribed from the extra
+   *  spacer Figma draws on 476:2670 — that pushed Continue to y 1002 on an
+   *  868-tall viewport. Keep any value here on the spacing scale. */
   gapBeforeContinue?: number;
   /**
    * An extra control ABOVE Continue, inside the same footer — `04a — Long-term
