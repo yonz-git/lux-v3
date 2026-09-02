@@ -4,6 +4,7 @@ import type { ReactNode } from "react";
 import styles from "./ProductList.module.css";
 import { ProductThumb } from "./ProductThumb";
 import { PlusIcon } from "./icons";
+import type { CatalogProduct } from "@/lib/products";
 
 /**
  * The three pieces every PRODUCTS list screen is built from. They are kept
@@ -28,19 +29,22 @@ export function ProductRow({
   meta,
   trailing,
   onClick,
-  imageUrl,
+  product,
 }: {
   name: string;
   meta: string;
   trailing?: ReactNode;
   onClick?: () => void;
-  /** a real product photo, when the row's product came from Open Beauty
-   *  Facts — see ProductThumb */
-  imageUrl?: string;
+  /** ⚠️ THE PRODUCT, NOT A URL. The thumb draws the product when there is no
+   *  photograph to show, so it needs to know which product it is — see
+   *  ProductThumb. `name` and `meta` stay separate props because a row does
+   *  not always title itself the way `fullName` would: the check list shows
+   *  the product name with the brand moved down into the meta line. */
+  product: CatalogProduct;
 }) {
   const inner = (
     <>
-      <ProductThumb imageUrl={imageUrl} />
+      <ProductThumb product={product} />
       <span className={styles.copy}>
         <span className={`${styles.name} t-h6`}>{name}</span>
         <span className={`${styles.meta} t-label-sm`}>{meta}</span>

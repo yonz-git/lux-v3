@@ -39,6 +39,38 @@ export function CheckIcon({ className }: IconProps) {
   );
 }
 
+/**
+ * `My skin` — the first nav item, added with that section.
+ *
+ * ⚠️ NOT IN FIGMA. `Bottom-Nav-Bar` (410:258) has three items and three icons;
+ * a fourth section needs a fourth glyph and the DS has no face or skin icon
+ * anywhere outside `FaceDiagram`, which is a picker, not an icon. Composed here
+ * from the same primitives the line icons use (currentColor, 1.6 round-capped
+ * strokes) so the nav's active/inactive opacity treatment still works
+ * unchanged. Replace it in the DS first, not here — it is on the
+ * missing-from-the-DS list in AGENTS.md.
+ *
+ * Stroke rather than fill, unlike its three neighbours: a solid disc at 24 is
+ * a much heavier mark than Progress/Check/Products draw, and the face reads at
+ * that size only if the eyes and mouth stay open.
+ */
+export function MySkinIcon({ className }: IconProps) {
+  return (
+    <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" style={base} className={className} aria-hidden="true">
+      <circle cx="12" cy="12" r="9.25" stroke="currentColor" strokeWidth="1.6" />
+      <circle cx="8.9" cy="10.2" r="1.15" fill="currentColor" />
+      <circle cx="15.1" cy="10.2" r="1.15" fill="currentColor" />
+      <path
+        d="M8.6 14.7C9.6 15.95 10.7 16.575 12 16.575C13.3 16.575 14.4 15.95 15.4 14.7"
+        stroke="currentColor"
+        strokeWidth="1.6"
+        strokeLinecap="round"
+        strokeLinejoin="round"
+      />
+    </svg>
+  );
+}
+
 export function ProductsIcon({ className }: IconProps) {
   return (
     <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" style={base} className={className} aria-hidden="true">
@@ -76,6 +108,26 @@ export function PlusIcon({ className }: IconProps) {
   return (
     <svg viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg" style={{ ...line, width: "var(--size-icon-sm)", height: "var(--size-icon-sm)" }} className={className} aria-hidden="true">
       <path d="M10 3.5V16.5M3.5 10H16.5" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" />
+    </svg>
+  );
+}
+
+/**
+ * A pencil, for `Check-in chat`'s "Add a note".
+ *
+ * ⚠️ NOT IN THE DESIGN SYSTEM. `Check-in chat` (555:1268) draws a pencil beside
+ * "Add a note", and the file has no edit/pencil/write glyph anywhere — the only
+ * icons that exist are the four nav marks, the chevrons, plus, camera, search,
+ * close and the success tick. Drawn to match `CameraIcon`, which is its literal
+ * neighbour on that screen: the same 20-box, the same 1.4 stroke on
+ * currentColor, the same `--size-icon-sm`. Two glyphs sitting in a matched pair
+ * of buttons must not be two different weights. **Raise it in Figma.**
+ */
+export function NoteIcon({ className }: IconProps) {
+  return (
+    <svg viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg" style={{ ...line, width: "var(--size-icon-sm)", height: "var(--size-icon-sm)" }} className={className} aria-hidden="true">
+      <path d="M13.4 3.6a1.7 1.7 0 0 1 2.4 2.4l-8 8-3.2.8.8-3.2 8-8Z" stroke="currentColor" strokeWidth="1.4" strokeLinejoin="round" />
+      <path d="M12.2 4.8l3 3" stroke="currentColor" strokeWidth="1.4" strokeLinecap="round" />
     </svg>
   );
 }

@@ -10,9 +10,14 @@ import { useInvestigation } from "./InvestigationProvider";
  * 03c — Timing. Figma mobile 488:851, desktop 491:1031. Step 5/6.
  *
  * ⚠️ THE STATUS GROUP IS RADIO ROWS EVEN THOUGH THE WIREFRAME DREW CHIPS. It is
- * single-select, and the design-system contract is circle = exactly one. The
- * library has no single-select Chip variant; adding one is the alternative if
- * the pill look is ever wanted back.
+ * single-select, and the design-system contract is circle = exactly one.
+ *
+ * ⚠️ A SINGLE-SELECT CHIP NOW EXISTS (`Chip`'s `control="radio"`, added for the
+ * daily check-in) — and this screen deliberately does NOT use it. These labels
+ * are sentences about state ("Getting worse"), not a short ordinal scale, and
+ * the screen already stacks a labelled date field above them, so a pill row
+ * here would break the field/label rhythm to save one row of height. Revisit
+ * only if Figma resolves the wireframe's pills into a real variant.
  *
  * The date uses `DateField`, not a native <input type="date">: the native popup
  * is drawn by the browser and cannot be styled, so it rendered as a stock white

@@ -9,6 +9,11 @@
 
 .stackedBubble {
   margin-top: var(--space-md); /* 12 */
+  /* the second briefing bubble lands just after the first, so the two read as
+     one person saying two things rather than a block of copy appearing at once.
+     A module may set this and animation-delay freely — it is only a rule that
+     NAMES an animation that must stay in globals.css. */
+  --bubble-enter-delay: 160ms;
 }
 
 /* ⚠️ NOT IN FIGMA — the briefing bubbles span the whole column in the comps,

@@ -8,7 +8,6 @@ import { Orb } from "./Orb";
 import { useInvestigation } from "./InvestigationProvider";
 import { ingredientCount } from "@/lib/check";
 import { toIso } from "@/lib/date";
-import { type CatalogProduct, productById } from "@/lib/products";
 
 /** How long the analysis takes. Long enough to read the copy, short enough not
  *  to be a tax on every check. */
@@ -42,9 +41,7 @@ export function CheckAnalyzing() {
   const { answers, setAnswer } = useInvestigation();
   const [running, setRunning] = useState(false);
 
-  const basket = (answers.checkBasket ?? [])
-    .map(productById)
-    .filter((p): p is CatalogProduct => Boolean(p));
+  const basket = answers.checkBasket ?? [];
 
   useEffect(() => {
     // next frame, so the bar has rendered at 0 and the transition has something
@@ -62,7 +59,7 @@ export function CheckAnalyzing() {
     const id = `check-${Date.now()}`;
     const timer = setTimeout(() => {
       setAnswer("checks", (prev) => [
-        { id, date: toIso(new Date()), productIds: basket.map((p) => p.id) },
+        { id, date: toIso(new Date()), products: basket },
         ...(prev ?? []),
       ]);
       setAnswer("viewingCheck", id);

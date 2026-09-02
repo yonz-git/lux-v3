@@ -4,6 +4,7 @@ import { DataCard } from "./DataCard";
 import { Tag } from "./Tag";
 import {
   LIKELIHOOD_LABEL,
+  type CompatBand,
   type IngredientConcern,
   formatScheduleDate,
   type ScheduleNode,
@@ -99,7 +100,10 @@ export function IngredientsCard({
                 <p className={`${styles.concernText} t-body3`}>
                   {c.description}
                 </p>
-                <Tag variant={c.likelihood === "high" ? "brand" : "neutral"}>
+                <Tag
+                  variant={c.likelihood === "high" ? "brand" : "neutral"}
+                  className={styles.likelihood}
+                >
                   {LIKELIHOOD_LABEL[c.likelihood]}
                 </Tag>
               </div>
@@ -127,6 +131,7 @@ export function NextStepsCard({
   label = "What to do next",
   title,
   badge,
+  badgeBand,
   description,
   notes,
   schedule,
@@ -136,6 +141,8 @@ export function NextStepsCard({
   label?: string;
   title: ReactNode;
   badge?: string;
+  /** the band the badge names — drives its fill. See `.badge` in the module. */
+  badgeBand?: CompatBand;
   description?: string;
   /** extra lines below the emphasis block — CHECK's routine advice */
   notes?: string[];
@@ -149,7 +156,11 @@ export function NextStepsCard({
 
       <div className={styles.emphasis}>
         <p className={`${styles.emphasisTitle} t-h6`}>{title}</p>
-        {badge && <Tag>{badge}</Tag>}
+        {badge && (
+          <Tag className={styles.badge} data-band={badgeBand}>
+            {badge}
+          </Tag>
+        )}
         {description && (
           <p className={`${styles.emphasisText} t-body3`}>{description}</p>
         )}

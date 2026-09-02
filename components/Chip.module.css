@@ -1,6 +1,18 @@
 /* Chip — Figma 162:74. Padding 10/16, radius full, label `Label` (Medium 14/20).
-     Default  frost-light fill, NO border
-     Selected bg/brand fill, text/on-brand label */
+     Default  frost-light-muted fill + a 1px border/chip hairline
+     Selected bg/brand fill, text/on-brand label
+
+   ⚠️ THE DEFAULT FILL IS `bg/frost-light-muted`, NOT THE COMPONENT'S
+   `surface/frost-light` — DECIDED HERE, NOT IN FIGMA. `surface/frost-light` is
+   #f4feff, the brightest light value in the app, and at 55% on the frosted
+   question card the chip row read as white stickers: the loudest thing on 01,
+   above the title that states the question. The same near-white one step down
+   (#dbeded, the value declared in `globals.css` for the face-diagram region
+   pills) puts the row back under the title, and it makes the two pill groups on
+   this screen — the symptoms and the location chips inside `FaceDiagram`, which
+   are the same component — read as one family instead of two brightnesses.
+   Opaque, so there is no reduced-transparency fallback to keep. Raise
+   frost-light-muted in Figma as a real role; see the note on the token. */
 
 .chip {
   display: inline-flex;
@@ -16,14 +28,26 @@
   border-radius: var(--radius-full);
 
   color: var(--color-text-primary);
-  background: var(--color-surface-frost-light);
+  background: var(--color-bg-frost-light-muted);
+  /* ⚠️ A STROKE, WHICH THE FIGMA COMPONENT DOES NOT HAVE — see
+     `--color-border-chip` in `globals.css` for the measurements. With the fill
+     one step down from frost-light the pill has no edge of its own on a light
+     card, and the border is the only thing left to draw it. The height does not
+     move: `box-sizing: border-box` is global and the chip is sized by
+     `min-height`, so the 1px sits inside the 40 (non-negotiable 8b). */
+  border: var(--border-width-hairline) solid var(--color-border-chip);
 
   transition: background-color var(--duration-base) var(--ease-standard),
+    border-color var(--duration-base) var(--ease-standard),
     color var(--duration-base) var(--ease-standard);
 }
 
 .chip[data-selected="true"] {
   background: var(--color-bg-brand);
+  /* the selected pill is indigo on a light card and needs no help being seen;
+     a sage hairline on it would read as a rim rather than an edge, so the
+     border stays only to hold the geometry */
+  border-color: var(--color-bg-brand);
   color: var(--color-text-on-brand);
 }
 
@@ -32,10 +56,4 @@
   position: absolute;
   inset: calc((var(--size-touch-target) - 100%) / -2) 0;
   min-height: var(--size-touch-target);
-}
-
-@media (prefers-reduced-transparency: reduce) {
-  .chip[data-selected="false"] {
-    background: var(--color-bg-surface-frost);
-  }
 }

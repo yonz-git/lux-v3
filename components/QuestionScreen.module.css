@@ -70,9 +70,12 @@
     align-self: center;
     width: 100%;
     max-width: var(--width-card-form); /* 920 */
-    margin-top: var(--space-4xl); /* 40 — desktop's spacer is 40 on every frame,
-                                     title-first or not, so --content-gap is
-                                     deliberately mobile-only */
+    /* 40 — desktop's spacer is 40 on every frame, title-first or not, so the
+       mobile `--content-gap` is deliberately NOT read here. A screen that needs
+       more air above the card sets `--content-gap-desktop` instead, which keeps
+       the two breakpoints independent: mobile's gap comes from the comp, the
+       desktop card floats in a page that is mostly whitespace. */
+    margin-top: var(--content-gap-desktop, var(--space-4xl));
     padding: var(--space-5xl); /* 48 */
 
     border-radius: var(--radius-3xl);

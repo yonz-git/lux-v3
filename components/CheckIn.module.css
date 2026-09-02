@@ -1,0 +1,153 @@
+/* The daily check-in — `Check-in chat` (555:1268), at /progress/check-in.
+   A chat that builds itself as the user answers; see CheckIn.tsx.
+
+   Composed from the established recipes rather than invented: the questions are
+   `ChatBubble`s exactly as every investigation question is, the answers are
+   `Chip`s on the 12 gap every pill group in the app uses, and the card, heading
+   and footer are `HubScreen`'s. Nothing here sets a type size or a colour of its
+   own — the only rules are the gaps between blocks, plus the two extras buttons,
+   which have no component and are composed from the frosted-row recipe below. */
+
+/* The whole exchange. 20 between TURNS, 12 inside one — a question and its own
+   pills belong together more tightly than one turn belongs to the next, and
+   without that difference the chat reads as six unrelated blocks on one gap.
+   Measured against the frame: bubble to its pills 12, pills to the next bubble
+   20. The 24 above the first turn comes from HubScreen's `.body > .heading + *`. */
+.chat {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-xl); /* 20 */
+}
+
+.turn {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-md); /* 12 */
+}
+
+/* ⚠️ A WRAPPING PILL ROW, WHICH IS WHAT THE FRAME DRAWS — five chips over two
+   lines for turn 1, four over two for turn 2, both flowing rather than gridded.
+   12 both ways, the gap every chip group in the app uses. No desktop
+   two-column grid: that is right for the stacked option ROWS on 02a/02b/02c,
+   and wrong here — these hug their labels and the row is already the layout. */
+.options {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-md); /* 12 */
+}
+
+/* ---------------------------------------------------------------------------
+   Turn 3's two buttons — `Add a note` / `Take a photo`.
+
+   ⚠️ NO COMPONENT EXISTS FOR THESE. They are not `Button` (no gradient, and
+   they are toggles rather than the screen's primary action), not `SmallButton`
+   (a compact text pill), and not `Chip` (which is a selection control in a
+   group). The frame draws two equal frosted rows with a leading icon, so they
+   are composed from the frosted-row recipe the option rows use — same fill,
+   same 1px border/subtle, same inner shadow, same radius/lg.
+
+   ⚠️ FIGMA PADDING MINUS THE BORDER (non-negotiable 12) — a CSS border adds to
+   the height where a Figma stroke does not, so 56 with a 1px border needs the
+   padding written as a calc, or the pair renders 58 and breaks the row rhythm
+   the pills above it set.
+   -------------------------------------------------------------------------- */
+.extras {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: var(--space-md); /* 12 */
+}
+
+.extra {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--space-sm); /* 8 */
+  min-height: 56px;
+  /* the UA button padding is `1px 6px`, not zero — non-negotiable 13 */
+  padding: calc(var(--space-md) - var(--border-width-hairline)) var(--space-lg);
+
+  color: var(--color-text-primary);
+  /* ⚠️ `surface/frost-light` (TRANSLUCENT), NOT `bg/frost-light`. The opaque
+     one is #f4feff, the brightest value in the app, and these two buttons
+     rendered as white stickers next to bubbles and pills that are not — the
+     same trap the Chip fill note documents. This is the row recipe verbatim:
+     same fill, same 1px border/subtle, same inner shadow, same radius/lg, same
+     blur. They sit beside chips and under bubbles, so they must be of the same
+     material as both. */
+  background: var(--color-surface-frost-light);
+  border: var(--border-width-hairline) solid var(--color-border-subtle);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-frosted-row);
+  -webkit-backdrop-filter: blur(var(--blur-card));
+  backdrop-filter: blur(var(--blur-card));
+
+  transition: border-color var(--duration-base) var(--ease-standard);
+}
+
+/* Armed, not selected — these are TOGGLES, so they take a border change rather
+   than the indigo fill a Chip gets. `bg/brand` here would put a third
+   selection treatment on a screen that already has two, and would claim these
+   are part of the answer group above them. */
+.extra[aria-pressed="true"] {
+  border-color: var(--color-button-border-focused);
+}
+
+/* rule 9: a frosted surface always gets a solid fallback */
+@media (prefers-reduced-transparency: reduce) {
+  .extra {
+    background: var(--color-bg-surface-frost);
+    -webkit-backdrop-filter: none;
+    backdrop-filter: none;
+  }
+}
+
+/* The capture OVERLAY's body — `Sheet` owns the tray, the scrim and `Done`, so
+   this only stacks what CameraCapture renders. 16 between the viewfinder, its
+   copy and the shutter, which is the gap the products tray's scan view uses for
+   the same three blocks. */
+.camera {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-lg); /* 16 */
+  width: 100%;
+}
+
+/* The line under the two buttons once a photo exists. It replaces an inline
+   preview: the capture is a placeholder, so a "preview" would be an empty box
+   claiming to be the user's photo. A sentence says the true thing. */
+.captured {
+  color: var(--color-text-secondary);
+}
+
+.remove {
+  padding: 0;
+  color: var(--color-text-primary);
+  background: none;
+  border: none;
+  text-decoration: underline;
+  cursor: pointer;
+  font: inherit;
+}
+
+.remove:hover {
+  opacity: 0.7;
+}
+
+@media (hover: none) {
+  .remove:hover {
+    opacity: 1;
+  }
+}
+
+/* Sits above the chat as a standing note about the day, not part of the
+   exchange, so it keeps a bubble's 12 rather than the chat's own 20. */
+.note {
+  color: var(--color-text-secondary);
+  margin-bottom: var(--space-md); /* 12 */
+}
+
+/* full width of the 392 column on mobile; HubScreen's footer caps it at 280 on
+   desktop, the same width every flow footer button uses */
+.submit {
+  width: 100%;
+}

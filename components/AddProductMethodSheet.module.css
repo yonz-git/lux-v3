@@ -11,6 +11,15 @@
   display: flex;
   flex-direction: column;
   gap: var(--space-md);
+
+  /* ⚠️ WHITE BY REQUEST, AND IT FAILS WCAG AA. AGENTS.md redefines
+     `text/on-data*` dark globally because white on light sage measures
+     1.49-2.63:1 against 4.5:1. Scoped to this list only, so the rest of the
+     app keeps the accessible values. Revert by deleting these four lines. */
+  --color-text-on-data: #ffffff;
+  --color-text-on-data-secondary: #ffffff;
+  --color-text-on-data-muted: #ffffff;
+  --color-icon-on-data: #ffffff;
 }
 
 /* 70 tall on mobile / 78 on desktop, padding 14/18, gap 12, radius/lg.
@@ -101,6 +110,9 @@
    ------------------------------------------------------------------------- */
 
 .searchView,
+/* the viewfinder, guide, captured label, copy, shutter row and shutter all
+   moved to CameraCapture.module.css when the check-in became the third capture
+   surface — see CameraCapture.tsx. Only the layout around them is left here. */
 .scanView,
 .confirmView {
   display: flex;
@@ -235,85 +247,15 @@
   gap: var(--space-lg);
 }
 
-.viewfinder {
-  position: relative;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  width: 100%;
-  aspect-ratio: 392 / 300;
-  max-height: 300px;
 
-  border-radius: var(--radius-2xl);
-  background: var(--color-surface-data);
-  box-shadow: var(--shadow-frosted-data);
-  -webkit-backdrop-filter: blur(var(--blur-card));
-  backdrop-filter: blur(var(--blur-card));
-}
 
-.guide {
-  height: calc(160 / 300 * 100%);
-  aspect-ratio: 300 / 200;
-  border: var(--border-width-thick) dashed var(--color-effect-rim-highlight);
-  border-radius: var(--radius-lg);
-}
 
-.captured {
-  position: absolute;
-  bottom: var(--space-lg);
-  color: var(--color-text-on-data);
-}
 
-.scanCopy {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: var(--space-sm);
-  text-align: center;
-  color: var(--color-text-on-data);
-}
 
-.scanHelper {
-  color: var(--color-text-on-data-secondary);
-}
 
-.shutterRow {
-  display: flex;
-  justify-content: center;
-}
 
-.shutter {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  width: 64px;
-  height: 64px;
-  padding: var(--space-sm);
 
-  border-radius: var(--radius-full);
-  background: var(--color-bg-glass);
-  box-shadow: var(--shadow-md);
 
-  transition: opacity var(--duration-fast) var(--ease-standard);
-}
-
-.shutter:hover {
-  opacity: 0.8;
-}
-
-@media (hover: none) {
-  .shutter:hover {
-    opacity: 1;
-  }
-}
-
-.shutterCore {
-  flex: none;
-  width: 48px;
-  height: 48px;
-  border-radius: var(--radius-full);
-  background: var(--color-effect-rim-highlight);
-}
 
 .scanAlt {
   padding: var(--space-sm) 0;

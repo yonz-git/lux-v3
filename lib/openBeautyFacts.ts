@@ -2,8 +2,19 @@ import type { CatalogProduct } from "./products";
 
 /**
  * Client for Open Beauty Facts (world.openbeautyfacts.org) — a free,
- * crowdsourced, open database of cosmetic products: real product photos and
- * real INCI ingredient lists, keyed by barcode. No API key, CORS-open.
+ * crowdsourced, open database of cosmetic products: real names, brands, sizes
+ * and real INCI ingredient lists, keyed by barcode. No API key, CORS-open.
+ *
+ * ⚠️ THE PHOTOS ARE NOT READ, DELIBERATELY — `ProductArt` DRAWS EVERY PRODUCT.
+ * OBF carries an `image_front_url` and this client used to prefer it over the
+ * illustration. The photos are crowdsourced with no quality gate, so a list of
+ * results mixed a few good front-of-package shots with stubs, boxes shot at an
+ * angle, and rows that fell back to a drawing anyway — the thumbnails were the
+ * least consistent thing on a screen whose whole job is telling rows apart.
+ * The drawn vessels already encode identity (same brand → same tint, same
+ * packaging → same silhouette) and they encode it for EVERY row. So the API
+ * keeps supplying the words, and the pictures are all ours. The fields are not
+ * merely ignored — they are not requested, so the response is smaller too.
  *
  * ⚠️ USES THE LEGACY `cgi/search.pl` ENDPOINT, NOT `api/v2/search`. The v2
  * endpoint is search-a-licious-backed and returned near-unfiltered results in
@@ -15,7 +26,7 @@ import type { CatalogProduct } from "./products";
 const SEARCH_URL = "https://world.openbeautyfacts.org/cgi/search.pl";
 
 const FIELDS =
-  "code,product_name,brands,quantity,image_front_url,image_url,ingredients_text_en,ingredients_text";
+  "code,product_name,brands,quantity,ingredients_text_en,ingredients_text";
 
 /** Only the fields this app reads out of an Open Beauty Facts product. */
 type OBFProduct = {
@@ -23,8 +34,6 @@ type OBFProduct = {
   product_name?: string;
   brands?: string;
   quantity?: string;
-  image_front_url?: string;
-  image_url?: string;
   ingredients_text_en?: string;
   ingredients_text?: string;
 };
@@ -54,7 +63,9 @@ function toCatalogProduct(raw: OBFProduct): CatalogProduct | null {
     brand: raw.brands?.split(",")[0]?.trim() || "Unknown brand",
     size: raw.quantity?.trim() || "",
     description: ingredients ? truncate(ingredients) : undefined,
-    imageUrl: raw.image_front_url || raw.image_url || undefined,
+    /* the UNCUT list — see `CatalogProduct.ingredients` on why the checker
+       cannot read the truncated one */
+    ingredients: ingredients || undefined,
   };
 }
 
@@ -95,10 +106,10 @@ export async function searchOpenBeautyFacts(
 
 /**
  * The single best match for a free-text query — used to enrich the scan
- * flow's hardcoded catalogue match with a real photo and ingredient list,
- * since the viewfinder has no camera to read an actual barcode from (see
- * the tray's scan view / useEnrichedProduct). Swallows failures: enrichment is a
- * nice-to-have, not something that should ever block the flow.
+ * flow's hardcoded catalogue match with a real ingredient list, since the
+ * viewfinder has no camera to read an actual barcode from (see the tray's scan
+ * view / useEnrichedProduct). Swallows failures: enrichment is a nice-to-have,
+ * not something that should ever block the flow.
  */
 export async function lookupOpenBeautyFacts(
   query: string,

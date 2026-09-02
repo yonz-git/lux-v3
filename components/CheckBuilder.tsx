@@ -22,10 +22,10 @@ import { ownedProducts, skinProfile } from "@/lib/demo";
 import {
   type CatalogProduct,
   fullName,
-  productById,
   resultMeta,
   searchCatalog,
 } from "@/lib/products";
+import { useOpenBeautyFactsSearch } from "@/lib/useOpenBeautyFactsSearch";
 
 /**
  * `/check/new` — build the check.
@@ -64,6 +64,13 @@ import {
  * the handoff's rule, and Tag is non-interactive by contract: removal happens
  * in the basket, not in the list.
  */
+/** Live results first, then anything the local ingredient index found that the
+ *  live list did not already contain. First occurrence of an id wins. */
+function dedupe(products: CatalogProduct[]): CatalogProduct[] {
+  const seen = new Set<string>();
+  return products.filter((p) => (seen.has(p.id) ? false : (seen.add(p.id), true)));
+}
+
 export function CheckBuilder() {
   const router = useRouter();
   const { answers, setAnswer } = useInvestigation();
@@ -72,10 +79,8 @@ export function CheckBuilder() {
   const [addManually, setAddManually] = useState(false);
 
   const query = answers.checkQuery ?? "";
-  const basketIds = answers.checkBasket ?? [];
-  const basket = basketIds
-    .map(productById)
-    .filter((p): p is CatalogProduct => Boolean(p));
+  const basket = answers.checkBasket ?? [];
+  const basketIds = basket.map((p) => p.id);
 
   /* ⚠️ NEWEST FIRST. A product library in the order it happened to be entered
      buries the thing you are most likely asking about — the one you just
@@ -99,32 +104,48 @@ export function CheckBuilder() {
      (`ownedProducts`), so the primary case — "do these two things I own work
      together?" — is what the screen actually opens on. */
   const searching = query.trim() !== "";
-  /* ⚠️ THE SEARCH READS INGREDIENTS TOO — `checkSearchTerms` is passed in
-     because `lib/products.ts` cannot import the actives model without a cycle.
-     It is what makes "salicylic" find the BHA Exfoliant, which the app already
-     knew contained it and flagged on `/check/results` while refusing to find
-     it here. Results come back RANKED; see `searchCatalog`. */
+  /* ⚠️ THE SAME SEARCH THE PRODUCTS TRAY RUNS — `useOpenBeautyFactsSearch`.
+     This screen used to search the 13-product offline fixture ALONE while the
+     add-product tray searched Open Beauty Facts live, so the same query typed
+     two screens apart returned two unrelated lists and neither explained
+     itself: search "cerave" in the tray and you get the real shelf, search it
+     here and you got four fixture rows plus whatever the ingredient index
+     dragged in. One search function, one debounce, one fixture fallback.
+
+     ⚠️ THE INGREDIENT INDEX SURVIVES, AS A LOCAL PASS. `checkSearchTerms` is
+     what makes "salicylic" find the BHA Exfoliant — a compatibility question,
+     and the reason this screen searched differently in the first place. It runs
+     over the fixture and is MERGED UNDER the live results rather than replacing
+     them, so the ingredient case still works and the list still leads with what
+     the user typed. Live results carry their own INCI list, so the checker
+     reads their actives directly; see `activesOf` in lib/check.ts. */
+  const { results: live, loading } = useOpenBeautyFactsSearch(query);
+  const byIngredient = searching ? searchCatalog(query, checkSearchTerms) : [];
   const results: CatalogProduct[] = searching
-    ? searchCatalog(query, checkSearchTerms)
+    ? dedupe([...live, ...byIngredient])
     : owned;
   /* ⚠️ THE COUNT IS PART OF THE LABEL. With ranking in play the list no longer
      ends where the obvious matches end, so "did it find one thing or nine?" is
      a question the heading should answer without scrolling — the same reason
      `Check results` writes "Compared Products (5)". */
   const listLabel = searching
-    ? `Search results (${results.length})`
+    ? loading
+      ? "Searching…"
+      : `Search results (${results.length})`
     : "Your products";
 
   function add(p: CatalogProduct) {
     setAnswer("checkBasket", (prev) => {
       const next = prev ?? [];
-      if (next.includes(p.id) || next.length >= MAX_CHECK_PRODUCTS) return next;
-      return [...next, p.id];
+      if (next.some((x) => x.id === p.id) || next.length >= MAX_CHECK_PRODUCTS) {
+        return next;
+      }
+      return [...next, p];
     });
   }
 
   function remove(id: string) {
-    setAnswer("checkBasket", (prev) => (prev ?? []).filter((x) => x !== id));
+    setAnswer("checkBasket", (prev) => (prev ?? []).filter((p) => p.id !== id));
   }
 
   /**
@@ -134,14 +155,13 @@ export function CheckBuilder() {
    */
   function closeManualAdd(before: string[]) {
     setAddManually(false);
-    const after = (answers.products ?? []).map((p) => p.id);
-    const added = after.filter((id) => !before.includes(id));
+    const added = (answers.products ?? []).filter((p) => !before.includes(p.id));
     if (added.length > 0) {
       setAnswer("checkBasket", (prev) => {
         const next = [...(prev ?? [])];
-        for (const id of added) {
-          if (!next.includes(id) && next.length < MAX_CHECK_PRODUCTS) {
-            next.push(id);
+        for (const p of added) {
+          if (!next.some((x) => x.id === p.id) && next.length < MAX_CHECK_PRODUCTS) {
+            next.push(p);
           }
         }
         return next;
@@ -208,27 +228,42 @@ export function CheckBuilder() {
                        reason the search looks wrong at exactly the moment
                        it started working. */
                     meta={metaFor(p)}
-                    imageUrl={p.imageUrl}
+                    product={p}
+                    /* ⚠️ ONE FIXED SLOT FOR BOTH STATES — NOT IN FIGMA. The
+                       handoff's swap is between two components of different
+                       SIZE: Small Button is 36 tall with 16 side padding,
+                       Tag is 26 with 12. Adding a product therefore shrank
+                       the control it replaced and pulled the row's right
+                       edge in, so a list where you add several things
+                       twitched on every tap. The slot is sized once and both
+                       states fill it; each keeps its own fill, radius and
+                       type. */
                     trailing={
-                      inBasket ? (
-                        <Tag variant="brand">Added</Tag>
-                      ) : (
-                        <SmallButton
-                          label="Add"
-                          arrow={false}
-                          disabled={full}
-                          aria-label={`Add ${fullName(p)} to this check`}
-                          onClick={() => add(p)}
-                        />
-                      )
+                      <span className={styles.trailing}>
+                        {inBasket ? (
+                          <Tag variant="brand">Added</Tag>
+                        ) : (
+                          <SmallButton
+                            label="Add"
+                            arrow={false}
+                            disabled={full}
+                            aria-label={`Add ${fullName(p)} to this check`}
+                            onClick={() => add(p)}
+                          />
+                        )}
+                      </span>
                     }
                   />
                 </li>
               );
             })}
           </ul>
-        ) : searching ? (
-          /* `Check — no results` (651:2510), as a state rather than a screen */
+        ) : searching && !loading ? (
+          /* `Check — no results` (651:2510), as a state rather than a screen.
+             ⚠️ GATED ON `loading`, because the search is a network round trip
+             now: without this the empty box flashed up on every keystroke
+             between the debounce firing and the response landing, so typing a
+             product name told you it did not exist, once per character. */
           <>
             <div className={styles.emptyBox}>
               <p className={`${styles.emptyTitle} t-h6`}>No products found</p>

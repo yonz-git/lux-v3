@@ -14,7 +14,22 @@
   padding: var(--space-md);
 
   border-radius: var(--radius-2xl);
-  background: var(--color-surface-data);
+  /* ⚠️ `surface/data-strong` (62%), NOT `surface/data` (44%) — decided here.
+     This card carries objects ON it (the face form and seven pills) rather
+     than text alone, so it is doing a different job from a PROGRESS or CHECK
+     readout card, and at 44% the pills had to fight it for separation. Both
+     alphas were already in scope of the System B contrast measurement, so the
+     ink values are unchanged. Deliberately the STRONG token rather than a new
+     value — the DS has exactly two sage surface alphas and this wants the
+     deeper one, painted TWICE: 62% over 62% composites to an effective 86%,
+     which is the depth this card needs and is still the same one sage. A
+     third alpha would be a new token for one screen; the DS should grow a
+     real `surface/data-deep` instead. */
+  background: linear-gradient(
+      var(--color-surface-data-strong),
+      var(--color-surface-data-strong)
+    ),
+    var(--color-surface-data-strong);
   box-shadow: var(--shadow-frosted-row);
   -webkit-backdrop-filter: blur(var(--blur-card));
   backdrop-filter: blur(var(--blur-card));
@@ -24,17 +39,10 @@
   position: relative;
   width: 100%;
   aspect-ratio: 392 / 300;
-  /* ⚠️ The 392x300 box is taller than the drawn face — "Chin / jaw", the
-     lowest region, bottoms out around y=241 of 300, leaving ~20% of the
-     box as dead air below it before .card's own gap even starts. That
-     dead air can't be trimmed by shrinking the aspect ratio (every region
-     is positioned as a % of this exact 392x300 box, so resizing it would
-     rescale and distort the face). A negative margin-bottom pulls .chips
-     up into that dead air instead, without moving anything absolutely
-     positioned inside .diagram. -9% (of width, which is how percentage
-     margins resolve, and this box's width IS its own reference) roughly
-     halves the visual gap to the location chips below. */
-  margin-bottom: -9%;
+  /* The 392x300 box used to end ~20% below the lowest pill, because the drawn
+     face bottomed out at y=241 and nothing filled the rest; a -9% bottom margin
+     pulled the chip row up into that dead air. The form now runs to y=280 of
+     300, so the box is doing its own job and the pull-up is gone. */
 }
 
 .chips {
@@ -45,15 +53,53 @@
   gap: 10px;
 }
 
-.outline {
+/* The illustration layer. It spans the whole 392x300 box so that both the base
+   form and the contour tiers can be positioned in the SAME coordinate space the
+   regions use — see TIERS in FaceDiagram.tsx. */
+.form {
   position: absolute;
-  left: calc(112 / 392 * 100%);
-  top: calc(40 / 300 * 100%);
-  width: calc(168 / 392 * 100%);
-  height: calc(214 / 300 * 100%);
-  border: 1.25px solid var(--color-text-primary);
-  border-radius: 50%;
+  inset: 0;
   pointer-events: none;
+}
+
+.form::before {
+  content: "";
+  position: absolute;
+  /* ⚠️ A TERRACED DOME, NOT A 1.25px ELLIPSE — decided here, NOT IN FIGMA.
+     Figma draws the face as a 168x214 ellipse at 112,40 stroked 1.25 in
+     text/primary. Two things were wrong with shipping that literally. It has no
+     room: at 168 wide the left and right arcs run straight THROUGH `Cheeks (L)`
+     and `Cheeks (R)`, and the top arc grazes `Forehead` — a hairline crossing a
+     pill reads as a rendering fault, and it is why the pills could not be
+     translucent. And a 1px outline is the flattest possible object on a card
+     whose whole surface system is about depth.
+     So the form is widened to 230x260 at 81,20 — every pill now sits INSIDE it
+     with clearance, which is what buys the breathing room — and it is filled
+     rather than stroked: one light source at 33%/21% down the sage ramp, a
+     seated drop shadow, and paired inner shadows for the falloff on the shaded
+     side. A filled ground under a pill is also a legitimate place for a pill to
+     sit, which a crossing line never was.
+     THE CONTOUR LIVES ON TOP OF IT (`.tier`): the level lines are what make the
+     curvature legible, but drawn as lines alone they only ever describe a dome
+     without being one, so the two are used together — the dome supplies the
+     light, the terraces supply the elevation. */
+  left: calc(81 / 392 * 100%);
+  top: calc(20 / 300 * 100%);
+  width: calc(230 / 392 * 100%);
+  height: calc(260 / 300 * 100%);
+  border-radius: 50%;
+  background: var(--gradient-face-form);
+  box-shadow: var(--shadow-face-form);
+}
+
+/* One contour level. Each is a step UP the sage ramp toward the light and casts
+   onto the step below it, so the stack reads as elevation rather than as three
+   more ellipses. Geometry comes from TIERS in FaceDiagram.tsx. */
+.tier {
+  position: absolute;
+  border-radius: 50%;
+  background: var(--color-surface-face-tier);
+  box-shadow: var(--shadow-face-tier);
 }
 
 .region {
@@ -66,24 +112,77 @@
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  min-height: 26px;
-  padding: 5px var(--space-sm);
+  /* Rule 8b: the pill is 30 tall (a 20px Label with 5 either side). It now
+     carries a 1px border, so the vertical padding becomes a min-height and the
+     horizontal padding loses the border width — the pill lands on the same box
+     it had when it was borderless. */
+  min-height: 30px;
+  padding: 0 calc(var(--space-sm) - var(--border-width-hairline));
 
-  border-radius: var(--radius-lg);
-  /* ⚠️ OPAQUE, not surface/frost-light. The chip sits ON a frost-light card, so
-     at 55% it was the same fill over the same fill and the pill had almost no
-     edge. bg/frost-light is that colour at full strength. */
-  background: var(--color-bg-frost-light);
+  /* ⚠️ OPAQUE AND BRIGHT, WITH THE EDGE CARRIED BY A HAIRLINE — decided here,
+     NOT IN FIGMA.
+     The pill has been through both ends of this. Figma draws it as a flat fill
+     with no stroke; that shipped as OPAQUE bg/frost-light, which on the sage
+     `surface/data` card read as seven white stickers pasted over the face. The
+     obvious fix — surface/frost-light at 55%, the same value the location chips
+     under it use — is wrong here for a reason the chips do not have: THE FACE
+     OUTLINE PASSES BEHIND THESE PILLS. A 1.25px text/primary ellipse showing
+     through a translucent fill reads as a rendering artefact, not as depth, and
+     it crosses `Forehead`, both `Cheeks` and `Chin / jaw`.
+     So the fill stays opaque: bg/frost-light-muted (see globals.css), which is
+     the same near-white one step down from bg/frost-light — bright enough to
+     separate cleanly from the sage, short of the glare that made the original
+     read as a sticker. Everything that made the old version read as a sticker is
+     handled by the parts Figma left off instead: radius/full rather than
+     radius/lg (16 on a 30-tall pill is an almost-pill, and the near-miss is
+     what looked cheap next to the fully-round chips below), a 1px border/subtle
+     hairline — the frosted-ROW edge, i.e. Surface System A, because the pill is
+     now a light opaque object rather than glass — and shadow/sm to seat it on
+     the sage instead of floating on it. */
+  border-radius: var(--radius-full);
+  border: var(--border-width-hairline) solid var(--color-border-subtle);
+  background: var(--color-bg-frost-light-muted);
+  box-shadow: var(--shadow-sm);
   color: var(--color-text-primary);
   white-space: nowrap;
 
   transition: background-color var(--duration-base) var(--ease-standard),
+    border-color var(--duration-base) var(--ease-standard),
+    box-shadow var(--duration-base) var(--ease-standard),
     color var(--duration-base) var(--ease-standard);
+}
+
+/* the pill is already the brightest fill on the card, so hover cannot lighten
+   it — it deepens the shadow and the hairline instead */
+.region:hover {
+  border-color: var(--color-border-default);
+  box-shadow: var(--shadow-md);
+}
+
+@media (hover: none) {
+  .region:hover {
+    border-color: var(--color-border-subtle);
+    box-shadow: var(--shadow-sm);
+  }
 }
 
 .region[data-selected="true"] {
   background: var(--color-bg-brand);
+  /* the light hairline would read as a rim around the indigo fill, so the
+     selected pill drops its edge and keeps only the lift */
+  border-color: transparent;
+  box-shadow: var(--shadow-button);
   color: var(--color-text-on-brand);
+}
+
+.region[data-selected="true"]:hover {
+  background: var(--color-bg-brand-hover);
+}
+
+@media (hover: none) {
+  .region[data-selected="true"]:hover {
+    background: var(--color-bg-brand);
+  }
 }
 
 @media (min-width: 1024px) {
@@ -93,12 +192,23 @@
 }
 
 @media (prefers-reduced-transparency: reduce) {
-  /* the regions are opaque now, so only the card needs a fallback — and it gets
-     the right one: frost-light at full strength rather than bg/surface-frost,
-     which is a different colour */
+  /* frost-light at full strength rather than bg/surface-frost, which is a
+     different colour */
   .card {
-    background: var(--color-bg-frost-light);
+    /* surface/data-strong composited over the canvas — the same move `Sheet`
+       and `DataCard` make, since the DS has no opaque counterpart for it */
+    background: linear-gradient(
+        var(--color-surface-data-strong),
+        var(--color-surface-data-strong)
+      ),
+      linear-gradient(
+        var(--color-surface-data-strong),
+        var(--color-surface-data-strong)
+      ),
+      var(--color-bg-canvas);
     -webkit-backdrop-filter: none;
     backdrop-filter: none;
   }
+
+  /* the regions are opaque (see .region), so only the card needs a fallback */
 }

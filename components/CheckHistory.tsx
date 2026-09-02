@@ -54,7 +54,7 @@ export function CheckHistory() {
         center
       >
         <div className={styles.empty}>
-          <Orb className="reveal-hero" />
+          <Orb animateIn />
           <h2 className="t-h4-h3">No checks yet</h2>
           <p className={`${styles.emptyText} t-body3-body2`}>
             Run a compatibility check and it will appear here.

@@ -76,3 +76,22 @@
     backdrop-filter: none;
   }
 }
+
+/* ⚠️ NOT IN FIGMA — the trailing slot on a result row, sized once so the
+   `Add` → `Added` swap does not resize the control or shift the row's right
+   edge. 76 is the wider of the two at their Figma paddings ("Added" in
+   Label Small + 12 either side); the height is the Small Button's
+   size/control-sm, which is the taller of the pair. Both children stretch to
+   fill it and keep their own fill, radius and type — only the box they sit in
+   is shared. */
+.trailing {
+  flex: none;
+  display: flex;
+  width: 76px;
+  min-height: var(--size-control-sm); /* 36 */
+}
+
+.trailing > * {
+  width: 100%;
+  min-height: var(--size-control-sm);
+}

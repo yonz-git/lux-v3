@@ -23,13 +23,12 @@ export type StepId =
   | "start"
   | "skin-type"
   | "conditions"
-  | "selfie"
   | "timing"
   | "products";
 
 export type Step = {
   id: StepId;
-  /** 1-based position on the progress track. Selfie shares Location's step. */
+  /** 1-based position on the progress track. */
   step: number;
   href: string;
   /** Figma frame ids, so the next person can diff code against the design. */
@@ -45,7 +44,13 @@ export type Step = {
    * visually-hidden. One source of truth either way, and it lives on the step
    * for the same reason `isComplete` does — a new screen cannot forget it.
    *
-   * These are the Figma frame names, not new copy.
+   * These are the Figma frame names, not new copy — with ONE exception. Step 1
+   * is titled `Create skin profile`, not the frame's `Start investigation`: the
+   * flow is now a nav section called `My skin`, and every link into it in the
+   * app says `Create skin profile`, which is the label `Check — no profile`
+   * (606:2183) already gives that exact destination. Naming the section, the
+   * three CTAs and the screen four different things for one place was the
+   * confusion; the frame name is the odd one out and Figma catches up.
    */
   title: string;
   /**
@@ -74,14 +79,20 @@ export type Step = {
 export const STEPS: Step[] = [
   // Start (01, 476:2542/476:2670) and Location (03b, 476:2802/476:2934)
   // combined onto one screen — see components/StartInvestigation.tsx. Continue
-  // needs both answers, which used to gate two separate steps. Selfie still
-  // shares this step number: it is a sub-step reached from "Take a photo", not
-  // a step of its own.
-  // Continue skips straight to skin-type: selfie is an OPTIONAL side path off
-  // "Take a photo", not a stop on the main line. Making Continue pass through
-  // it too would give the user two controls for the same "move on" action.
-  { id: "start",      step: 1, href: "/investigation/start",      title: "Start investigation", figma: { mobile: "476:2542", desktop: "476:2670" }, isComplete: (a) => (a.start?.length ?? 0) > 0 && (a.location?.length ?? 0) > 0, next: "/investigation/skin-type" },
-  { id: "selfie",     step: 1, href: "/investigation/selfie",     title: "Selfie capture", figma: { mobile: "487:834",  desktop: "490:1041" }, isComplete: (a) => Boolean(a.selfie) },
+  // needs both answers, which used to gate two separate steps.
+  //
+  // ⚠️ SELFIE CAPTURE (03b, 487:834/490:1041) IS NO LONGER A STEP AT ALL. It
+  // was listed here at step 1 — sharing this screen's number, so it never moved
+  // the track — because it was a routed screen with a track to move. It is the
+  // tray overlay `components/SelfieSheet.tsx` now, opened by "Take a photo"
+  // without leaving the page, so it has no route, no track and nothing for this
+  // file to own. Frame ids are kept on the component.
+  //
+  // ⚠️ THIS IS ALSO THE `My skin` NAV LANDING. It keeps its back chevron, its
+  // track and its `Save & exit` — it is a flow step that the nav happens to
+  // point at, not a hub, and the "no back chevron on a hub landing" rule does
+  // not reach it. See `components/BottomNav.tsx`.
+  { id: "start",      step: 1, href: "/investigation/start",      title: "Create skin profile", figma: { mobile: "476:2542", desktop: "476:2670" }, isComplete: (a) => (a.start?.length ?? 0) > 0 && (a.location?.length ?? 0) > 0, next: "/investigation/skin-type" },
   // Skin type (02a, 484:722/489:902) and Skin tendencies (02b, 485:755/489:960)
   // combined onto one screen — see components/SkinType.tsx. Continue needs
   // both answers, which used to gate two separate steps.

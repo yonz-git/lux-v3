@@ -117,8 +117,25 @@
 /* a real Secondary Button (Button.module.css `.secondary` owns the visual
    recipe) — this class is just the spacing that used to live on the
    hand-built frosted row. */
-.takePhoto {
+/* ⚠️ THE ELEMENT SELECTOR IS LOAD-BEARING. `Button.module.css` sets
+   min-height/padding on `.button` at the same specificity as a bare
+   `.takePhoto`, and modules resolve that by load order — which Button wins.
+   `a.takePhoto` (0,1,1) is what actually reaches the control; the desktop rule
+   below already had to do this. */
+a.takePhoto,
+button.takePhoto {
   margin-top: var(--space-lg);
+  /* ⚠️ NOT full-width, and control/md rather than control/lg — decided here.
+     This is the OPTIONAL side path off step 1 (selfie capture shares the step
+     number); rendered as a 62-tall bar across the card it was the largest
+     control on a screen whose actual task is the chips and the face diagram,
+     and it outweighed Continue. Hugging its own label at 48 puts it back in
+     proportion. Both values are on the control scale — this is a size change,
+     not a new treatment, so the gradient, shadow and hover all still come from
+     `Button`. */
+  align-self: center;
+  min-height: var(--size-control-md);
+  padding: 0 var(--space-xl);
 }
 
 @media (min-width: 1024px) {
@@ -159,8 +176,11 @@
      824 card width `fullWidth` gives it on mobile. Element+class beats
      Button.module.css's single `.full` class on specificity, so this wins
      regardless of import order. */
-  a.takePhoto {
-    width: 180px;
+  /* it hugs its label at both breakpoints now — the old fixed 180 was there to
+     stop the full-width mobile bar stretching across the desktop card, and
+     there is no bar any more */
+  a.takePhoto,
+  button.takePhoto {
     align-self: center;
   }
 }

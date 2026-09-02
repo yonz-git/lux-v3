@@ -92,6 +92,19 @@
   color: var(--color-text-on-data);
 }
 
+/* ⚠️ THE MODERATE PILL IS FILLED, NOT FROSTED — NOT IN FIGMA. High likelihood
+   is `Tag/Brand` (bg/brand + white); moderate was `Tag/Neutral`, a frost pill
+   with dark text, so the pair read as "a badge" and "a different kind of
+   badge" rather than as two points on one scale. It takes `bg/brand-soft`
+   (indigo/300, declared in globals.css) with the same white label, so the two
+   differ only in weight — which is what the accent bar beside them already
+   says. Specificity is deliberate: Tag's own `.tag[data-variant]` rule is
+   0,2,0 and module load order between two CSS Modules is not guaranteed. */
+.concernBody .likelihood[data-variant="neutral"] {
+  background: var(--color-bg-brand-soft);
+  color: var(--color-text-on-data-inverse);
+}
+
 /* sits 2 under the name, inside the 8 gap — the comp pairs them tighter than
    the rest of the entry */
 .foundIn {
@@ -139,6 +152,35 @@
 .emphasisTitle,
 .emphasisText {
   color: var(--color-text-on-data-inverse);
+}
+
+/* ⚠️ THE BADGE CARRIES THE BAND, NOT A NEUTRAL LABEL — NOT IN FIGMA. It states
+   the worst band in the check ("Avoid", "Risky"), and as a frost pill it said
+   that in the same voice as every other Tag in the app. It takes the feedback
+   colour the CompatCard for that band already uses, so one verdict is one
+   colour on both halves of the screen.
+
+   ⚠️ FILLED, WHERE COMPATCARD'S PILL IS TINTED. That pill sits on a light card
+   and can use `-subtle` behind `--band`; this one sits on `surface/data-strong`
+   — sage over sage — where a `red/100` tint has almost no edge and the red text
+   on it is unreadable. White on `feedback/error` measures 4.47:1, the same
+   figure the band pills already carry on `/check/results`. Specificity per the
+   note above. */
+.emphasis .badge[data-band] {
+  background: var(--band);
+  color: var(--color-text-on-data-inverse);
+}
+
+.emphasis .badge[data-band="avoid"] {
+  --band: var(--color-feedback-error);
+}
+
+.emphasis .badge[data-band="risky"] {
+  --band: var(--color-feedback-warning);
+}
+
+.emphasis .badge[data-band="compatible"] {
+  --band: var(--color-feedback-success);
 }
 
 .notes {

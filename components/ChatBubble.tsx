@@ -11,6 +11,13 @@ import styles from "./ChatBubble.module.css";
  * `align` defaults to the side that matches `from`. Override it only for a
  * centred hero composition such as 00 Welcome.
  *
+ * ⚠️ EVERY BUBBLE PLAYS THE WELCOME ENTRANCE. `bubble-enter` (globals.css) is
+ * applied here rather than by each screen, so the drop-and-settle that 00
+ * Welcome's opening bubble has is what a bubble does everywhere — a screen
+ * cannot forget it and cannot invent a second one. Set `entrance={false}` only
+ * when the caller supplies its own bubble animation; Welcome does, because its
+ * two bubbles swap in place and that timeline already includes the entrance.
+ *
  * ⚠️ Body text is `Body 2` (16/26) on mobile and `Body 1` (18/28) on desktop.
  * This comment claimed as much from the start while the CSS held `t-body2` at
  * both breakpoints, so every desktop bubble rendered 16/26 and came out 2px
@@ -22,6 +29,7 @@ export function ChatBubble({
   from,
   align,
   full,
+  entrance = true,
   className,
   "aria-hidden": ariaHidden,
   children,
@@ -30,6 +38,11 @@ export function ChatBubble({
   align?: "left" | "right" | "center";
   /** span the whole content column instead of hugging the text */
   full?: boolean;
+  /**
+   * Play the standard bubble entrance. Off only for a caller whose own
+   * animation covers the arrival — see the note above.
+   */
+  entrance?: boolean;
   /** applied to the bubble itself, not the row — e.g. an entrance animation */
   className?: string;
   /**
@@ -44,7 +57,14 @@ export function ChatBubble({
   return (
     <div className={styles.row} data-align={resolvedAlign} aria-hidden={ariaHidden}>
       <div
-        className={[styles.bubble, "t-body2-body1", className].filter(Boolean).join(" ")}
+        className={[
+          styles.bubble,
+          "t-body2-body1",
+          entrance ? "bubble-enter" : null,
+          className,
+        ]
+          .filter(Boolean)
+          .join(" ")}
         data-from={from}
         data-full={full ? "true" : undefined}
       >

@@ -4,6 +4,7 @@ import styles from "./CheckBasket.module.css";
 import { Sheet } from "./Sheet";
 import { Button } from "./Button";
 import { ChevronDownIcon, CloseIcon, PlusIcon } from "./icons";
+import { ProductThumb } from "./ProductThumb";
 import {
   MAX_CHECK_PRODUCTS,
   MIN_CHECK_PRODUCTS,
@@ -79,7 +80,7 @@ export function CheckBasketBar({
   const label = ready
     ? `${count} products · review & check`
     : count === 0
-      ? `Pick ${MIN_CHECK_PRODUCTS} products to compare`
+      ? `Pick at least ${MIN_CHECK_PRODUCTS} products`
       : `${count} of ${MIN_CHECK_PRODUCTS} — pick one more`;
 
   const content = (
@@ -152,6 +153,17 @@ export function CheckBasketSheet({
               </span>
             )}
             <span className={styles.item}>
+              {/* ⚠️ THE THUMB IS NOT IN THE COMP — `bottom-sheet` (604:2103)
+                  draws these rows as a label and a close glyph alone. Every
+                  other place a product appears carries its drawn vessel
+                  (`/check/new`'s own result rows, the PRODUCTS tray, both
+                  hubs), so the ONE screen where you review what you picked was
+                  the one screen that dropped the picture — and it is the
+                  screen where two rows are most likely to read alike, since a
+                  basket is two products from the same shelf. Same
+                  `ProductArt`, same hash, so a row keeps the identity it had
+                  in the list you picked it from. */}
+              <ProductThumb product={p} />
               <span className={`${styles.itemLabel} t-body2`}>
                 {fullName(p)}
               </span>
@@ -200,7 +212,7 @@ export function CheckBasketSheet({
           disabled CTA */}
       {!enough && (
         <p id="check-helper" className={`${styles.helper} t-caption`}>
-          Add at least {MIN_CHECK_PRODUCTS} products
+          Pick at least {MIN_CHECK_PRODUCTS} products
         </p>
       )}
     </Sheet>

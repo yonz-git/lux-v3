@@ -34,6 +34,7 @@ export function Welcome() {
               from="ai"
               align="center"
               className="bubble-ask-exit"
+              entrance={false}
               aria-hidden
             >
               How is your skin feeling today?
@@ -43,6 +44,7 @@ export function Welcome() {
               from="ai"
               align="center"
               className={`bubble-swap-in ${styles.bubbleReply}`}
+              entrance={false}
               aria-hidden
             >
               I can help identify possible links between skincare products and
@@ -53,7 +55,7 @@ export function Welcome() {
 
         <div className={`${styles.actions} reveal-hero`}>
           <Button className={styles.cta} href="/investigation/start">
-            Start investigating
+            Create skin profile
           </Button>
           <p className={`${styles.disclaimer} t-caption`}>
             Lux does not provide medical diagnoses.

@@ -64,10 +64,3 @@
     text-decoration: none;
   }
 }
-
-/* the roadmap line — see CheckScreen.tsx. Deliberately quiet: text/muted, and
-   pushed away from the actions so it does not read as one of them. */
-.roadmap {
-  margin-top: var(--space-md); /* + the 16 gap = 28 */
-  color: var(--color-text-muted);
-}

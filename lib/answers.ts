@@ -1,6 +1,7 @@
 import type { StepId } from "./flow";
-import type { ProductDraft, SavedProduct } from "./products";
+import type { CatalogProduct, ProductDraft, SavedProduct } from "./products";
 import type { SavedCheck } from "./check";
+import type { CheckIn } from "./progress";
 
 /**
  * Everything the user has answered so far.
@@ -43,8 +44,14 @@ export type Answers = Partial<{
      app's only state and the basket has to survive the walk from /check/new to
      /check/analyzing to /check/results. */
 
-  /** catalogue ids in the basket being built on /check/new */
-  checkBasket: string[];
+  /** the products in the basket being built on /check/new.
+   *
+   *  ⚠️ THE PRODUCTS THEMSELVES, NOT IDS. `/check/new` searches Open Beauty
+   *  Facts now, exactly as the PRODUCTS tray does, so a basket row can be a
+   *  live result that exists nowhere in `CATALOG` — `productById` would return
+   *  undefined and the row would vanish between /check/new and /check/results.
+   *  Scores are still never stored; see lib/check.ts. */
+  checkBasket: CatalogProduct[];
   /** what /check/new's search field has typed in it */
   checkQuery: string;
   /** checks the user has actually run, newest first. The seeded history in
@@ -53,17 +60,43 @@ export type Answers = Partial<{
   checks: SavedCheck[];
   /** which check /check/results is showing; absent means the newest */
   viewingCheck: string;
+
+  /* ---- THE DAILY CHECK-IN — the PROGRESS section -------------------------
+     ⚠️ NOT AN INVESTIGATION STEP EITHER, and not part of CHECK. It is one
+     question asked from `/progress`, and `/progress` is the only screen that
+     reads it back — see components/CheckIn.tsx for why it does not live under
+     the Check tab the handoff nominally assigns it to. */
+
+  /** the check-ins the user has actually recorded, oldest first. One per day —
+   *  answering again on a day already recorded REPLACES that day's entry, so
+   *  the calendar can never show two discs on one square. The seeded demo
+   *  series in lib/progress.ts sits alongside these rather than in here, the
+   *  same split `checks` makes against the seeded check history. */
+  checkIns: CheckIn[];
 }>;
 
 /**
- * ⚠️ EXCLUSIVE OPTIONS — "None", "Not sure", "Prefer not to say".
+ * ⚠️ EXCLUSIVE OPTIONS — "None", "Not sure", "Prefer not to say", "No change".
  *
  * These are answers ABOUT the list, not items in it. They stay CHECKBOXES and
  * keep `role="checkbox"` — the group is still multi-select — but they clear
  * everything else. Never switch just those rows to radios: mixing circles and
  * squares in one group tells the user the whole group is single-select.
+ *
+ * ⚠️ "No change" IS THE DAILY CHECK-IN'S, and it was missing. `Check-in chat`
+ * (555:1268) ends turn 2 with it, and it is the same species as "None" — you
+ * cannot have noticed less redness AND noticed no change. It was not in this
+ * list, so it toggled like an ordinary symptom and the screen happily recorded
+ * "More redness, More itching, No change". The list is the only place that
+ * knowledge lives, which is exactly why the bug was invisible in the screen's
+ * own code.
  */
-export const EXCLUSIVE_OPTIONS = ["None", "Not sure", "Prefer not to say"];
+export const EXCLUSIVE_OPTIONS = [
+  "None",
+  "Not sure",
+  "Prefer not to say",
+  "No change",
+];
 
 export function isExclusive(option: string): boolean {
   return EXCLUSIVE_OPTIONS.includes(option);

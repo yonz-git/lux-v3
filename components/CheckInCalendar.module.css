@@ -96,15 +96,42 @@
 }
 
 /* the accent on a data card is indigo bg/brand — the handoff's rule for
-   check-ins, timeline dots and meter fills alike */
+   check-ins, timeline dots and meter fills alike.
+
+   ⚠️ THE NUMERAL IS `text/on-brand`, NOT `text/on-data`. It used to read
+   on-data, which was fine while that token was white — but on-data was
+   darkened globally to clear AA on the light sage card, and a checked-in day
+   is not on the sage card, it is on an indigo disc. Dark ink on bg/brand made
+   the numerals unreadable: exactly the days the card exists to show. on-brand
+   is white on indigo and passes, which is why the CHECK section already lists
+   the check-in discs as deliberately still white. */
 .day[data-checked-in] {
   background: var(--color-bg-brand);
-  color: var(--color-text-on-data);
+  color: var(--color-text-on-brand);
 }
 
 .day[data-today] {
   border: var(--border-width-thin) solid var(--color-border-glass); /* 1.5 */
   color: var(--color-text-on-data);
+}
+
+/* ⚠️ CHECKED IN **AND** TODAY — a state that could not happen until the daily
+   check-in shipped, and it rendered a blank disc.
+
+   The seeded series is clipped at today and its offsets never landed ON today,
+   so the comp has a ring on one day and discs on others and never both on one.
+   `/progress/check-in` writes a check-in dated today, which is the whole point
+   of the button, so the two states now collide on the same square. They are
+   equal-specificity single-attribute rules and `[data-today]` is written second,
+   so it won and repainted the numeral `text/on-data` — the DARK ink, on an
+   indigo disc. The day the user just recorded was the one day whose number you
+   could not read.
+
+   Two attributes outrank one, so this restores the on-brand white the indigo
+   fill requires while `[data-today]`'s ring stays on top of it. The ring is
+   `border/glass`, i.e. white-ish, so it still reads against bg/brand. */
+.day[data-today][data-checked-in] {
+  color: var(--color-text-on-brand);
 }
 
 .legend {

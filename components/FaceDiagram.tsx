@@ -30,14 +30,50 @@ type Region = { id: string; x: number; y: number; w: number };
    to its label (see .region's transform in FaceDiagram.module.css), not
    stretched to `w`, or a wider diagram (desktop's 920 card vs mobile's 392)
    would blow the pill up into mostly whitespace. */
+/* ⚠️ FOUR y VALUES ARE NUDGED OFF THE FRAME — decided here, NOT IN FIGMA.
+   The comp stacks Forehead at 49 and Eye area at 79, and Around mouth at 183
+   and Chin / jaw at 215: a 30-tall pill therefore ENDS exactly where the next
+   one starts (49+30 = 79) or clears it by 2 (183+30 = 213). Drawn as flat
+   fills that reads as tight; drawn as the pill it is now — hairline, radius
+   full, a shadow — two touching pills merge into one lozenge and the edge
+   treatment is what makes the collision visible. The rows keep their reading
+   order and their anchor to the face; each pair is opened to a uniform 8 gap
+   (43/81 and 179/217), which is the gap the cheeks row already had to the eye
+   row. Everything still sits inside the outline: it spans y 40..254 and the
+   lowest pill now bottoms at 247. */
 const REGIONS: Region[] = [
-  { id: "Forehead", x: 160 / 392, y: 49 / 300, w: 73 / 392 },
-  { id: "Eye area", x: 162 / 392, y: 79 / 300, w: 68 / 392 },
+  { id: "Forehead", x: 160 / 392, y: 43 / 300, w: 73 / 392 },
+  { id: "Eye area", x: 162 / 392, y: 81 / 300, w: 68 / 392 },
   { id: "Cheeks (L)", x: 82 / 392, y: 119 / 300, w: 80 / 392 },
   { id: "Nose", x: 171 / 392, y: 119 / 300, w: 50 / 392 },
   { id: "Cheeks (R)", x: 231 / 392, y: 119 / 300, w: 82 / 392 },
-  { id: "Around mouth", x: 146 / 392, y: 183 / 300, w: 101 / 392 },
-  { id: "Chin / jaw", x: 158 / 392, y: 215 / 300, w: 77 / 392 },
+  { id: "Around mouth", x: 146 / 392, y: 179 / 300, w: 101 / 392 },
+  { id: "Chin / jaw", x: 158 / 392, y: 217 / 300, w: 77 / 392 },
+];
+
+/* ⚠️ THE FACE IS A TERRACED DOME — decided here, NOT IN FIGMA. See `.form` in
+   FaceDiagram.module.css for why the comp's 1.25px ellipse could not stay.
+   These are the CONTOUR LEVELS: nested ellipses, each smaller step drifting
+   toward the light at 33%/21% the way the level lines on a real dome do, each
+   casting onto the step below it. The geometry is here rather than in the CSS
+   for the same reason REGIONS is — the shape of this thing IS the design, and
+   the module should not be the place you go to find out what the face looks
+   like. Level 0 is the base form itself (`.form`); these are the three above
+   it. Values are diagram units, i.e. the same 392x300 box the regions use.
+   Every level steps in by ~30 and shares the base form's centre (196, 150),
+   so the stack is CONCENTRIC. The light stays off-centre — the base gradient
+   still lights the dome from 33%/21% — which is what keeps the terraces
+   reading as elevation rather than as a flat target; the geometry does not
+   need to lean for that, and a stack that leans reads as a mistake before it
+   reads as perspective. Each level carries the same translucent wash, so the
+   tint accumulates toward the summit on its own rather than being five
+   hand-picked values that can drift apart. */
+const TIERS = [
+  { w: 198, h: 224, cx: 196, cy: 150 },
+  { w: 168, h: 190, cx: 196, cy: 150 },
+  { w: 138, h: 156, cx: 196, cy: 150 },
+  { w: 108, h: 122, cx: 196, cy: 150 },
+  { w: 78, h: 88, cx: 196, cy: 150 },
 ];
 
 /** So "Whole face" can select/clear every region pill in one tap — see StartInvestigation. */
@@ -59,8 +95,21 @@ export function FaceDiagram({
         role="group"
         aria-label="Face regions"
       >
-        {/* the outline is decorative — the pills carry the meaning */}
-        <span className={styles.outline} aria-hidden="true" />
+        {/* the form is decorative — the pills carry the meaning */}
+        <span className={styles.form} aria-hidden="true">
+          {TIERS.map((t, i) => (
+            <span
+              key={i}
+              className={styles.tier}
+              style={{
+                left: `${((t.cx - t.w / 2) / 392) * 100}%`,
+                top: `${((t.cy - t.h / 2) / 300) * 100}%`,
+                width: `${(t.w / 392) * 100}%`,
+                height: `${(t.h / 300) * 100}%`,
+              }}
+            />
+          ))}
+        </span>
         {REGIONS.map((r) => (
           <button
             key={r.id}

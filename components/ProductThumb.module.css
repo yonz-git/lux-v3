@@ -18,10 +18,10 @@
   color: var(--color-icon-muted);
 }
 
-/* a real Open Beauty Facts photo fills the well the camera glyph otherwise
-   placeholds — see the component doc comment */
-.photo {
+/* the drawn vessel every product gets — see ProductArt, and the component doc
+   comment on why no photograph is fetched. It fills the well and centres
+   itself; the well's own opaque fill is the ground the bottle sits on. */
+.art {
   width: 100%;
   height: 100%;
-  object-fit: cover;
 }

@@ -35,17 +35,15 @@
   background: var(--color-bg-surface-frost);
 }
 
-.glyph {
-  width: var(--size-icon-md);
-  height: var(--size-icon-md);
-  color: var(--color-text-primary);
-}
-
-.photo {
+/* the drawn vessel — see ProductArt. It centres in the letterbox well rather
+   than filling it: `preserveAspectRatio="xMidYMid meet"` on a square
+   composition means the height is what binds, so the bottle sits at the well's
+   full 140 and the well's own opaque fill is the ground. */
+.art {
   width: 100%;
   height: 100%;
-  object-fit: cover;
 }
+
 
 .name {
   color: var(--color-text-primary);
@@ -62,7 +60,11 @@
 }
 
 .ingredientsLabel {
-  color: var(--color-text-muted);
+  /* ⚠️ NOT `text/muted`: neutral-400 on a frosted card measures 2.27:1 at
+     12-13px, the app-wide failure AGENTS.md flags. Stepped one entry down the
+     declared ramp to `text/secondary`; hierarchy against `.description` is
+     carried by size and tracking, as it is on the data cards. */
+  color: var(--color-text-secondary);
 }
 
 .description {

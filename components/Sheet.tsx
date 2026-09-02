@@ -1,6 +1,7 @@
 "use client";
 
-import { useEffect, useRef } from "react";
+import { useEffect, useRef, useState } from "react";
+import { createPortal } from "react-dom";
 import styles from "./Sheet.module.css";
 
 /**
@@ -25,13 +26,30 @@ import styles from "./Sheet.module.css";
  * The design system has no Bottom Sheet with a blur and no scrim token, so this
  * is composed from the recipe rather than instanced. See AGENTS.md.
  *
- * ⚠️ THE BACK CHEVRON IS GONE, AND `Cancel` IS THE TRAY'S ONLY DISMISSAL. The
+ * ⚠️ IT RENDERS IN A PORTAL ON `document.body`, AND IT HAS TO. `position:
+ * fixed` is relative to the viewport only while no ancestor establishes a
+ * containing block — and `backdrop-filter` does, exactly like `transform` and
+ * `filter`. Every tray in the app opens from inside `QuestionScreen`'s card,
+ * which is a frosted surface with `blur(32px)` on it, so the desktop dialog's
+ * `top: 50%` centred it in THAT CARD rather than the viewport: measured at
+ * 1238x875 the tray's top edge sat at y = −41, hanging off the top of the
+ * screen with its heading cut away, while the scrim covered the card instead of
+ * the page. A portal takes the tray out of the frosted subtree; nothing about
+ * the recipe changes.
+ *
+ * ⚠️ THE BACK CHEVRON IS GONE, AND `Done` IS THE TRAY'S ONLY DISMISSAL. The
  * tray used to carry an `onBack` chevron in a header row of its own, so a
  * multi-view tray had TWO ways out that did different things — a chevron at the
  * top that stepped back one view, and a `Cancel` at the bottom of the method
  * view only that closed the whole thing. Every other view had no visible way
- * out at all. One dismissal, in one place, on every view: `Cancel` is rendered
- * HERE rather than by each view, so a new view cannot ship without one.
+ * out at all. One dismissal, in one place, on every view: it is rendered HERE
+ * rather than by each view, so a new view cannot ship without one.
+ *
+ * ⚠️ IT READS `Done`, NOT `Cancel`. `Cancel` promised to undo, and the button
+ * does not: every view that reaches it has already committed — a product added
+ * on the `added` view stays added when the tray closes. Naming the sole exit
+ * after an undo it never performed was the misleading half. `Done` describes
+ * what it does. Escape and the scrim run the same `onClose`.
  */
 export function Sheet({
   open,
@@ -45,6 +63,10 @@ export function Sheet({
   children: React.ReactNode;
 }) {
   const trayRef = useRef<HTMLDivElement>(null);
+  // `document` does not exist while the page is rendered on the server, so the
+  // portal can only be built after the first client render.
+  const [mounted, setMounted] = useState(false);
+  useEffect(() => setMounted(true), []);
 
   // ⚠️ NOT IN THE EFFECT'S DEPENDENCY ARRAY, ON PURPOSE. `AddProductMethodSheet`
   // (and any other caller) passes an inline `onClose`, a fresh function on
@@ -122,9 +144,9 @@ export function Sheet({
     };
   }, [open]);
 
-  if (!open) return null;
+  if (!open || !mounted) return null;
 
-  return (
+  return createPortal(
     <>
       {/* `state/pressed-overlay` at 14% is the only darkening token LUX has, and
           it is weak for a modal. Flagged in the handoff panel rather than
@@ -143,10 +165,11 @@ export function Sheet({
         <span className={styles.grabber} aria-hidden="true" />
         {children}
         {/* the tray's one way out, on every view — see the doc comment */}
-        <button type="button" className={`${styles.cancel} t-label`} onClick={onClose}>
-          Cancel
+        <button type="button" className={`${styles.dismiss} t-label`} onClick={onClose}>
+          Done
         </button>
       </div>
-    </>
+    </>,
+    document.body,
   );
 }

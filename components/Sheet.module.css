@@ -48,7 +48,10 @@
      Written as a literal rather than snapped to a token that would be quietly
      wrong — the same call `Chip`'s 10/16 padding gets. */
   border-radius: 28px 28px 0 0;
-  background: var(--color-surface-data-strong);
+  /* ⚠️ `surface/data`, NOT `-data-strong` — the tray read too dark. 44% of the
+     same sage; the cards inside keep 62%, so the card-on-tray step the recipe
+     depends on is the one that survived, just one token lighter underneath. */
+  background: var(--color-surface-data);
   box-shadow: var(--shadow-sheet-mobile);
   /* NOT optional: surface/data-strong is 62% translucent and the nav underneath
      reads straight through an unblurred tray */
@@ -77,9 +80,12 @@
    and a back chevron in a header row above the content did a different job
    again. `Sheet` renders it now, so it cannot be forgotten by a new view.
 
+   ⚠️ IT READS `Done`, NOT `Cancel`. The class keeps the old name; the label
+   changed because the word did. See the doc comment on `Sheet`.
+
    display:block so the line box is exactly the 20 of `Label`; a button's
    default inline-block layout renders 22. */
-.cancel {
+.dismiss {
   display: block;
   width: 100%;
   /* full WHITE `text/on-data`, not the 85% `on-data-secondary` — this is now
@@ -90,12 +96,12 @@
   transition: opacity var(--duration-fast) var(--ease-standard);
 }
 
-.cancel:hover {
+.dismiss:hover {
   opacity: 0.7;
 }
 
 @media (hover: none) {
-  .cancel:hover {
+  .dismiss:hover {
     opacity: 1;
   }
 }
@@ -155,8 +161,8 @@
        `surface/data-opaque` belongs in Figma. */
     background:
       linear-gradient(
-        var(--color-surface-data-strong),
-        var(--color-surface-data-strong)
+        var(--color-surface-data),
+        var(--color-surface-data)
       ),
       var(--color-bg-canvas);
     -webkit-backdrop-filter: blur(7px);

@@ -94,11 +94,19 @@
   flex: 1 1 0;
 }
 
+/* ⚠️ THE FOOTER OWNS ITS OWN TOP GAP. `.shell` has no row gap, so a footer
+   rendered flush against the body — on `My Products — filled` the Start
+   analysis button sat directly on the last category row and read as a fourth
+   row rather than the screen's action. 32 mobile / 48 desktop, the same two
+   values the card uses for its own internal rhythm and its desktop padding.
+   A `center` screen absorbs it into the trailing spacer, so this is safe for
+   the pinned-footer composition too. */
 .footer {
   display: flex;
   flex-direction: column;
   gap: var(--space-md);
   width: 100%;
+  margin-top: var(--space-3xl); /* 32 */
 }
 
 @media (min-width: 1024px) {
@@ -175,7 +183,7 @@
   .footer {
     align-self: center;
     max-width: 280px;
-    margin-top: var(--space-4xl); /* 40 */
+    margin-top: var(--space-5xl); /* 48 — matches the card's own padding */
   }
 }
 

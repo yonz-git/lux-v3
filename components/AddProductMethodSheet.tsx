@@ -3,6 +3,7 @@
 import { useState } from "react";
 import styles from "./AddProductMethodSheet.module.css";
 import { Sheet } from "./Sheet";
+import { CameraCapture } from "./CameraCapture";
 import { ChatBubble } from "./ChatBubble";
 import { ProductCard } from "./ProductCard";
 import { Button } from "./Button";
@@ -385,7 +386,7 @@ function SearchView({
                     className={styles.result}
                     onClick={() => onChoose(p)}
                   >
-                    <ProductThumb imageUrl={p.imageUrl} />
+                    <ProductThumb product={p} />
                     <span className={styles.resultCopy}>
                       <span className={`${styles.resultName} t-h6`}>
                         {p.name}
@@ -423,43 +424,25 @@ function ScanView({
 }) {
   return (
     <div className={styles.scanView}>
-      <div className={styles.viewfinder} data-captured={captured}>
-        <span className={styles.guide} aria-hidden="true" />
-        {captured && (
-          <p
-            role="status"
-            className={`${styles.captured} reveal-quick t-label`}
-          >
-            Photo captured
-          </p>
-        )}
-      </div>
-
-      <div className={styles.scanCopy}>
-        <p className="t-h6">
-          {subject === "front"
+      {/* the viewfinder, its copy and the shutter are `CameraCapture` now —
+          three surfaces drew this recipe and SelfieCapture's own note said to
+          make it a component once a second appeared */}
+      <CameraCapture
+        captured={captured}
+        title={
+          subject === "front"
             ? "Take a photo of the front of the product."
-            : "Take a photo of the ingredient list."}
-        </p>
-        <p className={`${styles.scanHelper} t-body3`}>
-          {captured
+            : "Take a photo of the ingredient list."
+        }
+        helper={
+          captured
             ? "Tap the shutter again to retake."
             : subject === "front"
               ? "Make sure the product name and brand are visible."
-              : "Make sure the whole list is in frame and in focus."}
-        </p>
-      </div>
-
-      <div className={styles.shutterRow}>
-        <button
-          type="button"
-          className={styles.shutter}
-          aria-label={captured ? "Retake photo" : "Capture photo"}
-          onClick={onCapture}
-        >
-          <span className={styles.shutterCore} aria-hidden="true" />
-        </button>
-      </div>
+              : "Make sure the whole list is in frame and in focus."
+        }
+        onCapture={onCapture}
+      />
 
       <button
         type="button"
@@ -651,7 +634,7 @@ function ConfirmView({
                 <ProductRow
                   name={fullName(p)}
                   meta={p.size}
-                  imageUrl={p.imageUrl}
+                  product={p}
                   trailing={
                     <button
                       type="button"

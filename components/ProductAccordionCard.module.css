@@ -1,41 +1,9 @@
-/* Long-term products list. Figma mobile 581:1593 / desktop 583:1924.
-   header (chevron + Edit) -> 24 -> heading -> 24 -> accordion-stack (gap 12)
-   -> 16 -> add-more.
+/* One saved product, collapsed or expanded. Figma `product · …` inside
+   `Long-term products list` (581:1593 / 583:1924).
 
    Card: radius/2xl, padding 16/18, surface/frost-light + the frosted-row
    inner shadow. Gap 12 collapsed, 16 expanded. */
 
-/* no vertical padding: the header row is 24 tall in the comp, and padding here
-   would grow it */
-.headerAction {
-  color: var(--color-text-brand);
-  border-radius: var(--radius-sm);
-  transition: opacity var(--duration-fast) var(--ease-standard);
-}
-
-.headerAction:hover {
-  opacity: 0.7;
-}
-
-@media (hover: none) {
-  .headerAction:hover {
-    opacity: 1;
-  }
-}
-
-
-.addMore {
-  margin-top: var(--space-lg); /* 16 */
-}
-
-.stack {
-  margin: 0;
-  padding: 0;
-  list-style: none;
-  display: flex;
-  flex-direction: column;
-  gap: var(--space-md);
-}
 
 .card {
   display: flex;

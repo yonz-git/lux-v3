@@ -15,13 +15,15 @@ export function Tag({
   children,
   variant = "neutral",
   className,
+  ...rest
 }: {
   children: React.ReactNode;
   variant?: "neutral" | "brand";
   className?: string;
-}) {
+} & React.ComponentPropsWithoutRef<"span">) {
   return (
     <span
+      {...rest}
       className={[styles.tag, "t-label-sm", className].filter(Boolean).join(" ")}
       data-variant={variant}
     >

@@ -154,9 +154,9 @@ const ACTIVES: Record<ActiveId, Active> = {
  * What each catalogue product contains. Only what the checker reasons about —
  * this is not an INCI list.
  *
- * A product missing from this map contains nothing the checker objects to and
- * scores the full 98, which is the right default: silence should not be a
- * penalty.
+ * A product missing from this map falls through to `activesFromInci`, and if
+ * that finds nothing either it contains nothing the checker objects to and
+ * scores the full 98. Silence should not be a penalty.
  */
 const PRODUCT_ACTIVES: Record<string, ActiveId[]> = {
   "the-ordinary-niacinamide": ["niacinamide"],
@@ -188,8 +188,48 @@ const CONFLICTS: [ActiveId, ActiveId][] = [
   ["retinol", "salicylic-acid"],
 ];
 
+/**
+ * The INCI words that mean an active, for a product the table above does not
+ * name — which is every LIVE Open Beauty Facts result, now that `/check/new`
+ * searches the same database the PRODUCTS tray does.
+ *
+ * ⚠️ WITHOUT THIS, LIVE PRODUCTS SCORE A PERFECT 98 AND NOTHING IS EVER
+ * FLAGGED. `PRODUCT_ACTIVES` is keyed by catalogue id, so a barcode id matched
+ * nothing and every searched-for product came back "compatible" — a
+ * compatibility checker that approves everything the user actually looks up.
+ * OBF ships the real INCI list in `description`, so the actives can be READ off
+ * the product rather than looked up beside it.
+ *
+ * Matching is on the INCI name, not the display name: an ingredient list says
+ * PARFUM, not "Fragrance (Parfum)".
+ *
+ * ⚠️ THE DRYING-ALCOHOL PATTERN NAMES ITS FORMS AND NEVER MATCHES BARE
+ * "ALCOHOL". CETEARYL, CETYL and STEARYL ALCOHOL are fatty alcohols — emollients,
+ * the OPPOSITE of a drying solvent — and they appear in almost every moisturiser
+ * on the shelf, CeraVe Moisturizing Cream included. A bare `\balcohol\b` would
+ * therefore penalise 18 points off the gentlest products in the list. Better to
+ * miss an unusual spelling than to flag a barrier cream as drying.
+ */
+const INCI_PATTERNS: [ActiveId, RegExp][] = [
+  ["retinol", /\bretinol\b|\bretinyl\b|\bretinal(?:dehyde)?\b/i],
+  ["salicylic-acid", /\bsalicylic acid\b|\bbetaine salicylate\b/i],
+  ["niacinamide", /\bniacinamide\b/i],
+  ["alcohol-denat", /\balcohol denat\b|\bsd alcohol\b|\bdenatured alcohol\b|\bethanol\b/i],
+  ["fragrance", /\bparfum\b|\bfragrance\b|\blinalool\b|\blimonene\b/i],
+  ["sulfates", /\bsodium lauryl sulfate\b|\bsodium laureth sulfate\b|\bsls\b/i],
+];
+
+function activesFromInci(inci: string): ActiveId[] {
+  return INCI_PATTERNS.filter(([, re]) => re.test(inci)).map(([id]) => id);
+}
+
 function activesOf(product: CatalogProduct): ActiveId[] {
-  return PRODUCT_ACTIVES[product.id] ?? [];
+  const known = PRODUCT_ACTIVES[product.id];
+  if (known) return known;
+  /* `ingredients`, NOT `description` — the latter is cut to 240 for the confirm
+     card, and an INCI list is ordered by concentration, so the cut takes the
+     fragrance and the preservatives with it. */
+  return product.ingredients ? activesFromInci(product.ingredients) : [];
 }
 
 /**
@@ -318,7 +358,12 @@ export type SavedCheck = {
   id: string;
   /** ISO date the check was run */
   date: IsoDate;
-  productIds: string[];
+  /** ⚠️ THE PRODUCTS, NOT THEIR IDS. A checked product can be a live Open
+   *  Beauty Facts result that is not in `CATALOG`, so an id is no longer enough
+   *  to get one back. The SCORES are still not stored — that rule is about
+   *  derived values, and every number on `/check/results` still comes out of
+   *  `analyse()` on read. */
+  products: CatalogProduct[];
 };
 
 /** "18 August 2026" — the format on a history row. */
@@ -333,9 +378,17 @@ export function formatCheckDate(iso: IsoDate): string {
 }
 
 export function productsOf(check: SavedCheck): CatalogProduct[] {
-  return check.productIds
-    .map(productById)
-    .filter((p): p is CatalogProduct => Boolean(p));
+  return check.products;
+}
+
+/** The seeded checks are authored by catalogue id, because that is what is
+ *  readable in a fixture; they are resolved to products once, here. */
+function demoCheck(id: string, date: IsoDate, ids: string[]): SavedCheck {
+  return {
+    id,
+    date,
+    products: ids.map(productById).filter((p): p is CatalogProduct => Boolean(p)),
+  };
 }
 
 /* ---------------------------------------------------------------------------
@@ -353,27 +406,21 @@ export function productsOf(check: SavedCheck): CatalogProduct[] {
    -------------------------------------------------------------------------- */
 
 export const DEMO_CHECKS: SavedCheck[] = [
-  {
-    id: "demo-1",
-    date: "2026-08-18",
-    productIds: [
-      "the-ordinary-niacinamide",
-      "lrp-retinol-b3-serum",
-      "paulas-choice-bha-exfoliant",
-      "cerave-moisturizing-cream-16",
-      "cerave-foaming-cleanser",
-    ],
-  },
-  {
-    id: "demo-2",
-    date: "2026-08-11",
-    productIds: ["lrp-retinol-b3-serum", "the-ordinary-niacinamide"],
-  },
-  {
-    id: "demo-3",
-    date: "2026-08-02",
-    productIds: ["cerave-moisturizing-cream-16", "cerave-am-lotion-spf30"],
-  },
+  demoCheck("demo-1", "2026-08-18", [
+    "the-ordinary-niacinamide",
+    "lrp-retinol-b3-serum",
+    "paulas-choice-bha-exfoliant",
+    "cerave-moisturizing-cream-16",
+    "cerave-foaming-cleanser",
+  ]),
+  demoCheck("demo-2", "2026-08-11", [
+    "lrp-retinol-b3-serum",
+    "the-ordinary-niacinamide",
+  ]),
+  demoCheck("demo-3", "2026-08-02", [
+    "cerave-moisturizing-cream-16",
+    "cerave-am-lotion-spf30",
+  ]),
 ];
 
 /* ---------------------------------------------------------------------------

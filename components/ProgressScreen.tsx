@@ -10,8 +10,9 @@ import { SymptomTrend } from "./SymptomTrend";
 import { useInvestigation } from "./InvestigationProvider";
 import { formatLong } from "@/lib/date";
 import {
+  checkInsFor,
+  currentLine,
   dayNumber,
-  demoCheckIns,
   lastCheckInLabel,
   progressView,
 } from "@/lib/progress";
@@ -42,13 +43,16 @@ import {
  * about selection controls rendering pre-ticked, and there are no controls here.
  * `lib/progress.ts` has the full reasoning and the fixed demo clock.
  *
- * ⚠️ THE CHECK-IN SERIES IS SEEDED, NOT REAL — see `lib/progress.ts`. CHECK is
- * not built, so nothing writes check-ins yet.
+ * ⚠️ `Check in today` IS WIRED, AND IT DOES NOT GO TO THE CHECK TAB. It leads to
+ * `/progress/check-in` — one question, one answer, back here. The handoff put
+ * the daily check-in in the CHECK section as `Check-in chat`, where nothing in
+ * the app could reach it and where it would have lit the tab that owns the
+ * product compatibility check; `components/CheckIn.tsx` has the full argument.
  *
- * ⚠️ `Check in today` GOES NOWHERE YET, on purpose. It leads to `Check-in chat`,
- * which has no route — the same reason the nav's own Check item is still an
- * inert button. Wire both in one pass when CHECK lands. The empty state's
- * `Start investigation` DOES have a destination and is a real link.
+ * ⚠️ THE SERIES IS THE USER'S OWN, PLUS THE SEED ONLY WHILE THIS IS THE DEMO.
+ * It used to be seeded unconditionally, which was defensible only while nothing
+ * could write a check-in. Something can now, so a real investigation plots
+ * exactly what was recorded and the demo merges the two — see `checkInsFor`.
  *
  * ⚠️ THE COMP'S UNLABELLED TOP-RIGHT ICON IS DELIBERATELY ABSENT. Listed in the
  * handoff's own deviations: "Progress empty/active drop the unlabelled top-right
@@ -56,8 +60,10 @@ import {
  */
 export function ProgressScreen() {
   const { answers } = useInvestigation();
-  const { start, today, skinType, tendencies, current } = progressView(answers);
-  const checkIns = demoCheckIns(start, today);
+  const view = progressView(answers);
+  const { start, today, skinType, tendencies } = view;
+  const checkIns = checkInsFor(answers, view);
+  const current = currentLine(answers, view);
   const lastCheckIn = lastCheckInLabel(checkIns, today);
 
   return (
@@ -83,8 +89,9 @@ export function ProgressScreen() {
 
       <SymptomTrend className={styles.trend} checkIns={checkIns} />
 
-      {/* no href — see the note above */}
-      <Button className={styles.cta}>Check in today</Button>
+      <Button href="/progress/check-in" className={styles.cta}>
+        Check in today
+      </Button>
 
       {lastCheckIn && (
         <p className={`${styles.lastCheckIn} t-caption`}>{lastCheckIn}</p>
@@ -120,13 +127,13 @@ export function ProgressEmpty() {
       center
     >
       <div className={styles.empty}>
-        <Orb className="reveal-hero" />
+        <Orb animateIn />
         <h2 className="t-h4-h3">No active investigation</h2>
         <p className={`${styles.emptyText} t-body3-body2`}>
           Start an investigation to track your skin&rsquo;s progress over time.
         </p>
         <Button href="/investigation/start" className={styles.emptyCta}>
-          Start investigation
+          Create skin profile
         </Button>
       </div>
     </HubScreen>

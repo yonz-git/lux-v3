@@ -24,7 +24,7 @@ import {
   type SavedCheck,
 } from "@/lib/check";
 import { skinProfile } from "@/lib/demo";
-import { type CatalogProduct, fullName, productById } from "@/lib/products";
+import { fullName } from "@/lib/products";
 
 /**
  * `Check results` (476:2841) at `/check/results`.
@@ -55,7 +55,7 @@ import { type CatalogProduct, fullName, productById } from "@/lib/products";
  * and matches Check results".
  *
  * ⚠️ THE SCORES ARE COMPUTED, NOT STORED. A `SavedCheck` holds only the date and
- * the product ids; everything else is derived on read, so a check the user just
+ * the products; everything else is derived on read, so a check the user just
  * ran and a seeded one go through the same code and neither can drift from the
  * model in lib/check.ts.
  */
@@ -75,9 +75,7 @@ export function CheckResults() {
 
   /* While the tray is open it edits the live basket; until then it mirrors the
      check on screen. See `openEditor`. */
-  const basket = (answers.checkBasket ?? [])
-    .map(productById)
-    .filter((p): p is CatalogProduct => Boolean(p));
+  const basket = answers.checkBasket ?? [];
 
   /**
    * ⚠️ `Edit` LOADS *THIS* CHECK INTO THE BASKET, THEN OPENS THE TRAY IN PLACE.
@@ -94,10 +92,7 @@ export function CheckResults() {
    * Seeding the basket from the check on screen is what makes Edit mean edit.
    */
   function openEditor() {
-    setAnswer(
-      "checkBasket",
-      products.map((p) => p.id)
-    );
+    setAnswer("checkBasket", products);
     setEditing(true);
   }
 
@@ -153,6 +148,7 @@ export function CheckResults() {
               : "No conflicts found"
           }
           badge={primary ? BAND_LABEL[band] : undefined}
+          badgeBand={primary ? band : undefined}
           description={
             primary
               ? `This product contains ${primary.ingredient.name}, which is the biggest problem for your skin profile in this set.`
@@ -192,7 +188,7 @@ export function CheckResults() {
         products={basket}
         submitLabel="Re-run check"
         onRemove={(id) =>
-          setAnswer("checkBasket", (prev) => (prev ?? []).filter((x) => x !== id))
+          setAnswer("checkBasket", (prev) => (prev ?? []).filter((p) => p.id !== id))
         }
         onAddAnother={() => {
           /* the search list lives on the builder, and the basket is already

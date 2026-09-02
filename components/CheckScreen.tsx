@@ -26,13 +26,13 @@ import { skinProfile } from "@/lib/demo";
  * the BODY as H3/H2 with a Body 3/Body 2 subtitle: the dashboard header,
  * pattern C, the same one `/progress` uses.
  *
- * ⚠️ THE DAILY CHECK-IN IS MISSING FROM THIS SECTION AND THAT IS A REAL GAP.
- * The PROGRESS handoff assigns `Check-in chat` to the Check nav section — "it
- * IS the check-in" — but this screen offers only "Start a check" and "View
- * previous checks", so nothing in the app reaches it, and Progress's
- * `Check in today` has nowhere to go either. The tab owns two unrelated jobs
- * and advertises one. Out of scope for this pass by decision, so the second job
- * is NAMED rather than silently dropped — see `.roadmap` in the stylesheet.
+ * ⚠️ THE DAILY CHECK-IN IS NOT HERE, AND THAT IS NO LONGER A GAP. The PROGRESS
+ * handoff assigns `Check-in chat` to this section — "it IS the check-in" — and
+ * this screen never offered it, so for a while the tab owned two unrelated jobs
+ * and advertised one. Resolved by moving the job rather than by adding a third
+ * CTA here: the daily check-in ships at `/progress/check-in`, reached from
+ * Progress's `Check in today`, and lights `Progress`. This tab keeps exactly
+ * one meaning — the product compatibility check. See `components/CheckIn.tsx`.
  */
 export function CheckScreen() {
   const { answers } = useInvestigation();
@@ -54,7 +54,7 @@ export function CheckScreen() {
       }
     >
       <div className={styles.hero}>
-        <Orb className="reveal-hero" />
+        <Orb animateIn />
         <h2 className="t-h4-h3">Check your products</h2>
         <p className={`${styles.text} t-body3-body2`}>
           Check how your products may suit your skin and work together in the
@@ -66,14 +66,6 @@ export function CheckScreen() {
         <Link href="/check/history" className={`${styles.link} t-body3`}>
           View previous checks
         </Link>
-
-        {/* ⚠️ NOT IN FIGMA — see the doc comment. A stated roadmap line, not a
-            control: a disabled button for something that was never built reads
-            as broken, while saying nothing at all hides that this tab is
-            supposed to hold two things. */}
-        <p className={`${styles.roadmap} t-caption`}>
-          Daily check-in — coming next
-        </p>
       </div>
     </HubScreen>
   );
@@ -101,7 +93,7 @@ export function CheckNoProfile() {
       center
     >
       <div className={styles.hero}>
-        <Orb className="reveal-hero" />
+        <Orb animateIn />
         <h2 className="t-h4-h3">No skin profile yet</h2>
         <p className={`${styles.text} t-body3-body2`}>
           Check how your products may suit your skin and work together in the

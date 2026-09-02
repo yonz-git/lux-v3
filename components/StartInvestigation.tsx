@@ -8,9 +8,9 @@ import { TextField } from "./TextField";
 import { FaceDiagram, FACE_REGION_IDS } from "./FaceDiagram";
 import { Button } from "./Button";
 import { PlusIcon, CloseIcon, CameraIcon } from "./icons";
+import { SelfieSheet } from "./SelfieSheet";
 import { useInvestigation } from "./InvestigationProvider";
 import { toggleMulti } from "@/lib/answers";
-import { stepFor } from "@/lib/flow";
 
 /**
  * 01 + 03b combined — Start investigation and Location on one screen. Step 1/5.
@@ -32,9 +32,12 @@ import { stepFor } from "@/lib/flow";
  * in. Adding the bubble back here would just repeat what the layout already
  * says.
  *
- * "Take a photo" leads to the selfie capture, which SHARES this step number —
- * it is a sub-step of this screen, not a step of its own, so the progress
- * track does not move.
+ * ⚠️ "Take a photo" OPENS AN OVERLAY, IT DOES NOT NAVIGATE — decided here, not
+ * in Figma. The selfie capture used to be `/investigation/selfie`, a routed
+ * screen that shared this step's number so the track did not move. A sub-step
+ * that is really an aside to the question on screen is what the modal tray is
+ * for: routing away scrolled the symptoms and regions just picked out of
+ * sight, and the capture is one tap. See `components/SelfieSheet.tsx`.
  *
  * NOTHING starts selected. The Figma frames show options already chosen
  * because a comp has to show a filled-in state; the prototype starts empty and
@@ -90,6 +93,7 @@ export function StartInvestigation() {
       return toggleMulti(current, id);
     });
 
+  const [photoOpen, setPhotoOpen] = useState(false);
   const [otherOpen, setOtherOpen] = useState(false);
   const [otherText, setOtherText] = useState("");
   const inputRef = useRef<HTMLInputElement>(null);
@@ -198,13 +202,14 @@ export function StartInvestigation() {
 
       <Button
         variant="secondary"
-        href={stepFor("selfie").href}
+        onClick={() => setPhotoOpen(true)}
         icon={<CameraIcon />}
         className={styles.takePhoto}
-        fullWidth
       >
         Take a photo
       </Button>
+
+      <SelfieSheet open={photoOpen} onClose={() => setPhotoOpen(false)} />
     </QuestionScreen>
   );
 }

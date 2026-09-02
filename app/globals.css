@@ -92,6 +92,87 @@
      `#fff` in the module so the exception is greppable and so the module is not
      reaching into the primitives block, which non-negotiable 2 forbids. */
   --color-text-on-data-inverse: #ffffff;
+
+  /* ⚠️ NOT IN FIGMA, BY EXPLICIT REQUEST — the two result pills that needed a
+     fill of their own. `02 Color` has no semantic role for either, so both are
+     named here rather than left as raw hex (or as a reach into the primitives
+     block, which non-negotiable 2 forbids) — declared, greppable, and to be
+     raised in Figma.
+
+     `brand-soft` is indigo/300, the moderate-likelihood pill on
+     `ResultCards`' ingredients card: the high one is `bg/brand` and the two
+     have to read as one scale, which a neutral frost pill did not. White on it
+     measures 3.52:1 — under AA for a 12px label, the same open question the
+     CompatCard band pills already carry. */
+  --color-bg-brand-soft: #8e80bc;
+
+  /* bg/frost-light-muted — ⚠️ DECLARED HERE, NOT IN `tokens.css`, and NOT IN
+     FIGMA. The face-diagram region pills need an OPAQUE fill (the face outline
+     passes behind them, and a translucent pill shows the ellipse through
+     itself), but `bg/frost-light` (#f4feff) is the brightest light value in the
+     app and on the sage `surface/data` card it reads as a white sticker. This
+     is the same near-white one step down — literally the value `bg/nav` and
+     `bg/bubble-ai` already carry, i.e. the LUX opaque light mint, written out
+     rather than aliased to either of them so that retuning the nav or the AI
+     bubble does not silently move the pills. Raise it in Figma as a real
+     frost-light-muted role; the DS has the colour three times and no name for
+     it. */
+  --color-bg-frost-light-muted: #dbeded;
+
+  /* border/chip — ⚠️ DECLARED HERE, NOT IN `tokens.css`, and NOT IN FIGMA. The
+     Chip component has no stroke in Figma, which works only while the chip is
+     the brightest thing on its surface. It is not: measured on 01, the chip
+     fill (#dbeded) against the composited question card (#e3eff2) is
+     **1.03:1**, so the pill had no boundary at all and the row read as floating
+     labels. A chip is a CONTROL, so its boundary is what WCAG 1.4.11 asks 3:1
+     of — nothing else here can carry it, since the fill cannot get darker
+     without becoming the loudest element again.
+
+     #6b8b8d is the sage ramp continued past its last step (400, #a7c0c1) rather
+     than a new hue: it measures **3.14:1** on the light card and 2.20:1 on the
+     sage `FaceDiagram` card, where the fill is already doing most of the work
+     (1.38:1 there, and the surface is saturated enough to separate). The
+     neutral border tokens cannot reach it — border/subtle is 1.08:1 and
+     border/default 1.35:1 against that card, i.e. both invisible — and going
+     darker (#577476, a true 3:1 on BOTH surfaces) stops reading as a hairline
+     and starts reading as an outlined pill, which is louder than the calm the
+     motion board asks for. Raise it in Figma as a real border role; the ramp
+     wants a sage/500 anyway. */
+  --color-border-chip: #6b8b8d;
+
+  /* gradient/face-form + effect/face-form — ⚠️ DECLARED HERE, NOT IN
+     `tokens.css`, and NOT IN FIGMA. The face-diagram illustration (see
+     `.outline` in FaceDiagram.module.css for the why). Declared as semantic
+     names here rather than written into the module because non-negotiable 2
+     forbids a component reaching into the `01 Primitives` block, and this
+     recipe is built from the sage ramp: the card's own colours, so the face
+     reads as that surface lifting rather than as a new one arriving. Raise the
+     illustration in Figma — the DS has no face artwork at all, which is why
+     the comp fell back to a stroked ellipse. */
+  --gradient-face-form: radial-gradient(
+    108% 100% at 33% 21%,
+    var(--color-sage-200) 0%,
+    var(--color-sage-300) 26%,
+    var(--color-sage-400) 62%,
+    var(--color-sage-400) 100%
+  );
+  /* the deep edge is carried by the ink inset rather than by a further ramp
+     step: the sage primitives stop at 400, and lighting the form is what
+     darkens it, not a new colour */
+  --shadow-face-form: 0 16px 34px -14px rgba(46, 36, 71, 0.28),
+    inset -14px -18px 36px rgba(46, 36, 71, 0.2),
+    inset 10px 12px 26px rgba(255, 255, 255, 0.26);
+
+  /* surface/face-tier + effect/face-tier — the contour levels on the face form
+     (see `.tier` in FaceDiagram.module.css). ONE wash, not one value per level:
+     it is translucent, so each level takes the dome's own lighting through it
+     and the tint accumulates toward the summit by itself — five hand-picked
+     fills would flatten the falloff the base gradient draws and could drift
+     apart the moment the ramp moves. The colour is sage-100; the depth is in
+     the shadow, the reading is in the edge. */
+  --color-surface-face-tier: rgba(225, 235, 233, 0.22);
+  --shadow-face-tier: 0 5px 12px -5px rgba(46, 36, 71, 0.2),
+    inset 0 1px 0 rgba(255, 255, 255, 0.3);
 }
 
 html,
@@ -742,6 +823,22 @@ button {
   /* hangs from the orb above it, so there is no lateral drift as it scales */
   transform-origin: top center;
   animation: lux-bubble-ask 800ms var(--ease-standard) 1000ms backwards;
+}
+
+/* EVERY bubble in the app arrives this way — `ChatBubble` applies this class
+   itself, so a new screen cannot forget it and no screen can invent a second
+   bubble entrance. Same keyframes and same 800ms as Welcome's opening bubble;
+   only the delay differs, because Welcome's 1000ms is it waiting for the orb to
+   finish assembling and nothing else in the app has an orb to wait for. A
+   screen retunes the beat with --bubble-enter-delay (see YourProducts, where
+   two briefing bubbles arrive one after the other rather than together).
+
+   `backwards`, never `both` — see the reveal block above for why an opacity
+   animation left in effect breaks z-index on the whole screen. */
+.bubble-enter {
+  transform-origin: top center;
+  animation: lux-bubble-ask 800ms var(--ease-standard)
+    var(--bubble-enter-delay, 0ms) backwards;
 }
 
 /* 00 Welcome swaps its opening question for the follow-up line in place,

@@ -2,7 +2,13 @@
 
    empty:  orb 129 -> 16 spacer -> title -> description -> 16 spacer -> CTA,
            the whole block centred, no card at either breakpoint.
-   filled: heading (+ subtitle) -> 24 -> category rows 56 tall, gap 12. */
+   filled: heading (+ subtitle) -> 24 -> category rows 56 tall, gap 12 -> 16
+           -> add-more.
+
+   ⚠️ A CATEGORY ROW IS A DISCLOSURE, NOT A LINK — it opens the group's product
+   cards in place. See MyProducts.tsx. The row itself is unchanged: still 56,
+   still padding 0/18, still the frosted-row recipe; only the trailing glyph
+   swapped from chevron-right to a rotating chevron-down. */
 
 .empty {
   display: flex;
@@ -42,27 +48,73 @@
   gap: var(--space-md);
 }
 
-/* 56 tall, padding 16/18, gap 12 */
+/* the row and, when open, its panel — so the gap between two categories stays
+   the list's 12 no matter which of them is expanded */
+.group {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-md);
+}
+
+/* 56 tall, padding 16/18, gap 12.
+
+   ⚠️ THE ROW IS `surface/frost-nav`, NOT `frost-light` — NOT IN FIGMA.
+   579:1607 draws every row on frost-light, which was correct while the row was
+   a LINK to a pushed screen. It opens its products IN PLACE now, so the header
+   and the cards it discloses sit on the same screen at the same time — and
+   `ProductAccordionCard` is frost-light too, so an open group read as one
+   undifferentiated pale stack with no edge saying which row owned which cards.
+   frost-nav (#dbeded @88%) is the app's existing darker frosted fill, already
+   the pill the nav and the search field share, so this is a token swap inside
+   one family rather than a new surface. Same recipe otherwise: same radius,
+   same frosted-row inner shadow, same blur, same 56. Its opaque counterpart
+   `bg/nav` is the reduced-transparency fallback, the pairing that token already
+   has. */
 .category {
   display: flex;
   align-items: center;
   gap: var(--space-md);
+  width: 100%;
   min-height: 56px;
   padding: 0 18px;
-  text-decoration: none;
+  text-align: left;
 
   border-radius: var(--radius-lg);
-  background: var(--color-surface-frost-light);
+  background: var(--color-surface-frost-nav);
   box-shadow: var(--shadow-frosted-row);
   -webkit-backdrop-filter: blur(var(--blur-card));
   backdrop-filter: blur(var(--blur-card));
 }
 
-/* the name takes the slack so the count and chevron stay pinned right */
-.categoryName {
+/* name + window travel together and take the slack, so the count and chevron
+   stay pinned right. Baseline-aligned rather than centred: two different type
+   sizes on one line sit on the same baseline, exactly as `Your products` sets
+   its group headers. */
+.copy {
   flex: 1;
   min-width: 0;
+  display: flex;
+  align-items: baseline;
+  gap: var(--space-sm);
+}
+
+.categoryName {
+  min-width: 0;
   color: var(--color-text-primary);
+  /* the name yields first — the window is the shorter, fixed string, and a
+     truncated "4+ wee" would be worse than a truncated category name */
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+/* ⚠️ THE ROW MUST STAY 56. The window sits BESIDE the name on one line, never
+   under it — a second line would push the row to ~72 and break the comp's
+   height on the one screen that shows four of them stacked. */
+.window {
+  flex: none;
+  color: var(--color-text-muted);
+  white-space: nowrap;
 }
 
 .count {
@@ -70,16 +122,46 @@
   color: var(--color-text-muted);
 }
 
+/* one glyph, two states — `chevron-up` in Figma is a chevron-down at 180°.
+   A rotation, not a bounce: LUX does not overshoot. */
 .chevron {
   flex: none;
   width: var(--size-icon-sm);
   height: var(--size-icon-sm);
   color: var(--color-text-primary);
+  transition: transform var(--duration-base) var(--ease-standard);
+}
+
+.group[data-open="true"] .chevron {
+  transform: rotate(180deg);
+}
+
+/* the group's cards, at the list's own width — no indent. The rotated chevron
+   and the gap above the next row carry the nesting; insetting these would put
+   the product cards off the 392 / 640 column every other card sits on. */
+.panel {
+  display: flex;
+  flex-direction: column;
+}
+
+.stack {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-md);
+}
+
+/* carried over from the deleted pushed view, which is also where the filled hub
+   was missing an add affordance entirely */
+.addMore {
+  margin-top: var(--space-lg); /* 16 */
 }
 
 @media (prefers-reduced-transparency: reduce) {
   .category {
-    background: var(--color-bg-surface-frost);
+    background: var(--color-bg-nav);
     -webkit-backdrop-filter: none;
     backdrop-filter: none;
   }

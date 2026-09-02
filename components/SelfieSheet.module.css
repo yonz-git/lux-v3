@@ -1,19 +1,20 @@
-/* 03b — Selfie capture. Figma mobile 487:834 / desktop 490:1041.
+/* 03b — Selfie capture, as the tray overlay off step 1.
+   Figma mobile 487:834 / desktop 490:1041.
    viewfinder 392x400: surface/data + the frosted-data effect + radius/2xl —
-   the one sage surface in an otherwise light flow, because it stands in for a
-   camera feed. Guide oval 190x250, 2px effect/rim-highlight at 90%. */
+   it stands in for a camera feed. Guide oval 190x250, 2px effect/rim-highlight
+   at 90%.
+
+   ⚠️ EVERY PIECE OF TEXT HERE IS `text/on-data`. The frame drew these on the
+   light canvas; inside `Sheet` they sit on the sage tray, which takes the
+   on-data colours — the same treatment `AddProductMethodSheet`'s scan view
+   already uses for the identical viewfinder.
+
+   The tray is itself a centred flex column with a 20 gap, so nothing here
+   lays out the stack — only the blocks inside it. */
 
 .question {
-  color: var(--color-text-primary);
+  color: var(--color-text-on-data);
   text-align: center;
-}
-
-.columns {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: var(--space-xl);
-  margin-top: var(--space-2xl);
 }
 
 .viewfinder {
@@ -48,7 +49,6 @@
   border-radius: 50%;
 }
 
-/* WHITE text: this is a sage surface, so it takes the on-data colours */
 .captured {
   position: absolute;
   bottom: var(--space-xl);
@@ -98,22 +98,14 @@
 }
 
 .helper {
-  color: var(--color-text-secondary);
+  color: var(--color-text-on-data-secondary);
   text-align: center;
 }
 
 @media (min-width: 1024px) {
-  /* Figma 490:1041 — `columns`: viewfinder 420 left, controls 364 right,
-     gap 40, controls vertically centred against the 340-tall viewfinder. */
-  .columns {
-    flex-direction: column;
-    justify-content: center;
-    align-items: center;
-    gap: var(--space-4xl);
-  }
-
-  /* the desktop viewfinder is a FIXED 420x340, not the full card width, and
-     its oval is 170x240 */
+  /* the desktop viewfinder is a FIXED 420x340, not the full tray width, and
+     its oval is 170x240. The dialog is 640 wide with 48 padding, so 420 sits
+     centred inside 544 with room either side. */
   .viewfinder {
     width: 420px;
     aspect-ratio: 420 / 340;
@@ -126,7 +118,6 @@
   }
 
   .controls {
-    width: 364px;
     gap: var(--space-2xl); /* 24 on desktop, 16 on mobile */
   }
 }

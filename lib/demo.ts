@@ -39,8 +39,20 @@ export const DEMO_PROFILE = {
    * inventing. Carrying both keeps one profile across the app.
    */
   tendencies: ["Sensitive", "Acne-prone"],
-  /** step 1's symptoms placed on step 1's locations — see currentSymptoms() */
-  current: "Current: Redness, Itching on Cheeks",
+  /**
+   * The two halves of the profile card's `Current:` line, as DATA.
+   *
+   * ⚠️ IT USED TO BE THE FINISHED STRING — `current: "Current: Redness, Itching
+   * on Cheeks"` — transcribed from the comp beside a doc comment saying it was
+   * "step 1's symptoms placed on step 1's locations". It was not; nothing
+   * assembled it, so the demo carried a sentence while every other path
+   * assembled one, and the two could drift. The daily check-in is what forced
+   * the issue: it reports a fresh location each day, and there is no way to put
+   * a new location into a baked sentence. `formatCurrent` in lib/progress.ts is
+   * the single assembler now and this is one of its three inputs.
+   */
+  symptoms: ["Redness", "Itching"],
+  locations: ["Cheeks"],
 } as const;
 
 export type SkinProfile = {
@@ -93,10 +105,16 @@ export function skinProfile(a: Answers): SkinProfile {
    (476:2841) analyses, so the library, the seeded check history and the
    designed results screen are all the same set.
 
-   ⚠️ YOUR LIBRARY IS NOT PART OF ONE INVESTIGATION. Step 5 reads this too, and
-   that is correct rather than a leak: products you use persist across
-   investigations, and step 5 is where you ADD to the list, not where the list
-   begins. Walking the flow adds to these rather than starting from nothing.
+   ⚠️ STEP 5 DOES *NOT* READ THIS, AND THAT IS AN OPEN QUESTION. This comment
+   used to claim it did. It does not: `YourProducts` reads `answers.products`
+   raw, on its own documented reasoning that the add screen has to arrive empty
+   so the user can watch `groupProducts` grow headers as they add. Both
+   positions are defensible and they contradict each other — a library that
+   persists across investigations argues step 5 should open on these five; the
+   live-sorting demo argues it must open on nothing. The visible cost of the
+   split is that `/products` lists five products and "Add more products" lands
+   on a screen saying "No products added yet". Left as-is rather than decided
+   silently. Every OTHER owned-products reader goes through `ownedProducts`.
    -------------------------------------------------------------------------- */
 
 export const DEMO_PRODUCTS: SavedProduct[] = [
@@ -148,14 +166,28 @@ export const DEMO_PRODUCTS: SavedProduct[] = [
 ];
 
 /**
- * The products the user owns — theirs once they have added any, else the seeded
- * library.
+ * The products the user owns — theirs once they have touched the list, else the
+ * seeded library.
  *
  * ⚠️ A FALLBACK, NOT A MERGE, and not a write into the store. The moment the
  * user adds their first product the demo library disappears whole rather than
  * leaving five strangers mixed in with it.
+ *
+ * ⚠️ THE SIGNAL IS `undefined` vs `[]`, NOT `length`. It used to read
+ * `own.length > 0 ? own : DEMO_PRODUCTS`, which cannot tell "has never touched
+ * the list" from "has emptied it" — so removing your last product resurrected
+ * all five seeded ones. An absent key means untouched; an array, even an empty
+ * one, means the list is theirs and is allowed to be empty.
+ *
+ * ⚠️ EVERY SCREEN THAT SHOWS OWNED PRODUCTS MUST COME THROUGH HERE. Reading
+ * `answers.products` directly is how `/products` came to count the seeded
+ * library on its category rows while `/products/[bucket]` — the list behind
+ * those very rows — read the raw store and rendered "No products in this list
+ * yet". The hub said 2, the list said 0, and adding a product looked like it
+ * had not saved. `AddProductMethodSheet` and `CheckBuilder` are the exceptions
+ * and must stay raw: they compute what the USER added, and a seeded product is
+ * not something the user added.
  */
 export function ownedProducts(a: Answers): SavedProduct[] {
-  const own = a.products ?? [];
-  return own.length > 0 ? own : DEMO_PRODUCTS;
+  return a.products ?? DEMO_PRODUCTS;
 }

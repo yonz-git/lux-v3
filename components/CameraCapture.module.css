@@ -1,0 +1,85 @@
+/* The shared viewfinder + shutter — see CameraCapture.tsx.
+
+   Moved verbatim out of AddProductMethodSheet.module.css, which is where the
+   recipe lived while the products tray was the only place it appeared besides
+   the selfie screen. Nothing here changed in the move. */
+
+.viewfinder {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  aspect-ratio: 392 / 300;
+  max-height: 300px;
+
+  border-radius: var(--radius-2xl);
+  background: var(--color-surface-data);
+  box-shadow: var(--shadow-frosted-data);
+  -webkit-backdrop-filter: blur(var(--blur-card));
+  backdrop-filter: blur(var(--blur-card));
+}
+
+.guide {
+  height: calc(160 / 300 * 100%);
+  aspect-ratio: 300 / 200;
+  border: var(--border-width-thick) dashed var(--color-effect-rim-highlight);
+  border-radius: var(--radius-lg);
+}
+
+.captured {
+  position: absolute;
+  bottom: var(--space-lg);
+  color: var(--color-text-on-data);
+}
+
+.copy {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--space-sm);
+  text-align: center;
+  color: var(--color-text-on-data);
+}
+
+.helper {
+  color: var(--color-text-on-data-secondary);
+}
+
+.shutterRow {
+  display: flex;
+  justify-content: center;
+}
+
+.shutter {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 64px;
+  height: 64px;
+  padding: var(--space-sm);
+
+  border-radius: var(--radius-full);
+  background: var(--color-bg-glass);
+  box-shadow: var(--shadow-md);
+
+  transition: opacity var(--duration-fast) var(--ease-standard);
+}
+
+.shutter:hover {
+  opacity: 0.8;
+}
+
+@media (hover: none) {
+  .shutter:hover {
+    opacity: 1;
+  }
+}
+
+.shutterCore {
+  flex: none;
+  width: 48px;
+  height: 48px;
+  border-radius: var(--radius-full);
+  background: var(--color-effect-rim-highlight);
+}

@@ -137,10 +137,19 @@ export type CatalogProduct = {
   brand: string;
   size: string;
   description?: string;
-  /** A real product photo, when the catalogue entry came from Open Beauty
-   *  Facts. Absent for the local fixture — `ProductThumb`/`ProductCard` fall
-   *  back to the camera-glyph placeholder. See lib/openBeautyFacts.ts. */
-  imageUrl?: string;
+  /**
+   * The FULL INCI list, when one is known. `description` is the same text cut
+   * to 240 for the confirm card; this is what the checker reads.
+   *
+   * ⚠️ THE MODEL MUST NOT READ THE TRUNCATED COPY. Fragrance, preservatives and
+   * the other low-percentage actives sit at the END of an INCI list by
+   * regulation — they are ordered by concentration — so a 240-character cut
+   * removes exactly the ingredients `activesFromInci` is looking for. Reading
+   * `description` scored a fragranced product as fragrance-free.
+   */
+  ingredients?: string;
+  /* ⚠️ NO `imageUrl`. Every product is DRAWN — see `ProductArt`, and the note
+     in lib/openBeautyFacts.ts on why the API's photos are not read. */
 };
 
 /** A product the user has added: a catalogue entry plus their answers. */

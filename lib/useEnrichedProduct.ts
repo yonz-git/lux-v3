@@ -5,11 +5,17 @@ import { fullName, type CatalogProduct } from "./products";
 import { lookupOpenBeautyFacts } from "./openBeautyFacts";
 
 /**
- * Fills in a real photo and ingredient list for a catalogue product that
- * doesn't have one yet — the scan flow's hardcoded `SCAN_MATCH`, or a search
- * result that fell back to the offline fixture. Products that already carry
- * an `imageUrl` (a live Open Beauty Facts search result) pass through
+ * Fills in a real INCI ingredient list for a catalogue product that doesn't
+ * have one yet — the scan flow's hardcoded `SCAN_MATCH`, or a search result
+ * that fell back to the offline fixture. Products that already carry a
+ * `description` (a live Open Beauty Facts search result) pass through
  * unchanged with no extra request.
+ *
+ * ⚠️ INGREDIENTS ONLY — IT USED TO FETCH A PHOTO TOO, and keyed its skip on
+ * `imageUrl`. Photos are no longer read from the API at all (see
+ * lib/openBeautyFacts.ts); the artwork is drawn from the product itself and
+ * needs no request. The description is the one field left that a lookup can
+ * add, so it is what the skip now tests.
  *
  * Used by the add-product tray's confirm view (the old `04 — Product match` /
  * `04 — Confirm product` screens, now one view inside the tray)
@@ -21,14 +27,14 @@ export function useEnrichedProduct(product: CatalogProduct): CatalogProduct {
 
   useEffect(() => {
     setEnriched(product);
-    if (product.imageUrl) return; // already real — no lookup needed
+    if (product.description) return; // already real — no lookup needed
 
     const controller = new AbortController();
     lookupOpenBeautyFacts(fullName(product), { signal: controller.signal }).then((match) => {
       if (controller.signal.aborted || !match) return;
       setEnriched((prev) =>
         prev.id === product.id
-          ? { ...prev, imageUrl: match.imageUrl, description: match.description ?? prev.description }
+          ? { ...prev, description: match.description ?? prev.description }
           : prev
       );
     });

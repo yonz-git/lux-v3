@@ -1,8 +1,7 @@
 import styles from "./ProductCard.module.css";
 import { Tag } from "./Tag";
-import { CameraIcon } from "./icons";
+import { ProductArt } from "./ProductArt";
 import { fullName, type CatalogProduct } from "@/lib/products";
-import { useProductPhoto } from "@/lib/useProductPhoto";
 
 /**
  * The big product card on `04 — Confirm product` (577:1430) and
@@ -12,14 +11,20 @@ import { useProductPhoto } from "@/lib/useProductPhoto";
  * size, and — on Confirm only — a description. Product match adds a "N% match"
  * `Tag` above the image and drops the description.
  *
- * ⚠️ THE IMAGE WELL WAS A PLACEHOLDER. There was no product imagery in the
- * file and no product icon in the design system, so both comps draw a camera
- * glyph on `bg/surface-frost` — still the fallback here when `product` has no
- * `imageUrl`. A product sourced from Open Beauty Facts (a live search result,
- * or a scan match run through `useEnrichedProduct`) carries a real photo,
- * which fills the same OPAQUE well instead. It stays opaque either way — a
- * frosted well would show the canvas gradient through the photo. Same
- * broken/near-blank fallback as ProductThumb, via `useProductPhoto`.
+ * ⚠️ THE IMAGE WELL WAS A CAMERA GLYPH, AND IS NOW A DRAWN VESSEL. There was
+ * no product imagery in the file and no product icon in the design system, so
+ * both comps draw a camera on `bg/surface-frost`. This is the screen that asks
+ * "is this it?" — a camera is the one picture that cannot answer that question,
+ * because it is the same picture for every product. A product sourced from Open
+ * Beauty Facts used to bring a real photo here and that photo used to win.
+ * It no longer does: OBF's images are crowdsourced with no quality gate, so
+ * "is this it?" was being answered by a stub or an angled box about as often
+ * as by a usable front-of-package shot. A drawing that is always the right
+ * vessel in the right brand tint answers it more reliably than a photo that is
+ * sometimes right. See `ProductArt` and lib/openBeautyFacts.ts.
+ *
+ * The well stays OPAQUE — a frosted well would show the canvas gradient
+ * through the artwork.
  */
 export function ProductCard({
   product,
@@ -31,8 +36,6 @@ export function ProductCard({
   matchScore?: number;
   showDescription?: boolean;
 }) {
-  const { showPhoto, onLoad, onError } = useProductPhoto(product.imageUrl);
-
   return (
     <div className={styles.card}>
       {matchScore != null && (
@@ -42,17 +45,7 @@ export function ProductCard({
       )}
 
       <div className={styles.image} aria-hidden="true">
-        {showPhoto ? (
-          <img
-            src={product.imageUrl}
-            alt=""
-            className={styles.photo}
-            onLoad={onLoad}
-            onError={onError}
-          />
-        ) : (
-          <CameraIcon className={styles.glyph} />
-        )}
+        <ProductArt product={product} className={styles.art} />
       </div>
 
       <p className={`${styles.name} t-h5`}>{fullName(product)}</p>

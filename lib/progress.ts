@@ -27,8 +27,31 @@ import type { Answers } from "./answers";
 import { DEMO_PROFILE, skinProfile } from "./demo";
 import { type IsoDate, daysBetween, fromIso, toIso } from "./date";
 
-/** One recorded check-in. `severity` is the reported symptom score, 0–10. */
-export type CheckIn = { date: IsoDate; severity: number };
+/**
+ * One recorded check-in — `Check-in chat` (555:1268), one per day.
+ *
+ * `severity` is the absolute symptom score, 0–10, DERIVED from turn 1's
+ * relative answer by `severityAfter` — see `SKIN_TREND_CHOICES` for why the
+ * question and the storage disagree on purpose.
+ *
+ * `changes` is turn 2's multi-select ("Less redness", "No change", …).
+ * `note` and `photo` are turn 3's optional extras.
+ *
+ * ⚠️ EVERYTHING PAST `severity` IS WRITTEN BUT NOT YET READ, and that is the
+ * comp's own design rather than data invented here: the handoff places
+ * `Check-in detail` in the PROGRESS section as "a historical record opened from
+ * the Progress calendar", and that screen is what displays them. It has no
+ * route yet — see the note on `CheckInCalendar`, which is why the calendar's
+ * discs are still plain cells rather than links. Build the two together.
+ */
+export type CheckIn = {
+  date: IsoDate;
+  severity: number;
+  changes?: string[];
+  note?: string;
+  /** the capture is a placeholder, so this records THAT a photo was taken */
+  photo?: string;
+};
 
 /** The chart's y-axis runs 0–10, and the comp labels 10 / 5 / 0. */
 export const SEVERITY_MAX = 10;
@@ -110,7 +133,6 @@ export type ProgressView = {
   today: Date;
   skinType?: string;
   tendencies?: string[];
-  current: string | null;
 };
 
 export function progressView(a: Answers): ProgressView {
@@ -125,7 +147,6 @@ export function progressView(a: Answers): ProgressView {
       today: demoToday(),
       skinType: profile.skinType,
       tendencies: profile.tendencies,
-      current: DEMO_PROFILE.current,
     };
   }
 
@@ -136,7 +157,6 @@ export function progressView(a: Answers): ProgressView {
     today: new Date(),
     skinType: profile.skinType,
     tendencies: profile.tendencies,
-    current: currentSymptoms(a),
   };
 }
 
@@ -215,18 +235,208 @@ export function lastCheckInLabel(
 }
 
 /**
- * The profile card's "Current: Redness, Itching on Cheeks" line — step 1's
- * symptoms, placed on step 1's locations.
+ * The profile card's "Current: Redness, Itching on Cheeks" line — symptoms
+ * placed on locations.
  *
  * Both halves are optional, so a deep link straight to /progress renders
  * whichever half exists instead of a stranded "Current:" or a bare " on ".
+ *
+ * ⚠️ A PURE FORMATTER, SPLIT OUT OF `currentSymptoms`. It used to read the
+ * answer store directly, which meant the demo had to carry the finished STRING
+ * ("Current: Redness, Itching on Cheeks") beside the data it was made of — and
+ * the daily check-in, which reports a fresh location each day, had no way in.
+ * Now there is one formatter and three callers feed it: step 1's answers, the
+ * demo's symptoms/locations, and today's check-in.
  */
-export function currentSymptoms(a: Answers): string | null {
-  const symptoms = a.start?.filter(Boolean) ?? [];
-  const locations = a.location?.filter(Boolean) ?? [];
-  if (symptoms.length === 0 && locations.length === 0) return null;
+export function formatCurrent(
+  symptoms: readonly string[],
+  locations: readonly string[]
+): string | null {
+  const s = symptoms.filter(Boolean);
+  const l = locations.filter(Boolean);
+  if (s.length === 0 && l.length === 0) return null;
 
-  if (symptoms.length === 0) return `Affected areas: ${locations.join(", ")}`;
-  if (locations.length === 0) return `Current: ${symptoms.join(", ")}`;
-  return `Current: ${symptoms.join(", ")} on ${locations.join(", ")}`;
+  if (s.length === 0) return `Affected areas: ${l.join(", ")}`;
+  if (l.length === 0) return `Current: ${s.join(", ")}`;
+  return `Current: ${s.join(", ")} on ${l.join(", ")}`;
+}
+
+/** Step 1's symptoms on step 1's locations. */
+export function currentSymptoms(a: Answers): string | null {
+  return formatCurrent(a.start ?? [], a.location ?? []);
+}
+
+/** The newest recorded check-in, or null. The list is kept oldest-first. */
+export function latestCheckIn(list: CheckIn[]): CheckIn | null {
+  return list.length > 0 ? list[list.length - 1] : null;
+}
+
+/**
+ * The profile card's `Current:` line — the demo's symptoms and locations, or
+ * the user's own once they have answered step 1.
+ *
+ * ⚠️ IT LIVES HERE RATHER THAN ON `ProgressView` because the demo half is now
+ * assembled from data like every other half. `ProgressView.current` used to
+ * carry the finished string straight out of `DEMO_PROFILE`; see the note there.
+ */
+export function currentLine(a: Answers, view: ProgressView): string | null {
+  return view.isDemo
+    ? formatCurrent(DEMO_PROFILE.symptoms, DEMO_PROFILE.locations)
+    : formatCurrent(a.start ?? [], a.location ?? []);
+}
+
+/* ---------------------------------------------------------------------------
+   THE DAILY CHECK-IN
+
+   ⚠️ NOT IN FIGMA, AND DECIDED HERE. `HANDOFF — INVESTIGATION & PROGRESS`
+   assigns `Check-in chat` to the CHECK section and draws it as a conversation;
+   nothing in the app ever reached it, and `/check` advertises only the
+   compatibility check. See components/CheckIn.tsx for the whole argument. What
+   it comes down to for this file: a check-in is ONE severity on ONE day, so the
+   flow is one question, and the answer feeds `CheckIn` directly.
+   -------------------------------------------------------------------------- */
+
+/**
+ * The five answers to turn 1 — `Check-in chat` (555:1268) draws these exact
+ * labels, in this order.
+ *
+ * ⚠️ THE QUESTION IS RELATIVE; THE STORED VALUE IS ABSOLUTE. This was the one
+ * real conflict between the comp and the trend chart, and both get what they
+ * need. `SymptomTrend` plots 0–10 and `trendSummary` divides one severity by
+ * another, so a series of "slightly better"s is not something either can read —
+ * a percentage computed from relative reports would be a change in a change.
+ * But that only rules out STORING the delta. Asking for it is fine, and it is
+ * the friendlier question: nobody can rate their own skin 0–10 consistently
+ * across a fortnight, while everyone knows whether today is better than
+ * yesterday. So the chip carries a delta, `severityAfter` applies it to the
+ * last recorded severity, and what lands in `CheckIn` is an absolute score.
+ *
+ * An earlier build asked the absolute question directly (Clear … Very severe)
+ * on the reasoning that relative answers break the chart. The reasoning was
+ * sound and the conclusion was wrong — it confused the question with the
+ * storage.
+ *
+ * ±2 and ±4 on a 0–10 axis: "slightly" is a fifth of the scale, "much" is two
+ * fifths, and neither can cross the whole range in one day.
+ */
+export const SKIN_TREND_CHOICES: {
+  label: string;
+  delta: number;
+  direction: "better" | "same" | "worse";
+}[] = [
+  { label: "Much better", delta: -4, direction: "better" },
+  { label: "Slightly better", delta: -2, direction: "better" },
+  { label: "About the same", delta: 0, direction: "same" },
+  { label: "Slightly worse", delta: 2, direction: "worse" },
+  { label: "Much worse", delta: 4, direction: "worse" },
+];
+
+/**
+ * Today's absolute severity, from a relative answer.
+ *
+ * ⚠️ THE BASELINE IS THE LAST RECORDED CHECK-IN, and `SEVERITY_MAX / 2` when
+ * there is none. "Better than what?" has no answer on day one, so the first
+ * check-in starts mid-scale and every later one moves from where the last one
+ * left off. Clamped to the axis, so a run of "much better" bottoms out at 0
+ * rather than plotting off the floor.
+ */
+export function severityAfter(previous: CheckIn | null, delta: number): number {
+  const base = previous ? previous.severity : SEVERITY_MAX / 2;
+  return Math.min(SEVERITY_MAX, Math.max(0, base + delta));
+}
+
+/**
+ * Turn 2 — `That's good to hear! Any specific changes you've noticed?` and its
+ * chips, both of which depend on turn 1's direction.
+ *
+ * ⚠️ ONLY THE `better` BRANCH IS DRAWN. 555:1268 shows "Slightly better"
+ * selected, so it shows the better reply and `Less redness / Less itching /
+ * Less dryness / No change`. The conditional is the COMP'S OWN — "That's good
+ * to hear!" cannot be what the screen says after "Much worse", and "Less
+ * redness" cannot be what it offers. So the other two branches are required by
+ * the frame rather than invented on top of it; they mirror its structure and
+ * nothing more. **Get the worse/same copy confirmed in Figma.**
+ *
+ * ⚠️ THE SYMPTOMS ARE THE USER'S OWN. The comp's three — redness, itching,
+ * dryness — are exactly the first three of step 1's eight, so these chips are
+ * that answer echoed back with a direction on the front, which is what every
+ * other screen in the app does with an earlier answer. Falls back to the comp's
+ * three when step 1 is unanswered (a deep link, or the demo).
+ */
+export const CHECK_IN_FALLBACK_SYMPTOMS = ["Redness", "Itching", "Dryness"];
+
+/** The exclusive answer to turn 2 — it is in `EXCLUSIVE_OPTIONS`, so
+ *  `toggleMulti` already clears the rest when it is picked. */
+export const NO_CHANGE = "No change";
+
+export function changeReply(direction: "better" | "same" | "worse"): string {
+  if (direction === "better") {
+    return "That's good to hear! Any specific changes you've noticed?";
+  }
+  if (direction === "worse") {
+    return "Sorry to hear that. Any specific changes you've noticed?";
+  }
+  return "Noted. Any specific changes you've noticed?";
+}
+
+export function changeOptions(
+  direction: "better" | "same" | "worse",
+  symptoms: string[]
+): string[] {
+  const list = symptoms.length > 0 ? symptoms : CHECK_IN_FALLBACK_SYMPTOMS;
+  const lower = list.map((s) => s.toLowerCase());
+
+  /* "About the same" overall still allows one symptom to have moved either
+     way — that is exactly what the question is for — so it offers both
+     directions rather than a third vocabulary of its own. */
+  const prefixed =
+    direction === "same"
+      ? [...lower.map((s) => `Less ${s}`), ...lower.map((s) => `More ${s}`)]
+      : lower.map((s) => `${direction === "better" ? "Less" : "More"} ${s}`);
+
+  return [...prefixed, NO_CHANGE];
+}
+
+/**
+ * Add one check-in to the recorded list, oldest first.
+ *
+ * ⚠️ ONE ENTRY PER DAY — a second answer on a day already recorded REPLACES the
+ * first rather than appending. Two discs cannot share a calendar square and two
+ * points cannot share an x position, so the alternative is a chart that lies
+ * about how many days it covers.
+ */
+export function recordCheckIn(current: CheckIn[], entry: CheckIn): CheckIn[] {
+  return [...current.filter((c) => c.date !== entry.date), entry].sort((a, b) =>
+    a.date < b.date ? -1 : a.date > b.date ? 1 : 0
+  );
+}
+
+/**
+ * What `/progress` actually plots — the user's own check-ins, plus the seeded
+ * series only while the whole screen is the demo.
+ *
+ * ⚠️ THE SEED STOPS THE MOMENT THE INVESTIGATION IS REAL. It used to be
+ * unconditional: a user who walked the flow and answered step 4 still got five
+ * invented check-ins anchored to their own start date, which is a readout
+ * inventing its own data. That was defensible only while nothing could WRITE a
+ * check-in. Something can now, so the real branch shows exactly what the user
+ * recorded and nothing else — an empty chart until they check in, which
+ * `SymptomTrend` and the calendar both already render.
+ *
+ * ⚠️ IN DEMO MODE THE TWO ARE MERGED, on purpose. A check-in recorded during a
+ * demo walk is dated the demo's frozen today (17 Aug 2026 — see `demoToday`),
+ * so it lands three days after the last seeded point and joins the same series
+ * rather than stranding itself weeks to the right of it. That is the whole
+ * value of the button on a portfolio walk: tap it and the calendar fills today,
+ * the chart grows a sixth point and the caption flips to "Last check-in: today".
+ * A user entry always wins over a seeded one on the same day.
+ */
+export function checkInsFor(a: Answers, view: ProgressView): CheckIn[] {
+  const recorded = (a.checkIns ?? []).filter(
+    (c) => daysBetween(fromIso(c.date) ?? view.today, view.today) >= 0
+  );
+
+  if (!view.isDemo) return recorded;
+
+  return recorded.reduce(recordCheckIn, demoCheckIns(view.start, view.today));
 }

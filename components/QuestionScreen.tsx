@@ -6,7 +6,7 @@ import styles from "./QuestionScreen.module.css";
 import { ScreenHeader } from "./ScreenHeader";
 import { StepProgress } from "./StepProgress";
 import { Button } from "./Button";
-import { BottomNav } from "./BottomNav";
+import { BottomNav, type NavSection } from "./BottomNav";
 import { useInvestigation } from "./InvestigationProvider";
 import { type StepId, stepFor, prevHref, nextHref } from "@/lib/flow";
 
@@ -16,8 +16,20 @@ import { type StepId, stepFor, prevHref, nextHref } from "@/lib/flow";
  * ORDER IS FIXED, top to bottom: header row -> 12px spacer -> progress track ->
  * spacer -> content. The track goes UNDER the header row, never above it.
  *
- * Nav `Active` is `check` on every investigation question — the nav reflects the
- * section the user is IN, and these are check-in/investigation questions.
+ * Nav `Active` defaults to `my-skin` — the nav reflects the section the user is
+ * IN, and these questions ARE the skin profile.
+ *
+ * ⚠️ STEP 5 OVERRIDES IT TO `products`, AND IT IS THE ONE STEP THAT SHOULD.
+ * `/investigation/products` is the last step of the profile, but what it puts
+ * on screen IS the products list — the same list `/products` owns — and the
+ * user arrives at it to add products. Lighting `My skin` there names the flow
+ * the screen belongs to while the screen itself is plainly Products. Hence the
+ * `nav` prop: every other step keeps the default.
+ *
+ * ⚠️ IT USED TO BE `check`, WHICH WAS THE WRONG SECTION. There was no nav item
+ * for the flow at all, so all six of its screens lit the Check tab — the
+ * compatibility check, a section none of them belong to and whose own landing
+ * cannot reach them. `My skin` is that missing item; see `BottomNav.tsx`.
  *
  * On desktop the content and the Continue button move INSIDE one centred
  * frosted card (`width/card-form`, 920). On mobile there is no card: the content
@@ -36,7 +48,9 @@ export function QuestionScreen({
   footer,
   onContinue,
   contentGap,
+  contentGapDesktop,
   titleVisible,
+  nav = "my-skin",
 }: {
   id: StepId;
   children: ReactNode;
@@ -67,6 +81,14 @@ export function QuestionScreen({
    */
   contentGap?: number;
   /**
+   * The same gap at desktop, in px. Defaults to 40, which every desktop frame
+   * draws between the track and the 920 card. Separate from `contentGap`
+   * because the two breakpoints are different compositions — mobile's number
+   * comes straight off the comp, while on desktop the card is an object
+   * floating in a page that is mostly whitespace.
+   */
+  contentGapDesktop?: number;
+  /**
    * Render the step's title as visible copy instead of visually-hidden.
    *
    * ⚠️ EVERY SCREEN GETS AN `<h1>` EITHER WAY — the four PRODUCTS screens that
@@ -76,6 +98,11 @@ export function QuestionScreen({
    * The string comes from the step, so a new screen cannot forget it.
    */
   titleVisible?: boolean;
+  /**
+   * Which bottom-nav item lights up. Defaults to `my-skin`, the section the
+   * investigation flow lives in; step 5 passes `products`. See the note above.
+   */
+  nav?: NavSection;
 }) {
   const router = useRouter();
   const { answers } = useInvestigation();
@@ -95,8 +122,13 @@ export function QuestionScreen({
         <div
           className={styles.card}
           style={
-            contentGap != null
-              ? ({ "--content-gap": `${contentGap}px` } as React.CSSProperties)
+            contentGap != null || contentGapDesktop != null
+              ? ({
+                  ...(contentGap != null && { "--content-gap": `${contentGap}px` }),
+                  ...(contentGapDesktop != null && {
+                    "--content-gap-desktop": `${contentGapDesktop}px`,
+                  }),
+                } as React.CSSProperties)
               : undefined
           }
         >
@@ -144,7 +176,7 @@ export function QuestionScreen({
         </div>
       </div>
 
-      <BottomNav active="check" />
+      <BottomNav active={nav} />
     </main>
   );
 }

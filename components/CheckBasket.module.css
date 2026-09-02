@@ -131,7 +131,10 @@
   color: var(--color-text-on-data-muted);
 }
 
-/* 50 tall: 12 + 26 + 12 */
+/* ⚠️ 72 TALL, NOT THE COMP'S 50 — the row carries a 48 product thumb now (see
+   CheckBasket.tsx), and 12 + 48 + 12 is 72. The padding is unchanged; only the
+   tallest thing inside it is new. Same proportion the add-product tray's own
+   result rows already have. */
 .item {
   display: flex;
   align-items: center;
@@ -145,11 +148,19 @@
 .itemLabel {
   flex: 1;
   min-width: 0;
-  color: var(--color-text-on-data);
+  /* ⚠️ WHITE ON A SAGE ROW, BY EXPLICIT REQUEST — the same exception
+     `ResultCards`' emphasis block carries, and it does NOT meet AA: the
+     basket sheet's `surface/data-strong` row measures 1.64–2.13:1 against
+     white, which is why globals.css redefined `text/on-data` dark in the
+     first place. Named via `text/on-data-inverse` rather than a raw `#fff`
+     so the exception stays greppable and the module does not reach into the
+     primitives block (non-negotiable 2). */
+  color: var(--color-text-on-data-inverse);
 }
 
-/* A 20 glyph needs a 44 target; the negative margin keeps the 50-tall row at 50
-   — the same trick HubScreen's back chevron uses. */
+/* A 20 glyph needs a 44 target; the negative margin keeps the target from
+   driving the row height — the same trick HubScreen's back chevron uses. The
+   thumb is the tallest thing in the row now, so the row is 72. */
 .remove {
   display: inline-flex;
   align-items: center;
@@ -160,7 +171,8 @@
   margin: calc((var(--size-icon-sm) - var(--size-touch-target)) / 2);
   padding: 0;
   border-radius: var(--radius-full);
-  color: var(--color-icon-on-data);
+  /* white by explicit request, matching the label it sits beside */
+  color: var(--color-text-on-data-inverse);
   transition: opacity var(--duration-fast) var(--ease-standard);
 }
 
@@ -194,7 +206,8 @@
   border-radius: var(--radius-lg);
   background: var(--color-surface-data-strong);
   box-shadow: var(--shadow-frosted-row);
-  color: var(--color-text-on-data);
+  /* white by explicit request, same exception as `.itemLabel` above */
+  color: var(--color-text-on-data-inverse);
   transition: opacity var(--duration-fast) var(--ease-standard);
 }
 
@@ -216,7 +229,8 @@
   flex: none;
   width: var(--size-icon-sm);
   height: var(--size-icon-sm);
-  color: var(--color-icon-on-data);
+  /* inherits the row's white so the glyph does not split from its label */
+  color: inherit;
 }
 
 .count {

@@ -33,11 +33,23 @@ what changed and why — keep writing them.
 **Built so far:** GETTING STARTED, PRODUCTS, PROGRESS and CHECK.
 
 - **GETTING STARTED** — `00 — Welcome` at `/`, then four of the five track
-  steps: `01 — Start investigation` (step 1), `02a — Skin type` (2),
-  `02c — Known conditions` (3) and `03c — Timing` (4), with
-  `03b — Selfie capture` hanging off step 1 as an optional side path that
-  SHARES its track position. Routes under `/investigation/<step>`. PRODUCTS is
-  step 5.
+  steps: `01 — Create skin profile` (step 1), `02a — Skin type` (2),
+  `02c — Known conditions` (3) and `03c — Timing` (4). Routes under
+  `/investigation/<step>`. PRODUCTS is step 5. `03b — Selfie capture` is the
+  optional photo off step 1 — an OVERLAY, not a route; see below.
+
+  **⚠️ SELFIE CAPTURE IS A TRAY OVERLAY, NOT A SCREEN — NOT IN FIGMA.** It was
+  `/investigation/selfie`, a routed step that carried a progress track and
+  `Save & exit` while explicitly SHARING step 1's number, so the track never
+  moved when you reached it — a "step" on the main line of a flow it was an
+  optional side path off. "Take a photo" opens `components/SelfieSheet.tsx` in
+  place now: routing away scrolled the symptoms and face regions just picked
+  out of sight behind a screen that says nothing about them, and coming back
+  was a navigation rather than a dismissal, for what is one tap on a
+  placeholder viewfinder. The `Sheet` recipe is unchanged and every measurement
+  is still the frame's own; only the container is. The `selfie` step and its
+  `StepId` are gone from `lib/flow.ts` — there is no route left for it to own —
+  and `answers.selfie` is written exactly as before.
 
   **⚠️ NINE DESIGNED SCREENS ARE FIVE STEPS.** `02b — Skin tendencies` merged
   into `02a` and `03b — Location` merged into `01` — one screen each, and
@@ -47,9 +59,36 @@ what changed and why — keep writing them.
   `SkinType.tsx` and `StartInvestigation.tsx`; the frame ids of both halves are
   kept there so the next person can find what each came from. The track reads
   1/5, not 1/8, and `TOTAL_STEPS` is the only place that number lives.
-- **PRODUCTS** — ONE add-flow screen under `/investigation/products` (step 5/5,
-  nav `check`) and two hub routes under `/products*` (nav `products`). It was
+
+  **⚠️ THE FLOW IS ITS OWN NAV SECTION NOW — `my-skin`, AND IT IS NOT IN FIGMA.**
+  `Bottom-Nav-Bar` (410:258) encodes three items and the flow was not one of
+  them, so `QuestionScreen` lit `Check` on all six of its screens — telling the
+  user they were in the compatibility check while they answered profile
+  questions, and lighting a tab whose own landing cannot reach those screens.
+  `My skin` is the missing item, added FIRST because the other three all read
+  what it collects. Its landing is step 1, `/investigation/start`, which stays a
+  flow step — track, `Save & exit` and back chevron all kept, so the "a hub
+  landing has no back chevron" rule does not reach it. A fourth item needed a
+  fourth glyph and the DS has none; see `MySkinIcon` on the missing list below.
+
+  **⚠️ STEP 1 IS TITLED `Create skin profile`, NOT THE FRAME'S
+  `Start investigation`.** The nav section, the Welcome CTA and Progress's
+  empty-state CTA all say the same thing now, and that string is not new copy —
+  it is the label `Check — no profile` (606:2183) already gives this exact
+  destination. Four names for one place was the confusion; the frame name is the
+  odd one out and Figma catches up. `lib/flow.ts` owns the title, as it owns
+  every other screen's.
+- **PRODUCTS** — ONE add-flow screen under `/investigation/products` (step 5/5)
+  and two hub routes under `/products*`. All three read nav `products`. It was
   twelve screens; see the remap below.
+
+  **⚠️ STEP 5 IS THE ONE FLOW SCREEN THAT DOES NOT LIGHT `My skin` — NOT IN
+  FIGMA.** It is still an investigation step in every other respect (track,
+  `Save & exit`, `lib/flow.ts`), but what it puts on screen is the products
+  list the `Products` tab owns, and the user is there to add products. Lighting
+  `My skin` named the flow while the screen plainly read Products.
+  `QuestionScreen` takes a `nav` prop for it; every other step keeps the
+  `my-skin` default.
 - **PROGRESS** — ONE hub route at `/progress` (nav `progress`) in two states:
   `Progress — empty` (551:1196 / 551:1231) and `Progress — active`
   (552:1236 / 554:1252). Not an investigation step — no track, no `Save & exit`.
@@ -101,6 +140,37 @@ screen — that screen would only show a result already seen. The HUB is the
 opposite case on purpose: it always lists all three designed periods including
 the empty ones, because there a missing row reads as a lost category.
 
+**⚠️ THE TIME WINDOW LIVES ON THE HUB ROWS, AND NOWHERE ELSE IN THE HUB.** NOT
+IN FIGMA — `My Products — filled` (579:1607) draws each row as title + count,
+and `Long-term products` (581:1593) puts a duration `Tag` on every card. Both
+were moved in one pass, in opposite directions, for one reason:
+
+`bucket` is derived from `duration` by `bucketFor` and by nothing else — a
+strict 1:1 — so every product inside a group carries the SAME duration, the one
+its own page title is naming. A "4+ weeks" badge repeated down a screen headed
+"Long-term products" is noise that reads like data, so it came off the cards
+(both places it appeared: the collapsed `Tag` AND the expanded `Duration` detail
+row). `Your products` already had this rule and stated it — it shows the per-row
+Tag ONLY in its flat single-group state, "carrying the period information a
+header would otherwise repeat" — and `BucketProductsList`, permanently in the
+grouped case, simply had not applied it.
+
+The window moved TO `/products` because that is the only screen where all three
+periods appear together, so they read as one scale (4+ weeks / 1–4 weeks /
+< 1 week) rather than an isolated fact per row. It also put `Bucket.window` back
+on screen at all: its own doc calls it "the `duration` label beside it", but the
+only screen that ever rendered it was the deleted add-products intro, so the
+windows that DEFINE these groups had quietly stopped being visible anywhere.
+
+The treatment is not invented — same `t-h6` name + `t-label-sm` muted window,
+baseline-aligned, same `BUCKET_WINDOW` lookup that `Your products` uses on its
+group headers. ⚠️ **BESIDE THE NAME, NEVER UNDER IT**: measured 56 at both
+breakpoints, which a second line would break. The row also carries its own
+`aria-label` now — "Long-term products, 4+ weeks, 2 products" — because the
+three spans otherwise ran together as "Long-term products 4+ weeks 2", making an
+already-unlabelled count ambiguous. `not-sure` renders "unknown" beside it, the
+same pairing `Your products` already shows.
+
 **⚠️ "Not sure" IS A FOURTH GROUP, AND IT IS NOT IN FIGMA.** With no period mode
 left to stand in, `bucketFor("Not sure", current)`'s fallback had nothing to read
 `current` from. Binning it into Long term was the tempting fix and it is wrong:
@@ -126,6 +196,7 @@ authority for everything below.
 | ----------------- | ------------------------------ | -------------------------------------------- |
 | `/progress`       | active `552:1236` / `554:1252` | HUB landing, no back chevron. **The default** |
 | `/progress/empty` | empty `551:1196` / `551:1231`  | ⚠️ prototype-only route — see below           |
+| `/progress/check-in` | — | ⚠️ NOT IN FIGMA — one step, pushed view. See below |
 
 **⚠️ THESE ARE DATA SCREENS, AND THEY USE THE OTHER SURFACE SYSTEM.** GETTING
 STARTED and PRODUCTS are forms: light frosted rows and cards, dark text, a 1px
@@ -149,36 +220,153 @@ desktop bottom reservation so a CENTRED body lands where the comp puts it; a
 dashboard body is not centred and its last row rendered straight behind the nav
 pill. Measured: caption and nav both at y=743.
 
-**⚠️ THE CHECK-IN HISTORY IS SEEDED, AND IT HAS TO BE.** These screens are
-readouts of daily check-ins, and CHECK — which would write them — is not built.
+**⚠️ THE CHECK-IN HISTORY IS SEEDED ONLY WHILE THE SCREEN IS THE DEMO.**
 `lib/progress.ts` anchors a deterministic series to a start date and clips it at
 today; every figure the screen states (the day count, the percentage, "3 days
 ago") is computed from that series rather than transcribed. Every entry point is
-named `demo*`. Delete them when CHECK lands, and wire `Check in today` in the
-same pass — it is inert for the same reason the nav's Check item is.
+named `demo*`.
 
-**⚠️ THE SEEDED PROFILE LIVES IN `lib/demo.ts`, SHARED WITH CHECK** — see the
-CHECK section. `lib/progress.ts` keeps only what is progress-specific: the fixed
-clock and the check-in series.
+It used to seed unconditionally, which was defensible only while nothing could
+WRITE a check-in. Something can now — see DAILY CHECK-IN below — so `checkInsFor`
+splits the two: a REAL investigation plots exactly what the user recorded and
+nothing else, and the demo merges their entries into the seeded series. A
+check-in recorded during a demo walk is dated the demo's frozen today, so it
+lands three days after the last seeded point instead of stranding itself weeks to
+the right of a chart it cannot connect to.
 
-**⚠️ `/progress` OPENS POPULATED, AND THAT IS NOT A BREACH OF "STARTS EMPTY".**
-The rule below is about SELECTION CONTROLS rendering pre-ticked, because on a
-question screen the user does the selecting. Progress has no controls — it is a
-readout, and a readout with nothing in it demonstrates nothing. So an
-investigation is assumed until the user starts a real one, at which point their
-answers take over completely: walk the flow and the profile, dates, trend and
-percentage are all theirs. This is a **prototype decision, taken because the
-build is shown as a portfolio piece**, and it is why `Progress — empty` needed
-a route of its own: it is one Figma STATE, not two screens. Restore the fallback
-and delete `/progress/empty` when real check-ins exist.
+### DAILY CHECK-IN — `Check-in chat` (555:1268), at `/progress/check-in`
 
-**⚠️ THE DEMO CLOCK IS FROZEN AT 17 Aug 2026, NOT `new Date()`.** The demo branch
-is what an unanswered store produces, so it is what gets PRERENDERED — a live
-clock there bakes the build date into static HTML and then disagrees with the
-client on hydration. Frozen dates make the demo path a pure function of nothing.
-They also land the seeded check-ins on Aug 2, 5, 9, 11 and 14 under an "August
-2026" header — the comp's exact chart labels and month. The real-answer branch
-may call `new Date()` freely; it cannot render on the server.
+A chat that builds itself one turn at a time as the user taps a pill:
+
+| turn | LUX asks | control | writes |
+| ---- | -------- | ------- | ------ |
+| 1 | "Hi! How is your skin doing today?" | 5 radio chips, `SKIN_TREND_CHOICES` | `severity` (derived — see below) |
+| 2 | conditional on turn 1 — "That's good to hear! Any specific changes you've noticed?" | multi-select chips, `changeOptions` | `changes` |
+| 3 | "Would you like to add any notes or take a photo?" | two toggles, optional | `note`, `photo` |
+
+then `Submit check-in`.
+
+**⚠️ IT IS A PROGRESS SCREEN, THOUGH THE FRAME'S NAV SAYS `Check`.** The handoff
+assigns `Check-in chat` to the CHECK section and the frame lights that tab.
+Not taken, for two reasons: `Check — start` offers only "Start a check" and
+"View previous checks", so nothing in CHECK can reach this screen, while
+`/progress`'s `Check in today` had no destination at all; and `Check` is the
+product COMPATIBILITY check, which shares the word "check" with a daily symptom
+report and nothing else. The frame also carries the OLD three-item nav, which
+predates `My skin`, so its nav is stale in at least one other respect. Route is
+`/progress/check-in`, nav reads `progress`. **Open question — settle it in
+Figma.**
+
+**⚠️ THE FRAME DRAWS `Save & exit` WITH NO PROGRESS TRACK, AND THE BUILD HAS
+NEITHER.** That pair together is the investigation flow's signature, and this is
+a daily action off a hub, not a resumable step — it has no `StepId` and is not
+in `lib/flow.ts`. One half of the pair on its own is the frame contradicting the
+rule the rest of the file follows. It IS a pushed view, so it keeps the back
+chevron a hub LANDING does not get. **Also an open question.**
+
+**⚠️ THE QUESTION IS RELATIVE; THE STORED VALUE IS ABSOLUTE.** This was the one
+real conflict with the trend chart. `SymptomTrend` plots 0–10 and `trendSummary`
+divides one severity by another, so a series of "slightly better"s is unreadable
+to both — but that only rules out STORING the delta. Asking for it is fine, and
+it is the friendlier question: nobody rates their own skin 0–10 consistently
+across a fortnight, everybody knows whether today beats yesterday. So the chip
+carries a delta (±2 "slightly", ±4 "much"), `severityAfter` applies it to the
+last severity, and `CheckIn` holds an absolute score. An earlier build asked the
+absolute question outright (Clear … Very severe) on the reasoning that relative
+answers break the chart — sound reasoning, wrong conclusion, because it confused
+the question with the storage.
+
+**⚠️ THE BASELINE IS THE SERIES THE CHART PLOTS, NOT `answers.checkIns`.** In
+demo mode the store holds nothing — the five seeded check-ins live in
+`lib/progress.ts` and are merged by `checkInsFor` — so reading the store found no
+previous severity, `severityAfter` fell back to mid-scale, and "Slightly better"
+after a seeded 1 plotted a **3**. The line went UP directly under the words
+"Slightly better". "Better than what?" has exactly one right answer: the last
+point the user can see. Today is excluded from the baseline, so re-answering
+measures from the same place rather than compounding on itself.
+
+**⚠️ TURN 2's REPLY AND CHIPS ARE CONDITIONAL, AND ONLY THE `better` BRANCH IS
+DRAWN.** The frame shows "Slightly better" picked, so it shows the better reply
+and `Less redness / Less itching / Less dryness / No change`. The conditional is
+the FRAME'S OWN — "That's good to hear!" cannot follow "Much worse", and "Less
+redness" cannot be what it offers — so the worse and same branches are required
+by the frame rather than invented on top of it, and they mirror its structure
+and nothing more. Re-answering turn 1 across directions clears turn 2, rather
+than leaving "Less redness" under "Sorry to hear that". **Get the worse/same
+copy confirmed in Figma.**
+
+**⚠️ TURN 2's SYMPTOMS ARE THE USER'S OWN.** The frame's three — redness,
+itching, dryness — are exactly the first three of step 1's eight, so these chips
+are that answer echoed back with a direction on the front, which is what every
+screen in the app does with an earlier answer. Falls back to the frame's three
+when step 1 is unanswered.
+
+**⚠️ `"No change"` HAD TO JOIN `EXCLUSIVE_OPTIONS`.** It is the same species as
+"None" — you cannot have noticed less redness AND noticed no change — but it was
+not in the list, so it toggled like an ordinary symptom and the screen recorded
+"More redness, More itching, No change". That list is the only place exclusivity
+is declared, which is exactly why the bug was invisible in the screen's own code.
+
+**⚠️ THE SELECTED CHIP STAYS IN PLACE — no `from="user"` bubble.** An earlier
+build replaced each answered row with one; the frame does not, and the frame is
+right. The pills ARE the record of what was said, changing your mind is tapping
+a different one, and a bubble repeating a word already on screen two rows up is
+a second copy of the same fact. (`ChatBubble`'s `from="user"` styling is
+therefore still used by no screen, as it has been since it was written.)
+
+**⚠️ THE ANSWERS BUILD THE SCREEN — NO TIMER, NO STEP INDEX.** A turn renders
+because the one above it is answered. Nothing schedules anything and there is no
+cursor to keep in sync.
+
+**⚠️ NOTHING ANIMATES ITSELF — MOUNTING IS THE REVEAL.** Each bubble runs
+`ChatBubble`'s own `bubble-enter` because it is newly mounted; each pill row uses
+the global `[data-reveal]` hook. The screen names no animation of its own, which
+also keeps it clear of the "a rule that NAMES an animation may not live in a CSS
+module" trap.
+
+**⚠️ TURN 3's TWO BUTTONS HAVE NO COMPONENT, AND THEY ARE TOGGLES.** Not
+`Button` (no gradient, not the primary action), not `SmallButton` (a compact text
+pill), not `Chip` (a selection control in a group). Composed from the frosted-ROW
+recipe — and note that means `surface/frost-light`, the TRANSLUCENT token, not
+`bg/frost-light`: the opaque one is #f4feff and rendered them as white stickers
+beside bubbles and pills that are not, the same trap the Chip fill note records.
+Armed state is a border change, never `bg/brand`, which would put a third
+selection treatment on a screen that already has two. The frame gives no
+destination for either, and routing away mid-chat would lose the conversation
+(the store holds no partial check-in), so both stay on the screen: "Add a note"
+reveals a field in place, and "Take a photo" opens the capture as a `Sheet`
+OVERLAY — the same treatment the products scan view and the selfie tray use, so
+it brings the scrim, focus trap, Escape and the mobile-sheet / desktop-dialog
+pair with it rather than inventing a second modal. `Done` closes it and a photo
+taken stays taken; removing it is a separate control in the chat. `NoteIcon` is
+new — the file has no pencil glyph anywhere.
+
+**⚠️ `note`, `photo` AND `changes` ARE WRITTEN BUT NOT YET READ**, and that is
+the design's own doing rather than invented data: the handoff places `Check-in
+detail` in PROGRESS as "a historical record opened from the Progress calendar",
+and that is the screen which displays them. It has no route yet — which is also
+why the calendar's discs are still plain cells rather than links. Build the two
+together.
+
+**⚠️ NOTHING IS PRE-SELECTED, INCLUDING ON A DAY ALREADY RECORDED.** The frame
+shows "Slightly better", "Less redness" and "Less itching" already chosen because
+a comp shows a filled-in screen. Re-answering REPLACES the day's entry, and the
+screen says so in a caption.
+
+**⚠️ IT SURFACED A REAL BUG IN THE CALENDAR.** A day that is checked in AND today
+could not happen before — the seeded offsets never landed on today — and
+`.day[data-today]` and `.day[data-checked-in]` are equal-specificity rules with
+`[data-today]` written second, so it won and repainted the numeral `text/on-data`,
+the DARK ink, on an indigo disc. The day the user had just recorded was the one
+day whose number could not be read. Fixed with `.day[data-today][data-checked-in]`.
+
+**⚠️ `DEMO_PROFILE.current` WAS A BAKED SENTENCE AND IS NOW DATA.** It held
+`"Current: Redness, Itching on Cheeks"` beside a doc comment claiming it was
+"step 1's symptoms placed on step 1's locations" — nothing assembled it, so the
+demo carried a string while every other path assembled one, and the two could
+drift. `formatCurrent` is the single assembler now and `currentLine` picks its
+inputs.
+
 
 **⚠️ TWO COMP SLIPS ARE DELIBERATELY NOT REPRODUCED.** The comp marks Aug 14 as
 checked in while ringing Aug 11 as today, and its "57%" does not match its own
@@ -294,13 +482,13 @@ the order they were added. A readout leads with what needs attention.
 product ids. So a check the user ran and a seeded one go through the same code
 and neither can drift from the model.
 
-**⚠️ THE DAILY CHECK-IN IS ORPHANED, AND STILL IS.** The PROGRESS handoff assigns
-`Check-in chat` to the Check section — "it IS the check-in" — but `Check — start`
-offers only "Start a check" and "View previous checks", so nothing reaches it,
-and Progress's `Check in today` has nowhere to go. The tab owns two unrelated
-jobs and advertises one. Out of scope by decision; `/check` NAMES the second job
-rather than dropping it silently. Wire `Check-in chat`, the nav and
-`Check in today` in one pass.
+**⚠️ THE DAILY CHECK-IN IS NO LONGER ORPHANED, AND IT DID NOT LAND HERE.** The
+PROGRESS handoff assigns `Check-in chat` to this section — "it IS the check-in" —
+and that assignment was not taken. Resolved by moving the JOB rather than adding
+a third CTA to `Check — start`: the daily check-in ships at `/progress/check-in`,
+is reached from Progress's `Check in today`, and lights `Progress`. This tab now
+carries exactly one meaning — the product compatibility check. See DAILY CHECK-IN
+under PROGRESS above, and raise the section split in Figma.
 
 **⚠️ SURFACE SYSTEM B'S TEXT IS DARK, NOT WHITE — AND WHITE CANNOT BE FIXED.**
 The section above says the text on a data card is white (`text/on-data` for
@@ -328,7 +516,7 @@ was first scoped to `DataCard` and `SkinProfileStrip` on the assumption that the
 tray sat on a scrim and the two camera viewfinders were dark placeholders. BOTH
 WERE WRONG, and measuring said so: `state/pressed-overlay` is 14%, which barely
 darkens anything, so the basket bar measured **1.93:1** and the basket sheet
-**1.64–2.13:1**; and `SelfieCapture` and `AddProductMethodSheet` both draw their
+**1.64–2.13:1**; and `SelfieSheet` and `AddProductMethodSheet` both draw their
 viewfinder in the same light `surface/data`. Every surface in the app that reads
 these tokens is light sage, so the exception list was empty. The values are
 declared on `:root` in `globals.css` (hand-authored) rather than `tokens.css`
@@ -345,6 +533,31 @@ because both are meaning-carrying palette rather than a surface bug:
 at 12px, which is every `ProductRow` meta line app-wide; and `CompatCard`'s band
 colours plus their white pill text run **2.18–4.47:1** on `/check/results`.
 Changing either changes what a colour MEANS, so they want a decision, not a fix.
+
+**⚠️ `/check/new` AND THE PRODUCTS TRAY NOW RUN THE SAME SEARCH.** They did not,
+and the difference was invisible until you typed: the tray queried Open Beauty
+Facts live while `/check/new` searched the 13-product offline fixture alone, so
+one query typed two screens apart returned two unrelated lists and neither
+explained itself. Both go through `useOpenBeautyFactsSearch` now — same debounce,
+same fixture fallback. Three consequences, all flagged in the code:
+
+- **The ingredient index survives as a local pass**, merged UNDER the live
+  results rather than replacing them, so "salicylic" still finds the BHA
+  Exfoliant and the list still leads with what was typed.
+- **`activesOf` reads the INCI list** when a product is not in
+  `PRODUCT_ACTIVES` — which is every live result. Without it a barcode id
+  matched nothing and every searched-for product scored a perfect 98: a
+  compatibility checker that approves everything the user looks up. It reads
+  `ingredients` (the full list), **never** `description` (cut to 240 for the
+  confirm card) — an INCI list is ordered by concentration, so the cut takes
+  the fragrance and preservatives with it. The drying-alcohol pattern names its
+  forms and never matches bare "alcohol": CETEARYL/CETYL/STEARYL ALCOHOL are
+  emollients, and a bare match took 18 points off every barrier cream.
+- **`checkBasket` and `SavedCheck` hold PRODUCTS, not ids.** A live result
+  exists nowhere in `CATALOG`, so `productById` returned undefined and the row
+  vanished between `/check/new` and `/check/results`. **Scores are still never
+  stored** — that rule is about derived values, and every number still comes out
+  of `analyse()` on read.
 
 **⚠️ THE CHECK SEARCH RANKS, AND IT READS SIZE AND INGREDIENTS.**
 `searchCatalog` was an unranked AND-substring match over `brand + name` only,
@@ -459,6 +672,13 @@ answer being absent (deep links) rather than rendering an empty bubble.
    bottom, horizontally centred, `--z-nav`, 380 wide on mobile and 598 on
    desktop. `active="none"` is a real state (welcome, intro, onboarding), not a
    fallback.
+   ⚠️ **FOUR ITEMS, NOT THE COMPONENT'S THREE** — `My skin` leads, then
+   Progress, Check, Products. See GETTING STARTED above for why. **The 380/598
+   widths did NOT change** and no breakpoint was added: measured in headless
+   Chrome, the four items sum to 267.1 against 352 of inner width at 440 (84.9
+   slack) and 570 at 1024. They still fit unclipped down to a 344 viewport, and
+   at 320 they pack to exactly zero gap without overflowing the pill. If a FIFTH
+   item is ever added, that headroom is gone — measure before assuming.
    7a. ⚠️ **The nav is `surface/frost-nav` `#dde8eb @83%` — NOT 17%.** It used to be
    17%, which is barely a tint: the Continue button and the last option rows read
    straight through the bar. Frosted does not mean see-through. The
@@ -554,11 +774,12 @@ risk. All are on the missing-from-the-DS list.
 | Date picker        | `components/DateField.tsx`                           | `<input type="date">`'s popup is drawn by the browser and **cannot be styled** — no token or class reaches inside it. It rendered as a stock white Chrome calendar mid-flow. The DS has no calendar component either, so this is composed from tokens.                                                                                                                            |
 | Text input         | `components/TextField.tsx`                           | `Search Field` (248:70) exists but is search-specific. `other-input` on 02c/03a and the 03c date field are all hand-composed in Figma.                                                                                                                                                                                                                                            |
 | Face-region picker | `components/FaceDiagram.tsx`                         | The region coordinates ARE the design — "Cheeks (L)" only means the left cheek because of where it sits. Stored as % of the 392x300 card so it scales. ⚠️ The region chips are `bg/frost-light` (OPAQUE) as of 22 Aug 2026: they sit ON a frost-light card, so at 55% it was the same fill over the same fill and the pill had almost no edge. Selected stays `bg/brand` + white. |
-| Camera shutter     | `SelfieCapture.module.css`, `AddProductMethodSheet.module.css` | No shutter component. Both viewfinders are placeholders, not `getUserMedia` — wiring a real camera would make the prototype demand a permission just to walk the flow.                                                                                                                                                                                                            |
-| Modal tray         | `components/Sheet.tsx`                               | `Bottom Sheet` (255:91) has no background blur and a fixed light content slot, so every tray in the file is hand-composed from the recipe. There is also **no scrim token** — `state/pressed-overlay` at 14% is the only darkening value LUX has and it is weak for a modal.                                                                                                      |
+| Camera shutter     | `components/CameraCapture.tsx`, plus `SelfieSheet.module.css` | No shutter component in the DS, and there are now THREE capture surfaces: the selfie tray, the products scan view and the check-in's photo overlay. `SelfieCapture` carried the note "if a second capture surface ever appears, make it a real component first" — a third did, so `CameraCapture` is that component (viewfinder + guide + captured label + copy + shutter) and the scan view and the check-in both use it. ⚠️ **`SelfieSheet` DELIBERATELY DOES NOT.** 487:834 / 490:1041 give it its own geometry — a 392x400 / 420x340 viewfinder against `CameraCapture`'s 392x300, a PORTRAIT oval against a landscape rectangle, a 72 shutter against 64, and the helper BELOW the shutter rather than above. Those are its frame's measurements, not drift; folding it in would move them. **Raise a real Camera / Shutter component in Figma**, then migrate all three at once. Every viewfinder is a placeholder, not `getUserMedia` — wiring a real camera would make the prototype demand a permission just to walk the flow.                                                                                                                                                                                                            |
+| Modal tray         | `components/Sheet.tsx`                               | `Bottom Sheet` (255:91) has no background blur and a fixed light content slot, so every tray in the file is hand-composed from the recipe. There is also **no scrim token** — `state/pressed-overlay` at 14% is the only darkening value LUX has and it is weak for a modal. ⚠️ **IT PORTALS TO `document.body`, AND IT HAS TO.** `position: fixed` is viewport-relative only while no ancestor establishes a containing block, and `backdrop-filter` does that exactly like `transform` does. Every tray opens from inside `QuestionScreen`'s frosted card (`blur(32px)`), so the desktop dialog was centred in THAT CARD: measured at 1238x875 the tray's top edge sat at y = −41 with its heading off the top of the screen, and the scrim covered the card instead of the page.                                                                                                      |
 | Accordion          | `components/BucketProductsList.tsx`                  | No accordion component. Composed from the frosted card recipe.                                                                                                                                                                                                                                                                                                                    |
 | Search dropdown    | `AddProductMethodSheet.module.css` `.dropdown`        | `Search Field` (248:70) has no results popup, and the comps drew results as free-standing `ProductRow` cards on a routed screen. One frosted panel tucked 8 under the pill and inset 8 either side, capped at 296 with its own scroll. ⚠️ IN FLOW, NOT ABSOLUTE — the mobile tray is docked to the bottom edge and hugs its content, so an overlaid panel would open off the bottom of the viewport. |
-| Product imagery    | `components/ProductThumb.tsx`, `ProductCard`         | **No product or bottle icon exists outside the bottom nav**, so every thumb and image well in the file shows a camera glyph. Replace it in the DS first, not here.                                                                                                                                                                                                                |
+| `My skin` nav icon | `MySkinIcon` in `components/icons.tsx`               | The nav's fourth glyph. `Bottom-Nav-Bar` (410:258) ships three icons and the DS has no face or skin mark anywhere else — `FaceDiagram` is a picker, not an icon. ⚠️ STROKE-drawn, unlike its three filled neighbours: a solid disc at 24 is a far heavier mark than Progress/Check/Products draw, and the face only reads at that size with the eyes and mouth left open. currentColor throughout, so the active/inactive opacity treatment is untouched. Replace it in the DS first, not here. |
+| Product imagery    | `components/ProductArt.tsx`                          | ⚠️ **THE CAMERA GLYPH IS GONE — DECIDED HERE, NOT IN FIGMA.** No product or bottle icon exists outside the bottom nav, so every thumb (`ProductThumb`, 48) and image well (`ProductCard`, 352x140) drew a camera. That reads as "no photo yet" once and as nothing at all down a list — `/check/new`, the PRODUCTS hub and the add tray all show the same mark on every row, so the thumbnail identifies nothing. `ProductArt` draws the vessel instead: **nine** silhouettes (tub, pump, tube, dropper, bottle, airless, spray, sachet, tin) by packaging type, tinted per brand, so same brand → same tint and same type → same shape. ⚠️ **IT WAS FIVE FORMS AND ONE FALLBACK TINT, WHICH WAS ENOUGH ONLY WHILE THE CATALOGUE WAS THE SEARCH.** Both searches are live now, so the list is whatever the database holds — masks, mists, sticks, ointments — and every one of them fell through `formFor`'s default to the same pump on a `sage` body. A column of identical pumps is the camera glyph with an extra step. Three axes of variety, all keyed on a stable FNV-1a `hash` (never `Math.random()` or an index — a thumbnail that changes identity between two screens is worse than one that repeats): unnamed brands hash into a 7-tint `RING`, unrecognised names hash across all nine `FORMS`, and `labelVariant` picks one of three label treatments off the product id so two products of the same form AND brand still differ. Brand strings are diacritic-folded before hashing, because OBF files the same house as both "Avene" and "Avène". ⚠️ **AND IT IS THE ONLY PICTURE — THE API'S PHOTOS ARE NOT READ.** Open Beauty Facts carries `image_front_url` and it used to win over the drawing. Its images are crowdsourced with no quality gate, so a result list mixed usable front-of-package shots with stubs, angled boxes and rows that fell back to a drawing anyway — two kinds of picture in one column, which is worse at telling rows apart than either alone. `lib/openBeautyFacts.ts` no longer requests the image fields, `CatalogProduct` has no `imageUrl`, and `useProductPhoto` is deleted; `artFor` serves live results via `formFor`/`paletteFor`. **The API still supplies every WORD** — name, brand, size and the INCI list. The pigments are LOCAL LITERALS drawn from the LUX family and must not become tokens — `02 Color` has no "bottle glass" role, and binding a lid to `bg/brand` would move the artwork every time the brand colour did. **Raise a real illustration set in Figma.** |
 | Opaque sage        | `Sheet.module.css`                                   | `surface/data-strong` is 62% and has no solid counterpart the way `bg/nav` is `surface/frost-nav`'s. The `prefers-reduced-transparency` tray composites the same sage over `bg/canvas`.                                                                                                                                                                                           |
 | Data card          | `components/DataCard.tsx`                            | The whole of SURFACE SYSTEM B. `surface/data` + `surface/frosted-data` + `radius/2xl` + 20/24 padding, **no stroke**. Not a component in Figma — every PROGRESS and CHECK card is composed from those tokens. Its `prefers-reduced-transparency` fallback composites the same sage over `bg/canvas`, exactly as `Sheet` does.                                                       |
 | Calendar (record)  | `components/CheckInCalendar.tsx`                     | On the handoff's own missing list. ⚠️ THE SECOND CALENDAR IN THE APP AND NOT THE SAME ONE — `DateField` is a Monday-first interactive date PICKER, this is a Sunday-first read-only RECORD, and both match their frames. Do not merge them; raise the week-start split in Figma instead.                                                                                            |
@@ -577,6 +798,17 @@ differently.
 | Radio row    | circle | exactly one                | `role="radio"`    |
 | Checkbox row | square | zero or more               | `role="checkbox"` |
 | Chip         | pill   | zero or more, short labels | `role="checkbox"` |
+| Chip (radio) | pill   | exactly one, SHORT ORDINAL SCALE only | `role="radio"` |
+
+⚠️ **THE RADIO CHIP BENDS THIS TABLE, AND IT IS SCOPED ON PURPOSE.** `Chip`
+takes `control="radio"`, which changes the ROLE and nothing visual — so a pill
+does a job the table gives to a circle. It exists for ONE case: the daily
+check-in, whose five answers are a one-word ordinal scale where full-width rows
+spent most of a mobile screen. The caller MUST supply a real `role="radiogroup"`,
+so cardinality is announced by the group even though the pill does not draw it.
+Do not reach for it to make an ordinary multi-select tidier. **Raise a
+single-select Chip variant in Figma** rather than widening this — `Timing` has
+wanted the pill look since it was built and still uses radio rows.
 
 **Exclusive options** ("None", "Not sure", "Prefer not to say") stay
 **checkboxes** and keep `role="checkbox"`. Selecting one clears every other box;

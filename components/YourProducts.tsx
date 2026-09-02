@@ -27,6 +27,11 @@ import { nextHref } from "@/lib/flow";
  * through: the user adds a product, says how long they have used it, and the
  * list sorts itself. See `bucketFor` and `groupProducts`.
  *
+ * ⚠️ NOT IN FIGMA — THE NAV LIGHTS `Products` HERE, NOT `My skin`. This is
+ * still step 5 of the profile — track, `Save & exit` and all — but the screen
+ * IS the products list, reached to add products, and the nav names the section
+ * the user is looking at. Every other flow screen keeps the `my-skin` default.
+ *
  * ⚠️ THE PROTOTYPE ARRIVES EMPTY. The comps show two products because a comp
  * has to show a filled-in state; which state renders here is decided by what
  * the user has actually added.
@@ -59,7 +64,17 @@ export function YourProducts() {
 
   return (
     <>
-      <QuestionScreen id="products" contentGap={24} titleVisible>
+      <QuestionScreen
+        id="products"
+        contentGap={24}
+        /* ⚠️ NOT IN FIGMA — 64 where every other desktop frame uses 40. This is
+           the only flow screen whose card is short enough to leave the page
+           half empty, so at 40 it hung off the progress track instead of
+           sitting in the page. */
+        contentGapDesktop={64}
+        titleVisible
+        nav="products"
+      >
         <ChatBubble from="ai" full className={styles.briefBubble}>
           Now let&rsquo;s look at the products you&rsquo;ve been using.
         </ChatBubble>
@@ -90,7 +105,7 @@ export function YourProducts() {
                 <ul className={styles.list}>
                   {g.products.map((p) => (
                     <li key={p.id}>
-                      <ProductRow name={fullName(p)} meta={p.size} imageUrl={p.imageUrl} />
+                      <ProductRow name={fullName(p)} meta={p.size} product={p} />
                     </li>
                   ))}
                 </ul>
@@ -106,7 +121,7 @@ export function YourProducts() {
                 <ProductRow
                   name={fullName(p)}
                   meta={p.size}
-                  imageUrl={p.imageUrl}
+                  product={p}
                   trailing={<Tag>{p.duration}</Tag>}
                 />
               </li>
