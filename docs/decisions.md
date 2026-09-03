@@ -1103,3 +1103,34 @@ against**, which no screen in LUX currently has a pattern for.
 
 **Nothing in Figma covers it either** — page 06 has no analysis or result frames
 outside CHECK. Design it there first.
+
+## The ingredient data — one source is wired, one is named and missing
+
+Salvaged from `lux-phase1-spine.md` (7 Aug 2026) before that file was deleted;
+it was the only place either was written down.
+
+**[Open Beauty Facts](https://world.openbeautyfacts.org/)** — free, openly
+licensed, ~68,000 cosmetic products with barcodes and INCI lists, public API and
+full exports. **Already wired**: `features/products/openBeautyFacts.ts` serves
+both the PRODUCTS tray and `/check/new`, and `activesOf` reads the INCI list it
+returns whenever a product is not in `PRODUCT_ACTIVES`. The spine's own note on
+why it is not optional still holds, and applies harder to the analysis than to
+either search:
+
+> the culprit finder *is* ingredient-list arithmetic, so real data isn't a
+> nice-to-have, it's the mechanism.
+
+**[CosIng](https://ec.europa.eu/growth/tools-databases/cosing/)** — the European
+Commission's official cosmetic ingredient database, free and public. **Not used
+anywhere in the build, and it is the piece the analysis above is missing.** Open
+Beauty Facts says what is *in* a product; CosIng says what each INCI name
+actually *does* and what restrictions apply to it. The brief requires every
+hypothesis to explain why an ingredient is a plausible suspect and to show its
+uncertainty — that explanation needs a citable authority, and
+`PRODUCT_ACTIVES`'s hand-tuned penalties are not one. They are tuned to
+reproduce the comp's five scores, which is the right shape for a compatibility
+*score* and the wrong basis for a causal *claim*.
+
+Two more, for context on where LUX sits:
+[Glass Skin's 2026 write-up on product hopping](https://tryglassskin.com/blog/skincare-app-product-hopping-2026)
+and [MyVanity's AI shelf audit](https://myvanityai.com/).
