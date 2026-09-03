@@ -875,16 +875,22 @@ button {
   transform-origin: top center;
   animation:
     lux-bubble-ask 800ms var(--ease-standard) 1000ms backwards,
-    lux-bubble-push-out var(--duration-slower) var(--ease-standard) 4000ms both;
+    lux-bubble-push-out var(--duration-slower) var(--ease-standard) 3300ms both;
 }
 
 /* the reply bubble: `backwards` holds the 0% keyframe (opacity 0) for the
    full delay, so it is invisible on landing without needing display:none —
-   then rises into the question bubble's spot at the same moment the
-   question bubble starts leaving. */
+   then rises into the question bubble's spot as the question is pushed out.
+
+   ⚠️ THE TWO DELAYS MUST STAY EQUAL. Both bubbles sit in ONE grid cell
+   (Welcome.module.css `.bubbles`) and bubbles are OPAQUE, so the reply — later
+   in the DOM, no z-index — paints ON TOP of the question. Starting it early to
+   "overlap" does not blend the two, it stacks a second bubble over a
+   still-fully-visible first one for the length of the offset. Retune the swap
+   by moving BOTH delays together. */
 .bubble-swap-in {
   transform-origin: top center;
-  animation: lux-bubble-push-in var(--duration-slower) var(--ease-standard) 4000ms backwards;
+  animation: lux-bubble-push-in var(--duration-slower) var(--ease-standard) 3300ms backwards;
 }
 
 /* ⚠️ THESE RULES MUST LIVE HERE, NOT IN A CSS MODULE. CSS Modules localize
