@@ -1,4 +1,4 @@
-import { CheckScreen } from "@/components/CheckScreen";
+import { CheckScreen } from "@/features/check/components/CheckScreen";
 import type { Metadata } from "next";
 import { metadataTitleFor } from "@/lib/pageTitles";
 

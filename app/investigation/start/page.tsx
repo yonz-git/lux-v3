@@ -1,4 +1,4 @@
-import { StartInvestigation } from "@/components/StartInvestigation";
+import { StartInvestigation } from "@/features/my-skin/components/StartInvestigation";
 import type { Metadata } from "next";
 import { metadataTitleFor } from "@/lib/pageTitles";
 

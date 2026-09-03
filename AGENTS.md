@@ -30,6 +30,72 @@ what changed and why — keep writing them.
 **Screens page:** `06. Screen Designs` (`453:2252`). Each section has a
 `HANDOFF — *` annotation panel beside its mobile row documenting every recipe.
 
+## Where the code lives
+
+**One folder per nav section.** `features/<section>/` holds that section's
+screens AND its data module, so everything the Products tab is made of sits in
+`features/products/` and nothing else does. The four folders are named for the
+four nav items: `my-skin`, `products`, `progress`, `check`.
+
+```
+app/                       routes only — every page.tsx is a thin shell
+components/
+  ui/                      the design system: Button, SmallButton, Chip,
+                           OptionRow, Tag, TextField, DateField, SearchField,
+                           ChatBubble, Sheet, DataCard, Orb, CameraCapture,
+                           icons
+  layout/                  app chrome: BottomNav, HubScreen, ScreenHeader,
+                           RouteAnnouncer
+features/
+  my-skin/                 flow.ts + Welcome, QuestionScreen, StepProgress,
+                           StartInvestigation, SkinType, KnownConditions,
+                           Timing, SelfieSheet, FaceDiagram, OtherBlock
+  products/                products.ts, openBeautyFacts.ts, the two search
+                           hooks + YourProducts, MyProducts, ProductList,
+                           ProductCard, ProductDetails, ProductArt,
+                           ProductThumb, ProductAccordionCard,
+                           AddProductMethodSheet
+  progress/                progress.ts + ProgressScreen, CheckIn,
+                           CheckInDetail, CheckInCalendar, CheckInPhotoArt,
+                           SymptomTrend, SkinProfile
+  check/                   check.ts + CheckScreen, CheckBuilder,
+                           CheckAnalyzing, CheckResults, CheckHistory,
+                           CheckBasket, CompatCard, ResultCards,
+                           SkinProfileStrip
+lib/
+  store/                   answers.ts + InvestigationProvider.tsx
+  date.ts  demo.ts  pageTitles.ts
+```
+
+**The rule for placing a new file:** it goes in `features/<section>/` unless two
+different sections already use it. `components/ui/` is for things with no
+opinion about what they contain; `components/layout/` is for the frame around a
+screen. A component used by exactly one section is that section's, however
+generic it looks.
+
+**⚠️ `QuestionScreen` AND `StepProgress` LIVE UNDER `my-skin`, NOT `layout/`.**
+They read `flow.ts` — `StepId`, the track position, `isComplete` — so they can
+only ever wrap an investigation step, which makes them the flow's shell rather
+than app chrome. `HubScreen` takes no flow dependency and stays in `layout/`.
+The HUB vs FLOW rule the two of them encode is unchanged; only the folder is.
+
+**⚠️ THE STORE IS NOT `my-skin`'s, THOUGH THE FLOW WRITES MOST OF IT.**
+`Answers` carries slices owned by every section — `checkBasket` and `checks` are
+CHECK's, `products` and `productDraft` are PRODUCTS', `checkIns` is PROGRESS's —
+and it imports a type from all four. Filing it under `my-skin` would have made
+every feature import that feature, and `my-skin` import them all straight back.
+It sits in `lib/store/` beside the provider that serves it, because the shape
+and the provider are one thing.
+
+**⚠️ SECTIONS MAY IMPORT EACH OTHER, AND TWO DO.** CHECK reads PRODUCTS —
+`CheckBuilder` uses `ProductList`, `ProductDetails`, `ProductThumb` and opens
+the PRODUCTS tray, all deliberately (see the CHECK section). PRODUCTS reads
+`my-skin`'s `QuestionScreen`, because step 5 is a flow step. Both are real
+dependencies, not leftovers. What must NOT happen is `components/ui/` or
+`components/layout/` importing a feature — those two are the layer underneath.
+`lib/pageTitles.ts` is the one shared module that imports a feature
+(`my-skin/flow.ts`); it is a route registry, so knowing every route is its job.
+
 **Built so far:** GETTING STARTED, PRODUCTS, PROGRESS and CHECK.
 
 - **GETTING STARTED** — `00 — Welcome` at `/`, then four of the five track
@@ -42,13 +108,13 @@ what changed and why — keep writing them.
   `/investigation/selfie`, a routed step that carried a progress track and
   `Save & exit` while explicitly SHARING step 1's number, so the track never
   moved when you reached it — a "step" on the main line of a flow it was an
-  optional side path off. "Take a photo" opens `components/SelfieSheet.tsx` in
+  optional side path off. "Take a photo" opens `features/my-skin/components/SelfieSheet.tsx` in
   place now: routing away scrolled the symptoms and face regions just picked
   out of sight behind a screen that says nothing about them, and coming back
   was a navigation rather than a dismissal, for what is one tap on a
   placeholder viewfinder. The `Sheet` recipe is unchanged and every measurement
   is still the frame's own; only the container is. The `selfie` step and its
-  `StepId` are gone from `lib/flow.ts` — there is no route left for it to own —
+  `StepId` are gone from `features/my-skin/flow.ts` — there is no route left for it to own —
   and `answers.selfie` is written exactly as before.
 
   **⚠️ NINE DESIGNED SCREENS ARE FIVE STEPS.** `02b — Skin tendencies` merged
@@ -76,7 +142,7 @@ what changed and why — keep writing them.
   empty-state CTA all say the same thing now, and that string is not new copy —
   it is the label `Check — no profile` (606:2183) already gives this exact
   destination. Four names for one place was the confusion; the frame name is the
-  odd one out and Figma catches up. `lib/flow.ts` owns the title, as it owns
+  odd one out and Figma catches up. `features/my-skin/flow.ts` owns the title, as it owns
   every other screen's.
 - **PRODUCTS** — ONE add-flow screen under `/investigation/products` (step 5/5)
   and two hub routes under `/products*`. All three read nav `products`. It was
@@ -84,7 +150,7 @@ what changed and why — keep writing them.
 
   **⚠️ STEP 5 IS THE ONE FLOW SCREEN THAT DOES NOT LIGHT `My skin` — NOT IN
   FIGMA.** It is still an investigation step in every other respect (track,
-  `Save & exit`, `lib/flow.ts`), but what it puts on screen is the products
+  `Save & exit`, `features/my-skin/flow.ts`), but what it puts on screen is the products
   list the `Products` tab owns, and the user is there to add products. Lighting
   `My skin` named the flow while the screen plainly read Products.
   `QuestionScreen` takes a `nav` prop for it; every other step keeps the
@@ -99,11 +165,11 @@ what changed and why — keep writing them.
   (nav `check`). Eight designed screens; see the CHECK section below.
   Not an investigation step either.
 
-`lib/flow.ts` owns the step order, the 1-based track position, the Figma frame
-ids AND each step's `isComplete` rule. `lib/products.ts` owns the product
-catalogue, the groups and the duration→group mapping. `lib/progress.ts` owns
+`features/my-skin/flow.ts` owns the step order, the 1-based track position, the Figma frame
+ids AND each step's `isComplete` rule. `features/products/products.ts` owns the product
+catalogue, the groups and the duration→group mapping. `features/progress/progress.ts` owns
 the check-in series and everything the Progress screen states about it.
-`lib/check.ts` owns the compatibility bands, the scoring model and the check
+`features/check/check.ts` owns the compatibility bands, the scoring model and the check
 history.
 
 ### PRODUCTS — the route map
@@ -195,7 +261,7 @@ chevron is `icon-xs` against the header's `icon-sm`, which is the only thing
 saying it belongs TO the card rather than being a second one. It is not drawn
 when `ingredients` is absent.
 
-**⚠️ THAT BLOCK IS `components/ProductDetails.tsx`, AND TWO SCREENS OPEN IT.**
+**⚠️ THAT BLOCK IS `features/products/components/ProductDetails.tsx`, AND TWO SCREENS OPEN IT.**
 It started local to `ProductAccordionCard`, i.e. to this hub; `/check/new`
 expands its own rows onto the same thing now (see CHECK below). It is one
 readout of five fields, and a screen that reordered them or dropped one would
@@ -205,7 +271,7 @@ check's carries the `Add` control — the record does not. `Added` is the one
 optional row: a bare `CatalogProduct` has no `addedOn`, and a row reading
 "Added —" says less than no row.
 
-**⚠️ EVERY CATALOGUE ENTRY CARRIES AN INCI LIST NOW, AND `lib/check.ts` READS
+**⚠️ EVERY CATALOGUE ENTRY CARRIES AN INCI LIST NOW, AND `features/check/check.ts` READS
 THEM.** `CatalogProduct.ingredients` existed for live Open Beauty Facts results
 only, so on `/products` — which IS the demo — all five seeded products had an
 Ingredients section with nothing in it. The lists agree with the MODEL rather
@@ -260,7 +326,7 @@ timeline dots, meter fills — and the trend line is `text/on-data`, i.e. dark
 since the contrast fix below. A divider inside one is
 1px `border/glass`, never `border/subtle`. A nested emphasis block is
 `surface/data-strong`: **a sage card inside a light card is a LUX pattern, the
-reverse is not.** `components/DataCard.tsx` is the whole recipe; use it.
+reverse is not.** `components/ui/DataCard.tsx` is the whole recipe; use it.
 
 **⚠️ THE CTA AND ITS CAPTION SIT IN col-1 NOW, UNDER THE CALENDAR — NOT IN
 FIGMA.** The handoff gives col-2 four blocks and col-1 the calendar alone,
@@ -283,7 +349,7 @@ dashboard body is not centred and its last row rendered straight behind the nav
 pill. Measured: caption and nav both at y=743.
 
 **⚠️ THE CHECK-IN HISTORY IS SEEDED ONLY WHILE THE SCREEN IS THE DEMO.**
-`lib/progress.ts` anchors a deterministic series to a start date and clips it at
+`features/progress/progress.ts` anchors a deterministic series to a start date and clips it at
 today; every figure the screen states (the day count, the percentage, "3 days
 ago") is computed from that series rather than transcribed. Every entry point is
 named `demo*`.
@@ -322,7 +388,7 @@ Figma.**
 **⚠️ THE FRAME DRAWS `Save & exit` WITH NO PROGRESS TRACK, AND THE BUILD HAS
 NEITHER.** That pair together is the investigation flow's signature, and this is
 a daily action off a hub, not a resumable step — it has no `StepId` and is not
-in `lib/flow.ts`. One half of the pair on its own is the frame contradicting the
+in `features/my-skin/flow.ts`. One half of the pair on its own is the frame contradicting the
 rule the rest of the file follows. It IS a pushed view, so it keeps the back
 chevron a hub LANDING does not get. **Also an open question.**
 
@@ -340,7 +406,7 @@ the question with the storage.
 
 **⚠️ THE BASELINE IS THE SERIES THE CHART PLOTS, NOT `answers.checkIns`.** In
 demo mode the store holds nothing — the nine seeded check-ins live in
-`lib/progress.ts` and are merged by `checkInsFor` — so reading the store found no
+`features/progress/progress.ts` and are merged by `checkInsFor` — so reading the store found no
 previous severity, `severityAfter` fell back to mid-scale, and "Slightly better"
 after a seeded 1 plotted a **3**. The line went UP directly under the words
 "Slightly better". "Better than what?" has exactly one right answer: the last
@@ -565,7 +631,7 @@ including a written TRANSITION MAP, because page 06 carries zero Figma reactions
 
 **⚠️ NO PROGRESS TRACK AND NO `Save & exit` ANYWHERE IN CHECK.** That pair is the
 signature of the investigation flow. CHECK is a standalone check off the Check
-tab, so it has no `StepId` and lives in `lib/check.ts`, not `lib/flow.ts`.
+tab, so it has no `StepId` and lives in `features/check/check.ts`, not `features/my-skin/flow.ts`.
 Screens 1–2 are the tab landing (no back chevron, dashboard header, pattern C);
 3–8 are pushed views with a back chevron and, on desktop, the 920 page card.
 
@@ -626,7 +692,7 @@ multi-select so that card has to render two anyway — the narrower comp is
 abbreviating. Verified: the profile card still measures the comp's exact 189
 with both on one line.
 
-**⚠️ THE SCORING IS A MODEL, NOT A LOOKUP.** `lib/check.ts` gives every catalogue
+**⚠️ THE SCORING IS A MODEL, NOT A LOOKUP.** `features/check/check.ts` gives every catalogue
 product the actives it contains, each active a penalty against the user's skin,
 and the score is what is left of 98 — nothing is 100. Hardcoding the comp's five
 numbers would mean any product the user actually picks scores nothing, which is
@@ -698,7 +764,7 @@ System B question is the calendar's `Today` ring, which is `border/glass` on
 indicator.
 
 ⚠️ **TWO SHEETS OPT BACK OUT OF THE DARK INK, AND BOTH FAIL.**
-`AddProductMethodSheet.module.css` redeclares `text/on-data*` as `#ffffff` for
+`features/products/components/AddProductMethodSheet.module.css` redeclares `text/on-data*` as `#ffffff` for
 its method list (measured 2.64:1 / 2.70:1) and `CheckBasket` does the same for
 its rows (2.39:1, and 2.39:1 for the white remove glyphs, which are controls).
 Both are deliberate and flagged in their own files. Everything else in the app
@@ -798,8 +864,8 @@ field, skin-profile strip and all — out of reach. Now: the page always lists
 your products, and the panel floats over it, caps itself at
 `min(360px, 50dvh)` and takes its own scroll, so the page never moves.
 
-The recipe is the tray's (`.dropdown` in `AddProductMethodSheet.module.css`)
-with two deliberate differences, both flagged in `CheckBuilder.module.css`:
+The recipe is the tray's (`.dropdown` in `features/products/components/AddProductMethodSheet.module.css`)
+with two deliberate differences, both flagged in `features/check/components/CheckBuilder.module.css`:
 
 - **Absolutely positioned, where the tray's is in flow.** The tray is docked to
   the bottom edge and hugs its content, so an overlaid panel there would open
@@ -844,7 +910,7 @@ It now normalizes (diacritics, punctuation; so `la roche posay` finds
 `La Roche-Posay`), scores name > brand > size > ingredient with a word-start
 bonus and a whole-phrase bonus, and sorts equal hits by name so the list does
 not reshuffle as the query grows a character. **Ingredients come from the
-CALLER** — `lib/check.ts` owns the actives and already imports `products.ts`, so
+CALLER** — `features/check/check.ts` owns the actives and already imports `products.ts`, so
 `/check/new` passes `checkSearchTerms` and the PRODUCTS tray does not; searching
 by what a product contains is a compatibility question. A row pulled in by an
 ingredient it does not name says so in its meta line (`· Contains Salicylic
@@ -875,10 +941,10 @@ a populated dashboard — it has nothing to select, and an empty readout shows
 nothing. See the PROGRESS section above before "fixing" it.
 
 **`Continue` is DISABLED until the step is answered**, then becomes available.
-The rule lives on the step in `lib/flow.ts` (`isComplete`), never in the screen,
+The rule lives on the step in `features/my-skin/flow.ts` (`isComplete`), never in the screen,
 so a new screen cannot forget it. `QuestionScreen` reads it and owns the button.
 
-Answers live in `components/InvestigationProvider.tsx` — React context,
+Answers live in `lib/store/InvestigationProvider.tsx` — React context,
 **in memory only**. Read them with `useInvestigation()`. It is provided from
 `app/layout.tsx`, i.e. app-wide: the PRODUCTS hub under `/products` reads the
 same products step 5 writes and is reached from the nav rather than from inside
@@ -1042,23 +1108,23 @@ risk. All are on the missing-from-the-DS list.
 
 | Need               | Here                                                 | Note                                                                                                                                                                                                                                                                                                                                                                              |
 | ------------------ | ---------------------------------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| Date picker        | `components/DateField.tsx`                           | `<input type="date">`'s popup is drawn by the browser and **cannot be styled** — no token or class reaches inside it. It rendered as a stock white Chrome calendar mid-flow. The DS has no calendar component either, so this is composed from tokens.                                                                                                                            |
-| Text input         | `components/TextField.tsx`                           | `Search Field` (248:70) exists but is search-specific. `other-input` on 02c/03a and the 03c date field are all hand-composed in Figma.                                                                                                                                                                                                                                            |
-| Face-region picker | `components/FaceDiagram.tsx`                         | The region coordinates ARE the design — "Cheeks (L)" only means the left cheek because of where it sits. Stored as % of the 392x300 card so it scales. ⚠️ The region chips are `bg/frost-light` (OPAQUE) as of 22 Aug 2026: they sit ON a frost-light card, so at 55% it was the same fill over the same fill and the pill had almost no edge. Selected stays `bg/brand` + white. |
-| Camera shutter     | `components/CameraCapture.tsx`, plus `SelfieSheet.module.css` | No shutter component in the DS, and there are now THREE capture surfaces: the selfie tray, the products scan view and the check-in's photo overlay. `SelfieCapture` carried the note "if a second capture surface ever appears, make it a real component first" — a third did, so `CameraCapture` is that component (viewfinder + guide + captured label + copy + shutter) and the scan view and the check-in both use it. ⚠️ **`SelfieSheet` DELIBERATELY DOES NOT.** 487:834 / 490:1041 give it its own geometry — a 392x400 / 420x340 viewfinder against `CameraCapture`'s 392x300, a PORTRAIT oval against a landscape rectangle, a 72 shutter against 64, and the helper BELOW the shutter rather than above. Those are its frame's measurements, not drift; folding it in would move them. **Raise a real Camera / Shutter component in Figma**, then migrate all three at once. Every viewfinder is a placeholder, not `getUserMedia` — wiring a real camera would make the prototype demand a permission just to walk the flow.                                                                                                                                                                                                            |
-| Modal tray         | `components/Sheet.tsx`                               | `Bottom Sheet` (255:91) has no background blur and a fixed light content slot, so every tray in the file is hand-composed from the recipe. There is also **no scrim token** — `state/pressed-overlay` at 14% is the only darkening value LUX has and it is weak for a modal. ⚠️ **IT PORTALS TO `document.body`, AND IT HAS TO.** `position: fixed` is viewport-relative only while no ancestor establishes a containing block, and `backdrop-filter` does that exactly like `transform` does. Every tray opens from inside `QuestionScreen`'s frosted card (`blur(32px)`), so the desktop dialog was centred in THAT CARD: measured at 1238x875 the tray's top edge sat at y = −41 with its heading off the top of the screen, and the scrim covered the card instead of the page.                                                                                                      |
-| Accordion          | `components/ProductAccordionCard.tsx`, `ProductList.tsx`'s `details` row | No accordion component. Composed from the frosted card recipe. It was `BucketProductsList` on the deleted `/products/[bucket]` route; the cards moved into the hub rows unchanged. `ProductRow` learned the same move for `/check/new` rather than a second disclosure treatment appearing; both open onto `ProductDetails`.                                                                                                                                                                                                                                                                                                                    |
-| Search dropdown    | `AddProductMethodSheet.module.css` `.dropdown`        | `Search Field` (248:70) has no results popup, and the comps drew results as free-standing `ProductRow` cards on a routed screen. One frosted panel tucked 8 under the pill and inset 8 either side, capped at 296 with its own scroll. ⚠️ IN FLOW, NOT ABSOLUTE — the mobile tray is docked to the bottom edge and hugs its content, so an overlaid panel would open off the bottom of the viewport. |
-| `My skin` nav icon | `MySkinIcon` in `components/icons.tsx`               | The nav's fourth glyph. `Bottom-Nav-Bar` (410:258) ships three icons and the DS has no face or skin mark anywhere else — `FaceDiagram` is a picker, not an icon. ⚠️ STROKE-drawn, unlike its three filled neighbours: a solid disc at 24 is a far heavier mark than Progress/Check/Products draw, and the face only reads at that size with the eyes and mouth left open. currentColor throughout, so the active/inactive opacity treatment is untouched. Replace it in the DS first, not here. |
-| Product imagery    | `components/ProductArt.tsx`                          | ⚠️ **THE CAMERA GLYPH IS GONE — DECIDED HERE, NOT IN FIGMA.** No product or bottle icon exists outside the bottom nav, so every thumb (`ProductThumb`, 48) and image well (`ProductCard`, 352x140) drew a camera. That reads as "no photo yet" once and as nothing at all down a list — `/check/new`, the PRODUCTS hub and the add tray all show the same mark on every row, so the thumbnail identifies nothing. `ProductArt` draws the vessel instead: **nine** silhouettes (tub, pump, tube, dropper, bottle, airless, spray, sachet, tin) by packaging type, tinted per brand, so same brand → same tint and same type → same shape. ⚠️ **IT WAS FIVE FORMS AND ONE FALLBACK TINT, WHICH WAS ENOUGH ONLY WHILE THE CATALOGUE WAS THE SEARCH.** Both searches are live now, so the list is whatever the database holds — masks, mists, sticks, ointments — and every one of them fell through `formFor`'s default to the same pump on a `sage` body. A column of identical pumps is the camera glyph with an extra step. Three axes of variety, all keyed on a stable FNV-1a `hash` (never `Math.random()` or an index — a thumbnail that changes identity between two screens is worse than one that repeats): unnamed brands hash into a 7-tint `RING`, unrecognised names hash across all nine `FORMS`, and `labelVariant` picks one of three label treatments off the product id so two products of the same form AND brand still differ. Brand strings are diacritic-folded before hashing, because OBF files the same house as both "Avene" and "Avène". ⚠️ **AND IT IS THE ONLY PICTURE — THE API'S PHOTOS ARE NOT READ.** Open Beauty Facts carries `image_front_url` and it used to win over the drawing. Its images are crowdsourced with no quality gate, so a result list mixed usable front-of-package shots with stubs, angled boxes and rows that fell back to a drawing anyway — two kinds of picture in one column, which is worse at telling rows apart than either alone. `lib/openBeautyFacts.ts` no longer requests the image fields, `CatalogProduct` has no `imageUrl`, and `useProductPhoto` is deleted; `artFor` serves live results via `formFor`/`paletteFor`. **The API still supplies every WORD** — name, brand, size and the INCI list. The pigments are LOCAL LITERALS drawn from the LUX family and must not become tokens — `02 Color` has no "bottle glass" role, and binding a lid to `bg/brand` would move the artwork every time the brand colour did. **Raise a real illustration set in Figma.** |
-| Check-in photo     | `components/CheckInPhotoArt.tsx`                     | ⚠️ **NOT IN FIGMA.** `Check-in detail` draws its photo wells as a camera glyph, the same hole `ProductThumb` had and the same failure: the PHOTOS card's entire content is the picture, so a camera icon there says "no photo" on the record of one the user took. Drawn instead — a soft crop of skin with the flushed patch the investigation is about, `slice`-cropped to fill the well the way a photograph would be, grained with `feTurbulence` because three overlapping gradients in a picture frame read as a loading state. **No feature is drawn and it is not anyone's face.** Tone and blush position are keyed on the DAY with the same FNV-1a hash `ProductArt` uses, never `Math.random()`. Pigments are LOCAL LITERALS — `02 Color` has no skin-tone role and should not grow one for a placeholder. Every capture surface in LUX is a placeholder; this is the record of one. **Raise real imagery in Figma.** |
-| Opaque sage        | `Sheet.module.css`                                   | `surface/data-strong` is 62% and has no solid counterpart the way `bg/nav` is `surface/frost-nav`'s. The `prefers-reduced-transparency` tray composites the same sage over `bg/canvas`.                                                                                                                                                                                           |
-| Data card          | `components/DataCard.tsx`                            | The whole of SURFACE SYSTEM B. `surface/data` + `surface/frosted-data` + `radius/2xl` + 20/24 padding, **no stroke**. Not a component in Figma — every PROGRESS and CHECK card is composed from those tokens. Its `prefers-reduced-transparency` fallback composites the same sage over `bg/canvas`, exactly as `Sheet` does.                                                       |
-| Calendar (record)  | `components/CheckInCalendar.tsx`                     | On the handoff's own missing list. ⚠️ THE SECOND CALENDAR IN THE APP AND NOT THE SAME ONE — `DateField` is a Monday-first interactive date PICKER, this is a Sunday-first read-only RECORD, and both match their frames. Do not merge them; raise the week-start split in Figma instead.                                                                                            |
-| Line chart         | `components/SymptomTrend.tsx`                        | On the handoff's missing list. Drawn from the data, NOT from the comp's baked vector — the series is the card's whole content. `preserveAspectRatio="none"` + `vector-effect` for the line; the dots are positioned elements so they stay round (the desktop comp exports its "circles" at 13.33 x 8).                                                                              |
-| Skin-profile strip | `components/SkinProfileStrip.tsx`                    | The one sage element on a CHECK screen. Same System B recipe as `DataCard` but an 86-tall strip with 18/20 padding — a separate component rather than a size prop that would mean nothing.                                                                                                                                                                                         |
-| Compat accordion   | `components/CompatCard.tsx`                          | The SECOND accordion in the app; `ProductAccordionCard` is the other, on a different surface with a different header and no band. Neither exists in the DS. The band drives pill, score and bar fill through one `--band` custom property so they cannot drift.                                                                                                                       |
-| Status pill        | `CompatCard.module.css`, `CheckHistory.module.css`   | Not `Tag` — Tag is Neutral/Brand only and these carry the feedback colours. ⚠️ `feedback/warning` and `feedback/error` share a hue and differ only in lightness, so the pill TEXT is what separates Risky from Avoid. Every row states its band in an aria-label, including the compatible ones that draw no pill at all.                                                            |
+| Date picker        | `components/ui/DateField.tsx`                           | `<input type="date">`'s popup is drawn by the browser and **cannot be styled** — no token or class reaches inside it. It rendered as a stock white Chrome calendar mid-flow. The DS has no calendar component either, so this is composed from tokens.                                                                                                                            |
+| Text input         | `components/ui/TextField.tsx`                           | `Search Field` (248:70) exists but is search-specific. `other-input` on 02c/03a and the 03c date field are all hand-composed in Figma.                                                                                                                                                                                                                                            |
+| Face-region picker | `features/my-skin/components/FaceDiagram.tsx`                         | The region coordinates ARE the design — "Cheeks (L)" only means the left cheek because of where it sits. Stored as % of the 392x300 card so it scales. ⚠️ The region chips are `bg/frost-light` (OPAQUE) as of 22 Aug 2026: they sit ON a frost-light card, so at 55% it was the same fill over the same fill and the pill had almost no edge. Selected stays `bg/brand` + white. |
+| Camera shutter     | `components/ui/CameraCapture.tsx`, plus `features/my-skin/components/SelfieSheet.module.css` | No shutter component in the DS, and there are now THREE capture surfaces: the selfie tray, the products scan view and the check-in's photo overlay. `SelfieCapture` carried the note "if a second capture surface ever appears, make it a real component first" — a third did, so `CameraCapture` is that component (viewfinder + guide + captured label + copy + shutter) and the scan view and the check-in both use it. ⚠️ **`SelfieSheet` DELIBERATELY DOES NOT.** 487:834 / 490:1041 give it its own geometry — a 392x400 / 420x340 viewfinder against `CameraCapture`'s 392x300, a PORTRAIT oval against a landscape rectangle, a 72 shutter against 64, and the helper BELOW the shutter rather than above. Those are its frame's measurements, not drift; folding it in would move them. **Raise a real Camera / Shutter component in Figma**, then migrate all three at once. Every viewfinder is a placeholder, not `getUserMedia` — wiring a real camera would make the prototype demand a permission just to walk the flow.                                                                                                                                                                                                            |
+| Modal tray         | `components/ui/Sheet.tsx`                               | `Bottom Sheet` (255:91) has no background blur and a fixed light content slot, so every tray in the file is hand-composed from the recipe. There is also **no scrim token** — `state/pressed-overlay` at 14% is the only darkening value LUX has and it is weak for a modal. ⚠️ **IT PORTALS TO `document.body`, AND IT HAS TO.** `position: fixed` is viewport-relative only while no ancestor establishes a containing block, and `backdrop-filter` does that exactly like `transform` does. Every tray opens from inside `QuestionScreen`'s frosted card (`blur(32px)`), so the desktop dialog was centred in THAT CARD: measured at 1238x875 the tray's top edge sat at y = −41 with its heading off the top of the screen, and the scrim covered the card instead of the page.                                                                                                      |
+| Accordion          | `features/products/components/ProductAccordionCard.tsx`, `ProductList.tsx`'s `details` row | No accordion component. Composed from the frosted card recipe. It was `BucketProductsList` on the deleted `/products/[bucket]` route; the cards moved into the hub rows unchanged. `ProductRow` learned the same move for `/check/new` rather than a second disclosure treatment appearing; both open onto `ProductDetails`.                                                                                                                                                                                                                                                                                                                    |
+| Search dropdown    | `features/products/components/AddProductMethodSheet.module.css` `.dropdown`        | `Search Field` (248:70) has no results popup, and the comps drew results as free-standing `ProductRow` cards on a routed screen. One frosted panel tucked 8 under the pill and inset 8 either side, capped at 296 with its own scroll. ⚠️ IN FLOW, NOT ABSOLUTE — the mobile tray is docked to the bottom edge and hugs its content, so an overlaid panel would open off the bottom of the viewport. |
+| `My skin` nav icon | `MySkinIcon` in `components/ui/icons.tsx`               | The nav's fourth glyph. `Bottom-Nav-Bar` (410:258) ships three icons and the DS has no face or skin mark anywhere else — `FaceDiagram` is a picker, not an icon. ⚠️ STROKE-drawn, unlike its three filled neighbours: a solid disc at 24 is a far heavier mark than Progress/Check/Products draw, and the face only reads at that size with the eyes and mouth left open. currentColor throughout, so the active/inactive opacity treatment is untouched. Replace it in the DS first, not here. |
+| Product imagery    | `features/products/components/ProductArt.tsx`                          | ⚠️ **THE CAMERA GLYPH IS GONE — DECIDED HERE, NOT IN FIGMA.** No product or bottle icon exists outside the bottom nav, so every thumb (`ProductThumb`, 48) and image well (`ProductCard`, 352x140) drew a camera. That reads as "no photo yet" once and as nothing at all down a list — `/check/new`, the PRODUCTS hub and the add tray all show the same mark on every row, so the thumbnail identifies nothing. `ProductArt` draws the vessel instead: **nine** silhouettes (tub, pump, tube, dropper, bottle, airless, spray, sachet, tin) by packaging type, tinted per brand, so same brand → same tint and same type → same shape. ⚠️ **IT WAS FIVE FORMS AND ONE FALLBACK TINT, WHICH WAS ENOUGH ONLY WHILE THE CATALOGUE WAS THE SEARCH.** Both searches are live now, so the list is whatever the database holds — masks, mists, sticks, ointments — and every one of them fell through `formFor`'s default to the same pump on a `sage` body. A column of identical pumps is the camera glyph with an extra step. Three axes of variety, all keyed on a stable FNV-1a `hash` (never `Math.random()` or an index — a thumbnail that changes identity between two screens is worse than one that repeats): unnamed brands hash into a 7-tint `RING`, unrecognised names hash across all nine `FORMS`, and `labelVariant` picks one of three label treatments off the product id so two products of the same form AND brand still differ. Brand strings are diacritic-folded before hashing, because OBF files the same house as both "Avene" and "Avène". ⚠️ **AND IT IS THE ONLY PICTURE — THE API'S PHOTOS ARE NOT READ.** Open Beauty Facts carries `image_front_url` and it used to win over the drawing. Its images are crowdsourced with no quality gate, so a result list mixed usable front-of-package shots with stubs, angled boxes and rows that fell back to a drawing anyway — two kinds of picture in one column, which is worse at telling rows apart than either alone. `features/products/openBeautyFacts.ts` no longer requests the image fields, `CatalogProduct` has no `imageUrl`, and `useProductPhoto` is deleted; `artFor` serves live results via `formFor`/`paletteFor`. **The API still supplies every WORD** — name, brand, size and the INCI list. The pigments are LOCAL LITERALS drawn from the LUX family and must not become tokens — `02 Color` has no "bottle glass" role, and binding a lid to `bg/brand` would move the artwork every time the brand colour did. **Raise a real illustration set in Figma.** |
+| Check-in photo     | `features/progress/components/CheckInPhotoArt.tsx`                     | ⚠️ **NOT IN FIGMA.** `Check-in detail` draws its photo wells as a camera glyph, the same hole `ProductThumb` had and the same failure: the PHOTOS card's entire content is the picture, so a camera icon there says "no photo" on the record of one the user took. Drawn instead — a soft crop of skin with the flushed patch the investigation is about, `slice`-cropped to fill the well the way a photograph would be, grained with `feTurbulence` because three overlapping gradients in a picture frame read as a loading state. **No feature is drawn and it is not anyone's face.** Tone and blush position are keyed on the DAY with the same FNV-1a hash `ProductArt` uses, never `Math.random()`. Pigments are LOCAL LITERALS — `02 Color` has no skin-tone role and should not grow one for a placeholder. Every capture surface in LUX is a placeholder; this is the record of one. **Raise real imagery in Figma.** |
+| Opaque sage        | `components/ui/Sheet.module.css`                                   | `surface/data-strong` is 62% and has no solid counterpart the way `bg/nav` is `surface/frost-nav`'s. The `prefers-reduced-transparency` tray composites the same sage over `bg/canvas`.                                                                                                                                                                                           |
+| Data card          | `components/ui/DataCard.tsx`                            | The whole of SURFACE SYSTEM B. `surface/data` + `surface/frosted-data` + `radius/2xl` + 20/24 padding, **no stroke**. Not a component in Figma — every PROGRESS and CHECK card is composed from those tokens. Its `prefers-reduced-transparency` fallback composites the same sage over `bg/canvas`, exactly as `Sheet` does.                                                       |
+| Calendar (record)  | `features/progress/components/CheckInCalendar.tsx`                     | On the handoff's own missing list. ⚠️ THE SECOND CALENDAR IN THE APP AND NOT THE SAME ONE — `DateField` is a Monday-first interactive date PICKER, this is a Sunday-first read-only RECORD, and both match their frames. Do not merge them; raise the week-start split in Figma instead.                                                                                            |
+| Line chart         | `features/progress/components/SymptomTrend.tsx`                        | On the handoff's missing list. Drawn from the data, NOT from the comp's baked vector — the series is the card's whole content. `preserveAspectRatio="none"` + `vector-effect` for the line; the dots are positioned elements so they stay round (the desktop comp exports its "circles" at 13.33 x 8).                                                                              |
+| Skin-profile strip | `features/check/components/SkinProfileStrip.tsx`                    | The one sage element on a CHECK screen. Same System B recipe as `DataCard` but an 86-tall strip with 18/20 padding — a separate component rather than a size prop that would mean nothing.                                                                                                                                                                                         |
+| Compat accordion   | `features/check/components/CompatCard.tsx`                          | The SECOND accordion in the app; `ProductAccordionCard` is the other, on a different surface with a different header and no band. Neither exists in the DS. The band drives pill, score and bar fill through one `--band` custom property so they cannot drift.                                                                                                                       |
+| Status pill        | `features/check/components/CompatCard.module.css`, `features/check/components/CheckHistory.module.css`   | Not `Tag` — Tag is Neutral/Brand only and these carry the feedback colours. ⚠️ `feedback/warning` and `feedback/error` share a hue and differ only in lightness, so the pill TEXT is what separates Risky from Avoid. Every row states its band in an aria-label, including the compatible ones that draw no pill at all.                                                            |
 
 ## Selection controls — the shape is the contract
 
@@ -1156,7 +1222,7 @@ the tab label: **a title is the only sentence available to announce a
 client-side navigation**, and every navigation in the app announced the same
 word.
 
-`lib/pageTitles.ts` owns them. A flow step takes its title from `lib/flow.ts`,
+`lib/pageTitles.ts` owns them. A flow step takes its title from `features/my-skin/flow.ts`,
 which already owns every step's heading; a hub route gets an entry in
 `HUB_TITLES`. Then the page exports
 `export const metadata: Metadata = { title: metadataTitleFor("/its/path") };`.

@@ -1,4 +1,4 @@
-import { YourProducts } from "@/components/YourProducts";
+import { YourProducts } from "@/features/products/components/YourProducts";
 import type { Metadata } from "next";
 import { metadataTitleFor } from "@/lib/pageTitles";
 

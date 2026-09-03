@@ -25,8 +25,8 @@
  *
  * Delete this the moment there is a backend to resume from.
  */
-import type { Answers } from "./answers";
-import { bucketFor, productById, type Duration, type SavedProduct } from "./products";
+import type { Answers } from "@/lib/store/answers";
+import { bucketFor, productById, type Duration, type SavedProduct } from "@/features/products/products";
 
 export const DEMO_PROFILE = {
   skinType: "Combination",

@@ -1,4 +1,4 @@
-import { CheckHistory } from "@/components/CheckHistory";
+import { CheckHistory } from "@/features/check/components/CheckHistory";
 import type { Metadata } from "next";
 import { metadataTitleFor } from "@/lib/pageTitles";
 

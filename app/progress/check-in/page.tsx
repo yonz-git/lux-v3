@@ -1,4 +1,4 @@
-import { CheckIn } from "@/components/CheckIn";
+import { CheckIn } from "@/features/progress/components/CheckIn";
 import type { Metadata } from "next";
 import { metadataTitleFor } from "@/lib/pageTitles";
 

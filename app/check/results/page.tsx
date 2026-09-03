@@ -1,4 +1,4 @@
-import { CheckResults } from "@/components/CheckResults";
+import { CheckResults } from "@/features/check/components/CheckResults";
 import type { Metadata } from "next";
 import { metadataTitleFor } from "@/lib/pageTitles";
 

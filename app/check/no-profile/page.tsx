@@ -1,4 +1,4 @@
-import { CheckNoProfile } from "@/components/CheckScreen";
+import { CheckNoProfile } from "@/features/check/components/CheckScreen";
 import type { Metadata } from "next";
 import { metadataTitleFor } from "@/lib/pageTitles";
 
