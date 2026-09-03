@@ -27,7 +27,7 @@ comment naming what changed and why. Keep writing them.
 ## Where to find the reasoning
 
 This file is the RULES. It deliberately does not carry the reasoning behind
-them, because that lives in two better places:
+them, because that lives in three better places:
 
 1. **The component's own doc comment.** Every screen and component opens with a
    30–50 line block explaining its Figma frame, its measurements and every
@@ -37,6 +37,17 @@ them, because that lives in two better places:
    twelve screens to one, why CHECK's basket stopped being modal, the contrast
    measurements behind SURFACE SYSTEM B, and the list of things faked here
    because the design system has no component for them.
+3. **`docs/design.md`** — the Figma-side working guide: the component node ids
+   and their variant structures, all nine token collections, the text-style
+   ramp, the spacing and radius scales, and the `use_figma` gotchas. It is the
+   authority for anything this file does not answer. **Read it before building
+   a screen shape that does not already exist here** — it carries the
+   vocabulary this file assumes you already have.
+
+`design.md` is the FIGMA side; this file is the CODE side. Where they disagree,
+the code is the truth about what SHIPPED and `design.md` is the truth about what
+FIGMA HOLDS — both can be right at once. `docs/figma-catchup.md` lists every gap
+between them and is the work order for closing them in Figma.
 
 **Read the matching section of `docs/decisions.md` before you change the flow,
 the surfaces or the copy of a nav section.** Those entries record decisions a
@@ -186,9 +197,12 @@ the answer being absent (deep links) rather than rendering an empty bubble.
    a real state, not a fallback. ⚠️ **FOUR items, not the component's three** —
    `My skin` leads, then Progress, Check, Products. The widths did not change
    and no breakpoint was added; a FIFTH item would exhaust the headroom.
-7. **The nav is `surface/frost-nav` `#dde8eb @83%` — NOT 17%.** Frosted does not
-   mean see-through. The `prefers-reduced-transparency` fallback is the same
-   colour fully opaque.
+7. **The nav is `surface/frost-nav` `#dbeded @88%` — NOT 17%.** Frosted does not
+   mean see-through. `bg/nav` is its opaque counterpart, the **same colour**
+   fully opaque (`#dbeded`), and is the `prefers-reduced-transparency` fallback
+   — a fallback must not be translucent or a different hue. Same colour as
+   `bg/bubble-ai`, so the nav sits on the AI bubble's hue, and `Search Field`
+   binds the same token: one frosted-pill surface, two components.
 8. **Chat bubbles carry an asymmetric tail corner, and NO border.** Three
    corners at `--radius-bubble` (30), the sender-side corner at
    `--radius-bubble-tail` (1). AI = tail top-left, sits left; user = top-right,
