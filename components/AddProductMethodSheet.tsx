@@ -67,9 +67,20 @@ type ConfirmStage = "verify" | "duration" | "added" | "rejected";
 export function AddProductMethodSheet({
   open,
   onClose,
+  base = [],
 }: {
   open: boolean;
   onClose: () => void;
+  /**
+   * ⚠️ WHAT AN EMPTY STORE MEANS DEPENDS ON WHO OPENED THE TRAY. In step 5 it
+   * means the user has added nothing, so a first add starts from `[]`. On the
+   * PRODUCTS hub it means the seeded library is still showing
+   * (`ownedProducts`), and starting from `[]` there would materialise the store
+   * as that ONE new product and wipe the list the user was looking at. The
+   * caller passes what it is currently displaying; the same fallback
+   * `MyProducts`' remove path already uses.
+   */
+  base?: SavedProduct[];
 }) {
   const { answers, setAnswer } = useInvestigation();
   const [view, setView] = useState<View>("method");
@@ -155,7 +166,7 @@ export function AddProductMethodSheet({
       addedOn: new Date().toISOString(),
     };
     setAnswer("products", (prev) => [
-      ...(prev ?? []).filter((p) => p.id !== saved.id),
+      ...(prev ?? base).filter((p) => p.id !== saved.id),
       saved,
     ]);
     // ⚠️ THE QUERY IS CLEARED HERE, and it matters now the results are a
@@ -170,7 +181,7 @@ export function AddProductMethodSheet({
   }
 
   function removeProduct(id: string) {
-    setAnswer("products", (prev) => (prev ?? []).filter((p) => p.id !== id));
+    setAnswer("products", (prev) => (prev ?? base).filter((p) => p.id !== id));
   }
 
   const title =

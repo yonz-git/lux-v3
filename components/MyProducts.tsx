@@ -1,13 +1,13 @@
 "use client";
 
 import { useState } from "react";
-import { useRouter } from "next/navigation";
 import styles from "./MyProducts.module.css";
 import { HubScreen } from "./HubScreen";
 import { Button } from "./Button";
 import { Orb } from "./Orb";
 import { ProductAccordionCard } from "./ProductAccordionCard";
 import { AddProductRow, EmptyBox } from "./ProductList";
+import { AddProductMethodSheet } from "./AddProductMethodSheet";
 import { ChevronDownIcon } from "./icons";
 import { useInvestigation } from "./InvestigationProvider";
 import { ownedProducts, DEMO_PRODUCTS } from "@/lib/demo";
@@ -80,13 +80,28 @@ import {
  * products` row moves here — which is also where the hub was missing one, since
  * the filled state offered no way to add a product at all.
  *
+ * ⚠️ ADDING OPENS THE TRAY IN PLACE — IT DOES NOT GO BACK INTO THE FLOW. Both
+ * of this screen’s add affordances (the empty state’s `Add products` and the
+ * filled state’s `Add more products` row) used to `push`
+ * `/investigation/products`, which is step 5 of the investigation: the user
+ * asked to add a product and was answered with a progress track, a
+ * `Save & exit` and the list they were already looking at, one screen back from
+ * the tray they actually wanted. The tray is the whole add flow and it
+ * "runs without ever navigating" — so it opens here exactly as it opens on
+ * step 5, and the product it adds lands in the list underneath it.
+ *
+ * It is handed `DEMO_PRODUCTS` as its `base`: on this screen an empty store
+ * means the seeded library is showing, and a first add that started from `[]`
+ * would replace that whole list with the one product just added — the same
+ * trap the remove path below documents.
+ *
  * ⚠️ AN EMPTY GROUP STILL OPENS, onto the same `EmptyBox` the pushed view used.
  * The hub deliberately lists all three designed periods including empty ones,
  * so a row that refused to open would be the only dead row on the screen.
  */
 export function MyProducts() {
-  const router = useRouter();
   const { answers, setAnswer } = useInvestigation();
+  const [sheetOpen, setSheetOpen] = useState(false);
   /* ⚠️ THE SEEDED LIBRARY WHEN THE USER OWNS NOTHING — see lib/demo.ts. The hub
      greeted a portfolio visitor with "No products added yet", which is the same
      empty-readout problem `/progress` and `/check` had. */
@@ -112,60 +127,75 @@ export function MyProducts() {
           <p className={`${styles.emptyText} t-body3-body2`}>
             Add products you use to check skin compatibility.
           </p>
-          <Button className={styles.emptyCta} href="/investigation/products">
+          <Button
+            className={styles.emptyCta}
+            onClick={() => setSheetOpen(true)}
+          >
             Add products
           </Button>
         </div>
+        <AddProductMethodSheet
+          open={sheetOpen}
+          onClose={() => setSheetOpen(false)}
+        />
       </HubScreen>
     );
   }
 
   return (
-    <HubScreen
-      title="My Products"
-      subtitle={`${products.length} product${products.length === 1 ? "" : "s"} added`}
-      layout="card"
-      footer={
-        /* ⚠️ NOT IN FIGMA — `Start analysis`. The hub listed the products and
+    <>
+      <HubScreen
+        title="My Products"
+        subtitle={`${products.length} product${products.length === 1 ? "" : "s"} added`}
+        layout="card"
+        footer={
+          /* ⚠️ NOT IN FIGMA — `Start analysis`. The hub listed the products and
            then ended: the one thing the user can DO with a library of products
            is check them against their skin, and reaching that meant finding the
            Check tab and starting over from its own landing. It goes to
            `/check/new` rather than `/check`, because the products are already
            here and the next question is which of them to check. Primary, in the
            hub footer, so it reads at the same size as a flow's Continue. */
-        <Button href="/check/new">Start analysis</Button>
-      }
-    >
-      <ul className={styles.categories}>
-        {categories.map((b) => (
-          <li key={b.id}>
-            <CategoryGroup
-              bucket={b.id}
-              products={products.filter((p) => p.bucket === b.id)}
-              /* ⚠️ THE FALLBACK IS THE `prev`, so removing a seeded product
+          <Button href="/check/new">Start analysis</Button>
+        }
+      >
+        <ul className={styles.categories}>
+          {categories.map((b) => (
+            <li key={b.id}>
+              <CategoryGroup
+                bucket={b.id}
+                products={products.filter((p) => p.bucket === b.id)}
+                /* ⚠️ THE FALLBACK IS THE `prev`, so removing a seeded product
                  works. With `prev ?? []` the filter ran over an empty array and
                  wrote an empty array, which left the row on screen and was the
                  same bug in a second costume. Removing one product is the user
                  taking the list over: it materialises the seeded library into
                  the store minus that product, and from then on the list is
                  theirs — including when they empty it. */
-              onRemove={(id) =>
-                setAnswer("products", (prev) =>
-                  (prev ?? DEMO_PRODUCTS).filter((x) => x.id !== id)
-                )
-              }
-            />
-          </li>
-        ))}
-      </ul>
+                onRemove={(id) =>
+                  setAnswer("products", (prev) =>
+                    (prev ?? DEMO_PRODUCTS).filter((x) => x.id !== id),
+                  )
+                }
+              />
+            </li>
+          ))}
+        </ul>
 
-      <div className={styles.addMore}>
-        <AddProductRow
-          label="Add more products"
-          onClick={() => router.push("/investigation/products")}
-        />
-      </div>
-    </HubScreen>
+        <div className={styles.addMore}>
+          <AddProductRow
+            label="Add more products"
+            onClick={() => setSheetOpen(true)}
+          />
+        </div>
+      </HubScreen>
+
+      <AddProductMethodSheet
+        open={sheetOpen}
+        onClose={() => setSheetOpen(false)}
+        base={DEMO_PRODUCTS}
+      />
+    </>
   );
 }
 
@@ -226,7 +256,10 @@ function CategoryGroup({
             <ul className={styles.stack}>
               {products.map((p) => (
                 <li key={p.id}>
-                  <ProductAccordionCard product={p} onRemove={() => onRemove(p.id)} />
+                  <ProductAccordionCard
+                    product={p}
+                    onRemove={() => onRemove(p.id)}
+                  />
                 </li>
               ))}
             </ul>
