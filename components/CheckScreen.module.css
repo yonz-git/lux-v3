@@ -29,6 +29,54 @@
   color: var(--color-text-secondary);
 }
 
+/* The landing's one line of LUX speech, in a bubble — see the note in
+   CheckScreen.tsx. Text stays LEFT-aligned inside the centred hero: every other
+   bubble in the app sets its measure from the left edge, and `.hero`'s
+   text-align would otherwise centre it purely because of where it sits.
+
+   ⚠️ THE DESKTOP CEILING NEEDS THE [data-from] BUMP, the same trap
+   Welcome.module.css records: ChatBubble's own `.bubble` rule inside the 1024
+   media query is equal-specificity (one class each), so a bare `.intro` can
+   lose the cascade by bundle load order alone and silently keep the 586
+   ceiling. */
+.intro {
+  text-align: left;
+  /* the orb assembles first and the bubble follows it in — the same beat 00
+     Welcome uses, shortened, since here the bubble is the orb's line rather
+     than a separate block. `--bubble-enter-delay` is `ChatBubble`'s own hook,
+     so this module sets a DELAY and never names an animation. */
+  --bubble-enter-delay: 200ms;
+  /* mobile keeps the component's own hug and its own 322 ceiling */
+  --bubble-width: fit-content;
+  --bubble-max: min(100%, 322px);
+}
+
+/* ⚠️ THE ORB SITS DOWN ON THE BUBBLE, NOT 48 ABOVE IT. `.hero > svg`'s 48 is
+   the empty-state block's rhythm — an orb over a HEADING — and it still is on
+   `/check/no-profile`, which is that block. A bubble is the orb speaking, so it
+   hangs off the orb the way 00 Welcome's does: 19 on mobile and 23 on desktop
+   there, which is 20/24 on the scale, i.e. the 16 gap plus 4/8.
+   ⚠️ Equal specificity with `.hero > svg` (0,1,1) — it wins on source order
+   alone, so this block must stay BELOW it in the file. */
+.heroChat > svg {
+  margin-bottom: var(--space-xs); /* + the 16 gap = 20 */
+}
+
+@media (min-width: 1024px) {
+  .heroChat > svg {
+    margin-bottom: var(--space-sm); /* + the 16 gap = 24 */
+  }
+
+  /* ⚠️ 376 IS THE CTA's WIDTH, and that is the whole point: left to hug, the
+     bubble settled at ~375 beside a 376 button, which reads as a missed
+     alignment rather than a different measure. Fixed to the button's width so
+     the orb, the bubble and the CTA share one edge. */
+  .intro {
+    --bubble-width: 376px;
+    --bubble-max: 376px;
+  }
+}
+
 /* + the 16 gap = the comp's 48 */
 .cta {
   width: 100%;

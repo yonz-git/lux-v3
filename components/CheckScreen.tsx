@@ -5,6 +5,7 @@ import styles from "./CheckScreen.module.css";
 import { HubScreen } from "./HubScreen";
 import { Button } from "./Button";
 import { Orb } from "./Orb";
+import { ChatBubble } from "./ChatBubble";
 import { SkinProfileStrip } from "./SkinProfileStrip";
 import { useInvestigation } from "./InvestigationProvider";
 import { skinProfile } from "@/lib/demo";
@@ -53,13 +54,22 @@ export function CheckScreen() {
         />
       }
     >
-      <div className={styles.hero}>
+      <div className={`${styles.hero} ${styles.heroChat}`}>
+        {/* ⚠️ THE INTRO IS A BUBBLE, NOT A HEADING + PARAGRAPH — NOT IN FIGMA.
+            601:1952 draws "Check your products" as an H4/H3 over a Body 3/2
+            line. The heading restated the screen: `HubScreen` already titles
+            this page "Check" with the subtitle "Product compatibility", so the
+            landing carried three names for one thing before it said anything.
+            Dropping it leaves the sentence that actually explains the check,
+            and the sentence is LUX speaking — which is a bubble everywhere else
+            in the app. Same composition 00 Welcome opens on (orb, then a
+            centred AI bubble) and the same entrance, since `ChatBubble` owns
+            `bubble-enter`. */}
         <Orb animateIn />
-        <h2 className="t-h4-h3">Check your products</h2>
-        <p className={`${styles.text} t-body3-body2`}>
+        <ChatBubble from="ai" align="center" full className={styles.intro}>
           Check how your products may suit your skin and work together in the
           same routine.
-        </p>
+        </ChatBubble>
         <Button href="/check/new" className={styles.cta}>
           Start a check
         </Button>
