@@ -7,7 +7,7 @@ import { QuestionScreen } from "./QuestionScreen";
 import { ChatBubble } from "./ChatBubble";
 import { Tag } from "./Tag";
 import { AddProductMethodSheet } from "./AddProductMethodSheet";
-import { ProductRow, AddProductRow, EmptyBox } from "./ProductList";
+import { ProductRow, AddProductRow } from "./ProductList";
 import { useInvestigation } from "./InvestigationProvider";
 import { BUCKET_WINDOW, fullName, groupProducts, type SavedProduct } from "@/lib/products";
 import { nextHref } from "@/lib/flow";
@@ -88,11 +88,13 @@ export function YourProducts() {
           four weeks, even products you have used without problems.
         </ChatBubble>
 
-        {!filled ? (
-          <div className={styles.listWrap}>
-            <EmptyBox>No products added yet</EmptyBox>
-          </div>
-        ) : grouped ? (
+        {/* ⚠️ THE EMPTY STATE DRAWS NO LIST AT ALL — NOT IN FIGMA. 574:1391
+            puts an empty box reading "No products added yet" where the list
+            goes, directly above an `Add product` row. The box states what the
+            absence of rows already states, and it does it in a bordered
+            container that reads as a list with one item in it. Nothing is
+            drawn until there is something to draw; `Add product` moves up. */}
+        {!filled ? null : grouped ? (
           <div className={styles.listWrap}>
             {groups.map((g) => (
               <section key={g.bucket.id} className={styles.group}>
@@ -129,7 +131,7 @@ export function YourProducts() {
           </ul>
         )}
 
-        <div className={styles.addWrap}>
+        <div className={`${styles.addWrap} ${filled ? "" : styles.addWrapEmpty}`}>
           <AddProductRow label="Add product" onClick={() => setSheetOpen(true)} />
         </div>
 

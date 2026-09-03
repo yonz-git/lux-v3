@@ -83,6 +83,12 @@
   margin-top: var(--space-lg); /* 16 */
 }
 
+/* With no list above it, `Add product` takes the offset the list would have
+   had (24) rather than the 16 that separates it from rows of its own kind. */
+.addWrapEmpty {
+  margin-top: var(--space-2xl); /* 24 */
+}
+
 /* the filled state's readout, muted and left-aligned */
 .count {
   margin-top: var(--space-md); /* 12 */
