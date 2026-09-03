@@ -275,6 +275,23 @@ for:
   ⚠️ Warning and error share a hue — **never carry the distinction by colour
   alone**, always pair with a label.
 
+### Entrance reveals — three classes and two data attributes
+
+| Hook | Duration | Use |
+| --- | --- | --- |
+| `.reveal` | `slow` 320ms | a block arriving with the screen |
+| `.reveal-quick` | `base` 200ms | something the user just revealed |
+| `.reveal-hero` | `slower` 480ms | the orb and hero entrances |
+| `[data-reveal]` | `slow` 320ms | applies the fade to every DIRECT child |
+| `[data-reveal-stagger]` | + 0/40/80/120/160ms | stagger those children, capped at the 5th |
+
+All five run the global `lux-fade-in`. The stagger hits **direct children only**,
+so a ten-row option list arrives as one block rather than ten cascading rows.
+
+⚠️ **Use these rather than naming an animation in a module** — a module
+localizes the `@keyframes` name and it resolves to nothing (motion section
+below). A module may safely set `animation-delay`, which carries no name.
+
 For anything not listed — the full 9 collections, the Figma node ids, the
 variant structures — read `docs/design.md`.
 

@@ -500,6 +500,10 @@ Summary:
 17. **`getMainComponentAsync()` can return undefined** — fall back to finding by name.
 18. ⚠️ **A deleted main component keeps its instances alive but has a `null` parent chain.** Walk `parent` up to a `PAGE`; if you never reach one, the component is orphaned. You *can* restore it with `page.appendChild(component)` without breaking any instance link. **But do not do this unprompted.** An orphaned main component usually means the user deleted it on purpose — resurrecting it puts a design they retired back on their canvas. This happened with `Bottom Nav` `83:68`: it was the old nav, deliberately deleted, and restoring it was wrong. Report orphans and let the user decide.
 19. ⚠️ **Colour variables carry alpha.** When binding a translucent fill, set `paint.opacity = 1` and let the variable supply the alpha, or you will multiply the two.
+20. ⚠️ **Resolve the ALIAS chain before seeding a paint colour.** Most semantic tokens alias a primitive, so a naive `valuesByMode` read returns a `VARIABLE_ALIAS`, `x.r` is undefined, and a fallback writes **BLACK**. The inspector still shows the correct token name while the thing renders black, which is what makes it hard to spot. This bit twice in one session.
+21. ⚠️ **A component edit does not fix an instance carrying a raw override.** Check `fills[0].boundVariables` on the instance — `null` means a raw override sits on top and will mask your change.
+22. ⚠️ **`repeat: Infinity` in exported motion data is a PREVIEW artefact** — entrances play once. Glyph vectors are often authored pre-rotated and with a negative `scaleY`: normalise rotations to END at identity (keeping each track's delta) and drop the negative sign, or elements settle crooked or flipped. Scale travel distances to the target element.
+23. **Some Figma values are off-scale in Figma too** (the Chip's 10/40 padding-height, the 60px stack gap on 01). In code, write them as commented literals rather than snapping to a token that would be quietly wrong.
 
 ---
 
