@@ -4,8 +4,151 @@
    The 24 above the strip is HubScreen's `.heading + *` rule; everything below
    is this screen's. */
 
+/* ⚠️ THE ANCHOR FOR THE RESULTS PANEL. `position: relative` makes the panel's
+   absolute offsets its own; the `z-index: 1` is the rule every block that opens
+   a popover in this app carries, so the panel's layering does not depend on
+   nothing else on the screen ever creating a stacking context. */
 .search {
+  position: relative;
+  z-index: 1;
   margin-top: var(--space-xl); /* 20 */
+}
+
+/* --- the search dropdown (NOT IN FIGMA — see CheckBuilder's doc comment) ----
+   The same panel the PRODUCTS tray hangs off its search pill
+   (`AddProductMethodSheet.module.css .dropdown`) — frost-light + the frosted
+   inner shadow + a real drop shadow, tucked 8 under the pill and inset 8 either
+   side, capped and scrolling internally.
+
+   ⚠️ AND HERE IT IS ABSOLUTELY POSITIONED, WHERE THE TRAY'S IS IN FLOW. That
+   is not drift: the tray is DOCKED TO THE BOTTOM EDGE and hugs its content, so
+   an overlaid panel there would open past the bottom of the viewport. This is a
+   full page that scrolls, so a panel in flow would push the screen's own
+   content down and make the page grow and shrink on every keystroke. Floating
+   it leaves the page exactly where it was — "Your products" stays put
+   underneath — and the panel takes its own scroll. */
+.dropdown {
+  position: absolute;
+  top: calc(100% + var(--space-sm)); /* 8 under the pill */
+  right: var(--space-sm);
+  left: var(--space-sm);
+  z-index: var(--z-overlay);
+
+  display: flex;
+  flex-direction: column;
+  /* caps itself so it can never run past the fold on a short viewport; the
+     rows below the cap are reached by the panel's own scroll, never the
+     page's */
+  max-height: min(360px, 50dvh);
+  padding: var(--space-sm);
+
+  border-radius: var(--radius-2xl);
+  /* ⚠️ THE SEARCH FIELD'S OWN FILL — `surface/frost-nav`, the frosted pill the
+     field and the nav bar share — where the tray's panel is `frost-light`. Two
+     reasons, and they point the same way. It reads as the pill's own output
+     rather than as a separate white card dropped on the page; and frost-light
+     at 55% let the page's list straight through, which frost-light is fine for
+     in the tray (a uniform sage tray with nothing written on it) and is not
+     here, where the panel floats over the user's own products — measured at
+     1440, four rows of "BHA Exfoliant", "Retinol B3 Serum", "Foaming Cleanser"
+     were legible THROUGH the results.
+
+     ⚠️ AND IT IS `bg/nav`, THE SOLID COUNTERPART — not `surface/frost-nav`
+     itself. Same colour, no alpha, which is the only difference between the two
+     tokens; the field can be translucent because it sits on the page's own
+     background, and this panel cannot because it sits on the page's own LIST.
+     At 87.8% + blur(28) the ghost was faint rather than gone — "Retinol B3
+     Serum" and "Foaming Cleanser" still read between the result rows at 1440,
+     which is the same two-lists-in-one-place problem in a quieter voice. Over
+     these backdrops the two composite to within a point of each other, so the
+     panel and the pill read as one surface.
+
+     NO BORDER, for the same reason the field has none: it is the nav pill's
+     surface, and that surface carries an inner shadow instead of a stroke. */
+  background: var(--color-bg-nav);
+  /* the frosted inner shadow (rule 9) PLUS a real drop shadow: this panel sits
+     ABOVE the page's own rows */
+  box-shadow: var(--shadow-frosted-row), var(--shadow-lg);
+}
+
+/* stays put while the rows scroll under it — the count is what tells you
+   whether the list ended where you can see it end */
+.dropdownHead {
+  flex: none;
+  padding: var(--space-xs) var(--space-md) var(--space-sm);
+  color: var(--color-text-secondary);
+}
+
+/* the scrolling region is INSIDE the panel, not the panel itself, so the
+   heading above it does not scroll away. Scrollbar hidden the way the tray and
+   the sheet hide theirs: the scroll stays, the OS chrome doesn't. */
+.scroll {
+  flex: 1;
+  min-height: 0;
+  overflow-y: auto;
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+  overscroll-behavior: contain;
+}
+
+.scroll::-webkit-scrollbar {
+  display: none;
+}
+
+.results {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2xs);
+}
+
+/* ⚠️ A ROW ON THE PANEL'S OWN FILL — NOT `ProductRow`. That is the frosted CARD
+   recipe, and a card inside a panel is two surfaces doing one job; the tray's
+   dropdown made the same call. Unlike the tray's, the row itself is NOT a
+   button — the action here is `Add`, which lives in its own slot and has an
+   `Added` state, so there is nothing for a whole-row hover to promise. */
+.result {
+  display: flex;
+  align-items: center;
+  gap: var(--space-md);
+  width: 100%;
+  padding: var(--space-sm) var(--space-md);
+  border-radius: var(--radius-md);
+}
+
+.resultCopy {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2xs);
+}
+
+/* Open Beauty Facts names run long and arbitrary — clamped rather than left to
+   wrap a dropdown row to four lines. */
+.resultName {
+  color: var(--color-text-primary);
+  display: -webkit-box;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 2;
+  line-clamp: 2;
+  overflow: hidden;
+}
+
+.resultMeta {
+  color: var(--color-text-muted);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+/* "Searching…" — the panel's one-line waiting state. */
+.dropdownNote {
+  padding: var(--space-lg) var(--space-md);
+  color: var(--color-text-secondary);
+  text-align: center;
 }
 
 /* ⚠️ NOT IN FIGMA — the comp has one unlabelled list because it only ever shows
@@ -27,26 +170,18 @@
   list-style: none;
 }
 
-/* `empty-state` (651:2574) — frost-light + 1px border/DEFAULT (not subtle, the
-   heavier stroke: this box has to hold its own edge with no rows around it) +
-   radius/2xl + the frosted-row inner shadow. Padding 32/24, gap 8. */
-.emptyBox {
+/* `Check — no results` (651:2510 / its `empty-state` 651:2574), now a state of
+   the DROPDOWN rather than a block on the page — so it is the panel's own fill
+   with padding, not the frosted card the comp draws standing alone on the
+   canvas. A card inside the panel would be the same two-surfaces mistake the
+   result rows avoid. Copy, type and the secondary button are unchanged. */
+.noResults {
   display: flex;
   flex-direction: column;
   align-items: center;
   gap: var(--space-sm); /* 8 */
-  margin-top: var(--space-md); /* 12 */
-  /* rule 12: the Figma padding minus the border */
-  padding: calc(var(--space-3xl) - var(--border-width-hairline))
-    calc(var(--space-2xl) - var(--border-width-hairline));
+  padding: var(--space-xl) var(--space-md) var(--space-md);
   text-align: center;
-
-  border: var(--border-width-hairline) solid var(--color-border-default);
-  border-radius: var(--radius-2xl);
-  background: var(--color-surface-frost-light);
-  box-shadow: var(--shadow-frosted-row);
-  -webkit-backdrop-filter: blur(var(--blur-card));
-  backdrop-filter: blur(var(--blur-card));
 }
 
 .emptyTitle {
@@ -59,7 +194,7 @@
 
 .manual {
   width: 100%;
-  margin-top: var(--space-lg); /* 16 */
+  margin-top: var(--space-xs); /* 4 — on top of .noResults' 8 */
 }
 
 /* The bar is `position: fixed`, so it occupies no space in the flow and would
@@ -67,14 +202,6 @@
    from the nav, on top of the nav reservation the screen already carries. */
 .barSpacer {
   height: calc(54px + var(--space-md));
-}
-
-@media (prefers-reduced-transparency: reduce) {
-  .emptyBox {
-    background: var(--color-bg-surface-frost);
-    -webkit-backdrop-filter: none;
-    backdrop-filter: none;
-  }
 }
 
 /* ⚠️ NOT IN FIGMA — the trailing slot on a result row, sized once so the

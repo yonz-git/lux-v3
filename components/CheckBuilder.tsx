@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { useRouter } from "next/navigation";
 import styles from "./CheckBuilder.module.css";
 import { HubScreen } from "./HubScreen";
@@ -8,6 +8,7 @@ import { Button } from "./Button";
 import { SearchField } from "./SearchField";
 import { SkinProfileStrip } from "./SkinProfileStrip";
 import { ProductRow } from "./ProductList";
+import { ProductThumb } from "./ProductThumb";
 import { SmallButton } from "./SmallButton";
 import { Tag } from "./Tag";
 import { CheckBasketBar, CheckBasketSheet } from "./CheckBasket";
@@ -77,6 +78,14 @@ export function CheckBuilder() {
 
   const [sheetOpen, setSheetOpen] = useState(false);
   const [addManually, setAddManually] = useState(false);
+  /* ⚠️ THE PANEL IS DISMISSIBLE, and it has to be. In the tray the dropdown is
+     in flow, so it can only ever push content; here it FLOATS over the page's
+     own list, and an overlay you cannot put away is a trap — you would have to
+     empty the search field to see what is under it. Escape and a click outside
+     close it; the next keystroke in the field opens it again, because typing is
+     unambiguously asking for results. */
+  const [dismissed, setDismissed] = useState(false);
+  const searchRef = useRef<HTMLDivElement>(null);
 
   const query = answers.checkQuery ?? "";
   const basket = answers.checkBasket ?? [];
@@ -124,15 +133,22 @@ export function CheckBuilder() {
   const results: CatalogProduct[] = searching
     ? dedupe([...live, ...byIngredient])
     : owned;
-  /* ⚠️ THE COUNT IS PART OF THE LABEL. With ranking in play the list no longer
-     ends where the obvious matches end, so "did it find one thing or nine?" is
-     a question the heading should answer without scrolling — the same reason
-     `Check results` writes "Compared Products (5)". */
-  const listLabel = searching
-    ? loading
-      ? "Searching…"
-      : `Search results (${results.length})`
-    : "Your products";
+  /* ⚠️ THE COUNT IS PART OF THE LABEL, and it matters more now the results are
+     a capped panel: "did it find one thing or nine?" is a question you can no
+     longer answer by looking at the page, because the panel clips its own list.
+     Same reason `Check results` writes "Compared Products (5)". It sits in the
+     panel's head, which does not scroll with the rows. */
+  const resultsLabel = `Search results (${results.length})`;
+  const open = searching && !dismissed;
+
+  useEffect(() => {
+    if (!open) return;
+    function onPointerDown(e: PointerEvent) {
+      if (!searchRef.current?.contains(e.target as Node)) setDismissed(true);
+    }
+    document.addEventListener("pointerdown", onPointerDown);
+    return () => document.removeEventListener("pointerdown", onPointerDown);
+  }, [open]);
 
   function add(p: CatalogProduct) {
     setAnswer("checkBasket", (prev) => {
@@ -186,6 +202,31 @@ export function CheckBuilder() {
     return `${base} · Contains ${hidden.join(", ")}`;
   }
 
+  /** ⚠️ ONE FIXED SLOT FOR BOTH STATES — NOT IN FIGMA. The handoff's swap is
+   *  between two components of different SIZE: Small Button is 36 tall with 16
+   *  side padding, Tag is 26 with 12. Adding a product therefore shrank the
+   *  control it replaced and pulled the row's right edge in, so a list where
+   *  you add several things twitched on every tap. The slot is sized once and
+   *  both states fill it; each keeps its own fill, radius and type. Shared by
+   *  the page's own rows and the dropdown's, so the two lists cannot drift. */
+  function trailingFor(p: CatalogProduct) {
+    return (
+      <span className={styles.trailing}>
+        {basketIds.includes(p.id) ? (
+          <Tag variant="brand">Added</Tag>
+        ) : (
+          <SmallButton
+            label="Add"
+            arrow={false}
+            disabled={full}
+            aria-label={`Add ${fullName(p)} to this check`}
+            onClick={() => add(p)}
+          />
+        )}
+      </span>
+    );
+  }
+
   return (
     <>
       <HubScreen
@@ -196,90 +237,131 @@ export function CheckBuilder() {
       >
         <SkinProfileStrip {...skinProfile(answers)} />
 
-        <div className={styles.search}>
+        {/* ⚠️ THE RESULTS ARE A FLOATING DROPDOWN, NOT THE PAGE'S LIST —
+            NOT IN FIGMA, and the same call the PRODUCTS tray already made. They
+            used to REPLACE the list below: typing swapped "Your products" for
+            "Search results", so the page grew and shrank on every keystroke,
+            the thing you were half-way through comparing disappeared while you
+            looked something up, and a long result list scrolled the whole
+            screen — search field, skin-profile strip and all — out of reach.
+            The panel hangs off the pill, floats over the page, caps itself and
+            takes its own scroll; "Your products" stays exactly where it was
+            underneath. See `.dropdown` for why this one is absolutely
+            positioned where the tray's is in flow. */}
+        <div
+          className={styles.search}
+          ref={searchRef}
+          onKeyDown={(e) => {
+            if (e.key === "Escape" && open) {
+              e.stopPropagation();
+              setDismissed(true);
+            }
+          }}
+        >
           <SearchField
             value={query}
-            onChange={(v) => setAnswer("checkQuery", v)}
+            onChange={(v) => {
+              setAnswer("checkQuery", v);
+              setDismissed(false);
+            }}
             label="Search products to check"
           />
+
+          {/* the count is inside a panel a screen reader has to find, and the
+              panel is not there at all until something is typed — so the result
+              of typing is announced here, the same way the tray announces it */}
+          <p role="status" aria-live="polite" className="visually-hidden">
+            {!searching
+              ? ""
+              : loading
+                ? "Searching…"
+                : `${results.length} ${results.length === 1 ? "product" : "products"} found`}
+          </p>
+
+          {open && (
+            <div className={`${styles.dropdown} reveal-quick`}>
+              {loading ? (
+                <p className={`${styles.dropdownNote} t-body3`}>Searching…</p>
+              ) : results.length === 0 ? (
+                /* `Check — no results` (651:2510), a state of the panel rather
+                   than a screen — and reached only once the search has actually
+                   answered. Without the `loading` gate it flashed up between the
+                   debounce firing and the response landing, telling you the
+                   product did not exist once per character typed. */
+                <div className={styles.noResults}>
+                  <p className={`${styles.emptyTitle} t-h6`}>No products found</p>
+                  <p className={`${styles.emptyText} t-body3`}>
+                    Check the spelling, or add the product yourself.
+                  </p>
+                  <Button
+                    variant="secondary"
+                    className={styles.manual}
+                    onClick={() => {
+                      setDismissed(true);
+                      setAddManually(true);
+                    }}
+                  >
+                    Add it manually
+                  </Button>
+                </div>
+              ) : (
+                <>
+                  <h2 className={`${styles.dropdownHead} t-label`}>{resultsLabel}</h2>
+                  <div className={styles.scroll}>
+                    <ul className={styles.results}>
+                      {results.map((p) => (
+                        <li key={p.id}>
+                          {/* deliberately NOT `ProductRow` — that is the frosted
+                              CARD recipe, and a card inside a panel is two
+                              surfaces doing one job. Same call the tray's
+                              dropdown makes. */}
+                          <div className={styles.result}>
+                            <ProductThumb product={p} />
+                            <span className={styles.resultCopy}>
+                              <span className={`${styles.resultName} t-h6`}>
+                                {p.name}
+                              </span>
+                              {/* ⚠️ BRAND **AND SIZE**, plus the ingredient that
+                                  pulled the row in when the query matches
+                                  nothing visible on it — typing "salicylic"
+                                  returns "BHA Exfoliant · Paula's Choice", a row
+                                  with the word nowhere on it. */}
+                              <span className={`${styles.resultMeta} t-label-sm`}>
+                                {metaFor(p)}
+                              </span>
+                            </span>
+                            {trailingFor(p)}
+                          </div>
+                        </li>
+                      ))}
+                    </ul>
+                  </div>
+                </>
+              )}
+            </div>
+          )}
         </div>
 
-        <h2 className={`${styles.sectionLabel} t-label`}>{listLabel}</h2>
-
-        {results.length > 0 ? (
-          <ul className={styles.list}>
-            {results.map((p) => {
-              const inBasket = basketIds.includes(p.id);
-              return (
+        {/* The page's own list is now ALWAYS your products — the search never
+            takes it over. Nothing is drawn when you own nothing: a heading over
+            an empty box says less than the search field's placeholder does. */}
+        {owned.length > 0 && (
+          <>
+            <h2 className={`${styles.sectionLabel} t-label`}>Your products</h2>
+            <ul className={styles.list}>
+              {owned.map((p) => (
                 <li key={p.id}>
                   <ProductRow
                     name={p.name}
-                    /* ⚠️ BRAND **AND SIZE**, where the comp's rows show the
-                       brand alone. Its four results all have distinct names;
-                       the real catalogue has a 16 oz and a 12 oz CeraVe
-                       Moisturizing Cream, which render as two identical rows on
-                       brand alone. `resultMeta` is the same helper the PRODUCTS
-                       search uses and it drops the dash when a product has no
-                       size, so anything shaped like the comp's data still reads
-                       exactly like the comp. */
-                    /* ⚠️ SAY WHY AN INGREDIENT MATCH CAME BACK. Typing
-                       "salicylic" returns "BHA Exfoliant · Paula's Choice"
-                       — a row with the word nowhere on it. Without the
-                       reason the search looks wrong at exactly the moment
-                       it started working. */
-                    meta={metaFor(p)}
+                    meta={resultMeta(p)}
                     product={p}
-                    /* ⚠️ ONE FIXED SLOT FOR BOTH STATES — NOT IN FIGMA. The
-                       handoff's swap is between two components of different
-                       SIZE: Small Button is 36 tall with 16 side padding,
-                       Tag is 26 with 12. Adding a product therefore shrank
-                       the control it replaced and pulled the row's right
-                       edge in, so a list where you add several things
-                       twitched on every tap. The slot is sized once and both
-                       states fill it; each keeps its own fill, radius and
-                       type. */
-                    trailing={
-                      <span className={styles.trailing}>
-                        {inBasket ? (
-                          <Tag variant="brand">Added</Tag>
-                        ) : (
-                          <SmallButton
-                            label="Add"
-                            arrow={false}
-                            disabled={full}
-                            aria-label={`Add ${fullName(p)} to this check`}
-                            onClick={() => add(p)}
-                          />
-                        )}
-                      </span>
-                    }
+                    trailing={trailingFor(p)}
                   />
                 </li>
-              );
-            })}
-          </ul>
-        ) : searching && !loading ? (
-          /* `Check — no results` (651:2510), as a state rather than a screen.
-             ⚠️ GATED ON `loading`, because the search is a network round trip
-             now: without this the empty box flashed up on every keystroke
-             between the debounce firing and the response landing, so typing a
-             product name told you it did not exist, once per character. */
-          <>
-            <div className={styles.emptyBox}>
-              <p className={`${styles.emptyTitle} t-h6`}>No products found</p>
-              <p className={`${styles.emptyText} t-body3`}>
-                Check the spelling, or add the product yourself.
-              </p>
-            </div>
-            <Button
-              variant="secondary"
-              className={styles.manual}
-              onClick={() => setAddManually(true)}
-            >
-              Add it manually
-            </Button>
+              ))}
+            </ul>
           </>
-        ) : null}
+        )}
 
         {/* keeps the last row clear of the docked bar, which is fixed and so
             takes no space in the flow. Unconditional, because the bar is now

@@ -569,7 +569,8 @@ resting state changed. Two states instead of three. See `CheckBasket.tsx`.
   alone.
 - **Your own products come first on `/check/new`.** The comp opens on a search
   field, so checking two things you already told the app you own means typing
-  both names back in. Empty query → `answers.products`; type → the catalogue.
+  both names back in. The page's own list is ALWAYS your products; the search
+  overlays the catalogue on top of it — see the dropdown note below.
 - **"Add it manually" returns to the check.** The transition map sends it into
   the PRODUCTS add flow and stops. It opens the PRODUCTS tray in place instead,
   and whatever it adds joins the basket.
@@ -724,6 +725,49 @@ same fixture fallback. Three consequences, all flagged in the code:
   vanished between `/check/new` and `/check/results`. **Scores are still never
   stored** — that rule is about derived values, and every number still comes out
   of `analyse()` on read.
+
+**⚠️ `/check/new`'s RESULTS ARE A FLOATING DROPDOWN, LIKE THE TRAY'S — AND
+THIS ONE IS ABSOLUTELY POSITIONED.** The two screens ran the same search but
+presented it two different ways: the tray hangs a panel off its search pill,
+while `/check/new` let the results REPLACE the page's list. So typing swapped
+"Your products" for "Search results", the page grew and shrank on every
+keystroke, the thing you were half-way through comparing disappeared while you
+looked something up, and a long result list scrolled the whole screen — search
+field, skin-profile strip and all — out of reach. Now: the page always lists
+your products, and the panel floats over it, caps itself at
+`min(360px, 50dvh)` and takes its own scroll, so the page never moves.
+
+The recipe is the tray's (`.dropdown` in `AddProductMethodSheet.module.css`)
+with two deliberate differences, both flagged in `CheckBuilder.module.css`:
+
+- **Absolutely positioned, where the tray's is in flow.** The tray is docked to
+  the bottom edge and hugs its content, so an overlaid panel there would open
+  past the bottom of the viewport; this is a full page that scrolls, where a
+  panel in flow is what pushes the content around.
+- **The SEARCH FIELD's own fill — `bg/nav`, i.e. `surface/frost-nav` with no
+  alpha — where the tray's panel is `frost-light`.** Two things pointed the same
+  way. The panel should read as the pill's own output rather than as a separate
+  card dropped on the page, so it takes the pill's colour; and `frost-light` at
+  55% let the page's list straight through it, which is fine in the tray (a
+  uniform sage tray with nothing written on it) and is not fine here, where the
+  panel floats over the user's own products — measured at 1440, four rows of
+  "BHA Exfoliant", "Retinol B3 Serum", "Foaming Cleanser" were legible THROUGH
+  the results. `surface/frost-nav` itself was tried first and left a faint ghost
+  of the same rows at 87.8% + blur(28); the field can be translucent because it
+  sits on the page's background, the panel cannot because it sits on the page's
+  LIST. Sampled at both breakpoints the two composite to within two points per
+  channel — field rgb(218,235,236) / rgb(220,237,238) against the panel's
+  rgb(218,236,236) — so they read as one surface. No border and no
+  reduced-transparency case: the pill's surface carries an inner shadow instead
+  of a stroke, and an opaque fill has no fallback to answer for.
+
+Consequences: `Check — no results` is a state of the PANEL now (its own fill and
+padding, not the standing frosted card the comp draws), the `Add it manually`
+button moved into it, and the panel is DISMISSIBLE — Escape or a click outside
+close it, the next keystroke reopens it, because an overlay you cannot put away
+is a trap. The result count is announced in a `role="status"` line beside the
+field: it lives in the panel's own head, which a screen reader has to find and
+which is not there at all until something is typed.
 
 **⚠️ THE CHECK SEARCH RANKS, AND IT READS SIZE AND INGREDIENTS.**
 `searchCatalog` was an unranked AND-substring match over `brand + name` only,
