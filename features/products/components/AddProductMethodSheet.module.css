@@ -373,14 +373,12 @@
   }
 }
 
-/* ⚠️ `!important` IS REQUIRED, and this rule did nothing without it. `icons.tsx`
-   sizes every glyph through an inline `style` object, and an inline style beats
-   any external stylesheet rule at equal or higher specificity — so the old
-   `width: var(--size-icon-sm)` here was silently ignored and the X rendered at
-   the inline 24px, not the 20 this file claimed. Same trap, same fix, same
-   ratio as `.otherClearIcon`: 20/36 of the CloseIcon's default 24. */
+/* The icon scaled by the same ratio as the button itself: 20/36 of the
+   CloseIcon's default 24, matching `.otherClearIcon`. `!important` used to be
+   required here because `icons.tsx` sized every glyph inline; it stopped, and
+   the default is now a zero-specificity `:where()` rule in `globals.css`. */
 .removeIcon {
-  width: calc(24px * 20 / 36) !important;
-  height: calc(24px * 20 / 36) !important;
+  width: calc(24px * 20 / 36);
+  height: calc(24px * 20 / 36);
 }
 

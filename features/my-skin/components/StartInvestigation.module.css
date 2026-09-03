@@ -101,15 +101,13 @@
 }
 
 /* icon scaled down by the same ratio as the button itself, 20/36 of the
-   CloseIcon's default 24px (`size-icon-md`).
-   ⚠️ `!important` IS REQUIRED HERE. `icons.tsx` sets width/height via an
-   inline `style` object, and inline styles beat any external stylesheet rule
-   at equal or higher specificity — a plain class here is silently ignored.
-   Verified: without `!important` the SVG still computed to 24px inside a
-   20px circle. Scoped to this one icon only. */
+   CloseIcon's default 24px (`size-icon-md`). `!important` used to be required —
+   `icons.tsx` set width/height inline and a plain class was silently ignored —
+   but the size is a `:where()` default in `globals.css` now, which any class
+   outranks. */
 .otherClearIcon {
-  width: calc(24px * 20 / 36) !important;
-  height: calc(24px * 20 / 36) !important;
+  width: calc(24px * 20 / 36);
+  height: calc(24px * 20 / 36);
 }
 
 .otherLabel {

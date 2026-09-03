@@ -4,18 +4,31 @@
  * treatment stays a pure opacity change, exactly as the component does it.
  */
 
+import type { CSSProperties } from "react";
+
 type IconProps = { className?: string };
 
+/**
+ * ⚠️ NO `width` / `height` HERE, AND THAT IS THE POINT. These used to be inline
+ * `var(--size-icon-md)`, and an inline style beats any external stylesheet rule
+ * at every specificity — so a module class asking for a different size was
+ * silently ignored. Eleven rules across nine files were doing exactly that and
+ * rendering 24 (including `ProductDetails`'s nested `icon-xs` chevron, whose
+ * whole job is to be smaller than the header's), while three more had reached
+ * for `!important` to get out of it.
+ *
+ * The size now comes from `svg[data-lux-icon]` in `globals.css`, wrapped in
+ * `:where()` so it carries ZERO specificity and any single class beats it
+ * without `!important`. An icon whose default is not `md` sets `--icon-size`.
+ */
 const base = {
-  width: "var(--size-icon-md)",
-  height: "var(--size-icon-md)",
   display: "block" as const,
   flex: "none" as const,
 };
 
 export function ProgressIcon({ className }: IconProps) {
   return (
-    <svg viewBox="0 0 25 25" fill="none" xmlns="http://www.w3.org/2000/svg" style={base} className={className} aria-hidden="true">
+    <svg viewBox="0 0 25 25" fill="none" xmlns="http://www.w3.org/2000/svg" data-lux-icon style={base} className={className} aria-hidden="true">
       <path
         d="M12.5 1.17188C12.7686 1.17188 13.0208 1.2207 13.2568 1.31836C13.4928 1.41602 13.7004 1.55843 13.8794 1.74561C14.0584 1.93278 14.1968 2.1403 14.2944 2.36816C14.3921 2.59603 14.445 2.84831 14.4531 3.125C14.4531 3.39355 14.4043 3.64583 14.3066 3.88184C14.209 4.11784 14.0666 4.32536 13.8794 4.50439C13.6922 4.68343 13.4847 4.82178 13.2568 4.91943C13.029 5.01709 12.7767 5.06999 12.5 5.07812C12.2314 5.07812 11.9792 5.0293 11.7432 4.93164C11.5072 4.83398 11.2996 4.69157 11.1206 4.50439C10.9416 4.31722 10.8032 4.1097 10.7056 3.88184C10.6079 3.65397 10.555 3.40169 10.5469 3.125C10.5469 2.85645 10.5957 2.60417 10.6934 2.36816C10.791 2.13216 10.9334 1.92464 11.1206 1.74561C11.3078 1.56657 11.5153 1.42822 11.7432 1.33057C11.971 1.23291 12.2233 1.18001 12.5 1.17188ZM4.11377 5.87158C4.11377 5.62744 4.15853 5.39958 4.24805 5.18799C4.33757 4.9764 4.45964 4.79329 4.61426 4.63867C4.76888 4.48405 4.95606 4.35791 5.17578 4.26025C5.39551 4.1626 5.62744 4.11377 5.87158 4.11377C6.11573 4.11377 6.34359 4.15853 6.55518 4.24805C6.76677 4.33757 6.94987 4.4637 7.10449 4.62646C7.25912 4.78923 7.38526 4.9764 7.48291 5.18799C7.58057 5.39958 7.6294 5.62744 7.6294 5.87158C7.6294 6.11572 7.58464 6.34359 7.49512 6.55518C7.4056 6.76676 7.27946 6.95394 7.1167 7.1167C6.95394 7.27946 6.76677 7.4056 6.55518 7.49512C6.34359 7.58464 6.11573 7.62939 5.87158 7.62939C5.62744 7.62939 5.39958 7.58464 5.18799 7.49512C4.9764 7.4056 4.78923 7.28353 4.62647 7.12891C4.46371 6.97428 4.33757 6.78711 4.24805 6.56738C4.15853 6.34766 4.11377 6.11572 4.11377 5.87158ZM3.125 10.9375C3.34473 10.9375 3.54818 10.9782 3.73535 11.0596C3.92253 11.141 4.08529 11.2508 4.22364 11.3892C4.36198 11.5275 4.47591 11.6943 4.56543 11.8896C4.65495 12.085 4.69564 12.2884 4.6875 12.5C4.6875 12.7197 4.64681 12.9232 4.56543 13.1104C4.48405 13.2975 4.37419 13.4603 4.23584 13.5986C4.0975 13.737 3.93067 13.8509 3.73535 13.9404C3.54004 14.0299 3.33659 14.0706 3.125 14.0625C2.90528 14.0625 2.70183 14.0218 2.51465 13.9404C2.32748 13.859 2.16472 13.7492 2.02637 13.6108C1.88802 13.4725 1.77409 13.3057 1.68457 13.1104C1.59505 12.915 1.55436 12.7116 1.5625 12.5C1.5625 12.2803 1.60319 12.0768 1.68457 11.8896C1.76595 11.7025 1.87582 11.5397 2.01416 11.4014C2.15251 11.263 2.31934 11.1491 2.51465 11.0596C2.70996 10.9701 2.91341 10.9294 3.125 10.9375ZM4.5044 19.1284C4.5044 18.9412 4.54102 18.7663 4.61426 18.6035C4.6875 18.4408 4.78516 18.2943 4.90723 18.1641C5.0293 18.0339 5.17171 17.9362 5.33448 17.8711C5.49724 17.806 5.67627 17.7694 5.87158 17.7612C6.05876 17.7612 6.23373 17.7979 6.39649 17.8711C6.55925 17.9443 6.70573 18.042 6.83594 18.1641C6.96615 18.2861 7.0638 18.4285 7.12891 18.5913C7.19401 18.7541 7.23063 18.9331 7.23877 19.1284C7.23877 19.3156 7.20215 19.4906 7.12891 19.6533C7.05567 19.8161 6.95801 19.9626 6.83594 20.0928C6.71387 20.223 6.57145 20.3206 6.40869 20.3857C6.24593 20.4508 6.0669 20.4875 5.87158 20.4956C5.68441 20.4956 5.50944 20.459 5.34668 20.3857C5.18392 20.3125 5.03744 20.2148 4.90723 20.0928C4.77702 19.9707 4.67936 19.8283 4.61426 19.6655C4.54916 19.5028 4.51253 19.3237 4.5044 19.1284ZM12.5 20.7031C12.8255 20.7031 13.1022 20.8171 13.3301 21.0449C13.5579 21.2728 13.6719 21.5495 13.6719 21.875C13.6719 22.2005 13.5579 22.4772 13.3301 22.7051C13.1022 22.9329 12.8255 23.0469 12.5 23.0469C12.1745 23.0469 11.8978 22.9329 11.6699 22.7051C11.4421 22.4772 11.3281 22.2005 11.3281 21.875C11.3281 21.5495 11.4421 21.2728 11.6699 21.0449C11.8978 20.8171 12.1745 20.7031 12.5 20.7031ZM18.1519 19.1284C18.1519 18.8517 18.2454 18.6198 18.4326 18.4326C18.6198 18.2454 18.8517 18.1519 19.1284 18.1519C19.4051 18.1519 19.637 18.2454 19.8242 18.4326C20.0114 18.6198 20.105 18.8517 20.105 19.1284C20.105 19.4051 20.0114 19.637 19.8242 19.8242C19.637 20.0114 19.4051 20.105 19.1284 20.105C18.8517 20.105 18.6198 20.0114 18.4326 19.8242C18.2454 19.637 18.1519 19.4051 18.1519 19.1284ZM21.875 11.7188C22.0866 11.7188 22.2697 11.7961 22.4243 11.9507C22.5789 12.1053 22.6563 12.2884 22.6563 12.5C22.6563 12.7116 22.5789 12.8947 22.4243 13.0493C22.2697 13.2039 22.0866 13.2812 21.875 13.2812C21.6634 13.2812 21.4803 13.2039 21.3257 13.0493C21.1711 12.8947 21.0938 12.7116 21.0938 12.5C21.0938 12.2884 21.1711 12.1053 21.3257 11.9507C21.4803 11.7961 21.6634 11.7188 21.875 11.7188ZM19.1284 3.72314C19.4214 3.72314 19.6981 3.78011 19.9585 3.89404C20.2189 4.00798 20.4468 4.1626 20.6421 4.35791C20.8374 4.55322 20.992 4.78109 21.106 5.0415C21.2199 5.30192 21.2769 5.57861 21.2769 5.87158C21.2769 6.16455 21.2199 6.44124 21.106 6.70166C20.992 6.96208 20.8374 7.18994 20.6421 7.38525C20.4468 7.58057 20.2189 7.73519 19.9585 7.84912C19.6981 7.96305 19.4214 8.02002 19.1284 8.02002C18.8355 8.02002 18.5588 7.96305 18.2983 7.84912C18.0379 7.73519 17.8101 7.58057 17.6147 7.38525C17.4194 7.18994 17.2648 6.96208 17.1509 6.70166C17.0369 6.44124 16.98 6.16455 16.98 5.87158C16.98 5.57861 17.0369 5.30192 17.1509 5.0415C17.2648 4.78109 17.4194 4.55322 17.6147 4.35791C17.8101 4.1626 18.0379 4.00798 18.2983 3.89404C18.5588 3.78011 18.8355 3.72314 19.1284 3.72314Z"
         fill="currentColor"
@@ -26,7 +39,7 @@ export function ProgressIcon({ className }: IconProps) {
 
 export function CheckIcon({ className }: IconProps) {
   return (
-    <svg viewBox="0 0 25 25" fill="none" xmlns="http://www.w3.org/2000/svg" style={base} className={className} aria-hidden="true">
+    <svg viewBox="0 0 25 25" fill="none" xmlns="http://www.w3.org/2000/svg" data-lux-icon style={base} className={className} aria-hidden="true">
       <path
         d="M4.81875 9.24857C5.23415 8.25852 5.83927 7.35934 6.6 6.60169C7.35795 5.84085 8.25751 5.23572 9.24792 4.82044C11.2891 3.97246 13.581 3.95713 15.6333 4.77773C15.6539 5.45219 15.9366 6.09206 16.4212 6.56155C16.9059 7.03104 17.5544 7.29317 18.2292 7.29232C19.6729 7.29232 20.8333 6.1319 20.8333 4.68815C20.8333 3.2444 19.6729 2.08398 18.2292 2.08398C17.5115 2.08398 16.8625 2.37148 16.3927 2.83919C13.8604 1.82565 10.9521 1.84128 8.43959 2.90065C7.2 3.42148 6.08542 4.17148 5.12709 5.12878C4.15945 6.0967 3.39247 7.24616 2.87015 8.51122C2.34782 9.77627 2.08044 11.132 2.08334 12.5007H4.16667C4.16667 11.3694 4.38646 10.2757 4.81875 9.24857ZM20.1802 15.7527C19.7625 16.7444 19.1625 17.6361 18.399 18.3996C17.6354 19.1632 16.7438 19.7631 15.751 20.1809C13.7099 21.0288 11.4179 21.0442 9.36563 20.2236C9.34504 19.5493 9.06256 18.9096 8.57813 18.4401C8.0937 17.9707 7.44542 17.7084 6.77084 17.709C5.32709 17.709 4.16667 18.8694 4.16667 20.3132C4.16667 21.7569 5.32709 22.9173 6.77084 22.9173C7.48854 22.9173 8.1375 22.6298 8.60729 22.1621C9.84454 22.6608 11.166 22.9172 12.5 22.9173C14.5486 22.9217 16.5528 22.3207 18.2609 21.1898C19.9691 20.059 21.305 18.4487 22.101 16.5611C22.642 15.2758 22.9193 13.8951 22.9167 12.5007H20.8333C20.8358 13.6175 20.6136 14.7234 20.1802 15.7527Z"
         fill="currentColor"
@@ -56,7 +69,7 @@ export function CheckIcon({ className }: IconProps) {
  */
 export function MySkinIcon({ className }: IconProps) {
   return (
-    <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" style={base} className={className} aria-hidden="true">
+    <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" data-lux-icon style={base} className={className} aria-hidden="true">
       <circle cx="12" cy="12" r="9.25" stroke="currentColor" strokeWidth="1.6" />
       <circle cx="8.9" cy="10.2" r="1.15" fill="currentColor" />
       <circle cx="15.1" cy="10.2" r="1.15" fill="currentColor" />
@@ -73,7 +86,7 @@ export function MySkinIcon({ className }: IconProps) {
 
 export function ProductsIcon({ className }: IconProps) {
   return (
-    <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" style={base} className={className} aria-hidden="true">
+    <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" data-lux-icon style={base} className={className} aria-hidden="true">
       <path
         d="M2.40001 16H10.4C10.848 16 11.2 16.352 11.2 16.8V23.2C11.2 23.648 10.848 24 10.4 24H2.40001C1.95201 24 1.60001 23.648 1.60001 23.2V16.8C1.60001 16.352 1.95201 16 2.40001 16ZM2.40001 12.8H10.4C10.848 12.8 11.2 13.152 11.2 13.6V14.4C11.2 14.848 10.848 15.2 10.4 15.2H2.40001C1.95201 15.2 1.60001 14.848 1.60001 14.4V13.6C1.60001 13.152 1.95201 12.8 2.40001 12.8ZM2.40001 9.6H10.4C10.848 9.6 11.2 9.952 11.2 10.4V11.2C11.2 11.648 10.848 12 10.4 12H2.40001C1.95201 12 1.60001 11.648 1.60001 11.2V10.4C1.60001 9.952 1.95201 9.6 2.40001 9.6ZM9.60001 0V1.6H8.80001V3.536C10.208 4.144 11.2 5.568 11.2 7.2V8C11.2 8.448 10.848 8.8 10.4 8.8H2.40001C2.00001 8.8 1.68001 8.512 1.61601 8.144L1.60001 8V7.2C1.60001 5.552 2.59201 4.144 4.00001 3.536V1.6H3.20001V0H9.60001ZM19.2 0C19.728 1.616 20.288 2.896 20.832 3.792L21.056 4.128C21.28 4.448 21.552 4.816 21.904 5.264L22.944 6.608C23.632 7.472 24 8.512 24 9.6C24 12.24 21.84 14.4 19.2 14.4L18.784 14.384C17.856 14.288 16.96 13.952 16.208 13.36C15.2153 12.5705 14.5768 11.4191 14.4328 10.159C14.2888 8.89886 14.6511 7.6331 15.44 6.64L16.768 4.912C16.944 4.656 17.104 4.432 17.248 4.24L17.552 3.792C18.128 2.864 18.688 1.6 19.2 0Z"
         fill="currentColor"
@@ -89,16 +102,16 @@ export function ProductsIcon({ className }: IconProps) {
    nothing. That is why these use `stroke="currentColor"` and no fill.
    -------------------------------------------------------------------------- */
 
+/** Same object as `base`, kept separate because the two groups are documented
+ *  separately above. See the note on `base` for why neither sets a size. */
 const line = {
-  width: "var(--size-icon-md)",
-  height: "var(--size-icon-md)",
   display: "block" as const,
   flex: "none" as const,
 };
 
 export function ChevronLeftIcon({ className }: IconProps) {
   return (
-    <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" style={line} className={className} aria-hidden="true">
+    <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" data-lux-icon style={line} className={className} aria-hidden="true">
       <path d="M15 5L9 12L15 19" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
     </svg>
   );
@@ -106,7 +119,7 @@ export function ChevronLeftIcon({ className }: IconProps) {
 
 export function PlusIcon({ className }: IconProps) {
   return (
-    <svg viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg" style={{ ...line, width: "var(--size-icon-sm)", height: "var(--size-icon-sm)" }} className={className} aria-hidden="true">
+    <svg viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg" data-lux-icon style={{ ...line, "--icon-size": "var(--size-icon-sm)" } as CSSProperties} className={className} aria-hidden="true">
       <path d="M10 3.5V16.5M3.5 10H16.5" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" />
     </svg>
   );
@@ -125,7 +138,7 @@ export function PlusIcon({ className }: IconProps) {
  */
 export function NoteIcon({ className }: IconProps) {
   return (
-    <svg viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg" style={{ ...line, width: "var(--size-icon-sm)", height: "var(--size-icon-sm)" }} className={className} aria-hidden="true">
+    <svg viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg" data-lux-icon style={{ ...line, "--icon-size": "var(--size-icon-sm)" } as CSSProperties} className={className} aria-hidden="true">
       <path d="M13.4 3.6a1.7 1.7 0 0 1 2.4 2.4l-8 8-3.2.8.8-3.2 8-8Z" stroke="currentColor" strokeWidth="1.4" strokeLinejoin="round" />
       <path d="M12.2 4.8l3 3" stroke="currentColor" strokeWidth="1.4" strokeLinecap="round" />
     </svg>
@@ -134,7 +147,7 @@ export function NoteIcon({ className }: IconProps) {
 
 export function CameraIcon({ className }: IconProps) {
   return (
-    <svg viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg" style={{ ...line, width: "var(--size-icon-sm)", height: "var(--size-icon-sm)" }} className={className} aria-hidden="true">
+    <svg viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg" data-lux-icon style={{ ...line, "--icon-size": "var(--size-icon-sm)" } as CSSProperties} className={className} aria-hidden="true">
       <path d="M2.5 6.5A1.5 1.5 0 0 1 4 5h1.6a1 1 0 0 0 .83-.45l.64-.95A1 1 0 0 1 7.9 3.2h4.2a1 1 0 0 1 .83.4l.64.95a1 1 0 0 0 .83.45H16A1.5 1.5 0 0 1 17.5 6.5v8A1.5 1.5 0 0 1 16 16H4a1.5 1.5 0 0 1-1.5-1.5v-8Z" stroke="currentColor" strokeWidth="1.4" strokeLinejoin="round" />
       <circle cx="10" cy="10.2" r="2.8" stroke="currentColor" strokeWidth="1.4" />
     </svg>
@@ -143,7 +156,7 @@ export function CameraIcon({ className }: IconProps) {
 
 export function ChevronRightIcon({ className }: IconProps) {
   return (
-    <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" style={line} className={className} aria-hidden="true">
+    <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" data-lux-icon style={line} className={className} aria-hidden="true">
       <path d="M9 5L15 12L9 19" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
     </svg>
   );
@@ -151,7 +164,7 @@ export function ChevronRightIcon({ className }: IconProps) {
 
 export function ChevronDownIcon({ className }: IconProps) {
   return (
-    <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" style={line} className={className} aria-hidden="true">
+    <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" data-lux-icon style={line} className={className} aria-hidden="true">
       <path d="M5 9L12 15L19 9" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
     </svg>
   );
@@ -168,7 +181,7 @@ export function ChevronDownIcon({ className }: IconProps) {
 
 export function SearchIcon({ className }: IconProps) {
   return (
-    <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" style={line} className={className} aria-hidden="true">
+    <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" data-lux-icon style={line} className={className} aria-hidden="true">
       <circle cx="10" cy="10" r="7" stroke="currentColor" strokeWidth="1.5" />
       <path d="M17 17L21 21" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" />
     </svg>
@@ -177,7 +190,7 @@ export function SearchIcon({ className }: IconProps) {
 
 export function CloseIcon({ className }: IconProps) {
   return (
-    <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" style={line} className={className} aria-hidden="true">
+    <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" data-lux-icon style={line} className={className} aria-hidden="true">
       <path d="M6 6L18 18M18 6L6 18" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" />
     </svg>
   );
@@ -194,7 +207,7 @@ export function CloseIcon({ className }: IconProps) {
  */
 export function SuccessCheckIcon({ className }: IconProps) {
   return (
-    <svg viewBox="0 0 28 28" fill="none" xmlns="http://www.w3.org/2000/svg" style={{ ...line, width: "28px", height: "28px" }} className={className} aria-hidden="true">
+    <svg viewBox="0 0 28 28" fill="none" xmlns="http://www.w3.org/2000/svg" data-lux-icon style={{ ...line, "--icon-size": "28px" } as CSSProperties} className={className} aria-hidden="true">
       <path d="M5 13L10 18L20 6" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
     </svg>
   );

@@ -1100,6 +1100,32 @@ glitch rather than a CSS mistake. Only background IMAGES are affected; a flat
     font-size written on a screen — `t-h3-h2` stays in `globals.css` because it
     is a real Figma text style, it simply has no caller now.
 
+17. ⚠️ **AN ICON'S SIZE IS A CSS DEFAULT, NOT AN INLINE STYLE — NEVER PUT
+    `width`/`height` BACK IN `icons.tsx`.** Every glyph used to write
+    `var(--size-icon-md)` into its own `style` object, and an inline style beats
+    an external stylesheet rule at EVERY specificity, so a module class asking
+    for a different size did nothing. It failed silently — the rule sat right
+    there in the file looking correct — which is why **eleven** such rules
+    survived across nine components, all rendering 24. Among them
+    `ProductDetails`'s nested `inciChevron`, whose entire job per the PRODUCTS
+    section above is to be `icon-xs` against the header's `icon-sm`: measured at
+    24 against 24, i.e. the distinction was not drawing at all. Three more files
+    had hit the wall and reached for `!important`.
+
+    The default now lives in `globals.css` as `:where(svg[data-lux-icon])`.
+    **`:where()` is load-bearing** — a bare `svg[data-lux-icon]` is (0,1,1) and
+    would beat the single class it is meant to yield to, swapping one trap for
+    another. At zero specificity any class wins on its own, so no icon size
+    needs `!important` and none has it. An icon whose default is not `md` sets
+    `--icon-size` inline; that is a custom property feeding the rule, not a
+    `width` outranking it, so a class still overrides it.
+
+    Measured before and after over seven routes in headless Chrome: eight icon
+    instances moved to the size their own CSS had been asking for all along
+    (six chevrons and an `editIcon` 24→20, `inciChevron` 24→16), and nothing
+    that was already correct moved. `CheckBasket`'s `.barChevron` declares `md`,
+    so it was a no-op rule that now applies to the same 24.
+
 ## Things the design system does not have, faked here
 
 Each of these is composed from tokens in Figma too, so the code is not inventing
