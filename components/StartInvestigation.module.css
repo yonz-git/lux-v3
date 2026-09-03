@@ -94,6 +94,12 @@
   color: var(--color-text-primary);
 }
 
+@media (hover: none) {
+  .otherClear:hover {
+    color: var(--color-text-muted);
+  }
+}
+
 /* icon scaled down by the same ratio as the button itself, 20/36 of the
    CloseIcon's default 24px (`size-icon-md`).
    ⚠️ `!important` IS REQUIRED HERE. `icons.tsx` sets width/height via an

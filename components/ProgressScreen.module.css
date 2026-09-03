@@ -50,12 +50,27 @@
     grid-row: 1;
   }
 
-  /* col-1 is one card that runs the height of the column beside it. `start`
-     alignment on the grid keeps it its natural height rather than stretching
-     the calendar to match col-2. */
+  /* col-1 is the calendar and the action under it. `start` alignment on the
+     grid keeps every card its natural height rather than stretching one to
+     match its neighbour.
+
+     ⚠️ THE ACTION MOVED INTO col-1, AND THAT IS NOT IN FIGMA. The handoff
+     gives col-2 four blocks — profile, trend, CTA, caption — and col-1 the
+     calendar alone, spanning all four rows. That works in the comp because the
+     comp's calendar is 494 tall; this build's is 358, for the reason recorded
+     in AGENTS.md (the comp's empty week rows are 100-tall auto-layout
+     artefacts, and reproducing them would break the 32 every occupied row
+     measures). Measured at 1440, the consequence was a column that ended at
+     y≈680 beside one that ran to y≈1030 — 350px of empty canvas under the
+     calendar, with the screen's own action stranded at the bottom right.
+
+     Moving the CTA and its caption under the calendar balances the two columns
+     (472 against 497) without touching a single component's height, and it
+     reads better than it did: `Check in today` now sits under the calendar of
+     check-ins it adds to, rather than under a chart it does not change. */
   .calendar {
     grid-column: 1;
-    grid-row: 1 / span 4;
+    grid-row: 1 / span 2;
   }
 
   .trend {
@@ -74,15 +89,16 @@
      Centring it lines the two up and puts the primary action on the column's
      axis. Decided here; the comp has not caught up. */
   .cta {
-    grid-column: 2;
+    grid-column: 1;
     grid-row: 3;
     width: 376px;
     justify-self: center;
   }
 
   .lastCheckIn {
-    grid-column: 2;
+    grid-column: 1;
     grid-row: 4;
+    text-align: center;
   }
 }
 

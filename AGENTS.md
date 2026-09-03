@@ -112,7 +112,12 @@ history.
 | ------------------------- | ---------------------------------------------------------- | ---------------------------------------------------- |
 | `/investigation/products` | `574:1342` / `582:1612` (+ list `574:1391`, `578:1557`)    | step 5. `YourProducts` + the add-product tray on top |
 | `/products`               | `579:1574` / `583:1863` (+ filled `579:1607` / `583:1889`) | HUB landing, no back chevron                         |
-| `/products/[bucket]`      | `581:1593` / `583:1924`                                    | HUB pushed view, serves every group                  |
+
+⚠️ **`/products/[bucket]` IS GONE, AND SO IS THE SCREEN IT SERVED.**
+`Long-term products list` (`581:1593` / `583:1924`) was a pushed view whose
+whole content was a title, a count and the group's cards — the first two of
+which the hub row already stated. The category rows are DROPDOWNS now and the
+cards open in place (`ProductAccordionCard`); see the note on `MyProducts`.
 
 **⚠️ STEP 5 IS ONE SCREEN AND ONE TRAY — the twelve-screen flow is gone.** The
 design walked three time PERIODS in sequence: an intro promising them, a
@@ -154,8 +159,10 @@ its own page title is naming. A "4+ weeks" badge repeated down a screen headed
 (both places it appeared: the collapsed `Tag` AND the expanded `Duration` detail
 row). `Your products` already had this rule and stated it — it shows the per-row
 Tag ONLY in its flat single-group state, "carrying the period information a
-header would otherwise repeat" — and `BucketProductsList`, permanently in the
-grouped case, simply had not applied it.
+header would otherwise repeat" — and the pushed view's list, permanently in the
+grouped case, simply had not applied it. (That list is `ProductAccordionCard`
+now, opening in place on the hub; `BucketProductsList` was deleted with the
+route.)
 
 The window moved TO `/products` because that is the only screen where all three
 periods appear together, so they read as one scale (4+ weeks / 1–4 weeks /
@@ -208,10 +215,21 @@ a sage data card — `surface/data` + `surface/frosted-data` + `radius/2xl`,
 padding 20 mobile / 24 desktop, and **NO stroke**. The text on one is white:
 `text/on-data` for values, `-secondary` for body, `-muted` for labels; a section
 label is `Overline` in `-muted`. Accents are indigo `bg/brand` — check-in discs,
-timeline dots, meter fills — and the trend line is white. A divider inside one is
+timeline dots, meter fills — and the trend line is `text/on-data`, i.e. dark
+since the contrast fix below. A divider inside one is
 1px `border/glass`, never `border/subtle`. A nested emphasis block is
 `surface/data-strong`: **a sage card inside a light card is a LUX pattern, the
 reverse is not.** `components/DataCard.tsx` is the whole recipe; use it.
+
+**⚠️ THE CTA AND ITS CAPTION SIT IN col-1 NOW, UNDER THE CALENDAR — NOT IN
+FIGMA.** The handoff gives col-2 four blocks and col-1 the calendar alone,
+spanning all four rows, which balances only because the comp's calendar is 494
+tall. This build's is 358 — see the auto-layout note below — so at 1440 col-1
+ended at y≈680 beside a col-2 running to y≈1030, with the screen's own action
+stranded at the bottom of the taller column. Moving `Check in today` and
+`Last check-in` under the calendar balances the columns (472 against 497)
+without changing any component's height, and puts the action under the record
+it adds to rather than under a chart it does not change.
 
 **⚠️ THE DESKTOP IS A 1280 DASHBOARD GRID, NOT A CARD.** Per the handoff, 1280
 means "dashboard grid, no card": two columns a `gutter/desktop` (24) apart, col-1
@@ -597,10 +615,21 @@ these tokens is light sage, so the exception list was empty. The values are
 declared on `:root` in `globals.css` (hand-authored) rather than `tokens.css`
 (generated). **Raise this in Figma** — it is a token bug there too.
 
-⚠️ **STILL WHITE, DELIBERATELY:** the `border/glass` divider inside a data card,
-the check-in discs' `text/on-brand` (indigo ground, passes), and
-`SymptomTrend`'s line. The trend line is a graphical object at ~2.6:1 against
-the card and is the one remaining System B contrast question — unresolved.
+⚠️ **STILL WHITE, DELIBERATELY:** the `border/glass` divider inside a data card
+and the check-in discs' `text/on-brand` (indigo ground, passes).
+`SymptomTrend`'s line is NOT on this list any more: it binds
+`--color-text-on-data`, so the global fix carried it with the text and it now
+draws dark — measured, it clears 3:1 against both card alphas. The remaining
+System B question is the calendar's `Today` ring, which is `border/glass` on
+`surface/data` at **1.44:1** where SC 1.4.11 wants 3:1, and today has no other
+indicator.
+
+⚠️ **TWO SHEETS OPT BACK OUT OF THE DARK INK, AND BOTH FAIL.**
+`AddProductMethodSheet.module.css` redeclares `text/on-data*` as `#ffffff` for
+its method list (measured 2.64:1 / 2.70:1) and `CheckBasket` does the same for
+its rows (2.39:1, and 2.39:1 for the white remove glyphs, which are controls).
+Both are deliberate and flagged in their own files. Everything else in the app
+inherits the accessible values.
 
 ⚠️ **`--color-text-muted` WAS ONE OF THOSE SURVIVORS AND IS NOW FIXED.** It
 aliased `neutral-400` (`#9a9aa5`) and measured **2.13–2.57:1** on the three
@@ -882,7 +911,7 @@ risk. All are on the missing-from-the-DS list.
 | Face-region picker | `components/FaceDiagram.tsx`                         | The region coordinates ARE the design — "Cheeks (L)" only means the left cheek because of where it sits. Stored as % of the 392x300 card so it scales. ⚠️ The region chips are `bg/frost-light` (OPAQUE) as of 22 Aug 2026: they sit ON a frost-light card, so at 55% it was the same fill over the same fill and the pill had almost no edge. Selected stays `bg/brand` + white. |
 | Camera shutter     | `components/CameraCapture.tsx`, plus `SelfieSheet.module.css` | No shutter component in the DS, and there are now THREE capture surfaces: the selfie tray, the products scan view and the check-in's photo overlay. `SelfieCapture` carried the note "if a second capture surface ever appears, make it a real component first" — a third did, so `CameraCapture` is that component (viewfinder + guide + captured label + copy + shutter) and the scan view and the check-in both use it. ⚠️ **`SelfieSheet` DELIBERATELY DOES NOT.** 487:834 / 490:1041 give it its own geometry — a 392x400 / 420x340 viewfinder against `CameraCapture`'s 392x300, a PORTRAIT oval against a landscape rectangle, a 72 shutter against 64, and the helper BELOW the shutter rather than above. Those are its frame's measurements, not drift; folding it in would move them. **Raise a real Camera / Shutter component in Figma**, then migrate all three at once. Every viewfinder is a placeholder, not `getUserMedia` — wiring a real camera would make the prototype demand a permission just to walk the flow.                                                                                                                                                                                                            |
 | Modal tray         | `components/Sheet.tsx`                               | `Bottom Sheet` (255:91) has no background blur and a fixed light content slot, so every tray in the file is hand-composed from the recipe. There is also **no scrim token** — `state/pressed-overlay` at 14% is the only darkening value LUX has and it is weak for a modal. ⚠️ **IT PORTALS TO `document.body`, AND IT HAS TO.** `position: fixed` is viewport-relative only while no ancestor establishes a containing block, and `backdrop-filter` does that exactly like `transform` does. Every tray opens from inside `QuestionScreen`'s frosted card (`blur(32px)`), so the desktop dialog was centred in THAT CARD: measured at 1238x875 the tray's top edge sat at y = −41 with its heading off the top of the screen, and the scrim covered the card instead of the page.                                                                                                      |
-| Accordion          | `components/BucketProductsList.tsx`                  | No accordion component. Composed from the frosted card recipe.                                                                                                                                                                                                                                                                                                                    |
+| Accordion          | `components/ProductAccordionCard.tsx`                | No accordion component. Composed from the frosted card recipe. It was `BucketProductsList` on the deleted `/products/[bucket]` route; the cards moved into the hub rows unchanged.                                                                                                                                                                                                                                                                                                                    |
 | Search dropdown    | `AddProductMethodSheet.module.css` `.dropdown`        | `Search Field` (248:70) has no results popup, and the comps drew results as free-standing `ProductRow` cards on a routed screen. One frosted panel tucked 8 under the pill and inset 8 either side, capped at 296 with its own scroll. ⚠️ IN FLOW, NOT ABSOLUTE — the mobile tray is docked to the bottom edge and hugs its content, so an overlaid panel would open off the bottom of the viewport. |
 | `My skin` nav icon | `MySkinIcon` in `components/icons.tsx`               | The nav's fourth glyph. `Bottom-Nav-Bar` (410:258) ships three icons and the DS has no face or skin mark anywhere else — `FaceDiagram` is a picker, not an icon. ⚠️ STROKE-drawn, unlike its three filled neighbours: a solid disc at 24 is a far heavier mark than Progress/Check/Products draw, and the face only reads at that size with the eyes and mouth left open. currentColor throughout, so the active/inactive opacity treatment is untouched. Replace it in the DS first, not here. |
 | Product imagery    | `components/ProductArt.tsx`                          | ⚠️ **THE CAMERA GLYPH IS GONE — DECIDED HERE, NOT IN FIGMA.** No product or bottle icon exists outside the bottom nav, so every thumb (`ProductThumb`, 48) and image well (`ProductCard`, 352x140) drew a camera. That reads as "no photo yet" once and as nothing at all down a list — `/check/new`, the PRODUCTS hub and the add tray all show the same mark on every row, so the thumbnail identifies nothing. `ProductArt` draws the vessel instead: **nine** silhouettes (tub, pump, tube, dropper, bottle, airless, spray, sachet, tin) by packaging type, tinted per brand, so same brand → same tint and same type → same shape. ⚠️ **IT WAS FIVE FORMS AND ONE FALLBACK TINT, WHICH WAS ENOUGH ONLY WHILE THE CATALOGUE WAS THE SEARCH.** Both searches are live now, so the list is whatever the database holds — masks, mists, sticks, ointments — and every one of them fell through `formFor`'s default to the same pump on a `sage` body. A column of identical pumps is the camera glyph with an extra step. Three axes of variety, all keyed on a stable FNV-1a `hash` (never `Math.random()` or an index — a thumbnail that changes identity between two screens is worse than one that repeats): unnamed brands hash into a 7-tint `RING`, unrecognised names hash across all nine `FORMS`, and `labelVariant` picks one of three label treatments off the product id so two products of the same form AND brand still differ. Brand strings are diacritic-folded before hashing, because OBF files the same house as both "Avene" and "Avène". ⚠️ **AND IT IS THE ONLY PICTURE — THE API'S PHOTOS ARE NOT READ.** Open Beauty Facts carries `image_front_url` and it used to win over the drawing. Its images are crowdsourced with no quality gate, so a result list mixed usable front-of-package shots with stubs, angled boxes and rows that fell back to a drawing anyway — two kinds of picture in one column, which is worse at telling rows apart than either alone. `lib/openBeautyFacts.ts` no longer requests the image fields, `CatalogProduct` has no `imageUrl`, and `useProductPhoto` is deleted; `artFor` serves live results via `formFor`/`paletteFor`. **The API still supplies every WORD** — name, brand, size and the INCI list. The pigments are LOCAL LITERALS drawn from the LUX family and must not become tokens — `02 Color` has no "bottle glass" role, and binding a lid to `bg/brand` would move the artwork every time the brand colour did. **Raise a real illustration set in Figma.** |
@@ -892,7 +921,7 @@ risk. All are on the missing-from-the-DS list.
 | Calendar (record)  | `components/CheckInCalendar.tsx`                     | On the handoff's own missing list. ⚠️ THE SECOND CALENDAR IN THE APP AND NOT THE SAME ONE — `DateField` is a Monday-first interactive date PICKER, this is a Sunday-first read-only RECORD, and both match their frames. Do not merge them; raise the week-start split in Figma instead.                                                                                            |
 | Line chart         | `components/SymptomTrend.tsx`                        | On the handoff's missing list. Drawn from the data, NOT from the comp's baked vector — the series is the card's whole content. `preserveAspectRatio="none"` + `vector-effect` for the line; the dots are positioned elements so they stay round (the desktop comp exports its "circles" at 13.33 x 8).                                                                              |
 | Skin-profile strip | `components/SkinProfileStrip.tsx`                    | The one sage element on a CHECK screen. Same System B recipe as `DataCard` but an 86-tall strip with 18/20 padding — a separate component rather than a size prop that would mean nothing.                                                                                                                                                                                         |
-| Compat accordion   | `components/CompatCard.tsx`                          | The SECOND accordion in the app; `BucketProductsList` is the other, on a different surface with a different header and no band. Neither exists in the DS. The band drives pill, score and bar fill through one `--band` custom property so they cannot drift.                                                                                                                       |
+| Compat accordion   | `components/CompatCard.tsx`                          | The SECOND accordion in the app; `ProductAccordionCard` is the other, on a different surface with a different header and no band. Neither exists in the DS. The band drives pill, score and bar fill through one `--band` custom property so they cannot drift.                                                                                                                       |
 | Status pill        | `CompatCard.module.css`, `CheckHistory.module.css`   | Not `Tag` — Tag is Neutral/Brand only and these carry the feedback colours. ⚠️ `feedback/warning` and `feedback/error` share a hue and differ only in lightness, so the pill TEXT is what separates Risky from Avoid. Every row states its band in an aria-label, including the compatible ones that draw no pill at all.                                                            |
 
 ## Selection controls — the shape is the contract

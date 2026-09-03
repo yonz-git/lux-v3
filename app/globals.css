@@ -641,6 +641,26 @@ main[tabindex="-1"]:focus-visible {
     padding-bottom: 0;
   }
 
+  /* ⚠️ A SHORT DESKTOP VIEWPORT TAKES THE RESERVATION BACK. The 0 above is
+     right for the 1440x900 canvas, where a centred hero clears the floating
+     nav with room to spare — and wrong for a laptop or a split window, where
+     the same centring walks the bottom of the composition straight into the
+     pill. Measured at 1024x768 on `/check`: `document.elementFromPoint` at the
+     centre of `View previous checks` returned the NAV, so the link could not be
+     clicked at all and the only route to check history was gone.
+
+     A height query rather than a width one, because height is what actually
+     runs out: 900 is fine, 800 and 768 are not. 860 is the first round number
+     above the tallest measured failure. Above it nothing changes, so both
+     Figma canvases render exactly as before. */
+  @media (max-height: 860px) {
+    .screen[data-layout="hub"][data-center] {
+      padding-bottom: calc(
+        var(--space-2xl) + var(--size-nav-height) + var(--space-4xl)
+      );
+    }
+  }
+
   .screen {
     background: var(--gradient-canvas-desktop);
     /* 120 top = 40 page padding + the 40 empty header row + the 40 spacer that

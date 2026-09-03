@@ -25,6 +25,16 @@
   text-align: left;
 
   border-radius: var(--radius-lg);
+  /* ⚠️ DECLARED HERE OR THE SELECTED STATE NEVER DRAWS. The doc comment above
+     has always said the row carries a 1.5px stroke that only changes COLOUR
+     between states — but no width or style was ever set, so `border-color` on
+     `[data-selected="true"]` (and on `:hover`) resolved against a border of
+     `0px none` and painted nothing. Measured: computed `border-top-width: 0px`
+     on a selected row, so a picked option was marked by its circle alone.
+     Transparent by default keeps the unselected row exactly as it looks now,
+     and `border-box` + `min-height` means the row still measures 56 (58 on
+     desktop) with the stroke inside it, as rule 8b requires. */
+  border: var(--border-width-thin) solid transparent;
   background: var(--color-surface-frost-light);
 
   box-shadow: var(--shadow-frosted-row);
@@ -40,6 +50,16 @@
 
 .row:hover[data-selected="false"] {
   border-color: transparent;
+}
+
+/* a tap fires :hover on a touch device and it STAYS fired until something else
+   is tapped — so an unselected row that has been tapped once keeps its border
+   cleared for as long as the screen is open, which reads as a selection state
+   it is not. Motion rule: every :hover gets its counterpart. */
+@media (hover: none) {
+  .row:hover[data-selected="false"] {
+    border-color: transparent;
+  }
 }
 
 .label {

@@ -12,6 +12,24 @@
   width: 100%;
 }
 
+/* ⚠️ THE BUBBLE STAYS FULL WIDTH; THE SENTENCE INSIDE IT DOES NOT — NOT IN
+   FIGMA. At 1440 the verdict ran 96 characters a line, the longest measure on
+   the screen and the one line every reader starts with. Capping the BUBBLE
+   would have contradicted 548:1141, which draws a full-width row, so the cap
+   is on the text: the bubble is still the column, the sentence breaks at a
+   readable length. 52ch measures ~71 characters in this face (a `ch` is the
+   width of a zero, which is wider than an average letter). Mobile is a 392
+   column and never reaches the cap. */
+.verdict {
+  display: block;
+}
+
+@media (min-width: 1024px) {
+  .verdict {
+    max-width: 52ch;
+  }
+}
+
 /* The 24 under the AI bubble, which nothing else owned. `.block` starts at the
    summary card and `SkinProfileStrip` has no margin of its own, so the strip sat
    flush against the bubble at 0 while every other gap on the screen was 16 or

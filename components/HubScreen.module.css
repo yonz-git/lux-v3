@@ -106,7 +106,22 @@
   flex-direction: column;
   gap: var(--space-md);
   width: 100%;
-  margin-top: var(--space-3xl); /* 32 */
+
+  /* ⚠️ 32 IS A MINIMUM, NOT A POSITION — NOT IN FIGMA. `auto` takes whatever
+     vertical space is left over, so on a screen whose content fills the column
+     the footer keeps exactly the 32 the comps draw, and on a short one it
+     drops to the bottom of the screen instead of leaving the action stranded
+     in the upper half. Measured on `/products` at 440: the last row ended at
+     y=470 of a 957 viewport with `Start analysis` right under it and 480px of
+     empty canvas below, so the screen's action sat in the middle of nothing
+     while the bottom of the screen — where every other LUX action lives, from
+     Continue to the basket bar — was empty.
+
+     `padding-top` carries the 32 because `margin-top: auto` consumes the
+     margin: on a screen that DOES fill the column the auto resolves to 0 and
+     the padding is the whole gap, which is the comps' spacing exactly. */
+  margin-top: auto;
+  padding-top: var(--space-3xl); /* 32 */
 }
 
 @media (min-width: 1024px) {
@@ -183,7 +198,11 @@
   .footer {
     align-self: center;
     max-width: 280px;
+    /* the mobile rule's auto + 32 padding is replaced outright here: desktop
+       hub frames place the footer 48 under the card and the page is mostly
+       whitespace anyway, so there is no stranded-action problem to solve */
     margin-top: var(--space-5xl); /* 48 — matches the card's own padding */
+    padding-top: 0;
   }
 }
 

@@ -107,7 +107,11 @@ export function CheckResults() {
       {/* 1 — the verdict, in the AI's voice. `full` so it spans the column the
              way 548:1141 does rather than hugging its text. */}
       <ChatBubble from="ai" full className={styles.bubble}>
-        {verdict(band, primary ? fullName(primary.product) : null)}
+        {/* the sentence keeps a reading measure while the bubble keeps the
+            comp's full-width row — see `.verdict` */}
+        <span className={styles.verdict}>
+          {verdict(band, primary ? fullName(primary.product) : null)}
+        </span>
       </ChatBubble>
 
       <SkinProfileStrip className={styles.profile} {...skinProfile(answers)} />

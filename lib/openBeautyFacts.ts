@@ -49,6 +49,40 @@ function truncate(text: string): string {
     : text;
 }
 
+/**
+ * ⚠️ THE DATABASE IS CROWDSOURCED, SO THE STRINGS ARE NOT PRESENTATION-READY.
+ * A "cerave" query returns `moisturising cream` in lower case beside
+ * `CeraVe Schuimende Reinigingsgel` in its own — one list, two conventions,
+ * on the one screen whose whole job is telling products apart by reading them.
+ *
+ * Only an ALL-lower-case name is touched, and only word-initially: a name that
+ * already carries capitals is somebody's real capitalisation (`CeraVe`, `AHA`,
+ * `SA Cleanser`) and rewriting it would be the same damage in the other
+ * direction. A token holding a digit is left exactly as it is — `10%`, `b3`
+ * and `spf50` are specs rather than words, and title-casing them produces
+ * `B3` beside `Spf50`, which is neither the name nor the spec.
+ */
+function displayName(name: string): string {
+  if (name !== name.toLowerCase()) return name;
+  return name.replace(/[\p{L}][\p{L}\p{M}'’-]*/gu, (word) =>
+    /\d/.test(word) ? word : word[0].toUpperCase() + word.slice(1)
+  );
+}
+
+/**
+ * ⚠️ A SIZE WITH NO UNIT IS NOT A SIZE. `quantity` is free text, and a good
+ * share of OBF entries hold a bare number — the row then reads
+ * "CeraVe — 177", which looks like an ID, a count, or a truncation rather than
+ * 177 ml. `ProductRow`'s meta line is the only place two otherwise identical
+ * products are told apart (the catalogue holds a 12 oz and a 16 oz CeraVe
+ * Moisturizing Cream), so a value that cannot be read as a measurement is
+ * worse there than no value at all.
+ */
+function displaySize(quantity: string | undefined): string {
+  const size = quantity?.trim() ?? "";
+  return /\p{L}/u.test(size) ? size : "";
+}
+
 /** Skips a product with no barcode or name rather than rendering a blank row —
  *  both happen for entries the community hasn't finished filling in. */
 function toCatalogProduct(raw: OBFProduct): CatalogProduct | null {
@@ -59,9 +93,9 @@ function toCatalogProduct(raw: OBFProduct): CatalogProduct | null {
 
   return {
     id: raw.code,
-    name,
+    name: displayName(name),
     brand: raw.brands?.split(",")[0]?.trim() || "Unknown brand",
-    size: raw.quantity?.trim() || "",
+    size: displaySize(raw.quantity),
     description: ingredients ? truncate(ingredients) : undefined,
     /* the UNCUT list — see `CatalogProduct.ingredients` on why the checker
        cannot read the truncated one */
@@ -99,9 +133,43 @@ export async function searchOpenBeautyFacts(
     throw new Error(`Open Beauty Facts search failed: ${res.status}`);
   }
   const data = (await res.json()) as { products?: OBFProduct[] };
-  return (data.products ?? [])
-    .map(toCatalogProduct)
-    .filter((p): p is CatalogProduct => p !== null);
+  return dedupe(
+    (data.products ?? [])
+      .map(toCatalogProduct)
+      .filter((p): p is CatalogProduct => p !== null)
+  );
+}
+
+/**
+ * ⚠️ THE SAME PRODUCT ARRIVES TWICE, UNDER TWO BARCODES. A "cerave" query
+ * returned two rows both reading `CeraVe Schuimende Reinigingsgel`, one with a
+ * size and one without — the same tube filed twice by two contributors. They
+ * are distinct barcodes, so nothing upstream treats them as duplicates, and on
+ * screen they are two rows the user cannot choose between.
+ *
+ * ⚠️ THE KEY IS BRAND + NAME, AND SIZE IS DELIBERATELY NOT IN IT. Two entries
+ * that differ by a real size are two real products — the catalogue's own 12 oz
+ * and 16 oz CeraVe Moisturizing Cream is exactly that case, and collapsing
+ * them would throw away the one field that tells them apart. So a row is only
+ * dropped when it agrees with a kept row on brand and name AND states no size
+ * of its own while another row in that group does: an empty size is missing
+ * metadata, not a difference. The ranking's order is untouched.
+ */
+function dedupe(products: CatalogProduct[]): CatalogProduct[] {
+  const nameKey = (p: CatalogProduct) => `${p.brand} ${p.name}`.toLowerCase();
+  const sizedGroups = new Set(products.filter((p) => p.size).map(nameKey));
+  const taken = new Set<string>();
+
+  return products.filter((p) => {
+    /* no size, in a group where another row states one: the same product with
+       a field left blank */
+    if (!p.size && sizedGroups.has(nameKey(p))) return false;
+
+    const key = p.size ? `${nameKey(p)}|${p.size.toLowerCase()}` : nameKey(p);
+    if (taken.has(key)) return false;
+    taken.add(key);
+    return true;
+  });
 }
 
 /**

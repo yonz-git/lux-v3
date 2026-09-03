@@ -333,3 +333,30 @@
   gap: var(--space-md); /* 12 */
   width: 100%;
 }
+
+/* ---- reading measure, desktop only --------------------------------------- */
+
+/* ⚠️ NOT IN FIGMA, AND IT ONLY APPLIES AT 1024+. Mobile is a 392 column, so
+   these paragraphs run about 50 characters a line and need nothing. The desktop
+   card is 920 wide with 48 of padding, and every one of them fills it:
+   measured on `/check/results`, the ingredient descriptions run 103 characters
+   a line at 1024 and 115 at 1440, against the 45-75 that is comfortable to
+   read. Nothing else on the screen is prose — the stats, the tags and the
+   product rows are all short strings — so the card grew a column width that
+   suits a label and not a sentence.
+
+   `ch` rather than a pixel value: the cap is a measure, so it has to follow
+   the type it is measuring. ⚠️ `ch` IS THE WIDTH OF A ZERO, NOT OF AN AVERAGE
+   LETTER — a digit is one of the widest glyphs in this face, so 62ch measured
+   89 characters a line on the first attempt. 52ch is what actually lands in
+   the 65-75 the rule is about; measured 71. The cards keep their full width — only the running text
+   inside them stops early, which is also why the wrapping blocks are untouched:
+   a max-width on `.concernItem` would drag its `foundIn` line and its badge in
+   with it. */
+@media (min-width: 1024px) {
+  .concernText,
+  .stepText,
+  .emphasisText {
+    max-width: 52ch;
+  }
+}
