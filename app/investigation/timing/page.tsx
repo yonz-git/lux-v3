@@ -1,4 +1,4 @@
-import { Timing } from "@/components/Timing";
+import { Timing } from "@/features/my-skin/components/Timing";
 import type { Metadata } from "next";
 import { metadataTitleFor } from "@/lib/pageTitles";
 

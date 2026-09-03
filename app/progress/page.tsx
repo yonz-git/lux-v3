@@ -1,4 +1,4 @@
-import { ProgressScreen } from "@/components/ProgressScreen";
+import { ProgressScreen } from "@/features/progress/components/ProgressScreen";
 import type { Metadata } from "next";
 import { metadataTitleFor } from "@/lib/pageTitles";
 

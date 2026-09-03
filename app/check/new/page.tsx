@@ -1,4 +1,4 @@
-import { CheckBuilder } from "@/components/CheckBuilder";
+import { CheckBuilder } from "@/features/check/components/CheckBuilder";
 import type { Metadata } from "next";
 import { metadataTitleFor } from "@/lib/pageTitles";
 

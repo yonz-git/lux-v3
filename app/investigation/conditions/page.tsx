@@ -1,4 +1,4 @@
-import { KnownConditions } from "@/components/KnownConditions";
+import { KnownConditions } from "@/features/my-skin/components/KnownConditions";
 import type { Metadata } from "next";
 import { metadataTitleFor } from "@/lib/pageTitles";
 

@@ -20,7 +20,7 @@
  * screen renders as its `<h1>`. `lib/flow.ts` is the authority on a step's
  * name; repeating it here would be a second place for it to live.
  */
-import { STEPS } from "./flow";
+import { STEPS } from "@/features/my-skin/flow";
 
 export const APP_NAME = "LUX";
 

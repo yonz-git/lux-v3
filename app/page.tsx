@@ -1,4 +1,4 @@
-import { Welcome } from "@/components/Welcome";
+import { Welcome } from "@/features/my-skin/components/Welcome";
 import type { Metadata } from "next";
 import { metadataTitleFor } from "@/lib/pageTitles";
 

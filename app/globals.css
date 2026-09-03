@@ -326,6 +326,40 @@ button {
   cursor: pointer;
 }
 
+/* ⚠️ AN ICON'S SIZE IS A ZERO-SPECIFICITY DEFAULT, AND IT LIVES HERE BECAUSE IT
+   CANNOT LIVE INLINE. Every glyph in `components/ui/icons.tsx` used to write
+   `width`/`height: var(--size-icon-md)` into its own `style` object, and an
+   inline style beats an external stylesheet rule at EVERY specificity — so a
+   module class asking for a different size did nothing at all. It failed
+   silently, which is why it survived: the rule is right there in the file, it
+   just never applied. Eleven such rules were live across nine components, all
+   rendering 24:
+
+     CheckBasket .barChevron .removeIcon .plus · CheckHistory .chevron ·
+     CheckResults .editIcon · CompatCard .chevron · MyProducts .chevron ·
+     ProductAccordionCard .chevron · ProductDetails .inciChevron ·
+     ProductList .chevron · CheckInCalendar .arrowIcon
+
+   Three more had already hit the wall and reached for `!important`
+   (`CheckScreen .linkArrow`, `StartInvestigation .otherClearIcon`,
+   `AddProductMethodSheet .removeIcon`); all three drop it now.
+
+   ⚠️ `:where()` IS LOAD-BEARING — a plain `svg[data-lux-icon]` would be (0,1,1)
+   and would BEAT the single class it is meant to yield to, turning one trap
+   into another. `:where()` contributes nothing to specificity, so any class
+   wins on its own, and CSS Modules loading after this file never even comes
+   into it.
+
+   An icon whose default is not `md` sets `--icon-size` inline. That is a
+   custom property, not `width`, so it feeds this rule instead of outranking
+   it and a class still overrides it. */
+:where(svg[data-lux-icon]) {
+  width: var(--icon-size, var(--size-icon-md));
+  height: var(--icon-size, var(--size-icon-md));
+  display: block;
+  flex: none;
+}
+
 /* ⚠️ THE RING IS AN `outline`, NOT A `box-shadow` — and it has to be.
    `focus/ring` is a 2px stroke, so a 0-spread box-shadow renders it exactly...
    until the focused element sets a box-shadow of its own. CSS Modules load AFTER

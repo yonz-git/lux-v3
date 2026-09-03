@@ -1,4 +1,4 @@
-import { SkinType } from "@/components/SkinType";
+import { SkinType } from "@/features/my-skin/components/SkinType";
 import type { Metadata } from "next";
 import { metadataTitleFor } from "@/lib/pageTitles";
 

@@ -1,8 +1,8 @@
 import type { Metadata, Viewport } from "next";
 import { Figtree } from "next/font/google";
 import "./globals.css";
-import { InvestigationProvider } from "@/components/InvestigationProvider";
-import { RouteAnnouncer } from "@/components/RouteAnnouncer";
+import { InvestigationProvider } from "@/lib/store/InvestigationProvider";
+import { RouteAnnouncer } from "@/components/layout/RouteAnnouncer";
 
 /**
  * Figtree is the LUX typeface. Poppins was used early on and must not come back.

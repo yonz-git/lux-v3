@@ -1,0 +1,199 @@
+/* 01 + 03b combined — Start investigation and Location. Figma mobile
+   476:2542+476:2802 / desktop 476:2670+476:2934. The content column is a 16px
+   stack: disclaimer card, question, chip grid, face diagram, location chip
+   grid, other-row, take-a-photo button.
+   ⚠️ THE OTHER-ROW SITS AFTER THE LOCATION CHIPS NOW, not right under the
+   symptom chip grid as Figma draws it — a prototype-only reorder, not yet
+   reflected back in Figma. Because it closes the screen rather than continuing
+   the symptom question, it takes the BETWEEN-question gap below, not the
+   within-question one. */
+
+.question {
+  color: var(--color-text-primary);
+}
+
+/* ⚠️ NOT IN FIGMA — THE STACK IS TWO-LEVEL NOW, NOT ONE FLAT GAP.
+   Figma mobile 476:2542 spaces the top-level blocks 60 apart (off the spacing
+   scale there too) and desktop 476:2670 uses 48. Both were applied as ONE gap
+   to every block, which put the stack's WIDEST interval INSIDE a single
+   question — the title and its own chips — and its NARROWEST, 20, at the
+   boundary BETWEEN the two questions this screen merges. Measured on the
+   rendered page: 60 / 20 / 60 / 16 mobile, 48 / 20 / 48 / 16 desktop. Proximity
+   was telling the user that the symptom chips and the face diagram were one
+   group and that the title belonged to nothing.
+   Two levels instead, so the merge reads as the two questions it is:
+     WITHIN a question   20
+     BETWEEN questions   40 mobile / 48 desktop
+   Desktop keeps the comp's 48 and mobile drops to 40 — more air where there is
+   more room, which is the way round the old pair had backwards. Desktop's total
+   inter-block height is unchanged at 132, so the card does not move; mobile
+   loses 40 of the 92px by which the screen overflowed its own 957 canvas. */
+.chips {
+  margin-top: var(--space-xl); /* 20 — same question as the title above it */
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  /* 10 is the Chip grid gap in Figma and is off the spacing scale there too */
+  gap: 10px;
+}
+
+/* A new question starts at the face diagram, and the two "tell us more"
+   controls close the screen — both are group boundaries. */
+.diagram,
+.other {
+  margin-top: var(--space-4xl); /* 40 */
+}
+
+/* .other is now just the spacing wrapper — it holds either the collapsed
+   button or the revealed TextField, so the margin-top rule above stays on one
+   selector regardless of which is showing. */
+
+.otherButton {
+  display: flex;
+  align-items: center;
+  gap: var(--space-sm);
+  width: 100%;
+  min-height: 56px;
+  padding: 0 18px;
+  text-align: left;
+
+  border-radius: var(--radius-lg);
+  background: var(--color-surface-frost-light);
+  box-shadow: var(--shadow-frosted-row);
+  -webkit-backdrop-filter: blur(var(--blur-card));
+  backdrop-filter: blur(var(--blur-card));
+  color: var(--color-text-primary);
+}
+
+.otherFieldWrap {
+  position: relative;
+}
+
+/* No design-system component for a clear button on a free-text field — this is
+   composed from the same frosted-circle language as a Chip, sized down. */
+.otherClear {
+  position: absolute;
+  top: 50%;
+  right: 10px;
+  transform: translateY(-50%);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 20px;
+  height: 20px;
+
+  border: var(--border-width-hairline) solid var(--color-border-subtle);
+  border-radius: var(--radius-full);
+  background: var(--color-surface-frost-light);
+  color: var(--color-text-muted);
+
+  transition: color var(--duration-fast) var(--ease-standard);
+}
+
+.otherClear:hover {
+  color: var(--color-text-primary);
+}
+
+@media (hover: none) {
+  .otherClear:hover {
+    color: var(--color-text-muted);
+  }
+}
+
+/* icon scaled down by the same ratio as the button itself, 20/36 of the
+   CloseIcon's default 24px (`size-icon-md`). `!important` used to be required —
+   `icons.tsx` set width/height inline and a plain class was silently ignored —
+   but the size is a `:where()` default in `globals.css` now, which any class
+   outranks. */
+.otherClearIcon {
+  width: calc(24px * 20 / 36);
+  height: calc(24px * 20 / 36);
+}
+
+.otherLabel {
+  color: var(--color-text-secondary);
+}
+
+/* ---- Location half of the merge (formerly Location.module.css) ---------
+   (.diagram's own gap now lives with the stack rules at the top of the file,
+   so the two group boundaries stay written next to each other.) */
+
+/* a real Secondary Button (Button.module.css `.secondary` owns the visual
+   recipe) — this class is just the spacing that used to live on the
+   hand-built frosted row. */
+/* ⚠️ THE ELEMENT SELECTOR IS LOAD-BEARING. `Button.module.css` sets
+   min-height/padding on `.button` at the same specificity as a bare
+   `.takePhoto`, and modules resolve that by load order — which Button wins.
+   `a.takePhoto` (0,1,1) is what actually reaches the control; the desktop rule
+   below already had to do this. */
+a.takePhoto,
+button.takePhoto {
+  margin-top: var(--space-lg);
+  /* ⚠️ NOT full-width, and control/md rather than control/lg — decided here.
+     This is the OPTIONAL side path off step 1 (selfie capture shares the step
+     number); rendered as a 62-tall bar across the card it was the largest
+     control on a screen whose actual task is the chips and the face diagram,
+     and it outweighed Continue. Hugging its own label at 48 puts it back in
+     proportion. Both values are on the control scale — this is a size change,
+     not a new treatment, so the gradient, shadow and hover all still come from
+     `Button`. */
+  align-self: center;
+  min-height: var(--size-control-md);
+  padding: 0 var(--space-xl);
+}
+
+@media (min-width: 1024px) {
+  /* Figma 476:2670 — the desktop card is gap 48 with its children CENTRED.
+     48 is the BETWEEN-question gap here; .chips keeps the 20 it inherits from
+     the mobile rule, because the title and its chips are one group at every
+     width. */
+  .diagram,
+  .other {
+    margin-top: var(--space-5xl); /* 48 */
+  }
+
+  .question {
+    text-align: center;
+  }
+
+  .chips {
+    gap: var(--space-md); /* 12 on desktop, 10 on mobile */
+  }
+
+  .diagram {
+    /* the diagram does not need the full 824 card width to read */
+    max-width: 480px;
+    /* ⚠️ CENTRED — a deliberate departure from the comp, which left-aligns it at
+       the card's content edge (Figma 476:2934 puts face-diagram-card at x=308,
+       the same x as everything else in the card).
+       ⚠️ `width: 100%` IS LOAD-BEARING. Auto inline margins on a flex item
+       OVERRIDE the default stretch, so `margin-inline: auto` alone dropped the
+       item to its content width — and its only child is `width: 100%` of that,
+       so the whole diagram collapsed to 3px. The explicit width restores the
+       size, max-width caps it, and the auto margins centre what is left. */
+    width: 100%;
+    margin-inline: auto;
+  }
+
+  /* Match Continue's desktop footprint (QuestionScreen.module.css
+     `.footer .continue`) — 280 centred, not the full
+     824 card width `fullWidth` gives it on mobile. Element+class beats
+     Button.module.css's single `.full` class on specificity, so this wins
+     regardless of import order. */
+  /* it hugs its label at both breakpoints now — the old fixed 180 was there to
+     stop the full-width mobile bar stretching across the desktop card, and
+     there is no bar any more */
+  a.takePhoto,
+  button.takePhoto {
+    align-self: center;
+  }
+}
+
+@media (prefers-reduced-transparency: reduce) {
+  .disclaimer,
+  .otherButton {
+    background: var(--color-bg-surface-frost);
+    -webkit-backdrop-filter: none;
+    backdrop-filter: none;
+  }
+}
