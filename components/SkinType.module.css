@@ -85,8 +85,8 @@
      carries margin-top 20, so with the bubble display:none the first VISIBLE
      element sat 20 below the card's 48 padding — a 68 top inset where every
      other screen in the flow opens flush on 48. Adjacent-sibling selector on
-     purpose: the real first child is QuestionScreen's visually-hidden <h1>,
-     which is also an h1, so :first-child and :first-of-type both miss. */
+     purpose: the real first child is QuestionScreen's visually-hidden <h1>, so
+     :first-child misses whatever the prompt's own tag is. */
   .acknowledgement + .prompt {
     margin-top: 0;
   }

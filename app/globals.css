@@ -23,10 +23,15 @@
    they are the plumbing that makes the button/bg-* tokens animatable.
    ========================================================================== */
 
+/* ⚠️ KEEP THIS IN STEP WITH `--color-button-bg-default-start` BELOW. A
+   registered property's `initial-value` must be a literal — `var()` is not
+   allowed in it — so it cannot read the token and has to be updated by hand.
+   It is only the value used before any rule sets the property, but leaving the
+   old one here flashes the previous colour for a frame. */
 @property --grad-start {
   syntax: "<color>";
   inherits: false;
-  initial-value: #bbd3d9;
+  initial-value: #a2b9bf;
 }
 
 @property --grad-end {
@@ -175,6 +180,110 @@
     inset 0 1px 0 rgba(255, 255, 255, 0.3);
 }
 
+/* ==========================================================================
+   `gradient/brand`'s START — darkened one step, and NOT to a passing value.
+
+   ⚠️ NOT IN FIGMA, AND IT IS A DESIGN CHANGE RATHER THAN A CONTRAST FIX. The
+   start moved `#bbd3d9` → `#a2b9bf`; the end is untouched at `#637073`. That is
+   a deliberate call about how the button should LOOK, made after the fix that
+   would actually clear AA was built and rejected as too dark (see below), so do
+   not read this value as the accessibility answer or "improve" it toward one
+   without asking.
+
+   WHERE IT LEAVES THE LABEL. `Button` draws `text/on-brand` — white — centred,
+   so the ink sits across the middle of the sweep. Measured at the glyphs rather
+   than at the button edges, on `/`:
+
+                       left edge   first glyph   last glyph   right edge
+     #bbd3d9 (before)     1.56         2.16          3.36         5.13
+     #a2b9bf (now)        2.05         2.67          3.73         5.13
+
+   against 4.5:1 for 17px Regular. So it is better and it still fails, on the
+   primary call to action on every screen in the app. Recorded rather than
+   rounded off.
+
+   ⚠️ NO INK COLOUR RESOLVES THIS — the SURFACE has to move, which is why it is
+   a design decision and not a token correction like the two blocks above. White
+   needs the light end darker still; the app ink `#2e2a3f` is fine at the light
+   end and fails at the dark one (2.70:1). Nothing clears 4.5:1 at both ends,
+   because they are ~5:1 apart from each other. The change that works is seating
+   the whole gradient lower on the sage ramp — `#5f7275` → `#3c4b4e` gives
+   4.87:1 and 9.10:1 — and it reads as a solid dark pill rather than a
+   light-to-dark sweep, which is the reason it was not taken. A lighter LABEL
+   treatment that keeps the sweep would have to come from Figma.
+
+   ⚠️ AXE CANNOT SEE ANY OF THIS. `color-contrast` degrades to INCOMPLETE, never
+   to a violation, the moment a background is a gradient — every route in this
+   app reports zero contrast violations with this on screen. Measure it by
+   sampling the gradient at the label's own x-range; do not take a clean axe run
+   as evidence.
+
+   ⚠️ IT TAKES TWO VARIABLES PLUS THE `@property` ABOVE, because Figma holds this
+   paint twice. `Button` reads `button/bg-default-*`, which `tokens.css`
+   documents as mirroring `gradient/brand` — the same colours under two names.
+   Both move together, as they do in Figma.
+
+   ⚠️ DECLARED HERE, NOT IN `tokens.css`: that file is generated from the Figma
+   variables, and Figma still says `#bbd3d9`. **Raise it there.**
+   ========================================================================== */
+
+:root {
+  --color-gradient-brand-start: #a2b9bf;
+
+  /* the mirror of the line above — this is the one `Button` actually reads */
+  --color-button-bg-default-start: #a2b9bf;
+}
+
+/* ==========================================================================
+   THE MUTED TEXT TIER — dark enough to be text.
+
+   ⚠️ NOT IN FIGMA. `text/muted` aliased `neutral/400` (`#9a9aa5`), which on the
+   surfaces it actually lands on measured **2.13:1 – 2.57:1** against a 4.5:1
+   requirement — and it styles 12–16px text, so the large-text allowance never
+   applies to it. Measured live on every muted node in the app: every
+   `ProductRow` meta line (brand · size), `ProductList`'s empty label,
+   `DateField`'s "Select a date" value, the PRODUCTS hub's `4+ weeks` windows
+   and product counts, and `CheckHistory`'s counts. That is the tier carrying
+   the one field that tells two near-identical products apart — the catalogue
+   holds a 16 oz and a 12 oz CeraVe Moisturizing Cream, and the size was the
+   least legible text on the row.
+
+   `#63636f` is the LIGHTEST value that clears 4.5:1 on every surface the tier
+   lands on. It stays clearly a step below `text/secondary` (`#4b4b57`, which
+   measures 7.4:1 – 7.9:1 on the same rows), so the three tiers still read as
+   three.
+
+   ⚠️ THE THREE SURFACES ARE NOT EQUALLY LIGHT, AND THE DARKEST ONE SETS THE
+   VALUE. A frosted row inside the desktop page card stacks two translucent
+   fills over the canvas and composites lightest; a row sitting DIRECTLY on the
+   canvas gets only one, and the canvas itself runs to `#acc5cc` at the bottom
+   of the mobile gradient. Worst case per surface, across the full gradient
+   range:
+
+     ProductList row, over the page card   #9a9aa5 2.41–2.57   #63636f 5.13–5.47
+     MyProducts category row               #9a9aa5 2.20–2.29   #63636f 4.68–4.87
+     DateField trigger, on the canvas      #9a9aa5 2.13–2.48   #63636f 4.54–5.27
+
+   An earlier pass put this at `#6a6a76` on a single estimated row colour. That
+   value is 4.62–4.93 on the first surface and only **4.09–4.39** on the other
+   two — it clears the row it was measured against and fails the two it was not.
+   Measure a token like this against the DARKEST surface it can land on, not a
+   representative one.
+
+   ⚠️ NOTHING PUTS MUTED TEXT ON BARE CANVAS, and this value would not be enough
+   if anything did (2.95:1 at the bottom of the mobile gradient). Verified by
+   sweeping every route for nodes at this colour: all of them sit on a frosted
+   row, a card or a panel. A new screen that sets muted text straight on the
+   gradient needs a darker value, not this one.
+
+   Same standing as the block above: declared here rather than in the generated
+   `tokens.css`, and to be raised in Figma as a token bug.
+   ========================================================================== */
+
+:root {
+  --color-text-muted: #63636f;
+}
+
 html,
 body {
   margin: 0;
@@ -232,6 +341,18 @@ button {
 :focus-visible {
   outline: var(--border-width-focus) solid var(--color-border-focus);
   outline-offset: 0;
+}
+
+/* ⚠️ THE ONE EXEMPTION, AND IT IS A CONTAINER, NOT A CONTROL. `RouteAnnouncer`
+   focuses the new screen's `<main>` after a client-side navigation so the next
+   Tab continues from the top of what just replaced the page. That focus is
+   programmatic and the target is a whole screen, so a ring would draw a 2px
+   box around the entire viewport for no action the user took. Scoped to the
+   `tabindex="-1"` the announcer sets — nothing else in the app carries it, and
+   no interactive control ever gets this rule. */
+main[tabindex="-1"]:focus,
+main[tabindex="-1"]:focus-visible {
+  outline: none;
 }
 
 /* ============================================================================

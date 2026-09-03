@@ -42,9 +42,16 @@ export function KnownConditions() {
   return (
     <QuestionScreen id="conditions">
       <div className={styles.heading}>
-        <h1 className={`${styles.question} t-h4-h3`}>
+        {/* ⚠️ AN `<h2>`, NOT AN `<h1>` — the step's own title is the page's one
+            `<h1>`, rendered by `QuestionScreen` (visually hidden here). This is a
+            question WITHIN that step, so it is a level down. Marking both as
+            `<h1>` gave a screen reader two — on `skin-type`, three — peer page
+            titles with nothing saying the questions belong to the step. The
+            `t-h4-h3` class carries every visual property, so the tag change moves
+            nothing on screen. */}
+        <h2 className={`${styles.question} t-h4-h3`}>
           Do you have any diagnosed skin conditions?
-        </h1>
+        </h2>
       </div>
 
       <div

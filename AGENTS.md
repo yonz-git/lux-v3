@@ -527,12 +527,43 @@ the check-in discs' `text/on-brand` (indigo ground, passes), and
 `SymptomTrend`'s line. The trend line is a graphical object at ~2.6:1 against
 the card and is the one remaining System B contrast question — unresolved.
 
-⚠️ **TWO CONTRAST FAILURES SURVIVE AND ARE NOT SYSTEM B.** Neither was touched,
-because both are meaning-carrying palette rather than a surface bug:
-`--color-text-muted` (`neutral-400`) on a light frosted row measures **2.27:1**
-at 12px, which is every `ProductRow` meta line app-wide; and `CompatCard`'s band
-colours plus their white pill text run **2.18–4.47:1** on `/check/results`.
-Changing either changes what a colour MEANS, so they want a decision, not a fix.
+⚠️ **`--color-text-muted` WAS ONE OF THOSE SURVIVORS AND IS NOW FIXED.** It
+aliased `neutral-400` (`#9a9aa5`) and measured **2.13–2.57:1** on the three
+surfaces it actually lands on — every `ProductRow` meta line, `DateField`'s
+"Select a date", the PRODUCTS hub's windows and counts, `CheckHistory`'s counts —
+at 12–16px, where the large-text allowance never applies. It is `#63636f` now,
+**4.54–5.47:1** on all three, redefined on `:root` in `globals.css` beside the
+System B block and for the same reason. The full measurement, including why the
+darkest surface has to set the value, is on that block.
+
+⚠️ **THE REST OF THAT LIST STILL SURVIVES, AND ONE ENTRY IS NEW AND WORSE.**
+These are measured and deliberately unfixed — each wants a decision in Figma, not
+a patch here:
+
+- **`gradient/brand`, i.e. the PRIMARY BUTTON on every screen.** Its white label
+  measures **2.67:1 at the first glyph and 3.73:1 at the last** (2.05:1 at the
+  left edge), against 4.5:1. The gradient runs `#a2b9bf` → `#637073`, so the
+  centred label sits across a light-to-dark sweep and **no ink colour clears
+  both ends** — the surface has to move, which makes it a design decision, not a
+  token correction. Two rounds on it: the fix that actually passes (`#5f7275` →
+  `#3c4b4e`, 4.87:1 – 9.10:1) was built and **rejected as too dark**, then the
+  start was darkened one step by hand, `#bbd3d9` → `#a2b9bf`, which improves
+  every figure by roughly half a point and still fails. **`#a2b9bf` is a chosen
+  design value — do not "improve" it toward a passing one without asking.** The
+  start lives on `:root` in `globals.css` (with `button/bg-default-start`, its
+  mirror, and the `@property --grad-start` initial value); full numbers there.
+- `CompatCard`'s band colours and their white pill text, **2.03–4.47:1** on
+  `/check/results`; the same pill on `/check/history`.
+- `ResultCards`' nested emphasis block, **2.22:1**, noted on `.emphasisTitle`.
+
+⚠️ **AXE CANNOT SEE ANY OF THIS, AND A CLEAN AXE RUN IS NOT EVIDENCE.** Every
+screen in the app sits on the canvas gradient, and `color-contrast` degrades to
+INCOMPLETE — never to a violation — the moment a background is a gradient or a
+stack of translucent fills. All 15 routes report zero contrast violations with
+the failures above on screen. Contrast in LUX has to be measured by compositing
+the fill stack by hand and sampling the gradient at the element's own position;
+sampling one representative surface is not enough either, which is how the muted
+tier was first set two steps too light.
 
 **⚠️ `/check/new` AND THE PRODUCTS TRAY NOW RUN THE SAME SEARCH.** They did not,
 and the difference was invisible until you typed: the tray queried Open Beauty
@@ -874,6 +905,44 @@ flex, `100dvh`, `clamp()` — and keep the tokens exact. Component sizes, radii,
 type and colour must match Figma to the pixel; page-level whitespace should
 adapt.
 
+## Every route is a page, and the app has to say so
+
+**⚠️ A NEW ROUTE NEEDS A `metadata` EXPORT, AND IT IS NOT OPTIONAL.** All
+seventeen routes used to render `<title>LUX</title>` — the root layout set it
+once and no page overrode it. That is a WCAG 2.4.2 (level A) failure on its own,
+since a title has to describe the page's topic or purpose, but it cost more than
+the tab label: **a title is the only sentence available to announce a
+client-side navigation**, and every navigation in the app announced the same
+word.
+
+`lib/pageTitles.ts` owns them. A flow step takes its title from `lib/flow.ts`,
+which already owns every step's heading; a hub route gets an entry in
+`HUB_TITLES`. Then the page exports
+`export const metadata: Metadata = { title: metadataTitleFor("/its/path") };`.
+The two prototype-only empty-state routes name their STATE (`Progress — no
+check-ins yet`), because two screens under one title is the failure this file
+exists to fix, only smaller.
+
+**⚠️ THE APP ROUTER ANNOUNCES NOTHING AND MOVES NO FOCUS — `RouteAnnouncer` DOES
+BOTH.** Measured before it existed: activating `Create skin profile` on `/`
+landed on `/investigation/start` with `document.activeElement` back at `<body>`
+and the title unchanged. Nothing was spoken, and the next Tab restarted from the
+top of the document — so a keyboard user walking the five-step flow re-tabbed
+past the header, the progress track and every option row again after each
+Continue. (The route announcer people remember is the Pages Router's; the App
+Router ships none.) It is mounted once in `app/layout.tsx` and needs nothing from
+a screen except that the screen renders a `<main>`, which `QuestionScreen` and
+`HubScreen` both do. It reads `titleFor`, not `document.title` — Next writes the
+tag at its own moment in the commit, and losing that race announces the screen
+the user just left.
+
+**⚠️ `main[tabindex="-1"]:focus` IS THE ONE PLACE THE RING IS TURNED OFF.** The
+announcer focuses the new screen's `<main>`, which is programmatic and targets a
+whole screen — a ring there draws a 2px box around the entire viewport for an
+action the user did not take. Scoped to that one selector in `globals.css`.
+Nothing else in the app carries `tabindex="-1"`, and **no interactive control
+ever gets this rule.**
+
 ## Before you call a screen done
 
 - `npm run build` and `npm run typecheck` both clean.
@@ -881,3 +950,13 @@ adapt.
 - Check computed values in the browser rather than eyeballing a screenshot.
 - Keyboard: focus is visible on every interactive element. **The ring is an
   `outline`, not a `box-shadow`** — see the non-negotiable below. Never remove it.
+- A new route exports `metadata` from `lib/pageTitles.ts` — see the section
+  above. A route with no entry falls back to the bare product name.
+- **An ARIA `role` that takes a NAME needs one.** `role="progressbar"` takes its
+  accessible name from a label and never from its value, so `StepProgress`
+  announced "Step 2 of 5" with no idea what was being measured until it got an
+  `aria-label` — axe called it `aria-progressbar-name`, serious, on all five flow
+  screens. `aria-valuetext` says where a thing has got to; it does not say what
+  the thing is.
+- Contrast: **do not trust a clean axe run** — see the note in the CHECK section
+  on why `color-contrast` degrades to INCOMPLETE on every screen in this app.
