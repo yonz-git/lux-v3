@@ -1134,3 +1134,73 @@ reproduce the comp's five scores, which is the right shape for a compatibility
 Two more, for context on where LUX sits:
 [Glass Skin's 2026 write-up on product hopping](https://tryglassskin.com/blog/skincare-app-product-hopping-2026)
 and [MyVanity's AI shelf audit](https://myvanityai.com/).
+
+---
+
+# Two open items rescued from `lux-motion-critique.md`
+
+That file (5 Aug 2026) reviewed the 2024 XD prototype and proposed a motion
+system built on springs, `motion/react`, Rive, the View Transitions API and an
+animated radar chart. **None of it shipped** — board 04b (`389:200`) is four
+cubic-bezier easings and a duration scale, the dependency list is `next react
+react-dom`, all motion is CSS, and there is no radar chart anywhere. The orb's
+entrance came from Figma `670:31` (the "Spiral Assemble" timeline), not from the
+critique's spec. Deleted at the user's request; these two survive it.
+
+Its own best line did land, though nothing cites it: the analysing state should
+reuse the mark as a functional element — *identity doing work* — which is what
+`Orb`'s `thinking` prop does instead of adding a spinner.
+
+## ⚠️ OPEN — the orb entrance is 700ms and the token says 480
+
+```
+lux-orb-spiral 700ms cubic-bezier(0.16, 1, 0.3, 1)
+```
+
+`duration/slower` is **480ms**, and board 04b assigns it to "orb and hero
+entrances" — which this is. The 700ms is a hardcoded literal that contradicts
+the board, kept because it is the authored timing from the Figma spiral
+timeline. Both readings are defensible: the authored value is right and
+`duration/slower` should become 700, or the token wins and the orb tightens.
+
+**It is a design decision, not a bug — do not quietly change either one.** It
+was an open item in the 21 Aug handoff prompt (now
+`docs/handoff-2026-08-21.md`, marked historical), and recording it here is what
+keeps it from being lost with that file. The entrance is otherwise correct: it
+ends on its resting value, so the global `prefers-reduced-motion` collapse
+leaves a still orb.
+
+## Claim language is a REGULATORY constraint, not a copy preference
+
+The 2024 prototype labelled a radar axis **"Acne risk free"**. That is an
+absolute claim: under EU cosmetic-claims rules it needs substantiating, and it
+is exactly the language that pushes a beauty app toward **medical-device**
+territory. The fix is comparative and hedged — "Low acne risk for your skin
+type".
+
+Nothing else in this repo records that, and it binds every string CHECK and the
+unbuilt analysis put on screen. It is the same constraint the product brief
+states from the other direction (never claim two ingredients "clashed"; prefer
+"may have increased irritation when used in the same period"), and the two
+should be read together.
+
+**The current build is clean on this** — checked: the strongest thing
+`features/check/check.ts` says is *"Well tolerated. No special handling
+needed."*, which is an observation about tolerance rather than a guarantee of
+safety. Keep it that way. A recommendation that says a product IS safe, or IS
+free of a risk, is a different kind of sentence from one that says how it scored.
+
+### Three findings from that review the build already answers
+
+Recorded because they were the critique's ⚔ critical items and it is worth
+knowing they are closed rather than re-deriving them:
+
+- **"Verdict before reasoning" — the sin LUX exists to solve.** The 2024
+  prototype showed 88% and a green shape with nothing saying which ingredient
+  drove it. `CompatCard` leads with the score and band, then names
+  `riskyIngredients` and a recommendation in the panel below.
+- **The radar chart carried no information** — a near-regular hexagon whose
+  shape said nothing, with no gridlines or scale. It was dropped entirely rather
+  than fixed. A radar earns its place only when the *shape* is the insight.
+- **The verdict arrived five panels deep.** `/check/results` is the destination
+  of the check, not something behind a button on it.
