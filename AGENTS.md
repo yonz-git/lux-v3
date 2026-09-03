@@ -169,6 +169,115 @@ toggles in the same tick silently lose the first.
 Screens ECHO earlier answers rather than hardcoding the comp's copy. Guard for
 the answer being absent (deep links) rather than rendering an empty bubble.
 
+## The vocabulary — what exists, so you don't invent one
+
+Generated from `app/globals.css`, `app/tokens.css` and the components
+themselves. If a value here disagrees with the source, the source wins and this
+table is stale — say so rather than working around it.
+
+### Type — every piece of text takes one of these classes
+
+| Class | Mobile | Desktop | Weight | Use |
+| --- | --- | --- | --- | --- |
+| `t-display1` / `-2` | 84/96 · 64/76 | — | 500 | brand surfaces only |
+| `t-h1` | 40/48 | — | 500 | not used by any screen |
+| `t-h2` | 32/40 | — | 500 | — |
+| `t-h3` | 24/32 | — | 500 | — |
+| **`t-h4-h3`** | **20/28** | **24/32** | 500 | ⭐ **every page `<h1>`, hub and flow alike** |
+| `t-h4` | 20/28 | — | 500 | fixed-size headings |
+| `t-h5` | 18/26 | — | 500 | card titles |
+| `t-h6` | 16/24 | — | 500 | desktop option-row labels, row titles |
+| `t-body1` | 18/28 | — | 400 | — |
+| **`t-body2-body1`** | **16/26** | **18/28** | 400 | ⭐ **chat bubbles** |
+| `t-body2` | 16/26 | — | 400 | body copy |
+| **`t-body3-body2`** | **14/22** | **16/26** | 400 | secondary body |
+| `t-body3` | 14/22 | — | 400 | — |
+| `t-label` | 14/20 | — | 500 | mobile option-row labels, chips |
+| `t-label-sm` | 12/16 | — | 500 | nav labels, tags, meta lines |
+| `t-caption` | 12/16 | — | 400 | captions |
+| `t-overline` | 13/18 + 1.82px tracking | — | 500 | section labels on data cards |
+| `t-button` | 17/22 | — | 400 | `Button` — owns it, don't re-apply |
+| `t-button-sm` | 14/22 | — | 400 | `SmallButton` — same |
+| `t-metric1` / `-2` | 56/60 · 40/40 | — | 300 | big figures on data cards |
+
+⚠️ **A `-a-b` name means "a on mobile, b on desktop"** — the responsive pair is
+one class, never a media query you write. `t-h3-h2` is a real Figma style with
+**no caller**; page titles are `t-h4-h3`. See non-negotiable 16.
+
+### Spacing — `--space-*`
+
+`2xs` 2 · `xs` 4 · `sm` 8 · `md` 12 · `lg` 16 · `xl` 20 · `2xl` 24 · `3xl` 32 ·
+`4xl` 40 · `5xl` 48 · `6xl` 64 · `7xl` 80 · `8xl` 96 · `9xl` 120
+
+### Radius — `--radius-*`
+
+`none` 0 · `xs` 4 · `sm` 8 · `md` 12 · `lg` 16 · `xl` 20 · `2xl` 24 · `3xl` 32 ·
+`full` 999 · `bubble` 30 · `bubble-tail` 1
+
+`2xl` is the data card. `full` is every pill — buttons, chips, the nav, the
+tray bar. The two `bubble` values are `ChatBubble`'s and nothing else's.
+
+### Sizes — `--size-*`
+
+Icons `xs` 16 · `sm` 20 · `md` 24 (the default) · `lg` 32 · `xl` 48.
+Controls `sm` 36 · `md` 48 · `lg` 62 (the `Button` height).
+
+### Icons — 13 exist, in `components/ui/icons.tsx`
+
+Nav: `MySkinIcon` `ProgressIcon` `CheckIcon` `ProductsIcon`
+Chevrons: `ChevronLeftIcon` `ChevronRightIcon` `ChevronDownIcon`
+Actions: `PlusIcon` `CloseIcon` `SearchIcon` `CameraIcon` `NoteIcon`
+Feedback: `SuccessCheckIcon`
+
+⚠️ **There is no other glyph, and the DS has no more to give.** If a screen
+needs one that is not here, that is a gap to raise in Figma — see
+`docs/decisions.md`. Size them with a CSS class or `--icon-size`, never
+`width`/`height` (non-negotiable 14).
+
+### Components — the props, so you don't read every file
+
+| Component | Props |
+| --- | --- |
+| `Button` | `variant?: "primary" \| "secondary"`, `fullWidth?`, `href?`, `icon?` + button attrs |
+| `SmallButton` | `label`, `arrow?`, `href?`, `className?` + button attrs |
+| `Chip` | `label`, `selected`, `control?: "checkbox" \| "radio"`, `onToggle` |
+| `OptionRow` | `control: "radio" \| "checkbox"`, `label`, `selected`, `onSelect` |
+| `Tag` | `children`, `variant?: "neutral" \| "brand"`, `className?` |
+| `TextField` | input attrs + `ref?` |
+| `DateField` | `value?: IsoDate`, `onChange`, `id?`, `placeholder?` |
+| `SearchField` | `value`, `onChange`, `placeholder?`, `label` (the accessible name — there is no visible `<label>`) |
+| `ChatBubble` | `from: "ai" \| "user"`, `align?`, `full?` |
+| `Sheet` | `open`, `onClose`, `title`, `children` |
+| `DataCard` | `as?`, `className?`, `children?` |
+| `CameraCapture` | `captured`, `title`, `helper`, `onCapture` |
+| `Orb` | `size?`, `className?`, `animateIn?`, `thinking?` |
+
+`Button` and `SmallButton` apply their own type class. `Chip`'s `control` changes
+the ARIA role and nothing visual — read the selection-controls contract below
+before reaching for `"radio"`.
+
+### Colour — bind semantic tokens, never a primitive
+
+Groups in `02 Color`: `bg/` `surface/` `text/` `icon/` `border/` `state/`
+`feedback/` `gradient/` `button/` `effect/`. The ones you will actually reach
+for:
+
+- **Text on light:** `text/primary` `#2e2a3f` · `-secondary` `#4b4b57` ·
+  `-muted` `#63636f`
+- **Text on a data card:** `text/on-data` `#2e2a3f` · `-secondary` and `-muted`
+  both `#354446` — **dark, not white** (non-negotiable 17)
+- **Surfaces:** `surface/frost-light` (translucent) vs `bg/frost-light`
+  (opaque) — ⚠️ a frost fill ON a frost surface does not read; use the opaque
+  one. Same relationship as `surface/frost-nav` → `bg/nav`.
+- **Brand:** `bg/brand` `#3b305c` indigo, for selection and accents.
+  `gradient/brand` is the SAGE button gradient, not the indigo one.
+- **Feedback:** `success` `#5f8a6e` · `warning` `#c9918e` · `error` `#a86561`.
+  ⚠️ Warning and error share a hue — **never carry the distinction by colour
+  alone**, always pair with a label.
+
+For anything not listed — the full 9 collections, the Figma node ids, the
+variant structures — read `docs/design.md`.
+
 ## Non-negotiables
 
 1. **`app/tokens.css` is generated from the Figma variables.** Treat it as
