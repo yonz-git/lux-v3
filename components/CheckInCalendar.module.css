@@ -134,6 +134,30 @@
   color: var(--color-text-on-brand);
 }
 
+/* ⚠️ A CHECKED-IN DAY IS AN <a>, AND IT LOOKS EXACTLY THE SAME. The disc is
+   already the loudest mark on the card; giving the link its own fill, ring or
+   underline would add a second way of saying "this day has a record" on top of
+   the one the legend explains. Only the hover feedback is new, and it is the
+   0.7 fade every other control in this file uses rather than a colour of its
+   own. The focus ring is the global outline. */
+.day[data-checked-in] {
+  cursor: pointer;
+  /* the UA underlines an <a>, and a rule under a numeral inside a 32 disc
+     reads as a strikethrough on the one mark the card exists to show */
+  text-decoration: none;
+  transition: opacity var(--duration-fast) var(--ease-standard);
+}
+
+.day[data-checked-in]:hover {
+  opacity: 0.7;
+}
+
+@media (hover: none) {
+  .day[data-checked-in]:hover {
+    opacity: 1;
+  }
+}
+
 .legend {
   display: flex;
   align-items: center;

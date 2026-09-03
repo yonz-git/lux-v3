@@ -89,10 +89,12 @@ what changed and why — keep writing them.
   `My skin` named the flow while the screen plainly read Products.
   `QuestionScreen` takes a `nav` prop for it; every other step keeps the
   `my-skin` default.
-- **PROGRESS** — ONE hub route at `/progress` (nav `progress`) in two states:
+- **PROGRESS** — the hub at `/progress` (nav `progress`) in two states,
   `Progress — empty` (551:1196 / 551:1231) and `Progress — active`
-  (552:1236 / 554:1252). Not an investigation step — no track, no `Save & exit`.
-  See the PROGRESS section below.
+  (552:1236 / 554:1252), plus two pushed views off it: the daily check-in at
+  `/progress/check-in` and one day's record at `/progress/check-in/[date]`.
+  None is an investigation step — no track, no `Save & exit`. See the PROGRESS,
+  DAILY CHECK-IN and CHECK-IN DETAIL sections below.
 - **CHECK** — the product compatibility check, five routes under `/check*`
   (nav `check`). Eight designed screens; see the CHECK section below.
   Not an investigation step either.
@@ -197,6 +199,7 @@ authority for everything below.
 | `/progress`       | active `552:1236` / `554:1252` | HUB landing, no back chevron. **The default** |
 | `/progress/empty` | empty `551:1196` / `551:1231`  | ⚠️ prototype-only route — see below           |
 | `/progress/check-in` | — | ⚠️ NOT IN FIGMA — one step, pushed view. See below |
+| `/progress/check-in/[date]` | `556:1330` / `557:1353` | `Check-in detail`. Pushed view, the app's ONE dynamic route |
 
 **⚠️ THESE ARE DATA SCREENS, AND THEY USE THE OTHER SURFACE SYSTEM.** GETTING
 STARTED and PRODUCTS are forms: light frosted rows and cards, dark text, a 1px
@@ -341,12 +344,9 @@ pair with it rather than inventing a second modal. `Done` closes it and a photo
 taken stays taken; removing it is a separate control in the chat. `NoteIcon` is
 new — the file has no pencil glyph anywhere.
 
-**⚠️ `note`, `photo` AND `changes` ARE WRITTEN BUT NOT YET READ**, and that is
-the design's own doing rather than invented data: the handoff places `Check-in
-detail` in PROGRESS as "a historical record opened from the Progress calendar",
-and that is the screen which displays them. It has no route yet — which is also
-why the calendar's discs are still plain cells rather than links. Build the two
-together.
+**⚠️ `note`, `photo` AND `changes` ARE READ NOW — by `Check-in detail`.** They
+were written and unread for exactly as long as that screen had no route. It has
+one, and the calendar's discs are links to it. See CHECK-IN DETAIL below.
 
 **⚠️ NOTHING IS PRE-SELECTED, INCLUDING ON A DAY ALREADY RECORDED.** The frame
 shows "Slightly better", "Less redness" and "Less itching" already chosen because
@@ -383,6 +383,81 @@ shows.
 other screen uses, and page-level whitespace is exactly what "translate, don't
 transcribe" covers. Everything below it is pixel-exact: the profile card is 189
 and the trend card 284 at both breakpoints, with 16/16/24/8 between the blocks.
+
+### CHECK-IN DETAIL — `Check-in detail` (556:1330 / 557:1353), at `/progress/check-in/[date]`
+
+One day's record, opened from the Progress calendar. It is the screen that
+finally READS `changes`, `note` and `photo`; nothing on it is stored twice.
+
+| card | content | source |
+| ---- | ------- | ------ |
+| symptoms reported | the turn-2 answers as neutral `Tag`s | `CheckIn.changes` |
+| severity | "Moderate" + "6 / 10" + an indigo meter | `CheckIn.severity` |
+| notes | the note in quotes | `CheckIn.note` |
+| photos | the capture | `CheckIn.photo` |
+| products used | thumb + name + size/date | `productsUsedOn` |
+
+**⚠️ A PUSHED VIEW, NOT A HUB LANDING AND NOT A FLOW STEP.** Back chevron, nav
+`progress`, no track and no `Save & exit` — the same standing as the check-in
+chat it is the record of. No `StepId`. The `Day 4` Tag is the header row's
+action slot, and its number is `dayNumber`, the count the profile card already
+writes.
+
+**⚠️ THE APP'S ONLY DYNAMIC ROUTE.** `lib/pageTitles.ts` is keyed by pathname,
+so it matches this one with a regex and the page uses `generateMetadata`. The
+title is "Check-in record", NOT the date: a title names the kind of page, and
+the date is the screen's own `<h1>` a moment later.
+
+**⚠️ col-1 IS ONE GRID ITEM, col-2 IS THREE.** Grid row tracks are shared across
+columns, so five flat cards would tie the columns' heights together and start
+the severity card below the BOTTOM of the taller photos card beside it. Both
+frames flow the columns independently, so col-1 is wrapped and spanned — the
+same shape `/progress` uses for its calendar. The wrapper costs nothing on
+mobile: the frames put notes directly above photos there, so the DOM order IS
+the mobile order and only the desktop swaps the two.
+
+**⚠️ A CARD WITH NOTHING IN IT IS NOT DRAWN.** The frames are a filled-in state.
+Turn 3 is optional and turn 2 can be skipped, and an empty NOTES card headed by
+an overline is a promise the record does not keep. Severity always renders; a
+day with no check-in at all renders one card saying so, rather than 404ing — the
+calendar only links days that have one, so this is reachable by typed URL only.
+
+**⚠️ THE SYMPTOM TAGS ARE THE RECORDED ANSWER, VERBATIM.** The comp's tags read
+"Redness" and "Itching"; what turn 2 stores is "Less redness" / "More itching" —
+the symptom AND which way it moved. Dropping the prefix to match the comp throws
+away the half of the answer the check-in exists to collect.
+
+**⚠️ "PRODUCTS USED" IS DERIVED FROM `addedOn`, NOT RECORDED.** The chat's three
+turns ask about skin, not products, so nothing writes a per-day product list and
+adding a fourth turn would change a screen the frame draws. What the app knows is
+when each product entered the library, so "used on 5 Aug" is every product added
+on or before it — a product added later cannot have been in that day's routine.
+**⚠️ AND THE COMP'S SECOND LINE HAS NO DATA BEHIND IT**: "Moisturizer · Applied
+Morning & Night" needs a category and a routine time, and LUX stores neither, so
+the row writes the size and the date the product was added instead. Raise both
+in Figma.
+
+**⚠️ TWO PICTURES ARE ADDED THAT THE FRAMES DO NOT DRAW, for one reason.** A
+`ProductThumb` on every products-used row, and `CheckInPhotoArt` inside the photo
+well instead of the comp's camera glyph. Both frames draw text and an icon
+because the comps had no imagery to place; the products list is then the one
+place in the app that asks the reader to identify a product by reading it, and
+the PHOTOS card is a card whose entire content is a picture saying "no picture".
+Same call `ProductArt` already made, same rule, and Figma catches up.
+
+**⚠️ THE SEED GREW, AND IT GREW BY DERIVATION.** `demoCheckIns` seeded a date and
+a severity, which is all `/progress` reads — so on the demo path every seeded day
+opened on a detail screen with one card on it. `changes` is now computed from the
+direction the severity moved (the same fact turn 1 asks for) with the demo
+profile's own symptoms, so a seeded day cannot claim "Less redness" on a day its
+own plotted point went up. The note and the photo sit on ONE day, 5 Aug 2026 —
+the comp's own date and its own sentence — because a fortnight of check-ins is
+not a fortnight of written notes, and the screen has to render the absence as
+readily as the presence.
+
+**⚠️ THE TEXT IS DARK.** Both frames write `text/on-data` as white; that token is
+redefined globally in `globals.css` (see SURFACE SYSTEM B above) and this screen
+inherits the fix rather than restating it.
 
 ### CHECK — the compatibility check
 
@@ -811,6 +886,7 @@ risk. All are on the missing-from-the-DS list.
 | Search dropdown    | `AddProductMethodSheet.module.css` `.dropdown`        | `Search Field` (248:70) has no results popup, and the comps drew results as free-standing `ProductRow` cards on a routed screen. One frosted panel tucked 8 under the pill and inset 8 either side, capped at 296 with its own scroll. ⚠️ IN FLOW, NOT ABSOLUTE — the mobile tray is docked to the bottom edge and hugs its content, so an overlaid panel would open off the bottom of the viewport. |
 | `My skin` nav icon | `MySkinIcon` in `components/icons.tsx`               | The nav's fourth glyph. `Bottom-Nav-Bar` (410:258) ships three icons and the DS has no face or skin mark anywhere else — `FaceDiagram` is a picker, not an icon. ⚠️ STROKE-drawn, unlike its three filled neighbours: a solid disc at 24 is a far heavier mark than Progress/Check/Products draw, and the face only reads at that size with the eyes and mouth left open. currentColor throughout, so the active/inactive opacity treatment is untouched. Replace it in the DS first, not here. |
 | Product imagery    | `components/ProductArt.tsx`                          | ⚠️ **THE CAMERA GLYPH IS GONE — DECIDED HERE, NOT IN FIGMA.** No product or bottle icon exists outside the bottom nav, so every thumb (`ProductThumb`, 48) and image well (`ProductCard`, 352x140) drew a camera. That reads as "no photo yet" once and as nothing at all down a list — `/check/new`, the PRODUCTS hub and the add tray all show the same mark on every row, so the thumbnail identifies nothing. `ProductArt` draws the vessel instead: **nine** silhouettes (tub, pump, tube, dropper, bottle, airless, spray, sachet, tin) by packaging type, tinted per brand, so same brand → same tint and same type → same shape. ⚠️ **IT WAS FIVE FORMS AND ONE FALLBACK TINT, WHICH WAS ENOUGH ONLY WHILE THE CATALOGUE WAS THE SEARCH.** Both searches are live now, so the list is whatever the database holds — masks, mists, sticks, ointments — and every one of them fell through `formFor`'s default to the same pump on a `sage` body. A column of identical pumps is the camera glyph with an extra step. Three axes of variety, all keyed on a stable FNV-1a `hash` (never `Math.random()` or an index — a thumbnail that changes identity between two screens is worse than one that repeats): unnamed brands hash into a 7-tint `RING`, unrecognised names hash across all nine `FORMS`, and `labelVariant` picks one of three label treatments off the product id so two products of the same form AND brand still differ. Brand strings are diacritic-folded before hashing, because OBF files the same house as both "Avene" and "Avène". ⚠️ **AND IT IS THE ONLY PICTURE — THE API'S PHOTOS ARE NOT READ.** Open Beauty Facts carries `image_front_url` and it used to win over the drawing. Its images are crowdsourced with no quality gate, so a result list mixed usable front-of-package shots with stubs, angled boxes and rows that fell back to a drawing anyway — two kinds of picture in one column, which is worse at telling rows apart than either alone. `lib/openBeautyFacts.ts` no longer requests the image fields, `CatalogProduct` has no `imageUrl`, and `useProductPhoto` is deleted; `artFor` serves live results via `formFor`/`paletteFor`. **The API still supplies every WORD** — name, brand, size and the INCI list. The pigments are LOCAL LITERALS drawn from the LUX family and must not become tokens — `02 Color` has no "bottle glass" role, and binding a lid to `bg/brand` would move the artwork every time the brand colour did. **Raise a real illustration set in Figma.** |
+| Check-in photo     | `components/CheckInPhotoArt.tsx`                     | ⚠️ **NOT IN FIGMA.** `Check-in detail` draws its photo wells as a camera glyph, the same hole `ProductThumb` had and the same failure: the PHOTOS card's entire content is the picture, so a camera icon there says "no photo" on the record of one the user took. Drawn instead — a soft crop of skin with the flushed patch the investigation is about, `slice`-cropped to fill the well the way a photograph would be, grained with `feTurbulence` because three overlapping gradients in a picture frame read as a loading state. **No feature is drawn and it is not anyone's face.** Tone and blush position are keyed on the DAY with the same FNV-1a hash `ProductArt` uses, never `Math.random()`. Pigments are LOCAL LITERALS — `02 Color` has no skin-tone role and should not grow one for a placeholder. Every capture surface in LUX is a placeholder; this is the record of one. **Raise real imagery in Figma.** |
 | Opaque sage        | `Sheet.module.css`                                   | `surface/data-strong` is 62% and has no solid counterpart the way `bg/nav` is `surface/frost-nav`'s. The `prefers-reduced-transparency` tray composites the same sage over `bg/canvas`.                                                                                                                                                                                           |
 | Data card          | `components/DataCard.tsx`                            | The whole of SURFACE SYSTEM B. `surface/data` + `surface/frosted-data` + `radius/2xl` + 20/24 padding, **no stroke**. Not a component in Figma — every PROGRESS and CHECK card is composed from those tokens. Its `prefers-reduced-transparency` fallback composites the same sage over `bg/canvas`, exactly as `Sheet` does.                                                       |
 | Calendar (record)  | `components/CheckInCalendar.tsx`                     | On the handoff's own missing list. ⚠️ THE SECOND CALENDAR IN THE APP AND NOT THE SAME ONE — `DateField` is a Monday-first interactive date PICKER, this is a Sunday-first read-only RECORD, and both match their frames. Do not merge them; raise the week-start split in Figma instead.                                                                                            |
@@ -922,6 +998,13 @@ which already owns every step's heading; a hub route gets an entry in
 The two prototype-only empty-state routes name their STATE (`Progress — no
 check-ins yet`), because two screens under one title is the failure this file
 exists to fix, only smaller.
+
+**⚠️ THE ONE DYNAMIC ROUTE MATCHES A PATTERN AND GENERATES ITS TITLE.**
+`/progress/check-in/[date]` cannot have a `HUB_TITLES` key, so `titleFor` tests
+it with a regex and the page uses `generateMetadata` rather than a `metadata`
+const. Its title is "Check-in record", NOT the date on screen: a title names the
+KIND of page, and a tab reading "August 5, 2026" says nothing about what is being
+shown for that day.
 
 **⚠️ THE APP ROUTER ANNOUNCES NOTHING AND MOVES NO FOCUS — `RouteAnnouncer` DOES
 BOTH.** Measured before it existed: activating `Create skin profile` on `/`

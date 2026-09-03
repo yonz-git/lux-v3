@@ -24,8 +24,9 @@
  * Delete them the moment CHECK writes real check-ins.
  */
 import type { Answers } from "./answers";
-import { DEMO_PROFILE, skinProfile } from "./demo";
+import { DEMO_PROFILE, ownedProducts, skinProfile } from "./demo";
 import { type IsoDate, daysBetween, fromIso, toIso } from "./date";
+import type { SavedProduct } from "./products";
 
 /**
  * One recorded check-in — `Check-in chat` (555:1268), one per day.
@@ -189,8 +190,62 @@ export function demoCheckIns(start: Date, today: Date): CheckIn[] {
         new Date(start.getFullYear(), start.getMonth(), start.getDate() + offset)
       ),
       severity: DEMO_SEVERITY[i],
+      /* the rest of the record — see DEMO_EXTRAS */
+      ...demoExtras(i),
     })
   );
+}
+
+/**
+ * The seeded check-in's `changes`, `note` and `photo` — everything
+ * `Check-in detail` (556:1330) displays that a bare severity does not carry.
+ *
+ * ⚠️ THE SEED HAD TO GROW, AND IT GREW BY DERIVATION. `demoCheckIns` seeded a
+ * date and a severity because that is all `/progress` reads — a disc on the
+ * calendar and a point on the chart. The detail screen reads the whole record,
+ * so on the demo path every seeded day opened on a screen with one card on it,
+ * which is the check-in detail failing to demonstrate the check-in detail.
+ *
+ * ⚠️ `changes` IS COMPUTED FROM THE SERIES, NOT TRANSCRIBED. The direction is
+ * whichever way the severity moved from the day before — the same fact turn 1
+ * of the chat asks for — and the symptoms are the demo profile's own, prefixed
+ * exactly as `changeOptions` prefixes them. So the seeded series cannot claim
+ * "Less redness" on a day its own plotted point went up. The first day has no
+ * previous point and therefore no direction, which is also true of a real first
+ * check-in.
+ *
+ * ⚠️ THE NOTE AND THE PHOTO SIT ON ONE DAY, and it is the comp's own: offset 3
+ * is 5 Aug 2026, `Check-in detail`'s date, and the note is the comp's sentence.
+ * Every other seeded day carries neither, because a real fortnight of check-ins
+ * is not a fortnight of written notes — and the screen has to render the
+ * absence as readily as the presence.
+ */
+const DEMO_NOTE_OFFSET_INDEX = 1; /* DEMO_OFFSETS[1] === 3 → 5 Aug 2026 */
+const DEMO_NOTE =
+  "Patches on cheeks seem slightly less red than yesterday. Still itchy in the evening.";
+
+function demoExtras(i: number): Partial<CheckIn> {
+  const changes = demoChanges(i);
+
+  return {
+    ...(changes ? { changes } : {}),
+    ...(i === DEMO_NOTE_OFFSET_INDEX
+      ? { note: DEMO_NOTE, photo: "captured" }
+      : {}),
+  };
+}
+
+function demoChanges(i: number): string[] | null {
+  if (i === 0) return null;
+
+  const previous = DEMO_SEVERITY[i - 1];
+  const severity = DEMO_SEVERITY[i];
+  if (severity === previous) return [NO_CHANGE];
+
+  const direction = severity < previous ? "better" : "worse";
+  const prefix = direction === "better" ? "Less" : "More";
+
+  return DEMO_PROFILE.symptoms.map((s) => `${prefix} ${s.toLowerCase()}`);
 }
 
 /**
@@ -439,4 +494,57 @@ export function checkInsFor(a: Answers, view: ProgressView): CheckIn[] {
   if (!view.isDemo) return recorded;
 
   return recorded.reduce(recordCheckIn, demoCheckIns(view.start, view.today));
+}
+
+/* ---------------------------------------------------------------------------
+   CHECK-IN DETAIL — `Check-in detail` (556:1330 / 557:1353)
+
+   The historical record for ONE day, opened from the Progress calendar. Nothing
+   here is new state: a check-in already carries its severity, changes, note and
+   photo, and the products are the ones the user owned on the day. The screen
+   reads; the chat writes.
+   -------------------------------------------------------------------------- */
+
+/** One day's record, or null if the user did not check in that day. */
+export function checkInOn(list: CheckIn[], date: IsoDate): CheckIn | null {
+  return list.find((c) => c.date === date) ?? null;
+}
+
+/**
+ * The word beside the number — `Check-in detail` writes "Moderate" against
+ * "6 / 10".
+ *
+ * ⚠️ THE BANDS ARE THE SCALE'S, NOT THE COMP'S. The comp gives one pairing and
+ * the screen has to name every value on a 0–10 axis, so the axis is split into
+ * the five bands the check-in's own five answers imply — and 6 lands in the
+ * middle one, which is what the comp draws. Five names for five steps, with the
+ * widest band in the middle where most days sit.
+ */
+export function severityLabel(severity: number): string {
+  if (severity <= 1) return "Clear";
+  if (severity <= 3) return "Mild";
+  if (severity <= 6) return "Moderate";
+  if (severity <= 8) return "Severe";
+  return "Very severe";
+}
+
+/**
+ * `card · products used` — what was in the routine on the day of a check-in.
+ *
+ * ⚠️ IT IS DERIVED FROM `addedOn`, NOT RECORDED BY THE CHECK-IN — and that is a
+ * decision, flagged in `CheckInDetail`. The chat's three turns ask about skin,
+ * not about products, so nothing writes a per-day product list; adding a fourth
+ * turn would change a screen the frame draws. What the app does already know is
+ * when each product entered the library, so "used on 5 Aug" is every product
+ * added on or before it. A product added later cannot have been in that day's
+ * routine, which is the error the screen would otherwise make on every day but
+ * the most recent.
+ *
+ * ⚠️ THE COMP'S SECOND LINE — "Moisturizer · Applied Morning & Night" — HAS NO
+ * DATA BEHIND IT. LUX stores no product category and no routine time; inventing
+ * either would put a fact on screen that nothing in the app can be right about.
+ * `CheckInDetail` writes the two facts the product actually carries instead.
+ */
+export function productsUsedOn(a: Answers, date: IsoDate): SavedProduct[] {
+  return ownedProducts(a).filter((p) => p.addedOn <= date);
 }

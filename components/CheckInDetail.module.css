@@ -1,0 +1,210 @@
+/* Check-in detail — Figma 556:1330 (mobile) / 557:1353 (desktop).
+
+   MOBILE — one column, and every gap between the cards is 16:
+     header -> 24 -> date -> symptoms -> 16 -> severity -> 16 -> notes
+             -> 16 -> photos -> 16 -> products
+   (the 24 belongs to HubScreen's grid body. The mobile frame's own spacer is
+   20 and its heading carries no subtitle; page-level whitespace adapts, and
+   every other hub screen in the app opens on 24.)
+
+   DESKTOP — the same 1280 dashboard grid /progress uses, NOT a page card:
+     col-1  640 fixed   photos, notes
+     col-2  616 fill    symptoms, severity, products
+
+   ⚠️ col-1 IS ONE GRID ITEM, col-2 IS THREE. A grid's row tracks are shared
+   across its columns, so five flat cards would tie the two columns' heights
+   together: the photos card is taller than the symptoms card beside it, and
+   the severity card would start below the BOTTOM of the photos card instead of
+   below its own neighbour. Both frames flow the columns independently. Wrapping
+   col-1 and spanning it across the rows is how /progress solves the same
+   problem with its calendar, and it is the only structure this screen adds —
+   the mobile order runs straight through the wrapper, so nothing is reordered
+   at the small breakpoint and the DOM order stays the reading order. */
+
+/* 16 between every block on mobile — written as three sibling rules because
+   the col-1 wrapper sits in the middle of the stack, so `.card + .card` alone
+   would miss both of its edges. */
+.card + .card,
+.card + .col1,
+.col1 + .card {
+  margin-top: var(--space-lg); /* 16 */
+}
+
+.col1 {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-lg); /* 16 */
+}
+
+/* the wrapper owns the gap between its own two cards */
+.col1 > .card + .card {
+  margin-top: 0;
+}
+
+/* Overline is uppercased by the type class, so the JSX carries sentence case */
+.label {
+  color: var(--color-text-on-data-muted);
+}
+
+.empty {
+  color: var(--color-text-on-data-secondary);
+}
+
+/* ---- card · symptoms reported ------------------------------------------- */
+
+.tags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-sm); /* 8 */
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+/* ---- card · severity ----------------------------------------------------- */
+
+.severityValue {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-md);
+  margin: 0;
+}
+
+.severityWord {
+  color: var(--color-text-on-data);
+}
+
+.severityScore {
+  color: var(--color-text-on-data-secondary);
+}
+
+/* 8 tall, radius/full, the track in border/glass and the fill in bg/brand —
+   the handoff's rule that every accent on a data card is indigo. */
+.meter {
+  display: block;
+  overflow: hidden;
+  width: 100%;
+  height: 8px;
+  border-radius: var(--radius-full);
+  background: var(--color-border-glass);
+}
+
+.meterFill {
+  display: block;
+  height: 100%;
+  border-radius: var(--radius-full);
+  background: var(--color-bg-brand);
+}
+
+/* ---- card · notes -------------------------------------------------------- */
+
+.note {
+  color: var(--color-text-on-data-secondary);
+}
+
+/* ---- card · photos ------------------------------------------------------- */
+
+.photoGrid {
+  display: flex;
+  gap: var(--space-md); /* 12 */
+  width: 100%;
+}
+
+/* ⚠️ `surface/data-strong`, the nested emphasis fill — a well inside a data
+   card is the one place the stronger sage is used, and a LIGHT well here would
+   invert the nesting rule (a sage card inside a light card is a LUX pattern,
+   the reverse is not). */
+.photo {
+  flex: 1 0 0;
+  margin: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 0;
+  height: 120px;
+  overflow: hidden;
+  border-radius: var(--radius-lg); /* 16 */
+  background: var(--color-surface-data-strong);
+}
+
+/* the drawn capture fills the well and is cropped to it, the way a photograph
+   would be — see CheckInPhotoArt for why there is a drawing here at all */
+.photoArt {
+  width: 100%;
+  height: 100%;
+}
+
+/* ---- card · products used ------------------------------------------------ */
+
+.productList {
+  display: flex;
+  flex-direction: column;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+/* 10 above and below each row, and a 1px border/glass rule between them — the
+   divider is a border rather than its own element because the rows are list
+   items and an empty <li> between them would be a row to a screen reader. */
+.product {
+  display: flex;
+  align-items: center;
+  gap: var(--space-md); /* 12 */
+  padding: 10px 0;
+}
+
+.product + .product {
+  border-top: var(--border-width-hairline) solid var(--color-border-glass);
+}
+
+.productText {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2xs); /* 2 */
+  min-width: 0;
+}
+
+.productName {
+  color: var(--color-text-on-data);
+}
+
+.productMeta {
+  color: var(--color-text-on-data-muted);
+}
+
+@media (min-width: 1024px) {
+  /* the 16s become the grid's own 24 gutter */
+  .card + .card,
+  .card + .col1,
+  .col1 + .card {
+    margin-top: 0;
+  }
+
+  .symptoms,
+  .severity,
+  .products {
+    grid-column: 2;
+  }
+
+  /* ⚠️ SPANNING THREE ROWS — col-2's three cards define them, exactly as
+     `/progress`'s calendar spans the four its own column-2 neighbours define.
+     A record missing one of those three simply leaves the last track empty,
+     which costs nothing: an empty track has no height. */
+  .col1 {
+    grid-column: 1;
+    grid-row: 1 / span 3;
+    gap: var(--gutter-desktop); /* 24 */
+  }
+
+  /* 557:1353 leads col-1 with the photos; mobile leads with the notes, which
+     is the order they are written in */
+  .photos {
+    order: 1;
+  }
+
+  .notes {
+    order: 2;
+  }
+}

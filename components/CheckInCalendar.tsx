@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import Link from "next/link";
 import styles from "./CheckInCalendar.module.css";
 import { DataCard } from "./DataCard";
 import { ChevronLeftIcon, ChevronRightIcon } from "./icons";
@@ -31,13 +32,14 @@ import {
  * Monday-first date PICKER with a roving tabstop, this one is a Sunday-first
  * read-only RECORD. See the note on `monthGridSunday`.
  *
- * ⚠️ THE DAYS ARE NOT INTERACTIVE YET, deliberately. The handoff places
- * `Check-in detail` in the Progress section precisely because it is "a
- * historical record opened from the Progress calendar" — so a day will
- * eventually be a link. That screen has no route, and following `BottomNav`'s
- * rule (a link to a 404 is worse than a control that has not been wired) the
- * discs stay plain cells until it lands. Give a checked-in day an <a> then, and
- * the focus ring is an `outline`, never a box-shadow (non-negotiable 11).
+ * ⚠️ A CHECKED-IN DAY IS A LINK; EVERY OTHER DAY IS A PLAIN CELL. The handoff
+ * places `Check-in detail` in the Progress section precisely because it is "a
+ * historical record opened from the Progress calendar", and that screen now has
+ * a route — `/progress/check-in/<iso>`. Only the discs are links: a day with no
+ * record has nothing to open, and linking it would send the user to a screen
+ * whose entire content is a sentence saying so. The focus ring is the global
+ * `outline`, never a box-shadow (non-negotiable 11), and the two states'
+ * colours are unchanged — a link here is a change of ELEMENT, not of paint.
  *
  * ⚠️ EVERY WEEK ROW IS 32 TALL. The Figma frames disagree with themselves here:
  * the empty leading/trailing cells are 100-tall frames in both, which drags
@@ -134,22 +136,40 @@ export function CheckInCalendar({
                 const isCheckedIn = checkedIn.has(toIso(date));
                 const isToday = sameDay(date, today);
 
+                /* the day's own number is the visible label, so the date and
+                   its state carry the accessible name of the link */
+                const label = (
+                  <>
+                    {date.getDate()}
+                    {(isCheckedIn || isToday) && (
+                      <span className="visually-hidden">
+                        {formatFull(date)}
+                        {isCheckedIn && " — checked in"}
+                        {isToday && " — today"}
+                      </span>
+                    )}
+                  </>
+                );
+
                 return (
                   <td key={d} className={styles.cell}>
-                    <span
-                      className={`${styles.day} t-label-sm`}
-                      data-checked-in={isCheckedIn || undefined}
-                      data-today={isToday || undefined}
-                    >
-                      {date.getDate()}
-                      {(isCheckedIn || isToday) && (
-                        <span className="visually-hidden">
-                          {formatFull(date)}
-                          {isCheckedIn && " — checked in"}
-                          {isToday && " — today"}
-                        </span>
-                      )}
-                    </span>
+                    {isCheckedIn ? (
+                      <Link
+                        href={`/progress/check-in/${toIso(date)}`}
+                        className={`${styles.day} t-label-sm`}
+                        data-checked-in
+                        data-today={isToday || undefined}
+                      >
+                        {label}
+                      </Link>
+                    ) : (
+                      <span
+                        className={`${styles.day} t-label-sm`}
+                        data-today={isToday || undefined}
+                      >
+                        {label}
+                      </span>
+                    )}
                   </td>
                 );
               })}

@@ -52,6 +52,19 @@ export function formatLong(d: Date): string {
   });
 }
 
+/**
+ * "August 5, 2026" — the full month, for a screen whose whole subject is one
+ * day. `formatLong` abbreviates ("Aug 5, 2026") because it is a detail on a
+ * line of other facts; a page TITLE has the room to say the month.
+ */
+export function formatDay(d: Date): string {
+  return d.toLocaleDateString("en-US", {
+    month: "long",
+    day: "numeric",
+    year: "numeric",
+  });
+}
+
 export function formatMonth(d: Date): string {
   return d.toLocaleDateString("en-US", { month: "long", year: "numeric" });
 }
