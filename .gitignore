@@ -25,3 +25,8 @@ yarn-debug.log*
 yarn-error.log*
 .tsbuildinfo
 *.tsbuildinfo
+
+# design review screenshots — regenerable viewport captures, 74MB across 165 PNGs.
+# The review prose beside them (.design/whole-app/DESIGN_REVIEW.md) IS tracked; the
+# captures are not, so a repo that holds no other images stays clonable.
+.design/whole-app/screenshots/
