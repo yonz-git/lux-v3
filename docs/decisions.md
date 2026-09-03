@@ -1013,6 +1013,11 @@ glitch rather than a CSS mistake. Only background IMAGES are affected; a flat
 
 # Not built — the analysis the app is named for
 
+⚠️ **READ "Why the product is shaped like this" AT THE END OF THIS FILE FIRST.**
+The thesis pivoted on 7 Aug — from *"the thirty seconds before you buy"* to
+*"the culprit finder"* — and CHECK is the EARLIER thesis, shipped. What follows
+is not a forgotten ticket; it is the newer thesis never getting its screens.
+
 ⚠️ **THE CULPRIT FINDER HAS NO ROUTE, AND THE STORE ALREADY HOLDS ITS INPUTS.**
 This is the largest gap between what LUX says it is and what it does, and it is
 recorded here because it is invisible from inside the code: nothing is broken,
@@ -1204,3 +1209,83 @@ knowing they are closed rather than re-deriving them:
   than fixed. A radar earns its place only when the *shape* is the insight.
 - **The verdict arrived five panels deep.** `/check/results` is the destination
   of the check, not something behind a button on it.
+
+---
+
+# Why the product is shaped like this
+
+From `lux-scope-decision.md` (6 Aug 2026), the scoping document written before
+any screen existed. Nothing in this repo carried its reasoning, and three of its
+decisions are still visibly load-bearing in the code.
+
+## ⚠️ THE THESIS PIVOTED, AND THE BUILD IMPLEMENTS THE EARLIER ONE
+
+This matters for reading the "Not built" section above, which is otherwise easy
+to mistake for a feature someone simply forgot.
+
+| Date | Thesis | Direction |
+| --- | --- | --- |
+| 6 Aug — `lux-scope-decision.md` | **"LUX is for the thirty seconds before you buy."** One question — *does this suit my skin?* | prospective |
+| 7–11 Aug — the spine, then the brief | **"Thesis locked: the culprit finder."** Which product caused this? | retrospective |
+
+**CHECK is the 6 Aug thesis, shipped.** `check.ts` says in its own words that it
+answers *"is this product right for my skin?"* — the pre-purchase question. The
+culprit finder is the thesis the project pivoted TO, and it is the part with no
+route.
+
+So the gap is not an oversight. The project changed its mind about what it was,
+built the version it had already scoped, and the newer thesis never got its
+screens. Whoever picks this up should decide which thesis LUX is actually
+making, rather than assuming the missing feature is just the next ticket.
+
+## "Five questions, maximum" — the origin of the 5-step flow
+
+The scope doc's screen 1 is *"Five questions, maximum. Progressive — each answer
+visibly builds your profile."*
+
+`TOTAL_STEPS` is **5**. The GETTING STARTED section above explains that as nine
+designed screens collapsing — `02b` merged into `02a`, `03b` into `01`, `03a`
+dropped — and presents it as a decided-here flow change. It is that, but it is
+also a **return to a constraint set before any screen was drawn**. The Figma
+flow had drifted to eight or nine; the merge brought it back to five. Worth
+knowing before anyone proposes a sixth step: the number is a product decision
+with a stated reason, not an accident of what fitted.
+
+## The one-glance constraint is where the a11y work comes from
+
+> It has to work one-handed, in bad light, in under thirty seconds. That's a
+> real constraint that visibly shapes type size, contrast, tap targets and how
+> much text can exist on the screen.
+
+That is the rationale behind the contrast measurements in this file and behind
+the 44px-touch-target rule. They are not a compliance exercise bolted on at the
+end; they are the product's own stated operating condition. Read the two
+together — a failing contrast ratio on a screen meant for bad light is a
+product failure before it is a WCAG one.
+
+The doc's other two consequences also survive intact, and CHECK honours both:
+**the verdict comes first and the reasoning second** (`CompatCard` leads with
+score and band, then names the ingredients that cost points), and **the verdict
+is about one person** — *"no universal score. If the word 'your' isn't in it, it
+isn't a verdict."* The score is computed against the user's own profile, which
+is why `analyse()` runs on read and nothing is ever stored.
+
+## ⚠️ TWO THINGS ON THE 6 AUG "OUT" LIST SHIPPED ANYWAY
+
+The doc cut, explicitly and with a stated reason: routine builder, **progress
+tracking**, **selfie / AI skin analysis**, shopping, community, expiry
+reminders, the ingredient encyclopedia, price comparison, dupes.
+
+> *Each is a separate product with its own interaction model, and each one
+> already has a better version than I could build. LUX does one thing: the
+> decision in the shop.*
+
+Two of them are now in the app. **PROGRESS** is a whole nav section — hub,
+daily check-in, calendar, trend chart, per-day record. **The selfie** is
+`SelfieSheet` off step 1, and check-in photos are a nine-day diary.
+
+Neither is flagged anywhere as a reversal, and both are defensible under the
+*culprit finder* thesis — a flare investigation needs a timeline and a
+photographic record, which is exactly what PROGRESS collects. But they are not
+defensible under *"the decision in the shop"*, and the app currently claims
+both. Same underlying question as the pivot above; settle it once.
