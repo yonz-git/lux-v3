@@ -44,6 +44,12 @@ them, because that lives in three better places:
    a screen shape that does not already exist here** — it carries the
    vocabulary this file assumes you already have.
 
+4. **`docs/product-brief.md`** — the 11 Aug product brief. It specifies the
+   controlled vocabulary the product may and may not use, the safety branch, and
+   the analysis flow, most of which is **not built**. Read it before adding
+   user-facing copy about a product's effect on skin, or before working on the
+   investigation flow.
+
 `design.md` is the FIGMA side; this file is the CODE side. Where they disagree,
 the code is the truth about what SHIPPED and `design.md` is the truth about what
 FIGMA HOLDS — both can be right at once. `docs/figma-catchup.md` lists every gap
@@ -136,6 +142,16 @@ view keeps the back chevron and still has no track. Nothing outside
 
 **Two overlays are not routes:** the selfie capture off step 1 and the products
 add tray. Both are `Sheet` overlays, deliberately. See `docs/decisions.md`.
+
+⚠️ **THE SAFETY BRANCH IS SPECIFIED AND UNBUILT — read this before touching
+step 1.** The product brief requires the flow to INTERRUPT and show urgent-care
+guidance if the user reports swelling of lips/tongue/throat, breathing
+difficulty, major eye involvement, a widespread rash, severe pain, extensive
+blistering, infection signs or rapidly worsening symptoms. Step 1 already offers
+**`Swelling`** and **`Rash`** as symptoms and proceeds normally when either is
+ticked. There is no escalation path in the app. This is a user-safety gap, not a
+backlog item, and it does not depend on the unbuilt analysis — see
+"⚠️ SAFETY" in `docs/decisions.md`.
 
 ⚠️ **AND ONE FEATURE HAS NO ROUTE AT ALL.** The investigation collects symptoms,
 locations, conditions, a flare date, products with durations and a daily
@@ -510,6 +526,12 @@ losing that race announces the screen the user just left.
   thing has got to, not what it is. axe calls this `aria-progressbar-name`, and
   it fired serious on all five flow screens until `StepProgress` got an
   `aria-label`.
+- ⚠️ **Known open, do not re-report:** `Continue` renders behind the nav pill at
+  rest on flow steps 1 and 2, the two screens that outgrow the viewport
+  (measured 440: step 1 `cta=852` against `nav=858`; step 2 `cta=1033`, i.e.
+  off-screen). A sticky footer was built for it and **rejected and reverted**.
+  It wants either less height on those two screens or a docked action bar
+  decided in Figma — see `.design/whole-app/DESIGN_REVIEW.md`.
 - Contrast: ⚠️ **do not trust a clean axe run.** Every screen sits on the canvas
   gradient, so `color-contrast` degrades to INCOMPLETE — never to a violation —
   the moment a background is a gradient or a stack of translucent fills. All 17

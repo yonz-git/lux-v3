@@ -1024,9 +1024,11 @@ recorded here because it is invisible from inside the code: nothing is broken,
 no screen is half-finished, and every file that exists is complete. The feature
 simply was never started.
 
-**Source:** `/Users/yonz/Claude/LUX/lux_wireframe_ai_brief.md` (11 Aug 2026),
-§ "Analysis model to communicate through the UI" and §§ 07–08. That file is the
-product brief, sits outside the repo, and is not referenced by anything in it.
+**Source:** `docs/product-brief.md` (11 Aug 2026), § "Analysis model to
+communicate through the UI" and §§ 07–08. ⚠️ **Moved into the repo 4 Sep 2026**
+(was `/Users/yonz/Claude/LUX/lux_wireframe_ai_brief.md`) — it is the only copy
+of the spec for the unbuilt analysis AND for the safety branch below, and it was
+sitting unversioned outside git, cited by nothing.
 
 ## What the brief specifies
 
@@ -1096,6 +1098,21 @@ The related rule from the same section is unambiguous either way, and CHECK does
 respect it: *never infer an interaction from ingredient names alone without
 showing uncertainty; prefer "may have increased irritation when used in the same
 period" over claiming two ingredients "clashed".*
+
+## "Enough evidence, or no answer"
+
+From the case-study spine, and it is the constraint that makes outcome 3 above
+real rather than decorative:
+
+> With two products, almost everything is still in the running. The interface
+> has to be willing to say "I don't know yet, add three more."
+
+Worth holding against CHECK's own `MIN_CHECK_PRODUCTS = 2`. That minimum is
+right for a *compatibility* check — two products is exactly when a pair
+interaction becomes possible — and would be far too low a bar for a *causal*
+one. The analysis needs its own threshold, and needs a designed state for
+refusing to answer. The spine's note on why: refusing to answer is the hardest
+thing to design and the easiest thing to admire.
 
 ## If it gets built
 
@@ -1289,3 +1306,82 @@ Neither is flagged anywhere as a reversal, and both are defensible under the
 photographic record, which is exactly what PROGRESS collects. But they are not
 defensible under *"the decision in the shop"*, and the app currently claims
 both. Same underlying question as the pivot above; settle it once.
+
+---
+
+# ⚠️ SAFETY — the escalation branch was specified and never built
+
+**This is the most serious gap in the app and it is not a design question.**
+
+`docs/product-brief.md` § 03E specifies a safety branch:
+
+> If the user reports breathing difficulty; swelling of lips, tongue, or throat;
+> major eye involvement; widespread rash; severe pain; extensive blistering/open
+> skin; infection signs; or rapidly worsening symptoms, **interrupt the normal
+> flow. Show urgent-care guidance and do not continue product analysis as if it
+> were sufficient medical help.**
+
+**Step 1 already offers `Swelling` and `Rash` as selectable symptoms** — two of
+those triggers by name — and the flow proceeds normally when either is ticked.
+There is no interrupt, no urgent-care copy, and no escalation path anywhere in
+the app. Searched: no occurrence of urgent, emergency, doctor, physician,
+dermatologist, seek care or medical help outside one line.
+
+That line is the only medical hedge in the product, and it is in the wrong
+place: `CheckResults` closes with *"This is not a diagnosis — it highlights
+patterns worth discussing with a dermatologist."* That is a **disclaimer on the
+compatibility check**, on a screen the investigation flow never reaches. It does
+not cover step 1, and a disclaimer is not an escalation.
+
+**This is unblocked by the analysis being unbuilt.** The branch fires on what
+step 1 collects, and step 1 shipped. It does not need the hypothesis engine, a
+result screen, or anything from the CHECK model — it needs a condition on the
+symptom set and a screen that stops the flow.
+
+Read it with the claim-language constraint recorded above: an app that collects
+"Swelling" and continues to product analysis is making an implicit claim about
+what kind of problem this is. That is precisely the medical-device boundary the
+EU cosmetic-claims note is about, approached from the other side.
+
+⚠️ **Do not treat this as a backlog item behind the culprit finder.** It is the
+one thing in this file that is a user-safety issue rather than a product or
+design decision, and it is the cheapest of the unbuilt work.
+
+## The rest of the specified flow, for the record
+
+The brief specifies twelve screens. The build covers **01–05** — start, skin
+profile, describe the reaction, add products, evidence preparation — as the
+five-step investigation. **06–12 do not exist**: analysis in progress, result
+overview, detailed reasoning, save to investigation calendar, cautious next
+action, the no-conclusion route, and observation follow-up.
+
+Two near-misses worth naming so they are not mistaken for coverage:
+
+- **`/check/analyzing` is not screen 06.** It is the wait for the compatibility
+  check, not for the investigation analysis.
+- **PROGRESS's calendar is not screen 09.** The brief's is an *investigation
+  calendar* that saves a result; PROGRESS's records daily check-ins.
+
+## The controlled vocabulary — and the build passes it
+
+The brief fixes the words the product may and may not use. **Use:** associated
+with this reaction · used without problems · not enough history · possible
+contributor · possible interaction · fits your recorded pattern · evidence for ·
+evidence against · not enough evidence yet · investigation priority.
+**Avoid:** this caused your reaction · allergy diagnosis · toxic ingredient ·
+dangerous product · safe for you · guaranteed result · highest-risk product.
+
+Checked every one against the shipped strings: **no violations.** The band label
+`Avoid` is not the forbidden `dangerous product` / `highest-risk product` — it
+instructs the reader rather than characterising the product, which is the
+distinction the list is drawing. Keep that distinction if the labels are ever
+rewritten.
+
+Three principles from the same section that the build has not implemented, all
+belonging to the unbuilt analysis: **ask for every product used in the last four
+weeks, not only the suspected ones**; **treat tolerated products as
+counter-evidence**; and **keep uncertain histories visible without treating them
+as proof**. Step 5 currently asks only for what the user chooses to add, with no
+copy explaining why tolerated products matter — the brief's own wording is
+*"even products you have used without problems. Those products help LUX rule out
+weaker explanations."*
