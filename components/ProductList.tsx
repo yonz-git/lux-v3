@@ -1,9 +1,9 @@
 "use client";
 
-import type { ReactNode } from "react";
+import { useId, useState, type ReactNode } from "react";
 import styles from "./ProductList.module.css";
 import { ProductThumb } from "./ProductThumb";
-import { PlusIcon } from "./icons";
+import { ChevronDownIcon, PlusIcon } from "./icons";
 import type { CatalogProduct } from "@/lib/products";
 
 /**
@@ -23,6 +23,24 @@ import type { CatalogProduct } from "@/lib/products";
  *
  * `onClick` turns the whole row into a button. A row with no `onClick` renders
  * as a plain div: the added-products list is a readout, not a picker.
+ *
+ * ⚠️ `details` OPENS THE ROW IN PLACE, AND IS NOT IN FIGMA. `/check/new` shows
+ * the products you own beside an `Add` control, and until now that was every
+ * word it would ever tell you about them — you could add a product to a
+ * COMPATIBILITY check without being able to see what was in it. The PRODUCTS
+ * hub answers exactly that question by expanding its cards, so the row learned
+ * the same move rather than the check growing a second way to look a product
+ * up. See `ProductDetails`, which is what both screens open onto.
+ *
+ * The disclosure is the thumb + copy + chevron, NOT the whole row: the
+ * trailing slot on that screen holds the `Add` button, and one tap target that
+ * both expands the row and adds the product would be two actions on one
+ * control. `onClick` and `details` are therefore mutually exclusive in
+ * practice — a row that is itself a button has no room for a second one.
+ *
+ * ⚠️ THE CHEVRON IS `icon-sm`, THE CARD-LEVEL SIZE. `ProductDetails` puts an
+ * `icon-xs` one on its ingredients toggle, and that step down is what says the
+ * inner disclosure is subordinate to this one.
  */
 export function ProductRow({
   name,
@@ -30,6 +48,7 @@ export function ProductRow({
   trailing,
   onClick,
   product,
+  details,
 }: {
   name: string;
   meta: string;
@@ -41,7 +60,12 @@ export function ProductRow({
    *  not always title itself the way `fullName` would: the check list shows
    *  the product name with the brand moved down into the meta line. */
   product: CatalogProduct;
+  /** what the row opens onto. Absent = the row does not open. */
+  details?: ReactNode;
 }) {
+  const [open, setOpen] = useState(false);
+  const panelId = useId();
+
   const inner = (
     <>
       <ProductThumb product={product} />
@@ -52,6 +76,37 @@ export function ProductRow({
       {trailing}
     </>
   );
+
+  if (details) {
+    return (
+      <div className={styles.row} data-expandable data-open={open}>
+        <div className={styles.head}>
+          <button
+            type="button"
+            className={styles.disclosure}
+            aria-expanded={open}
+            aria-controls={panelId}
+            onClick={() => setOpen((o) => !o)}
+          >
+            <ProductThumb product={product} />
+            <span className={styles.copy}>
+              <span className={`${styles.name} t-h6`}>{name}</span>
+              <span className={`${styles.meta} t-label-sm`}>{meta}</span>
+            </span>
+            <ChevronDownIcon className={styles.chevron} />
+          </button>
+          {trailing}
+        </div>
+
+        {open && (
+          <div id={panelId} className={`${styles.panel} reveal-quick`}>
+            <span className={styles.divider} aria-hidden="true" />
+            {details}
+          </div>
+        )}
+      </div>
+    );
+  }
 
   if (!onClick) {
     return <div className={styles.row}>{inner}</div>;

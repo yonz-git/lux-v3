@@ -195,6 +195,16 @@ chevron is `icon-xs` against the header's `icon-sm`, which is the only thing
 saying it belongs TO the card rather than being a second one. It is not drawn
 when `ingredients` is absent.
 
+**⚠️ THAT BLOCK IS `components/ProductDetails.tsx`, AND TWO SCREENS OPEN IT.**
+It started local to `ProductAccordionCard`, i.e. to this hub; `/check/new`
+expands its own rows onto the same thing now (see CHECK below). It is one
+readout of five fields, and a screen that reordered them or dropped one would
+make the same product look like two different records depending on which tab you
+found it in. The CARDS still differ — the hub's carries Edit / Remove, the
+check's carries the `Add` control — the record does not. `Added` is the one
+optional row: a bare `CatalogProduct` has no `addedOn`, and a row reading
+"Added —" says less than no row.
+
 **⚠️ EVERY CATALOGUE ENTRY CARRIES AN INCI LIST NOW, AND `lib/check.ts` READS
 THEM.** `CatalogProduct.ingredients` existed for live Open Beauty Facts results
 only, so on `/products` — which IS the demo — all five seeded products had an
@@ -732,6 +742,26 @@ the fill stack by hand and sampling the gradient at the element's own position;
 sampling one representative surface is not enough either, which is how the muted
 tier was first set two steps too light.
 
+**⚠️ A ROW IN `Your products` OPENS ONTO ITS DETAILS — NOT IN FIGMA.** The
+screen listed the products you own beside an `Add` control and told you nothing
+else about them, so a COMPATIBILITY check was assembled out of rows whose
+ingredients you could not see without leaving for the Products tab and coming
+back. It opens onto `ProductDetails`, the same block the PRODUCTS hub opens —
+the check did not grow a second way to look a product up.
+
+`ProductRow` took a `details` prop for it. Closed, the row is unchanged and
+still measures exactly 76 at both breakpoints (measured); open, it becomes a
+column and grows the same hairline + panel the hub's accordion card draws. The
+disclosure is the thumb + copy + chevron and NOT the whole row, because the
+trailing slot holds `Add` — one tap target that both expanded the row and added
+the product would be two actions on one control. So `onClick` and `details` are
+mutually exclusive in practice.
+
+⚠️ **THE SEARCH DROPDOWN'S ROWS DO NOT OPEN.** They are a capped
+`min(360px, 50dvh)` panel with its own scroll, so a row that grew inside it
+would fight the cap; and a live Open Beauty Facts result has no `addedOn` to
+show. Left as-is deliberately — raise it if the panel ever stops being capped.
+
 **⚠️ `/check/new` AND THE PRODUCTS TRAY NOW RUN THE SAME SEARCH.** They did not,
 and the difference was invisible until you typed: the tray queried Open Beauty
 Facts live while `/check/new` searched the 13-product offline fixture alone, so
@@ -1017,7 +1047,7 @@ risk. All are on the missing-from-the-DS list.
 | Face-region picker | `components/FaceDiagram.tsx`                         | The region coordinates ARE the design — "Cheeks (L)" only means the left cheek because of where it sits. Stored as % of the 392x300 card so it scales. ⚠️ The region chips are `bg/frost-light` (OPAQUE) as of 22 Aug 2026: they sit ON a frost-light card, so at 55% it was the same fill over the same fill and the pill had almost no edge. Selected stays `bg/brand` + white. |
 | Camera shutter     | `components/CameraCapture.tsx`, plus `SelfieSheet.module.css` | No shutter component in the DS, and there are now THREE capture surfaces: the selfie tray, the products scan view and the check-in's photo overlay. `SelfieCapture` carried the note "if a second capture surface ever appears, make it a real component first" — a third did, so `CameraCapture` is that component (viewfinder + guide + captured label + copy + shutter) and the scan view and the check-in both use it. ⚠️ **`SelfieSheet` DELIBERATELY DOES NOT.** 487:834 / 490:1041 give it its own geometry — a 392x400 / 420x340 viewfinder against `CameraCapture`'s 392x300, a PORTRAIT oval against a landscape rectangle, a 72 shutter against 64, and the helper BELOW the shutter rather than above. Those are its frame's measurements, not drift; folding it in would move them. **Raise a real Camera / Shutter component in Figma**, then migrate all three at once. Every viewfinder is a placeholder, not `getUserMedia` — wiring a real camera would make the prototype demand a permission just to walk the flow.                                                                                                                                                                                                            |
 | Modal tray         | `components/Sheet.tsx`                               | `Bottom Sheet` (255:91) has no background blur and a fixed light content slot, so every tray in the file is hand-composed from the recipe. There is also **no scrim token** — `state/pressed-overlay` at 14% is the only darkening value LUX has and it is weak for a modal. ⚠️ **IT PORTALS TO `document.body`, AND IT HAS TO.** `position: fixed` is viewport-relative only while no ancestor establishes a containing block, and `backdrop-filter` does that exactly like `transform` does. Every tray opens from inside `QuestionScreen`'s frosted card (`blur(32px)`), so the desktop dialog was centred in THAT CARD: measured at 1238x875 the tray's top edge sat at y = −41 with its heading off the top of the screen, and the scrim covered the card instead of the page.                                                                                                      |
-| Accordion          | `components/ProductAccordionCard.tsx`                | No accordion component. Composed from the frosted card recipe. It was `BucketProductsList` on the deleted `/products/[bucket]` route; the cards moved into the hub rows unchanged.                                                                                                                                                                                                                                                                                                                    |
+| Accordion          | `components/ProductAccordionCard.tsx`, `ProductList.tsx`'s `details` row | No accordion component. Composed from the frosted card recipe. It was `BucketProductsList` on the deleted `/products/[bucket]` route; the cards moved into the hub rows unchanged. `ProductRow` learned the same move for `/check/new` rather than a second disclosure treatment appearing; both open onto `ProductDetails`.                                                                                                                                                                                                                                                                                                                    |
 | Search dropdown    | `AddProductMethodSheet.module.css` `.dropdown`        | `Search Field` (248:70) has no results popup, and the comps drew results as free-standing `ProductRow` cards on a routed screen. One frosted panel tucked 8 under the pill and inset 8 either side, capped at 296 with its own scroll. ⚠️ IN FLOW, NOT ABSOLUTE — the mobile tray is docked to the bottom edge and hugs its content, so an overlaid panel would open off the bottom of the viewport. |
 | `My skin` nav icon | `MySkinIcon` in `components/icons.tsx`               | The nav's fourth glyph. `Bottom-Nav-Bar` (410:258) ships three icons and the DS has no face or skin mark anywhere else — `FaceDiagram` is a picker, not an icon. ⚠️ STROKE-drawn, unlike its three filled neighbours: a solid disc at 24 is a far heavier mark than Progress/Check/Products draw, and the face only reads at that size with the eyes and mouth left open. currentColor throughout, so the active/inactive opacity treatment is untouched. Replace it in the DS first, not here. |
 | Product imagery    | `components/ProductArt.tsx`                          | ⚠️ **THE CAMERA GLYPH IS GONE — DECIDED HERE, NOT IN FIGMA.** No product or bottle icon exists outside the bottom nav, so every thumb (`ProductThumb`, 48) and image well (`ProductCard`, 352x140) drew a camera. That reads as "no photo yet" once and as nothing at all down a list — `/check/new`, the PRODUCTS hub and the add tray all show the same mark on every row, so the thumbnail identifies nothing. `ProductArt` draws the vessel instead: **nine** silhouettes (tub, pump, tube, dropper, bottle, airless, spray, sachet, tin) by packaging type, tinted per brand, so same brand → same tint and same type → same shape. ⚠️ **IT WAS FIVE FORMS AND ONE FALLBACK TINT, WHICH WAS ENOUGH ONLY WHILE THE CATALOGUE WAS THE SEARCH.** Both searches are live now, so the list is whatever the database holds — masks, mists, sticks, ointments — and every one of them fell through `formFor`'s default to the same pump on a `sage` body. A column of identical pumps is the camera glyph with an extra step. Three axes of variety, all keyed on a stable FNV-1a `hash` (never `Math.random()` or an index — a thumbnail that changes identity between two screens is worse than one that repeats): unnamed brands hash into a 7-tint `RING`, unrecognised names hash across all nine `FORMS`, and `labelVariant` picks one of three label treatments off the product id so two products of the same form AND brand still differ. Brand strings are diacritic-folded before hashing, because OBF files the same house as both "Avene" and "Avène". ⚠️ **AND IT IS THE ONLY PICTURE — THE API'S PHOTOS ARE NOT READ.** Open Beauty Facts carries `image_front_url` and it used to win over the drawing. Its images are crowdsourced with no quality gate, so a result list mixed usable front-of-package shots with stubs, angled boxes and rows that fell back to a drawing anyway — two kinds of picture in one column, which is worse at telling rows apart than either alone. `lib/openBeautyFacts.ts` no longer requests the image fields, `CatalogProduct` has no `imageUrl`, and `useProductPhoto` is deleted; `artFor` serves live results via `formFor`/`paletteFor`. **The API still supplies every WORD** — name, brand, size and the INCI list. The pigments are LOCAL LITERALS drawn from the LUX family and must not become tokens — `02 Color` has no "bottle glass" role, and binding a lid to `bg/brand` would move the artwork every time the brand colour did. **Raise a real illustration set in Figma.** |

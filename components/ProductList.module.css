@@ -29,6 +29,64 @@
   backdrop-filter: blur(var(--blur-card));
 }
 
+/* ---- the expandable row -------------------------------------------------
+   ⚠️ NOT IN FIGMA — see ProductList.tsx. Closed, it is the row above and
+   measures the same 76: the padding is unchanged and the head's own floor is
+   the thumb's 48. Open, it becomes a column and grows a panel, exactly as the
+   PRODUCTS hub's accordion card does — same 16 between the head, the hairline
+   and the details. */
+.row[data-expandable] {
+  flex-direction: column;
+  align-items: stretch;
+  gap: var(--space-lg); /* 16 */
+}
+
+.head {
+  display: flex;
+  align-items: center;
+  gap: var(--space-md);
+  min-height: var(--size-control-md); /* 48, the thumb — 14 + 48 + 14 = the row's 76 */
+}
+
+/* the disclosure is the thumb + copy + chevron and takes the slack; the
+   trailing slot (the check's `Add`) stays its own control, pinned right */
+.disclosure {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  align-items: center;
+  gap: var(--space-md);
+  text-align: left;
+  border-radius: var(--radius-md);
+}
+
+/* one glyph, two states — `chevron-up` in Figma is a chevron-down at 180°.
+   A rotation, not a bounce: LUX does not overshoot. */
+.chevron {
+  flex: none;
+  width: var(--size-icon-sm);
+  height: var(--size-icon-sm);
+  color: var(--color-text-primary);
+  transition: transform var(--duration-base) var(--ease-standard);
+}
+
+.row[data-open="true"] .chevron {
+  transform: rotate(180deg);
+}
+
+.panel {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-lg);
+}
+
+/* a 1px border/subtle hairline, full content width — the accordion card's */
+.divider {
+  display: block;
+  height: 1px;
+  background: var(--color-border-subtle);
+}
+
 /* `copy` — VERTICAL, gap 2, and it takes the slack so the trailing slot stays
    pinned right */
 .copy {

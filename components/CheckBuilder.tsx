@@ -8,6 +8,7 @@ import { Button } from "./Button";
 import { SearchField } from "./SearchField";
 import { SkinProfileStrip } from "./SkinProfileStrip";
 import { ProductRow } from "./ProductList";
+import { ProductDetails } from "./ProductDetails";
 import { ProductThumb } from "./ProductThumb";
 import { SmallButton } from "./SmallButton";
 import { Tag } from "./Tag";
@@ -351,11 +352,19 @@ export function CheckBuilder() {
             <ul className={styles.list}>
               {owned.map((p) => (
                 <li key={p.id}>
+                  {/* ⚠️ THE ROW OPENS — NOT IN FIGMA, and it is the PRODUCTS
+                      hub's move rather than a new one. This screen listed the
+                      products you own beside an `Add` control and told you
+                      nothing else about them, so a COMPATIBILITY check was
+                      built out of rows whose ingredients you could not see
+                      without leaving for the Products tab and coming back.
+                      Same block the hub opens: `ProductDetails`. */}
                   <ProductRow
                     name={p.name}
                     meta={resultMeta(p)}
                     product={p}
                     trailing={trailingFor(p)}
+                    details={<ProductDetails product={p} />}
                   />
                 </li>
               ))}
