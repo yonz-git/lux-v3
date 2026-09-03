@@ -146,6 +146,12 @@ export type CatalogProduct = {
    * regulation — they are ordered by concentration — so a 240-character cut
    * removes exactly the ingredients `activesFromInci` is looking for. Reading
    * `description` scored a fragranced product as fragrance-free.
+   *
+   * ⚠️ IT IS ALSO WHAT THE EXPANDED ACCORDION CARD SHOWS, so it is no longer
+   * only the checker's input — `ProductAccordionCard` opens it as a nested
+   * disclosure under Size. That is why every CATALOG entry below carries one:
+   * without it the seeded library, which IS the demo on `/products`, had five
+   * products with no ingredients to open.
    */
   ingredients?: string;
   /* ⚠️ NO `imageUrl`. Every product is DRAWN — see `ProductArt`, and the note
@@ -183,7 +189,19 @@ export type ProductDraft = {
 
 /** The products `04 — Search by name` (576:1428) lists for "CeraVe moist" —
  *  and, because Open Beauty Facts answers that exact query with zero results,
- *  what the tray actually shows for it. See useOpenBeautyFactsSearch. */
+ *  what the tray actually shows for it. See useOpenBeautyFactsSearch.
+ *
+ *  ⚠️ THE INCI LISTS AGREE WITH THE MODEL, NOT WITH THE SHELF. They are
+ *  fixture data, like every other field here, and `lib/check.ts` reads them:
+ *  `activesFromInci` runs for any product `PRODUCT_ACTIVES` does not name, so a
+ *  list that disagreed with the map would put an ingredient on screen that the
+ *  compatibility card refused to mention, or the reverse. Where the two overlap
+ *  the map still wins by id — see `activesOf`.
+ *
+ *  Verified: the comp's five still score 45 / 62 / 71 / 94 / 98. The three
+ *  niacinamide-containing moisturisers that had no map entry now read one off
+ *  their own list and score 94 rather than 98, which is what their `description`
+ *  said all along; the band is unchanged. */
 export const CATALOG: CatalogProduct[] = [
   {
     id: "cerave-moisturizing-cream-16",
@@ -191,6 +209,8 @@ export const CATALOG: CatalogProduct[] = [
     brand: "CeraVe",
     size: "16 oz tub",
     description: "Moisturizing cream with hyaluronic acid and ceramides",
+    ingredients:
+      "Aqua/Water, Glycerin, Cetearyl Alcohol, Caprylic/Capric Triglyceride, Cetyl Alcohol, Ceteareth-20, Petrolatum, Potassium Phosphate, Ceramide NP, Ceramide AP, Ceramide EOP, Carbomer, Dimethicone, Behentrimonium Methosulfate, Sodium Lauroyl Lactylate, Sodium Hyaluronate, Cholesterol, Phenoxyethanol, Disodium EDTA, Dipotassium Phosphate, Tocopherol, Phytosphingosine, Xanthan Gum, Ethylhexylglycerin",
   },
   {
     id: "cerave-moisturizing-cream-12",
@@ -198,6 +218,8 @@ export const CATALOG: CatalogProduct[] = [
     brand: "CeraVe",
     size: "12 oz pump",
     description: "Moisturizing cream with hyaluronic acid and ceramides",
+    ingredients:
+      "Aqua/Water, Glycerin, Cetearyl Alcohol, Caprylic/Capric Triglyceride, Cetyl Alcohol, Ceteareth-20, Petrolatum, Potassium Phosphate, Ceramide NP, Ceramide AP, Ceramide EOP, Carbomer, Dimethicone, Behentrimonium Methosulfate, Sodium Lauroyl Lactylate, Sodium Hyaluronate, Cholesterol, Phenoxyethanol, Disodium EDTA, Dipotassium Phosphate, Tocopherol, Phytosphingosine, Xanthan Gum, Ethylhexylglycerin",
   },
   {
     id: "cerave-moisturizing-lotion-12",
@@ -205,6 +227,8 @@ export const CATALOG: CatalogProduct[] = [
     brand: "CeraVe",
     size: "12 oz",
     description: "Lightweight moisturizing lotion with ceramides and niacinamide",
+    ingredients:
+      "Aqua/Water, Glycerin, Caprylic/Capric Triglyceride, Behentrimonium Methosulfate, Cetearyl Alcohol, Ceteareth-20, Cetyl Alcohol, Niacinamide, Sodium Hyaluronate, Ceramide NP, Ceramide AP, Ceramide EOP, Carbomer, Dimethicone, Cholesterol, Phenoxyethanol, Disodium EDTA, Tocopherol, Phytosphingosine, Xanthan Gum, Ethylhexylglycerin",
   },
   {
     id: "cerave-am-lotion-spf30",
@@ -212,6 +236,8 @@ export const CATALOG: CatalogProduct[] = [
     brand: "CeraVe",
     size: "3 oz",
     description: "Daytime moisturizer with broad-spectrum SPF 30",
+    ingredients:
+      "Homosalate, Octocrylene, Ethylhexyl Salicylate, Aqua/Water, Glycerin, Niacinamide, Butyloctyl Salicylate, Silica, Ceramide NP, Ceramide AP, Ceramide EOP, Sodium Hyaluronate, Cetearyl Alcohol, Ceteareth-20, Dimethicone, Behentrimonium Methosulfate, Cholesterol, Phenoxyethanol, Disodium EDTA, Tocopherol, Phytosphingosine, Xanthan Gum, Ethylhexylglycerin",
   },
   {
     id: "lrp-toleriane-double-repair",
@@ -219,6 +245,8 @@ export const CATALOG: CatalogProduct[] = [
     brand: "La Roche-Posay",
     size: "2.5 fl oz",
     description: "Face moisturizer with ceramide-3 and niacinamide",
+    ingredients:
+      "Aqua/Water, Glycerin, Dimethicone, Isononyl Isononanoate, Niacinamide, Ammonium Polyacryloyldimethyl Taurate, Sodium Hydroxide, Dimethiconol, Ceramide NP, Caprylyl Glycol, Tocopherol, Xanthan Gum, Disodium EDTA, Citric Acid, Zinc PCA, Shea Butter Ethyl Esters, Caprylic/Capric Triglyceride",
   },
   {
     id: "lrp-cicaplast-baume-b5",
@@ -226,6 +254,8 @@ export const CATALOG: CatalogProduct[] = [
     brand: "La Roche-Posay",
     size: "1.35 fl oz",
     description: "Soothing multi-purpose balm with panthenol",
+    ingredients:
+      "Aqua/Water, Glycerin, Dimethicone, Butyrospermum Parkii (Shea) Butter, Panthenol, Zinc Gluconate, Madecassoside, Propylene Glycol, Cetyl Alcohol, Glyceryl Stearate, PEG-100 Stearate, Tocopherol, Disodium EDTA, Xanthan Gum, Manganese Gluconate, Copper Gluconate",
   },
   {
     id: "the-ordinary-niacinamide",
@@ -233,6 +263,8 @@ export const CATALOG: CatalogProduct[] = [
     brand: "The Ordinary",
     size: "1 fl oz",
     description: "High-strength blemish formula",
+    ingredients:
+      "Aqua (Water), Niacinamide, Pentylene Glycol, Zinc PCA, Dimethyl Isosorbide, Tamarindus Indica Seed Gum, Xanthan Gum, Isoceteth-20, Ethoxydiglycol, Phenoxyethanol, Chlorphenesin",
   },
 
   /* ---- Added for CHECK ----------------------------------------------------
@@ -247,6 +279,8 @@ export const CATALOG: CatalogProduct[] = [
     brand: "Paula's Choice",
     size: "0.67 fl oz",
     description: "20% niacinamide concentrate for enlarged pores",
+    ingredients:
+      "Water, Niacinamide, Acetyl Glucosamine, Butylene Glycol, Glycerin, Ascorbyl Glucoside, Panthenol, Sodium Hyaluronate, Allantoin, Boerhavia Diffusa Root Extract, Sodium Citrate, Xanthan Gum, Disodium EDTA, Phenoxyethanol",
   },
   {
     id: "good-molecules-niacinamide-toner",
@@ -254,6 +288,8 @@ export const CATALOG: CatalogProduct[] = [
     brand: "Good Molecules",
     size: "3.7 fl oz",
     description: "Brightening toner with niacinamide",
+    ingredients:
+      "Water, Niacinamide, Glycerin, Butylene Glycol, Betaine, Panthenol, Sodium Hyaluronate, Allantoin, Zinc PCA, Polyglyceryl-10 Laurate, Ethylhexylglycerin, Phenoxyethanol",
   },
   {
     id: "cerave-niacinamide-body-lotion",
@@ -261,6 +297,8 @@ export const CATALOG: CatalogProduct[] = [
     brand: "CeraVe",
     size: "8 oz",
     description: "Body lotion with niacinamide and ceramides",
+    ingredients:
+      "Aqua/Water, Glycerin, Niacinamide, Caprylic/Capric Triglyceride, Cetearyl Alcohol, Ceteareth-20, Cetyl Alcohol, Ceramide NP, Ceramide AP, Ceramide EOP, Sodium Hyaluronate, Cholesterol, Dimethicone, Behentrimonium Methosulfate, Phenoxyethanol, Disodium EDTA, Tocopherol, Phytosphingosine, Xanthan Gum",
   },
   {
     id: "lrp-retinol-b3-serum",
@@ -268,6 +306,8 @@ export const CATALOG: CatalogProduct[] = [
     brand: "La Roche-Posay",
     size: "1 fl oz",
     description: "Pure retinol serum with vitamin B3",
+    ingredients:
+      "Aqua/Water, Dimethicone, Glycerin, Alcohol Denat., Niacinamide, Propanediol, Bis-PEG-18 Methyl Ether Dimethyl Silane, Retinol, Hydroxyethylpiperazine Ethane Sulfonic Acid, Adenosine, Sodium Hyaluronate, Tocopherol, Caprylyl Glycol, Disodium EDTA, Xanthan Gum, Phenoxyethanol",
   },
   {
     id: "paulas-choice-bha-exfoliant",
@@ -275,6 +315,8 @@ export const CATALOG: CatalogProduct[] = [
     brand: "Paula's Choice",
     size: "4 fl oz",
     description: "Skin Perfecting 2% BHA liquid exfoliant",
+    ingredients:
+      "Water, Methylpropanediol, Alcohol Denat., Butylene Glycol, Salicylic Acid, Polysorbate 20, Camellia Oleifera Leaf Extract, Sodium Hydroxide, Tetrasodium EDTA, Parfum",
   },
   {
     id: "cerave-foaming-cleanser",
@@ -282,6 +324,8 @@ export const CATALOG: CatalogProduct[] = [
     brand: "CeraVe",
     size: "12 fl oz",
     description: "Foaming facial cleanser for normal to oily skin",
+    ingredients:
+      "Aqua/Water, Cocamidopropyl Hydroxysultaine, Glycerin, Sodium Lauroyl Sarcosinate, Sodium Laureth Sulfate, Niacinamide, Ceramide NP, Ceramide AP, Ceramide EOP, Sodium Hyaluronate, Cholesterol, Phenoxyethanol, Disodium EDTA, Tocopherol, Phytosphingosine, Parfum",
   },
 ];
 

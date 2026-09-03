@@ -180,6 +180,37 @@ three spans otherwise ran together as "Long-term products 4+ weeks 2", making an
 already-unlabelled count ambiguous. `not-sure` renders "unknown" beside it, the
 same pairing `Your products` already shows.
 
+**⚠️ AN EXPANDED PRODUCT CARD LEADS WITH `Added`, AND OPENS ITS INGREDIENTS —
+NOT IN FIGMA.** 581:1593 orders the details Brand, Size, Added. Brand and size
+are already on the collapsed header — the card's title is `fullName`, i.e. brand
++ name, with the size directly under it — so the panel opened by restating the
+row that was just tapped and buried the one fact only it carries. `Added` leads
+now, and it is also the fact this hub is organised BY.
+
+A fourth row, `Ingredients`, is a nested disclosure rather than a `Detail`: an
+INCI list is 15–25 comma-separated terms, which as a value in a right-aligned
+column of two-word values would push every other card in an open group off the
+screen. Closed by default, so the panel's resting height is unchanged; its
+chevron is `icon-xs` against the header's `icon-sm`, which is the only thing
+saying it belongs TO the card rather than being a second one. It is not drawn
+when `ingredients` is absent.
+
+**⚠️ EVERY CATALOGUE ENTRY CARRIES AN INCI LIST NOW, AND `lib/check.ts` READS
+THEM.** `CatalogProduct.ingredients` existed for live Open Beauty Facts results
+only, so on `/products` — which IS the demo — all five seeded products had an
+Ingredients section with nothing in it. The lists agree with the MODEL rather
+than with the shelf: `activesFromInci` runs for any product `PRODUCT_ACTIVES`
+does not name, so a list disagreeing with the map would put an ingredient on
+screen that the compatibility card refused to mention. Verified after the
+change: the comp's five still score 45 / 62 / 71 / 94 / 98. The three
+niacinamide-containing moisturisers with no map entry now read one off their own
+list and score 94 instead of 98 — which is what their `description` said all
+along — and no band moves.
+
+`DEMO_PRODUCTS` is derived from `CATALOG` by id as a result. It had been five
+hand-copied twins, harmless only while a product was name + brand + size; the
+moment a catalogue entry grew a field, the copies shipped without it.
+
 **⚠️ "Not sure" IS A FOURTH GROUP, AND IT IS NOT IN FIGMA.** With no period mode
 left to stand in, `bucketFor("Not sure", current)`'s fallback had nothing to read
 `current` from. Binning it into Long term was the tempting fix and it is wrong:

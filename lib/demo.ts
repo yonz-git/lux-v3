@@ -26,7 +26,7 @@
  * Delete this the moment there is a backend to resume from.
  */
 import type { Answers } from "./answers";
-import type { SavedProduct } from "./products";
+import { bucketFor, productById, type Duration, type SavedProduct } from "./products";
 
 export const DEMO_PROFILE = {
   skinType: "Combination",
@@ -117,52 +117,33 @@ export function skinProfile(a: Answers): SkinProfile {
    silently. Every OTHER owned-products reader goes through `ownedProducts`.
    -------------------------------------------------------------------------- */
 
+/**
+ * One seeded product: the CATALOGUE entry plus the two answers the add tray
+ * collects.
+ *
+ * ⚠️ IT RESOLVES BY ID RATHER THAN RESTATING THE PRODUCT. These five were
+ * written out in full — name, brand and size copied from `CATALOG` — which was
+ * harmless only while a product was those three fields. It is not: a catalogue
+ * entry now carries an INCI list that the expanded accordion card renders and
+ * `activesOf` reads, and a hand-copied twin would have shipped five products
+ * whose Ingredients section was empty on the one screen that is the demo.
+ * `demoCheck` in lib/check.ts already resolves its fixtures this way and for
+ * the same reason.
+ *
+ * The group is derived by `bucketFor`, never set — see lib/products.ts.
+ */
+function demoProduct(id: string, duration: Duration, addedOn: string): SavedProduct {
+  const product = productById(id);
+  if (!product) throw new Error(`demo product not in the catalogue: ${id}`);
+  return { ...product, duration, bucket: bucketFor(duration), addedOn };
+}
+
 export const DEMO_PRODUCTS: SavedProduct[] = [
-  {
-    id: "the-ordinary-niacinamide",
-    name: "Niacinamide 10% + Zinc 1%",
-    brand: "The Ordinary",
-    size: "1 fl oz",
-    duration: "4+ weeks",
-    bucket: "long-term",
-    addedOn: "2026-07-02",
-  },
-  {
-    id: "cerave-moisturizing-cream-16",
-    name: "Moisturizing Cream",
-    brand: "CeraVe",
-    size: "16 oz tub",
-    duration: "4+ weeks",
-    bucket: "long-term",
-    addedOn: "2026-06-14",
-  },
-  {
-    id: "cerave-foaming-cleanser",
-    name: "Foaming Cleanser",
-    brand: "CeraVe",
-    size: "12 fl oz",
-    duration: "1–4 weeks",
-    bucket: "recent",
-    addedOn: "2026-08-04",
-  },
-  {
-    id: "lrp-retinol-b3-serum",
-    name: "Retinol B3 Serum",
-    brand: "La Roche-Posay",
-    size: "1 fl oz",
-    duration: "1–4 weeks",
-    bucket: "recent",
-    addedOn: "2026-08-08",
-  },
-  {
-    id: "paulas-choice-bha-exfoliant",
-    name: "BHA Exfoliant",
-    brand: "Paula's Choice",
-    size: "4 fl oz",
-    duration: "Less than 1 week",
-    bucket: "new-addition",
-    addedOn: "2026-08-15",
-  },
+  demoProduct("the-ordinary-niacinamide", "4+ weeks", "2026-07-02"),
+  demoProduct("cerave-moisturizing-cream-16", "4+ weeks", "2026-06-14"),
+  demoProduct("cerave-foaming-cleanser", "1–4 weeks", "2026-08-04"),
+  demoProduct("lrp-retinol-b3-serum", "1–4 weeks", "2026-08-08"),
+  demoProduct("paulas-choice-bha-exfoliant", "Less than 1 week", "2026-08-15"),
 ];
 
 /**
