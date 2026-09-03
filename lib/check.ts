@@ -524,27 +524,88 @@ export function primaryConcern(
 
 /**
  * The routine advice for a CHECK — every pair in the set that should not share
- * a routine, said once.
+ * a routine, said once, plus the one rule that always applies.
  *
  * ⚠️ THE PAIRS ARE THE WHOLE POINT OF A COMPATIBILITY CHECK, and they were only
  * reachable by opening an accordion. Surfacing them at the top is the "what do
  * I do?" the screen never answered.
+ *
+ * ⚠️ A STEP, NOT A SENTENCE — AND NOT IN FIGMA. This returned `string[]`, and
+ * `NextStepsCard` rendered each one as a `t-body3` line: two paragraphs of the
+ * same size, colour and weight as the description above them, both opening
+ * "Do not use", each naming two products at full brand-and-name length. Walked
+ * at 440 it reads as a footnote to the emphasis block rather than as the
+ * actions the card is titled for, and the card's own overline promises
+ * otherwise.
+ *
+ * Three things change, and each is why the shape had to:
+ *
+ *   — the ACTION leads. "Keep X and Y on alternate nights" is the same fact as
+ *     "Do not use X and Y in the same routine", said as the thing to do. The
+ *     prohibition moves into the body, where the reason lives.
+ *   — the title drops the BRAND. `fullName` is right in a list of products the
+ *     user is identifying; in a sentence naming two of them it spends most of a
+ *     mobile line on "La Roche-Posay" and "The Ordinary". The thumbs carry the
+ *     brand — that is what the per-brand tint in `ProductArt` is for.
+ *   — the pair comes with its PRODUCTS, so the card can draw them. A conflict
+ *     IS a pair of products; two thumbs and a `+` say that before the sentence
+ *     is read.
+ *
+ * ⚠️ THE PAUSED PRODUCT'S PAIRS SAY SO. When the worst product is in the Avoid
+ * band the card's emphasis block tells the user to pause it — so a step telling
+ * them to alternate it against something else is advice about a routine it is
+ * no longer in. It still has to be listed (the pause is two weeks, not
+ * forever), so the body names the condition instead of pretending the conflict
+ * is live.
  */
-export function routineAdvice(basket: CatalogProduct[]): string[] {
+export type NextStep = {
+  /** stable across renders — the two product ids, sorted */
+  id: string;
+  title: string;
+  body: string;
+  /** the products the step is about, in the order the title names them */
+  products: CatalogProduct[];
+};
+
+export function routineAdvice(basket: CatalogProduct[]): NextStep[] {
   const seen = new Set<string>();
-  const lines: string[] = [];
+  const steps: NextStep[] = [];
+  /* the emphasis block pauses the worst product only when it is in the Avoid
+     band — `analyseCheck` is sorted worst-first, so [0] is that product */
+  const worst = analyseCheck(basket)[0];
+  const pausedId = worst?.band === "avoid" ? worst.product.id : null;
 
   for (const product of basket) {
     for (const c of conflictsFor(product, basket)) {
       const key = [product.id, c.other.id].sort().join("|");
       if (seen.has(key)) continue;
       seen.add(key);
-      lines.push(
-        `Do not use ${fullName(product)} and ${fullName(c.other)} in the same routine — alternate days.`
-      );
+
+      const involvesPaused =
+        pausedId === product.id || pausedId === c.other.id;
+
+      steps.push({
+        id: key,
+        title: `Keep ${product.name} and ${c.other.name} on alternate nights`,
+        body: involvesPaused
+          ? `${ACTIVES[c.mine].label} and ${ACTIVES[c.theirs].label} irritate in the same routine — so this pair settles itself while ${worst.product.name} is out, and matters again the day it comes back.`
+          : `${ACTIVES[c.mine].label} and ${ACTIVES[c.theirs].label} irritate in the same routine. One tonight, the other tomorrow.`,
+        products: [product, c.other],
+      });
     }
   }
-  return lines;
+
+  /* ⚠️ ALWAYS LAST, AND ALWAYS PRESENT — including on a clean check, which is
+     the case the card used to answer with silence. It is the only advice that
+     does not depend on what is in the basket. */
+  steps.push({
+    id: "one-at-a-time",
+    title: "Bring anything back one product at a time",
+    body: "Two at once and a reaction cannot be traced to either of them.",
+    products: [],
+  });
+
+  return steps;
 }
 
 /* ---------------------------------------------------------------------------

@@ -7,6 +7,7 @@ import { HubScreen } from "./HubScreen";
 import { ChatBubble } from "./ChatBubble";
 import { SkinProfileStrip } from "./SkinProfileStrip";
 import { CompatCard } from "./CompatCard";
+import { ProductThumb } from "./ProductThumb";
 import { SummaryCard, IngredientsCard, NextStepsCard } from "./ResultCards";
 import { CheckBasketSheet } from "./CheckBasket";
 import { ChevronDownIcon } from "./icons";
@@ -142,19 +143,38 @@ export function CheckResults() {
           nothing to tell you" look identical on screen otherwise. */}
       <div className={styles.block}>
         <NextStepsCard
+          /* ⚠️ THE PRODUCT IS DRAWN, NOT JUST NAMED — NOT IN FIGMA. 549:1163
+             draws the emphasis block as text alone, because the comps had no
+             product imagery to place; every other screen that names one of the
+             user's products shows it (see `ProductArt`). It is also the one
+             product in the check the user has to act on, and the numbered
+             steps below now carry thumbs, so leaving the block text-only made
+             the loudest block the only one without the picture. */
+          art={
+            primary ? <ProductThumb product={primary.product} /> : undefined
+          }
+          /* ⚠️ THE TITLE IS THE ACTION IN THE AVOID BAND. "Take care with:" is
+             a diagnosis, and it is the right words for Risky — the product
+             stays in the routine and is used carefully. For Avoid it is not
+             what the card means: the advice is to stop, and the steps below
+             are written assuming the product is out. */
           title={
             primary
-              ? `Take care with: ${fullName(primary.product)}`
+              ? band === "avoid"
+                ? `Pause ${fullName(primary.product)}`
+                : `Take care with: ${fullName(primary.product)}`
               : "No conflicts found"
           }
           badge={primary ? BAND_LABEL[band] : undefined}
           badgeBand={primary ? band : undefined}
           description={
             primary
-              ? `This product contains ${primary.ingredient.name}, which is the biggest problem for your skin profile in this set.`
-              : "These can be used in the same routine. Introduce anything new one at a time, so a reaction is easy to trace back."
+              ? band === "avoid"
+                ? `It contains ${primary.ingredient.name}, the biggest problem for your skin profile in this set. Leave it out for two weeks and see whether the flare settles.`
+                : `This product contains ${primary.ingredient.name}, which is the biggest problem for your skin profile in this set.`
+              : "These can be used in the same routine."
           }
-          notes={advice}
+          steps={advice}
         />
       </div>
 

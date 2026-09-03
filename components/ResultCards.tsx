@@ -1,11 +1,13 @@
-import type { ReactNode } from "react";
+import { Fragment, type ReactNode } from "react";
 import styles from "./ResultCards.module.css";
 import { DataCard } from "./DataCard";
 import { Tag } from "./Tag";
+import { ProductThumb } from "./ProductThumb";
 import {
   LIKELIHOOD_LABEL,
   type CompatBand,
   type IngredientConcern,
+  type NextStep,
   formatScheduleDate,
   type ScheduleNode,
 } from "@/lib/check";
@@ -126,26 +128,53 @@ export function IngredientsCard({
  * halves of this: the investigation prescribes an elimination period and offers
  * to remind you, a compatibility check just tells you how to sequence what you
  * already own.
+ *
+ * ⚠️ THE EMPHASIS BLOCK IS A ROW NOW, NOT A STACK — NOT IN FIGMA. 549:1163
+ * stacks title, badge and description down the block, each on its own line at
+ * `align-items: flex-start`. That gives the band pill a full line of its own,
+ * where it reads as a heading rather than as a label on the product above it —
+ * and on a check whose worst product is in the Avoid band, the loudest thing in
+ * the card is a red word floating on its own row. In the row it stays a small
+ * pill ON the title it qualifies, which is what it is, and the block loses a
+ * line. `art` is the same move: the product the block names is drawn beside it,
+ * so the block leads with the thing rather than with a sentence about it.
+ *
+ * ⚠️ THE TITLE MUST BE ALLOWED TO WRAP UNDER THE PILL. Measured at 440 the
+ * emphasis block is 312 inside its padding; "Pause Paula's Choice BHA
+ * Exfoliant" plus a 48 thumb, a 26 pill and two 12 gaps does not fit on one
+ * line, and the pill is what would be pushed out. `.emphasisTitle` takes
+ * `flex-grow: 1; min-width: 0` and the pill `flex: none`, so the title takes
+ * the two lines it needs and the pill keeps its size.
+ *
+ * ⚠️ THE STEPS ARE NUMBERED, AND THE NUMBER IS NOT DECORATION. They used to be
+ * `notes: string[]`, rendered as bare `t-body3` paragraphs — see the note on
+ * `routineAdvice`, which now returns the steps themselves. The disc gives each
+ * one a visible start, so three actions read as three actions; it is
+ * `bg/brand` + `text/on-brand`, the pairing the check-in discs on `/progress`
+ * already use, rather than a new treatment.
  */
 export function NextStepsCard({
   label = "What to do next",
+  art,
   title,
   badge,
   badgeBand,
   description,
-  notes,
+  steps,
   schedule,
   scheduleLabel = "Check-in schedule",
   actions,
 }: {
   label?: string;
+  /** drawn at 48 beside the title — `ProductThumb` for the product it names */
+  art?: ReactNode;
   title: ReactNode;
   badge?: string;
   /** the band the badge names — drives its fill. See `.badge` in the module. */
   badgeBand?: CompatBand;
   description?: string;
-  /** extra lines below the emphasis block — CHECK's routine advice */
-  notes?: string[];
+  /** the numbered actions below the emphasis block — CHECK's routine advice */
+  steps?: NextStep[];
   schedule?: ScheduleNode[];
   scheduleLabel?: string;
   actions?: ReactNode;
@@ -155,25 +184,52 @@ export function NextStepsCard({
       <p className={`${styles.sectionLabel} t-overline`}>{label}</p>
 
       <div className={styles.emphasis}>
-        <p className={`${styles.emphasisTitle} t-h6`}>{title}</p>
-        {badge && (
-          <Tag className={styles.badge} data-band={badgeBand}>
-            {badge}
-          </Tag>
-        )}
+        <div className={styles.emphasisHead}>
+          {art}
+          <p className={`${styles.emphasisTitle} t-h6`}>{title}</p>
+          {badge && (
+            <Tag className={styles.badge} data-band={badgeBand}>
+              {badge}
+            </Tag>
+          )}
+        </div>
         {description && (
           <p className={`${styles.emphasisText} t-body3`}>{description}</p>
         )}
       </div>
 
-      {notes && notes.length > 0 && (
-        <ul className={styles.notes}>
-          {notes.map((n) => (
-            <li key={n} className={`${styles.note} t-body3`}>
-              {n}
+      {steps && steps.length > 0 && (
+        <ol className={styles.steps}>
+          {steps.map((step, i) => (
+            <li key={step.id} className={styles.step}>
+              {/* ⚠️ aria-hidden, and the <ol> carries the semantics. A screen
+                  reader already numbers a list item; reading the disc too
+                  announces "1 1 Keep …". */}
+              <span className={`${styles.num} t-label-sm`} aria-hidden="true">
+                {i + 1}
+              </span>
+              <div className={styles.stepBody}>
+                <p className={`${styles.stepTitle} t-h6`}>{step.title}</p>
+                {step.products.length > 0 && (
+                  <div className={styles.stepArt}>
+                    {step.products.map((p, j) => (
+                      <Fragment key={p.id}>
+                        {/* the `+` between the pair, not before the first */}
+                        {j > 0 && (
+                          <span className={`${styles.plus} t-label`} aria-hidden="true">
+                            +
+                          </span>
+                        )}
+                        <ProductThumb product={p} className={styles.thumb} />
+                      </Fragment>
+                    ))}
+                  </div>
+                )}
+                <p className={`${styles.stepText} t-body3`}>{step.body}</p>
+              </div>
             </li>
           ))}
-        </ul>
+        </ol>
       )}
 
       {schedule && schedule.length > 0 && (
