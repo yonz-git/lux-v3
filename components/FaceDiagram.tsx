@@ -23,6 +23,7 @@ import { Chip } from "./Chip";
  * 392x300 ratio in the comment above now belongs to the diagram illustration
  * alone — the card itself grows to fit the chip row under it.
  */
+/* `y` is the pill's CENTRE, not its top edge — see the note below. */
 type Region = { id: string; x: number; y: number; w: number };
 
 /* x/y/w read from Figma, expressed as % of the 392x300 card. `w` is only used
@@ -30,25 +31,46 @@ type Region = { id: string; x: number; y: number; w: number };
    to its label (see .region's transform in FaceDiagram.module.css), not
    stretched to `w`, or a wider diagram (desktop's 920 card vs mobile's 392)
    would blow the pill up into mostly whitespace. */
-/* ⚠️ FOUR y VALUES ARE NUDGED OFF THE FRAME — decided here, NOT IN FIGMA.
+/* ⚠️ THE y VALUES ARE PILL CENTRES, AND THEY ARE SEATED ON THE DOME — NOT IN
+   FIGMA. Two corrections in one pass, and the second is only visible at 1024+.
+
    The comp stacks Forehead at 49 and Eye area at 79, and Around mouth at 183
    and Chin / jaw at 215: a 30-tall pill therefore ENDS exactly where the next
    one starts (49+30 = 79) or clears it by 2 (183+30 = 213). Drawn as flat
    fills that reads as tight; drawn as the pill it is now — hairline, radius
    full, a shadow — two touching pills merge into one lozenge and the edge
-   treatment is what makes the collision visible. The rows keep their reading
-   order and their anchor to the face; each pair is opened to a uniform 8 gap
-   (43/81 and 179/217), which is the gap the cheeks row already had to the eye
-   row. Everything still sits inside the outline: it spans y 40..254 and the
-   lowest pill now bottoms at 247. */
+   treatment is what makes the collision visible. So the stacked rows are opened
+   to 40 units of centre-to-centre pitch — a 30-tall pill plus ~8 of air at 440,
+   which is the gap the cheeks row already had to the eye row.
+
+   THEY ARE ALSO SEATED LOWER THAN THE COMP, because the form under them moved
+   and they did not. Figma's face is a 168x214 ellipse spanning y 40..254; `.form`
+   is a 230x260 dome spanning y 20..280 (see FaceDiagram.module.css for why it
+   had to widen). That dropped the chin of the drawing 26 units without moving
+   the pill that names it, so every row read high on the face and `Around mouth`
+   and `Chin / jaw` — the two with the furthest to fall — left an empty crescent
+   at the bottom of the dome. The centres below are the SAME reading order at
+   the fractions of the new form a face actually has: .16 / .31 / .47 / .72 / .88
+   of y 20..280. Every pill still sits inside the outline at its own width — the
+   dome's half-width at the chin row is 73, against a 77-wide pill centred on it.
+
+   ⚠️ AND `y` IS THE CENTRE, NOT THE TOP — which is what made this a DESKTOP
+   complaint rather than an everywhere one. A pill is 30px tall at every
+   breakpoint while the box it sits in scales (368 wide at 440, 456 at 1024+),
+   so a top-anchored pill's CENTRE drifts up the face as the diagram grows: the
+   30px is a shrinking fraction of a growing box. Measured, chin's centre landed
+   3 units higher at 1024 than at 440 for no reason anyone chose. Anchoring the
+   centre makes the geometry scale-invariant, which is the only way one set of
+   percentages can be honest at both sizes. `.region` translates -50% on BOTH
+   axes now; it already did on x for the same reason. */
 const REGIONS: Region[] = [
-  { id: "Forehead", x: 160 / 392, y: 43 / 300, w: 73 / 392 },
-  { id: "Eye area", x: 162 / 392, y: 81 / 300, w: 68 / 392 },
-  { id: "Cheeks (L)", x: 82 / 392, y: 119 / 300, w: 80 / 392 },
-  { id: "Nose", x: 171 / 392, y: 119 / 300, w: 50 / 392 },
-  { id: "Cheeks (R)", x: 231 / 392, y: 119 / 300, w: 82 / 392 },
-  { id: "Around mouth", x: 146 / 392, y: 179 / 300, w: 101 / 392 },
-  { id: "Chin / jaw", x: 158 / 392, y: 217 / 300, w: 77 / 392 },
+  { id: "Forehead", x: 160 / 392, y: 62 / 300, w: 73 / 392 },
+  { id: "Eye area", x: 162 / 392, y: 102 / 300, w: 68 / 392 },
+  { id: "Cheeks (L)", x: 82 / 392, y: 142 / 300, w: 80 / 392 },
+  { id: "Nose", x: 171 / 392, y: 142 / 300, w: 50 / 392 },
+  { id: "Cheeks (R)", x: 231 / 392, y: 142 / 300, w: 82 / 392 },
+  { id: "Around mouth", x: 146 / 392, y: 208 / 300, w: 101 / 392 },
+  { id: "Chin / jaw", x: 158 / 392, y: 250 / 300, w: 77 / 392 },
 ];
 
 /* ⚠️ THE FACE IS A TERRACED DOME — decided here, NOT IN FIGMA. See `.form` in

@@ -104,11 +104,17 @@
 
 .region {
   position: absolute;
-  /* `left` is the region's CENTRE (see FaceDiagram.tsx), not its edge — the
-     pill is sized to its own label, not to Figma's fixed region width, so a
-     wider diagram (desktop's card is 920 vs mobile's 392, see QuestionScreen
-     .card) can't stretch it into a lot of extra padding-looking whitespace. */
-  transform: translateX(-50%);
+  /* `left` AND `top` are the region's CENTRE (see FaceDiagram.tsx), not its
+     edges — the pill is sized to its own label, not to Figma's fixed region
+     width, so a wider diagram (desktop's card is 920 vs mobile's 392, see
+     QuestionScreen .card) can't stretch it into a lot of extra
+     padding-looking whitespace.
+     ⚠️ THE y HALF MATTERS ONLY BECAUSE THE PILL DOES NOT SCALE. It is 30 tall
+     at every breakpoint while the diagram box grows with the column, so a
+     top-anchored pill's centre climbs the face as the box gets taller — the
+     same percentage describing a different point. Centring both axes makes one
+     set of coordinates mean the same thing at 440 and at 1024+. */
+  transform: translate(-50%, -50%);
   display: inline-flex;
   align-items: center;
   justify-content: center;
