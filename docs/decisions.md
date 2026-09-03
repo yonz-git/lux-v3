@@ -1008,3 +1008,98 @@ glitch rather than a CSS mistake. Only background IMAGES are affected; a flat
     that was already correct moved. `CheckBasket`'s `.barChevron` declares `md`,
     so it was a no-op rule that now applies to the same 24.
 
+
+---
+
+# Not built — the analysis the app is named for
+
+⚠️ **THE CULPRIT FINDER HAS NO ROUTE, AND THE STORE ALREADY HOLDS ITS INPUTS.**
+This is the largest gap between what LUX says it is and what it does, and it is
+recorded here because it is invisible from inside the code: nothing is broken,
+no screen is half-finished, and every file that exists is complete. The feature
+simply was never started.
+
+**Source:** `/Users/yonz/Claude/LUX/lux_wireframe_ai_brief.md` (11 Aug 2026),
+§ "Analysis model to communicate through the UI" and §§ 07–08. That file is the
+product brief, sits outside the repo, and is not referenced by anything in it.
+
+## What the brief specifies
+
+An investigation that ends in a **hypothesis about which product caused a
+reaction** — retrospective, evidence-based, hedged. Two hypothesis types:
+
+- **A. Single-ingredient pattern** — an ingredient appears across products
+  associated with the reaction and is absent, or less supported, in products
+  used without problems.
+- **B. Possible same-routine interaction** — two or more ingredients that may
+  increase irritation when layered or used too often in the same period.
+  Context-dependent possibilities, **not** universal incompatibilities.
+
+Every hypothesis has to weigh introduction and reaction timing, frequency and
+likely overlap, products used **without** problems, unknown concentration,
+formulation and pH and barrier condition as limitations, the recorded skin type
+and tendencies, and whether a known condition makes generic advice inappropriate.
+
+The result screen offers exactly three outcomes — *leading hypothesis found* /
+*several possible explanations remain* / *not enough evidence for a responsible
+conclusion* — with a cautious confidence label (stronger / possible / weak
+pattern), and five reasoning accordions: why this may be relevant, how the skin
+profile was considered, possible same-routine interactions, **evidence against**,
+and uncertain or excluded evidence.
+
+## Why this is not the CHECK tab
+
+`/check/*` is a **different question asked in the opposite direction.** CHECK is
+prospective — "is this product right for my skin?" — and scores a product
+against the user's profile before they use it. The brief's analysis is
+retrospective — "which of the things I already use did this?" — and reasons over
+a timeline. They share the word "check" and an ingredient model, and nothing
+else. Building CHECK did not build this, and the CHECK section above should not
+be read as covering it.
+
+## The inputs are all collected
+
+Every field the analysis needs is already written to `Answers` by a shipped
+screen, and read by nothing that draws a conclusion:
+
+| Input the brief needs | Where it already is | Written by |
+| --- | --- | --- |
+| Symptoms and their locations | `start`, `location` | step 1 |
+| Skin type and tendencies | `tendencies` | step 2 |
+| Known conditions | `conditions`, `conditionsOther` | step 3 |
+| **When the reaction started** | `timing` | step 4 |
+| Products, each with **how long it has been used** | `products` | step 5 |
+| Day-by-day severity, changes, photos | `checkIns` | the daily check-in |
+
+`bucketFor()` sorts products by duration specifically so they can be correlated
+against step 4's flare date — that is stated as the whole point of keeping
+"Not sure" as its own group rather than binning it into Long term (see the
+PRODUCTS section). The correlation is never run.
+
+## ⚠️ AND THE BRIEF FORBIDS THE ONE THING CHECK DOES
+
+> **"Do not show a scientific-looking percentage."**
+
+`CompatCard` renders `{score}%` with a bar whose fill width equals it. The two
+can be reconciled — the rule is written about the *hypothesis* result, where a
+number would dress a judgement up as a measurement, and CHECK's score is a
+model output rather than a claim about causation — but it is a stated product
+stance that the shipped UI takes the opposite position on, and it should be
+settled deliberately rather than by the brief staying unread.
+
+The related rule from the same section is unambiguous either way, and CHECK does
+respect it: *never infer an interaction from ingredient names alone without
+showing uncertainty; prefer "may have increased irritation when used in the same
+period" over claiming two ingredients "clashed".*
+
+## If it gets built
+
+It is not a sixth investigation step. The flow's five steps collect; this
+reports on what they collected, so it belongs off `/investigation` as a result
+view — the same standing `/check/results` has to `/check/new`. It would be the
+first screen in the app whose content is an argument rather than a readout, and
+the accordion order above is the argument's shape, including **evidence
+against**, which no screen in LUX currently has a pattern for.
+
+**Nothing in Figma covers it either** — page 06 has no analysis or result frames
+outside CHECK. Design it there first.

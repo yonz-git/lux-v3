@@ -137,6 +137,14 @@ view keeps the back chevron and still has no track. Nothing outside
 **Two overlays are not routes:** the selfie capture off step 1 and the products
 add tray. Both are `Sheet` overlays, deliberately. See `docs/decisions.md`.
 
+⚠️ **AND ONE FEATURE HAS NO ROUTE AT ALL.** The investigation collects symptoms,
+locations, conditions, a flare date, products with durations and a daily
+severity series — and nothing reads them to produce the hypothesis the product
+brief specifies. `/check/*` is not it: that asks "is this product right for my
+skin?" prospectively, where the analysis asks "which of the things I already use
+did this?" retrospectively. **Do not build it as a sixth step or fold it into
+CHECK** — see "Not built" at the end of `docs/decisions.md` first.
+
 ## The prototype starts EMPTY — and Continue is gated
 
 **Nothing is pre-selected, on any screen.** The Figma frames show options
