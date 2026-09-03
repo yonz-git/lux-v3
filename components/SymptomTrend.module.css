@@ -69,16 +69,30 @@
   background: var(--color-text-on-data);
 }
 
-/* 28 = the y-axis (20) plus the chart's gap (8), so the labels start where the
-   plot does rather than where the card does. */
+/* ⚠️ POSITIONED, NOT SPACED — see `xLabelStyle`. The labels are a THINNED
+   subset of the points now (at most five, whatever the series length), and
+   `space-between` distributes whatever it is given: drop a label and the
+   remaining ones slide off the dots they name.
+
+   32 = the y-axis (20) plus the chart's gap (8) plus the plot's own 4 inset, so
+   `left: 0` here is x=0 in the plot rather than the edge of the card; 4 on the
+   right is the same inset at the other end. It was 28, which put every label 4
+   to the left of its point — invisible while the labels were only approximately
+   aligned anyway, and wrong now that they are placed on the values.
+
+   16 is the caption's own line box (12/16), the same box the y-axis ticks use,
+   so reserving it costs nothing and keeps the card's height off the content. */
 .xAxis {
-  display: flex;
-  align-items: flex-start;
-  justify-content: space-between;
-  margin: 0;
-  padding-left: 28px;
+  position: relative;
+  height: 16px;
+  margin: 0 4px 0 32px;
   color: var(--color-text-on-data-muted);
   white-space: nowrap;
+}
+
+.xLabel {
+  position: absolute;
+  top: 0;
 }
 
 .summary {

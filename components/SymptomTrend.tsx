@@ -1,3 +1,4 @@
+import type { CSSProperties } from "react";
 import styles from "./SymptomTrend.module.css";
 import { DataCard } from "./DataCard";
 import { SEVERITY_MAX, type CheckIn, trendSummary } from "@/lib/progress";
@@ -51,6 +52,8 @@ export function SymptomTrend({
     x: checkIns.length > 1 ? (i / (checkIns.length - 1)) * 100 : 50,
     y: 102 - (c.severity / SEVERITY_MAX) * 94,
   }));
+
+  const labelled = axisLabelIndices(points.length);
 
   return (
     <DataCard className={className} aria-labelledby="trend-title">
@@ -113,11 +116,17 @@ export function SymptomTrend({
           </div>
 
           <p className={styles.xAxis} aria-hidden="true">
-            {points.map((p) => (
-              <span key={p.date} className="t-caption">
-                {shortDate(p.date)}
-              </span>
-            ))}
+            {points.map((p, i) =>
+              labelled.has(i) ? (
+                <span
+                  key={p.date}
+                  className={`${styles.xLabel} t-caption`}
+                  style={xLabelStyle(i, points.length, p.x)}
+                >
+                  {shortDate(p.date)}
+                </span>
+              ) : null
+            )}
           </p>
 
           <ul className="visually-hidden">
@@ -133,6 +142,58 @@ export function SymptomTrend({
       {summary && <p className={`${styles.summary} t-body3`}>{summary}</p>}
     </DataCard>
   );
+}
+
+/**
+ * ⚠️ THE AXIS LABELS AT MOST FIVE DATES, WHATEVER THE SERIES DOES — first,
+ * last, and evenly spaced between. NOT IN FIGMA, because the comp has exactly
+ * five points and never had to decide.
+ *
+ * The chart plots a point per check-in, and the seeded demo went from five
+ * check-ins to eleven (see `DEMO_OFFSETS`) — a real fortnight of daily
+ * check-ins is more like fifteen. A label per point does not survive that: at
+ * 440 the plot is about 316 wide and "Aug 16" sets at roughly 38, so eleven
+ * labels want 418 in 316 and `space-between` simply runs them into each other.
+ * A date axis is read for its RANGE and its direction; it does not need to name
+ * every point, and the per-point figures are in the visually-hidden list above
+ * for anyone who does.
+ *
+ * Five is the comp's own count, and it is the mobile budget — 316 / 5 leaves
+ * about 25 of air between labels. Desktop is 532 wide and could carry ten, but
+ * the breakpoints have to be clones, so both get five.
+ */
+const MAX_X_LABELS = 5;
+
+function axisLabelIndices(count: number): Set<number> {
+  if (count <= MAX_X_LABELS) {
+    return new Set(Array.from({ length: count }, (_, i) => i));
+  }
+
+  const step = (count - 1) / (MAX_X_LABELS - 1);
+  return new Set(
+    Array.from({ length: MAX_X_LABELS }, (_, i) => Math.round(i * step))
+  );
+}
+
+/**
+ * Each label is centred on its own dot, except the two ends.
+ *
+ * ⚠️ THIS USED TO BE `justify-content: space-between`, which aligned only
+ * because every point was labelled — drop one and flex redistributes the rest,
+ * so a label would sit over a dot it does not name. Positioning each one at the
+ * SAME `x` the dot uses makes the alignment a fact rather than a coincidence.
+ * The first and last are flushed to the plot's edges instead of centred, which
+ * is what `space-between` did for them and what the comp draws; centring them
+ * would hang half of each outside the card.
+ */
+function xLabelStyle(
+  i: number,
+  count: number,
+  x: number
+): CSSProperties {
+  if (i === 0) return { left: 0 };
+  if (i === count - 1) return { right: 0 };
+  return { left: `${x}%`, transform: "translateX(-50%)" };
 }
 
 /** "Aug 2" — the comp's x-axis format. */

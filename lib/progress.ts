@@ -5,14 +5,14 @@
  * (552:1236 / 554:1252), documented by `HANDOFF — INVESTIGATION & PROGRESS`
  * (559:1376).
  *
- * ⚠️ THE CHECK-IN HISTORY IS A PLACEHOLDER, AND IT HAS TO BE. The Progress
- * screens are READOUTS of daily check-ins — the calendar marks the days you
- * checked in and the chart plots the severity you reported. Those check-ins are
- * written by the CHECK section, which is not built (its nav item is still inert
- * in `BottomNav`, and `Check-in chat` has no route). So there is no real series
- * to read, and the alternative to seeding one is a screen that renders an empty
- * calendar and a chart with no line — which shows nothing about whether the
- * design works.
+ * ⚠️ THE CHECK-IN HISTORY IS SEEDED ONLY WHILE THE SCREEN IS THE DEMO. The
+ * Progress screens are READOUTS of daily check-ins — the calendar marks the
+ * days you checked in and the chart plots the severity you reported. Something
+ * writes those now: the daily check-in ships at `/progress/check-in`, so a REAL
+ * investigation plots exactly what the user recorded and nothing else. The seed
+ * survives for the demo path alone, because the alternative on a portfolio walk
+ * is a screen that renders an empty calendar and a chart with no line — which
+ * shows nothing about whether the design works. See `checkInsFor`.
  *
  * The seed is anchored to a start date and clipped at today, and everything the
  * screen states about it — the day count, the percentage, "3 days ago" — is
@@ -38,12 +38,12 @@ import type { SavedProduct } from "./products";
  * `changes` is turn 2's multi-select ("Less redness", "No change", …).
  * `note` and `photo` are turn 3's optional extras.
  *
- * ⚠️ EVERYTHING PAST `severity` IS WRITTEN BUT NOT YET READ, and that is the
- * comp's own design rather than data invented here: the handoff places
- * `Check-in detail` in the PROGRESS section as "a historical record opened from
- * the Progress calendar", and that screen is what displays them. It has no
- * route yet — see the note on `CheckInCalendar`, which is why the calendar's
- * discs are still plain cells rather than links. Build the two together.
+ * ⚠️ EVERYTHING PAST `severity` IS READ BY `Check-in detail`, and by nothing
+ * else. The handoff places that screen in the PROGRESS section as "a historical
+ * record opened from the Progress calendar"; it has a route now
+ * (`/progress/check-in/<iso>`) and the calendar's discs are the links to it, so
+ * these three fields went from written-and-unread to the whole content of a
+ * screen. Which is why the SEED carries them too — see `demoExtras`.
  */
 export type CheckIn = {
   date: IsoDate;
@@ -92,10 +92,10 @@ export function investigationStart(a: Answers): Date | null {
       nothing, so it prerenders safely and never mismatches. The real-answer
       branch may call `new Date()` freely: it is unreachable until the user has
       answered step 4, which can only happen client-side.
-   2. Fidelity. Anchored to 2 Aug 2026 the seeded offsets land on Aug 2, 5, 9,
-      11 and 14 — exactly the x-axis the comp draws — under an "August 2026"
-      calendar header, exactly the comp's. A relative clock would drift off
-      both.
+   2. Fidelity. Anchored to 2 Aug 2026 the seeded offsets put the comp's own
+      five days on Aug 2, 5, 9, 11 and 14 — exactly the points it plots — under
+      an "August 2026" calendar header, exactly the comp's. A relative clock
+      would drift off both.
 
    The cost is that the ringed "today" is a fixed day rather than the real one.
    For a prototype whose calendar is mock data either way, matching the design
@@ -117,10 +117,11 @@ export function demoStart(): Date {
  *
  * The comp rings 11 Aug as today, but it also marks a check-in on the 14th and
  * captions the button "Last check-in: 3 days ago", and no single day satisfies
- * all three. 15 days after the start does: all five seeded check-ins fall in the
- * past (Aug 2, 5, 9, 11, 14 — the comp's exact chart labels), the last of them
- * is three days ago as captioned, and today stays a ring on a day with no disc,
- * which is the picture the comp is going for.
+ * all three. 15 days after the start does: every seeded check-in falls in the
+ * past, the last of them (14 Aug) is three days ago as captioned, and today
+ * stays a ring on a day with no disc, which is the picture the comp is going
+ * for. The comp's own five — Aug 2, 5, 9, 11, 14 — are all still in the series;
+ * see `DEMO_OFFSETS` for the four filled in between them.
  */
 export function demoToday(): Date {
   return new Date(2026, 7, 17);
@@ -167,10 +168,41 @@ export function dayNumber(start: Date, today: Date): number {
 }
 
 /* The shape of the seeded series — offsets in days from the start date, and the
-   severity reported on each. Chosen to match the comp's picture (five points
-   descending across roughly a fortnight) rather than to be interesting. */
-const DEMO_OFFSETS = [0, 3, 7, 9, 12];
-const DEMO_SEVERITY = [9, 7, 5, 3, 1];
+   severity reported on each.
+ *
+ * ⚠️ IT WAS FIVE POINTS AND IS NOW NINE, AND THE COMP'S FIVE ARE STILL IN IT
+ * at their original severities: offsets 0, 3, 7, 9 and 12 are Aug 2, 5, 9, 11
+ * and 14 at 9, 7, 5, 3 and 1, which is the chart the comp draws. The other four
+ * are filled in between them.
+ *
+ * The reason is that the calendar is not a chart. Five discs on a 31-day grid
+ * is a month in which the user checked in once every three days, under a
+ * heading that calls this a DAILY check-in — and now that every disc is a link
+ * to `Check-in detail`, five discs is also five reachable records out of a
+ * fortnight. A prototype has to be walkable: a reader clicking around the
+ * calendar should land on a record most times they try, not one time in three.
+ *
+ * ⚠️ EVERY STEP IS 0, ±2 OR ±4 — the deltas `SKIN_TREND_CHOICES` actually
+ * offers. A seeded series that the app's own check-in chat could not have
+ * produced is a readout inventing data the writer cannot write, and it would
+ * show up the moment anyone compared a seeded day against one they recorded.
+ *
+ * ⚠️ IT IS NOT MONOTONIC ANY MORE, ON PURPOSE. Offset 5 goes UP (5 → 7), and
+ * offsets 1 and 10 hold flat. `demoChanges` derives its direction from the
+ * step, so those are the only seeded days that can produce "More redness" and
+ * "No change" — with a purely descending series every one of the nine detail
+ * screens read "Less redness, Less itching", i.e. the screen demonstrating the
+ * record could only ever show a third of what the record holds. The trend still
+ * ends where it did: 9 → 1, "Improving, symptoms decreased 89%".
+ *
+ * ⚠️ IT STILL ENDS AT OFFSET 12, AND THAT IS A CONSTRAINT, NOT A GAP. 12 is
+ * 14 Aug, three days before `demoToday`, which is what makes the comp's caption
+ * "Last check-in: 3 days ago" true — one of the three facts that pins the demo
+ * clock at all (see `demoToday`). Filling 13 and 14 flipped the caption to
+ * "yesterday" and quietly broke the frame it was matching. Fill BETWEEN the
+ * comp's days; do not extend past the last one. */
+const DEMO_OFFSETS = [0, 1, 3, 4, 5, 7, 9, 10, 12];
+const DEMO_SEVERITY = [9, 9, 7, 5, 7, 5, 3, 3, 1];
 
 /**
  * The seeded check-in history — see the file header.
@@ -191,7 +223,7 @@ export function demoCheckIns(start: Date, today: Date): CheckIn[] {
       ),
       severity: DEMO_SEVERITY[i],
       /* the rest of the record — see DEMO_EXTRAS */
-      ...demoExtras(i),
+      ...demoExtras(i, offset),
     })
   );
 }
@@ -214,24 +246,55 @@ export function demoCheckIns(start: Date, today: Date): CheckIn[] {
  * previous point and therefore no direction, which is also true of a real first
  * check-in.
  *
- * ⚠️ THE NOTE AND THE PHOTO SIT ON ONE DAY, and it is the comp's own: offset 3
- * is 5 Aug 2026, `Check-in detail`'s date, and the note is the comp's sentence.
- * Every other seeded day carries neither, because a real fortnight of check-ins
- * is not a fortnight of written notes — and the screen has to render the
- * absence as readily as the presence.
+ * ⚠️ THE NOTE SITS ON ONE DAY, and it is the comp's own: offset 3 is 5 Aug
+ * 2026, `Check-in detail`'s date, and the note is the comp's sentence. Every
+ * other seeded day carries none, because a real fortnight of check-ins is not a
+ * fortnight of written notes — and the screen has to render the absence as
+ * readily as the presence.
+ *
+ * ⚠️ THE PHOTO USED TO SIT ON THAT SAME DAY AND NOW SITS ON EVERY ONE. A note
+ * and a photo are not the same cost: a note is typing a sentence, which is why
+ * one day in nine is honest, while a photo is one tap on the capture the chat
+ * already offers. For a FLARE investigation it is also the point —
+ * photographing the affected area IS the record the whole app exists to
+ * compare, so a day-by-day series with gaps in it is a comparison with gaps in
+ * it. Coupled to the note, the PHOTOS card and `CheckInPhotoArt` with it
+ * appeared on exactly one screen in the app.
+ *
+ * ⚠️ IT WAS BRIEFLY DERIVED — a photo only on days that reported a CHANGE,
+ * leaving offsets 1 and 10 bare so the seed exercised the absence as well as
+ * the presence. Overruled deliberately: an unbroken photo diary is the more
+ * useful demo, and the absent case is not lost, because `photo` is optional and
+ * a real user who checks in without tapping "Take a photo" still produces it.
+ * The seed no longer covers that path — if the empty state needs a screenshot,
+ * walk a check-in rather than reading it off `/progress`.
  */
-const DEMO_NOTE_OFFSET_INDEX = 1; /* DEMO_OFFSETS[1] === 3 → 5 Aug 2026 */
+/**
+ * ⚠️ ANCHORED TO THE OFFSET, NOT TO A POSITION IN THE ARRAY. This was
+ * `DEMO_NOTE_OFFSET_INDEX = 1`, i.e. "whichever day happens to be second" —
+ * true of 5 Aug only while `DEMO_OFFSETS` began `[0, 3, …]`. Widening the
+ * series moved the comp's own note onto 3 Aug without touching this line, and
+ * nothing would have failed: the detail screen would simply have drawn the
+ * NOTES and PHOTOS cards on the wrong day. The offset is the fact being
+ * declared, so declare the offset. */
+const DEMO_NOTE_OFFSET = 3; /* 5 Aug 2026 — `Check-in detail`'s own date */
 const DEMO_NOTE =
   "Patches on cheeks seem slightly less red than yesterday. Still itchy in the evening.";
 
-function demoExtras(i: number): Partial<CheckIn> {
+/* ⚠️ THE SAME SENTINEL `CheckIn.photo` IS DOCUMENTED TO HOLD AND THE CHAT
+   WRITES (`components/CheckIn.tsx`) — every capture surface in LUX is a
+   placeholder, so this records THAT a photo was taken and never an image. The
+   picture itself is drawn by `CheckInPhotoArt` from the DATE, so seven seeded
+   days give seven different captures without seven assets. */
+const DEMO_PHOTO = "captured";
+
+function demoExtras(i: number, offset: number): Partial<CheckIn> {
   const changes = demoChanges(i);
 
   return {
     ...(changes ? { changes } : {}),
-    ...(i === DEMO_NOTE_OFFSET_INDEX
-      ? { note: DEMO_NOTE, photo: "captured" }
-      : {}),
+    photo: DEMO_PHOTO,
+    ...(offset === DEMO_NOTE_OFFSET ? { note: DEMO_NOTE } : {}),
   };
 }
 

@@ -298,7 +298,7 @@ answers break the chart — sound reasoning, wrong conclusion, because it confus
 the question with the storage.
 
 **⚠️ THE BASELINE IS THE SERIES THE CHART PLOTS, NOT `answers.checkIns`.** In
-demo mode the store holds nothing — the five seeded check-ins live in
+demo mode the store holds nothing — the nine seeded check-ins live in
 `lib/progress.ts` and are merged by `checkInsFor` — so reading the store found no
 previous severity, `severityAfter` fell back to mid-scale, and "Slightly better"
 after a seeded 1 plotted a **3**. The line went UP directly under the words
@@ -468,10 +468,41 @@ a severity, which is all `/progress` reads — so on the demo path every seeded 
 opened on a detail screen with one card on it. `changes` is now computed from the
 direction the severity moved (the same fact turn 1 asks for) with the demo
 profile's own symptoms, so a seeded day cannot claim "Less redness" on a day its
-own plotted point went up. The note and the photo sit on ONE day, 5 Aug 2026 —
-the comp's own date and its own sentence — because a fortnight of check-ins is
-not a fortnight of written notes, and the screen has to render the absence as
-readily as the presence.
+own plotted point went up.
+
+**⚠️ AND IT GREW AGAIN — FIVE SEEDED DAYS ARE NINE.** Five discs on a 31-day
+grid is a month in which the user checked in every third day, under a heading
+that calls this a DAILY check-in; now that every disc is a link, it was also
+five reachable records out of a fortnight, so a reader clicking the calendar
+landed on a record one time in three. The comp's five (Aug 2, 5, 9, 11, 14) are
+still there at their original severities and four are filled in between. Two
+constraints hold the shape: **every step is 0, ±2 or ±4**, the only deltas
+`SKIN_TREND_CHOICES` offers, so the seed is a series the app's own chat could
+have produced; and **it still ends at offset 12**, because that is what makes
+"Last check-in: 3 days ago" true — one of the three facts pinning `demoToday`.
+Fill BETWEEN the comp's days, never past the last one. It is also no longer
+monotonic — one day goes up and two hold flat — because `demoChanges` derives
+its direction from the step, so a purely descending series made all nine detail
+screens read "Less redness, Less itching".
+
+**⚠️ THE NOTE SITS ON ONE DAY; THE PHOTO SITS ON ALL NINE.** They were coupled
+and are not the same cost. The note is 5 Aug 2026 — the comp's own date and its
+own sentence — because a fortnight of check-ins is not a fortnight of written
+notes. A photo is one tap on a capture the chat already offers, and for a FLARE
+investigation photographing the affected area IS the record the whole app exists
+to compare, so a day-by-day series with gaps in it is a comparison with gaps in
+it. Coupled to the note, the PHOTOS card and `CheckInPhotoArt` with it appeared
+on exactly one screen in the app. `CheckInPhotoArt` keys tone and blush on the
+DATE, so nine seeded days give nine different captures and **no assets**.
+
+⚠️ **THE SEED NO LONGER EXERCISES THE EMPTY PHOTOS CARD.** An intermediate
+version derived the days — a photo only where the check-in reported a CHANGE,
+leaving the two "No change" days bare so the absence was rendered as readily as
+the presence. Overruled deliberately: an unbroken photo diary is the more useful
+demo. The code path is not lost — `photo` is optional and a real user who checks
+in without tapping "Take a photo" still produces the card-less state, and
+`CheckInDetail` still draws nothing rather than an empty well. But it is no
+longer reachable by reading `/progress`; walk a check-in to see it.
 
 **⚠️ THE TEXT IS DARK.** Both frames write `text/on-data` as white; that token is
 redefined globally in `globals.css` (see SURFACE SYSTEM B above) and this screen
