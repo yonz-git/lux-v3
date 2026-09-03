@@ -7,6 +7,7 @@ import { Button } from "./Button";
 import { Orb } from "./Orb";
 import { ChatBubble } from "./ChatBubble";
 import { SkinProfileStrip } from "./SkinProfileStrip";
+import { ChevronRightIcon } from "./icons";
 import { useInvestigation } from "./InvestigationProvider";
 import { skinProfile } from "@/lib/demo";
 
@@ -73,8 +74,16 @@ export function CheckScreen() {
         <Button href="/check/new" className={styles.cta}>
           Start a check
         </Button>
+        {/* ⚠️ THE TRAILING CHEVRON IS NOT IN FIGMA. 601:1952 draws this as a
+            bare text link, which reads as the one thing on the screen that
+            might not go anywhere — the CTA above it is a filled button and
+            every OTHER row in CHECK that pushes a view (`CheckHistory`'s own
+            rows) ends in this exact glyph. Same `ChevronRightIcon` at
+            `icon-sm`, currentColor, so it takes `text/brand` from the link and
+            cannot drift from it. Nothing else about the link changed. */}
         <Link href="/check/history" className={`${styles.link} t-body3`}>
-          View previous checks
+          <span className={styles.linkLabel}>View previous checks</span>
+          <ChevronRightIcon className={styles.linkArrow} />
         </Link>
       </div>
     </HubScreen>

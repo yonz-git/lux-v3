@@ -96,19 +96,51 @@
    until it is interacted with. A text link is right here: it is the secondary
    path off a screen whose primary action is already a Button. */
 .link {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-xs); /* 4 */
   color: var(--color-text-brand);
   text-decoration: none;
   transition: opacity var(--duration-fast) var(--ease-standard);
 }
 
+/* ⚠️ THE UNDERLINE IS ON THE LABEL ONLY. Text decoration propagates into flex
+   items, so underlining `.link` would draw the rule under the glyph as well — a
+   chevron with a line struck through its foot. The label carries it; the arrow
+   takes the link's `text/brand` through currentColor and fades with it.
+
+   It does NOT move on hover: that would be a transform, and nothing in LUX
+   translates on interaction.
+
+   ⚠️ AND THE SIZE NEEDS `!important`, WHICH IS NOT A STYLE CHOICE. Every glyph
+   in `icons.tsx` writes its own `--size-icon-md` as an INLINE style, and an
+   inline style beats a module class outright — so `CheckHistory`'s `.chevron`
+   and `CheckInCalendar`'s `.arrowIcon` both declare `--size-icon-sm` and both
+   silently render 24. Here the chevron sits on a 16px Body 3 line, where 24 is
+   a glyph half again the height of the words beside it. Measured at 440 and at
+   1440. **The real fix is to move those sizes out of the inline `style` object
+   in `icons.tsx` and take the three overrides with it** — that touches every
+   icon in the app, so it is not done in passing here. */
+.linkArrow {
+  flex: none;
+  width: var(--size-icon-sm) !important; /* 20 */
+  height: var(--size-icon-sm) !important;
+}
+
 .link:hover {
   opacity: 0.7;
+}
+
+.link:hover .linkLabel {
   text-decoration: underline;
 }
 
 @media (hover: none) {
   .link:hover {
     opacity: 1;
+  }
+
+  .link:hover .linkLabel {
     text-decoration: none;
   }
 }
