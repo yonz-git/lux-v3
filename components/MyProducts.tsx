@@ -75,10 +75,10 @@ import {
  * a section of this list. The chevron rotates instead of pointing right — the
  * disclosure glyph the app already uses — and the cards that open ARE the
  * pushed view's cards, lifted into `ProductAccordionCard` unchanged. Nothing
- * else from that screen is lost: its inert `Edit` header action goes (the
- * per-card `Edit` is the same dead link and survives), and its `Add more
- * products` row moves here — which is also where the hub was missing one, since
- * the filled state offered no way to add a product at all.
+ * else from that screen is lost: its inert `Edit` header action goes (as has
+ * the per-card `Edit`, the same dead link — see `ProductAccordionCard`), and
+ * its `Add more products` row moves here — which is also where the hub was
+ * missing one, since the filled state offered no way to add a product at all.
  *
  * ⚠️ ADDING OPENS THE TRAY IN PLACE — IT DOES NOT GO BACK INTO THE FLOW. Both
  * of this screen’s add affordances (the empty state’s `Add products` and the

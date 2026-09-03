@@ -36,16 +36,19 @@ import { fullName, type SavedProduct } from "@/lib/products";
  * glyph in both states, rotated; `chevron-up` in Figma is literally a
  * `chevron-down` instance at 180°.
  *
- * ⚠️ "Edit" HAS NO DESTINATION. The design defines no edit screen — not in the
- * comps and not in the wireframes — so it is inert here, deliberately, rather
- * than being wired to an invented flow. "Remove" is real: it is the one card
- * action the store can actually perform. This is on the open-questions list.
+ * ⚠️ "Edit" IS GONE — NOT IN FIGMA. 581:1593 draws Edit beside Remove, and it
+ * had no destination: the design defines no edit screen, not in the comps and
+ * not in the wireframes, so it sat here inert. A control that does nothing when
+ * tapped is worse than an absent one, and it was the FIRST of the two, so the
+ * card led with the dead action and put the working one second. "Remove" is the
+ * one card action the store can actually perform, and it is now the only one.
+ * Raise an edit flow in Figma before this comes back.
  *
  * ⚠️ THE PANEL'S CONTENT IS `ProductDetails`, WHICH `/check/new` ALSO OPENS.
  * Added / Brand / Size / Ingredients, in that order and with the ingredient
  * list behind its own disclosure — the reasoning for all of it lives on that
  * component. What stays here is what is particular to the HUB's card: the
- * frosted surface, the header, and the Edit / Remove actions.
+ * frosted surface, the header, and the Remove action.
  *
  * The design system has no accordion component; this is composed from the
  * frosted card recipe. It is on the missing-from-the-DS list.
@@ -84,9 +87,6 @@ export function ProductAccordionCard({
           <ProductDetails product={product} />
 
           <div className={styles.actions}>
-            <button type="button" className={`${styles.edit} t-label tap-target`}>
-              Edit
-            </button>
             <button
               type="button"
               className={`${styles.remove} t-label tap-target`}

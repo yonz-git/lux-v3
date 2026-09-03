@@ -14,7 +14,7 @@ import { formatAdded, type CatalogProduct } from "@/lib/products";
  * own products now and the two must not drift — this is a readout of the same
  * five fields, and a screen that ordered them differently or dropped one would
  * make the same product look like two different records depending on which tab
- * you found it in. The CARDS still differ (the hub's carries Edit/Remove, the
+ * you found it in. The CARDS still differ (the hub's carries Remove, the
  * check's carries the Add control); the record does not.
  *
  * ⚠️ `Added` LEADS, AND IT IS NOT IN FIGMA. 581:1593 orders them Brand, Size,

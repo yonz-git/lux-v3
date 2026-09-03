@@ -1118,8 +1118,8 @@ main[tabindex="-1"]:focus-visible {
    Target size — WCAG 2.5.8 (AA): an interactive target is at least 24x24.
 
    LUX's inline text controls are drawn smaller than that on purpose: the
-   `Edit` in a hub header is 25x20 in the comp, and the `Edit` / `Remove` pair
-   on an accordion card is 20 tall. Growing the box would move the design, so
+   `Edit` in a hub header is 25x20 in the comp, and the `Remove` on an
+   accordion card is 20 tall. Growing the box would move the design, so
    the TARGET grows instead — a pseudo-element expands the clickable area
    outwards while the text stays exactly where Figma puts it. 2.5.8 measures the
    target, not the ink.
