@@ -11,6 +11,9 @@
  * `animateIn` plays the "Spiral Assemble" entrance (Figma 670:31, Brand page) on
  * the sphere as it appears — see `.orb-assemble` in globals.css.
  *
+ * `halo` wraps the orb so a hover-only line of light can run along its rim —
+ * see `.orb-halo` in globals.css. Welcome's orb only, and ⚠️ NOT IN FIGMA.
+ *
  * The timeline has THREE tracks and the mark is three paths, so each track
  * drives one part: mark1 <- L, mark2 <- U, mark3 <- X, with the authored
  * 0 / 120 / 240ms stagger. The sphere assembles underneath them.
@@ -24,6 +27,7 @@ export function Orb({
   className,
   animateIn,
   thinking,
+  halo,
 }: {
   size?: string;
   className?: string;
@@ -36,8 +40,16 @@ export function Orb({
    * in globals.css — the keyframes MUST live there, not in a module.
    */
   thinking?: boolean;
+  /**
+   * ⚠️ NOT IN FIGMA. Wrap the orb so a hover-only line of light can travel
+   * along its rim — Welcome's orb only. It has to be a wrapper: the sphere
+   * fills its 129x129 viewBox to within 8px and the group is clipped to that
+   * box, so a light straddling the edge has nowhere to go INSIDE the SVG. See
+   * `.orb-halo` in globals.css; the keyframes MUST live there, not in a module.
+   */
+  halo?: boolean;
 }) {
-  return (
+  const orb = (
     <svg
       width={size}
       height={size}
@@ -177,4 +189,9 @@ export function Orb({
       </defs>
     </svg>
   );
+
+  /* The halo layer is the wrapper's own ::after, so the exported SVG stays
+     byte-identical and every other orb in the app renders exactly one element,
+     as it did before. */
+  return halo ? <span className="orb-halo">{orb}</span> : orb;
 }

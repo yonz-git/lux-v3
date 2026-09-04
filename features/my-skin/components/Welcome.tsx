@@ -35,7 +35,7 @@ export function Welcome() {
               not. It duplicates the bubble's text, so the bubble itself is
               hidden from assistive tech to avoid announcing it twice. */}
           <h1 className="visually-hidden">How is your skin feeling today?</h1>
-          <Orb size="var(--size-orb-lg)" animateIn />
+          <Orb size="var(--size-orb-lg)" animateIn halo />
           {/* centred rather than left, because Welcome is a hero composition —
               see the note in ChatBubble.module.css */}
           {/* the two bubbles occupy the same grid cell and cross-fade — see

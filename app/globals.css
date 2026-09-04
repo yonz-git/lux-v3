@@ -1006,6 +1006,142 @@ main[tabindex="-1"]:focus-visible {
 }
 
 /* ============================================================================
+   The orb HALO — a hover-only line of light travelling around the sphere's rim.
+
+   ⚠️ NOT IN FIGMA, AND ON WELCOME ONLY (`<Orb halo />`). Welcome's orb is the
+   app's brand moment and the only orb on a screen with nothing else to touch,
+   so it answers the pointer. Nowhere else does.
+
+   ⚠️ IT IS OUTSIDE THE SVG BECAUSE IT HAS TO BE. The sphere fills its 129x129
+   viewBox to within 8px and the whole group is clipped to that box, so a light
+   running the rim has nowhere to go inside the export. Hence the wrapper in
+   Orb.tsx and this ::after, which is free to straddle the edge.
+
+   ⚠️ IT IS AN ARC ON THE RIM, AND THAT WAS ASKED FOR DIRECTLY. The note on the
+   thinking orb above argues a travelling ring is a progress idiom and keeps one
+   off THAT screen, where it would compete with a literal progress bar. Welcome
+   has no progress to confuse it with, this one is hover-only, and it takes 8
+   seconds to go round — far too slow to read as a spinner. The argument still
+   stands where it was made; it does not reach this screen.
+
+   THE GEOMETRY, since the numbers look arbitrary — every one is a ratio, so the
+   line lands on the rim at any orb size:
+     · the layer is inset 4%, so its radius is 0.46 of the orb box;
+     · the sphere's own rim is at 0.442 (r=57 in a 129 box);
+     · the mask keeps 94%..100% of the layer's radius, i.e. 0.432..0.46.
+   The band therefore STRADDLES the rim rather than sitting inside or outside
+   it, which is what makes the light read as being ON the edge. The mask's inner
+   stops feather it, so the line has a soft bleed onto the sphere and no
+   second, hard border of its own.
+
+   The conic gradient is a COMET, not a segment: transparent at 0deg, full by
+   60deg, gone by 78deg. Rotating clockwise puts the short end forward, so the
+   light has a bright head and a long tail — a line travelling, rather than a
+   block of arc sliding round.
+
+   THE MOTION IS ALWAYS RUNNING, THE OPACITY IS WHAT HOVER SWITCHES. Starting
+   the rotation on hover would have the light jump back to 12 o'clock every time
+   the pointer arrived; leaving it turning under an opacity of 0 means it fades
+   in wherever it had got to, and fades out still moving. One transform on one
+   element, so the cost of leaving it running is nothing next to the canvas
+   shader this screen already runs.
+
+   8s is deliberately far slower than any motion token: those size transitions
+   the user CAUSED, and this is ambient.
+
+   `prefers-reduced-motion` is handled globally: it collapses the duration and
+   forces one iteration, so the rotation lands back at 0deg (its resting value)
+   and hovering simply reveals a still arc across the top-right of the rim.
+   ========================================================================== */
+
+@keyframes lux-orb-halo {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+.orb-halo {
+  display: block;
+  position: relative;
+  /* the SVG carried `flex: none` as a flex item; the wrapper is the flex item
+     now, so it inherits that job or the orb squashes on a short viewport */
+  flex: none;
+  /* the wrapper must measure exactly the orb and nothing more, or it changes
+     the flex gap above the bubbles */
+  line-height: 0;
+  /* ⚠️ THIS IS THE HOVER REGION, NOT DECORATION — the wrapper paints nothing.
+     Hit-testing is clipped by border-radius, so without it the corners of the
+     square box are live: the light switched on with the pointer 20px clear of
+     the sphere, and dragging across a corner flicked it on and off. That
+     flicker is most of what read as a snap. */
+  border-radius: var(--radius-full);
+}
+
+.orb-halo::after {
+  content: "";
+  position: absolute;
+  inset: 4%;
+  border-radius: var(--radius-full);
+  /* the light itself — effect/rim-highlight is the token for exactly this, the
+     white a LUX surface catches on its edge */
+  background: conic-gradient(
+    from 0deg,
+    transparent 0deg,
+    color-mix(in srgb, var(--color-effect-rim-highlight) 55%, transparent) 44deg,
+    var(--color-effect-rim-highlight) 60deg,
+    transparent 78deg
+  );
+  /* keep only the outermost band, feathered inwards so the line bleeds onto the
+     sphere instead of drawing a second hard edge beside its own */
+  -webkit-mask: radial-gradient(
+    closest-side,
+    transparent 76%,
+    rgba(0, 0, 0, 0.35) 90%,
+    #000 96%,
+    #000 100%
+  );
+  mask: radial-gradient(
+    closest-side,
+    transparent 76%,
+    rgba(0, 0, 0, 0.35) 90%,
+    #000 96%,
+    #000 100%
+  );
+  /* the orb is not a control and the halo must never eat a pointer that is
+     really aimed at the canvas behind it */
+  pointer-events: none;
+  opacity: 0;
+  /* ⚠️ THE FADE IS ASYMMETRIC, AND THIS IS THE VALUE ON THE WAY OUT. The light
+     answers the pointer promptly and then TRAILS OFF rather than being switched
+     off — an equal in-and-out on a thin bright arc reads as a snap at both
+     ends. 900ms is past the board's slowest token, deliberately: board 04b
+     sizes transitions the user CAUSED, and letting go of an ambient light is
+     not one. See the hover rule below for the way in. */
+  transition: opacity 900ms var(--ease-standard);
+  /* the layer is a conic gradient under a mask, which is expensive to rasterise
+     the first time. At opacity 0 the compositor has no reason to have done it,
+     so the first hover spent a frame or two on it and the fade started late and
+     abruptly. This keeps the layer on its own composited surface. */
+  will-change: opacity;
+  animation: lux-orb-halo 8000ms linear infinite;
+}
+
+/* ⚠️ HOVER-CAPABLE POINTERS ONLY. On touch the state sticks after the tap, and
+   a light that latches on because the user once brushed the orb reads as a
+   render bug rather than a response. */
+@media (hover: hover) {
+  .orb-halo:hover::after {
+    opacity: 1;
+    /* the way IN — quicker than the way out, so the orb feels responsive
+       without the light arriving all at once */
+    transition-duration: var(--duration-slower);
+  }
+}
+
+/* ============================================================================
    The AI's question — Welcome
 
    Lands LAST, after the orb has finished assembling (940ms) and after the CTA.
