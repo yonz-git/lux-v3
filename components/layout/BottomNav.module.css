@@ -1,12 +1,12 @@
 /* Bottom-Nav-Bar — Figma component set 410:258 (Active x Size, 8 variants).
-   The nav is FIXED: identical placement on every screen, 24px from the bottom,
-   horizontally centred, above everything else. */
+   The nav is FIXED: identical placement on every screen, `--nav-inset-bottom`
+   from the bottom, horizontally centred, above everything else. */
 
 .nav {
   position: fixed;
   left: 50%;
   transform: translateX(-50%);
-  bottom: var(--space-2xl);
+  bottom: var(--nav-inset-bottom);
   z-index: var(--z-nav);
 
   width: var(--size-nav-width-mobile);

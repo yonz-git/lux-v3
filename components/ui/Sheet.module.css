@@ -134,7 +134,8 @@
     top: 50%;
     transform: translate(-50%, -50%);
     max-height: calc(
-      100dvh - var(--size-nav-height) - var(--space-2xl) * 2 - var(--space-4xl)
+      100dvh - var(--size-nav-height) - var(--nav-inset-bottom) -
+        var(--space-2xl) - var(--space-4xl)
     );
     overflow-y: auto;
 

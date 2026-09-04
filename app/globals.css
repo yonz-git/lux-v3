@@ -284,6 +284,18 @@
   --color-text-muted: #63636f;
 }
 
+/* ⚠️ THE NAV'S OFFSET FROM THE BOTTOM EDGE, AS ONE TOKEN — asked for at 5,
+   against non-negotiable 6's 24 and off the spacing scale (the nearest step is
+   `--space-xs`, 4). It was `--space-2xl` written out at six sites: the nav
+   itself, four `.screen` bottom reservations, the focus scroll-margin, the
+   desktop sheet's max-height guard and CHECK's basket bar. Those are all the
+   SAME number, so they get one name; a literal 5px in a module would drift the
+   moment this moves again. Raise the value in Figma rather than assuming the
+   rule still says 24. */
+:root {
+  --nav-inset-bottom: 5px;
+}
+
 /* ==========================================================================
    THE NAV'S GLASS — one lit edge and one shaded edge, not four dark ones.
 
@@ -660,10 +672,10 @@ main[tabindex="-1"]:focus-visible {
   align-items: center;
   background: var(--gradient-canvas-mobile);
   background-attachment: fixed;
-  /* the fixed nav sits 24px from the bottom and is 75 tall; 16 of clearance
-     above it is the same reservation the Figma screens make (24+75+16). */
+  /* the fixed nav sits `--nav-inset-bottom` off the bottom and is 75 tall;
+     16 of clearance above it is the same reservation the Figma screens make. */
   padding: var(--space-4xl) var(--margin-mobile)
-    calc(var(--space-2xl) + var(--size-nav-height) + var(--space-lg));
+    calc(var(--nav-inset-bottom) + var(--size-nav-height) + var(--space-lg));
 }
 
 /* Flow screens carry their own header row and progress track, so they do not
@@ -674,7 +686,7 @@ main[tabindex="-1"]:focus-visible {
 .screen[data-layout="flow"],
 .screen[data-layout="hub"] {
   padding-bottom: calc(
-    var(--space-2xl) + var(--size-nav-height) + var(--space-lg)
+    var(--nav-inset-bottom) + var(--size-nav-height) + var(--space-lg)
   );
 }
 
@@ -699,14 +711,14 @@ main[tabindex="-1"]:focus-visible {
      `My Products — filled` for any list long enough to reach the bottom.
      `data-center` is set by HubScreen for exactly the screens the 0 is for.
 
-     24 (the nav's offset from the bottom) + 75 (the nav) + 40 of clearance.
+     the nav's offset from the bottom + 75 (the nav) + 40 of clearance.
 
      ⚠️ THIS CANNOT LIVE IN HubScreen.module.css. `.screen` is a global class, so
      a module would hash the selector and it would match nothing — the same trap
      that hides a module's @keyframes. */
   .screen[data-layout="hub"] {
     padding-bottom: calc(
-      var(--space-2xl) + var(--size-nav-height) + var(--space-4xl)
+      var(--nav-inset-bottom) + var(--size-nav-height) + var(--space-4xl)
     );
   }
 
@@ -729,7 +741,7 @@ main[tabindex="-1"]:focus-visible {
   @media (max-height: 860px) {
     .screen[data-layout="hub"][data-center] {
       padding-bottom: calc(
-        var(--space-2xl) + var(--size-nav-height) + var(--space-4xl)
+        var(--nav-inset-bottom) + var(--size-nav-height) + var(--space-4xl)
       );
     }
   }
@@ -1400,7 +1412,7 @@ select,
 textarea,
 [tabindex] {
   scroll-margin-bottom: calc(
-    var(--space-2xl) + var(--size-nav-height) + var(--space-lg)
+    var(--nav-inset-bottom) + var(--size-nav-height) + var(--space-lg)
   );
   scroll-margin-top: var(--space-2xl);
 }

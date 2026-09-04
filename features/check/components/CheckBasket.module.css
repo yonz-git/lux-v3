@@ -4,15 +4,17 @@
    The docked bar
 
    Figma puts it at y = (frameH − 99) − 12 − 54, i.e. 12 above the nav, which is
-   itself 24 from the bottom edge and 75 tall. Written as that sum so it tracks
-   the nav tokens rather than a magic 111.
+   itself `--nav-inset-bottom` from the bottom edge and 75 tall. Written as that
+   sum so it tracks the nav tokens rather than a magic number.
    -------------------------------------------------------------------------- */
 
 .bar {
   position: fixed;
   left: 50%;
   transform: translateX(-50%);
-  bottom: calc(var(--space-2xl) + var(--size-nav-height) + var(--space-md));
+  bottom: calc(
+    var(--nav-inset-bottom) + var(--size-nav-height) + var(--space-md)
+  );
   /* ⚠️ BELOW THE NAV. The bar is not a modal — only `Sheet` outranks the nav. */
   z-index: var(--z-sticky);
 

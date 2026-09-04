@@ -342,11 +342,22 @@ variant structures — read `docs/design.md`.
    ⚠️ **The reversal only animates because of the `--grad-*` plumbing.** CSS
    cannot interpolate `background-image`; the endpoints are registered
    `<color>` properties in `globals.css`. Motion is `duration/hover` (400ms).
-6. **The bottom nav is fixed and identical on every screen**: 24px from the
-   bottom, centred, `--z-nav`, 380 wide mobile / 598 desktop. `active="none"` is
-   a real state, not a fallback. ⚠️ **FOUR items, not the component's three** —
-   `My skin` leads, then Progress, Check, Products. The widths did not change
-   and no breakpoint was added; a FIFTH item would exhaust the headroom.
+6. **The bottom nav is fixed and identical on every screen**:
+   `--nav-inset-bottom` from the bottom, centred, `--z-nav`, 380 wide mobile /
+   598 desktop. `active="none"` is a real state, not a fallback. ⚠️ **FOUR
+   items, not the component's three** — `My skin` leads, then Progress, Check,
+   Products. The widths did not change and no breakpoint was added; a FIFTH item
+   would exhaust the headroom.
+
+   ⚠️ **THE OFFSET IS A TOKEN, NOT A NUMBER, AND IT IS NO LONGER 24.** It is
+   **5** as of 4 Sep 2026 — off the spacing scale on purpose, which is why it is
+   a literal on `:root` in `globals.css` rather than a `--space-*` step. It is
+   not only the nav's own `bottom`: five other rules reserve clearance FROM it
+   (`.screen`'s bottom padding in three variants, the global focus
+   `scroll-margin-bottom`, `Sheet`'s desktop max-height guard and CHECK's basket
+   bar). **Never write the number at any of them** — a literal at one site and a
+   token at the others is 19px of dead space nobody can see. See
+   `docs/decisions.md`.
 7. **The nav is `surface/frost-nav` `#dbeded @88%` — NOT 17%.** Frosted does not
    mean see-through. `bg/nav` is its opaque counterpart, the **same colour**
    fully opaque (`#dbeded`), and is the `prefers-reduced-transparency` fallback

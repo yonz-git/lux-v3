@@ -942,6 +942,49 @@ search field needs its own token, not a local override.
 at `--radius-bubble` (30), the sender-side corner at `--radius-bubble-tail`
 (1). AI = tail top-left, sits left. User = tail top-right, sits right. Four
 
+## The nav's offset from the bottom, and why it is one token
+
+### ⚠️ 4 Sep 2026 — the nav sits **5** from the bottom, not 24
+
+`AGENTS.md` non-negotiable 6 said 24 from the first screen and now says
+`--nav-inset-bottom`. Asked for directly; no measurement produced it, and there
+is none to defend it with. It is recorded here because the number is off the
+spacing scale — the scale runs `xs` 4, `sm` 8, with nothing between — so it is a
+literal on `:root` in `globals.css`, the app's second hand-authored spacing
+value after `--content-top`'s tight-top variant.
+
+**The reason it is a token is that the 24 was never in one place.** It appeared
+verbatim at six sites, and only the first of them is the nav:
+
+| Site | What it computes |
+| --- | --- |
+| `BottomNav.module.css` | the nav's own `bottom` |
+| `.screen` (mobile) | `inset + 75 + 16` of bottom padding |
+| `.screen[data-layout="flow"\|"hub"]` | the same reservation |
+| `.screen[data-layout="hub"]` desktop, and its `max-height: 860px` variant | `inset + 75 + 40` |
+| `:focus` scroll-margin-bottom | keeps a focused control off the pill |
+| `Sheet` desktop `max-height` | the guard that makes a tall tray scroll |
+| `CheckBasket` `.bar` | floats 12 above the nav |
+
+Move the nav alone and the other six keep reserving room for where it used to
+be: 19px of empty space under every screen, invisible on a comp and obvious in
+the flow steps that already run out of viewport. Hence one name.
+
+⚠️ **THIS PROBABLY EASES THE KNOWN-OPEN `Continue` COLLISION, AND THAT IS NOT
+CONFIRMED.** The measurement in `.design/whole-app/DESIGN_REVIEW.md` is at 440:
+step 1's CTA bottom at 852 against the nav's top edge at 858. The CTA is placed
+by content flow and `padding-bottom` only reserves space BELOW it, so the CTA
+should not move while the nav's top edge goes to 877 — which would clear step 1
+at rest and still leave step 2 (`cta=1033`) off-screen. **Arithmetic, not a
+measurement.** Re-measure in the browser before striking the item; the docked
+action bar it actually wants is still a Figma decision.
+
+⚠️ **The nav also got 19px closer to the edge of the screen**, which is where a
+phone's home indicator lives. Nothing in the app reads `env(safe-area-inset-*)`
+today. At 24 that was comfortable; at 5 the pill's lower lip is inside the
+indicator's territory on an iPhone, and the bevel's whole point is that the
+lower lip is visible. Raise it if the offset stays.
+
 ## Opaque bubbles
 
 8a. **Bubbles are OPAQUE** — `--color-bg-bubble-ai` (**#dbeded**) and
