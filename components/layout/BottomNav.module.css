@@ -23,13 +23,17 @@
   /* ⚠️ THE RIM IS NOT IN FIGMA. `Bottom-Nav-Bar` (410:258) has no stroke, and
      with none the pill has no edge for the light to catch — it reads as a
      sticker laid on the canvas rather than a piece of glass above it.
-     `border/glass` is the token the system already keeps for this.
-     The global reset is `border-box`, so the 1px sits INSIDE the 75px instead
+     `border/glass` is the token the system already keeps for this, but the
+     rim it draws (55% white, 1px) reads as a drawn outline rather than a
+     catch of light, so this one is dialled back by hand: 0.5px at 33% white
+     (#ffffff54). ⚠️ NOT IN FIGMA, and deliberately NOT `border/glass` — the
+     token stays as-is for the dividers inside SYSTEM B that do want it.
+     The global reset is `border-box`, so the rim sits INSIDE the 75px instead
      of adding to it; non-negotiable 9's min-height dance is not needed here.
      ⚠️ And this fill is a flat `background-color`, NOT a gradient, so it does
      NOT want `background-origin: border-box` — non-negotiable 10 is about
      background IMAGES. Adding it here would be cargo cult. */
-  border: var(--border-width-hairline) solid var(--color-border-glass);
+  border: 0.5px solid #ffffff54;
   background: var(--color-surface-frost-nav);
   box-shadow: var(--shadow-nav);
 
