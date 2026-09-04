@@ -57,13 +57,22 @@
    hangs off the orb the way 00 Welcome's does: 19 on mobile and 23 on desktop
    there, which is 20/24 on the scale, i.e. the 16 gap plus 4/8.
    ⚠️ Equal specificity with `.hero > svg` (0,1,1) — it wins on source order
-   alone, so this block must stay BELOW it in the file. */
-.heroChat > svg {
+   alone, so this block must stay BELOW it in the file.
+
+   ⚠️ AND IT HAS TO MATCH THE HALO WRAPPER TOO. `<Orb halo />` wraps the SVG in
+   a span (it needs a parent to hang the rim light on — see `.orb-halo` in
+   globals.css), so the orb here is NOT a direct `svg` child of `.heroChat` any
+   more and this rule silently stopped applying: the orb fell back to the bare
+   16 gap. `.hero > svg` above is left alone deliberately — `/check/no-profile`
+   uses it and takes no halo. */
+.heroChat > svg,
+.heroChat > :global(.orb-halo) {
   margin-bottom: var(--space-xs); /* + the 16 gap = 20 */
 }
 
 @media (min-width: 1024px) {
-  .heroChat > svg {
+  .heroChat > svg,
+  .heroChat > :global(.orb-halo) {
     margin-bottom: var(--space-sm); /* + the 16 gap = 24 */
   }
 

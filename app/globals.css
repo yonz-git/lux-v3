@@ -1008,9 +1008,14 @@ main[tabindex="-1"]:focus-visible {
 /* ============================================================================
    The orb HALO — a hover-only line of light travelling around the sphere's rim.
 
-   ⚠️ NOT IN FIGMA, AND ON WELCOME ONLY (`<Orb halo />`). Welcome's orb is the
-   app's brand moment and the only orb on a screen with nothing else to touch,
-   so it answers the pointer. Nowhere else does.
+   ⚠️ NOT IN FIGMA, AND ON TWO ROUTES ONLY (`<Orb halo />`): 00 Welcome and the
+   CHECK landing. Both were asked for directly, and both are the same
+   composition — orb, centred AI bubble, one CTA, floating on bare canvas with
+   no card to interrupt it — so the orb is the same brand object doing the same
+   job on both. That is the identical argument the living canvas makes for
+   those same two routes, and it carries the identical limit: a THIRD route
+   wants a Figma decision, not another opt-in. Every other orb in the app sits
+   in an empty state or over a progress bar and takes none of this.
 
    ⚠️ IT IS OUTSIDE THE SVG BECAUSE IT HAS TO BE. The sphere fills its 129x129
    viewBox to within 8px and the whole group is clipped to that box, so a light
@@ -1078,6 +1083,21 @@ main[tabindex="-1"]:focus-visible {
      the sphere, and dragging across a corner flicked it on and off. That
      flicker is most of what read as a snap. */
   border-radius: var(--radius-full);
+  /* ⚠️ THE ORB GROWS ON HOVER, WHICH THE MOTION BOARD LEANS AGAINST. "LUX does
+     not bounce" is written about the PRESSED state, which takes an overlay and
+     never a transform, so this is not a violation — but it is the first size
+     change in the app and it is here because it was asked for directly.
+     ⚠️ NOT IN FIGMA.
+
+     It scales the WRAPPER, so the halo grows with the sphere and the line of
+     light stays on the rim; scaling only the SVG would leave the light orbiting
+     at the old radius. And it goes UP only — a control that shrinks under the
+     pointer pulls its own edge out from under it and flickers.
+
+     A transform does not reflow, so the bubbles below do not move: the orb
+     spends 4px of the 20px gap above them and takes it back on the way out. */
+  transform: scale(1);
+  transition: transform 900ms var(--ease-standard);
 }
 
 .orb-halo::after {
@@ -1133,6 +1153,12 @@ main[tabindex="-1"]:focus-visible {
    a light that latches on because the user once brushed the orb reads as a
    render bug rather than a response. */
 @media (hover: hover) {
+  .orb-halo:hover {
+    transform: scale(1.06);
+    /* the same asymmetry the light has — see the fade below */
+    transition-duration: var(--duration-slower);
+  }
+
   .orb-halo:hover::after {
     opacity: 1;
     /* the way IN — quicker than the way out, so the orb feels responsive

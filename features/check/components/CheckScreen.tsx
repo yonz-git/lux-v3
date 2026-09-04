@@ -85,7 +85,15 @@ export function CheckScreen() {
             in the app. Same composition 00 Welcome opens on (orb, then a
             centred AI bubble) and the same entrance, since `ChatBubble` owns
             `bubble-enter`. */}
-        <Orb animateIn />
+        {/* ⚠️ AND IT ANSWERS THE POINTER, LIKE WELCOME'S — NOT IN FIGMA. Asked
+            for directly, and it rides on the same argument the shader above
+            makes: this landing IS Welcome's composition (orb, centred AI
+            bubble, one CTA) on bare canvas, so the orb is the same brand
+            object doing the same job. `.heroChat > .orb-halo` below the SVG
+            rule in the module is what keeps its spacing — see the note there.
+            Third route, same rule as the shader: not without a Figma
+            decision. */}
+        <Orb animateIn halo />
         <ChatBubble from="ai" align="center" full className={styles.intro}>
           Check how your products may suit your skin and work together in the
           same routine.

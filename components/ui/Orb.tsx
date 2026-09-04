@@ -11,8 +11,13 @@
  * `animateIn` plays the "Spiral Assemble" entrance (Figma 670:31, Brand page) on
  * the sphere as it appears — see `.orb-assemble` in globals.css.
  *
- * `halo` wraps the orb so a hover-only line of light can run along its rim —
- * see `.orb-halo` in globals.css. Welcome's orb only, and ⚠️ NOT IN FIGMA.
+ * `halo` wraps the orb so it can answer the pointer: a line of light runs
+ * along its rim and the whole thing scales to 1.06 — see `.orb-halo` in
+ * globals.css. 00 Welcome and the CHECK landing only, and ⚠️ NOT IN FIGMA.
+ *
+ * ⚠️ A CALLER THAT SPACES THE ORB WITH `> svg` MUST ALSO MATCH `> .orb-halo`,
+ * or the wrapper breaks the selector and the orb silently loses its margin.
+ * CheckScreen.module.css records the trap.
  *
  * The timeline has THREE tracks and the mark is three paths, so each track
  * drives one part: mark1 <- L, mark2 <- U, mark3 <- X, with the authored
@@ -41,10 +46,11 @@ export function Orb({
    */
   thinking?: boolean;
   /**
-   * ⚠️ NOT IN FIGMA. Wrap the orb so a hover-only line of light can travel
-   * along its rim — Welcome's orb only. It has to be a wrapper: the sphere
-   * fills its 129x129 viewBox to within 8px and the group is clipped to that
-   * box, so a light straddling the edge has nowhere to go INSIDE the SVG. See
+   * ⚠️ NOT IN FIGMA. Wrap the orb so it can answer the pointer — 00 Welcome and
+   * the CHECK landing only. It has to be a wrapper twice over: the sphere fills
+   * its 129x129 viewBox to within 8px and the group is clipped to that box, so
+   * a light straddling the edge has nowhere to go INSIDE the SVG; and the hover
+   * scale has to carry the light with it, which only a shared parent does. See
    * `.orb-halo` in globals.css; the keyframes MUST live there, not in a module.
    */
   halo?: boolean;
