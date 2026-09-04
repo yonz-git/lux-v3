@@ -58,12 +58,20 @@
   flex-grow: 70;
 }
 
+/* ⚠️ THE HERO SITS 40 LOWER THAN THE SPACER RATIO PUTS IT — NOT IN FIGMA.
+   Requested directly. It is a nudge to the ORB AND BUBBLES ONLY: the CTA and
+   disclaimer keep their measured position, because the space above the floating
+   nav is separately tuned (see .spacerBottom). The offset is therefore paid for
+   twice — added here and subtracted from .actions' margin-top — so the group's
+   total height is unchanged and neither spacer moves. Change one and you must
+   change the other, or the button drifts. */
 .hero {
   display: flex;
   flex-direction: column;
   align-items: center;
   gap: var(--space-xl); /* Figma 19 — orb to the bubble stack */
   width: 100%;
+  margin-top: var(--space-4xl);
 }
 
 /* the question and reply bubbles share this one grid cell so they overlap
@@ -92,8 +100,9 @@
   gap: 13px; /* matches desktop's button-to-disclaimer gap, tighter than the Figma-literal 24 (--space-2xl) */
   width: 100%;
   /* bubble bottom to button top is 163 at the 957 design height, and shrinks
-     first on short viewports */
-  margin-top: clamp(var(--space-2xl), 17vh, 163px);
+     first on short viewports — less the 40 .hero now takes above it, so the
+     button lands exactly where it did */
+  margin-top: clamp(0px, 17vh - var(--space-4xl), 123px);
 }
 
 .cta {
@@ -147,8 +156,9 @@
 
   .actions {
     gap: 13px;
-    /* 23 gap + 94 spacer + 23 gap between the bubble and the CTA group */
-    margin-top: 140px;
+    /* 23 gap + 94 spacer + 23 gap between the bubble and the CTA group,
+       less .hero's 40 offset */
+    margin-top: 100px;
   }
 
   .cta {
