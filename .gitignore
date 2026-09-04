@@ -34,3 +34,6 @@ yarn-error.log*
 # case-study write-up and its captures — portfolio work-product, kept locally and
 # published as an artifact rather than carried in the repo.
 .design/case-study/
+
+# graphify generated code graph
+graphify-out/
