@@ -4,6 +4,7 @@ import type { ReactNode } from "react";
 import Link from "next/link";
 import styles from "./HubScreen.module.css";
 import { BottomNav, type NavSection } from "./BottomNav";
+import { CanvasShader } from "./CanvasShader";
 import { ChevronLeftIcon } from "@/components/ui/icons";
 
 /**
@@ -54,6 +55,7 @@ export function HubScreen({
   nav = "products",
   belowHeading,
   center,
+  shader,
   footer,
   children,
 }: {
@@ -77,6 +79,16 @@ export function HubScreen({
   belowHeading?: ReactNode;
   /** centre the body between two equal flexible spacers */
   center?: boolean;
+  /**
+   * Paint the WebGL canvas over `.screen`'s token gradient — 00 Welcome's
+   * living canvas, on a hub screen.
+   *
+   * ⚠️ NOT IN FIGMA, AND OPT-IN ONE SCREEN AT A TIME. `/check` is the only hub
+   * that passes it. It is a candidate treatment awaiting a Figma decision, so
+   * do not default it to `true` and do not add it to a screen without being
+   * asked — see the doc comment on CanvasShader.tsx.
+   */
+  shader?: boolean;
   /** pinned below the body — `Product added`'s two stacked buttons */
   footer?: ReactNode;
   children?: ReactNode;
@@ -103,7 +115,16 @@ export function HubScreen({
   ) : null;
 
   return (
-    <main className="screen" data-layout="hub" data-center={center || undefined}>
+    <main
+      className="screen"
+      data-layout="hub"
+      data-center={center || undefined}
+      data-shader={shader || undefined}
+    >
+      {/* ⚠️ BEFORE THE SHELL, AND THE SHELL IS RAISED ABOVE IT. The canvas is
+          opaque and covers the viewport; `[data-shader] .shell` in the
+          stylesheet is what keeps the page on top of it. */}
+      {shader && <CanvasShader />}
       <div className={styles.shell} data-reveal>
         {hasHeader && (
           <div className={styles.header}>

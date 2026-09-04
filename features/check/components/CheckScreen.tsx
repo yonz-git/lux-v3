@@ -47,6 +47,25 @@ export function CheckScreen() {
       nav="check"
       layout="plain"
       center
+      /* ⚠️ NOT IN FIGMA — 601:1952 paints this screen with the static
+         `gradient/canvas-*`. `/check` now runs 00 Welcome's living canvas
+         instead: it was asked for directly, and it is the one hub that earns it
+         — the landing is the same composition Welcome opens on (orb, centred AI
+         bubble, one CTA) floating on bare canvas with no card to interrupt it,
+         so the flowing field reads as the same screen breathing rather than as
+         decoration behind a form. Still a candidate treatment awaiting a Figma
+         decision; do not spread it to a third route without one.
+
+         ⚠️ MEASURED, BECAUSE AXE CANNOT SEE A CANVAS. The ramp's dark end is
+         frozen at #acc5cc (see CanvasShader.tsx), so that floor IS this
+         screen's worst case whatever the field does. Against it: the h1 and
+         the bubble copy in `text/primary` 7.64:1, the subtitle in
+         `text/secondary` 4.75:1, `View previous checks` in `text/brand`
+         6.59:1, and the strip's translucent `surface/data` composites to
+         #97b8bd, giving `text/on-data` 6.52:1 and `-secondary` 4.79:1. All AA.
+         Nothing on this screen sits on bare canvas below `text/secondary`, so
+         the floor is the whole proof. */
+      shader
       belowHeading={
         <SkinProfileStrip
           className={styles.profile}

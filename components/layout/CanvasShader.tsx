@@ -1,17 +1,28 @@
 "use client";
 
 import { useEffect, useRef } from "react";
-import styles from "./WelcomeShader.module.css";
+import styles from "./CanvasShader.module.css";
 
 /**
- * 00 — Welcome · the living canvas.
+ * The living canvas — 00 Welcome (`/`) and the CHECK landing (`/check`).
  *
- * ⚠️ NOT IN FIGMA. Figma paints Welcome with `gradient/canvas-mobile` /
- * `-desktop`, a static three-stop linear gradient. This replaces it, on `/`
- * ONLY, with a WebGL fragment shader that flows the same stops around. It was
- * asked for directly as an experiment; it is a candidate treatment, not an
- * approved one, and it must be raised in Figma before it spreads to a second
- * route.
+ * ⚠️ NOT IN FIGMA. Figma paints every screen with `gradient/canvas-mobile` /
+ * `-desktop`, a static three-stop linear gradient. This replaces it, on the two
+ * routes that opt in, with a WebGL fragment shader that flows the same stops
+ * around. It was asked for directly as an experiment; it is a candidate
+ * treatment, not an approved one, and it is still owed a decision in Figma.
+ *
+ * ⚠️ IT IS OPT-IN PER SCREEN, AND IT MUST STAY THAT WAY UNTIL FIGMA RULES ON
+ * IT. It lived under `features/my-skin/` while `/` was its only caller; CHECK
+ * asking for the same canvas made it a second section's dependency, which is
+ * what moved it here — `components/layout/` is the frame around a screen. Do
+ * NOT promote it into `.screen` in `globals.css` to "finish the job": that
+ * would put an unapproved treatment on all seventeen routes at once, and the
+ * contrast bound below was measured against bare canvas on two of them.
+ *
+ * `HubScreen` renders it behind a `shader` prop; Welcome renders it directly.
+ * A caller must also raise its own content above it — see the placement note in
+ * CanvasShader.module.css.
  *
  * ⚠️ THE RAMP MAY ONLY BE WIDENED UPWARDS, AND THAT IS A CONTRAST CONSTRAINT,
  * NOT A TASTE ONE. Roughly 200 lines of `globals.css` derive colours by sampling
@@ -279,7 +290,7 @@ function parseHex(value: string): [number, number, number] | null {
   return [((n >> 16) & 255) / 255, ((n >> 8) & 255) / 255, (n & 255) / 255];
 }
 
-export function WelcomeShader() {
+export function CanvasShader() {
   const ref = useRef<HTMLCanvasElement>(null);
 
   useEffect(() => {

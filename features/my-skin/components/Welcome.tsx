@@ -5,7 +5,7 @@ import { Orb } from "@/components/ui/Orb";
 import { ChatBubble } from "@/components/ui/ChatBubble";
 import { Button } from "@/components/ui/Button";
 import { BottomNav } from "@/components/layout/BottomNav";
-import { WelcomeShader } from "./WelcomeShader";
+import { CanvasShader } from "@/components/layout/CanvasShader";
 
 export function Welcome() {
   return (
@@ -16,10 +16,10 @@ export function Welcome() {
           means the Figma gradient, and nothing looks broken. It paints as a
           positioned element, which is why `.welcome` below had to be lifted out
           of the in-flow paint layer. Read the palette/contrast note in
-          WelcomeShader.tsx before retuning it: the ramp's dark end is frozen at
+          CanvasShader.tsx before retuning it: the ramp's dark end is frozen at
           `#acc5cc` so the disclaimer cannot fall below 4.75:1, and widening it
           downwards throws that guarantee away. */}
-      <WelcomeShader />
+      <CanvasShader />
 
       <div className={styles.welcome}>
         {/* the two spacers split the free space in the ratio Figma places above
