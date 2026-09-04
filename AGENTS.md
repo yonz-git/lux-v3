@@ -66,6 +66,14 @@ comment is enough.
 **One folder per nav section.** `features/<section>/` holds that section's
 screens AND its data module. The four folders are named for the four nav items.
 
+⚠️ **AND THERE IS A FIFTH, `features/chat/`, WHICH BELONGS TO NO NAV SECTION.**
+It holds the standalone conversation panel at `/chat` — a look-see built from
+Figma `chat-page / mobile` (270:96) on 4 Sep 2026, which nothing links to and
+nothing reads. It is filed on its own rather than pushed into `progress` for
+the reason the rule exists: a screen that belongs to no section should say so.
+It gets a section or it gets deleted; it does not quietly become another
+section's. **Do not add a sixth** — see `docs/decisions.md`.
+
 ```
 app/                 routes only — every page.tsx is a thin shell
 components/ui/       the design system: Button, SmallButton, Chip, OptionRow,
@@ -81,6 +89,8 @@ features/progress/   progress.ts + ProgressScreen, CheckIn, CheckInDetail,
                      CheckInCalendar, CheckInPhotoArt, SymptomTrend, SkinProfile
 features/check/      check.ts + the check screens, CompatCard, ResultCards,
                      CheckBasket, SkinProfileStrip
+features/chat/       ⚠️ NOT A NAV SECTION — chat.ts + ChatScreen and the two
+                     glyphs the DS does not have (see above)
 lib/store/           answers.ts + InvestigationProvider.tsx
 lib/                 date.ts  demo.ts  pageTitles.ts
 ```
@@ -110,8 +120,9 @@ Four placement facts that look like mistakes and are not:
 
 ## The route map
 
-Seventeen routes. `features/my-skin/flow.ts` owns the step order, the 1-based
-track position, the Figma frame ids and each step's `isComplete` rule.
+Eighteen routes — seventeen, plus `/chat`, which is in no nav section.
+`features/my-skin/flow.ts` owns the step order, the 1-based track position, the
+Figma frame ids and each step's `isComplete` rule.
 
 | Route | Kind | Nav |
 | ----- | ---- | --- |
@@ -132,6 +143,7 @@ track position, the Figma frame ids and each step's `isComplete` rule.
 | `/check/analyzing` | pushed view | `check` |
 | `/check/results` | pushed view | `check` |
 | `/check/history` | pushed view | `check` |
+| `/chat` | ⚠️ prototype-only — a panel, in no section, linked from nothing | `none` |
 
 **⚠️ HUB vs FLOW — the header tells you which, and `HubScreen` vs
 `QuestionScreen` encodes it.** A screen is an investigation step if and only if

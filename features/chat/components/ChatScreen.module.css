@@ -1,0 +1,385 @@
+/* Conversation — Figma `chat-page / mobile` (270:96), inside the spec column
+   `col` (274:99) captioned "Mobile · 375".
+
+   ⚠️ THE FRAME IS A PANEL, NOT A DEVICE SCREEN. Every other screen in the file
+   is drawn on the 440x957 mobile canvas; this one is 375x538 with a 36 radius
+   on all four corners and its own gradient fill. It is a self-contained chat
+   SURFACE that floats on the canvas — which is also what its two header
+   controls say, since a kebab and a collapse chevron only make sense on
+   something that can be collapsed.
+
+   ⚠️ NINE VALUES IN THIS FRAME ARE OFF THE PUBLISHED SCALES. Each is marked
+   where it is used and all nine are listed in docs/figma-catchup.md as work to
+   close in Figma. None was "corrected" here — Figma leads on pixels — but none
+   should survive into a shipped screen either:
+     radius 36 · gap 6 · glyphs 18 and 14 · border 0.2 · text 11 and 10
+     · fills #b5c8cc, #beced2 and #606d75, none of which are in `02 Color`
+   ========================================================================== */
+
+.panel {
+  /* Raw fills off the frame. ⚠️ NEITHER IS A PAINT STYLE — `get_design_context`
+     reports only gradient/brand, gradient/brand-indigo and surface/chat-bubble
+     as named styles on this frame, so the panel's own gradient is a local fill
+     with no variable behind it. It is close to but NOT `gradient/canvas-mobile`
+     (#dce7ea -> #cedee2 -> #acc5cc): lighter at the top and markedly lighter at
+     the bottom, which is what separates the panel from the canvas it sits on.
+     Raise it as `gradient/chat-panel`. */
+  --chat-panel-gradient: linear-gradient(
+    116.756deg,
+    #dbebed 36.39%,
+    #d1e1e5 53.77%,
+    #c3cdd9 105.01%
+  );
+  /* ⚠️ OFF THE RADIUS SCALE — `3xl` is 32 and `full` is 999, so 36 is a value
+     the system does not publish. Raise `radius/4xl`. */
+  --chat-panel-radius: 36px;
+  /* ⚠️ OFF `02 Color` — the divider stroke (#b5c8cc) and the composer's hairline
+     (#beced2) are sage tints with no token. `border/subtle` (#e2e4e8) and
+     `border/default` (#cbcdd4) are both neutral and both read wrong on this
+     surface. Raise them as `border/sage-subtle` and `border/sage-hairline`. */
+  --chat-line: #b5c8cc;
+  --chat-field-border: #beced2;
+  /* ⚠️ OFF `02 Color`, AND A MEASURED CONTRAST FAILURE — 4.34:1 at the top of
+     the panel and 4.07:1 lower down, against 4.5:1. Kept as drawn: the frame
+     leads on colour. The obvious substitution is worse (`text/muted` #9a9aa5
+     measures 2.27:1 / 2.13:1 here); `text/secondary` #4b4b57 passes at 7.01:1 /
+     6.57:1 and is the fix to make in Figma. See docs/figma-catchup.md §7e. */
+  --chat-meta: #606d75;
+
+  width: 100%;
+  /* the frame's own width; there is no wider drawing of this screen */
+  max-width: 375px;
+
+  /* ⚠️ THE PANEL STRETCHES ON MOBILE RATHER THAN HOLDING THE FRAME'S 538.
+     "Translate, don't transcribe" — 538 is a height on a fixed canvas, and a
+     chat surface that stops two-thirds of the way down a phone is the artefact
+     reproduced rather than the intent. The COMPONENT sizes — radius, padding,
+     the bubbles, the 61 composer — are all exact; it is the page-level
+     whitespace that adapts, which is the rule. Desktop holds 538, at the bottom
+     of this file, because there is no desktop frame to say otherwise. */
+  flex: 1;
+  min-height: 0;
+
+  display: flex;
+  flex-direction: column;
+
+  /* the frame's 24/20 */
+  padding: var(--space-2xl) var(--space-xl);
+  border-radius: var(--chat-panel-radius);
+  background: var(--chat-panel-gradient);
+  /* the frame is overflow-clip; the composer's drop shadow is clipped in the
+     comp too */
+  overflow: hidden;
+}
+
+/* ---------------------------------------------------------------------------
+   HEADER (270:97) — the avatar, the greeting, and two controls.
+   -------------------------------------------------------------------------- */
+
+.header {
+  flex: none;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.headerLeft {
+  display: flex;
+  align-items: center;
+  gap: var(--space-md);
+}
+
+/* The frame's `chat-ball` instance is a 58 slot with a 44 sphere centred in it.
+   `Orb` draws its sphere at r=57 in a 129 viewBox, i.e. 114/129 of whatever
+   size it is given — so 44 x 129/114 = 49.8. The 50 is derived, not eyeballed,
+   and it is NOT `--size-orb-sm` (48), which would land the sphere at 42.4. */
+.avatar {
+  flex: none;
+  display: grid;
+  place-items: center;
+  width: 58px;
+  height: 58px;
+}
+
+.headerRight {
+  display: flex;
+  align-items: center;
+  gap: var(--space-md);
+}
+
+/* A 44px touch target around a glyph that is smaller than it is offset by HALF
+   the difference on every side, so the box takes the GLYPH's room in the layout
+   and the drawn 12px gap survives. Same move as SearchField's clear button. */
+.headerButton {
+  flex: none;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: var(--size-touch-target);
+  height: var(--size-touch-target);
+  margin: calc((var(--chat-glyph) - var(--size-touch-target)) / 2);
+  padding: 0;
+  border: 0;
+  background: none;
+  border-radius: var(--radius-full);
+  color: var(--color-icon-default);
+}
+
+/* Both are set through `--icon-size` rather than width/height — a custom
+   property feeding the globals rule, never an inline size outranking it. */
+
+/* ⚠️ 18 IS OFF THE `size/icon-*` SCALE (16/20/24/32/48), as drawn. */
+.menu {
+  --chat-glyph: 18px;
+  --icon-size: 18px;
+}
+
+/* The close X, at `size/icon-xs`. The frame draws a chevron-down at an
+   off-scale 14; this is the DS `CloseIcon` at 16, so the control is on the
+   scale and 2px shy of the kebab beside it — which is the relationship the
+   frame draws. See the doc comment on ChatScreen.tsx for why it is an X. */
+.close {
+  --chat-glyph: var(--size-icon-xs);
+  --icon-size: var(--size-icon-xs);
+}
+
+/* ---------------------------------------------------------------------------
+   BODY (270:106)
+   -------------------------------------------------------------------------- */
+
+.body {
+  flex: 1;
+  min-height: 0;
+  overflow-y: auto;
+  overscroll-behavior: contain;
+
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2xl);
+  padding-block: var(--space-xl);
+}
+
+/* The date divider (270:107). Two hairlines and a label; the lines are
+   pseudo-elements because there is nothing for a screen reader to read in
+   them — the word between them already says what the row is. */
+.divider {
+  flex: none;
+  display: flex;
+  align-items: center;
+  gap: var(--space-lg);
+  color: var(--chat-meta);
+}
+
+.divider::before,
+.divider::after {
+  content: "";
+  flex: 1;
+  height: var(--border-width-hairline);
+  background: var(--chat-line);
+}
+
+/* A row hugs its bubble, because the timestamp is aligned to the BUBBLE's right
+   edge and not the column's — for the AI that is the bubble's inner edge, for
+   the user its outer one. Measured in the frame: the AI timestamp ends at 237
+   (the bubble width) and the user's at 335 (the body width, which is also its
+   bubble's right edge). */
+.messageRow {
+  flex: none;
+  display: flex;
+  flex-direction: column;
+  /* ⚠️ OFF THE SPACING SCALE — `2xs` is 2 and `xs` is 4. Raise `space/6`, or
+     move the frame to 4. */
+  gap: 6px;
+  width: fit-content;
+  max-width: 100%;
+}
+
+.messageRow[data-from="user"] {
+  align-self: flex-end;
+}
+
+/* `full` + these two properties is the documented way to retune ChatBubble's
+   span: the component's own rule is class + attribute, so a module class would
+   lose the specificity contest — the custom properties are what it reads
+   instead. 300 is the frame's `user-bubble` max; the AI bubble is drawn at 237
+   only because its sentence is shorter. */
+.bubble {
+  --bubble-width: fit-content;
+  --bubble-max: 300px;
+}
+
+.timestamp {
+  align-self: stretch;
+  text-align: right;
+  color: var(--chat-meta);
+}
+
+/* ---------------------------------------------------------------------------
+   COMPOSER (270:116 / 270:118)
+   -------------------------------------------------------------------------- */
+
+.composer {
+  flex: none;
+  display: flex;
+  align-items: center;
+  gap: var(--space-sm);
+
+  /* The field is WIDER than the panel's content column: the frame insets it 9
+     from the left, 10 from the right and 9 from the bottom of the 375 panel,
+     against the 20/24 padding everything else sits in. Symmetrised to 10 — the
+     1px is a nudge, not a spec. */
+  margin: 0 -10px -14px;
+
+  /* ⚠️ 61 IS A FIXED HEIGHT AND THE STROKE IS A FIGMA STROKE. A CSS border adds
+     to the box where a Figma stroke does not, so the height goes on min-height
+     with border-box sizing rather than on padding. The 3px is the send disc's
+     inset, which the frame really does draw. */
+  min-height: 61px;
+  padding: 3px 3px 3px 30px;
+
+  /* The translucent fill, and its opaque counterpart below. A frosted surface
+     always gets a solid `prefers-reduced-transparency` fallback — this one is
+     the same fill composited over the panel gradient at the composer's own
+     position, so the fallback is the same colour rather than a different one. */
+  --chat-field-fill: rgba(24, 48, 54, 0.15);
+
+  border-radius: var(--radius-full);
+  /* ⚠️ 0.2 IS OFF THE `border-width-*` SCALE (hairline 1, thin 1.5, thick 2) and
+     lands under a device pixel on a 1x display. Kept as drawn; raise it. */
+  border: 0.2px solid var(--chat-field-border);
+  background: var(--chat-field-fill);
+  box-shadow: 3px 4px 5px rgba(0, 0, 0, 0.08),
+    inset 5px 8px 6px rgba(46, 36, 71, 0.1);
+}
+
+@media (prefers-reduced-transparency: reduce) {
+  .composer {
+    --chat-field-fill: #b2c1c7;
+  }
+}
+
+/* The ring goes on the PILL, not the bare input inside it — SearchField records
+   why. An outline, never a box-shadow: the composer already has two shadows and
+   a third at equal specificity would have silently won. */
+.composer:focus-within {
+  outline: var(--border-width-focus) solid var(--color-border-focus);
+  outline-offset: 2px;
+}
+
+.input {
+  flex: 1;
+  min-width: 0;
+  border: 0;
+  background: none;
+  outline: none;
+  font-family: inherit;
+  /* ⚠️ WHITE ON A TRANSLUCENT DARK FILL, AND IT IS A KNOWN CONTRAST FAILURE.
+     The frame types this `text/on-brand` on `#183036 @15%`, which composites
+     over the panel gradient to #b2c1c7 — measured 1.85:1 against white, where
+     AA wants 4.5:1. TYPED TEXT INHERITS IT TOO, so it is not only a placeholder
+     problem. It is what the frame draws and the frame is the authority on
+     colour, so it is reproduced rather than quietly darkened. Listed in
+     docs/figma-catchup.md §7e alongside the other white-on-light failures
+     already awaiting a Figma decision. */
+  color: var(--color-text-on-brand);
+}
+
+.input::placeholder {
+  color: var(--color-text-on-brand);
+  opacity: 1;
+}
+
+/* ---------------------------------------------------------------------------
+   SEND (270:120) — the button recipe, on a 52 disc.
+
+   The disc is `gradient/brand` on `radius/full`, so it follows non-negotiable 5
+   exactly as `Button` does: hover runs the gradient END FOR END at full
+   strength, pressed overlays `state/pressed-overlay` and never transforms.
+
+   ⚠️ THERE IS NO DISABLED STATE, AND THAT IS THE ONE PLACE THIS DIVERGES FROM
+   THE BUTTON RECIPE. `opacity/disabled` is 0.4, and a 0.4 sage gradient on a
+   sage panel is not a faded disc — it is no disc. Gating the control on the
+   field being non-empty therefore erased the screen's only send affordance in
+   its RESTING state. The frame draws a full-strength disc beside the empty
+   placeholder, so the comp agrees; an empty submit is a no-op in the component.
+   See docs/decisions.md.
+
+   ⚠️ THE REVERSAL ONLY ANIMATES BECAUSE OF THE --grad-* PLUMBING. CSS cannot
+   interpolate background-image; the endpoints are registered <color> properties
+   in globals.css, and they are `inherits: false`, so setting them here is
+   scoped to this control.
+   -------------------------------------------------------------------------- */
+
+.send {
+  --grad-start: var(--color-button-bg-default-start);
+  --grad-end: var(--color-button-bg-default-end);
+  --icon-size: 52px;
+
+  position: relative;
+  flex: none;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+
+  width: 52px;
+  height: 52px;
+  padding: 0;
+  border: 0;
+  border-radius: var(--radius-full);
+
+  color: var(--color-icon-on-brand);
+  background: linear-gradient(90deg, var(--grad-start) 0%, var(--grad-end) 100%);
+  /* the export's own drop shadow: dy 6, blur 16, erode 2, #4d3d6b at 35% */
+  box-shadow: 0 6px 16px -2px rgba(77, 61, 107, 0.35);
+
+  transition: opacity var(--duration-hover) var(--ease-standard),
+    --grad-start var(--duration-hover) var(--ease-standard),
+    --grad-end var(--duration-hover) var(--ease-standard);
+}
+
+.send::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  background: var(--color-state-pressed-overlay);
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity var(--duration-fast) var(--ease-standard);
+}
+
+.send:hover:not(:disabled) {
+  --grad-start: var(--color-button-bg-default-end);
+  --grad-end: var(--color-button-bg-default-start);
+}
+
+/* the hover state must not stick after a tap */
+@media (hover: none) {
+  .send:hover:not(:disabled) {
+    --grad-start: var(--color-button-bg-default-start);
+    --grad-end: var(--color-button-bg-default-end);
+  }
+}
+
+.send:active:not(:disabled)::after {
+  opacity: 1;
+}
+
+
+/* ---------------------------------------------------------------------------
+   DESKTOP
+
+   ⚠️ THERE IS NO DESKTOP FRAME FOR THIS SCREEN. The column is captioned
+   "Mobile · 375" and nothing else in the file draws it, so rather than invent a
+   1440 composition the panel keeps the size it was drawn at and centres. That
+   is a decision to revisit the moment a desktop frame exists — noted in
+   docs/figma-catchup.md.
+   -------------------------------------------------------------------------- */
+
+@media (min-width: 1024px) {
+  .panel {
+    flex: none;
+    height: 538px;
+    margin-block: auto;
+  }
+}

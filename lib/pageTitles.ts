@@ -41,6 +41,11 @@ const HUB_TITLES: Record<string, string> = {
   "/check/analyzing": "Analysing your check",
   "/check/results": "Check results",
   "/check/history": "Previous checks",
+  /* ⚠️ PROTOTYPE-ONLY AND IN NO NAV SECTION. `/chat` is the standalone
+     conversation panel (270:96); nothing links to it. It still needs a title —
+     an untitled route is the WCAG 2.4.2 failure this file exists to fix, and
+     "prototype" is not an exemption from it. */
+  "/chat": "Conversation",
 };
 
 /**

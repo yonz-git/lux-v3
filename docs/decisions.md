@@ -1471,3 +1471,120 @@ as proof**. Step 5 currently asks only for what the user chooses to add, with no
 copy explaining why tolerated products matter — the brief's own wording is
 *"even products you have used without problems. Those products help LUX rule out
 weaker explanations."*
+
+---
+
+# `/chat` — the conversation panel, and why it is a fifth feature folder
+
+Built 4 Sep 2026 from Figma `chat-page / mobile` (270:96), on the request to see
+how it looks. It is a look-see: nothing links to it, and nothing reads what is
+typed into it.
+
+## It is a PANEL, not a screen — which is the whole reading of the frame
+
+Every other frame in the file is drawn on the 440x957 mobile canvas. This one is
+375x538, with a 36 radius on all four corners and its own gradient fill. So it
+is built as a surface that floats on `.screen`'s canvas gradient rather than as
+a screen that replaces it.
+
+That is not a stylistic call — it is the only reading under which the frame's
+two header controls mean anything. A kebab and a **collapse chevron** belong to
+something that can be collapsed. Read as a full screen, the chevron has nothing
+to do; read as a panel, it closes.
+
+Consequence to know: on mobile the panel STRETCHES to fill the viewport rather
+than holding 538. "Translate, don't transcribe" — the 538 is a canvas artefact,
+and a chat that stops two-thirds down a phone screen is transcription. On
+desktop it holds 538 and centres, because there is no desktop frame to say
+otherwise and inventing a 1440 composition is drift.
+
+## Why `features/chat/` exists against a rule that says there are four folders
+
+The rule is one folder per nav section, named for the nav items. This screen is
+in no nav section. Both alternatives were worse:
+
+- **File it under `progress`.** It is not a check-in — `/progress/check-in` is a
+  guided chat that writes a dated severity record, and this is free text that
+  writes nothing. Filing it there makes the folder name a lie and hides a
+  homeless screen inside a section that has a home.
+- **Put it in `components/`.** That layer is underneath the features and may not
+  import one; a screen is not a component.
+
+So it is its own folder, and the folder is the flag: it gets a section or it
+gets deleted. **Do not add a sixth folder** on this precedent — the next screen
+with no section is a sign the nav is wrong, not that the tree needs a drawer.
+
+The same reasoning puts its two glyphs — `more-vertical` and the send arrow — in
+`features/chat/components/icons.tsx` rather than in the design system's
+`icons.tsx`. Thirteen icons is what the DS publishes; a fourteenth is a Figma
+decision, not a file move.
+
+## ⚠️ LUX DOES NOT ANSWER, AND THAT IS DELIBERATE
+
+Sending appends the user's message and nothing replies.
+
+The temptation is a canned response, because a chat that does not answer looks
+broken. But what LUX may say about a user's skin is a **regulatory** constraint,
+not a copy preference — see the controlled vocabulary above, and
+`docs/product-brief.md`. A reply invented to make a demo feel alive is
+unreviewed clinical-sounding copy shown to a user, and the vocabulary section of
+this file exists precisely because that is the failure mode worth engineering
+against.
+
+The composer is fully real — it types, it sends, it appends, the disc gates on
+input — so the *interaction* can be judged. The conversation is not simulated.
+The frame draws one LUX question; that is what ships until the analysis this
+screen fronts actually exists.
+
+## Two things the build decided and Figma has not
+
+Both are in `docs/figma-catchup.md` §7f as work orders.
+
+- **The send disc is NOT gated on the field, and the first build had it wrong.**
+  Every other primary action in the app is disabled until its step is answered,
+  so the disc was built the same way. `opacity/disabled` is 0.4, and a 0.4 sage
+  gradient on a sage panel is not a faded disc — it is no disc. The resting
+  state lost the only affordance that says how to send. The frame settles it: it
+  draws a full-strength disc beside the EMPTY placeholder, so the comp says this
+  control is not gated, and the `Continue` rule does not reach it — that rule is
+  about investigation steps, lives on the step in `flow.ts`, and a composer is
+  not a step. An empty submit is a no-op, as in every chat composer. Worth
+  keeping as a general point: **`opacity/disabled` needs a surface to fade
+  against, and Surface System-adjacent sage-on-sage does not give it one.**
+- **The close control is an X where the frame draws a chevron-down.** A
+  chevron-down is a *disclosure* glyph — it says the panel folds away and can be
+  unfolded — and pointed at a route change it promises a state the app cannot
+  return you to, because nothing links back to `/chat`. An X says the thing goes
+  away, which is what happens. Using the DS's `CloseIcon` also avoids inventing
+  a fourth chat-local glyph and lands the control on `size/icon-xs` (16) instead
+  of the frame's off-scale 14.
+- **The kebab has no behaviour and is rendered `disabled`.** No flow anywhere
+  says what it opens. A focusable button that does nothing, or an
+  `aria-haspopup` pointing at a menu that does not exist, are both worse than
+  saying so in the markup — and `disabled` takes it out of the tab order, which
+  is the honest result. Figma needs to say what it is for, or drop it.
+
+## The bubbles are the component's type, not the frame's
+
+The frame sets bubble text at 14/20. `Spec/Chat Bubble` (47:12) and all nine
+GETTING STARTED frames set it at `Body 2` / `Body 1` — which is `t-body2-body1`,
+which is what `ChatBubble` renders. Two Figma sources disagree and the published
+component wins: a chat bubble two steps smaller here than everywhere else in the
+product is the drift, not the fix. Everything else about the frame's bubbles
+matches the component exactly, down to the 30/1 tail corners and the
+fill-plus-two-shadows-no-stroke recipe.
+
+## Known-failing contrast, reproduced as drawn
+
+Measured by compositing, since axe reports INCOMPLETE on every gradient screen:
+
+- **the composer's placeholder and typed text — 1.85:1.** `text/on-brand` on
+  `#183036 @15%`, which composites to #b2c1c7.
+- **the day label and both timestamps — 4.34:1 / 4.07:1**, against 4.5:1. The
+  frame's #606d75. `text/muted` is worse here (2.27:1); `text/secondary` passes
+  at 7.01:1 and is the fix to make in Figma.
+
+Both are what the frame draws, and `#a2b9bf` is already precedent in this file
+for a value that is chosen rather than accidental — so neither was quietly
+darkened. Both are logged in `docs/figma-catchup.md` §7e for a Figma decision.
+

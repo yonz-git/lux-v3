@@ -4,7 +4,8 @@ Changes the LUX Figma file needs so it matches what shipped.
 
 - **File:** `wIftBhzkn8E4wjZwgdH71n`
 - **Screens page:** `06. Screen Designs` (`453:2252`)
-- **Sections built:** my-skin, products, progress, check · 17 routes
+- **Sections built:** my-skin, products, progress, check · 18 routes
+  (17 + `/chat`, the prototype-only conversation panel — see section 7)
 
 Contrast figures below are hand-composited against the canvas gradient at each
 element's own position. Automated tooling reports none of them: every screen
@@ -421,3 +422,135 @@ Secondary is distinguished by its gradient alone.
 - **`Style=Ghost` is not implemented** in code — the component takes `primary`
   and `secondary` only. Its hover still points at the deleted `bg/accent-mint`;
   see section 1.
+
+---
+
+## 7. `chat-page / mobile` (270:96) — the conversation panel
+
+Built at `/chat` on 4 Sep 2026 as a look-see, from the spec column `col`
+(274:99) captioned "Mobile · 375". Nothing in the app links to it and nothing
+reads what is typed into it. It is the only screen in the product that offers
+free-text conversation, and it has no home yet — it is not one of the four nav
+sections, which is why `features/chat/` exists against a rule that says there
+are four.
+
+**The frame is a PANEL, not a screen.** 375x538 with a 36 radius on all four
+corners and its own gradient fill, where every other frame in the file is the
+440x957 mobile canvas. The build treats it as a surface floating on the canvas,
+which is also the only reading under which a kebab and a collapse chevron mean
+anything.
+
+### 7a. Nine values are off the published scales
+
+Every one is drawn in the frame, reproduced in the build, and marked at its use
+site in `features/chat/components/ChatScreen.module.css`.
+
+| Value | Where | Nearest published | Do |
+| ----- | ----- | ----------------- | -- |
+| radius **36** | the panel | `3xl` 32 · `full` 999 | add `radius/4xl` |
+| gap **6** | bubble → timestamp | `2xs` 2 · `xs` 4 | add `space/6`, or move the frame to 4 |
+| glyph **18** | `more-vertical` | `icon/xs` 16 · `sm` 20 | move the frame to 16 |
+| glyph **14** | `chevron-down` | `icon/xs` 16 | **superseded — see 7f**, the control is now a 16 close X |
+| stroke **0.2** | the composer field | `hairline` 1 | move the frame to 1 — 0.2 is under a device pixel and Chrome rounds it to 1 anyway |
+| text **11** | the `Today` label | `Label Small` 12/16 | build uses `t-label-sm`; move the frame to 12 |
+| text **10** | both timestamps | `Label Small` 12/16 | build uses `t-label-sm`; move the frame to 12 |
+| text **14/20** | both bubbles | `Body 2` 16/26 | see 7c |
+
+### 7b. Four fills have no variable in `02 Color`
+
+The frame paints them raw. All four are local custom properties in the module
+rather than tokens, so none of them can be reused until Figma publishes them.
+
+| Fill | Where | Nearest token | Raise as |
+| ---- | ----- | ------------- | -------- |
+| `linear-gradient(116.756deg, #dbebed 36.39%, #d1e1e5 53.77%, #c3cdd9 105.01%)` | the panel | `gradient/canvas-mobile` — close, but lighter top AND bottom, which is what separates the panel from the canvas under it | `gradient/chat-panel` |
+| `#b5c8cc` | the date-divider hairlines | `border/subtle` #e2e4e8 and `border/default` #cbcdd4 are both neutral and read wrong on sage | `border/sage-subtle` |
+| `#beced2` | the composer hairline | as above | `border/sage-hairline` |
+| `#606d75` | the day label and both timestamps | between `text/secondary` #4b4b57 and `text/muted` #9a9aa5 | **move the frame to `text/secondary`** — see 7e |
+
+### 7c. The bubble type contradicts the design system — the component won
+
+The frame sets its bubble text at **14/20**. `Spec/Chat Bubble` (47:12) and all
+nine GETTING STARTED frames set it at `Body 2` / `Body 1`, which is what
+`t-body2-body1` is and what `ChatBubble` renders. Two Figma sources disagree;
+the published component wins, because a chat bubble two steps smaller here than
+everywhere else in the product is the drift, not the fix.
+
+Everything else about the frame's bubbles — the 30/1 tail corners, `bg/bubble-ai`
+and `bg/bubble-user`, the fill-plus-two-shadows recipe with no stroke — matches
+the component exactly. **Move the frame to Body 2**, or say why this surface
+is different.
+
+### 7d. Two glyphs the design system does not have
+
+Both are exported from the frame and live in `features/chat/components/icons.tsx`,
+NOT in `components/ui/icons.tsx` — a glyph used by one section is that section's
+until the DS publishes it. Adds to the list in section 3.
+
+- **`more-vertical`** (270:102) — a stroked kebab. There is no overflow-menu
+  glyph anywhere in `02 Icons`.
+- **`send`** (270:120) — the white arrow on the composer's disc. The disc itself
+  is `gradient/brand` on `radius/full` and is built as CSS, not as an image,
+  because that is the button recipe.
+
+  ⚠️ **The frame rotates the whole `Send` node 43°**, which is what turns a
+  triangle drawn pointing up-and-right into one pointing along the field. The
+  disc under it is a circle, so the rotation is invisible on everything except
+  the path. **Draw the glyph at its final angle** and drop the transform.
+
+### 7e. Two contrast failures, both measured
+
+Hand-composited: the text is hidden, the surface underneath is screenshotted,
+and the rendered pixel at the element's own position is read. Both fail; both
+are reproduced as drawn rather than quietly darkened, because the frame is the
+authority on colour and `#a2b9bf`-class values in this file have already been
+established as chosen rather than accidental. **Both need a Figma decision**
+(section 2's list).
+
+| Text | Ink | Behind it | Ratio | Needs |
+| ---- | --- | --------- | ----- | ----- |
+| composer placeholder + typed text | `text/on-brand` #ffffff | #b2c1c7 | **1.85:1** | 4.5:1 |
+| `Today`, both timestamps | #606d75 | #dbebed / #d4e4e8 | **4.34:1** / **4.07:1** | 4.5:1 |
+
+**The placeholder is the serious one.** `text/on-brand` on `#183036 @15%`
+composites to #b2c1c7 over the panel gradient — at 1.85:1 the placeholder is
+barely present, and TYPED text inherits the same colour, so this is not only a
+placeholder problem. Either darken the field fill well past 15%, or ink the
+text.
+
+**The meta colour misses by a hair and has a clean fix.** #606d75 lands at
+4.34:1 at the top of the panel and 4.07:1 lower down, where the gradient
+darkens. The obvious substitution does not work — `text/muted` measures
+**2.27:1 / 2.13:1** here, worse — but **`text/secondary` (#4b4b57) passes at
+7.01:1 / 6.57:1** and is already the token for exactly this job. Moving the
+frame onto it costs nothing and deletes one of the four fills in 7b.
+
+### 7f. Two things the build decided, not Figma
+
+- **The send disc has NO disabled state**, which is the one place it diverges
+  from the button recipe. It was built gated, the way `Continue` is on all five
+  flow steps — and `opacity/disabled` is 0.4, which on a sage disc over a sage
+  panel is not a faded control but no control at all. The screen's resting state
+  lost its only send affordance. The frame settles it by drawing a full-strength
+  disc beside the empty placeholder; an empty submit is a no-op. **No Figma
+  change needed** — logged so the next reader does not "fix" it back.
+- **The close control is an X, not the frame's chevron-down** (5 Sep 2026). A
+  chevron-down is a disclosure glyph: it says the panel folds away and can be
+  unfolded. Pointed at a route change it promises a state the app cannot return
+  you to, since nothing links back to `/chat`. An X says the thing goes away,
+  which is what happens. It is the DS's own `CloseIcon`, so it also avoids a
+  fourth chat-local glyph, and it puts the control on `size/icon-xs` (16),
+  deleting one of the nine off-scale values in 7a. **Change the frame**, or say
+  why the panel should read as foldable.
+- **The kebab has no behaviour and is rendered `disabled`.** No flow anywhere
+  defines what it opens. The chevron does have an obvious one — you collapse a
+  panel — so it closes to Welcome. **Figma needs to say what the kebab is for,
+  or the frame should drop it.**
+
+### 7g. There is no desktop frame
+
+The column is captioned "Mobile · 375" and nothing else in the file draws this
+screen. Rather than invent a 1440 composition the panel keeps the size it was
+drawn at and centres on the gradient — which is a decision to revisit the moment
+a desktop frame exists.
+
