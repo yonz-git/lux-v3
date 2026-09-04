@@ -33,7 +33,15 @@
    detuned from the Figma-literal 24 to match desktop's 13), so those are
    written as literals rather than snapped to the nearest token. */
 
+/* ⚠️ `position: relative; z-index: 1` IS LOAD-BEARING, NOT TIDINESS. The shader
+   canvas is a POSITIONED child of `.screen` at `z-index: 0`, and CSS paints the
+   whole z-index:0 layer ABOVE in-flow, non-positioned content — so with this
+   block left static, the canvas covered the orb, the bubbles, the CTA and the
+   disclaimer, and Welcome rendered as an empty gradient. `BottomNav` was never
+   affected: it already carries `--z-nav` (200). */
 .welcome {
+  position: relative;
+  z-index: 1;
   flex: 1;
   width: 100%;
   max-width: 392px; /* 440 - (2 x margin/mobile) */

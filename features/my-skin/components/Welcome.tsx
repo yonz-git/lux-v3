@@ -5,10 +5,22 @@ import { Orb } from "@/components/ui/Orb";
 import { ChatBubble } from "@/components/ui/ChatBubble";
 import { Button } from "@/components/ui/Button";
 import { BottomNav } from "@/components/layout/BottomNav";
+import { WelcomeShader } from "./WelcomeShader";
 
 export function Welcome() {
   return (
     <main className="screen">
+      {/* ⚠️ NOT IN FIGMA, AND ON THIS ROUTE ONLY. A WebGL canvas that flows five
+          LUX tokens around, painted OVER `.screen`'s static gradient rather
+          than replacing it — so no WebGL, a lost context or a failed compile
+          means the Figma gradient, and nothing looks broken. It paints as a
+          positioned element, which is why `.welcome` below had to be lifted out
+          of the in-flow paint layer. Read the palette/contrast note in
+          WelcomeShader.tsx before retuning it: the ramp's dark end is frozen at
+          `#acc5cc` so the disclaimer cannot fall below 4.75:1, and widening it
+          downwards throws that guarantee away. */}
+      <WelcomeShader />
+
       <div className={styles.welcome}>
         {/* the two spacers split the free space in the ratio Figma places above
             and below the group, so it sits low without fixed offsets */}

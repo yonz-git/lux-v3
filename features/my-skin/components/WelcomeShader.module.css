@@ -1,0 +1,32 @@
+/* 00 — Welcome · the living canvas.
+   The reasoning, the palette clamp and the contrast measurement live in the
+   doc comment on WelcomeShader.tsx. This file is only the placement.
+
+   ⚠️ IT PAINTS OVER `.screen`'s GRADIENT, IT DOES NOT REPLACE IT. `.screen`
+   keeps `background: var(--gradient-canvas-mobile/-desktop)` untouched, so a
+   device with no WebGL, a lost context or a failed compile renders the token
+   gradient and nothing looks broken. That is also why the canvas is opaque.
+
+   ⚠️ `fixed`, NOT `absolute` — it has to match `.screen`'s
+   `background-attachment: fixed`, or the shader would scroll on a screen taller
+   than the viewport while the fallback beneath it stayed put. */
+.shader {
+  position: fixed;
+  inset: 0;
+  z-index: 0;
+  display: block;
+  width: 100%;
+  height: 100%;
+  /* purely decorative and it sits under the whole app */
+  pointer-events: none;
+  /* First paint is one frame behind the CSS gradient, so it arrives rather than
+     snaps — `--duration-slower` is the orb/hero entrance curve, which is what
+     this is. `data-ready` is set by the component after its first draw; without
+     it the transition would run against an unpainted (black) buffer. */
+  opacity: 0;
+  transition: opacity var(--duration-slower) var(--ease-standard);
+}
+
+.shader[data-ready] {
+  opacity: 1;
+}
