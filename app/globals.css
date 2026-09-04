@@ -284,6 +284,45 @@
   --color-text-muted: #63636f;
 }
 
+/* ==========================================================================
+   THE NAV'S GLASS — one lit edge and one shaded edge, not four dark ones.
+
+   ⚠️ NOT IN FIGMA. `Bottom-Nav-Bar` (410:258) carries
+   `inset 0 0 12px rgba(0, 0, 0, 0.2)`: a dark glow on all four edges at once.
+   Light does not arrive from four directions, so it reads as a vignette rather
+   than a bevel and the pill sits flat on the canvas. Split in two —
+   `border/highlight` along the top rim where the light lands, ink at 12% along
+   the lower lip — and the same element reads as a slab with a thickness.
+
+   The single drop shadow becomes two. The nav floats 24px off the bottom edge
+   and one shadow carries one distance cue; a tight contact shadow plus a wide
+   ambient one is what actually says "above the canvas, not printed on it".
+
+   ⚠️ THE LOWER-LIP INK HAS NO TOKEN. `border/highlight` is the real white the
+   top rim wants, but `02 Color` has no matching dark counterpart, so
+   `rgba(46, 42, 63, 0.12)` — `text/primary` at 12% — is literal here. Raise
+   the pair in Figma; a bevel needs both halves or it is not a bevel.
+
+   ⚠️ THE FILL IS `#dbeded7a` — 47.8%, NOT THE 88% NON-NEGOTIABLE 7 DESCRIBES.
+   That rule says "frosted does not mean see-through" and pins the nav at 88%;
+   this is a deliberate, asked-for departure from it and the rule is now stale.
+   Raise it in Figma rather than "fixing" the code back — see docs/decisions.md.
+
+   It moves BOTH components binding this token, which is on purpose: the same
+   rule pairs the nav and `SearchField` as one frosted-pill surface, and they
+   appear together on `/products`, so letting them drift apart would read as a
+   bug. If the search field should stay dense, it needs its own token, not a
+   local override.
+   ========================================================================== */
+
+:root {
+  --color-surface-frost-nav: #dbeded7a;
+
+  --shadow-nav: inset 0 1px 0 var(--color-border-highlight),
+    inset 0 -1px 0 rgba(46, 42, 63, 0.12), 0 2px 6px rgba(28, 27, 36, 0.1),
+    0 12px 28px -10px rgba(28, 27, 36, 0.16);
+}
+
 html,
 body {
   margin: 0;

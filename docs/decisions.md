@@ -895,6 +895,49 @@ straight through the bar. Frosted does not mean see-through. The
 `prefers-reduced-transparency` fallback is `bg/nav`, now the SAME colour fully
 opaque (`#dde8eb`) — it used to be `#9caeaf @55%`, a different hue _and_ still
 translucent, which is not a fallback at all.
+
+### ⚠️ SUPERSEDED 4 Sep 2026 — the nav is now `#dbeded7a`, i.e. 47.8%
+
+**This decision was reversed deliberately, and `AGENTS.md` non-negotiable 7 has
+not caught up — it still says 88%.** Do not "fix" the code back to it.
+
+Two separate things changed. The fill went to `#dbeded7a`, and the bevel was
+rebuilt: the shipped `inset 0 0 12px rgba(0,0,0,0.2)` darkened all four edges at
+once, which is not how light works, so it read as a vignette and the pill sat
+flat. It is now `border/highlight` along the top rim, `text/primary @12%` along
+the lower lip, a `border/glass` stroke, two drop shadows instead of one, and
+`saturate(160%)` on the backdrop-filter. Both live on `:root` in `globals.css`.
+
+The 17% failure above still stands — the objection was never "transparency", it
+was that at 17% the Continue button read straight through the bar. 47.8% keeps
+the labels legible over everything the app actually puts under them BUT ONE.
+
+**Measured**, compositing by hand and sampling the 165° gradient at the nav's
+own position (88.8% along it, `#b4cbd1`), against the 4.5:1 the 12px/500 labels
+need:
+
+| Backdrop under the nav | at 0.478 | was 0.90 |
+| --- | --- | --- |
+| bare canvas | 9.62:1 | 11.07:1 |
+| `bg/bubble-ai` | 11.42:1 | 11.42:1 |
+| `surface/data` card | 8.79:1 | 10.89:1 |
+| chart bar, `bg/brand @75%` on card | 5.04:1 | 9.97:1 |
+| **solid `bg/brand` — a selected Chip** | **4.09:1** | 9.67:1 |
+
+⚠️ **The last row fails, and it is not theoretical.** Selected chips are solid
+`bg/brand`, and investigation steps 1 and 3 are full of them — the two screens
+that already outgrow the viewport, so they scroll under the pill. That 4.09:1 is
+the UN-BLURRED worst case: `blur(28px)` averages a ~36px chip with the light
+canvas around it and the real figure is higher. **How much higher has not been
+measured** — it needs a browser. If it has to pass outright without giving up
+the transparency, raise `--blur-card`; more blur mixes more light canvas into
+whatever dark element passes underneath.
+
+⚠️ **`SearchField` moved with it, on purpose.** Both bind `surface/frost-nav`,
+which non-negotiable 7 pairs as one frosted-pill surface, and both are on screen
+together on `/products`. At the old 0.878 → 0.90 step the pairing was academic;
+at 0.478 it is visible, and letting them drift would read as a bug. A denser
+search field needs its own token, not a local override.
 6. **Chat bubbles carry an asymmetric tail corner, and NO border.** Three corners
 at `--radius-bubble` (30), the sender-side corner at `--radius-bubble-tail`
 (1). AI = tail top-left, sits left. User = tail top-right, sits right. Four
