@@ -1095,21 +1095,11 @@ main[tabindex="-1"]:focus-visible {
      the sphere, and dragging across a corner flicked it on and off. That
      flicker is most of what read as a snap. */
   border-radius: var(--radius-full);
-  /* ⚠️ THE ORB GROWS ON HOVER, WHICH THE MOTION BOARD LEANS AGAINST. "LUX does
-     not bounce" is written about the PRESSED state, which takes an overlay and
-     never a transform, so this is not a violation — but it is the first size
-     change in the app and it is here because it was asked for directly.
-     ⚠️ NOT IN FIGMA.
-
-     It scales the WRAPPER, so the halo grows with the sphere and the line of
-     light stays on the rim; scaling only the SVG would leave the light orbiting
-     at the old radius. And it goes UP only — a control that shrinks under the
-     pointer pulls its own edge out from under it and flickers.
-
-     A transform does not reflow, so the bubbles below do not move: the orb
-     spends 4px of the 20px gap above them and takes it back on the way out. */
-  transform: scale(1);
-  transition: transform 900ms var(--ease-standard);
+  /* ⚠️ THE ORB DOES NOT CHANGE SIZE ON HOVER — REMOVED, DO NOT PUT IT BACK
+     WITHOUT ASKING. It scaled to 1.06 briefly and came out again: the motion
+     board leans against it ("LUX does not bounce"), it was the only size change
+     anywhere in the app, and the orb is the one object the system treats as
+     untouchable. The rim light alone is the hover response. */
 }
 
 .orb-halo::after {
@@ -1165,12 +1155,6 @@ main[tabindex="-1"]:focus-visible {
    a light that latches on because the user once brushed the orb reads as a
    render bug rather than a response. */
 @media (hover: hover) {
-  .orb-halo:hover {
-    transform: scale(1.06);
-    /* the same asymmetry the light has — see the fade below */
-    transition-duration: var(--duration-slower);
-  }
-
   .orb-halo:hover::after {
     opacity: 1;
     /* the way IN — quicker than the way out, so the orb feels responsive
