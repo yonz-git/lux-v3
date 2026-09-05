@@ -102,11 +102,15 @@ export const LEAD_IN_DAYS = 14;
  */
 export type EvidenceState = "associated" | "tolerated" | "unclear";
 
-export const EVIDENCE_LABEL: Record<EvidenceState, string> = {
-  associated: "Associated with this reaction",
-  tolerated: "Used without problems",
-  unclear: "Not enough history",
-};
+/* ⚠️ THE THREE STATES HAVE NO LABELS ANY MORE, AND THAT IS THE POINT. They had
+   one each — the brief's "Associated with this reaction" / "Used without
+   problems" / "Not enough history" — for a read-only list on the deleted
+   evidence screen that showed the user every product filed under its state.
+   That list was the clearest single example of the "too much reading" problem:
+   it restated the timeline the user had just entered, in the app's vocabulary,
+   before it would say anything useful. If a screen ever needs to name a state
+   again, take the strings from `docs/product-brief.md` § "UX vocabulary" rather
+   than inventing near-misses. */
 
 /**
  * The evidence state the timeline implies, before the user confirms anything.
@@ -162,55 +166,64 @@ export function evidenceFor(a: Answers): ProductEvidence[] {
 }
 
 /* ---------------------------------------------------------------------------
-   § 05 — the gates
+   § 05 — the two gates, and everything that is NOT one
 
-   ⚠️ THESE ARE STRUCTURAL, AND `MIN_CHECK_PRODUCTS = 2` IS NOT THE MODEL. Two
-   products is the right floor for a COMPATIBILITY check — two is exactly when a
-   pair interaction becomes possible — and far too low for a CAUSAL one. But a
-   flat count is the wrong shape either way: five products all added last week,
-   with no tolerated history between them, gives a subtraction nothing to
-   subtract, while three products can answer cleanly if one of them entered the
-   routine in the window and two did not.
+   ⚠️ ONLY TWO THINGS STOP THE ANALYSIS, AND NEITHER IS ABOUT COMPLETENESS.
+   It gated on five things once — a cleanser, a sunscreen, two tolerated
+   products carrying ingredient lists, ingredient data on the majority — and the
+   result was a screen that lectured the user about what they had not typed in
+   before it would tell them anything. That is the wrong trade. A thin
+   comparison is still a comparison, and it already has a way to say it is thin:
+   the CONFIDENCE WORD.
 
-   So each gate names a STRUCTURE the argument needs, and the step that can fix
-   it. From `docs/decisions.md`: "refusing to answer is the hardest thing to
-   design and the easiest thing to admire."
+   So the rule is: **refuse only when there is nothing to compare.** Everything
+   else lowers the confidence and is said on the card rather than in the way.
+
+     GATE       no flare date        nothing to compare products against
+     GATE       nothing new, or no ingredient list anywhere
+                                     no suspect at all, or nothing to read
+
+     NOT a gate — a missing cleanser or sunscreen (a REMINDER, see
+       `forgottenRoles`); a thin tolerated set (caps confidence at `weak`);
+       most products lacking ingredient lists (named in the reasoning).
+
+   ⚠️ **DO NOT PUT THE OLD GATES BACK.** Requiring a cleanser before LUX will
+   say anything is the app deciding the user's routine is incomplete, which is
+   not its call — decided 6 Sep 2026, after the first build did exactly that.
    -------------------------------------------------------------------------- */
 
-export type GapId =
-  | "no-flare-date"
-  | "nothing-new"
-  | "no-tolerated-history"
-  | "routine-incomplete"
-  | "ingredients-missing";
+export type GapId = "no-flare-date" | "nothing-to-compare";
 
 export type Gap = {
   id: GapId;
   /** what is missing, in the user's words */
   title: string;
-  /** why the analysis cannot proceed without it */
+  /** why it is needed — ONE short sentence, never a paragraph */
   body: string;
   /** where the user goes to fix it */
   href: string;
   action: string;
 };
 
-/** Tolerated products carrying an ingredient list — what a subtraction needs
- *  on the other side of the minus sign. Two, because one product clearing a
- *  candidate is a coincidence and the brief asks for a pattern. */
+/**
+ * Tolerated products carrying an ingredient list.
+ *
+ * ⚠️ NOT A GATE ANY MORE. A comparison with fewer than this still runs; it just
+ * cannot come out better than `weak`, which is the honest way to say the same
+ * thing without withholding the answer.
+ */
 const MIN_TOLERATED = 2;
 
+export type RoutineRole = "cleanser" | "sunscreen";
+
 /**
- * The two product types § 05 requires to be present or explicitly declared.
+ * The two routine roles worth reminding someone about.
  *
  * ⚠️ MATCHED ON THE NAME, WHICH IS A PROTOTYPE-GRADE HEURISTIC AND SAYS SO.
  * Open Beauty Facts has a category field this should read instead; it is not
- * requested by `openBeautyFacts.ts` today. The failure mode is mild and in the
- * right direction — an unrecognised cleanser asks the user a question they can
- * answer in one tap, rather than silently passing a gate.
+ * requested by `openBeautyFacts.ts` today. Getting it wrong is now harmless in
+ * both directions, because nothing depends on the answer.
  */
-export type RoutineRole = "cleanser" | "sunscreen";
-
 const ROUTINE_ROLES: { id: RoutineRole; label: string; re: RegExp }[] = [
   { id: "cleanser", label: "cleanser", re: /cleans|wash|foaming|micellar|makeup remover/i },
   { id: "sunscreen", label: "sunscreen", re: /spf|sunscreen|sun cream|uv\b|fluid uv/i },
@@ -221,96 +234,62 @@ function hasRole(products: SavedProduct[], re: RegExp): boolean {
 }
 
 /**
- * The roles § 05 still has no answer for — neither a product that looks like
- * one, nor a declaration that the user does not use one.
+ * Roles the user has not added — for a REMINDER, not a requirement.
  *
- * ⚠️ THE DECLARATION IS COLLECTED ON `/investigation/evidence`, NOT ON STEP 5.
- * The brief's own flow diagram puts "Review products and missing
- * cleanser/sunscreen" between the product collection and the analysis, which is
- * this screen — and it is the better place regardless: on step 5 the question
- * would arrive before the user has finished adding, so "no, I don't use one"
- * would be asked of someone who was about to add one.
+ * ⚠️ THIS IS A QUESTION, NOT A GATE, AND THE DIFFERENCE IS THE WHOLE POINT.
+ * A cleanser and a sunscreen touch the whole face every day, so it is worth
+ * asking whether one was forgotten. It is not worth refusing to analyse over:
+ * plenty of people use neither, and an app that will not answer until they say
+ * so out loud has decided their routine is wrong. The analysis runs either way
+ * and this produces one line of copy.
  */
-export function missingRoutineRoles(
-  a: Answers
-): { id: RoutineRole; label: string; declared: boolean }[] {
+export function forgottenRoles(a: Answers): string[] {
   const products = a.products ?? [];
-  const declared = a.routineNotUsed ?? [];
   return ROUTINE_ROLES.filter((role) => !hasRole(products, role.re)).map(
-    ({ id, label }) => ({ id, label, declared: declared.includes(id) })
+    (r) => r.label
   );
 }
 
 /**
- * Everything standing between the recorded investigation and an answer.
- *
- * An empty array means the analysis can run. A non-empty one IS the
- * no-conclusion screen's content — § 11 requires the exact reason, not a
- * generic failure.
+ * What stops the analysis — at most one thing, and only when there is genuinely
+ * nothing to compare. An empty array means it runs.
  */
 export function gaps(a: Answers): Gap[] {
-  const out: Gap[] = [];
-
   if (!a.timing?.date) {
-    out.push({
-      id: "no-flare-date",
-      title: "When the reaction started",
-      body: "Every product is compared against the day your skin changed. Without that day there is nothing to compare them to.",
-      href: "/investigation/timing",
-      action: "Add the date",
-    });
-    /* Nothing below can be computed without it, so stop here rather than
-       reporting five consequences of one missing answer. */
-    return out;
+    return [
+      {
+        id: "no-flare-date",
+        title: "When did your skin change?",
+        body: "Your products are compared against that day.",
+        href: "/investigation/timing",
+        action: "Add the date",
+      },
+    ];
   }
 
   const evidence = evidenceFor(a);
-  const products = a.products ?? [];
+  const suspects = evidence.filter((e) => e.state === "associated");
+  const readable = evidence.filter((e) => e.readable);
 
-  if (products.length === 0 || !evidence.some((e) => e.state === "associated")) {
-    out.push({
-      id: "nothing-new",
-      title: "A product you were using around the time it started",
-      body: "Nothing in your list entered your routine near the reaction. Add anything you used in the four weeks before it — including products you do not suspect.",
-      href: "/investigation/products",
-      action: "Add products",
-    });
+  if (suspects.length === 0 || readable.length === 0) {
+    return [
+      {
+        id: "nothing-to-compare",
+        title:
+          suspects.length === 0
+            ? "Nothing in your list is new"
+            : "No ingredient lists to compare",
+        body:
+          suspects.length === 0
+            ? "Add anything you started in the four weeks before your skin changed — including products you do not suspect."
+            : "None of your products came with an ingredient list, so there is nothing to compare between them.",
+        href: "/investigation/products",
+        action: "Add products",
+      },
+    ];
   }
 
-  const tolerated = evidence.filter((e) => e.state === "tolerated" && e.readable);
-  if (tolerated.length < MIN_TOLERATED) {
-    out.push({
-      id: "no-tolerated-history",
-      title: "Products you have used for a while without problems",
-      body: "These are what rule an ingredient OUT. Without at least two, anything shared by your newer products stays a suspect and none of it can be cleared.",
-      href: "/investigation/products",
-      action: "Add products",
-    });
-  }
-
-  const missingRoles = missingRoutineRoles(a).filter((r) => !r.declared);
-  if (missingRoles.length > 0) {
-    out.push({
-      id: "routine-incomplete",
-      title: `No ${missingRoles.map((r) => r.label).join(" or ")} in your list`,
-      body: "These touch the whole face every day, so leaving one out hides the product most likely to be involved. Add it, or say you do not use one.",
-      href: "/investigation/evidence",
-      action: "Add or declare",
-    });
-  }
-
-  const readable = evidence.filter((e) => e.readable).length;
-  if (products.length > 0 && readable * 2 <= products.length) {
-    out.push({
-      id: "ingredients-missing",
-      title: "Ingredient lists for most of your products",
-      body: `${products.length - readable} of ${products.length} have no ingredient list, so there is nothing to compare between them.`,
-      href: "/investigation/evidence",
-      action: "Review products",
-    });
-  }
-
-  return out;
+  return [];
 }
 
 /* ---------------------------------------------------------------------------
@@ -332,12 +311,6 @@ export function gaps(a: Answers): Gap[] {
  */
 export function needsConfirmation(a: Answers): ProductEvidence[] {
   return evidenceFor(a).filter((e) => e.state === "unclear" || e.confirmed);
-}
-
-/** How many of those are still unanswered — what the screen counts aloud. */
-export function unansweredCount(a: Answers): number {
-  return evidenceFor(a).filter((e) => e.state === "unclear" && !e.confirmed)
-    .length;
 }
 
 /* ---------------------------------------------------------------------------
@@ -400,8 +373,17 @@ function confidenceFor(h: {
   associatedTotal: number;
   toleratedReadable: number;
 }): Confidence {
+  /* A tolerated product carries it too, so the user's own history argues
+     against it — it should not be a candidate at all, and `subtract` moves it
+     to `cleared`. Weak is the floor for the case where it slips through. */
   if (h.inTolerated.length > 0) return "weak";
+  /* One product is a coincidence, not a pattern. */
   if (h.inAssociated.length < 2) return "weak";
+  /* ⚠️ NOTHING TO BE ABSENT FROM IS NOT THE SAME AS BEING ABSENT. With no
+     readable tolerated product, the candidate has not been cleared of
+     anything — it has never been tested. This is the case that used to REFUSE
+     to answer; it answers now, and says `weak`. */
+  if (h.toleratedReadable === 0) return "weak";
   if (
     h.inAssociated.length === h.associatedTotal &&
     h.toleratedReadable >= MIN_TOLERATED
@@ -589,7 +571,7 @@ export function analyseInvestigation(a: Answers): Analysis {
       outcome: "none",
       gaps: [
         {
-          id: "ingredients-missing",
+          id: "nothing-to-compare",
           title: "Nothing survived the comparison",
           body:
             cleared.length > 0
@@ -672,11 +654,47 @@ export function subject(h: Hypothesis): string {
   return `${ACTIVES[x].name} with ${ACTIVES[y].name}`;
 }
 
-/** The type label § 07 asks to show beside the headline. */
+/**
+ * The type label § 07 asks to show beside the headline.
+ *
+ * ⚠️ THE SHORT FORMS, AND THEY ARE THE BRIEF'S OWN. "Possible contributor" and
+ * "Possible interaction" are both on the approved vocabulary list verbatim;
+ * "Possible ingredient contributor" was a longer thing I had made up out of
+ * them, and at 13px with tracking it wrapped to two lines and crowded the
+ * confidence pill beside it. Shorter and more correct at once.
+ */
 export function hypothesisKind(h: Hypothesis): string {
   return h.kind === "ingredient"
-    ? "Possible ingredient contributor"
-    : "Possible same-routine interaction";
+    ? "Possible contributor"
+    : "Possible interaction";
+}
+
+/**
+ * The whole answer in one line, for the verdict card.
+ *
+ * ⚠️ IT MUST NOT REPEAT `headline()`. The verdict card and the hypothesis card
+ * below it sat one above the other saying the same six words, which is reading
+ * for no gain. The verdict says WHAT and WHY IN SHORT; the card says it again
+ * with the evidence attached, which is the only reason to have both.
+ */
+export function verdictLine(analysis: Analysis): string {
+  const top = analysis.hypotheses[0];
+  if (!top) return "Nothing survived the comparison.";
+
+  if (top.kind === "pair") {
+    return `${subject(top)} — used in the same period, which may have added up.`;
+  }
+
+  const inAll = top.inAssociated.length === top.associatedTotal;
+  const where = inAll
+    ? "in everything you started recently"
+    : `in ${top.inAssociated.length} of the ${top.associatedTotal} you started recently`;
+  const against =
+    top.toleratedReadable > 0
+      ? `, and in none of the ${top.toleratedReadable} you have used for longer`
+      : ", though there is nothing older to compare it against";
+
+  return `${top.name} — ${where}${against}.`;
 }
 
 /** The products a hypothesis is about. */
@@ -971,7 +989,3 @@ export function suggestedPause(a: Answers): PriorityEntry | null {
   return pausableProducts(investigationPriority(a))[0] ?? null;
 }
 
-/** Every product in the analysis, with the name the screens show. */
-export function describe(p: SavedProduct): string {
-  return fullName(p);
-}

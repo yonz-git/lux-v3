@@ -119,14 +119,14 @@ export const STEPS: Step[] = [
   // ⚠️ CONTINUE ENDS THE FLOW AT THE ANALYSIS NOW, NOT AT THE PRODUCTS HUB.
   // It pointed at `/products` while the analysis had no route — the note here
   // said "the real destination once INVESTIGATION lands is 05 — Investigating",
-  // and it has landed: `/investigation/evidence`, then analysing, then
-  // findings. See `features/my-skin/analysis.ts`.
+  // and it has landed: `/investigation/analysis`, which is ONE screen (it was
+  // three). See `features/my-skin/analysis.ts`.
   //
-  // ⚠️ AND THE THREE ANALYSIS ROUTES ARE NOT STEPS. They carry no progress
-  // track and no `Save & exit`, so by the rule at the top of this file they are
-  // not in `STEPS` and `TOTAL_STEPS` is still 5. The flow COLLECTS; they REPORT
-  // on what it collected.
-  { id: "products", step: 5, href: "/investigation/products", title: "Your products", figma: { mobile: "574:1342", desktop: "582:1612" }, isComplete: () => true, next: "/investigation/evidence" },
+  // ⚠️ AND THE ANALYSIS IS NOT A STEP. It carries no progress track and no
+  // `Save & exit`, so by the rule at the top of this file it is not in `STEPS`
+  // and `TOTAL_STEPS` is still 5. The flow COLLECTS; the analysis REPORTS on
+  // what it collected.
+  { id: "products", step: 5, href: "/investigation/products", title: "Your products", figma: { mobile: "574:1342", desktop: "582:1612" }, isComplete: () => true, next: "/investigation/analysis" },
 ];
 
 /**

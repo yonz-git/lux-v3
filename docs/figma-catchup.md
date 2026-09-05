@@ -166,10 +166,10 @@ treatment — but there is no component to keep them in sync.
 | **Product imagery** | No product or bottle icon exists outside the nav, so every thumb and image well drew a camera — which identifies nothing down a list. Nine vessel silhouettes by packaging type, tinted per brand. Raise a real illustration set. |
 | **Check-in photo** | The photos card's entire content is a picture, so a camera glyph says "no photo" on the record of one the user took. Raise real imagery. |
 | **Opaque sage** | `surface/data-strong` has no solid counterpart — see the token list. |
-| **Reasoning accordion** | The THIRD accordion, and the first stacked into a group: § 08's six reasoning sections on `/investigation/findings`. Composed from `ProductAccordionCard`'s recipe by way of `features/my-skin/components/Disclosure.tsx`, with a hairline between rows instead of a card each. Three accordions on three surfaces is now the strongest case in this file for one component — raise it and migrate all three. |
-| **Hypothesis card** | The result card on `/investigation/findings`: overline, headline, a confidence Tag, the products involved, then the accordion stack. Frosted light card, System A. ⚠️ **Deliberately carries NO score, no bar and no percentage** — unlike `CompatCard`, which is the same species of object answering a different question. Any Figma component for it must not grow one. |
+| **Reasoning accordion** | The THIRD accordion, and the first stacked into a group: § 08's six reasoning sections on `/investigation/analysis`. Composed from `ProductAccordionCard`'s recipe by way of `features/my-skin/components/Disclosure.tsx`, with a hairline between rows instead of a card each. Three accordions on three surfaces is now the strongest case in this file for one component — raise it and migrate all three. |
+| **Hypothesis card** | The result card on `/investigation/analysis`: overline, headline, a confidence Tag, the products involved, then the accordion stack. Frosted light card, System A. ⚠️ **Deliberately carries NO score, no bar and no percentage** — unlike `CompatCard`, which is the same species of object answering a different question. Any Figma component for it must not grow one. |
 | **Ranked list** | § 11's investigation-priority list: one card holding numbered rows, because the RANKING is the content and rows-as-cards would lose it. The ordinal is a small indigo disc, set as meta rather than as a metric — it is a position in a queue, not a score. |
-| **Progress step list** | `/investigation/analyzing` names § 06's six passes and ticks them off, where `Check — analyzing` (`605:2163`) fills a bar. Uses `SuccessCheckIcon` in a fixed-width slot so the lines do not reflow as ticks land. No frame draws this. |
+| **Progress step list** | The analysis's running state names § 06's six passes and ticks them off, where `Check — analyzing` (`605:2163`) fills a bar. Uses `SuccessCheckIcon` in a fixed-width slot so the lines do not reflow as ticks land. No frame draws this. |
 | **Callout / notice** | The safety notice on `01 — Start investigation` is composed from the frosted-card recipe the frame's own deleted DISCLAIMER card used (`radius/lg`, `surface/frost-light`, hairline `border/subtle`, `t-overline` over body). There is no callout component and no ACCENT of any kind for one — the DS also has no warning glyph — `02 Icons` has 13 and none of them means caution — so the block carries its meaning by position and label alone. Raise a Notice component with a `feedback/warning` accent, and note the notice is CONDITIONAL: no frame draws it. |
 
 ---
@@ -298,19 +298,34 @@ They are **pushed views, not steps**: no progress track, no `Save & exit`, back
 chevron kept. `TOTAL_STEPS` is still 5, and step 5's Continue now ends at
 `/investigation/evidence` instead of the Products hub.
 
+⚠️ **IT IS ONE SCREEN, NOT THREE.** It was drawn up as `evidence` → `analyzing`
+→ `findings` and cut back a day later — three screens between step 5 and an
+answer read as three more steps. Figma should draw the ONE screen and its
+states, not the wizard.
+
 What Figma needs to draw, at both breakpoints:
 
-- **`05 — Evidence check`** — an AI bubble, a confirmation card per ambiguous
-  product (two radio rows), the cleanser/sunscreen prompt with its chips, and a
-  read-only three-group summary of what the timeline worked out.
-- **`06 — Analysing`** — the orb `thinking`, and the six named passes ticking
-  through. Not a bar; the transparency is the screen.
-- **`07/08/11 — Findings`**, in **three outcome states**: a leading hypothesis,
-  several that still fit, and **not enough evidence**. The third is the one that
-  matters most — it is where most real runs land, and it is a designed answer
-  rather than an error state.
+- **`Analysis — running`** — the orb `thinking` and the six named passes ticking
+  through, INSIDE the page card. Not a bar and not its own frame; the
+  transparency is the point and the wait is a state.
+- **`Analysis — result`**, in **three outcomes**: a leading hypothesis, several
+  that still fit, and **not enough evidence**. The third matters most — it is
+  where most real runs land, and it is a designed answer rather than an error.
+- Two conditional strips on the result: the ambiguous-product question (usually
+  absent) and the "no cleanser in your list" reminder (a reminder, never a
+  gate).
 
-Three new components go with them; see § 3.
+⚠️ **THE COLOUR IS PART OF THE SPEC AND IT IS CONSTRAINED BY MEASUREMENT.** The
+verdict is a sage `DataCard` — one System B card on a screen of System A ones,
+which is what makes the answer findable. Below it: a WARM stripe and pill on the
+strongest hypothesis, GREEN on what the user's own history ruled out, grey on
+what is weak. Composited over the real surfaces, `feedback/warning` is 1.24–2.36
+and `feedback/success` is 1.84–3.50 — **neither can be a text colour anywhere on
+this screen**, and white on `feedback/warning` is 2.65, the failure already
+recorded against `CompatCard`'s band pills. So the accents are fills and stripes
+with measured ink beside them. A Figma component for this must not undo that.
+
+Four new components go with it; see § 3.
 
 ### Nine designed screens are five steps
 

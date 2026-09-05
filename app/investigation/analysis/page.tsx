@@ -1,12 +1,12 @@
-import { Analyzing } from "@/features/my-skin/components/Analyzing";
+import { Analysis } from "@/features/my-skin/components/Analysis";
 import type { Metadata } from "next";
 import { metadataTitleFor } from "@/lib/pageTitles";
 
 /* The route's own `<title>`, product name included — see `metadataTitleFor`.
    Shared with `RouteAnnouncer`, so the tab label and the sentence a screen
    reader hears on navigation cannot drift apart. */
-export const metadata: Metadata = { title: metadataTitleFor("/investigation/analyzing") };
+export const metadata: Metadata = { title: metadataTitleFor("/investigation/analysis") };
 
 export default function Page() {
-  return <Analyzing />;
+  return <Analysis />;
 }

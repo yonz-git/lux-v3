@@ -1,7 +1,11 @@
-/* `/investigation/analyzing` — § 06. ⚠️ NOT IN FIGMA; the hero follows
+/* § 06, the analysis running. ⚠️ NOT IN FIGMA; the hero follows
    `CheckAnalyzing.module.css`, which was itself cloned from
    `05 — Investigating`. What differs is the body: six named passes instead of a
-   bar, because the brief lists them and the transparency IS the screen. */
+   bar, because the brief lists them and the transparency IS the screen.
+
+   ⚠️ IT IS A STATE INSIDE `/investigation/analysis` NOW, NOT ITS OWN ROUTE, so
+   it sits in the page card rather than centring a whole screen — the padding
+   below is what keeps it from collapsing against the card's top edge. */
 
 .hero {
   display: flex;
@@ -9,6 +13,7 @@
   align-items: center;
   gap: var(--space-2xl);
   width: 100%;
+  padding: var(--space-4xl) 0;
 }
 
 .title {
@@ -71,16 +76,8 @@
   color: var(--color-feedback-success);
 }
 
-.caveat {
-  margin: 0;
-  max-width: 340px;
-  text-align: center;
-  color: var(--color-text-muted);
-}
-
 @media (min-width: 1024px) {
-  .passes,
-  .caveat {
+  .passes {
     max-width: 420px;
   }
 }

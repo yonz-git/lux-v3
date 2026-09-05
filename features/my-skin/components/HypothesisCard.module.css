@@ -5,6 +5,25 @@
    readouts, and this card is an argument the reader opens and works through. */
 
 .card {
+  /* --band is the one colour that changes with the confidence, so the pill and
+     the card's left edge read from it and cannot drift — the same device
+     `CompatCard.module.css` uses for its compatibility band.
+
+     ⚠️ WARM FOR THE STRONGEST, NOT RED. This is not a risk scale: it is how
+     much of the comparison held up, and the warmest thing on the screen should
+     be the thing worth looking at. `feedback/error` would say "danger", which
+     is a claim the analysis is not making.
+
+     ⚠️ `--band-ink` IS A SECOND PROPERTY BECAUSE THE PILL'S TEXT COLOUR CANNOT
+     BE FIXED. Measured: white on `feedback/warning` (#c9918e) is **2.65:1** and
+     fails AA outright — which is why `CompatCard`'s band pills are on the
+     known-failing list in AGENTS.md non-negotiable 17. `text/primary` on the
+     same fill is **5.22:1** and passes. On `bg/brand` (#3b305c) it is the other
+     way round: white 11.91, ink 1.16. So the ink travels with the band, and a
+     new component does not inherit an old component's failure. */
+  --band: var(--color-feedback-warning);
+  --band-ink: var(--color-text-primary);
+
   display: flex;
   flex-direction: column;
   gap: var(--space-lg);
@@ -13,15 +32,57 @@
   border-radius: var(--radius-2xl);
   background: var(--color-surface-frost-light);
   border: var(--border-width-hairline) solid var(--color-border-subtle);
+  border-left: 3px solid var(--band);
   box-shadow: var(--shadow-frosted-row);
   -webkit-backdrop-filter: blur(var(--blur-card));
   backdrop-filter: blur(var(--blur-card));
+}
+
+.card[data-confidence="possible"] {
+  --band: var(--color-bg-brand);
+  --band-ink: var(--color-text-on-brand);
+}
+
+/* the quietest of the three — a weak pattern should not be the loudest thing
+   on the card it sits on */
+.card[data-confidence="weak"] {
+  --band: var(--color-border-subtle);
 }
 
 .head {
   display: flex;
   flex-direction: column;
   gap: var(--space-sm);
+}
+
+.topline {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-md);
+}
+
+/* 24 tall: 4 + 16 + 4. Smaller than `CompatCard`'s 26 because it sits on a
+   line with an overline rather than a heading row. */
+.pill {
+  flex: none;
+  padding: 4px 12px;
+  border-radius: var(--radius-full);
+  background: var(--band);
+  color: var(--band-ink);
+  white-space: nowrap;
+}
+
+/* ⚠️ THE WEAK PILL IS AN OUTLINE, NOT A FILL. `border/subtle` is #e2e4e8, and
+   measured, white on it is **1.27:1** — invisible. Rather than pick a third ink
+   for a fill nobody needs to see, the weak pill drops the fill entirely and its
+   text sits on the card surface, where `text/muted` is already the measured,
+   shipped combination. It also reads correctly: the quietest confidence should
+   be the quietest object. */
+.card[data-confidence="weak"] .pill {
+  background: transparent;
+  border: var(--border-width-hairline) solid var(--color-border-subtle);
+  color: var(--color-text-muted);
 }
 
 .kind {
@@ -33,12 +94,6 @@
   margin: 0;
   color: var(--color-text-primary);
   text-wrap: balance;
-}
-
-.tags {
-  display: flex;
-  flex-wrap: wrap;
-  gap: var(--space-sm);
 }
 
 .products {
@@ -59,14 +114,6 @@
 .reasoning {
   display: flex;
   flex-direction: column;
-}
-
-/* § 07 calls "See the reasoning" the PRIMARY ACTION. Here it labels a stack of
-   disclosures rather than a button, because the reasoning opens in place: a
-   button implies leaving, and the whole argument is on this screen. */
-.reasoningLabel {
-  margin: 0 0 var(--space-xs);
-  color: var(--color-text-muted);
 }
 
 .points {

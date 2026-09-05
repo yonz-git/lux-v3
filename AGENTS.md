@@ -128,7 +128,7 @@ Four placement facts that look like mistakes and are not:
 
 ## The route map
 
-Twenty-one routes — twenty, plus `/chat`, which is in no nav section.
+Nineteen routes — eighteen, plus `/chat`, which is in no nav section.
 `features/my-skin/flow.ts` owns the step order, the 1-based track position, the
 Figma frame ids and each step's `isComplete` rule.
 
@@ -140,9 +140,7 @@ Figma frame ids and each step's `isComplete` rule.
 | `/investigation/conditions` | flow step 3/5 | `my-skin` |
 | `/investigation/timing` | flow step 4/5 | `my-skin` |
 | `/investigation/products` | flow step 5/5 — ⚠️ the one flow screen lighting `products` | `products` |
-| `/investigation/evidence` | pushed view — ⚠️ NOT a step: the analysis's evidence check | `my-skin` |
-| `/investigation/analyzing` | pushed view — ⚠️ NOT a step | `my-skin` |
-| `/investigation/findings` | pushed view — ⚠️ NOT a step: the analysis result | `my-skin` |
+| `/investigation/analysis` | pushed view — ⚠️ NOT a step: the retrospective analysis | `my-skin` |
 | `/products` | hub landing | `products` |
 | `/progress` | hub landing — **the default**, opens populated | `progress` |
 | `/progress/empty` | ⚠️ prototype-only empty state | `progress` |
@@ -185,13 +183,20 @@ things stay open: no locale-appropriate emergency number, and
 `/progress/check-in` records worsening and escalates nothing. See
 "⚠️ SAFETY" in `docs/decisions.md`.
 
-⚠️ **THREE ROUTES UNDER `/investigation` ARE NOT STEPS, AND `TOTAL_STEPS` IS
-STILL 5.** `evidence`, `analyzing` and `findings` are the retrospective analysis
-— the culprit finder the product brief specifies and the thing LUX is named
-for. They carry no progress track and no `Save & exit`, which by the rule above
-is exactly what makes them not steps: the five steps COLLECT, these three REPORT
-on what those five collected. They live under `/investigation` for that reason
-and not because they are a sixth question. **Do not add them to `STEPS`.**
+⚠️ **`/investigation/analysis` IS NOT A STEP, AND `TOTAL_STEPS` IS STILL 5.** It
+is the retrospective analysis — the culprit finder the product brief specifies
+and the thing LUX is named for. It carries no progress track and no
+`Save & exit`, which by the rule above is exactly what makes it not a step: the
+five steps COLLECT, this REPORTS on what they collected. It lives under
+`/investigation` for that reason and not because it is a sixth question.
+**Do not add it to `STEPS`.**
+
+⚠️ **AND IT IS ONE ROUTE BECAUSE THREE WAS TOO MANY.** It shipped on 5 Sep as
+`evidence` → `analyzing` → `findings` and was cut back the next day: three
+screens between step 5 and an answer read as three more steps. The wait is a
+STATE of this route now, the ambiguous-product question is an inline strip on
+it, and the read-only "here is what I worked out" summary was deleted outright.
+**Do not re-expand it into a wizard.**
 
 `features/my-skin/analysis.ts` owns the whole model — the evidence states, the
 gates, the subtraction, the confidence label and every sentence the screens put
@@ -214,12 +219,15 @@ scientific-looking percentage." Confidence is a WORD — stronger / possible /
 weak — derived from the shape of the subtraction. `CompatCard` keeps its `%`,
 deliberately; the split is recorded in `docs/decisions.md`.
 
-⚠️ **AND THE ANALYSIS IS ALLOWED TO REFUSE.** "Not enough evidence for a
-responsible conclusion" is one of § 07's three outcomes and is a designed state,
-not an error — it names exactly what is missing and links to the step that owns
-it. The gates are STRUCTURAL, not a product count: `MIN_CHECK_PRODUCTS = 2` is
-right for a compatibility check and far too low for a causal one. Do not
-"improve" the analysis by loosening them so it always answers.
+⚠️ **THE ANALYSIS IS ALLOWED TO REFUSE — BUT ONLY WHEN THERE IS NOTHING TO
+COMPARE.** "Not enough evidence for a responsible conclusion" is one of § 07's
+three outcomes and is a designed state, not an error. It fires on exactly two
+things: no flare date, or nothing new plus nothing readable. ⚠️ **It used to
+fire on five**, including a missing cleanser or sunscreen, and the result was a
+screen that lectured the user about what they had not typed in before it would
+say anything. Everything else now LOWERS THE CONFIDENCE instead — which the
+screen already has a word for. **Do not put the completeness gates back**; in
+particular, a missing cleanser is a reminder, never a requirement.
 
 ## The prototype starts EMPTY — and Continue is gated
 

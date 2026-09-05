@@ -41,13 +41,15 @@ const HUB_TITLES: Record<string, string> = {
   "/check/analyzing": "Analysing your check",
   "/check/results": "Check results",
   "/check/history": "Previous checks",
-  /* ⚠️ UNDER `/investigation`, AND NOT FLOW STEPS — so they belong here rather
-     than coming from `flow.ts`. The five steps COLLECT; these three report on
-     what they collected, and carry no progress track and no `Save & exit`. See
-     `features/my-skin/analysis.ts`. */
-  "/investigation/evidence": "Evidence check",
-  "/investigation/analyzing": "Analysing your investigation",
-  "/investigation/findings": "Investigation findings",
+  /* ⚠️ UNDER `/investigation`, AND NOT A FLOW STEP — so it belongs here rather
+     than coming from `flow.ts`. The five steps COLLECT; this reports on what
+     they collected, and carries no progress track and no `Save & exit`. See
+     `features/my-skin/analysis.ts`.
+
+     ⚠️ IT WAS THREE ROUTES — `evidence`, `analyzing`, `findings` — and three
+     screens for one question read as three more steps. One route now, with the
+     wait as its first state. */
+  "/investigation/analysis": "Analysis",
   /* ⚠️ PROTOTYPE-ONLY AND IN NO NAV SECTION. `/chat` is the standalone
      conversation panel (270:96); nothing links to it. It still needs a title —
      an untitled route is the WCAG 2.4.2 failure this file exists to fix, and

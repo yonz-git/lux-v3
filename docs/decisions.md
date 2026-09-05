@@ -1111,30 +1111,53 @@ product is shaped like this", below). CHECK is the earlier thesis and it STAYS �
 decided 5 Sep 2026: they answer different questions in opposite directions and
 neither subsumes the other. Do not merge them.
 
-## The shape: three routes, not seven screens, and not a sixth step
+## The shape: ONE route, not seven screens, and not a sixth step
 
-The brief's §§ 05–12 are seven screens. They ship as three:
+The brief's §§ 05–12 are seven screens. They ship as one, plus PROGRESS:
 
-| Brief | Route |
+| Brief | Where |
 | --- | --- |
-| 05 Evidence preparation | `/investigation/evidence` |
-| 06 Analysis in progress | `/investigation/analyzing` |
-| 07 Result · 08 Reasoning · 11 No-conclusion | `/investigation/findings` |
+| 05 Evidence preparation | inline on the analysis — a strip, only when ambiguous |
+| 06 Analysis in progress | the first ~2.5s of `/investigation/analysis` |
+| 07 Result · 08 Reasoning · 11 No-conclusion | `/investigation/analysis` |
 | 09 Calendar · 10 Next action · 12 Follow-up | PROGRESS — **no new screens** |
 
-⚠️ **THE THREE ARE NOT INVESTIGATION STEPS.** No progress track, no
-`Save & exit`, back chevron kept — pushed views, the standing `/check/results`
-has to `/check/new`. `TOTAL_STEPS` is still 5 and `STEPS` is untouched. They sit
-under `/investigation` because they REPORT on what the five steps COLLECTED.
-Step 5's `next` now points at `/investigation/evidence`; it pointed at
-`/products` with a note saying "the real destination once INVESTIGATION lands".
+⚠️ **IT WAS THREE ROUTES FOR ONE DAY, AND THAT IS THE MOST USEFUL THING IN THIS
+SECTION.** `evidence` → `analyzing` → `findings` shipped on 5 Sep 2026 and was
+collapsed on 6 Sep. The feedback, verbatim: *"as a user its more steps added and
+too much reading required."* Both halves were true and both were self-inflicted:
+
+- **`/investigation/evidence` is deleted.** Its confirmation question is an
+  inline strip on the analysis (and is usually absent, because the timeline is
+  usually unambiguous). Its cleanser prompt is one line at the bottom. Its
+  read-only "here is what I worked out" summary — three groups listing every
+  product under its evidence state — is **gone**, and it was the clearest single
+  example of the reading problem: it restated the timeline the user had just
+  typed in, in the app's own vocabulary, before saying anything useful.
+- **`/investigation/analyzing` is a STATE, not a route.** Six named passes for
+  2.3 seconds at the top of the analysis, then the result replaces it. It runs
+  once per arrival and does NOT re-run when the user answers the inline strip.
+
+⚠️ **DO NOT RE-EXPAND IT INTO A WIZARD.** Every screen this feature adds is a
+screen between someone and the answer they came for.
+
+⚠️ **IT IS NOT AN INVESTIGATION STEP.** No progress track, no `Save & exit`,
+back chevron kept — a pushed view, the standing `/check/results` has to
+`/check/new`. `TOTAL_STEPS` is still 5 and `STEPS` is untouched. It sits under
+`/investigation` because it REPORTS on what the five steps COLLECTED. Step 5's
+`next` points at it; it pointed at `/products` with a note saying "the real
+destination once INVESTIGATION lands".
 
 ⚠️ **§§ 09/10/12 ADDED NO SCREENS AND SHOULD NOT.** PROGRESS already owns the
 investigation calendar, the day-by-day series and the check-in; building a
 second calendar for the analysis would give the demo two.
 
-⚠️ **`findings`, NOT `results`.** `/check/results` owns the other question, and
-the route map has to make the two visibly different to someone scanning it.
+⚠️ **IT IS CALLED "ANALYSIS", AND THAT IS THE ONLY WORD FOR IT NOW.** It was
+`findings` for a day. The app was calling one idea three things — *investigation*
+(the flow), *check* (the other engine), *findings* (the result) — and a user
+reading the nav has no way to know those are three names and not three features.
+"Analysis" is the word the product actually means. See "The naming, and whether
+CHECK should merge into it" below, which is a decision still open.
 
 ## One route, three outcomes — and one of them is a refusal
 
@@ -1144,19 +1167,95 @@ an answer, and it was **built first** — Open Beauty Facts ingredient coverage 
 patchy and the gates are strict, so it is the state most real runs land in.
 Built last it would have been built worst.
 
-⚠️ **THE GATES ARE STRUCTURAL, NOT A PRODUCT COUNT, AND LOOSENING THEM IS NOT AN
-IMPROVEMENT.** `MIN_CHECK_PRODUCTS = 2` is right for a compatibility check and
-far too low for a causal one — but a flat number is the wrong shape either way:
-five products all added last week give a subtraction nothing to subtract, and
-three can answer cleanly. Each gate names a structure the argument needs and the
-step that fixes it. From the case-study spine: *"the interface has to be willing
-to say I don't know yet, add three more."*
+⚠️ **THERE ARE TWO GATES. THERE WERE FIVE, AND THAT WAS WRONG.** The first build
+refused to analyse without a cleanser, a sunscreen, two tolerated products
+carrying ingredient lists, and ingredient data on the majority. The result was a
+screen that lectured the user about what they had not typed in before it would
+tell them anything — and, worse, an app deciding that someone's routine was
+incomplete because they do not use a sunscreen. That is not its call.
+
+What stops it now: **no flare date** (nothing to compare against), and
+**nothing new plus nothing readable** (no suspect at all, or no ingredients
+anywhere). Everything else lowers the CONFIDENCE, which the screen already has a
+word for — a comparison with no tolerated history to subtract from comes out
+`weak` and says so, instead of refusing.
+
+⚠️ **DO NOT PUT THE COMPLETENESS GATES BACK.** Specifically: a missing cleanser
+or sunscreen is a REMINDER at the bottom of the result (`forgottenRoles`), never
+a requirement, and there is no longer any answer key for "I don't use one"
+because there is nothing for it to unlock.
+
+`MIN_CHECK_PRODUCTS = 2` is still the wrong shape for a causal question, and the
+constant `MIN_TOLERATED` is still 2 — it just caps confidence now rather than
+blocking. From the case-study spine: *"the interface has to be willing to say I
+don't know yet, add three more."* It still is; it just does not say it as often.
 
 ⚠️ **AND `Findings` DOES NOT GIVE EVERY CANDIDATE A CARD.** A real routine
 produces four or five weak candidates; carding each one buries the leading
 hypothesis under things the analysis has already said it cannot support. Only
 the top confidence band gets cards (`splitHypotheses`); the rest are listed by
 name and label. Nothing is hidden and nothing is dressed up.
+
+## ⚠️ OPEN — the naming, and whether CHECK should merge into the analysis
+
+Raised 6 Sep 2026, by the person who owns the product, on seeing it built:
+
+> *"i also want to understand if this is necessary separate feature from the
+> check feature. i do not really think so. analysis, check and investigation
+> should be one thing. maybe only the term analysis should be used."*
+
+**They are right about the naming and half right about the feature.** Written
+down here because it is a real decision and it is not made yet.
+
+### Where they are right
+
+The app calls one idea three things. *Investigation* is the five-step flow,
+*Check* is a nav tab, and the result screen was called *Findings* until this
+change. A user reading the bottom nav has no way to know those are three names
+for one activity — LUX looking at your products and telling you something —
+rather than three separate features. Nothing about the two engines requires
+three vocabularies. **The word is "analysis"**, and as of this change the
+retrospective side uses it everywhere: the route, the title, the screen.
+
+### Where the separation is real, and it is NOT about the code
+
+The two engines take different inputs and cannot become one function:
+
+| | CHECK | the analysis |
+| --- | --- | --- |
+| Question | does this suit my skin? | which of these did this to me? |
+| Direction | prospective, before use | retrospective, after a reaction |
+| Input | a basket + a skin profile | a flare date + a product timeline |
+| Mechanism | penalties against a profile | subtraction against tolerated products |
+| Output | a score per product | an argument, with a confidence word |
+
+Force the prospective question through the retrospective engine and every
+product comes back "not enough history", because there is no timeline. Force the
+retrospective one through CHECK and the flare date — the entire mechanism — is
+ignored. **A merge at the engine level makes both answers worse.**
+
+### The option that gets what was actually asked for
+
+**ONE FEATURE, TWO QUESTIONS, ONE VOCABULARY.** Rename the Check tab to
+**Analysis** and give it a small landing with two entry points — *"Is this
+product right for me?"* and *"What caused my reaction?"* — that both end on a
+result screen of the same shape, with the same words for the same ideas. The
+engines stay separate underneath, where the difference is real; the user sees
+one feature, which is where the difference is not.
+
+That also fixes a thing this section has been quietly wrong about: the analysis
+currently lives under `/investigation` and lights the **`my-skin`** nav item,
+because it is the end of that flow. Under the proposal it would move under the
+renamed Check tab and `/investigation/analysis` would become a redirect or a
+second entrance. **Not done** — it moves shipped CHECK screens and changes the
+nav, which is a product decision rather than a cleanup.
+
+### What is NOT worth doing
+
+Merging the two result screens into one component. They share a vocabulary and
+should share a shape, but `/check/results` shows five scored products and the
+analysis shows one argument with its counter-evidence. One component serving
+both would be a component with two modes and no opinion.
 
 ## The timeline is four coarse buckets, so there are THREE evidence states
 

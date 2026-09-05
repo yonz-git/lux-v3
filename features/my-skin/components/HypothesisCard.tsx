@@ -2,14 +2,13 @@
 
 import styles from "./HypothesisCard.module.css";
 import { Disclosure } from "./Disclosure";
-import { Tag } from "@/components/ui/Tag";
 import { fullName } from "@/features/products/products";
 import {
   CONFIDENCE_LABEL,
-  headline,
   hypothesisKind,
   hypothesisProducts,
   reasoningFor,
+  subject,
   type Analysis,
   type Hypothesis,
 } from "@/features/my-skin/analysis";
@@ -30,6 +29,13 @@ import type { Answers } from "@/lib/store/answers";
  * A number would dress that up as a measurement. The confidence is a WORD —
  * stronger, possible, weak — derived from the shape of the comparison. Counts
  * of products are facts and are shown; a score is not.
+ *
+ * ⚠️ THE CONFIDENCE IS A COLOURED PILL, THE SAME DEVICE `CompatCard` USES FOR
+ * ITS BAND — one `--band` custom property set by a `data-` attribute, so the
+ * pill and the card's edge cannot drift apart. It carries no percentage and no
+ * bar: the brief forbids a scientific-looking number on a hypothesis, and this
+ * judgement is made from four coarse duration buckets. ⚠️ The pill's TEXT is
+ * always the carrier — colour never says it alone (non-negotiable 7).
  *
  * ⚠️ THE ACCORDION ORDER IS THE BRIEF'S AND IT IS THE ARGUMENT'S SHAPE:
  * relevance, then the skin profile, then interactions, then EVIDENCE AGAINST,
@@ -67,21 +73,24 @@ export function HypothesisCard({
   ];
 
   return (
-    <article className={styles.card}>
+    <article className={styles.card} data-confidence={hypothesis.confidence}>
       <header className={styles.head}>
-        <p className={`${styles.kind} t-overline`}>
-          {rank ? `${rank}. ` : ""}
-          {hypothesisKind(hypothesis)}
-        </p>
-        <h3 className={`${styles.headline} t-h5`}>{headline(hypothesis)}</h3>
-
-        <div className={styles.tags}>
-          {/* ⚠️ THE CONFIDENCE IS A NEUTRAL TAG, NOT A COLOURED BAND. CHECK's
-              bands carry `feedback/warning` and `feedback/error`, which share a
-              hue — and this is not a warning in the first place. It is how much
-              of the comparison held up. */}
-          <Tag>{CONFIDENCE_LABEL[hypothesis.confidence]}</Tag>
+        <div className={styles.topline}>
+          <p className={`${styles.kind} t-overline`}>
+            {rank ? `${rank}. ` : ""}
+            {hypothesisKind(hypothesis)}
+          </p>
+          <span className={`${styles.pill} t-label-sm`}>
+            {CONFIDENCE_LABEL[hypothesis.confidence]}
+          </span>
         </div>
+
+        {/* ⚠️ `subject`, NOT `headline`. The overline directly above already
+            says "Possible contributor", so `headline`'s "A possible contributor:
+            Alcohol Denat." said it twice in two lines. `headline` keeps the
+            framing for the saved PROGRESS record, where nothing else supplies
+            it. */}
+        <h3 className={`${styles.headline} t-h5`}>{subject(hypothesis)}</h3>
 
         <ul className={styles.products}>
           {products.map((p) => (
@@ -93,7 +102,6 @@ export function HypothesisCard({
       </header>
 
       <div className={styles.reasoning}>
-        <p className={`${styles.reasoningLabel} t-label-sm`}>See the reasoning</p>
         {sections
           .filter((s) => s.items.length > 0)
           .map((s) => (

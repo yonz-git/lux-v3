@@ -81,17 +81,12 @@ export type Answers = Partial<{
    */
   evidence: Record<string, "associated" | "tolerated">;
 
-  /**
-   * The routine roles the user has declared they do not use — `"cleanser"`,
-   * `"sunscreen"`.
-   *
-   * ⚠️ "I DON'T USE ONE" IS AN ANSWER AND ITS ABSENCE IS NOT. § 05 will not let
-   * the analysis run without a cleanser and a sunscreen accounted for, because
-   * both touch the whole face daily and leaving one out hides the product most
-   * likely to be involved. Without this key the gate could only ever be failed,
-   * never passed, by someone who genuinely uses neither.
-   */
-  routineNotUsed: ("cleanser" | "sunscreen")[];
+  /* ⚠️ THERE IS NO `routineNotUsed` KEY, AND THAT IS DELIBERATE. It existed so
+     the user could declare "I don't use a sunscreen" and thereby satisfy a GATE
+     that refused to analyse without one. The gate is gone — a missing cleanser
+     or sunscreen is a reminder now, not a requirement — so there is nothing for
+     the declaration to unlock and nothing worth storing. See `forgottenRoles`
+     in `features/my-skin/analysis.ts`. */
 
   /**
    * The finding the user saved — § 09's "investigation record", which is what

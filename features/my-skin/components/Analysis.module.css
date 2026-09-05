@@ -1,0 +1,214 @@
+/* `/investigation/analysis`. ⚠️ NOT IN FIGMA — page `06. Screen Designs` has no
+   analysis frames outside CHECK, so every value here is decided in the
+   prototype and listed in `docs/figma-catchup.md`.
+
+   ⚠️ THE SCREEN MIXES BOTH SURFACE SYSTEMS, DELIBERATELY, AND `/check/results`
+   IS THE PRECEDENT. The verdict is System B — a sage DataCard, because it is a
+   READOUT and it is the one thing that has to be legible at arm's length. The
+   hypothesis cards below stay System A, frosted light, because they are the
+   detail you open. The CHECK handoff already permits exactly this: "a sage card
+   inside a light screen is correct and matches Check results".
+
+   ⚠️ COLOUR IS A FILL OR A STRIPE HERE, NEVER A TEXT COLOUR, AND THAT IS
+   MEASURED RATHER THAN ASSUMED. Composited over the real surfaces:
+
+     on surface/data (the sage card, over the canvas range)
+       feedback/warning   1.24 – 1.42     unusable as text
+       feedback/success   1.84 – 2.10     unusable as text
+       bg/brand           5.57 – 6.38     fine
+       text/on-data-muted 4.75 – 5.44     fine
+
+     on surface/frost-light (the light cards, over the canvas range)
+       feedback/warning   2.03 – 2.36     unusable as text
+       feedback/success   3.00 – 3.50     fails AA for 13px; OK as a 3px stripe
+       bg/brand           9.11 – 10.63    fine
+
+   So the warm and the green appear as a STRIPE or a FILL and the words beside
+   them are always in a token that passes. This is also why the confidence pill
+   in `HypothesisCard.module.css` carries its own ink: white on
+   `feedback/warning` is 2.65 and is the failure AGENTS.md already records
+   against `CompatCard`'s band pills. Do not repeat it here.
+
+   And per non-negotiable 7 every colour is paired with a word regardless —
+   "Ruled out by what you tolerate", "Stronger pattern" — so nothing on this
+   screen depends on seeing the colour at all. */
+
+/* ---- the verdict ------------------------------------------------------- */
+
+/* ⚠️ THE SAGE IS THE EMPHASIS — THE CARD DOES NOT NEED AN ACCENT STRIPE AS WELL.
+   It carried one per outcome at first, in `feedback/warning`; measured against
+   the sage composite that stripe is 1.24–1.42 and effectively invisible, which
+   is the tell that the colour was decorative rather than doing work. One sage
+   card on a screen of light frosted ones is already the loudest thing on it.
+   The per-outcome signal is the confidence band on the cards below. */
+.verdict {
+  margin-bottom: var(--space-2xl);
+}
+
+.verdictOverline {
+  margin: 0;
+  color: var(--color-text-on-data-muted);
+}
+
+.verdictText {
+  margin: 0;
+  color: var(--color-text-on-data);
+  text-wrap: balance;
+}
+
+/* ---- the confirmation strip -------------------------------------------- */
+
+.confirm {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-md);
+  margin-bottom: var(--space-2xl);
+}
+
+.confirmTitle {
+  margin: 0;
+  color: var(--color-text-secondary);
+}
+
+.confirmRow {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-sm);
+}
+
+.confirmName {
+  margin: 0;
+  color: var(--color-text-primary);
+}
+
+.confirmChips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px; /* the Chip grid gap, off the spacing scale in Figma too */
+}
+
+/* ---- the hypotheses ---------------------------------------------------- */
+
+.cards {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-lg);
+  margin-bottom: var(--space-2xl);
+}
+
+/* ---- ruled out --------------------------------------------------------- */
+
+.cleared {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-sm);
+  margin-bottom: var(--space-2xl);
+  padding: var(--space-lg) 18px;
+
+  border-radius: var(--radius-lg);
+  border-left: 3px solid var(--color-feedback-success);
+  background: var(--color-surface-frost-light);
+  box-shadow: var(--shadow-frosted-row);
+  -webkit-backdrop-filter: blur(var(--blur-card));
+  backdrop-filter: blur(var(--blur-card));
+}
+
+/* ⚠️ `text/secondary`, NOT `feedback/success`. The green is 3.00–3.50 on this
+   surface — enough for the 3px stripe beside it, not enough for 13px type. The
+   stripe carries the colour, the words carry the meaning. */
+.clearedTitle {
+  margin: 0;
+  color: var(--color-text-secondary);
+}
+
+.plain {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-sm);
+  margin: 0;
+  padding-left: var(--space-lg);
+  color: var(--color-text-primary);
+  list-style: disc;
+}
+
+/* ---- the next action --------------------------------------------------- */
+
+.gap,
+.next {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: var(--space-md);
+  margin-bottom: var(--space-2xl);
+}
+
+.nextTitle {
+  margin: 0;
+  color: var(--color-text-primary);
+  text-wrap: balance;
+}
+
+.nextBody {
+  margin: 0;
+  color: var(--color-text-secondary);
+}
+
+.actions {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--space-md);
+}
+
+.secondary {
+  color: var(--color-text-secondary);
+}
+
+.fineprint {
+  margin: 0;
+  color: var(--color-text-muted);
+}
+
+.lone {
+  align-self: flex-start;
+  margin-bottom: var(--space-2xl);
+}
+
+/* ---- the quiet tail ---------------------------------------------------- */
+
+/* Everything below the answer: the thinner candidates and the § 11 fallback.
+   A hairline above rather than a card, because these are asides to the screen
+   rather than objects on it. */
+.foot {
+  margin-bottom: var(--space-xl);
+  border-top: var(--border-width-hairline) solid var(--color-border-subtle);
+}
+
+.reminder {
+  margin: 0 0 var(--space-2xl);
+  color: var(--color-text-muted);
+}
+
+.reminderLink {
+  color: var(--color-text-secondary);
+}
+
+@media (min-width: 1024px) {
+  /* 52ch is the measure `ResultCards.module.css` settled on and measured —
+     kept so the two answer screens read at the same width. */
+  .verdictText,
+  .nextBody,
+  .plain,
+  .reminder,
+  .fineprint {
+    max-width: 52ch;
+  }
+}
+
+@media (prefers-reduced-transparency: reduce) {
+  .cleared {
+    background: var(--color-bg-surface-frost);
+    -webkit-backdrop-filter: none;
+    backdrop-filter: none;
+  }
+}
