@@ -76,13 +76,13 @@
     margin-bottom: var(--space-sm); /* + the 16 gap = 24 */
   }
 
-  /* ⚠️ 376 IS THE CTA's WIDTH, and that is the whole point: left to hug, the
-     bubble settled at ~375 beside a 376 button, which reads as a missed
-     alignment rather than a different measure. Fixed to the button's width so
-     the orb, the bubble and the CTA share one edge. */
+  /* ⚠️ THE CTA's WIDTH, and that is the whole point: left to hug, the bubble
+     settled at ~375 beside the button, which reads as a missed alignment rather
+     than a different measure. Bound to the same token so the orb, the bubble and
+     the CTA share one edge and cannot drift apart. */
   .intro {
-    --bubble-width: 376px;
-    --bubble-max: 376px;
+    --bubble-width: var(--width-action);
+    --bubble-max: var(--width-action);
   }
 }
 
@@ -92,12 +92,12 @@
   margin-top: var(--space-3xl); /* 32 */
 }
 
-/* ⚠️ 376 ON DESKTOP, NOT THE 280 `Progress — empty` USES. Both are "the empty
-   state's one action" and the two comps disagree; each is reproduced rather
-   than normalised to whichever was drawn first. Worth resolving in Figma. */
+/* ⚠️ RESOLVED. This used to read "376 on desktop, not the 280 `Progress — empty`
+   uses ... worth resolving in Figma", and it has been: every primary action in
+   the app is now `--width-action`, which is this 376. See globals.css. */
 @media (min-width: 1024px) {
   .cta {
-    width: 376px;
+    width: var(--width-action);
   }
 }
 

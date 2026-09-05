@@ -104,9 +104,10 @@
     min-height: var(--continue-gap, var(--space-3xl));
   }
 
-  /* Continue is 280x62, centred — not stretched to the card width. */
+  /* Continue is `width/action` x 62, centred — not stretched to the card
+     width. It was 280 until the action width was unified; see globals.css. */
   .footer .continue {
-    width: 280px;
+    width: var(--width-action);
     align-self: center;
   }
 }

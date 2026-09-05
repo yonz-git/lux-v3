@@ -170,7 +170,7 @@
   }
 
   .cta {
-    max-width: 376px;
+    max-width: var(--width-action);
   }
 
   .disclaimer {

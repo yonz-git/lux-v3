@@ -251,6 +251,16 @@
   width: 100%;
 }
 
+/* The same `width/action` every other primary action takes on desktop, rather
+   than stretching across the tray. No centring needed here — `Sheet`'s tray is
+   a flex column with `align-items: center`, so a child that is not full width
+   is already on the axis. */
+@media (min-width: 1024px) {
+  .submit {
+    width: var(--width-action);
+  }
+}
+
 /* sits directly under the disabled CTA, so the reason is next to the control it
    explains rather than at the top of the tray */
 .helper {

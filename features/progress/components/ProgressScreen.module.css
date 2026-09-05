@@ -91,7 +91,7 @@
   .cta {
     grid-column: 1;
     grid-row: 3;
-    width: 376px;
+    width: var(--width-action);
     justify-self: center;
   }
 
@@ -137,6 +137,6 @@
 
 @media (min-width: 1024px) {
   .emptyCta {
-    width: 280px;
+    width: var(--width-action);
   }
 }

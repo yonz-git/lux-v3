@@ -696,6 +696,24 @@ main[tabindex="-1"]:focus-visible {
   --content-top: var(--space-3xl); /* 32 */
 }
 
+/* ⚠️ ONE DESKTOP WIDTH FOR EVERY PRIMARY ACTION — 376, RESOLVED 5 Sep 2026.
+   The app had two: 376 on Welcome, `/check`, `/check/history` and `/progress`,
+   and 280 on the flow's Continue, the PRODUCTS hub footer and
+   `/progress/empty`. That split was not a decision, it was two comps
+   disagreeing — `CheckScreen.module.css` said so in as many words and asked for
+   it to be resolved in Figma. It is resolved here, toward the value five of the
+   eight sites already used, so a button does not change size because you walked
+   into a different section.
+
+   ⚠️ IT IS A HAND-AUTHORED TOKEN AND BELONGS ON `:root` HERE, NOT IN
+   `tokens.css`, which is generated from the Figma variables (non-negotiable 1).
+   Raise `width/action` in Figma and this moves.
+
+   Mobile is unaffected: every one of these is full-width on a phone. */
+:root {
+  --width-action: 376px;
+}
+
 /* ⚠️ NOT IN FIGMA — THE PANEL SCREENS SIT 24 HIGHER THAN EVERY OTHER SCREEN,
    asked for directly: 60% off the 40 top space, leaving 16.
 

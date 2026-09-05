@@ -214,7 +214,7 @@
      footer button. */
   .footer {
     align-self: center;
-    max-width: 280px;
+    max-width: var(--width-action);
     /* the mobile rule's auto + 32 padding is replaced outright here: desktop
        hub frames place the footer 48 under the card and the page is mostly
        whitespace anyway, so there is no stranded-action problem to solve */
