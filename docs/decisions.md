@@ -1431,10 +1431,21 @@ EU cosmetic-claims note is about, approached from the other side.
 `features/my-skin/safety.ts` + `components/SafetyNotice.tsx`. Ticking
 `Swelling` or `Rash` reveals a notice under step 1's chip grid:
 
-> **Before you continue** — LUX looks for patterns in the products you use — it
-> cannot judge how serious a reaction is. If your symptoms are severe, spreading
-> quickly, or affecting your eyes, lips, mouth or breathing, please speak to a
-> doctor or pharmacist rather than waiting on an investigation.
+> **Before you continue** — LUX can't judge how serious a reaction is. If yours
+> is severe, spreading fast, or affecting your eyes, lips or breathing, please
+> see a doctor or pharmacist.
+
+⚠️ **27 words, and the length is part of the safety argument.** The first draft
+ran to 46 and opened by explaining what LUX does before reaching the point; a
+safety message nobody finishes reading is not a safety message. Three things
+survived the cut on purpose — the LIMIT (`can't judge how serious`), the
+CONDITIONAL that keeps the severity judgement with the reader (`if yours is`),
+and the NAMED SIGNS, which are § 03E's triggers in plain words and the only part
+that tells someone whether this is about them. Keep all three if it is rewritten.
+
+It also OPENS rather than appears, so the face diagram below slides instead of
+jumping — `SafetyNotice.module.css` carries the three-element grid that does it,
+and why only the opening animates.
 
 That closes the implicit claim above: the app no longer collects "Swelling" and
 walks on as though a product investigation were the right response.

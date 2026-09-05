@@ -72,9 +72,20 @@ export function needsProfessionalNotice(selected: readonly string[]): boolean {
  * see. `doctor or pharmacist` rather than the `dermatologist` `CheckResults`
  * points at: a dermatology referral is the right destination for a slow
  * pattern question and the wrong one for something that is getting worse today.
+ *
+ * ⚠️ 27 WORDS, DOWN FROM 46, AND THE CUT KEPT THREE THINGS ON PURPOSE. A safety
+ * message nobody finishes reading is not a safety message, and the first draft
+ * opened with a clause about what LUX does before reaching the point. What
+ * survives is the limit (`can't judge how serious`), the CONDITIONAL that keeps
+ * the severity judgement with the reader (`if yours is`), and the named signs —
+ * eyes, lips, breathing — which are the brief's § 03E triggers in plain words
+ * and the only part that tells someone whether this is about them. What went:
+ * the framing sentence, `mouth` (bracketed by `lips` and `breathing`), and
+ * `rather than waiting on an investigation`, which the `Before you continue`
+ * label already says.
  */
 export const SAFETY_NOTICE = {
   label: "Before you continue",
   body:
-    "LUX looks for patterns in the products you use — it cannot judge how serious a reaction is. If your symptoms are severe, spreading quickly, or affecting your eyes, lips, mouth or breathing, please speak to a doctor or pharmacist rather than waiting on an investigation.",
+    "LUX can't judge how serious a reaction is. If yours is severe, spreading fast, or affecting your eyes, lips or breathing, please see a doctor or pharmacist.",
 } as const;

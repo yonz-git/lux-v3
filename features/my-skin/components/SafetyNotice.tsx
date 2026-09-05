@@ -23,9 +23,13 @@ import { SAFETY_NOTICE } from "@/features/my-skin/safety";
  * ⚠️ THE WRAPPER IS ALWAYS RENDERED AND THE NOTICE IS NOT. A live region has to
  * be in the DOM BEFORE its contents change or screen readers announce nothing —
  * mounting the whole thing on the tick would make this silent for exactly the
- * users least able to see it appear. The empty wrapper costs no height:
- * `QuestionScreen`'s `.content` sets no `gap`, so the stack's spacing lives on
- * `.notice`'s own margin.
+ * users least able to see it appear.
+ *
+ * That same split is what lets the block OPEN rather than appear. The wrapper
+ * persists, so it can hold a `grid-template-rows` transition that the mounting
+ * child flips through `:has()` — no `@starting-style`, and nothing to
+ * orchestrate in React. `.clip` is the middle layer the grid row actually
+ * measures. See the module for why the three levels are all load-bearing.
  *
  * ⚠️ IT ADDS HEIGHT TO A SCREEN THAT ALREADY OVERFLOWS. Step 1 is one of the two
  * screens where `Continue` sits behind the nav pill at rest (measured 440:
@@ -40,17 +44,21 @@ export function SafetyNotice({ show }: { show: boolean }) {
   return (
     /* `polite`, not `assertive` — it must not cut across the announcement of
        the chip the user just pressed. */
-    <div role="status">
+    <div role="status" className={styles.live}>
       {show ? (
-        <section
-          className={`${styles.notice} reveal-quick`}
-          aria-labelledby={labelId}
-        >
-          <p id={labelId} className={`${styles.label} t-overline`}>
-            {SAFETY_NOTICE.label}
-          </p>
-          <p className={`${styles.body} t-body3-body2`}>{SAFETY_NOTICE.body}</p>
-        </section>
+        <div className={styles.clip}>
+          <section
+            className={`${styles.notice} reveal-quick`}
+            aria-labelledby={labelId}
+          >
+            <p id={labelId} className={`${styles.label} t-overline`}>
+              {SAFETY_NOTICE.label}
+            </p>
+            <p className={`${styles.body} t-body3-body2`}>
+              {SAFETY_NOTICE.body}
+            </p>
+          </section>
+        </div>
       ) : null}
     </div>
   );
