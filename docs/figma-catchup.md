@@ -166,6 +166,7 @@ treatment — but there is no component to keep them in sync.
 | **Product imagery** | No product or bottle icon exists outside the nav, so every thumb and image well drew a camera — which identifies nothing down a list. Nine vessel silhouettes by packaging type, tinted per brand. Raise a real illustration set. |
 | **Check-in photo** | The photos card's entire content is a picture, so a camera glyph says "no photo" on the record of one the user took. Raise real imagery. |
 | **Opaque sage** | `surface/data-strong` has no solid counterpart — see the token list. |
+| **Callout / notice** | The safety notice on `01 — Start investigation` is composed from the frosted-card recipe the frame's own deleted DISCLAIMER card used (`radius/lg`, `surface/frost-light`, hairline `border/subtle`, `t-overline` over body). There is no callout component and no ACCENT of any kind for one — the DS also has no warning glyph — `02 Icons` has 13 and none of them means caution — so the block carries its meaning by position and label alone. Raise a Notice component with a `feedback/warning` accent, and note the notice is CONDITIONAL: no frame draws it. |
 
 ---
 
@@ -286,6 +287,25 @@ name is the odd one out.
 *02b Skin tendencies* merged into *02a*; *03b Location* merged into *01* — one
 screen each, with Continue gating on both answers. *03a Observable symptoms* was
 dropped entirely. The track reads 1/5, not 1/8.
+
+### Step 1 carries a CONDITIONAL safety notice (`476:2542`, `476:2670`)
+
+New block, and no frame draws it. Ticking `Swelling` or `Rash` — the only two
+symptoms this screen collects that appear on the product brief's § 03E trigger
+list — reveals a notice under the chip grid saying LUX cannot judge how serious
+a reaction is, and to see a doctor or pharmacist if it is severe.
+
+⚠️ **It does not interrupt the flow and does not gate Continue**, which is a
+deliberate departure from the brief: § 03E asks for a full interrupt on nine
+clinical triggers, and answering those would mean the app performing a triage.
+The shipped block states LUX's limit and leaves the judgement to the reader
+instead. See `features/my-skin/safety.ts` and `docs/decisions.md` § SAFETY.
+
+For Figma this needs: the notice drawn on both frames in a `symptom = trigger`
+state, and a decision on the accent it should carry (§ 3, *Callout / notice*).
+The recipe is not new — it is the DISCLAIMER card `476:2542` already had at the
+top of this stack, which the code cut in `f3edc75` when 01 and 03b merged and
+has now reused. If Figma still draws that disclaimer, it is stale (§ 4).
 
 ### Selfie capture is a tray overlay, not a route (`487:834`, `490:1041`)
 

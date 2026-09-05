@@ -1,0 +1,67 @@
+/* The card recipe is the disclaimer card Figma 476:2542 / 476:2670 drew on this
+   screen, recovered from `f3edc75` unchanged — Surface System A, the same
+   frosted-row language as `.otherButton` next door. See the component's doc
+   comment for why it is reused rather than a new treatment. */
+
+/* The persistent live-region wrapper carries NO style on purpose. It has to
+   take zero height while empty — `QuestionScreen`'s `.content` sets no `gap`,
+   so an empty block costs nothing and the stack spacing stays on `.notice`.
+   ⚠️ NOT `display: contents`: browsers have dropped such elements from the
+   accessibility tree, which is the one thing this wrapper exists to be in. */
+
+.notice {
+  /* 20 — the WITHIN-question gap. The notice answers the symptom chips directly
+     above it, so it takes the tighter of the two intervals
+     `StartInvestigation.module.css` establishes, not the 40/48 that separates
+     the screen's two merged questions. */
+  margin-top: var(--space-xl);
+
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-sm);
+  padding: 18px var(--space-xl);
+
+  border-radius: var(--radius-lg);
+  background: var(--color-surface-frost-light);
+  border: var(--border-width-hairline) solid var(--color-border-subtle);
+  box-shadow: var(--shadow-frosted-row);
+  -webkit-backdrop-filter: blur(var(--blur-card));
+  backdrop-filter: blur(var(--blur-card));
+}
+
+.label {
+  color: var(--color-text-secondary);
+}
+
+/* ⚠️ `text/primary`, WHERE THE OLD DISCLAIMER USED `text/secondary`. That block
+   was boilerplate the reader was meant to skim; this one is the only sentence
+   on the screen that might send someone elsewhere, and muted body copy is how a
+   message gets read as fine print. The label stays secondary, so the hierarchy
+   still reads. */
+.body {
+  color: var(--color-text-primary);
+}
+
+@media (prefers-reduced-transparency: reduce) {
+  .notice {
+    background: var(--color-bg-surface-frost);
+    -webkit-backdrop-filter: none;
+    backdrop-filter: none;
+  }
+}
+
+/* ⚠️ THE MEASURE IS CAPPED ON DESKTOP, AND 52ch IS NOT A GUESS. At the card's
+   full 824 this paragraph rendered 90 characters a line (measured, 782px of
+   text) — the one block on the screen that has to actually be read, set at the
+   width of a heading. `ResultCards.module.css` already solved exactly this and
+   the value is copied from it rather than re-derived: `ch` because the cap is a
+   measure and has to follow its type, and 52 rather than a number nearer 65
+   because ⚠️ `ch` IS THE WIDTH OF A ZERO, one of the widest glyphs in this
+   face. Measured here after the cap: 67 characters a line.
+   The CARD keeps its full width — only the running text inside it stops early,
+   which is the same split ResultCards makes. */
+@media (min-width: 1024px) {
+  .body {
+    max-width: 52ch;
+  }
+}

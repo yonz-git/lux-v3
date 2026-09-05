@@ -1,0 +1,57 @@
+"use client";
+
+import { useId } from "react";
+import styles from "./SafetyNotice.module.css";
+import { SAFETY_NOTICE } from "@/features/my-skin/safety";
+
+/**
+ * The safety notice on step 1 — shown when a reported symptom is one LUX
+ * should hand back to a person. `features/my-skin/safety.ts` owns the rule,
+ * the trigger set and the copy, and the reasoning for all three.
+ *
+ * ⚠️ NOT IN FIGMA. No frame draws a conditional notice on 01 (476:2542 /
+ * 476:2670). Rather than invent a treatment, this reuses the recipe of the
+ * DISCLAIMER CARD that frame already had — a frosted System A card, `t-overline`
+ * label over body copy, radius/lg, hairline `border/subtle` — which shipped on
+ * this screen until `f3edc75` cut it while merging 01 and 03b. Its orphaned
+ * `prefers-reduced-transparency` rule was still sitting in
+ * `StartInvestigation.module.css` with nothing to match. So the block is the
+ * comp's, and only the copy and the condition are decided here. Logged in
+ * `docs/figma-catchup.md`; a real callout variant with an accent is the thing
+ * to raise in Figma.
+ *
+ * ⚠️ THE WRAPPER IS ALWAYS RENDERED AND THE NOTICE IS NOT. A live region has to
+ * be in the DOM BEFORE its contents change or screen readers announce nothing —
+ * mounting the whole thing on the tick would make this silent for exactly the
+ * users least able to see it appear. The empty wrapper costs no height:
+ * `QuestionScreen`'s `.content` sets no `gap`, so the stack's spacing lives on
+ * `.notice`'s own margin.
+ *
+ * ⚠️ IT ADDS HEIGHT TO A SCREEN THAT ALREADY OVERFLOWS. Step 1 is one of the two
+ * screens where `Continue` sits behind the nav pill at rest (measured 440:
+ * cta=852 against nav=858 — a known-open item in AGENTS.md). The notice pushes
+ * that further whenever it fires. Taken deliberately: this is the one block on
+ * the screen worth scrolling to, and the fix for the overflow is the docked
+ * action bar that decision is already waiting on, not a shorter safety message.
+ */
+export function SafetyNotice({ show }: { show: boolean }) {
+  const labelId = useId();
+
+  return (
+    /* `polite`, not `assertive` — it must not cut across the announcement of
+       the chip the user just pressed. */
+    <div role="status">
+      {show ? (
+        <section
+          className={`${styles.notice} reveal-quick`}
+          aria-labelledby={labelId}
+        >
+          <p id={labelId} className={`${styles.label} t-overline`}>
+            {SAFETY_NOTICE.label}
+          </p>
+          <p className={`${styles.body} t-body3-body2`}>{SAFETY_NOTICE.body}</p>
+        </section>
+      ) : null}
+    </div>
+  );
+}

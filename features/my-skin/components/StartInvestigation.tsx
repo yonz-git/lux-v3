@@ -9,8 +9,10 @@ import { FaceDiagram, FACE_REGION_IDS } from "./FaceDiagram";
 import { Button } from "@/components/ui/Button";
 import { PlusIcon, CloseIcon, CameraIcon } from "@/components/ui/icons";
 import { SelfieSheet } from "./SelfieSheet";
+import { SafetyNotice } from "./SafetyNotice";
 import { useInvestigation } from "@/lib/store/InvestigationProvider";
 import { toggleMulti } from "@/lib/store/answers";
+import { SYMPTOMS, needsProfessionalNotice } from "@/features/my-skin/safety";
 
 /**
  * 01 + 03b combined — Start investigation and Location on one screen. Step 1/5.
@@ -39,6 +41,14 @@ import { toggleMulti } from "@/lib/store/answers";
  * for: routing away scrolled the symptoms and regions just picked out of
  * sight, and the capture is one tap. See `components/SelfieSheet.tsx`.
  *
+ * ⚠️ THIS SCREEN CARRIES THE APP'S ONLY SAFETY MESSAGE. Ticking `Swelling` or
+ * `Rash` — the two symptoms on this screen that appear on the product brief's
+ * § 03E trigger list — reveals `SafetyNotice` under the chip grid. It does NOT
+ * interrupt the flow and does NOT gate Continue: LUX states what it cannot see
+ * and hands the severity judgement to the reader, rather than performing a
+ * triage it is not qualified to perform. `features/my-skin/safety.ts` owns the
+ * rule, the trigger set and the copy, and carries the full reasoning.
+ *
  * NOTHING starts selected. The Figma frames show options already chosen
  * because a comp has to show a filled-in state; the prototype starts empty and
  * Continue stays disabled until a symptom AND a location are both picked.
@@ -51,16 +61,13 @@ import { toggleMulti } from "@/lib/store/answers";
  * cue that one existed below the fold. 48 is the card's own between-block gap
  * and is on the spacing scale, which 104 never was.
  */
-const SYMPTOMS = [
-  "Redness",
-  "Itching",
-  "Dryness",
-  "Breakouts",
-  "Irritation",
-  "Swelling",
-  "Flaking",
-  "Rash",
-];
+/* ⚠️ `SYMPTOMS` MOVED TO `features/my-skin/safety.ts` AND THAT IS NOT A TIDY-UP.
+   Two of these chips — Swelling and Rash — are the only members of the product
+   brief's § 03E trigger list this screen collects, and the safety notice keys
+   off them. Kept in two files, renaming a chip here would leave the notice
+   quietly never firing again, with nothing in this file to say so. In one file
+   the trigger set is typed as a subset of the list and the same rename is a
+   compile error. */
 
 const LOCATION_CHIPS = ["Whole face", "Neck", "Other"];
 
@@ -77,6 +84,7 @@ export function StartInvestigation() {
   const { answers, setAnswer } = useInvestigation();
   const selected = answers.start ?? [];
   const location = answers.location ?? [];
+  const showSafetyNotice = needsProfessionalNotice(selected);
   // "Whole face" is shorthand for every region pill — selecting it fills them
   // all in, clearing it clears them all, rather than being just one more chip.
   const toggleLocation = (id: string) =>
@@ -160,6 +168,8 @@ export function StartInvestigation() {
           />
         ))}
       </div>
+
+      <SafetyNotice show={showSafetyNotice} />
 
       <div className={styles.diagram}>
         <FaceDiagram

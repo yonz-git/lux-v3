@@ -1,7 +1,11 @@
 /* 01 + 03b combined — Start investigation and Location. Figma mobile
    476:2542+476:2802 / desktop 476:2670+476:2934. The content column is a 16px
-   stack: disclaimer card, question, chip grid, face diagram, location chip
-   grid, other-row, take-a-photo button.
+   stack: question, chip grid, safety notice, face diagram, location chip grid,
+   other-row, take-a-photo button.
+   ⚠️ THE DISCLAIMER CARD THAT OPENED THIS STACK IS GONE — cut in `f3edc75`
+   while 01 and 03b were merged. Its recipe was not lost: `SafetyNotice` reuses
+   it for the conditional notice under the chip grid, which is why the rule for
+   it below now lives in `SafetyNotice.module.css` instead.
    ⚠️ THE OTHER-ROW SITS AFTER THE LOCATION CHIPS NOW, not right under the
    symptom chip grid as Figma draws it — a prototype-only reorder, not yet
    reflected back in Figma. Because it closes the screen rather than continuing
@@ -190,7 +194,6 @@ button.takePhoto {
 }
 
 @media (prefers-reduced-transparency: reduce) {
-  .disclaimer,
   .otherButton {
     background: var(--color-bg-surface-frost);
     -webkit-backdrop-filter: none;

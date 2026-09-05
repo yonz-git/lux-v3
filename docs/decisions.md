@@ -1395,9 +1395,11 @@ both. Same underlying question as the pivot above; settle it once.
 
 ---
 
-# ⚠️ SAFETY — the escalation branch was specified and never built
+# ⚠️ SAFETY — what shipped, and the interrupt that deliberately did not
 
-**This is the most serious gap in the app and it is not a design question.**
+**Status: a safety NOTICE ships on step 1 (5 Sep 2026). The brief's full
+escalation BRANCH does not, and that is a decision rather than a backlog item.**
+Read this whole entry before changing either.
 
 `docs/product-brief.md` § 03E specifies a safety branch:
 
@@ -1419,19 +1421,51 @@ patterns worth discussing with a dermatologist."* That is a **disclaimer on the
 compatibility check**, on a screen the investigation flow never reaches. It does
 not cover step 1, and a disclaimer is not an escalation.
 
-**This is unblocked by the analysis being unbuilt.** The branch fires on what
-step 1 collects, and step 1 shipped. It does not need the hypothesis engine, a
-result screen, or anything from the CHECK model — it needs a condition on the
-symptom set and a screen that stops the flow.
-
 Read it with the claim-language constraint recorded above: an app that collects
 "Swelling" and continues to product analysis is making an implicit claim about
 what kind of problem this is. That is precisely the medical-device boundary the
 EU cosmetic-claims note is about, approached from the other side.
 
-⚠️ **Do not treat this as a backlog item behind the culprit finder.** It is the
-one thing in this file that is a user-safety issue rather than a product or
-design decision, and it is the cheapest of the unbuilt work.
+## What shipped instead — a scope statement, not a triage
+
+`features/my-skin/safety.ts` + `components/SafetyNotice.tsx`. Ticking
+`Swelling` or `Rash` reveals a notice under step 1's chip grid:
+
+> **Before you continue** — LUX looks for patterns in the products you use — it
+> cannot judge how serious a reaction is. If your symptoms are severe, spreading
+> quickly, or affecting your eyes, lips, mouth or breathing, please speak to a
+> doctor or pharmacist rather than waiting on an investigation.
+
+That closes the implicit claim above: the app no longer collects "Swelling" and
+walks on as though a product investigation were the right response.
+
+**⚠️ THREE THINGS IT DELIBERATELY DOES NOT DO, AND THE REASONS ARE THE POINT.**
+
+1. **It does not ask the brief's nine triggers.** Asking about breathing
+   difficulty, throat swelling and infection signs, and then DECIDING whether
+   the answers are serious, is the app performing a clinical assessment. LUX
+   does not assess. The notice is CONDITIONAL — "if your symptoms are severe" —
+   so the app never concludes that a case IS severe; it names the kinds of
+   reaction that outrun it and leaves the judgement with the person who can look
+   at the skin.
+2. **It does not interrupt the flow or gate `Continue`.** A gate would be the
+   app acting on a severity judgement it just declined to make. And `Swelling`
+   and `Rash` are ambiguous by construction — the chip cannot tell a swollen lip
+   from a swollen cheek — so a hard stop on them fires mostly on the common case
+   and trains people to click past the one message on the screen that matters.
+3. **It gives no emergency number.** The app has no locale and a wrong number is
+   worse than none. ⚠️ **A release into a known market needs the local one, and
+   that is a legal and product decision, not a code one.** Open.
+
+**⚠️ SO THE BRIEF IS NOT SATISFIED, ONLY ANSWERED.** § 03E asks for an
+interrupt; this is a notice. Anyone reinstating the interrupt has to bring the
+trigger questions with it — the branch cannot fire honestly on two ambiguous
+chips — and that is a product decision about whether LUX performs triage at all.
+Do not "finish" this by adding a redirect to the existing condition.
+
+**Still open, and named so it is not mistaken for covered:** "rapidly worsening
+symptoms" is a § 03E trigger, and `/progress/check-in` records a severity series
+that escalates nothing. That is a second trigger site with no notice on it.
 
 ## The rest of the specified flow, for the record
 

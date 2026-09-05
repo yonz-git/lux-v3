@@ -155,14 +155,23 @@ view keeps the back chevron and still has no track. Nothing outside
 **Two overlays are not routes:** the selfie capture off step 1 and the products
 add tray. Both are `Sheet` overlays, deliberately. See `docs/decisions.md`.
 
-⚠️ **THE SAFETY BRANCH IS SPECIFIED AND UNBUILT — read this before touching
-step 1.** The product brief requires the flow to INTERRUPT and show urgent-care
-guidance if the user reports swelling of lips/tongue/throat, breathing
-difficulty, major eye involvement, a widespread rash, severe pain, extensive
-blistering, infection signs or rapidly worsening symptoms. Step 1 already offers
-**`Swelling`** and **`Rash`** as symptoms and proceeds normally when either is
-ticked. There is no escalation path in the app. This is a user-safety gap, not a
-backlog item, and it does not depend on the unbuilt analysis — see
+⚠️ **STEP 1 CARRIES A SAFETY NOTICE, AND THE BRIEF'S INTERRUPT IS DELIBERATELY
+NOT BUILT — read this before touching step 1.** The product brief requires the
+flow to INTERRUPT and show urgent-care guidance on nine clinical triggers
+(swelling of lips/tongue/throat, breathing difficulty, major eye involvement, a
+widespread rash, severe pain, extensive blistering, infection signs, rapidly
+worsening symptoms). What ships instead: ticking **`Swelling`** or **`Rash`** —
+the only two of those step 1 collects — reveals `SafetyNotice` under the chip
+grid, saying LUX cannot judge how serious a reaction is and to see a doctor or
+pharmacist if it is severe. **It does not interrupt the flow and does not gate
+`Continue`**, because asking the other seven triggers and then deciding whether
+the answers are serious is the app performing a triage it is not qualified to
+perform. `features/my-skin/safety.ts` owns the rule, the trigger set and the
+copy. ⚠️ **Do not "finish" this by adding a redirect to the existing
+condition** — the branch cannot fire honestly on two ambiguous chips, and
+reinstating it is a product decision about whether LUX triages at all. Two
+things stay open: no locale-appropriate emergency number, and
+`/progress/check-in` records worsening and escalates nothing. See
 "⚠️ SAFETY" in `docs/decisions.md`.
 
 ⚠️ **AND ONE FEATURE HAS NO ROUTE AT ALL.** The investigation collects symptoms,
