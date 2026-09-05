@@ -20,6 +20,10 @@
   margin-top: var(--space-lg); /* 16 */
 }
 
+.record {
+  margin-top: var(--space-lg); /* 16 — the same interval every card takes */
+}
+
 /* ⚠️ WIDTH IS SET HERE, NOT VIA Button's `fullWidth`. `.full` and `.cta` are
    both single-class selectors, so which one wins depends on the order the two
    CSS modules happen to land in the bundle — the same trap that silently ate
@@ -40,6 +44,7 @@
   /* the column gap is the grid's; every mobile margin goes */
   .calendar,
   .trend,
+  .record,
   .cta,
   .lastCheckIn {
     margin-top: 0;
@@ -76,6 +81,16 @@
   .trend {
     grid-column: 2;
     grid-row: 2;
+  }
+
+  /* ⚠️ col-2, UNDER THE TREND — it belongs with the profile and the chart,
+     which are the two other blocks that say what the investigation knows. The
+     CTA column stays the calendar's. It is conditional, so col-2 simply ends a
+     row earlier when there is no record, and the column balance the CTA move
+     was made for (see above) is unaffected either way. */
+  .record {
+    grid-column: 2;
+    grid-row: 3;
   }
 
   /* 376 is the comp's own width for this button. Not a token and not the 280 a

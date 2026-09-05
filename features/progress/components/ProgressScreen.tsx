@@ -5,6 +5,7 @@ import { HubScreen } from "@/components/layout/HubScreen";
 import { Button } from "@/components/ui/Button";
 import { Orb } from "@/components/ui/Orb";
 import { SkinProfile } from "./SkinProfile";
+import { InvestigationRecord } from "./InvestigationRecord";
 import { CheckInCalendar } from "./CheckInCalendar";
 import { SymptomTrend } from "./SymptomTrend";
 import { useInvestigation } from "@/lib/store/InvestigationProvider";
@@ -89,6 +90,17 @@ export function ProgressScreen() {
       />
 
       <SymptomTrend className={styles.trend} checkIns={checkIns} />
+
+      {/* § 09 — only when the user actually saved a finding. ⚠️ NOT IN FIGMA,
+          and absent by default: PROGRESS opens populated because it has a
+          seeded check-in series, but a CONCLUSION is not something a demo gets
+          to claim on the user's behalf. */}
+      {answers.savedFinding && (
+        <InvestigationRecord
+          className={styles.record}
+          finding={answers.savedFinding}
+        />
+      )}
 
       <Button href="/progress/check-in" className={styles.cta}>
         Check in today

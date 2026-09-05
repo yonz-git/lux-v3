@@ -1,0 +1,54 @@
+/* § 09's investigation record. ⚠️ NOT IN FIGMA — the recipe is `DataCard`'s, so
+   the spacing between blocks is DataCard's own 16 gap and nothing here restates
+   it. Every colour is a `text/on-data*` token: Surface System B's text is DARK,
+   not white (non-negotiable 17). */
+
+.label {
+  /* Overline is uppercase in the type class, so the JSX carries sentence case
+     and the CSS does the shouting — same as `SkinProfile`. */
+  color: var(--color-text-on-data-muted);
+}
+
+.summary {
+  margin: 0;
+  color: var(--color-text-on-data);
+}
+
+/* ⚠️ border/glass, NOT border/subtle — the handoff's rule for a divider on a
+   data card. border/subtle is a hairline for LIGHT surfaces and disappears
+   entirely against sage. Drawn as a 1px filled box rather than a border so it
+   cannot pick up a border-box height surprise. */
+.divider {
+  height: var(--border-width-hairline);
+  background: var(--color-border-glass);
+}
+
+.observation {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2xs); /* 2 */
+}
+
+.pausing {
+  margin: 0;
+  color: var(--color-text-on-data);
+}
+
+.review {
+  margin: 0;
+  color: var(--color-text-on-data-muted);
+}
+
+/* The hedge rides with the date, deliberately: the sentence that says this is
+   not a diagnosis should be attached to the thing that makes it look like one —
+   a dated, saved conclusion. */
+.saved {
+  margin: 0;
+  color: var(--color-text-on-data-muted);
+}
+
+@media (min-width: 1024px) {
+  .summary {
+    max-width: 52ch;
+  }
+}

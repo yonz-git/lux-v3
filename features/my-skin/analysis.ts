@@ -934,6 +934,36 @@ export function pausableProducts(entries: PriorityEntry[]): PriorityEntry[] {
 }
 
 /**
+ * How long an observation runs.
+ *
+ * ⚠️ THE SAME FOUR WEEKS AS `ELIMINATION_WEEKS` IN `check.ts`, AND NOT IMPORTED
+ * FROM IT. Both come from the brief ("suggested four-week observation period")
+ * rather than from each other, and they are different things: CHECK builds a
+ * schedule for reintroducing products it scored, this is a single pause on a
+ * product the analysis is arguing about. If one moves, the other should be
+ * looked at and may well stay — which is not true of a shared constant.
+ */
+export const OBSERVATION_WEEKS = 4;
+
+/**
+ * The one sentence the PROGRESS record carries.
+ *
+ * ⚠️ IT IS BUILT HERE AND STORED AS A STRING, SO `progress.ts` NEVER IMPORTS
+ * THIS MODULE. PROGRESS shows what the investigation concluded; it has no
+ * business re-deriving it, and a record that recomputed itself would silently
+ * change after the user edited their products — which is the opposite of what a
+ * record is for.
+ */
+export function recordSummary(analysis: Analysis): string {
+  const top = analysis.hypotheses[0];
+  if (!top) return "No conclusion yet — not enough evidence to point at anything.";
+  const others = analysis.hypotheses.length - 1;
+  return others > 0
+    ? `${headline(top)} — ${CONFIDENCE_LABEL[top.confidence].toLowerCase()}, with ${others} other explanation${others === 1 ? "" : "s"} still open.`
+    : `${headline(top)} — ${CONFIDENCE_LABEL[top.confidence].toLowerCase()}.`;
+}
+
+/**
  * The product § 10 proposes pausing: the top of the priority list that is
  * allowed to be paused at all. `null` when everything is excluded.
  */

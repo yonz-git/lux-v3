@@ -93,8 +93,28 @@ export type Answers = Partial<{
    */
   routineNotUsed: ("cleanser" | "sunscreen")[];
 
-  /** the finding the user saved, which the PROGRESS record points at */
-  savedFinding: { id: string; date: string; summary: string };
+  /**
+   * The finding the user saved — § 09's "investigation record", which is what
+   * PROGRESS shows.
+   *
+   * ⚠️ THE SUMMARY IS A STORED STRING, NOT A RE-DERIVATION. `recordSummary`
+   * builds it at the moment the user saves. A record that recomputed itself
+   * would silently change after the user edited their products, which is the
+   * opposite of what a record is for — and it keeps `progress.ts` from
+   * importing the analysis.
+   *
+   * ⚠️ IT IS A RECORD, NOT A DIAGNOSIS, and the screen that shows it says so.
+   */
+  savedFinding: {
+    id: string;
+    /** ISO date the finding was saved */
+    date: string;
+    summary: string;
+    /** § 10 — the product being paused, if the user started an observation */
+    pausing?: string;
+    /** ISO date the observation is due to be reviewed */
+    reviewOn?: string;
+  };
 
   /* ---- THE DAILY CHECK-IN — the PROGRESS section -------------------------
      ⚠️ NOT AN INVESTIGATION STEP EITHER, and not part of CHECK. It is one

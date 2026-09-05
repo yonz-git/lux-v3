@@ -1,5 +1,6 @@
 "use client";
 
+import { useRouter } from "next/navigation";
 import styles from "./Findings.module.css";
 import { HubScreen } from "@/components/layout/HubScreen";
 import { ChatBubble } from "@/components/ui/ChatBubble";
@@ -14,12 +15,15 @@ import {
   ruledOut,
   splitHypotheses,
   suggestedPause,
+  recordSummary,
+  OBSERVATION_WEEKS,
   CONFIDENCE_LABEL,
   hypothesisKind,
   subject,
   type Analysis,
 } from "@/features/my-skin/analysis";
 import { fullName } from "@/features/products/products";
+import { addDays, toIso } from "@/lib/date";
 
 /**
  * `/investigation/findings` — the end of the investigation, and the screen LUX
@@ -149,10 +153,37 @@ function NoConclusion({ analysis }: { analysis: Analysis }) {
  * change the reasoning layout and one of them would rot.
  */
 function Hypotheses({ analysis }: { analysis: Analysis }) {
-  const { answers } = useInvestigation();
+  const router = useRouter();
+  const { answers, setAnswer } = useInvestigation();
   const several = analysis.outcome === "several";
   const pause = suggestedPause(answers);
   const { leading, alsoConsidered } = splitHypotheses(analysis);
+
+  /**
+   * § 09 — "Saving creates a calendar entry." Both actions on this screen save;
+   * starting an observation is the same record with a product paused and a
+   * review date on it.
+   *
+   * ⚠️ THE SUMMARY IS FROZEN AT THE MOMENT OF SAVING. `recordSummary` runs here
+   * and the string is stored — see `savedFinding` in `answers.ts`. A record
+   * that re-derived itself would quietly change the day the user edited their
+   * products.
+   */
+  function save(pausing?: string) {
+    const today = new Date();
+    setAnswer("savedFinding", () => ({
+      id: `finding-${Date.now()}`,
+      date: toIso(today),
+      summary: recordSummary(analysis),
+      ...(pausing
+        ? {
+            pausing,
+            reviewOn: toIso(addDays(today, OBSERVATION_WEEKS * 7)),
+          }
+        : {}),
+    }));
+    router.push(pausing ? "/progress/check-in" : "/progress");
+  }
 
   return (
     <>
@@ -244,7 +275,7 @@ function Hypotheses({ analysis }: { analysis: Analysis }) {
             <SmallButton
               label="Start a four-week observation"
               arrow
-              href="/progress/check-in"
+              onClick={() => save(fullName(pause.product))}
               className={styles.gapAction}
             />
           </div>
@@ -255,7 +286,10 @@ function Hypotheses({ analysis }: { analysis: Analysis }) {
         </section>
       ) : null}
 
-      <Button href="/progress" fullWidth className={styles.primary}>
+      {/* ⚠️ IT SAVES, IT DOES NOT JUST NAVIGATE. This used to be a link to
+          `/progress` that wrote nothing — a button that says "save" and saves
+          nothing is worse than no button. */}
+      <Button onClick={() => save()} fullWidth className={styles.primary}>
         Save to my investigation
       </Button>
     </>
