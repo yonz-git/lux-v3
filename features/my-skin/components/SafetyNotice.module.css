@@ -113,6 +113,32 @@
    The CARD keeps its full width — only the running text inside it stops early,
    which is the same split ResultCards makes. */
 @media (min-width: 1024px) {
+  /* ⚠️ THE CARD HUGS THE MEASURE — AND THIS IS WHERE THE RESULTCARDS PRECEDENT
+     STOPS APPLYING. There the cards keep their full width and only the running
+     text inside them stops early, because those cards also hold badges and
+     `foundIn` lines that need the room. This card holds a label and one
+     paragraph and nothing else, so capping only the text left 250px of empty
+     card to the right of every line — a hole INSIDE a bordered box, which reads
+     as a layout bug rather than as whitespace. Hugging moves that space
+     outside the card, where it is just the page.
+
+     `fit-content` rather than a second width: the measure is declared once, on
+     `.body` below, and the card resolves to whatever that comes to plus its own
+     padding. Two numbers to keep in step would be one too many.
+
+     Centred, because that is what this screen does at this width — the
+     question, the chips and the face diagram (`StartInvestigation.module.css`
+     `.diagram`, capped at 480 and `margin-inline: auto`) are all centred blocks
+     with capped widths. Left-aligned under centred chips, the notice read as
+     the one block that had come loose. ⚠️ The auto margins work here only
+     because `.clip` is a plain block — on a FLEX parent they would override the
+     item's default stretch and collapse the card to its content width, which is
+     the trap `.diagram` documents next door. */
+  .notice {
+    width: fit-content;
+    margin-inline: auto;
+  }
+
   .body {
     max-width: 52ch;
   }
