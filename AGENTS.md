@@ -81,8 +81,10 @@ components/ui/       the design system: Button, SmallButton, Chip, OptionRow,
                      DataCard, Orb, CameraCapture, icons
 components/layout/   app chrome: BottomNav, HubScreen, ScreenHeader,
                      RouteAnnouncer
-features/my-skin/    flow.ts + the investigation steps, QuestionScreen,
-                     StepProgress, SelfieSheet, FaceDiagram
+features/my-skin/    flow.ts + safety.ts + analysis.ts, the investigation steps,
+                     QuestionScreen, StepProgress, SelfieSheet, FaceDiagram, and
+                     the three analysis screens (EvidenceCheck, Analyzing,
+                     Findings + HypothesisCard, PriorityList, Disclosure)
 features/products/   products.ts, openBeautyFacts.ts, the two search hooks,
                      the product list/card/details/art components, the add tray
 features/progress/   progress.ts + ProgressScreen, CheckIn, CheckInDetail,
@@ -92,7 +94,7 @@ features/check/      check.ts + the check screens, CompatCard, ResultCards,
 features/chat/       ⚠️ NOT A NAV SECTION — chat.ts + ChatScreen and the two
                      glyphs the DS does not have (see above)
 lib/store/           answers.ts + InvestigationProvider.tsx
-lib/                 date.ts  demo.ts  pageTitles.ts
+lib/                 date.ts  demo.ts  pageTitles.ts  actives.ts
 ```
 
 **The rule for placing a new file:** it goes in `features/<section>/` unless two
@@ -114,13 +116,18 @@ Four placement facts that look like mistakes and are not:
   What must NOT happen is `components/ui/` or `components/layout/` importing a
   feature — those are the layer underneath. `lib/pageTitles.ts` is the one
   shared module that imports a feature, because it is a route registry.
-- **`features/<section>/*.ts`** (`flow.ts`, `products.ts`, `progress.ts`,
-  `check.ts`) own the data and the derived values. A screen states nothing it
-  could compute from one of these.
+- **`features/<section>/*.ts`** (`flow.ts`, `safety.ts`, `analysis.ts`,
+  `products.ts`, `progress.ts`, `check.ts`) own the data and the derived values.
+  A screen states nothing it could compute from one of these.
+- **`lib/actives.ts` IS SHARED, AND ONLY BECAUSE TWO SECTIONS USE IT.** It was
+  `check.ts`'s until `my-skin`'s analysis needed the same ingredient
+  vocabulary — the names, what each does to skin, the INCI patterns, the
+  conflict pairs. CHECK's PENALTIES did not move: they stay in `check.ts` as
+  `SCORING`, where the analysis cannot reach them.
 
 ## The route map
 
-Eighteen routes — seventeen, plus `/chat`, which is in no nav section.
+Twenty-one routes — twenty, plus `/chat`, which is in no nav section.
 `features/my-skin/flow.ts` owns the step order, the 1-based track position, the
 Figma frame ids and each step's `isComplete` rule.
 
@@ -132,6 +139,9 @@ Figma frame ids and each step's `isComplete` rule.
 | `/investigation/conditions` | flow step 3/5 | `my-skin` |
 | `/investigation/timing` | flow step 4/5 | `my-skin` |
 | `/investigation/products` | flow step 5/5 — ⚠️ the one flow screen lighting `products` | `products` |
+| `/investigation/evidence` | pushed view — ⚠️ NOT a step: the analysis's evidence check | `my-skin` |
+| `/investigation/analyzing` | pushed view — ⚠️ NOT a step | `my-skin` |
+| `/investigation/findings` | pushed view — ⚠️ NOT a step: the analysis result | `my-skin` |
 | `/products` | hub landing | `products` |
 | `/progress` | hub landing — **the default**, opens populated | `progress` |
 | `/progress/empty` | ⚠️ prototype-only empty state | `progress` |
@@ -174,13 +184,41 @@ things stay open: no locale-appropriate emergency number, and
 `/progress/check-in` records worsening and escalates nothing. See
 "⚠️ SAFETY" in `docs/decisions.md`.
 
-⚠️ **AND ONE FEATURE HAS NO ROUTE AT ALL.** The investigation collects symptoms,
-locations, conditions, a flare date, products with durations and a daily
-severity series — and nothing reads them to produce the hypothesis the product
-brief specifies. `/check/*` is not it: that asks "is this product right for my
-skin?" prospectively, where the analysis asks "which of the things I already use
-did this?" retrospectively. **Do not build it as a sixth step or fold it into
-CHECK** — see "Not built" at the end of `docs/decisions.md` first.
+⚠️ **THREE ROUTES UNDER `/investigation` ARE NOT STEPS, AND `TOTAL_STEPS` IS
+STILL 5.** `evidence`, `analyzing` and `findings` are the retrospective analysis
+— the culprit finder the product brief specifies and the thing LUX is named
+for. They carry no progress track and no `Save & exit`, which by the rule above
+is exactly what makes them not steps: the five steps COLLECT, these three REPORT
+on what those five collected. They live under `/investigation` for that reason
+and not because they are a sixth question. **Do not add them to `STEPS`.**
+
+`features/my-skin/analysis.ts` owns the whole model — the evidence states, the
+gates, the subtraction, the confidence label and every sentence the screens put
+on the page. A screen states nothing it could compute from there, and the copy
+lives in the module rather than the components so the brief's controlled
+vocabulary can be checked by `npm run vocab` over one file.
+
+⚠️ **IT IS NOT CHECK, AND THE TWO MUST NOT CONVERGE.** `/check/*` asks "is this
+product right for my skin?" prospectively and scores a product. The analysis
+asks "which of the things I already use is associated with the reaction I
+recorded?" retrospectively, over a timeline, and its answer is an argument
+rather than a number. They share `lib/actives.ts` — the ingredient names, what
+they do to skin, the INCI patterns, the conflict pairs — and nothing else.
+⚠️ **CHECK's penalties are NOT shared**: they live on as `SCORING` in
+`check.ts`, tuned to reproduce a comp's five scores, and a number tuned that way
+has no business behind a sentence about what caused someone's reaction.
+
+⚠️ **NO SCORE, NO BAR, NO PERCENTAGE ON `findings`.** The brief: "Do not show a
+scientific-looking percentage." Confidence is a WORD — stronger / possible /
+weak — derived from the shape of the subtraction. `CompatCard` keeps its `%`,
+deliberately; the split is recorded in `docs/decisions.md`.
+
+⚠️ **AND THE ANALYSIS IS ALLOWED TO REFUSE.** "Not enough evidence for a
+responsible conclusion" is one of § 07's three outcomes and is a designed state,
+not an error — it names exactly what is missing and links to the step that owns
+it. The gates are STRUCTURAL, not a product count: `MIN_CHECK_PRODUCTS = 2` is
+right for a compatibility check and far too low for a causal one. Do not
+"improve" the analysis by loosening them so it always answers.
 
 ## The prototype starts EMPTY — and Continue is gated
 

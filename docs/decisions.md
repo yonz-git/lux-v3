@@ -1097,24 +1097,169 @@ glitch rather than a CSS mistake. Only background IMAGES are affected; a flat
 
 ---
 
-# Not built — the analysis the app is named for
+# THE ANALYSIS — the culprit finder, built 5 Sep 2026
 
-⚠️ **READ "Why the product is shaped like this" AT THE END OF THIS FILE FIRST.**
+⚠️ **THIS SECTION USED TO BE HEADED "Not built".** It is built now:
+`features/my-skin/analysis.ts` plus `/investigation/{evidence,analyzing,
+findings}`. What follows is the record of WHAT WAS DECIDED, because most of it
+is the kind of decision a later comp or a later ticket will quietly contradict.
+The spec is `docs/product-brief.md` §§ 05–12.
+
+⚠️ **AND BOTH THESES ARE NOW SHIPPED, ON PURPOSE.** The project pivoted on 7 Aug
+from "the thirty seconds before you buy" to "the culprit finder" (see "Why the
+product is shaped like this", below). CHECK is the earlier thesis and it STAYS —
+decided 5 Sep 2026: they answer different questions in opposite directions and
+neither subsumes the other. Do not merge them.
+
+## The shape: three routes, not seven screens, and not a sixth step
+
+The brief's §§ 05–12 are seven screens. They ship as three:
+
+| Brief | Route |
+| --- | --- |
+| 05 Evidence preparation | `/investigation/evidence` |
+| 06 Analysis in progress | `/investigation/analyzing` |
+| 07 Result · 08 Reasoning · 11 No-conclusion | `/investigation/findings` |
+| 09 Calendar · 10 Next action · 12 Follow-up | PROGRESS — **no new screens** |
+
+⚠️ **THE THREE ARE NOT INVESTIGATION STEPS.** No progress track, no
+`Save & exit`, back chevron kept — pushed views, the standing `/check/results`
+has to `/check/new`. `TOTAL_STEPS` is still 5 and `STEPS` is untouched. They sit
+under `/investigation` because they REPORT on what the five steps COLLECTED.
+Step 5's `next` now points at `/investigation/evidence`; it pointed at
+`/products` with a note saying "the real destination once INVESTIGATION lands".
+
+⚠️ **§§ 09/10/12 ADDED NO SCREENS AND SHOULD NOT.** PROGRESS already owns the
+investigation calendar, the day-by-day series and the check-in; building a
+second calendar for the analysis would give the demo two.
+
+⚠️ **`findings`, NOT `results`.** `/check/results` owns the other question, and
+the route map has to make the two visibly different to someone scanning it.
+
+## One route, three outcomes — and one of them is a refusal
+
+§ 07's three outcomes are three states of ONE screen, not three destinations.
+Sending "not enough evidence" to its own URL would make it an error page; it is
+an answer, and it was **built first** — Open Beauty Facts ingredient coverage is
+patchy and the gates are strict, so it is the state most real runs land in.
+Built last it would have been built worst.
+
+⚠️ **THE GATES ARE STRUCTURAL, NOT A PRODUCT COUNT, AND LOOSENING THEM IS NOT AN
+IMPROVEMENT.** `MIN_CHECK_PRODUCTS = 2` is right for a compatibility check and
+far too low for a causal one — but a flat number is the wrong shape either way:
+five products all added last week give a subtraction nothing to subtract, and
+three can answer cleanly. Each gate names a structure the argument needs and the
+step that fixes it. From the case-study spine: *"the interface has to be willing
+to say I don't know yet, add three more."*
+
+⚠️ **AND `Findings` DOES NOT GIVE EVERY CANDIDATE A CARD.** A real routine
+produces four or five weak candidates; carding each one buries the leading
+hypothesis under things the analysis has already said it cannot support. Only
+the top confidence band gets cards (`splitHypotheses`); the rest are listed by
+name and label. Nothing is hidden and nothing is dressed up.
+
+## The timeline is four coarse buckets, so there are THREE evidence states
+
+The app has four duration buckets and one flare date, so a product's
+introduction is a RANGE. The range sits inside the suspicion window
+(**associated**), entirely before it (**tolerated**), or **straddles the
+boundary** — which is not a tie to break. It is the honest answer, and it is
+exactly the ambiguity § 05's confirmation list exists to resolve: the screen asks
+about two products, never twelve. `LEAD_IN_DAYS = 14` is a named judgement, not
+a measurement.
+
+⚠️ **`Not sure` IS STILL NOT BINNED.** `INTRO_WINDOW["not-sure"]` is `null` and
+such a product is excluded from both sides of the comparison and said to be. That
+is the payoff for keeping the fourth bucket out of `BUCKETS` in the first place
+(see the PRODUCTS section).
+
+## Evidence AGAINST is the discarded half of the same pass
+
+`subtract()` returns both halves. Candidates the tolerated set fails to clear are
+the evidence for; the ones it clears are § 08's **evidence against** accordion —
+the thing no screen in LUX had a pattern for — and they cost nothing, being the
+same comparison read from the other side. **Returning only the survivors is how
+a reasoning screen turns into advocacy.** The accordion sits FOURTH in the
+brief's order rather than last for the same reason: counter-evidence below the
+fold, after the reader has stopped scrolling, is advocacy wearing an accordion.
+
+The cleared candidates also get their own top-level block — "Ruled out by what
+you already tolerate" — because they are a fact about the whole comparison
+rather than about one hypothesis, and because they are the most useful thing the
+analysis produces: the ingredient someone would blame first, cleared by a
+product they have used without trouble for a month.
+
+## ⚠️ THE PERCENTAGE SPLIT — RESOLVED, AND DELIBERATELY ASYMMETRIC
+
+The brief says **"Do not show a scientific-looking percentage."** `CompatCard`
+renders `{score}%` with a bar. Decided 5 Sep 2026: **CHECK keeps its number, the
+analysis shows none.** The rule is written about the HYPOTHESIS result, where a
+number dresses a judgement up as a measurement — and this judgement is made from
+four coarse duration buckets and an ingredient list of unknown concentration.
+CHECK's score is a model output about a product, which is a different kind of
+claim. `Confidence` is a WORD (stronger / possible / weak) derived from the
+shape of the subtraction, including **how much tolerated evidence there was to
+be absent from** — a candidate absent from an empty tolerated set has been
+cleared of nothing. Counts of products are facts and are shown.
+
+## The vocabulary moved to `lib/actives.ts`, the WEIGHTS did not
+
+Two sections now use the ingredient names, what each does to skin, the INCI
+patterns and the conflict pairs, so by the placement rule they are no longer
+CHECK's. **`SCORING` stayed in `check.ts`.** Those penalties are tuned to
+reproduce the five scores `Check results` draws — the right shape for a
+compatibility SCORE and the wrong basis for a causal CLAIM — and the analysis
+cannot reach them. `advice` stayed for the same reason: it is prospective
+how-to-use copy. `hasReadableIngredients` is new and only the analysis needs it:
+an empty active set means "no ingredient list" and "contains nothing of
+interest" equally, which is harmless for a score and the whole game for a
+subtraction.
+
+⚠️ The analysis also uses `ACTIVES[id].name`, never `.label` — one label is
+"Salicylic Acid 2%", and naming a concentration two lines above "concentration
+and formulation are unknown" undoes the hedge.
+
+## The copy lives in the data module, and `npm run vocab` enforces it
+
+These screens add more product-effect copy than the rest of the app combined.
+Every sentence is built in `analysis.ts` rather than in the components, which is
+the house rule ("a screen states nothing it could compute") and also the only
+way the brief's controlled vocabulary stays checkable. `scripts/vocab.mjs` greps
+user-facing strings for the forbidden phrases and fails the build on a hit; it
+strips comments first, so the rule can be written down where it is explained.
+
+## What the analysis still will not do
+
+- **It does not triage.** § 10 offers "consult a professional" as a peer of the
+  other next actions, the same stance `SafetyNotice` takes on step 1.
+- **Sunscreen can never be proposed for a pause** — the exclusion is in
+  `pausableProducts`, in code, not in copy. Prescribed treatment cannot be
+  detected (nothing asks), so the screen says to check with whoever prescribed
+  it rather than pretending to know.
+- **`ACTIVES[id].concern` is still hand-written and not a citable authority.**
+  CosIng remains unwired — see "The ingredient data" below. Read the current
+  strings as good enough for a prototype to explain itself with, not good enough
+  to ship a causal claim on.
+
+---
+
+# The brief's original statement of the gap, kept for the reasoning
+
+⚠️ **THIS IS THE STATE OF THINGS UP TO 5 SEP 2026, AND IT IS KEPT BECAUSE THE
+REASONING STILL BINDS.** The feature is built — the section above records what
+was decided. Everything below is why it needed to exist and what the brief asks
+of it, which is still the authority when the next person changes it. Where the
+two disagree about what EXISTS, the section above is current.
+
 The thesis pivoted on 7 Aug — from *"the thirty seconds before you buy"* to
-*"the culprit finder"* — and CHECK is the EARLIER thesis, shipped. What follows
-is not a forgotten ticket; it is the newer thesis never getting its screens.
-
-⚠️ **THE CULPRIT FINDER HAS NO ROUTE, AND THE STORE ALREADY HOLDS ITS INPUTS.**
-This is the largest gap between what LUX says it is and what it does, and it is
-recorded here because it is invisible from inside the code: nothing is broken,
-no screen is half-finished, and every file that exists is complete. The feature
-simply was never started.
+*"the culprit finder"* — and CHECK is the EARLIER thesis. Both ship now; see
+"Why the product is shaped like this" at the end of this file.
 
 **Source:** `docs/product-brief.md` (11 Aug 2026), § "Analysis model to
 communicate through the UI" and §§ 07–08. ⚠️ **Moved into the repo 4 Sep 2026**
 (was `/Users/yonz/Claude/LUX/lux_wireframe_ai_brief.md`) — it is the only copy
-of the spec for the unbuilt analysis AND for the safety branch below, and it was
-sitting unversioned outside git, cited by nothing.
+of the spec for the analysis AND for the safety branch below, and it was sitting
+unversioned outside git, cited by nothing.
 
 ## What the brief specifies
 
@@ -1169,16 +1314,15 @@ against step 4's flare date — that is stated as the whole point of keeping
 "Not sure" as its own group rather than binning it into Long term (see the
 PRODUCTS section). The correlation is never run.
 
-## ⚠️ AND THE BRIEF FORBIDS THE ONE THING CHECK DOES
+## ⚠️ AND THE BRIEF FORBIDS THE ONE THING CHECK DOES — SETTLED, SEE ABOVE
 
 > **"Do not show a scientific-looking percentage."**
 
-`CompatCard` renders `{score}%` with a bar whose fill width equals it. The two
-can be reconciled — the rule is written about the *hypothesis* result, where a
-number would dress a judgement up as a measurement, and CHECK's score is a
-model output rather than a claim about causation — but it is a stated product
-stance that the shipped UI takes the opposite position on, and it should be
-settled deliberately rather than by the brief staying unread.
+`CompatCard` renders `{score}%` with a bar whose fill width equals it. Resolved
+5 Sep 2026 in favour of the asymmetry the two questions actually have: CHECK
+keeps its number, `findings` shows none. The full reasoning is under
+"THE PERCENTAGE SPLIT" above; it is recorded twice on purpose, because someone
+reading CHECK's section will not necessarily read the analysis's.
 
 The related rule from the same section is unambiguous either way, and CHECK does
 respect it: *never infer an interaction from ingredient names alone without
@@ -1200,7 +1344,10 @@ one. The analysis needs its own threshold, and needs a designed state for
 refusing to answer. The spine's note on why: refusing to answer is the hardest
 thing to design and the easiest thing to admire.
 
-## If it gets built
+**It got both** — structural gates rather than a count, and the no-conclusion
+outcome built first. See "The gates are structural" above.
+
+## How it got built — the brief on its own terms
 
 It is not a sixth investigation step. The flow's five steps collect; this
 reports on what they collected, so it belongs off `/investigation` as a result
@@ -1209,8 +1356,10 @@ first screen in the app whose content is an argument rather than a readout, and
 the accordion order above is the argument's shape, including **evidence
 against**, which no screen in LUX currently has a pattern for.
 
-**Nothing in Figma covers it either** — page 06 has no analysis or result frames
-outside CHECK. Design it there first.
+**Nothing in Figma covers it** — page 06 has no analysis or result frames
+outside CHECK, and that is still true: the three screens were built here, under
+the "prototype leads on flow" rule, and every one of them carries a
+`⚠️ NOT IN FIGMA` comment. `docs/figma-catchup.md` is the work order.
 
 ## The ingredient data — one source is wired, one is named and missing
 
@@ -1229,8 +1378,10 @@ either search:
 > nice-to-have, it's the mechanism.
 
 **[CosIng](https://ec.europa.eu/growth/tools-databases/cosing/)** — the European
-Commission's official cosmetic ingredient database, free and public. **Not used
-anywhere in the build, and it is the piece the analysis above is missing.** Open
+Commission's official cosmetic ingredient database, free and public. **Still not
+used anywhere in the build, and it is the piece the shipped analysis is
+missing.** `ACTIVES[id].concern` carries the explanation today and says so in its
+own doc comment. Open
 Beauty Facts says what is *in* a product; CosIng says what each INCI name
 actually *does* and what restrictions apply to it. The brief requires every
 hypothesis to explain why an ingredient is a plausible suspect and to show its
@@ -1331,15 +1482,21 @@ to mistake for a feature someone simply forgot.
 | 6 Aug — `lux-scope-decision.md` | **"LUX is for the thirty seconds before you buy."** One question — *does this suit my skin?* | prospective |
 | 7–11 Aug — the spine, then the brief | **"Thesis locked: the culprit finder."** Which product caused this? | retrospective |
 
+⚠️ **BOTH SHIP NOW.** The culprit finder landed 5 Sep 2026 and CHECK stays —
+decided then, at the user's direction. They answer different questions in
+opposite directions and neither subsumes the other.
+
 **CHECK is the 6 Aug thesis, shipped.** `check.ts` says in its own words that it
 answers *"is this product right for my skin?"* — the pre-purchase question. The
 culprit finder is the thesis the project pivoted TO, and it is the part with no
 route.
 
-So the gap is not an oversight. The project changed its mind about what it was,
-built the version it had already scoped, and the newer thesis never got its
-screens. Whoever picks this up should decide which thesis LUX is actually
-making, rather than assuming the missing feature is just the next ticket.
+So the gap was not an oversight. The project changed its mind about what it was,
+built the version it had already scoped, and the newer thesis got its screens a
+month later. The question that was left open — *which thesis is LUX actually
+making?* — was answered by keeping both, which means the app now has two
+sections that reason about ingredients and a standing obligation not to let them
+collapse into each other.
 
 ## "Five questions, maximum" — the origin of the 5-step flow
 

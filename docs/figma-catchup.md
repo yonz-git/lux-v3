@@ -166,6 +166,10 @@ treatment — but there is no component to keep them in sync.
 | **Product imagery** | No product or bottle icon exists outside the nav, so every thumb and image well drew a camera — which identifies nothing down a list. Nine vessel silhouettes by packaging type, tinted per brand. Raise a real illustration set. |
 | **Check-in photo** | The photos card's entire content is a picture, so a camera glyph says "no photo" on the record of one the user took. Raise real imagery. |
 | **Opaque sage** | `surface/data-strong` has no solid counterpart — see the token list. |
+| **Reasoning accordion** | The THIRD accordion, and the first stacked into a group: § 08's six reasoning sections on `/investigation/findings`. Composed from `ProductAccordionCard`'s recipe by way of `features/my-skin/components/Disclosure.tsx`, with a hairline between rows instead of a card each. Three accordions on three surfaces is now the strongest case in this file for one component — raise it and migrate all three. |
+| **Hypothesis card** | The result card on `/investigation/findings`: overline, headline, a confidence Tag, the products involved, then the accordion stack. Frosted light card, System A. ⚠️ **Deliberately carries NO score, no bar and no percentage** — unlike `CompatCard`, which is the same species of object answering a different question. Any Figma component for it must not grow one. |
+| **Ranked list** | § 11's investigation-priority list: one card holding numbered rows, because the RANKING is the content and rows-as-cards would lose it. The ordinal is a small indigo disc, set as meta rather than as a metric — it is a position in a queue, not a score. |
+| **Progress step list** | `/investigation/analyzing` names § 06's six passes and ticks them off, where `Check — analyzing` (`605:2163`) fills a bar. Uses `SuccessCheckIcon` in a fixed-width slot so the lines do not reflow as ticks land. No frame draws this. |
 | **Callout / notice** | The safety notice on `01 — Start investigation` is composed from the frosted-card recipe the frame's own deleted DISCLAIMER card used (`radius/lg`, `surface/frost-light`, hairline `border/subtle`, `t-overline` over body). There is no callout component and no ACCENT of any kind for one — the DS also has no warning glyph — `02 Icons` has 13 and none of them means caution — so the block carries its meaning by position and label alone. Raise a Notice component with a `feedback/warning` accent, and note the notice is CONDITIONAL: no frame draws it. |
 
 ---
@@ -281,6 +285,32 @@ Not the frame's *Start investigation*. Four names for one place was the
 confusion, and this string is not new copy — it is the label
 `Check — no profile` (`606:2183`) already gives this exact destination. The frame
 name is the odd one out.
+
+### The investigation ends in an ANALYSIS, and page 06 has no frames for it
+
+⚠️ **The biggest gap in this file.** `/investigation/evidence`,
+`/investigation/analyzing` and `/investigation/findings` — the culprit finder
+from `docs/product-brief.md` §§ 05–12 — are built entirely in the prototype.
+Page `06. Screen Designs` has no analysis or result frames outside CHECK, so
+every measurement on all three screens is decided here.
+
+They are **pushed views, not steps**: no progress track, no `Save & exit`, back
+chevron kept. `TOTAL_STEPS` is still 5, and step 5's Continue now ends at
+`/investigation/evidence` instead of the Products hub.
+
+What Figma needs to draw, at both breakpoints:
+
+- **`05 — Evidence check`** — an AI bubble, a confirmation card per ambiguous
+  product (two radio rows), the cleanser/sunscreen prompt with its chips, and a
+  read-only three-group summary of what the timeline worked out.
+- **`06 — Analysing`** — the orb `thinking`, and the six named passes ticking
+  through. Not a bar; the transparency is the screen.
+- **`07/08/11 — Findings`**, in **three outcome states**: a leading hypothesis,
+  several that still fit, and **not enough evidence**. The third is the one that
+  matters most — it is where most real runs land, and it is a designed answer
+  rather than an error state.
+
+Three new components go with them; see § 3.
 
 ### Nine designed screens are five steps
 
