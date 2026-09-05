@@ -53,6 +53,20 @@
   color: var(--color-text-primary);
 }
 
+/* The compact bubble — `/chat` only, see ChatBubble.tsx.
+
+   The text drops a step, 16/26 -> 14/22, so the padding drops with it rather
+   than leaving a small sentence rattling in a box built for a larger one:
+   14/18 x 14/16 = 12.25/15.75, which rounds to 12/16.
+
+   ⚠️ AND THAT LANDS IT ON THE SPACING SCALE, WHICH 14/18 NEVER WAS. `md` is 12
+   and `lg` is 16, so the compact bubble is the one that can name its padding in
+   tokens; the default keeps the raw 14/18 because that is the value 29 of the
+   43 bubbles in Figma are drawn at. Do not "fix" the default to match this. */
+.bubble[data-size="compact"] {
+  padding: var(--space-md) var(--space-lg); /* 12 / 16 */
+}
+
 .bubble[data-from="ai"] {
   background: var(--color-bg-bubble-ai);
   border-top-left-radius: var(--radius-bubble-tail);
@@ -75,6 +89,15 @@
        were verified against, and 4px of side padding on a full-width bubble does
        not move anything. Resolve it in Figma rather than forking the component. */
     padding: 14px 22px;
+  }
+
+  /* ⚠️ THE COMPACT BUBBLE DOES NOT TAKE THE DESKTOP STEP-UP. The 22 exists
+     because the GETTING STARTED bubbles get wider as their column does; the
+     `/chat` panel is 375 at BOTH breakpoints (there is no desktop frame for
+     it), so a bubble inside it has no more room on desktop and widening its
+     padding would just eat the line. */
+  .bubble[data-size="compact"] {
+    padding: var(--space-md) var(--space-lg); /* 12 / 16 */
   }
 }
 

@@ -7,13 +7,8 @@ import { BottomNav } from "@/components/layout/BottomNav";
 import { ChatBubble } from "@/components/ui/ChatBubble";
 import { Orb } from "@/components/ui/Orb";
 import { CloseIcon } from "@/components/ui/icons";
-import { MoreVerticalIcon, SendArrowIcon } from "./icons";
-import {
-  DAY_LABEL,
-  SEEDED_CONVERSATION,
-  clockTime,
-  type ChatMessage,
-} from "@/features/chat/chat";
+import { SendArrowIcon } from "./icons";
+import { SEEDED_CONVERSATION, type ChatMessage } from "@/features/chat/chat";
 
 /**
  * Conversation — `chat-page / mobile` (270:96), at `/chat`.
@@ -33,19 +28,43 @@ import {
  * which is also the only reading under which its two header controls mean
  * anything: you collapse a panel, not a page.
  *
- *   header    the orb, `Hi, I'm LUX`, a kebab and a close X
- *   body      a `Today` divider, then the seeded exchange the frame draws
+ *   header    the orb, `Hi, I'm LUX` and a close X
+ *   body      the seeded exchange the frame draws
  *   composer  a frosted pill with a `gradient/brand` send disc
  *
- * ⚠️ THE BUBBLES ARE `ChatBubble`, AT THE COMPONENT'S TYPE AND NOT THE FRAME'S.
- * This frame sets its bubble text at 14/20; the design-system component
- * (`Spec/Chat Bubble` 47:12) and all nine GETTING STARTED frames set it at
- * `Body 2` / `Body 1`, which is what `t-body2-body1` is. Two Figma sources
- * disagree and the published component wins — a chat bubble two steps smaller
- * here than everywhere else in the product would be the drift, not the fix.
- * Everything else about the bubble — the 30/1 tail corners, the two fills, the
- * fill-plus-two-shadows recipe with no stroke — the component already draws
- * exactly as this frame does.
+ * ⚠️ NOTHING ON THIS SCREEN STATES A TIME ANY MORE, AND THE FRAME STATES TWO.
+ * It drew per-message timestamps (10:32 / 10:34, at 10px) under a `Today`
+ * divider; both were removed on request, in that order. What is left is an
+ * exchange with no date at all — which is fine for two seeded turns and would
+ * not be for a conversation with history, so this is the first thing to
+ * revisit if the panel ever holds more than one day.
+ *
+ * Each removal took its data with it rather than leaving it unread:
+ * `ChatMessage` no longer carries an `at`, `clockTime` is gone, and `DAY_LABEL`
+ * went with the divider. If times come back, they come back in `chat.ts` first
+ * — a timestamp is data before it is markup.
+ *
+ * ⚠️ THE BUBBLES TAKE THE FRAME'S SMALLER TYPE, VIA `size="compact"` — REVERSED
+ * 5 Sep 2026, HAVING FIRST SHIPPED THE OTHER WAY. This frame sets its bubble
+ * text at 14/20 where the published component (`Spec/Chat Bubble` 47:12) and
+ * all nine GETTING STARTED frames set `Body 2` / `Body 1`. The first build gave
+ * the component the win, reasoning that a bubble two steps smaller here than
+ * everywhere else would be the drift; walked at 375 the panel says otherwise —
+ * it is a 375 surface, not a 440 screen, and full-size bubbles in it leave the
+ * conversation with almost no room to be a conversation. The frame was right
+ * about its own panel. Asked for directly, and the change is the frame's.
+ *
+ * `t-body3` (14/22) is the nearest published style to the frame's 14/20; there
+ * is no 20 line-height in the ramp, and rule 3 means a `t-*` class rather than
+ * an ad-hoc `font-size`. The bubble's PADDING drops with the type — see
+ * ChatBubble.module.css — and `--bubble-max` below drops by the same ratio, so
+ * the bubble shrinks as a whole rather than just losing height.
+ *
+ * ⚠️ IT IS A VARIANT ON THE PUBLISHED COMPONENT, NOT A LOCAL OVERRIDE, and it
+ * still needs raising in Figma — see ChatBubble.tsx. Everything else about the
+ * bubble — the 30/1 tail corners, the two fills, the fill-plus-two-shadows
+ * recipe with no stroke — the component already draws exactly as this frame
+ * does.
  *
  * ⚠️ SENDING APPENDS YOUR MESSAGE AND LUX DOES NOT ANSWER. What LUX may say
  * about skin is governed by `docs/product-brief.md`'s controlled vocabulary,
@@ -76,11 +95,16 @@ import {
  * own `CloseIcon` rather than a fourth chat-local glyph, and it takes the
  * control onto `size/icon-xs` (16) from the frame's off-scale 14.
  *
- * ⚠️ THE KEBAB HAS NO BEHAVIOUR AND IS RENDERED DISABLED. The frame draws the
- * control and no flow anywhere defines what it opens. A focusable button that
- * does nothing, or an `aria-haspopup` pointing at a menu that does not exist,
- * are both worse than saying so. Closing DOES have an obvious destination —
- * the prototype leads on flow — so the X goes to Welcome.
+ * ⚠️ THE KEBAB IS GONE, THOUGH THE FRAME DRAWS ONE — removed on request, and
+ * it is the better end of an argument this file already had. It shipped
+ * DISABLED because no flow anywhere defines what it opens, and a dead control
+ * is a promise the app does not keep; deleting it keeps the promise honestly
+ * instead. Closing DOES have an obvious destination — the prototype leads on
+ * flow — so the X remains and goes to Welcome.
+ *
+ * The X is now the only thing on the right, so the header is one control each
+ * side. `MoreVerticalIcon` went with it: it was drawn for this button and had
+ * no other caller.
  *
  * ⚠️ NOTHING ANIMATES ITSELF. Each bubble runs `ChatBubble`'s own
  * `bubble-enter` because it is newly mounted, and the panel arrives on the
@@ -100,14 +124,7 @@ export function ChatScreen() {
     if (draft.trim() === "") return;
     setMessages((prev) => [
       ...prev,
-      {
-        id: `sent-${prev.length}`,
-        from: "user",
-        text: draft.trim(),
-        /* the real clock, which only ever runs after an interaction and so
-           cannot reach the prerender — see chat.ts */
-        at: clockTime(new Date()),
-      },
+      { id: `sent-${prev.length}`, from: "user", text: draft.trim() },
     ]);
     setDraft("");
     /* after the append has painted */
@@ -130,43 +147,26 @@ export function ChatScreen() {
             <p className="t-body1">Hi, I&rsquo;m LUX</p>
           </div>
 
-          <div className={styles.headerRight}>
-            <button
-              type="button"
-              className={`${styles.headerButton} ${styles.menu}`}
-              aria-label="Conversation options"
-              disabled
-            >
-              <MoreVerticalIcon />
-            </button>
-            <Link
-              href="/"
-              className={`${styles.headerButton} ${styles.close}`}
-              aria-label="Close conversation"
-            >
-              <CloseIcon />
-            </Link>
-          </div>
+          <Link
+            href="/"
+            className={`${styles.headerButton} ${styles.close}`}
+            aria-label="Close conversation"
+          >
+            <CloseIcon />
+          </Link>
         </div>
 
         <div className={styles.body}>
-          {/* ⚠️ `t-label-sm` (12/16) AGAINST THE FRAME'S 11. There is no 11 in
-              the ramp and rule 3 is that every piece of text takes a `t-*`
-              class, so the nearest published style wins over an ad-hoc
-              font-size. Same call as the timestamps below, which are drawn at
-              10. Both are in docs/figma-catchup.md. */}
-          <div className={`${styles.divider} t-label-sm`}>{DAY_LABEL}</div>
-
           {messages.map((message) => (
             <div key={message.id} className={styles.messageRow} data-from={message.from}>
-              <ChatBubble from={message.from} full className={styles.bubble}>
+              <ChatBubble
+                from={message.from}
+                size="compact"
+                full
+                className={styles.bubble}
+              >
                 {message.text}
               </ChatBubble>
-              {/* a plain paragraph rather than `<time>`: the seeded rows carry
-                  the comp's printed strings and no machine-readable datetime to
-                  put in the attribute, and a `<time>` without one is worth
-                  nothing to a screen reader. */}
-              <p className={`${styles.timestamp} t-label-sm`}>{message.at}</p>
             </div>
           ))}
           <div ref={tail} aria-hidden="true" />

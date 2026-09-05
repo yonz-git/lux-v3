@@ -8,12 +8,18 @@
    controls say, since a kebab and a collapse chevron only make sense on
    something that can be collapsed.
 
-   ⚠️ NINE VALUES IN THIS FRAME ARE OFF THE PUBLISHED SCALES. Each is marked
-   where it is used and all nine are listed in docs/figma-catchup.md as work to
-   close in Figma. None was "corrected" here — Figma leads on pixels — but none
-   should survive into a shipped screen either:
-     radius 36 · gap 6 · glyphs 18 and 14 · border 0.2 · text 11 and 10
-     · fills #b5c8cc, #beced2 and #606d75, none of which are in `02 Color`
+   ⚠️ SEVEN OFF-SCALE VALUES FROM THIS FRAME ARE STILL IN PLAY. Each is marked
+   where it is used. None was "corrected" here — Figma leads on pixels — but
+   none should survive into a shipped screen either:
+     radius 36 · border 0.2 · fill #beced2, which is not in `02 Color`
+
+   ⚠️ THE OTHER SIX LEFT WITH THE THINGS THAT CARRIED THEM — the 6 row gap and
+   the 10 text with the timestamps, the 18 glyph with the kebab, the 11 text and
+   the #b5c8cc and #606d75 fills with the `Today` divider — and the frame's
+   off-scale 14 chevron was never reproduced (the X is `CloseIcon` at 16).
+   docs/figma-catchup.md still lists all nine. Reconcile it there; this file is
+   the truth about what SHIPPED and the doc is the truth about what Figma
+   holds, which is exactly the split AGENTS.md describes.
    ========================================================================== */
 
 .panel {
@@ -33,18 +39,17 @@
   /* ⚠️ OFF THE RADIUS SCALE — `3xl` is 32 and `full` is 999, so 36 is a value
      the system does not publish. Raise `radius/4xl`. */
   --chat-panel-radius: 36px;
-  /* ⚠️ OFF `02 Color` — the divider stroke (#b5c8cc) and the composer's hairline
-     (#beced2) are sage tints with no token. `border/subtle` (#e2e4e8) and
-     `border/default` (#cbcdd4) are both neutral and both read wrong on this
-     surface. Raise them as `border/sage-subtle` and `border/sage-hairline`. */
-  --chat-line: #b5c8cc;
+  /* ⚠️ OFF `02 Color` — the composer's hairline is a sage tint with no token.
+     `border/subtle` (#e2e4e8) and `border/default` (#cbcdd4) are both neutral
+     and both read wrong on this surface. Raise it as `border/sage-hairline`.
+
+     ⚠️ TWO SIBLINGS OF THIS ONE WENT WITH THE DIVIDER: `--chat-line` (#b5c8cc,
+     its two hairlines) and `--chat-meta` (#606d75, its label and the
+     timestamps). `--chat-meta` was also the screen's one MEASURED contrast
+     failure — 4.34:1 at the top of the panel, 4.07:1 lower down, against 4.5:1
+     — so the panel no longer has a text-contrast problem of its own. The
+     composer's white-on-translucent still does; see `.input`. */
   --chat-field-border: #beced2;
-  /* ⚠️ OFF `02 Color`, AND A MEASURED CONTRAST FAILURE — 4.34:1 at the top of
-     the panel and 4.07:1 lower down, against 4.5:1. Kept as drawn: the frame
-     leads on colour. The obvious substitution is worse (`text/muted` #9a9aa5
-     measures 2.27:1 / 2.13:1 here); `text/secondary` #4b4b57 passes at 7.01:1 /
-     6.57:1 and is the fix to make in Figma. See docs/figma-catchup.md §7e. */
-  --chat-meta: #606d75;
 
   width: 100%;
   /* the frame's own width; there is no wider drawing of this screen */
@@ -63,8 +68,19 @@
   display: flex;
   flex-direction: column;
 
-  /* the frame's 24/20 */
-  padding: var(--space-2xl) var(--space-xl);
+  /* ⚠️ NOT IN FIGMA — THE TOP IS 16 WHERE THE FRAME DRAWS 24, asked for
+     directly. Sides and bottom are the frame's 20 and 24; only the top moved,
+     so the header sits closer to the panel's edge without narrowing the column
+     or lifting the composer.
+
+     ⚠️ THE GAP YOU SEE IS 4 MORE THAN THIS NUMBER, and the rest is not padding.
+     `.avatar` is the frame's 58 `chat-ball` slot holding a 50 sphere, so it
+     carries 4 of slack above the orb that no padding here can reach. 16 + 4 =
+     20 to the sphere, against 28 before. Take the slot down before reaching for
+     a smaller top pad again — the sphere is the thing the eye measures to, and
+     `--space-md` here would put the kebab and the X 12 from the edge while the
+     orb still sat at 16. */
+  padding: var(--space-lg) var(--space-xl) var(--space-2xl);
   border-radius: var(--chat-panel-radius);
   background: var(--chat-panel-gradient);
   /* the frame is overflow-clip; the composer's drop shadow is clipped in the
@@ -101,12 +117,6 @@
   height: 58px;
 }
 
-.headerRight {
-  display: flex;
-  align-items: center;
-  gap: var(--space-md);
-}
-
 /* A 44px touch target around a glyph that is smaller than it is offset by HALF
    the difference on every side, so the box takes the GLYPH's room in the layout
    and the drawn 12px gap survives. Same move as SearchField's clear button. */
@@ -125,19 +135,14 @@
   color: var(--color-icon-default);
 }
 
-/* Both are set through `--icon-size` rather than width/height — a custom
-   property feeding the globals rule, never an inline size outranking it. */
+/* Set through `--icon-size` rather than width/height — a custom property
+   feeding the globals rule, never an inline size outranking it.
 
-/* ⚠️ 18 IS OFF THE `size/icon-*` SCALE (16/20/24/32/48), as drawn. */
-.menu {
-  --chat-glyph: 18px;
-  --icon-size: 18px;
-}
-
-/* The close X, at `size/icon-xs`. The frame draws a chevron-down at an
+   The close X, at `size/icon-xs`. The frame draws a chevron-down at an
    off-scale 14; this is the DS `CloseIcon` at 16, so the control is on the
-   scale and 2px shy of the kebab beside it — which is the relationship the
-   frame draws. See the doc comment on ChatScreen.tsx for why it is an X. */
+   scale. It used to sit 2px shy of the kebab beside it, which is the
+   relationship the frame draws; the kebab is gone and the X is now the header's
+   only right-hand control. See the doc comment on ChatScreen.tsx. */
 .close {
   --chat-glyph: var(--size-icon-xs);
   --icon-size: var(--size-icon-xs);
@@ -147,6 +152,19 @@
    BODY (270:106)
    -------------------------------------------------------------------------- */
 
+/* ⚠️ NOT IN FIGMA — 12 ABOVE THE FIRST MESSAGE WHERE THE FRAME GIVES 20. The
+   12 was set to pull the `Today` divider up under the header; the divider has
+   since gone, so it is now the gap between the header and the first bubble and
+   it was kept, because the whole top of this panel was tightened on purpose.
+   The bottom pad keeps the frame's 20 — that one is clearance above the
+   composer, not space around anything that was removed.
+
+   ⚠️ THE 16 GAP AND THE 24 BETWEEN MESSAGES ARE TWO DIFFERENT NUMBERS ON
+   PURPOSE, split across this rule and `.messageRow + .messageRow` below. With
+   the divider gone the gap governs only the tail sentinel, and the 24 is what
+   actually separates two bubbles — they had already lost the timestamp row
+   that used to sit between them, so they need it more than they did, not
+   less. */
 .body {
   flex: 1;
   min-height: 0;
@@ -155,41 +173,23 @@
 
   display: flex;
   flex-direction: column;
-  gap: var(--space-2xl);
-  padding-block: var(--space-xl);
+  gap: var(--space-lg); /* 16 — the floor; messages add 8 to it below */
+  padding-block: var(--space-md) var(--space-xl); /* 12 / 20 */
 }
 
-/* The date divider (270:107). Two hairlines and a label; the lines are
-   pseudo-elements because there is nothing for a screen reader to read in
-   them — the word between them already says what the row is. */
-.divider {
-  flex: none;
-  display: flex;
-  align-items: center;
-  gap: var(--space-lg);
-  color: var(--chat-meta);
-}
+/* A row hugs its bubble. It used to STACK the bubble and its timestamp, which
+   is why it was a column with a 6 gap; with the timestamp gone it holds one
+   child and exists to place that child — `fit-content` so the row is the
+   bubble's width, and the side it sits on below.
 
-.divider::before,
-.divider::after {
-  content: "";
-  flex: 1;
-  height: var(--border-width-hairline);
-  background: var(--chat-line);
-}
-
-/* A row hugs its bubble, because the timestamp is aligned to the BUBBLE's right
-   edge and not the column's — for the AI that is the bubble's inner edge, for
-   the user its outer one. Measured in the frame: the AI timestamp ends at 237
-   (the bubble width) and the user's at 335 (the body width, which is also its
-   bubble's right edge). */
+   ⚠️ IT IS NOT REDUNDANT WITH `ChatBubble`'s OWN ROW, though it looks it. That
+   row justifies a bubble inside a full-width line; this one makes the bubble's
+   own box the thing the `+` selector below can space. Collapsing the two would
+   put the 24 between message LINES rather than between bubbles, which is the
+   same number until a bubble wraps. */
 .messageRow {
   flex: none;
   display: flex;
-  flex-direction: column;
-  /* ⚠️ OFF THE SPACING SCALE — `2xs` is 2 and `xs` is 4. Raise `space/6`, or
-     move the frame to 4. */
-  gap: 6px;
   width: fit-content;
   max-width: 100%;
 }
@@ -198,21 +198,28 @@
   align-self: flex-end;
 }
 
+/* the frame's 24 between messages, restored on top of the body's smaller gap */
+.messageRow + .messageRow {
+  margin-top: var(--space-sm); /* 16 + 8 = 24 */
+}
+
 /* `full` + these two properties is the documented way to retune ChatBubble's
    span: the component's own rule is class + attribute, so a module class would
    lose the specificity contest — the custom properties are what it reads
    instead. 300 is the frame's `user-bubble` max; the AI bubble is drawn at 237
-   only because its sentence is shorter. */
+   only because its sentence is shorter.
+
+   ⚠️ 262, NOT THE FRAME'S 300, BECAUSE THE TYPE CAME DOWN WITH IT. The bubbles
+   render at `size="compact"` (14/22 against 16/26), and a ceiling left at 300
+   would shrink the text without shrinking the bubble — the same sentence on the
+   same number of lines in a box that only got shorter. 300 x 14/16 = 262.5, so
+   the ceiling falls by exactly the ratio the type did and a line still breaks
+   at roughly the word it broke at before. See ChatScreen.tsx. */
 .bubble {
   --bubble-width: fit-content;
-  --bubble-max: 300px;
+  --bubble-max: 262px;
 }
 
-.timestamp {
-  align-self: stretch;
-  text-align: right;
-  color: var(--chat-meta);
-}
 
 /* ---------------------------------------------------------------------------
    COMPOSER (270:116 / 270:118)

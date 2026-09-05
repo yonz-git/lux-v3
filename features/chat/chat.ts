@@ -6,12 +6,18 @@
  * every other section keeps its data in `features/<section>/*.ts`: the screen
  * states nothing it could read from this file.
  *
- * ⚠️ THE SEEDED TIMESTAMPS ARE THE COMP'S, VERBATIM, and they are strings
- * rather than `Date`s on purpose. 10:32 / 10:34 are the two times the frame
- * prints; deriving them from a clock would make the screen render differently
- * on every load and, worse, differently on the server and the client. A message
- * the USER sends is stamped from the real clock — that only ever happens after
- * an interaction, so it cannot reach the prerender.
+ * ⚠️ THERE ARE NO TIMESTAMPS, THOUGH THE FRAME DRAWS THEM — removed on
+ * request. `ChatMessage` carried an `at` string (the comp's own 10:32 / 10:34,
+ * kept as strings so a clock could not make the server and the client disagree)
+ * and `clockTime` stamped a sent message from the real one. Both are gone
+ * rather than left unread: a field nothing renders is a claim the data makes
+ * and the screen does not honour.
+ *
+ * ⚠️ `DAY_LABEL` HAS GONE THE SAME WAY, with the `Today` divider it headed, so
+ * this module now states no time at all — not the minute and not the day. That
+ * is honest for two seeded turns and would not be for a conversation with
+ * history; see the note on ChatScreen.tsx. If times come back, they come back
+ * here first.
  */
 
 export type ChatAuthor = "ai" | "user";
@@ -20,8 +26,6 @@ export type ChatMessage = {
   id: string;
   from: ChatAuthor;
   text: string;
-  /** already formatted for display — see the note above */
-  at: string;
 };
 
 /**
@@ -35,34 +39,10 @@ export type ChatMessage = {
  * is what ships until the analysis this screen fronts actually exists.
  */
 export const SEEDED_CONVERSATION: ChatMessage[] = [
-  {
-    id: "seed-lux-1",
-    from: "ai",
-    text: "How does your skin feel today?",
-    at: "10:32 AM",
-  },
+  { id: "seed-lux-1", from: "ai", text: "How does your skin feel today?" },
   {
     id: "seed-user-1",
     from: "user",
     text: "it is much better than yesterday! no itchiness.",
-    at: "10:34 AM",
   },
 ];
-
-/** The divider that heads the day's messages. */
-export const DAY_LABEL = "Today";
-
-/**
- * `10:34 AM` — the shape the frame prints, from the viewer's own locale.
- *
- * ⚠️ NOT IN `lib/date.ts`, THOUGH THAT IS THE SHARED DATE MODULE. Nothing else
- * in the app prints a clock time: PROGRESS works in whole days and formats them
- * with `formatLong` / `formatDay`. A helper used by exactly one section belongs
- * to that section — move it down when a second caller appears.
- */
-export function clockTime(at: Date): string {
-  return at.toLocaleTimeString("en-US", {
-    hour: "numeric",
-    minute: "2-digit",
-  });
-}
