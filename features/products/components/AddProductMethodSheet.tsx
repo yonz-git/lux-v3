@@ -465,7 +465,11 @@ function ScanView({
           : "Take photo of the front instead"}
       </button>
 
-      <Button fullWidth disabled={!captured} onClick={onContinue}>
+      <Button
+        className={styles.trayAction}
+        disabled={!captured}
+        onClick={onContinue}
+      >
         Continue
       </Button>
     </div>
@@ -601,7 +605,11 @@ function ConfirmView({
           {/* the tray's own primary action. Disabled until the question is
               answered, for the same reason Continue is on every step: there is
               no group to file the product under until it is. */}
-          <Button fullWidth disabled={!draft.duration} onClick={onAdd}>
+          <Button
+            className={styles.trayAction}
+            disabled={!draft.duration}
+            onClick={onAdd}
+          >
             Add product
           </Button>
         </div>

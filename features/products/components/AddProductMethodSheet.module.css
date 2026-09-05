@@ -391,3 +391,28 @@
   height: calc(24px * 20 / 36);
 }
 
+
+/* ⚠️ THE TRAY'S PRIMARY ACTION OWNS ITS OWN WIDTH — `Continue` on the capture
+   view and `Add product` on the confirm view. Full width on mobile, and
+   `--width-action` centred on desktop, which is what every other primary action
+   in the app measures; stretched across the tray they were the one button that
+   did not match.
+
+   ⚠️ NOT `Button`'s `fullWidth` PROP. That applies `Button.module.css`'s own
+   `.full`, and a caller's module class competes with it at equal specificity —
+   so which one wins comes down to bundle order rather than intent. The same
+   reason `QuestionScreen` gives for owning Continue's width instead of passing
+   `fullWidth`. Dropping the prop leaves exactly one rule in charge.
+
+   `align-self` because the views are stretch columns: without it a button
+   narrower than the tray sits against the left edge. */
+.trayAction {
+  width: 100%;
+}
+
+@media (min-width: 1024px) {
+  .trayAction {
+    width: var(--width-action);
+    align-self: center;
+  }
+}
