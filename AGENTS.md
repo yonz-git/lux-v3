@@ -45,10 +45,11 @@ them, because that lives in three better places:
    vocabulary this file assumes you already have.
 
 4. **`docs/product-brief.md`** — the 11 Aug product brief. It specifies the
-   controlled vocabulary the product may and may not use, the safety branch, and
-   the analysis flow, most of which is **not built**. Read it before adding
-   user-facing copy about a product's effect on skin, or before working on the
-   investigation flow.
+   controlled vocabulary the product may and may not use, the safety branch and
+   the analysis flow. **§§ 05–12 are built now** (`features/my-skin/analysis.ts`
+   and the three routes under `/investigation`); the safety branch deliberately
+   is not — see below. Read it before adding user-facing copy about a product's
+   effect on skin, or before working on the investigation flow.
 
 `design.md` is the FIGMA side; this file is the CODE side. Where they disagree,
 the code is the truth about what SHIPPED and `design.md` is the truth about what
@@ -587,6 +588,13 @@ losing that race announces the screen the user just left.
 ## Before you call a screen done
 
 - `npm run build` and `npm run typecheck` both clean.
+- ⚠️ **`npm run vocab` clean IF THE SCREEN SAYS ANYTHING ABOUT A PRODUCT'S
+  EFFECT ON SKIN.** It checks user-facing strings against the product brief's
+  forbidden list — "this caused your reaction", "safe for you", "toxic
+  ingredient", two ingredients that "clashed". That vocabulary is a
+  **regulatory** constraint, not a tone preference: an absolute claim needs
+  substantiating and is the language that pushes a beauty app toward
+  medical-device territory. See `docs/decisions.md`, "Claim language".
 - Compare against the Figma frame at 440 and at 1440.
 - Check computed values in the browser rather than eyeballing a screenshot.
 - Keyboard: focus is visible on every interactive element, as an `outline`.
