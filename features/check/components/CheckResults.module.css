@@ -7,27 +7,33 @@
    The 16 between the sage cards is `06 — Results`' own spacing; the 14 and 12
    inside the product block are this screen's. */
 
-/* the AI bubble spans the column (548:1141 is a full-width ai-bubble-row) */
-.bubble {
-  width: 100%;
-}
+/* ⚠️ THE BUBBLE HUGS ITS SENTENCE — NOT IN FIGMA. 548:1141 draws a full-width
+   ai-bubble-row, and the bubble used to be built that way: width 100% with a
+   52ch cap on the text inside it. That left the verdict sitting in a box far
+   wider than the sentence it holds — a band of empty fill to the right of the
+   last line at every width. A chat bubble reads as speech, and speech is the
+   shape of what was said, so the bubble now hugs.
 
-/* ⚠️ THE BUBBLE STAYS FULL WIDTH; THE SENTENCE INSIDE IT DOES NOT — NOT IN
-   FIGMA. At 1440 the verdict ran 96 characters a line, the longest measure on
-   the screen and the one line every reader starts with. Capping the BUBBLE
-   would have contradicted 548:1141, which draws a full-width row, so the cap
-   is on the text: the bubble is still the column, the sentence breaks at a
-   readable length. 52ch measures ~71 characters in this face (a `ch` is the
-   width of a zero, which is wider than an average letter). Mobile is a 392
-   column and never reaches the cap. */
-.verdict {
-  display: block;
+   `ChatBubble`'s own two hooks do it: --bubble-width `fit-content` replaces
+   the full-width span, --bubble-max keeps the hug from growing past a readable
+   measure on desktop. 52ch is the cap the text carried before and measures ~71
+   characters in this face (a `ch` is the width of a zero, which is wider than
+   an average letter); it lands on the bubble now, and the padding is inside
+   it, so the text measure is a shade narrower than before — the same intent.
+   Mobile is a 392 column and never reaches the cap, so the hug is what shows
+   there: a short verdict gets a short bubble. */
+.bubble {
+  --bubble-width: fit-content;
 }
 
 @media (min-width: 1024px) {
-  .verdict {
-    max-width: 52ch;
+  .bubble {
+    --bubble-max: 52ch;
   }
+}
+
+.verdict {
+  display: block;
 }
 
 /* The 24 under the AI bubble, which nothing else owned. `.block` starts at the
