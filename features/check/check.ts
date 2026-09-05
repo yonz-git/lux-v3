@@ -15,9 +15,10 @@
  * — would mean any product the user actually picks scores nothing, which is the
  * one thing a compatibility checker must not do.
  *
- * So: every catalogue product declares the actives it contains, each active
- * carries a penalty against THIS user's skin, and the score is what is left of
- * 98. Nothing is 100 — no formula is perfect for anyone.
+ * So: every catalogue product declares the actives it contains (that vocabulary
+ * is `lib/actives.ts` now — see the note above `SCORING`), each active carries a
+ * penalty against THIS user's skin, and the score is what is left of 98.
+ * Nothing is 100 — no formula is perfect for anyone.
  *
  * The weights are tuned so the five products on `Check results` (476:2841) come
  * out at exactly the scores the comp draws — 94 / 98 / 62 / 45 / 71 — which is
@@ -28,6 +29,8 @@
 import type { CatalogProduct } from "@/features/products/products";
 import { fullName, productById } from "@/features/products/products";
 import type { IsoDate } from "@/lib/date";
+import type { ActiveId } from "@/lib/actives";
+import { ACTIVES, activesOf, conflicts } from "@/lib/actives";
 
 /* ---------------------------------------------------------------------------
    Bands — RESOLVED in the handoff, derived from the only evidence in the file.
@@ -74,172 +77,100 @@ export const MIN_CHECK_PRODUCTS = 2;
 export const MAX_CHECK_PRODUCTS = 8;
 
 /* ---------------------------------------------------------------------------
-   Actives — what the checker knows how to reason about
+   Scoring — CHECK's half of the ingredient model
+
+   ⚠️ THE VOCABULARY MOVED TO `lib/actives.ts` AND THE WEIGHTS STAYED HERE.
+   What an ingredient is called, what it does to skin, which INCI words mean it
+   and which pairs should not share a routine are now shared with `my-skin`'s
+   analysis — two sections use them, so by the placement rule in AGENTS.md they
+   are no longer this file's.
+
+   The penalties are, and must remain. They are tuned so the five products on
+   `Check results` (476:2841) come out at exactly the scores the comp draws —
+   94 / 98 / 62 / 45 / 71 — which is the right shape for a compatibility SCORE
+   and the wrong basis for a causal CLAIM. The analysis reasons about which
+   product is associated with a reaction that already happened; a number tuned
+   against a comp has no business behind a sentence like that, so it cannot
+   reach one. Same for `advice`: it is prospective how-to-use copy, which is
+   this section's question and not the other's.
    -------------------------------------------------------------------------- */
 
-type ActiveId =
-  | "retinol"
-  | "salicylic-acid"
-  | "niacinamide"
-  | "alcohol-denat"
-  | "fragrance"
-  | "sulfates";
-
-type Active = {
-  /** the short form, for an ingredient tag on a results card */
-  label: string;
-  /** the full form, for an `Ingredients of concern` entry */
-  name: string;
+type Scoring = {
   /** points off, for a sensitive + acne-prone profile */
   penalty: number;
   /** the line this active contributes to a product's recommendation */
   advice: string;
-  /** why it is a concern, for the ingredient-major view */
-  concern: string;
 };
 
-const ACTIVES: Record<ActiveId, Active> = {
+const SCORING: Record<ActiveId, Scoring> = {
   "salicylic-acid": {
-    label: "Salicylic Acid 2%",
-    name: "Salicylic Acid (BHA)",
     penalty: 20,
     advice:
       "Exfoliating acid — use two or three times a week at most, never on broken or irritated skin.",
-    concern:
-      "An exfoliating acid. Over-use thins the barrier and shows up as stinging and flaking on sensitive skin.",
   },
   retinol: {
-    label: "Retinol",
-    name: "Retinol",
     penalty: 18,
     advice:
       "Use only at night. Start with 2x per week and increase gradually. May cause dryness and peeling on sensitive skin.",
-    concern:
-      "A potent active. Redness, dryness and peeling in the first weeks are common, and more pronounced on sensitive skin.",
   },
   "alcohol-denat": {
-    label: "Alcohol Denat.",
-    name: "Alcohol Denat.",
     penalty: 18,
     advice: "Drying on sensitive skin — follow with a barrier moisturiser.",
-    concern:
-      "A drying solvent, high in the ingredient list of many serums. Commonly associated with tightness and redness.",
   },
   fragrance: {
-    label: "Fragrance",
-    name: "Fragrance (Parfum)",
     penalty: 15,
     advice: "A common trigger for sensitive skin. Patch test before daily use.",
-    concern:
-      "One of the most common causes of contact dermatitis. Reaction timing often aligns with product introduction.",
   },
   sulfates: {
-    label: "SLS",
-    name: "Sodium Lauryl Sulfate (SLS)",
     penalty: 12,
     advice: "Can strip the barrier. Avoid using twice a day.",
-    concern:
-      "Known irritant for sensitive skin. Commonly associated with redness and dryness.",
   },
   niacinamide: {
-    label: "Niacinamide",
-    name: "Niacinamide",
     penalty: 4,
     advice: "Well tolerated. No special handling needed.",
-    concern: "",
   },
-};
-
-/**
- * What each catalogue product contains. Only what the checker reasons about —
- * this is not an INCI list.
- *
- * A product missing from this map falls through to `activesFromInci`, and if
- * that finds nothing either it contains nothing the checker objects to and
- * scores the full 98. Silence should not be a penalty.
- */
-const PRODUCT_ACTIVES: Record<string, ActiveId[]> = {
-  "the-ordinary-niacinamide": ["niacinamide"],
-  "paulas-choice-niacinamide-serum": ["niacinamide"],
-  "good-molecules-niacinamide-toner": ["niacinamide"],
-  "cerave-niacinamide-body-lotion": ["niacinamide"],
-  "lrp-retinol-b3-serum": ["retinol", "alcohol-denat"],
-  "paulas-choice-bha-exfoliant": ["salicylic-acid", "alcohol-denat", "fragrance"],
-  "cerave-foaming-cleanser": ["sulfates", "fragrance"],
 };
 
 /** Nothing scores 100 — no formula is perfect for anyone. */
 const BASE_SCORE = 98;
 
-/**
- * Pairs that should not share a routine.
+/** Which of `product`'s actives clash with something else in the basket.
  *
- * ⚠️ A CONFLICT DOES NOT MOVE THE SCORE, IT CHANGES THE ADVICE — and that is
- * what the comp does. `Check results` scores The Ordinary Niacinamide at 94
- * with a retinol in the same check, while the retinol's own recommendation
- * reads "Do not combine with Niacinamide in the same routine". The score
- * answers "is this product right for my skin?", which is a fact about the
- * product; the recommendation answers "how do I use it alongside the rest?",
- * which is the only place a pair belongs. Penalising both halves would also
- * double-count one problem.
- */
-const CONFLICTS: [ActiveId, ActiveId][] = [
-  ["retinol", "niacinamide"],
-  ["retinol", "salicylic-acid"],
-];
+ *  ⚠️ THE PAIR LIST IS SHARED; THIS TIE-BREAK IS NOT. `conflicts()` in
+ *  `lib/actives.ts` says whether two actives are a pair. Deciding WHICH HALF of
+ *  the pair to report it against needs the penalties, which is a scoring
+ *  concern and stays here. */
+function conflictsFor(
+  product: CatalogProduct,
+  basket: CatalogProduct[]
+): { other: CatalogProduct; mine: ActiveId; theirs: ActiveId }[] {
+  const mine = activesOf(product);
+  const found: { other: CatalogProduct; mine: ActiveId; theirs: ActiveId }[] = [];
 
-/**
- * The INCI words that mean an active, for a product the table above does not
- * name — which is every LIVE Open Beauty Facts result, now that `/check/new`
- * searches the same database the PRODUCTS tray does.
- *
- * ⚠️ WITHOUT THIS, LIVE PRODUCTS SCORE A PERFECT 98 AND NOTHING IS EVER
- * FLAGGED. `PRODUCT_ACTIVES` is keyed by catalogue id, so a barcode id matched
- * nothing and every searched-for product came back "compatible" — a
- * compatibility checker that approves everything the user actually looks up.
- * OBF ships the real INCI list in `description`, so the actives can be READ off
- * the product rather than looked up beside it.
- *
- * Matching is on the INCI name, not the display name: an ingredient list says
- * PARFUM, not "Fragrance (Parfum)".
- *
- * ⚠️ THE DRYING-ALCOHOL PATTERN NAMES ITS FORMS AND NEVER MATCHES BARE
- * "ALCOHOL". CETEARYL, CETYL and STEARYL ALCOHOL are fatty alcohols — emollients,
- * the OPPOSITE of a drying solvent — and they appear in almost every moisturiser
- * on the shelf, CeraVe Moisturizing Cream included. A bare `\balcohol\b` would
- * therefore penalise 18 points off the gentlest products in the list. Better to
- * miss an unusual spelling than to flag a barrier cream as drying.
- */
-const INCI_PATTERNS: [ActiveId, RegExp][] = [
-  ["retinol", /\bretinol\b|\bretinyl\b|\bretinal(?:dehyde)?\b/i],
-  ["salicylic-acid", /\bsalicylic acid\b|\bbetaine salicylate\b/i],
-  ["niacinamide", /\bniacinamide\b/i],
-  ["alcohol-denat", /\balcohol denat\b|\bsd alcohol\b|\bdenatured alcohol\b|\bethanol\b/i],
-  ["fragrance", /\bparfum\b|\bfragrance\b|\blinalool\b|\blimonene\b/i],
-  ["sulfates", /\bsodium lauryl sulfate\b|\bsodium laureth sulfate\b|\bsls\b/i],
-];
-
-function activesFromInci(inci: string): ActiveId[] {
-  return INCI_PATTERNS.filter(([, re]) => re.test(inci)).map(([id]) => id);
-}
-
-function activesOf(product: CatalogProduct): ActiveId[] {
-  const known = PRODUCT_ACTIVES[product.id];
-  if (known) return known;
-  /* `ingredients`, NOT `description` — the latter is cut to 240 for the confirm
-     card, and an INCI list is ordered by concentration, so the cut takes the
-     fragrance and the preservatives with it. */
-  return product.ingredients ? activesFromInci(product.ingredients) : [];
+  for (const other of basket) {
+    if (other.id === product.id) continue;
+    for (const theirs of activesOf(other)) {
+      for (const a of mine) {
+        /* Attributed to the HARSHER half only, so one problem is reported
+           once — on the product the user has to be careful with. */
+        if (conflicts(a, theirs) && SCORING[a].penalty > SCORING[theirs].penalty) {
+          found.push({ other, mine: a, theirs });
+        }
+      }
+    }
+  }
+  return found;
 }
 
 /**
  * The ingredient words a product should be findable by on `/check/new`.
  *
- * ⚠️ THIS LIVES HERE, NOT IN `lib/products.ts`. The actives model is this
- * module's, and `products.ts` cannot import it without a cycle — so the search
- * takes them as a parameter instead. It is also the honest split: searching by
- * what a product CONTAINS is a compatibility question, which is why the check
- * builder passes this and the PRODUCTS add tray does not.
+ * ⚠️ THIS LIVES HERE, NOT IN `products.ts`, EVEN THOUGH `lib/actives.ts` WOULD
+ * NOW TAKE IT. `products.ts` cannot import the actives model without a cycle, so
+ * the search takes these as a parameter instead. Keeping it in CHECK is also the
+ * honest split: searching by what a product CONTAINS is a compatibility
+ * question, which is why the check builder passes this and the PRODUCTS add tray
+ * does not. The analysis has no search to feed.
  *
  * Both the label and the id are returned, so "salicylic acid", "BHA" and
  * "salicylic-acid" all find the same product.
@@ -264,32 +195,6 @@ export function matchedActives(
     });
 }
 
-/** Which of `product`'s actives clash with something else in the basket. */
-function conflictsFor(
-  product: CatalogProduct,
-  basket: CatalogProduct[]
-): { other: CatalogProduct; mine: ActiveId; theirs: ActiveId }[] {
-  const mine = activesOf(product);
-  const found: { other: CatalogProduct; mine: ActiveId; theirs: ActiveId }[] = [];
-
-  for (const other of basket) {
-    if (other.id === product.id) continue;
-    for (const theirs of activesOf(other)) {
-      for (const a of mine) {
-        const clash = CONFLICTS.some(
-          ([x, y]) => (x === a && y === theirs) || (y === a && x === theirs)
-        );
-        /* Attributed to the HARSHER half only, so one problem is reported
-           once — on the product the user has to be careful with. */
-        if (clash && ACTIVES[a].penalty > ACTIVES[theirs].penalty) {
-          found.push({ other, mine: a, theirs });
-        }
-      }
-    }
-  }
-  return found;
-}
-
 /* ---------------------------------------------------------------------------
    The result
    -------------------------------------------------------------------------- */
@@ -310,13 +215,13 @@ export function analyse(
   const actives = activesOf(product);
   const score = Math.max(
     0,
-    actives.reduce((n, a) => n - ACTIVES[a].penalty, BASE_SCORE)
+    actives.reduce((n, a) => n - SCORING[a].penalty, BASE_SCORE)
   );
 
   /* The mild ones are not "risky" — niacinamide costs 4 points and belongs in
      the score, not in a warning tag. 10 is the line between "worth naming" and
      "worth knowing". */
-  const risky = actives.filter((a) => ACTIVES[a].penalty >= 10);
+  const risky = actives.filter((a) => SCORING[a].penalty >= 10);
 
   const conflicts = conflictsFor(product, basket);
   const lines = [
@@ -324,7 +229,7 @@ export function analyse(
       (c) =>
         `Do not combine with ${fullName(c.other)} in the same routine — alternate days.`
     ),
-    ...actives.map((a) => ACTIVES[a].advice),
+    ...actives.map((a) => SCORING[a].advice),
   ];
 
   return {
@@ -468,13 +373,13 @@ export function ingredientsOfConcern(
 
   for (const product of basket) {
     for (const a of activesOf(product)) {
-      if (ACTIVES[a].penalty < 10) continue;
+      if (SCORING[a].penalty < 10) continue;
       byActive.set(a, [...(byActive.get(a) ?? []), product]);
     }
   }
 
   return [...byActive.entries()]
-    .sort(([a], [b]) => ACTIVES[b].penalty - ACTIVES[a].penalty)
+    .sort(([a], [b]) => SCORING[b].penalty - SCORING[a].penalty)
     .map(([id, foundIn]) => ({
       id,
       name: ACTIVES[id].name,
@@ -483,7 +388,7 @@ export function ingredientsOfConcern(
       /* The same boundary the harsh/irritant split already implies: an active
          that costs 18+ is the kind that shows up on its own, one that costs
          less needs the timing to agree. */
-      likelihood: ACTIVES[id].penalty >= 18 ? "high" : "moderate",
+      likelihood: SCORING[id].penalty >= 18 ? "high" : "moderate",
     }));
 }
 
