@@ -12,7 +12,11 @@ import {
   analyseInvestigation,
   investigationPriority,
   ruledOut,
+  splitHypotheses,
   suggestedPause,
+  CONFIDENCE_LABEL,
+  hypothesisKind,
+  subject,
   type Analysis,
 } from "@/features/my-skin/analysis";
 import { fullName } from "@/features/products/products";
@@ -148,6 +152,7 @@ function Hypotheses({ analysis }: { analysis: Analysis }) {
   const { answers } = useInvestigation();
   const several = analysis.outcome === "several";
   const pause = suggestedPause(answers);
+  const { leading, alsoConsidered } = splitHypotheses(analysis);
 
   return (
     <>
@@ -164,7 +169,7 @@ function Hypotheses({ analysis }: { analysis: Analysis }) {
           {several ? "What still fits" : "What fits your recorded pattern"}
         </h2>
         <div className={styles.cards}>
-          {analysis.hypotheses.map((h, i) => (
+          {leading.map((h, i) => (
             <HypothesisCard
               key={h.id}
               hypothesis={h}
@@ -175,6 +180,25 @@ function Hypotheses({ analysis }: { analysis: Analysis }) {
           ))}
         </div>
       </section>
+
+      {/* Everything that survived the comparison but could not be argued —
+          named and labelled, never given a card it cannot fill. See
+          `splitHypotheses`. */}
+      {alsoConsidered.length > 0 ? (
+        <section className={styles.block} aria-labelledby="also-heading">
+          <h2 id="also-heading" className={`${styles.heading} t-h5`}>
+            Also still possible, on thinner evidence
+          </h2>
+          <ul className={styles.cleared}>
+            {alsoConsidered.map((h) => (
+              <li key={h.id} className={`${styles.clearedItem} t-body3-body2`}>
+                {subject(h)} — {hypothesisKind(h).toLowerCase()},{" "}
+                {CONFIDENCE_LABEL[h.confidence].toLowerCase()}.
+              </li>
+            ))}
+          </ul>
+        </section>
+      ) : null}
 
       {/* ⚠️ THE RULED-OUT BLOCK IS TOP-LEVEL, NOT BURIED IN AN ACCORDION. These
           are candidates the user's OWN tolerated history knocked out, and they

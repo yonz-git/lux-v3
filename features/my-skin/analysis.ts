@@ -543,6 +543,30 @@ export type Analysis = {
 
 const RANK: Record<Confidence, number> = { stronger: 2, possible: 1, weak: 0 };
 
+/**
+ * The hypotheses the screen argues, and the ones it merely lists.
+ *
+ * ⚠️ EVERY SURVIVING CANDIDATE IS REPORTED, BUT NOT EVERY ONE GETS A CARD. A
+ * real routine produces four or five weak candidates — an ingredient in exactly
+ * one product, with nothing tolerated to test it against — and giving each of
+ * them a full reasoning card buries the leading hypothesis under things the
+ * analysis has already said it cannot support. § 07 shows ONE hypothesis for
+ * outcome 1; the rest still appear, named and labelled, in a compact list, so
+ * nothing is hidden and nothing is dressed up.
+ */
+export function splitHypotheses(a: Analysis): {
+  leading: Hypothesis[];
+  alsoConsidered: Hypothesis[];
+} {
+  const top = a.hypotheses[0];
+  if (!top) return { leading: [], alsoConsidered: [] };
+  const cut = RANK[top.confidence];
+  return {
+    leading: a.hypotheses.filter((h) => RANK[h.confidence] === cut),
+    alsoConsidered: a.hypotheses.filter((h) => RANK[h.confidence] < cut),
+  };
+}
+
 export function analyseInvestigation(a: Answers): Analysis {
   const blocking = gaps(a);
   const evidence = evidenceFor(a);
@@ -628,7 +652,24 @@ export function headline(h: Hypothesis): string {
     return `A possible contributor: ${h.name}`;
   }
   const [x, y] = h.actives;
-  return `${ACTIVES[x].label} and ${ACTIVES[y].label}, used in the same period`;
+  /* ⚠️ `name`, NOT `label`. `ACTIVES.label` is CHECK's ingredient-tag string and
+     one of them carries a concentration — "Salicylic Acid 2%" — which this
+     screen has just finished saying it does not know. A sentence that names a
+     percentage two lines above "concentration and formulation are unknown"
+     undoes the hedge. Same reason every other sentence in this file uses
+     `name`. */
+  return `${ACTIVES[x].name} and ${ACTIVES[y].name}, used in the same period`;
+}
+
+/**
+ * The bare subject of a hypothesis, without the "A possible contributor:"
+ * framing — for the compact list, where `hypothesisKind` already says what
+ * species it is and the full headline would repeat it twice in one line.
+ */
+export function subject(h: Hypothesis): string {
+  if (h.kind === "ingredient") return h.name;
+  const [x, y] = h.actives;
+  return `${ACTIVES[x].name} with ${ACTIVES[y].name}`;
 }
 
 /** The type label § 07 asks to show beside the headline. */
@@ -707,7 +748,7 @@ export function reasoningFor(
   } else {
     const [x, y] = h.actives;
     interactions.push(
-      `${fullName(h.products[0])} contains ${ACTIVES[x].label}; ${fullName(h.products[1])} contains ${ACTIVES[y].label}.`
+      `${fullName(h.products[0])} contains ${ACTIVES[x].name}; ${fullName(h.products[1])} contains ${ACTIVES[y].name}.`
     );
     interactions.push(
       "Used in the same period, these two may have increased irritation. That is a possibility about your routine, not a reaction between the products."
@@ -838,7 +879,7 @@ export function investigationPriority(a: Answers): PriorityEntry[] {
       if (named.length > 0) {
         weight += named.length * 10;
         reasons.push(
-          `Contains ${named.map((id) => ACTIVES[id].label).join(" and ")}`
+          `Contains ${named.map((id) => ACTIVES[id].name).join(" and ")}`
         );
       }
 

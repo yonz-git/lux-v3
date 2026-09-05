@@ -115,9 +115,12 @@ export function EvidenceCheck() {
               : "No cleanser or sunscreen in your list"}
           </h2>
           <p className={`${styles.body} t-body3-body2`}>
-            These touch your whole face every day, so leaving one out hides the
-            product most likely to be involved. Add it, or tell me you do not
-            use one.
+            {missingRoles.length === 1 ? "This touches" : "These touch"} your
+            whole face every day, so leaving{" "}
+            {missingRoles.length === 1 ? "it" : "one"} out hides the product
+            most likely to be involved. Add{" "}
+            {missingRoles.length === 1 ? "it" : "them"}, or tell me you do not
+            use {missingRoles.length === 1 ? "one" : "them"}.
           </p>
           <div className={styles.roleActions}>
             <SmallButton
