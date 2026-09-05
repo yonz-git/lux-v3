@@ -319,6 +319,9 @@ export function CanvasShader() {
     gl.attachShader(prog, fs);
     gl.linkProgram(prog);
     if (!gl.getProgramParameter(prog, gl.LINK_STATUS)) return;
+    /* biome-ignore lint/correctness/useHookAtTopLevel: `gl.useProgram` is the
+       WebGL call, not a React hook — the rule matches on the `use` prefix and
+       cannot tell the two apart. There is no hook anywhere in this effect. */
     gl.useProgram(prog);
 
     /* one triangle big enough to cover the clip volume — no quad, no indices */
@@ -472,5 +475,10 @@ export function CanvasShader() {
     };
   }, []);
 
+  /* biome-ignore lint/a11y/noAriaHiddenOnFocusable: a <canvas> with no
+     tabindex is not focusable, so this is the ordinary way to hide decoration.
+     The rule counts canvas as focusable because it MAY hold focusable fallback
+     content; this one holds none. Removing the attribute would put the app's
+     background gradient in the accessibility tree. */
   return <canvas ref={ref} className={styles.shader} aria-hidden="true" />;
 }

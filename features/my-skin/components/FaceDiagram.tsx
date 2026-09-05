@@ -120,8 +120,10 @@ export function FaceDiagram({
         {/* the form is decorative — the pills carry the meaning */}
         <span className={styles.form} aria-hidden="true">
           {TIERS.map((t, i) => (
-            <span
-              key={i}
+            /* biome-ignore lint/suspicious/noArrayIndexKey: TIERS is a constant
+               list of decorative shapes — fixed length, fixed order, no state,
+               aria-hidden. Position is the only identity they have. */
+            <span key={i}
               className={styles.tier}
               style={{
                 left: `${((t.cx - t.w / 2) / 392) * 100}%`,

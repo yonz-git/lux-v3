@@ -1,3 +1,12 @@
+/* biome-ignore-all lint/style/noDescendingSpecificity: THE TWO PAIRS THE RULE
+   FLAGS SET DISJOINT PROPERTIES, so neither can override the other. The sibling
+   rules (`.card + .col1`, 0-2-0) own only the mobile stacking margin; the plain
+   `.col1` rules that follow own display/gap on mobile and grid placement inside
+   the desktop query, where line 182 has already zeroed that margin. Reordering
+   would fix the first pair and not the second — the desktop one lives in a
+   media query and cannot be hoisted above a top-level rule — while splitting up
+   the three sibling selectors the file deliberately writes together. */
+
 /* Check-in detail — Figma 556:1330 (mobile) / 557:1353 (desktop).
 
    MOBILE — one column, and every gap between the cards is 16:

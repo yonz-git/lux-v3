@@ -42,7 +42,10 @@ export function OptionRow({
       <span className={`${styles.label} t-label`}>{label}</span>
       <span className={styles.selector} data-shape={control} aria-hidden="true">
         {control === "checkbox" && selected && (
-          <svg viewBox="0 0 11 8" fill="none" className={styles.check}>
+          /* aria-hidden on the svg itself, as every glyph in `icons.tsx` is.
+             The parent span already hides it, but the rule reads the element,
+             and so does anything else that inspects one svg in isolation. */
+          <svg viewBox="0 0 11 8" fill="none" className={styles.check} aria-hidden="true">
             <path
               d="M1 4L4 7L10 1"
               stroke="currentColor"

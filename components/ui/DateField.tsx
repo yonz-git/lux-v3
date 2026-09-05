@@ -80,7 +80,15 @@ export function DateField({
     };
   }, [open]);
 
-  // keep DOM focus on the focused day while the calendar is open
+  /* keep DOM focus on the focused day while the calendar is open
+
+     biome-ignore lint/correctness/useExhaustiveDependencies: `focused` IS
+     LOAD-BEARING AND THE RULE CANNOT SEE IT. The effect reaches the day through
+     the DOM (`[data-focused="true"]`, rendered from this very state), so no
+     reference to `focused` appears in the body and Biome reads the dep as
+     surplus. It is the trigger: drop it and DOM focus stops following the arrow
+     keys, stranding the ring on whichever day was focused when the calendar
+     opened. */
   useEffect(() => {
     if (!open) return;
     gridRef.current
@@ -181,6 +189,10 @@ export function DateField({
 
           <div className={styles.weekdays} aria-hidden="true">
             {WEEKDAYS.map((w, i) => (
+              /* biome-ignore lint/suspicious/noArrayIndexKey: WEEKDAYS is a
+                 fixed seven-item constant that never reorders or filters, and
+                 its labels REPEAT — "T" and "S" appear twice — so the value
+                 cannot be the key. The position is the identity here. */
               <span key={i} className={`${styles.weekday} t-label-sm`}>
                 {w}
               </span>

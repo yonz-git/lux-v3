@@ -1422,12 +1422,22 @@ main[tabindex="-1"]:focus-visible {
   animation-delay: 160ms;
 }
 
+/* ⚠️ THE ONLY `!important` IN THE APP, AND IT HAS TO BE. This is the global
+   reduced-motion collapse: it overrides durations declared by every component
+   module, and a module's own rule loads after globals.css and wins at equal
+   specificity — the same load-order trap that cost the focus ring its outline
+   (non-negotiable 13). Without the flag this rule silently does nothing for the
+   users who need it most. */
 @media (prefers-reduced-motion: reduce) {
   *,
   *::before,
   *::after {
+    /* biome-ignore lint/complexity/noImportantStyles: see above — overriding
+       every component module is the entire point of this block. */
     animation-duration: 0.01ms !important;
+    /* biome-ignore lint/complexity/noImportantStyles: as above */
     animation-iteration-count: 1 !important;
+    /* biome-ignore lint/complexity/noImportantStyles: as above */
     transition-duration: 0.01ms !important;
   }
 }

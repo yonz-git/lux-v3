@@ -50,6 +50,12 @@ export function CheckAnalyzing() {
     return () => cancelAnimationFrame(raf);
   }, []);
 
+  /* biome-ignore lint/correctness/useExhaustiveDependencies: THIS RUNS ONCE, ON
+     PURPOSE — it is a fixed-length wait that ends in a route change, not a
+     subscription to its inputs. `basket` is a new array every render, so listing
+     it (or `setAnswer`, which the provider rebuilds) would clear and restart the
+     timer on each one and the screen would never leave. The empty deps are the
+     behaviour. */
   useEffect(() => {
     if (basket.length === 0) {
       router.replace("/check/new");
@@ -67,9 +73,6 @@ export function CheckAnalyzing() {
     }, ANALYSIS_MS);
 
     return () => clearTimeout(timer);
-    // basket identity changes every render; its length and contents do not, and
-    // re-running this would restart the timer forever
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   return (

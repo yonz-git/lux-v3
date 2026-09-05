@@ -92,6 +92,7 @@ export function SymptomTrend({
                     viewBox="0 0 100 110"
                     preserveAspectRatio="none"
                     focusable="false"
+                    aria-hidden="true"
                   >
                     <polyline
                       points={points.map((p) => `${p.x},${p.y}`).join(" ")}

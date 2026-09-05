@@ -25,6 +25,13 @@ import { lookupOpenBeautyFacts } from "./openBeautyFacts";
 export function useEnrichedProduct(product: CatalogProduct): CatalogProduct {
   const [enriched, setEnriched] = useState<CatalogProduct>(product);
 
+  /* biome-ignore lint/correctness/useExhaustiveDependencies: KEYED ON IDENTITY,
+     NOT ON EVERY FIELD. The effect reads `product` whole, so the rule wants the
+     object in the deps — but the caller rebuilds it each render, and an object
+     dep would re-run the lookup on every render of the tray. `product.id` is
+     what actually changes when the subject changes. The cost is that a new
+     object with the SAME id and different fields is ignored until the id moves;
+     that is the intended trade, and the id is the identity here. */
   useEffect(() => {
     setEnriched(product);
     if (product.description) return; // already real — no lookup needed
@@ -40,7 +47,6 @@ export function useEnrichedProduct(product: CatalogProduct): CatalogProduct {
     });
 
     return () => controller.abort();
-    // eslint-disable-next-line react-hooks/exhaustive-deps -- keyed on identity, not every field
   }, [product.id]);
 
   return enriched;

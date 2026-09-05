@@ -16,7 +16,6 @@ import { useInvestigation } from "@/lib/store/InvestigationProvider";
 import { toggleMulti } from "@/lib/store/answers";
 import { toIso } from "@/lib/date";
 import {
-  NO_CHANGE,
   SKIN_TREND_CHOICES,
   checkInsFor,
   changeOptions,

@@ -70,7 +70,11 @@ import { useOpenBeautyFactsSearch } from "@/features/products/useOpenBeautyFacts
  *  live list did not already contain. First occurrence of an id wins. */
 function dedupe(products: CatalogProduct[]): CatalogProduct[] {
   const seen = new Set<string>();
-  return products.filter((p) => (seen.has(p.id) ? false : (seen.add(p.id), true)));
+  return products.filter((p) => {
+    if (seen.has(p.id)) return false;
+    seen.add(p.id);
+    return true;
+  });
 }
 
 export function CheckBuilder() {
@@ -250,6 +254,11 @@ export function CheckBuilder() {
             takes its own scroll; "Your products" stays exactly where it was
             underneath. See `.dropdown` for why this one is absolutely
             positioned where the tray's is in flow. */}
+        {/* biome-ignore lint/a11y/noStaticElementInteractions: the handler catches
+            Escape BUBBLING UP from the SearchField inside — the interactive
+            element is the input, and this wrapper only closes the panel that
+            hangs off it. Giving the div a role to satisfy the rule would put a
+            second, meaningless control in the accessibility tree. */}
         <div
           className={styles.search}
           ref={searchRef}

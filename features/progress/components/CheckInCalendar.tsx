@@ -1,3 +1,11 @@
+/* biome-ignore-all lint/suspicious/noArrayIndexKey: EVERY INDEX KEY IN THIS
+   FILE IS A GRID POSITION, WHICH IS THE CELL'S ACTUAL IDENTITY. A month is a
+   fixed 7-column table: the weekday header repeats its initials ("S", "T"
+   twice) so the value cannot key it, the empty leading and trailing cells have
+   no date at all, and rows and cells never reorder or filter — changing month
+   replaces the whole grid. Nothing here holds state, so there is no stale-state
+   bug for a real key to prevent. Keying the day cells by ISO date and the blanks
+   by index would mix two schemes for no gain. */
 "use client";
 
 import { useState } from "react";
