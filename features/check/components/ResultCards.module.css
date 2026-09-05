@@ -129,7 +129,10 @@
   width: 100%;
   padding: var(--space-xl); /* 20 */
   border-radius: var(--radius-lg);
-  background: var(--color-surface-data-strong);
+  /* ⚠️ `surface/data-deep`, NOT `-data-strong` — BY EXPLICIT REQUEST. Sage at
+     62% inside a sage card gave the block almost no edge against the card it
+     sits in; this is the darker sage at the same alpha (see globals.css). */
+  background: var(--color-surface-data-deep);
   box-shadow: var(--shadow-frosted-data);
   -webkit-backdrop-filter: blur(var(--blur-card));
   backdrop-filter: blur(var(--blur-card));
@@ -139,16 +142,16 @@
    sage surface was moved to the ink (see the SURFACE SYSTEM B block in
    globals.css); this one nested emphasis block was asked to stay white.
 
-   Measured on `/check/results`: the block is `surface/data-strong` nested INSIDE
-   a `surface/data` card, so the sage stacks twice and composites to
-   rgb(141,177,179). White on that is **2.32:1** against a 4.5:1 requirement.
-   The ink measures 5.95:1 on the same surface.
+   Measured on `/check/results` when the block was `surface/data-strong` nested
+   INSIDE a `surface/data` card: the sage stacked twice, composited to
+   rgb(141,177,179), and white measured **2.32:1** against a 4.5:1 requirement.
 
-   There is no in-system way to make white legitimate here: the sage ramp stops
-   at `sage/400` (#a7c0c1), so a dark-sage emphasis surface — the treatment that
-   would make white both correct and emphatic — would be a colour outside the
-   ramp. Raise that in Figma if this block should keep white; a `sage/700` is
-   the missing token. */
+   ⚠️ THE DARK SAGE ARRIVED AND STILL DOES NOT CLOSE IT. `surface/data-deep`
+   (globals.css) is the `sage/700` this note used to call missing, but at the
+   same 62% alpha it composites to rgb(116,160,163), where white computes to
+   ~**2.9:1** — better than 2.32:1, still failing. Only an OPAQUE dark sage
+   would make white legitimate here. Raise `sage/700` in Figma as a real surface
+   role; the ink computes to ~4.8:1 on this fill if the request is withdrawn. */
 .emphasisTitle,
 .emphasisText {
   color: var(--color-text-on-data-inverse);

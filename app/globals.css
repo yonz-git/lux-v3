@@ -98,6 +98,24 @@
      reaching into the primitives block, which non-negotiable 2 forbids. */
   --color-text-on-data-inverse: #ffffff;
 
+  /* surface/data-deep — ⚠️ DECLARED HERE, NOT IN `tokens.css`, and NOT IN
+     FIGMA, BY EXPLICIT REQUEST. `#538b8d @62%`: the same alpha as
+     `surface/data-strong` on a darker sage than the ramp holds — it is the
+     `sage/700` the note on `ResultCards`' `.emphasisTitle` says is missing,
+     i.e. the third step System B never had. It exists so a nested emphasis
+     block reads as EMPHASIS rather than as one more 62% sage: the two surfaces
+     that use it (`ResultCards`' "what to do next" block and the basket sheet's
+     product rows) both sit on `surface/data` and both were asked to keep white
+     text.
+
+     ⚠️ IT DOES NOT RESCUE THE WHITE. Composited over the `surface/data` card
+     (rgb(170,194,198)) it lands at rgb(116,160,163), where white measures
+     ~2.9:1 against a 4.5:1 requirement — better than the 2.32:1 it replaces on
+     the emphasis block and the 1.64–2.13:1 on the basket rows, and still
+     failing. Only an OPAQUE dark sage closes that gap. Raise `sage/700` in
+     Figma as a real surface role. */
+  --color-surface-data-deep: #538b8d9e;
+
   /* ⚠️ NOT IN FIGMA, BY EXPLICIT REQUEST — the two result pills that needed a
      fill of their own. `02 Color` has no semantic role for either, so both are
      named here rather than left as raw hex (or as a reach into the primitives

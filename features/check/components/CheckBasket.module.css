@@ -143,7 +143,11 @@
   gap: var(--space-md); /* 12 */
   padding: 12px var(--space-lg); /* 12 / 16 */
   border-radius: var(--radius-lg);
-  background: var(--color-surface-data-strong);
+  /* ⚠️ `surface/data-deep`, NOT `-data-strong` — BY EXPLICIT REQUEST, and the
+     same swap `ResultCards`' emphasis block takes. A 62% sage row on the 44%
+     sage tray is two steps of one hue with almost nothing between them; the
+     darker sage separates the rows from the tray they sit on. */
+  background: var(--color-surface-data-deep);
   box-shadow: var(--shadow-frosted-row);
 }
 
@@ -152,9 +156,10 @@
   min-width: 0;
   /* ⚠️ WHITE ON A SAGE ROW, BY EXPLICIT REQUEST — the same exception
      `ResultCards`' emphasis block carries, and it does NOT meet AA: the
-     basket sheet's `surface/data-strong` row measures 1.64–2.13:1 against
-     white, which is why globals.css redefined `text/on-data` dark in the
-     first place. Named via `text/on-data-inverse` rather than a raw `#fff`
+     basket sheet's row measured 1.64–2.13:1 against white when it was
+     `surface/data-strong`, which is why globals.css redefined `text/on-data`
+     dark in the first place. On the `surface/data-deep` fill the row carries
+     now it computes to ~2.9:1 — better, and still short of 4.5:1. Named via `text/on-data-inverse` rather than a raw `#fff`
      so the exception stays greppable and the module does not reach into the
      primitives block (non-negotiable 2). */
   color: var(--color-text-on-data-inverse);
@@ -206,7 +211,9 @@
   padding: calc(15px - var(--border-width-hairline)) 0;
   border: var(--border-width-hairline) solid var(--color-border-glass);
   border-radius: var(--radius-lg);
-  background: var(--color-surface-data-strong);
+  /* the same `surface/data-deep` the rows above take, so the add affordance
+     stays one surface with the list it appends to */
+  background: var(--color-surface-data-deep);
   box-shadow: var(--shadow-frosted-row);
   /* white by explicit request, same exception as `.itemLabel` above */
   color: var(--color-text-on-data-inverse);
