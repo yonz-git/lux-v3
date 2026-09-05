@@ -27,6 +27,21 @@ import styles from "./Chip.module.css";
  * five full-width rows spend a screen's height on five one-word labels.
  * **Raise a single-select Chip variant in Figma** rather than widening this.
  *
+ * ⚠️ `size="compact"` IS THE CHAT PANEL'S CHIP AND NOTHING ELSE'S. 40 tall
+ * becomes 32 and the label drops a ramp step, `Label` (14/20) to `Label Small`
+ * (12/16), both Medium. It exists because the check-in moved inside
+ * `ChatPanel`, a 375 surface where a 40-tall pill row wraps a five-option scale
+ * onto three lines and stops reading as a row of answers.
+ *
+ * ⚠️ THE 44 TAP TARGET IS UNCHANGED, and that is the point of `::after` in the
+ * stylesheet: it extends the hit region beyond the pill rather than padding the
+ * pill out to 44, so shrinking the drawn control does not shrink what a finger
+ * has to find. A compact chip is 32 to the eye and 44 to the thumb.
+ *
+ * ⚠️ RAISE IT IN FIGMA AS A SIZE VARIANT ON 162:74. The frame does not draw a
+ * small chip; this is a decided-here size, like the radio variant above it, and
+ * the DEFAULT is untouched so every chip outside the panel is still 40/14.
+ *
  * Chips suit short labels (symptoms). For long ones such as "Perioral
  * dermatitis" use a Checkbox row instead.
  */
@@ -34,6 +49,7 @@ export function Chip({
   label,
   selected,
   control = "checkbox",
+  size = "default",
   onToggle,
 }: {
   label: string;
@@ -43,6 +59,11 @@ export function Chip({
    * one, whose caller MUST wrap the chips in `role="radiogroup"`. See above.
    */
   control?: "checkbox" | "radio";
+  /**
+   * The pill's size and label style. `compact` is the chat panel's — see the
+   * note above, and raise it in Figma before reusing it.
+   */
+  size?: "default" | "compact";
   onToggle: () => void;
 }) {
   return (
@@ -51,7 +72,9 @@ export function Chip({
       role={control}
       aria-checked={selected}
       data-selected={selected}
-      className={`${styles.chip} t-label`}
+      data-size={size === "compact" ? "compact" : undefined}
+      /* still a `t-*` class either way — rule 3 holds for both sizes */
+      className={`${styles.chip} ${size === "compact" ? "t-label-sm" : "t-label"}`}
       onClick={onToggle}
     >
       {label}

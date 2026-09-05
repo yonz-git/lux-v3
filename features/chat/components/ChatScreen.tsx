@@ -1,12 +1,10 @@
 "use client";
 
 import { useRef, useState } from "react";
-import Link from "next/link";
 import styles from "./ChatScreen.module.css";
 import { BottomNav } from "@/components/layout/BottomNav";
+import { ChatPanel } from "@/components/layout/ChatPanel";
 import { ChatBubble } from "@/components/ui/ChatBubble";
-import { Orb } from "@/components/ui/Orb";
-import { CloseIcon } from "@/components/ui/icons";
 import { SendArrowIcon } from "./icons";
 import { SEEDED_CONVERSATION, type ChatMessage } from "@/features/chat/chat";
 
@@ -134,66 +132,56 @@ export function ChatScreen() {
   };
 
   return (
-    <main className="screen">
-      <div className={styles.panel} data-reveal>
-        <div className={styles.header}>
-          <div className={styles.headerLeft}>
-            <span className={styles.avatar}>
-              <Orb size="50px" />
-            </span>
-            {/* `Body 1` (18/28, regular) — the frame's 18px title. It is not a
-                page heading: the panel is a surface inside the page, and the
-                greeting names the speaker rather than the screen. */}
-            <p className="t-body1">Hi, I&rsquo;m LUX</p>
-          </div>
-
-          <Link
-            href="/"
-            className={`${styles.headerButton} ${styles.close}`}
-            aria-label="Close conversation"
+    <main className="screen" data-layout="panel">
+      <ChatPanel
+        closeHref="/"
+        closeLabel="Close conversation"
+        footer={
+          <form
+            className={styles.composer}
+            onSubmit={(e) => {
+              e.preventDefault();
+              send();
+            }}
           >
-            <CloseIcon />
-          </Link>
-        </div>
-
-        <div className={styles.body}>
-          {messages.map((message) => (
-            <div key={message.id} className={styles.messageRow} data-from={message.from}>
-              <ChatBubble
-                from={message.from}
-                size="compact"
-                full
-                className={styles.bubble}
-              >
-                {message.text}
-              </ChatBubble>
-            </div>
-          ))}
-          <div ref={tail} aria-hidden="true" />
-        </div>
-
-        <form
-          className={styles.composer}
-          onSubmit={(e) => {
-            e.preventDefault();
-            send();
-          }}
-        >
-          {/* no visible label in the design — the placeholder is not a name */}
-          <input
-            type="text"
-            className={`${styles.input} t-body2`}
-            value={draft}
-            placeholder="Type here..."
-            aria-label="Message LUX"
-            onChange={(e) => setDraft(e.target.value)}
-            autoComplete="off"
-          />
-          <button type="submit" className={styles.send} aria-label="Send message">
-            <SendArrowIcon />
-          </button>
-        </form>
-      </div>
+            {/* no visible label in the design — the placeholder is not a name */}
+            <input
+              type="text"
+              className={`${styles.input} t-body2`}
+              value={draft}
+              placeholder="Type here..."
+              aria-label="Message LUX"
+              onChange={(e) => setDraft(e.target.value)}
+              autoComplete="off"
+            />
+            <button
+              type="submit"
+              className={styles.send}
+              aria-label="Send message"
+            >
+              <SendArrowIcon />
+            </button>
+          </form>
+        }
+      >
+        {messages.map((message) => (
+          <div
+            key={message.id}
+            className={styles.messageRow}
+            data-from={message.from}
+          >
+            <ChatBubble
+              from={message.from}
+              size="compact"
+              full
+              className={styles.bubble}
+            >
+              {message.text}
+            </ChatBubble>
+          </div>
+        ))}
+        <div ref={tail} aria-hidden="true" />
+      </ChatPanel>
 
       {/* the nav is fixed and identical on every screen. `none` because this
           panel belongs to no section — the same state Welcome uses. */}

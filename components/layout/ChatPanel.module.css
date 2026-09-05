@@ -1,0 +1,209 @@
+/* The conversation panel — Figma `chat-page / mobile` (270:96), inside the spec
+   column `col` (274:99) captioned "Mobile · 375". See ChatPanel.tsx.
+
+   ⚠️ THE FRAME IS A PANEL, NOT A DEVICE SCREEN. Every other screen in the file
+   is drawn on the 440x957 mobile canvas; this one is 375x538 with a 36 radius
+   on all four corners and its own gradient fill. It is a self-contained surface
+   that floats on the canvas — which is also what its close control says, since
+   you collapse a panel, not a page.
+
+   ⚠️ THREE VALUES HERE ARE OFF THE PUBLISHED SCALES: the 36 radius, and the
+   panel's own gradient, which is not a paint style. Each is marked where it is
+   used. None was "corrected" — Figma leads on pixels — but none should survive
+   into a shipped screen either.
+
+   ⚠️ docs/figma-catchup.md LISTS NINE OFF-SCALE VALUES FOR THIS FRAME AND IS
+   STALE. Six left with the controls that carried them (the timestamps' 6 gap
+   and 10 text, the kebab's 18 glyph, the `Today` divider's 11 text and its
+   #b5c8cc / #606d75 fills); the frame's off-scale 14 chevron was never
+   reproduced. Reconcile it there — that file is the truth about what FIGMA
+   HOLDS and this one is the truth about what SHIPPED.
+   ========================================================================== */
+
+.panel {
+  /* Raw fill off the frame. ⚠️ NOT A PAINT STYLE — `get_design_context` reports
+     only gradient/brand, gradient/brand-indigo and surface/chat-bubble as named
+     styles here, so the panel's own gradient is a local fill with no variable
+     behind it. It is close to but NOT `gradient/canvas-mobile` (#dce7ea ->
+     #cedee2 -> #acc5cc): lighter at the top and markedly lighter at the bottom,
+     which is what separates the panel from the canvas it sits on. Raise it as
+     `gradient/chat-panel`. */
+  --chat-panel-gradient: linear-gradient(
+    116.756deg,
+    #dbebed 36.39%,
+    #d1e1e5 53.77%,
+    #c3cdd9 105.01%
+  );
+  /* ⚠️ OFF THE RADIUS SCALE — `3xl` is 32 and `full` is 999, so 36 is a value
+     the system does not publish. Raise `radius/4xl`. */
+  --chat-panel-radius: 36px;
+
+  width: 100%;
+  /* the frame's own width; there is no wider drawing of this screen */
+  max-width: 375px;
+
+  /* ⚠️ THE PANEL STRETCHES ON MOBILE RATHER THAN HOLDING THE FRAME'S 538.
+     "Translate, don't transcribe" — 538 is a height on a fixed canvas, and a
+     panel that stops two-thirds of the way down a phone is the artefact
+     reproduced rather than the intent. The COMPONENT sizes — radius, padding,
+     the bubbles — are all exact; it is the page-level whitespace that adapts,
+     which is the rule. Desktop holds 538, at the bottom of this file, because
+     there is no desktop frame to say otherwise. */
+  flex: 1;
+  min-height: 0;
+
+  display: flex;
+  flex-direction: column;
+
+  /* ⚠️ NOT IN FIGMA — THE TOP IS 16 WHERE THE FRAME DRAWS 24, asked for
+     directly. Sides and bottom are the frame's 20 and 24; only the top moved,
+     so the header sits closer to the panel's edge without narrowing the column
+     or lifting the footer.
+
+     ⚠️ THE GAP YOU SEE IS 4 MORE THAN THIS NUMBER, and the rest is not padding.
+     `.avatar` is the frame's 58 `chat-ball` slot holding a 50 sphere, so it
+     carries 4 of slack above the orb that no padding here can reach. 16 + 4 =
+     20 to the sphere, against 28 before. Take the slot down before reaching for
+     a smaller top pad again — the sphere is the thing the eye measures to, and
+     `--space-md` here would put the X 12 from the edge while the orb still sat
+     at 16. */
+  padding: var(--space-lg) var(--space-xl) var(--space-2xl);
+  border-radius: var(--chat-panel-radius);
+  background: var(--chat-panel-gradient);
+  /* the frame is overflow-clip; a footer's drop shadow is clipped in the comp
+     too */
+  overflow: hidden;
+}
+
+/* ---------------------------------------------------------------------------
+   HEADER (270:97) — the avatar, the greeting, and the close control.
+   -------------------------------------------------------------------------- */
+
+.header {
+  flex: none;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.headerLeft {
+  display: flex;
+  align-items: center;
+  gap: var(--space-md);
+}
+
+/* The frame's `chat-ball` instance is a 58 slot with a 44 sphere centred in it.
+   `Orb` draws its sphere at r=57 in a 129 viewBox, i.e. 114/129 of whatever
+   size it is given — so 44 x 129/114 = 49.8. The 50 is derived, not eyeballed,
+   and it is NOT `--size-orb-sm` (48), which would land the sphere at 42.4. */
+.avatar {
+  flex: none;
+  display: grid;
+  place-items: center;
+  width: 58px;
+  height: 58px;
+}
+
+/* A 44px touch target around a glyph smaller than it is offset by HALF the
+   difference on every side, so the box takes the GLYPH's room in the layout and
+   the drawn gap survives. Same move as SearchField's clear button. */
+.headerButton {
+  flex: none;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: var(--size-touch-target);
+  height: var(--size-touch-target);
+  margin: calc((var(--chat-glyph) - var(--size-touch-target)) / 2);
+  padding: 0;
+  border: 0;
+  background: none;
+  border-radius: var(--radius-full);
+  color: var(--color-icon-default);
+}
+
+/* Set through `--icon-size` rather than width/height — a custom property
+   feeding the globals rule, never an inline size outranking it.
+
+   The close X, at `size/icon-xs`. The frame draws a chevron-down at an
+   off-scale 14; this is the DS `CloseIcon` at 16, so the control is on the
+   scale. See the doc comment on ChatPanel.tsx for why it is an X. */
+.close {
+  --chat-glyph: var(--size-icon-xs);
+  --icon-size: var(--size-icon-xs);
+}
+
+/* ---------------------------------------------------------------------------
+   BODY (270:106) — the scroller. The PAGE does not scroll; this does, so the
+   header and the footer stay put while the conversation moves under them.
+   -------------------------------------------------------------------------- */
+
+/* ⚠️ NOT IN FIGMA — 12 ABOVE THE FIRST ROW WHERE THE FRAME GIVES 20. The 12 was
+   set to pull the `Today` divider up under the header; the divider has since
+   gone, so it is now the gap between the header and the first thing in the
+   body, and it was kept because the whole top of this panel was tightened on
+   purpose. The bottom pad keeps the frame's 20 — that one is clearance above
+   the footer, not space around anything that was removed.
+
+   The 16 gap is a FLOOR. A caller that wants its rows further apart adds to it
+   rather than replacing it — see `.messageRow + .messageRow` in ChatScreen and
+   `.chat` in CheckIn. */
+.body {
+  flex: 1;
+  min-height: 0;
+  overflow-y: auto;
+  overscroll-behavior: contain;
+
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-lg); /* 16 */
+  padding-block: var(--space-md) var(--space-xl); /* 12 / 20 */
+}
+
+/* ---------------------------------------------------------------------------
+   DESKTOP
+
+   ⚠️ THERE IS NO DESKTOP FRAME FOR THIS PANEL. The column is captioned
+   "Mobile · 375" and nothing else in the file draws it, so rather than invent a
+   1440 composition the panel keeps the size it was drawn at and centres. That
+   is a decision to revisit the moment a desktop frame exists — noted in
+   docs/figma-catchup.md.
+   -------------------------------------------------------------------------- */
+
+@media (min-width: 1024px) {
+  .panel {
+    /* ⚠️ NOT IN FIGMA — 450, WHICH IS THE FRAME'S 375 PLUS 20%, asked for
+       directly. Desktop only: a phone is about 390 wide, so 375 is already
+       nearly the full screen there and widening it would just remove the
+       margins. On a 1440 canvas the same 375 is a narrow column in a lot of
+       empty space, and 20% is what closes that without turning a conversation
+       panel into a page.
+
+       ⚠️ THE HEIGHT IS NOT PART OF THIS AND CANNOT BE. The panel already fills
+       the column top to bottom — 16 under the screen's top pad, 16 above the
+       nav — so "20% larger" only has one dimension left to grow in. */
+    max-width: 450px;
+
+    /* ⚠️ NOTHING ELSE. THE PANEL STRETCHES ON DESKTOP TOO, AND THE 538 IS GONE —
+       asked for directly, and it was also a BUG, not just a preference.
+
+       The frame is 375x538 and this rule used to reproduce that height, on the
+       reasoning that with no desktop frame to say otherwise the panel should
+       keep the size it was drawn at. That is defensible for `/chat`, which
+       holds two seeded bubbles and never grows. It is wrong for the daily
+       check-in, which is the same panel and builds itself as the user answers:
+       measured at 1440x900, turn 3 put `Add a note` and `Take a photo` 100px
+       BELOW the panel's bottom edge, where `.panel`'s `overflow: hidden`
+       clipped them — so the two controls were invisible and unclickable while
+       the body still reported itself scrollable. Mobile never had it, because
+       mobile already stretched.
+
+       So the mobile rule now applies at every width: `flex: 1` against the
+       screen's own padding. That is the "translate, don't transcribe" reading
+       the mobile comment above already makes — 538 is a height on a fixed
+       canvas, and a panel that stops two-thirds of the way down is the artefact
+       reproduced rather than the intent. Revisit if a desktop frame ever
+       appears, and note that a fixed height there has to answer for a panel
+       whose content grows. */
+  }
+}

@@ -696,6 +696,48 @@ main[tabindex="-1"]:focus-visible {
   --content-top: var(--space-3xl); /* 32 */
 }
 
+/* ⚠️ NOT IN FIGMA — THE PANEL SCREENS SIT 24 HIGHER THAN EVERY OTHER SCREEN,
+   asked for directly: 60% off the 40 top space, leaving 16.
+
+   ⚠️ BOTH NUMBERS ARE SCALE STEPS, WHICH IS WHY 60% WAS TAKEN AT ITS WORD. The
+   amount removed is 24 (`2xl`) and what remains is 16 (`lg`), so this is one of
+   the rare percentage asks that does not have to be rounded to fit the system.
+
+   It is `--content-top` rather than a negative margin on the panel, because the
+   space being closed is the SCREEN's padding and this is the mechanism that
+   already owns it — the same one `data-tight-top` above uses. A negative margin
+   would have worked and would have left the padding lying about what it does.
+
+   ⚠️ IT APPLIES ON DESKTOP TOO, where `.screen` otherwise pads 120 at the top —
+   see the `min-width: 1024px` block below, which now lists `panel` alongside
+   `flow` and `hub` for exactly that reason, and gives it the nav reservation
+   the floating desktop nav would otherwise deny it. */
+.screen[data-layout="panel"] {
+  --content-top: var(--space-lg); /* 16 */
+
+  /* ⚠️ A HEIGHT, NOT JUST A MIN-HEIGHT, AND THIS IS WHAT MAKES THE PANEL'S BODY
+     SCROLL INSTEAD OF THE PAGE. `.screen`'s `min-height: 100dvh` is a FLOOR: it
+     stops a short screen collapsing and does nothing to stop a tall one growing.
+     `ChatPanel` is a fixed-chrome layout — header and footer pinned, one
+     scrolling body between them — and that only holds if something bounds the
+     whole thing to the viewport. Nothing did.
+
+     Measured at 1024x600 before this line, on the check-in at turn 3: the
+     screen was 794 tall in a 600 viewport, so the panel grew to 658 to fit its
+     content, `.body` never had to scroll (`overflow-y: auto` with nothing to
+     overflow), and the page scrolled instead — putting `Submit check-in` below
+     the fold and `Add a note` / `Take a photo` under the fixed nav, which
+     `document.elementFromPoint` returned in their place.
+
+     ⚠️ IT IS `dvh`, NOT `vh`, for the reason the unit exists: a mobile toolbar
+     that hides and shows changes the viewport, and `vh` would leave the footer
+     under the browser chrome for as long as it is expanded.
+
+     ⚠️ THIS IS SAFE ONLY BECAUSE THE PANEL'S BODY SCROLLS. Do not put this
+     layout on a screen whose content just flows — it would clip it. */
+  height: 100dvh;
+}
+
 /* Flow screens carry their own header row and progress track, so they do not
    need the empty 40px header allowance that Welcome reserves. Without this they
    sit 80px too low on desktop. `hub` is the same padding for the PRODUCTS hub
@@ -710,8 +752,36 @@ main[tabindex="-1"]:focus-visible {
 
 @media (min-width: 1024px) {
   .screen[data-layout="flow"],
-  .screen[data-layout="hub"] {
+  .screen[data-layout="hub"],
+  .screen[data-layout="panel"] {
     padding-top: var(--content-top);
+  }
+
+  /* ⚠️ THE PANEL SCREENS RESERVE THE NAV AT EVERY DESKTOP HEIGHT, WITH NO
+     `max-height` ESCAPE. `.screen`'s desktop padding-bottom is 0 — the nav
+     floats over the content region — and a CENTRED hub can live with that
+     because its body sits in the middle and only walks into the pill on a short
+     viewport, which is what the height query below handles.
+
+     `ChatPanel` cannot: it is `flex: 1`, so it always grows to the bottom of
+     whatever space it is given, and with 0 reservation that bottom is the
+     viewport's. Measured at 1280x720 before this rule: `Add a note` and `Take a
+     photo` returned the NAV from `document.elementFromPoint`, and `Submit
+     check-in` sat at y 723 in a 720 viewport — off-screen entirely. Same
+     failure the `[data-center]` note above records on `/check`, reached by a
+     different route.
+
+     ⚠️ 16 OF CLEARANCE, WHICH IS MOBILE'S NUMBER AND NOT THE DESKTOP HUB'S 40 —
+     asked for directly: the panel should reach as close to the nav on desktop
+     as it does on a phone. The hub screens keep 40 because their content ENDS
+     wherever it ends and the gap is the composition's own breathing room; the
+     panel's bottom edge is a drawn edge with a footer against it, so the same
+     40 read as the panel stopping short. This is the mobile reservation
+     verbatim, which is the point — one panel, one bottom gap. */
+  .screen[data-layout="panel"] {
+    padding-bottom: calc(
+      var(--nav-inset-bottom) + var(--size-nav-height) + var(--space-lg)
+    );
   }
 
   /* ⚠️ NO BOTTOM RESERVATION FOR A **CENTRED** HUB SCREEN ON DESKTOP. The desktop

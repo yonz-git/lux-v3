@@ -3,7 +3,8 @@
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import styles from "./CheckIn.module.css";
-import { HubScreen } from "@/components/layout/HubScreen";
+import { BottomNav } from "@/components/layout/BottomNav";
+import { ChatPanel } from "@/components/layout/ChatPanel";
 import { ChatBubble } from "@/components/ui/ChatBubble";
 import { Chip } from "@/components/ui/Chip";
 import { Button } from "@/components/ui/Button";
@@ -64,16 +65,32 @@ import {
  * are cleared rather than left reading "Less redness" under "Sorry to hear
  * that".
  *
- * ⚠️ TWO THINGS IN THE COMP ARE DELIBERATELY NOT REPRODUCED, both open
- * questions rather than oversights — see the header note and the nav note in
- * AGENTS.md:
- *   · the header's `Save & exit`, which the frame draws WITHOUT a progress
- *     track. That pair is the investigation flow's signature and this screen is
- *     a daily action off a hub, so it has neither.
- *   · the nav lighting `Check`. The frame carries the OLD three-item nav, and
- *     `/check` is the product compatibility check, which cannot reach this
- *     screen. Nav reads `progress`, the section that links here and the only
- *     one that reads a check-in back.
+ * ⚠️ IT IS DRAWN IN THE `/chat` PANEL, NOT ON THE CHECK-IN FRAME'S OWN CHROME —
+ * asked for directly, 5 Sep 2026, and this is the screen's biggest divergence
+ * from Figma. `Check-in chat` (555:1268) draws a 440 canvas with a page header;
+ * what ships is `components/layout/ChatPanel`, the 375 surface from `chat-page
+ * / mobile` (270:96), floating on the canvas with the orb, `Hi, I'm LUX` and a
+ * close X across its top. THE PROTOTYPE LEADS ON FLOW: two screens in this
+ * product are a conversation with LUX and they now look like each other.
+ *   · `Submit check-in` sits where `/chat` puts its composer — pinned under the
+ *     scrolling body. There is no composer here; you answer this conversation
+ *     by tapping, which is the whole point of it.
+ *   · the close X goes to `/progress` and is the ONLY way out. It replaced the
+ *     back chevron; a chevron was then added beside it and removed again, both
+ *     on request. Two controls going to the same place is one too many, and the
+ *     X is the panel's own idiom. ⚠️ That leaves a pushed view without the back
+ *     chevron AGENTS.md gives it — a real divergence, argued in ChatPanel.tsx.
+ *   · `Daily Check-in` survives as a `visually-hidden` <h1>. The panel shows a
+ *     greeting, not a page title, and every route needs a heading — see
+ *     AGENTS.md. It is ALSO why the bubbles below stay unhidden: the <h1> is a
+ *     different string, so each question still exists only in its bubble.
+ *   · the nav still reads `progress`. The frame carries the OLD three-item nav
+ *     and lights `Check`, which is the product compatibility check and cannot
+ *     reach this screen.
+ *
+ * ⚠️ THE FRAME'S `Save & exit` IS STILL NOT REPRODUCED. That control pairs with
+ * a progress track and the pair is the investigation flow's signature; this is a
+ * daily action off a hub, so it has neither — unchanged by the panel.
  *
  * ⚠️ NOTHING IS PRE-SELECTED, INCLUDING ON A DAY ALREADY RECORDED. The comp
  * shows "Slightly better", "Less redness" and "Less itching" already chosen
@@ -146,165 +163,182 @@ export function CheckIn() {
   };
 
   return (
-    <HubScreen
-      title="Daily Check-in"
-      backHref="/progress"
-      nav="progress"
-      layout="card"
-      footer={
-        /* ⚠️ ALWAYS RENDERED, DISABLED UNTIL COMPLETE — which is what the comp
-           draws (it shows the button greyed while the chat is part-answered),
-           and what every other primary action in the app does. An earlier build
-           withheld the button entirely until the end; that is a different
-           control pattern from the rest of the product for no reason the comp
-           supports. */
-        <Button className={styles.submit} disabled={!canSubmit} onClick={submit}>
-          Submit check-in
-        </Button>
-      }
-    >
-      {alreadyToday && (
-        <p className={`${styles.note} t-caption`}>
-          You have already checked in today — a new answer replaces it.
-        </p>
-      )}
+    <main className="screen" data-layout="panel">
+      <ChatPanel
+        closeHref="/progress"
+        closeLabel="Close check-in"
+        heading={<h1 className="visually-hidden">Daily Check-in</h1>}
+        footer={
+          /* ⚠️ ALWAYS RENDERED, DISABLED UNTIL COMPLETE — which is what the comp
+             draws (it shows the button greyed while the chat is part-answered),
+             and what every other primary action in the app does. An earlier
+             build withheld the button entirely until the end; that is a
+             different control pattern from the rest of the product for no
+             reason the comp supports.
 
-      <div className={styles.chat}>
-        {/* ---- turn 1 — how is it today, relative to last time ------------ */}
-        <div className={styles.turn}>
-          {/* ⚠️ NOT `aria-hidden`, unlike 00 Welcome's bubble. Welcome marks
-              its question up as the page <h1> as well, so hiding the bubble
-              stops it being read twice. Here the <h1> is HubScreen's "Daily
-              Check-in" — a different string — so each question exists only in
-              its bubble and has to be announced. */}
-          <ChatBubble from="ai">Hi! How is your skin doing today?</ChatBubble>
-
-          <div
-            className={styles.options}
-            role="radiogroup"
-            aria-label="How is your skin doing today?"
-            data-reveal
+             ⚠️ AND IT IS GATED WHERE `/chat`'s SEND DISC IS NOT. The disc is
+             ungated because `opacity/disabled` at 0.4 erases a sage gradient on
+             a sage panel; this is a `Button`, which fades to a still-visible
+             control, so the app's ordinary rule applies. */
+          <Button
+            className={styles.submit}
+            disabled={!canSubmit}
+            onClick={submit}
           >
-            {SKIN_TREND_CHOICES.map(({ label }) => (
-              <Chip
-                key={label}
-                control="radio"
-                label={label}
-                selected={trend === label}
-                onToggle={() => pickTrend(label)}
-              />
-            ))}
-          </div>
-        </div>
+            Submit check-in
+          </Button>
+        }
+      >
+        {alreadyToday && (
+          <p className={`${styles.note} t-caption`}>
+            You have already checked in today — a new answer replaces it.
+          </p>
+        )}
 
-        {/* ---- turn 2 — what specifically changed ------------------------- */}
-        {choice && (
+        <div className={styles.chat}>
+          {/* ---- turn 1 — how is it today, relative to last time ------------ */}
           <div className={styles.turn}>
-            <ChatBubble from="ai">{changeReply(choice.direction)}</ChatBubble>
+            {/* ⚠️ NOT `aria-hidden`, unlike 00 Welcome's bubble. Welcome marks
+                its question up as the page <h1> as well, so hiding the bubble
+                stops it being read twice. Here the <h1> is the panel's
+                visually-hidden "Daily Check-in" — a different string — so each
+                question exists only in its bubble and has to be announced. */}
+            <ChatBubble from="ai" size="compact">Hi! How is your skin doing today?</ChatBubble>
 
             <div
               className={styles.options}
-              role="group"
-              aria-label="Any specific changes you've noticed?"
+              role="radiogroup"
+              aria-label="How is your skin doing today?"
               data-reveal
             >
-              {changeOptions(choice.direction, answers.start ?? []).map(
-                (label) => (
-                  <Chip
-                    key={label}
-                    label={label}
-                    selected={changes.includes(label)}
-                    /* `No change` is an EXCLUSIVE option, so toggleMulti
-                       clears the rest when it is picked and vice versa — the
-                       same rule 02c's "None" follows. It had to be ADDED to
-                       `EXCLUSIVE_OPTIONS` for that: the list is the only place
-                       exclusivity is declared, and until this screen no group
-                       had used this particular word. */
-                    onToggle={() =>
-                      setChanges((prev) => toggleMulti(prev, label))
-                    }
-                  />
-                )
-              )}
+              {SKIN_TREND_CHOICES.map(({ label }) => (
+                <Chip
+                  key={label}
+                  control="radio"
+                  size="compact"
+                  label={label}
+                  selected={trend === label}
+                  onToggle={() => pickTrend(label)}
+                />
+              ))}
             </div>
           </div>
-        )}
 
-        {/* ---- turn 3 — optional note and photo --------------------------- */}
-        {askedExtras && (
-          <div className={styles.turn}>
-            <ChatBubble from="ai">
-              Would you like to add any notes or take a photo?
-            </ChatBubble>
+          {/* ---- turn 2 — what specifically changed ------------------------- */}
+          {choice && (
+            <div className={styles.turn}>
+              <ChatBubble from="ai" size="compact">
+                  {changeReply(choice.direction)}
+                </ChatBubble>
 
-            <div className={styles.extras} data-reveal>
-              {/* ⚠️ TOGGLES, NOT LINKS. The comp draws two buttons and no
-                  destination for either, and routing away mid-chat would lose
-                  the conversation — the store holds no partial check-in. So
-                  "Add a note" reveals a field in place and "Take a photo"
-                  arms the capture, which is a placeholder for the same reason
-                  every other viewfinder in the app is: wiring getUserMedia
-                  would make the prototype demand a camera permission to walk a
-                  flow. See AGENTS.md, Camera shutter. */}
-              <button
-                type="button"
-                className={`${styles.extra} t-label`}
-                aria-pressed={note !== null}
-                onClick={() => setNote((prev) => (prev === null ? "" : null))}
+              <div
+                className={styles.options}
+                role="group"
+                aria-label="Any specific changes you've noticed?"
+                data-reveal
               >
-                <NoteIcon />
-                Add a note
-              </button>
-
-              <button
-                type="button"
-                className={`${styles.extra} t-label`}
-                aria-pressed={photo}
-                onClick={() => setCamera(true)}
-              >
-                <CameraIcon />
-                {photo ? "Retake photo" : "Take a photo"}
-              </button>
+                {changeOptions(choice.direction, answers.start ?? []).map(
+                  (label) => (
+                    <Chip
+                      key={label}
+                      size="compact"
+                      label={label}
+                      selected={changes.includes(label)}
+                      /* `No change` is an EXCLUSIVE option, so toggleMulti
+                         clears the rest when it is picked and vice versa — the
+                         same rule 02c's "None" follows. It had to be ADDED to
+                         `EXCLUSIVE_OPTIONS` for that: the list is the only place
+                         exclusivity is declared, and until this screen no group
+                         had used this particular word. */
+                      onToggle={() =>
+                        setChanges((prev) => toggleMulti(prev, label))
+                      }
+                    />
+                  )
+                )}
+              </div>
             </div>
+          )}
 
-            {note !== null && (
-              <TextField
-                autoFocus
-                value={note}
-                onChange={(e) => setNote(e.target.value)}
-                placeholder="Anything worth remembering about today"
-                aria-label="Your note"
-              />
-            )}
+          {/* ---- turn 3 — optional note and photo --------------------------- */}
+          {askedExtras && (
+            <div className={styles.turn}>
+              <ChatBubble from="ai" size="compact">
+                Would you like to add any notes or take a photo?
+              </ChatBubble>
 
-            {photo && (
-              <p className={`${styles.captured} t-caption`} role="status">
-                Photo captured.{" "}
+              <div className={styles.extras} data-reveal>
+                {/* ⚠️ TOGGLES, NOT LINKS. The comp draws two buttons and no
+                    destination for either, and routing away mid-chat would lose
+                    the conversation — the store holds no partial check-in. So
+                    "Add a note" reveals a field in place and "Take a photo"
+                    arms the capture, which is a placeholder for the same reason
+                    every other viewfinder in the app is: wiring getUserMedia
+                    would make the prototype demand a camera permission to walk a
+                    flow. See AGENTS.md, Camera shutter. */}
                 <button
                   type="button"
-                  className={styles.remove}
-                  onClick={() => setPhoto(false)}
+                  className={`${styles.extra} t-label`}
+                  aria-pressed={note !== null}
+                  onClick={() => setNote((prev) => (prev === null ? "" : null))}
                 >
-                  Remove
+                  <NoteIcon />
+                  Add a note
                 </button>
-              </p>
-            )}
-          </div>
-        )}
-      </div>
 
-      {/* ⚠️ AN OVERLAY, NOT A ROUTE — the capture happens ON this screen. The
-          products tray already does exactly this for its scan view, and the
-          reason is the same: routing away mid-chat would lose the conversation,
-          because the store holds no partial check-in. `Sheet` brings the scrim,
-          the focus trap, Escape and the mobile-sheet / desktop-dialog pair with
-          it, so the overlay is the app's existing modal rather than a second
-          one invented here.
+                <button
+                  type="button"
+                  className={`${styles.extra} t-label`}
+                  aria-pressed={photo}
+                  onClick={() => setCamera(true)}
+                >
+                  <CameraIcon />
+                  {photo ? "Retake photo" : "Take a photo"}
+                </button>
+              </div>
 
-          `Done` is the sheet's own and only dismissal (see Sheet.tsx), and it
-          is honest here for the same reason it is there: a photo taken stays
-          taken when the overlay closes. Removing it is a separate control in
-          the chat. */}
+              {note !== null && (
+                <TextField
+                  autoFocus
+                  value={note}
+                  onChange={(e) => setNote(e.target.value)}
+                  placeholder="Anything worth remembering about today"
+                  aria-label="Your note"
+                />
+              )}
+
+              {photo && (
+                <p className={`${styles.captured} t-caption`} role="status">
+                  Photo captured.{" "}
+                  <button
+                    type="button"
+                    className={styles.remove}
+                    onClick={() => setPhoto(false)}
+                  >
+                    Remove
+                  </button>
+                </p>
+              )}
+            </div>
+          )}
+        </div>
+
+        {/* ⚠️ AN OVERLAY, NOT A ROUTE — the capture happens ON this screen. The
+            products tray already does exactly this for its scan view, and the
+            reason is the same: routing away mid-chat would lose the conversation,
+            because the store holds no partial check-in. `Sheet` brings the scrim,
+            the focus trap, Escape and the mobile-sheet / desktop-dialog pair with
+            it, so the overlay is the app's existing modal rather than a second
+            one invented here.
+
+            `Done` is the sheet's own and only dismissal (see Sheet.tsx), and it
+            is honest here for the same reason it is there: a photo taken stays
+            taken when the overlay closes. Removing it is a separate control in
+            the chat. */}
+      </ChatPanel>
+
+      <BottomNav active="progress" />
+
       <Sheet open={camera} onClose={() => setCamera(false)} title="Take a photo">
         <div className={styles.camera}>
           <CameraCapture
@@ -319,6 +353,6 @@ export function CheckIn() {
           />
         </div>
       </Sheet>
-    </HubScreen>
+    </main>
   );
 }

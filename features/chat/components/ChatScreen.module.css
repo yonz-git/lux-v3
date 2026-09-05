@@ -1,181 +1,8 @@
-/* Conversation — Figma `chat-page / mobile` (270:96), inside the spec column
-   `col` (274:99) captioned "Mobile · 375".
-
-   ⚠️ THE FRAME IS A PANEL, NOT A DEVICE SCREEN. Every other screen in the file
-   is drawn on the 440x957 mobile canvas; this one is 375x538 with a 36 radius
-   on all four corners and its own gradient fill. It is a self-contained chat
-   SURFACE that floats on the canvas — which is also what its two header
-   controls say, since a kebab and a collapse chevron only make sense on
-   something that can be collapsed.
-
-   ⚠️ SEVEN OFF-SCALE VALUES FROM THIS FRAME ARE STILL IN PLAY. Each is marked
-   where it is used. None was "corrected" here — Figma leads on pixels — but
-   none should survive into a shipped screen either:
-     radius 36 · border 0.2 · fill #beced2, which is not in `02 Color`
-
-   ⚠️ THE OTHER SIX LEFT WITH THE THINGS THAT CARRIED THEM — the 6 row gap and
-   the 10 text with the timestamps, the 18 glyph with the kebab, the 11 text and
-   the #b5c8cc and #606d75 fills with the `Today` divider — and the frame's
-   off-scale 14 chevron was never reproduced (the X is `CloseIcon` at 16).
-   docs/figma-catchup.md still lists all nine. Reconcile it there; this file is
-   the truth about what SHIPPED and the doc is the truth about what Figma
-   holds, which is exactly the split AGENTS.md describes.
+/* `/chat`'s own rules. The panel, its header and its scrolling body are
+   `components/layout/ChatPanel` — shared with PROGRESS's daily check-in — so
+   what is left here is the two things only this screen has: the message rows
+   and the composer.
    ========================================================================== */
-
-.panel {
-  /* Raw fills off the frame. ⚠️ NEITHER IS A PAINT STYLE — `get_design_context`
-     reports only gradient/brand, gradient/brand-indigo and surface/chat-bubble
-     as named styles on this frame, so the panel's own gradient is a local fill
-     with no variable behind it. It is close to but NOT `gradient/canvas-mobile`
-     (#dce7ea -> #cedee2 -> #acc5cc): lighter at the top and markedly lighter at
-     the bottom, which is what separates the panel from the canvas it sits on.
-     Raise it as `gradient/chat-panel`. */
-  --chat-panel-gradient: linear-gradient(
-    116.756deg,
-    #dbebed 36.39%,
-    #d1e1e5 53.77%,
-    #c3cdd9 105.01%
-  );
-  /* ⚠️ OFF THE RADIUS SCALE — `3xl` is 32 and `full` is 999, so 36 is a value
-     the system does not publish. Raise `radius/4xl`. */
-  --chat-panel-radius: 36px;
-  /* ⚠️ OFF `02 Color` — the composer's hairline is a sage tint with no token.
-     `border/subtle` (#e2e4e8) and `border/default` (#cbcdd4) are both neutral
-     and both read wrong on this surface. Raise it as `border/sage-hairline`.
-
-     ⚠️ TWO SIBLINGS OF THIS ONE WENT WITH THE DIVIDER: `--chat-line` (#b5c8cc,
-     its two hairlines) and `--chat-meta` (#606d75, its label and the
-     timestamps). `--chat-meta` was also the screen's one MEASURED contrast
-     failure — 4.34:1 at the top of the panel, 4.07:1 lower down, against 4.5:1
-     — so the panel no longer has a text-contrast problem of its own. The
-     composer's white-on-translucent still does; see `.input`. */
-  --chat-field-border: #beced2;
-
-  width: 100%;
-  /* the frame's own width; there is no wider drawing of this screen */
-  max-width: 375px;
-
-  /* ⚠️ THE PANEL STRETCHES ON MOBILE RATHER THAN HOLDING THE FRAME'S 538.
-     "Translate, don't transcribe" — 538 is a height on a fixed canvas, and a
-     chat surface that stops two-thirds of the way down a phone is the artefact
-     reproduced rather than the intent. The COMPONENT sizes — radius, padding,
-     the bubbles, the 61 composer — are all exact; it is the page-level
-     whitespace that adapts, which is the rule. Desktop holds 538, at the bottom
-     of this file, because there is no desktop frame to say otherwise. */
-  flex: 1;
-  min-height: 0;
-
-  display: flex;
-  flex-direction: column;
-
-  /* ⚠️ NOT IN FIGMA — THE TOP IS 16 WHERE THE FRAME DRAWS 24, asked for
-     directly. Sides and bottom are the frame's 20 and 24; only the top moved,
-     so the header sits closer to the panel's edge without narrowing the column
-     or lifting the composer.
-
-     ⚠️ THE GAP YOU SEE IS 4 MORE THAN THIS NUMBER, and the rest is not padding.
-     `.avatar` is the frame's 58 `chat-ball` slot holding a 50 sphere, so it
-     carries 4 of slack above the orb that no padding here can reach. 16 + 4 =
-     20 to the sphere, against 28 before. Take the slot down before reaching for
-     a smaller top pad again — the sphere is the thing the eye measures to, and
-     `--space-md` here would put the kebab and the X 12 from the edge while the
-     orb still sat at 16. */
-  padding: var(--space-lg) var(--space-xl) var(--space-2xl);
-  border-radius: var(--chat-panel-radius);
-  background: var(--chat-panel-gradient);
-  /* the frame is overflow-clip; the composer's drop shadow is clipped in the
-     comp too */
-  overflow: hidden;
-}
-
-/* ---------------------------------------------------------------------------
-   HEADER (270:97) — the avatar, the greeting, and two controls.
-   -------------------------------------------------------------------------- */
-
-.header {
-  flex: none;
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-}
-
-.headerLeft {
-  display: flex;
-  align-items: center;
-  gap: var(--space-md);
-}
-
-/* The frame's `chat-ball` instance is a 58 slot with a 44 sphere centred in it.
-   `Orb` draws its sphere at r=57 in a 129 viewBox, i.e. 114/129 of whatever
-   size it is given — so 44 x 129/114 = 49.8. The 50 is derived, not eyeballed,
-   and it is NOT `--size-orb-sm` (48), which would land the sphere at 42.4. */
-.avatar {
-  flex: none;
-  display: grid;
-  place-items: center;
-  width: 58px;
-  height: 58px;
-}
-
-/* A 44px touch target around a glyph that is smaller than it is offset by HALF
-   the difference on every side, so the box takes the GLYPH's room in the layout
-   and the drawn 12px gap survives. Same move as SearchField's clear button. */
-.headerButton {
-  flex: none;
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  width: var(--size-touch-target);
-  height: var(--size-touch-target);
-  margin: calc((var(--chat-glyph) - var(--size-touch-target)) / 2);
-  padding: 0;
-  border: 0;
-  background: none;
-  border-radius: var(--radius-full);
-  color: var(--color-icon-default);
-}
-
-/* Set through `--icon-size` rather than width/height — a custom property
-   feeding the globals rule, never an inline size outranking it.
-
-   The close X, at `size/icon-xs`. The frame draws a chevron-down at an
-   off-scale 14; this is the DS `CloseIcon` at 16, so the control is on the
-   scale. It used to sit 2px shy of the kebab beside it, which is the
-   relationship the frame draws; the kebab is gone and the X is now the header's
-   only right-hand control. See the doc comment on ChatScreen.tsx. */
-.close {
-  --chat-glyph: var(--size-icon-xs);
-  --icon-size: var(--size-icon-xs);
-}
-
-/* ---------------------------------------------------------------------------
-   BODY (270:106)
-   -------------------------------------------------------------------------- */
-
-/* ⚠️ NOT IN FIGMA — 12 ABOVE THE FIRST MESSAGE WHERE THE FRAME GIVES 20. The
-   12 was set to pull the `Today` divider up under the header; the divider has
-   since gone, so it is now the gap between the header and the first bubble and
-   it was kept, because the whole top of this panel was tightened on purpose.
-   The bottom pad keeps the frame's 20 — that one is clearance above the
-   composer, not space around anything that was removed.
-
-   ⚠️ THE 16 GAP AND THE 24 BETWEEN MESSAGES ARE TWO DIFFERENT NUMBERS ON
-   PURPOSE, split across this rule and `.messageRow + .messageRow` below. With
-   the divider gone the gap governs only the tail sentinel, and the 24 is what
-   actually separates two bubbles — they had already lost the timestamp row
-   that used to sit between them, so they need it more than they did, not
-   less. */
-.body {
-  flex: 1;
-  min-height: 0;
-  overflow-y: auto;
-  overscroll-behavior: contain;
-
-  display: flex;
-  flex-direction: column;
-  gap: var(--space-lg); /* 16 — the floor; messages add 8 to it below */
-  padding-block: var(--space-md) var(--space-xl); /* 12 / 20 */
-}
 
 /* A row hugs its bubble. It used to STACK the bubble and its timestamp, which
    is why it was a column with a 6 gap; with the timestamp gone it holds one
@@ -243,6 +70,14 @@
      inset, which the frame really does draw. */
   min-height: 61px;
   padding: 3px 3px 3px 30px;
+
+  /* ⚠️ OFF `02 Color` — a sage tint with no token. `border/subtle` (#e2e4e8)
+     and `border/default` (#cbcdd4) are both neutral and both read wrong on this
+     surface. Raise it as `border/sage-hairline`. It used to be declared on the
+     panel with its two siblings; the panel is shared now, and this is the only
+     one of the three that survived the `Today` divider, so it sits on the one
+     control that reads it. */
+  --chat-field-border: #beced2;
 
   /* The translucent fill, and its opaque counterpart below. A frosted surface
      always gets a solid `prefers-reduced-transparency` fallback — this one is
@@ -373,20 +208,3 @@
 }
 
 
-/* ---------------------------------------------------------------------------
-   DESKTOP
-
-   ⚠️ THERE IS NO DESKTOP FRAME FOR THIS SCREEN. The column is captioned
-   "Mobile · 375" and nothing else in the file draws it, so rather than invent a
-   1440 composition the panel keeps the size it was drawn at and centres. That
-   is a decision to revisit the moment a desktop frame exists — noted in
-   docs/figma-catchup.md.
-   -------------------------------------------------------------------------- */
-
-@media (min-width: 1024px) {
-  .panel {
-    flex: none;
-    height: 538px;
-    margin-block: auto;
-  }
-}

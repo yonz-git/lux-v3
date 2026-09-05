@@ -3,10 +3,18 @@
 
    Composed from the established recipes rather than invented: the questions are
    `ChatBubble`s exactly as every investigation question is, the answers are
-   `Chip`s on the 12 gap every pill group in the app uses, and the card, heading
-   and footer are `HubScreen`'s. Nothing here sets a type size or a colour of its
-   own — the only rules are the gaps between blocks, plus the two extras buttons,
-   which have no component and are composed from the frosted-row recipe below. */
+   `Chip`s on the 12 gap every pill group in the app uses, and the surface, the
+   heading slot and the footer are `components/layout/ChatPanel`'s. Nothing here
+   sets a type size or a colour of its own — the only rules are the gaps between
+   blocks, plus the two extras buttons, which have no component and are composed
+   from the frosted-row recipe below.
+
+   ⚠️ THE SCREEN MOVED INTO THE `/chat` PANEL — see CheckIn.tsx. Two things
+   follow for this file. The chat's own 24 between messages is NOT adopted: a
+   turn here is a bubble AND its pills, so the frame's 20/12 pair is what keeps
+   a question with its own answers, and 24 would loosen the wrong join. And the
+   frosted rows below now sit on the PANEL's gradient rather than the canvas's,
+   which is a lighter ground — flagged at `.extra`. */
 
 /* The whole exchange. 20 between TURNS, 12 inside one — a question and its own
    pills belong together more tightly than one turn belongs to the next, and
@@ -34,6 +42,18 @@
   display: flex;
   flex-wrap: wrap;
   gap: var(--space-md); /* 12 */
+
+  /* ⚠️ HALF THE GAP, SO THE ROW HAS NO DEAD SPACE IN IT. The pills are 32 tall
+     here rather than the DS 40, and at that size the 12 between them was wide
+     enough to swallow a click: aiming at a pill and landing 2px wide selected
+     nothing, which reads as the control being broken rather than as a miss.
+     ⚠️ HALF THE GAP PLUS A PIXEL, NOT EXACTLY HALF. At exactly 6 the two hit
+     areas MEET rather than overlap, and a click landing on that one-pixel seam
+     hit neither — measured: the precise midpoint of the gap still selected
+     nothing. The extra pixel makes them overlap by 2, so the seam belongs to
+     the later chip in DOM order instead of to no one. Invisible — see the note
+     on `.chip::after`. */
+  --chip-hit-inline: calc(var(--space-md) / 2 + var(--border-width-hairline)); /* 7 */
 }
 
 /* ---------------------------------------------------------------------------
@@ -146,8 +166,12 @@
   margin-bottom: var(--space-md); /* 12 */
 }
 
-/* full width of the 392 column on mobile; HubScreen's footer caps it at 280 on
-   desktop, the same width every flow footer button uses */
+/* ⚠️ FULL WIDTH AT BOTH BREAKPOINTS NOW, WHERE IT USED TO CAP AT 280. That cap
+   was `HubScreen`'s footer, and the panel has no such rule — nor should it: the
+   panel is 375 wide on desktop too (there is no desktop frame for it), so a 280
+   button inside a 335 column would be a narrower control in a narrower surface
+   for no reason. It also lands where `/chat` draws its composer, which is full
+   width, and the two screens are meant to read as the same object. */
 .submit {
   width: 100%;
 }

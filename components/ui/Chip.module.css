@@ -42,6 +42,21 @@
     color var(--duration-base) var(--ease-standard);
 }
 
+/* The compact pill — the chat panel only, see Chip.tsx.
+
+   ⚠️ 32 IS EXACTLY 20% OFF THE 40; THE PADDING IS 25% OFF AND CANNOT BE 20%.
+   16 x 0.8 is 12.8 and the spacing scale runs 12 then 16, so `md` is the step
+   and 12.8 would be the app's first off-scale spacing value. The pill hugs its
+   label either way, so the extra 0.8 a side is not a shape anyone can see —
+   which is not true of a number that is on no scale.
+
+   The label drops with it, `Label` 14/20 to `Label Small` 12/16, set in
+   Chip.tsx so it stays a published text style rather than a font-size here. */
+.chip[data-size="compact"] {
+  min-height: 32px;
+  padding: 0 var(--space-md); /* 12 */
+}
+
 .chip[data-selected="true"] {
   background: var(--color-bg-brand);
   /* the selected pill is indigo on a light card and needs no help being seen;
@@ -51,9 +66,25 @@
   color: var(--color-text-on-brand);
 }
 
+/* The hit area, which is bigger than the pill and always has been vertically:
+   44 around a chip drawn at 40 (or 32 compact), so the target meets the
+   touch-target minimum without the pill growing to meet it.
+
+   ⚠️ `--chip-hit-inline` EXTENDS IT SIDEWAYS TOO, AND THE CALLER SETS IT,
+   BECAUSE ONLY THE CALLER KNOWS ITS OWN GAP. Left at 0 the pill's own width is
+   the whole horizontal target, so the gap between two chips is dead space — a
+   click landing in it selects nothing and reads as a broken control. Measured
+   on the daily check-in: 2px to the right of `Much better` selected nothing at
+   all. Set it to HALF the row's gap and neighbouring targets meet exactly, so
+   every pixel of the row belongs to the nearest pill.
+
+   ⚠️ IT IS INVISIBLE AND MUST STAY THAT WAY. This changes what a click hits,
+   never what the eye sees — no fill, no border, no layout. The pill is still
+   drawn exactly where Figma draws it. Do not use it to fake a bigger chip. */
 .chip::after {
   content: "";
   position: absolute;
-  inset: calc((var(--size-touch-target) - 100%) / -2) 0;
+  inset: calc((var(--size-touch-target) - 100%) / -2)
+    calc(var(--chip-hit-inline, 0px) * -1);
   min-height: var(--size-touch-target);
 }
