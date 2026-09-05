@@ -209,13 +209,36 @@ const MIN_TOLERATED = 2;
  * right direction — an unrecognised cleanser asks the user a question they can
  * answer in one tap, rather than silently passing a gate.
  */
-const ROUTINE_ROLES: { id: "cleanser" | "sunscreen"; label: string; re: RegExp }[] = [
+export type RoutineRole = "cleanser" | "sunscreen";
+
+const ROUTINE_ROLES: { id: RoutineRole; label: string; re: RegExp }[] = [
   { id: "cleanser", label: "cleanser", re: /cleans|wash|foaming|micellar|makeup remover/i },
   { id: "sunscreen", label: "sunscreen", re: /spf|sunscreen|sun cream|uv\b|fluid uv/i },
 ];
 
 function hasRole(products: SavedProduct[], re: RegExp): boolean {
   return products.some((p) => re.test(`${p.brand} ${p.name} ${p.description ?? ""}`));
+}
+
+/**
+ * The roles § 05 still has no answer for — neither a product that looks like
+ * one, nor a declaration that the user does not use one.
+ *
+ * ⚠️ THE DECLARATION IS COLLECTED ON `/investigation/evidence`, NOT ON STEP 5.
+ * The brief's own flow diagram puts "Review products and missing
+ * cleanser/sunscreen" between the product collection and the analysis, which is
+ * this screen — and it is the better place regardless: on step 5 the question
+ * would arrive before the user has finished adding, so "no, I don't use one"
+ * would be asked of someone who was about to add one.
+ */
+export function missingRoutineRoles(
+  a: Answers
+): { id: RoutineRole; label: string; declared: boolean }[] {
+  const products = a.products ?? [];
+  const declared = a.routineNotUsed ?? [];
+  return ROUTINE_ROLES.filter((role) => !hasRole(products, role.re)).map(
+    ({ id, label }) => ({ id, label, declared: declared.includes(id) })
+  );
 }
 
 /**
@@ -265,15 +288,13 @@ export function gaps(a: Answers): Gap[] {
     });
   }
 
-  const missingRoles = ROUTINE_ROLES.filter(
-    (role) => !hasRole(products, role.re) && !(a.routineNotUsed ?? []).includes(role.id)
-  );
+  const missingRoles = missingRoutineRoles(a).filter((r) => !r.declared);
   if (missingRoles.length > 0) {
     out.push({
       id: "routine-incomplete",
       title: `No ${missingRoles.map((r) => r.label).join(" or ")} in your list`,
       body: "These touch the whole face every day, so leaving one out hides the product most likely to be involved. Add it, or say you do not use one.",
-      href: "/investigation/products",
+      href: "/investigation/evidence",
       action: "Add or declare",
     });
   }
@@ -299,10 +320,24 @@ export function gaps(a: Answers): Gap[] {
    compact confirmation list only when the AI's interpretation is ambiguous."
    -------------------------------------------------------------------------- */
 
-/** The products whose timeline straddles the boundary and which the user has
- *  not already answered for. Exactly these get a question, and no others. */
+/**
+ * The products whose timeline straddles the boundary. Exactly these get a
+ * question, and no others.
+ *
+ * ⚠️ ANSWERING ONE DOES NOT REMOVE IT FROM THE LIST — `confirmed` products stay,
+ * carrying the user's answer. A card that vanishes the moment it is tapped
+ * gives no confirmation that the tap landed and no way to change the answer,
+ * and on a screen whose whole job is "check what I worked out", that is the
+ * wrong direction to fail in.
+ */
 export function needsConfirmation(a: Answers): ProductEvidence[] {
-  return evidenceFor(a).filter((e) => e.state === "unclear" && !e.confirmed);
+  return evidenceFor(a).filter((e) => e.state === "unclear" || e.confirmed);
+}
+
+/** How many of those are still unanswered — what the screen counts aloud. */
+export function unansweredCount(a: Answers): number {
+  return evidenceFor(a).filter((e) => e.state === "unclear" && !e.confirmed)
+    .length;
 }
 
 /* ---------------------------------------------------------------------------
