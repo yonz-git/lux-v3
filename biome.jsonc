@@ -1,0 +1,76 @@
+{
+  "$schema": "https://biomejs.dev/schemas/2.5.12/schema.json",
+
+  // Biome is the linter because ESLint cannot run in this repo at all.
+  //
+  // `next lint` was removed in Next 16, so the old script had been dead since
+  // the upgrade — it failed with "Invalid project directory: .../lint", having
+  // read `lint` as a path. The documented replacement, eslint +
+  // eslint-config-next, does not work here either: @typescript-eslint/parser
+  // refuses TypeScript 7 at the peer range AND hard-throws at runtime
+  // ("typescript-eslint does not support TS 7.0"), and every file in this repo
+  // is .ts/.tsx, so the run is not degraded — it is empty. Next 16's own
+  // upgrade guide names Biome as the alternative. Biome parses TS/TSX natively
+  // with no TypeScript dependency, so it cannot break on a compiler upgrade.
+  // Tracking: typescript-eslint#10940.
+  //
+  // ⚠️ WHAT THIS COSTS: the Next-specific rules are gone — no-img-element,
+  // no-html-link-for-pages, no-sync-scripts. Nothing replaces them.
+
+  // ⚠️ AND THE FILENAME IS `.jsonc` BECAUSE OF THE COMMENTS YOU ARE READING.
+  // As `biome.json` a commented config does not error — Biome FAILS TO LOAD IT
+  // AND SILENTLY USES ITS DEFAULTS, which is invisible except that the run
+  // suddenly covers .next/ too. Watch the "Checked N files" line: 164 means
+  // this file was read, ~889 means it was not.
+
+  // ⚠️ .gitignore IS THE IGNORE LIST. Without this Biome lints generated
+  // artefacts that are not in the repo — `graphify-out/graph.html` was the one
+  // that caught it, a 1-error 2-warning file nobody wrote by hand. The
+  // negations below stay anyway, so the run is the same outside a git checkout.
+  "vcs": { "enabled": true, "clientKind": "git", "useIgnoreFile": true },
+
+  "files": {
+    "includes": [
+      "**",
+      "!**/node_modules",
+      "!.next",
+      "!out",
+      "!build",
+      "!next-env.d.ts"
+    ]
+  },
+
+  // ⚠️ FORMATTER OFF, DELIBERATELY. The script is `biome lint`, not
+  // `biome check`. This repo's CSS carries hand-wrapped 30-50 line doc comments
+  // and aligned token tables that a formatter would reflow, and its style was
+  // never Biome's. Turning this on is a whole-repo reformat, not a config
+  // change.
+  "formatter": { "enabled": false },
+
+  "linter": {
+    "enabled": true,
+    "rules": {
+      "preset": "recommended",
+      "a11y": {
+        // ⚠️ TWO RULES OFF, BOTH BECAUSE THEY CONTRADICT THE SELECTION-CONTROLS
+        // CONTRACT IN AGENTS.md — not because they were noisy.
+        //
+        // useSemanticElements wants <input type="radio"> wherever it sees
+        // role="radio". LUX's controls are buttons carrying a role on purpose:
+        // Chip and OptionRow each render BOTH cardinalities from one component,
+        // the shape maps to the role, and an exclusive option stays a checkbox
+        // by role while behaving exclusively. A native input cannot express
+        // that, and mixing shapes within one group is the exact bug the
+        // contract exists to prevent.
+        "useSemanticElements": "off",
+
+        // useAriaPropsSupportedByRole is a false positive produced by that same
+        // pattern: `role={control}` is a variable, so Biome cannot resolve the
+        // role, reads the element as a plain button, and reports aria-checked
+        // as unsupported. It fires only on Chip and OptionRow — the two
+        // components whose role is dynamic by design.
+        "useAriaPropsSupportedByRole": "off"
+      }
+    }
+  }
+}
