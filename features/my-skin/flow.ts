@@ -116,9 +116,17 @@ export const STEPS: Step[] = [
   // genuinely optional and the screen says so ("None — skip to next"). Same
   // call 02c makes, and it belongs here rather than in the screen.
   //
-  // Continue ends step 5 at the Products hub. The real destination once
-  // INVESTIGATION lands is `05 — Investigating`.
-  { id: "products", step: 5, href: "/investigation/products", title: "Your products", figma: { mobile: "574:1342", desktop: "582:1612" }, isComplete: () => true, next: "/products" },
+  // ⚠️ CONTINUE ENDS THE FLOW AT THE ANALYSIS NOW, NOT AT THE PRODUCTS HUB.
+  // It pointed at `/products` while the analysis had no route — the note here
+  // said "the real destination once INVESTIGATION lands is 05 — Investigating",
+  // and it has landed: `/investigation/evidence`, then analysing, then
+  // findings. See `features/my-skin/analysis.ts`.
+  //
+  // ⚠️ AND THE THREE ANALYSIS ROUTES ARE NOT STEPS. They carry no progress
+  // track and no `Save & exit`, so by the rule at the top of this file they are
+  // not in `STEPS` and `TOTAL_STEPS` is still 5. The flow COLLECTS; they REPORT
+  // on what it collected.
+  { id: "products", step: 5, href: "/investigation/products", title: "Your products", figma: { mobile: "574:1342", desktop: "582:1612" }, isComplete: () => true, next: "/investigation/evidence" },
 ];
 
 /**

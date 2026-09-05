@@ -598,6 +598,206 @@ export function analyseInvestigation(a: Answers): Analysis {
 }
 
 /* ---------------------------------------------------------------------------
+   § 07 / § 08 — the sentences
+
+   ⚠️ THE COPY IS HERE AND NOT IN THE SCREENS, WHICH IS THE HOUSE RULE ("a
+   screen states nothing it could compute from one of these") AND ALSO THE ONLY
+   WAY THE VOCABULARY STAYS ENFORCEABLE. These screens add more product-effect
+   copy than the rest of the app combined, and the brief's controlled vocabulary
+   is a REGULATORY constraint rather than a tone preference — see
+   `docs/decisions.md`, "Claim language". Every sentence below is hedged on
+   purpose:
+
+     SAY                                   NEVER SAY
+     Associated with this reaction         This caused your reaction
+     Used without problems                 Safe for you
+     Possible contributor / interaction    Toxic ingredient, dangerous product
+     Fits your recorded pattern            Guaranteed result
+     Not enough evidence yet               Allergy diagnosis
+     May have increased irritation when    These two ingredients clashed
+       used in the same period
+
+   Keeping it in one module means the forbidden list can be checked by a script
+   over this file rather than trusted to whoever writes the next screen.
+   -------------------------------------------------------------------------- */
+
+/** The one-line headline § 07 asks for: "This currently fits your recorded
+ *  pattern best." Hedged, and never naming a cause. */
+export function headline(h: Hypothesis): string {
+  if (h.kind === "ingredient") {
+    return `A possible contributor: ${h.name}`;
+  }
+  const [x, y] = h.actives;
+  return `${ACTIVES[x].label} and ${ACTIVES[y].label}, used in the same period`;
+}
+
+/** The type label § 07 asks to show beside the headline. */
+export function hypothesisKind(h: Hypothesis): string {
+  return h.kind === "ingredient"
+    ? "Possible ingredient contributor"
+    : "Possible same-routine interaction";
+}
+
+/** The products a hypothesis is about. */
+export function hypothesisProducts(h: Hypothesis): SavedProduct[] {
+  return h.kind === "ingredient" ? h.inAssociated : h.products;
+}
+
+/** The § 08 accordions, in the brief's order. An empty array means the section
+ *  has nothing to say and the screen omits it — never renders it empty. */
+export type Reasoning = {
+  relevance: string[];
+  profile: string[];
+  interactions: string[];
+  against: string[];
+  excluded: string[];
+  couldChange: string[];
+};
+
+export function reasoningFor(
+  h: Hypothesis,
+  analysis: Analysis,
+  a: Answers
+): Reasoning {
+  const associated = analysis.evidence.filter((e) => e.state === "associated");
+  const tolerated = analysis.evidence.filter((e) => e.state === "tolerated");
+  const unclear = analysis.evidence.filter((e) => e.state === "unclear");
+  const unreadable = analysis.evidence.filter((e) => !e.readable);
+
+  const relevance: string[] = [];
+  const against: string[] = [];
+  const interactions: string[] = [];
+
+  if (h.kind === "ingredient") {
+    relevance.push(
+      `${h.name} appears in ${count(h.inAssociated.length, "product")} you were using around the time the reaction started: ${h.inAssociated.map(fullName).join(", ")}.`
+    );
+    if (h.toleratedReadable > 0) {
+      relevance.push(
+        `It appears in none of the ${count(h.toleratedReadable, "product")} you have used for longer without problems.`
+      );
+    }
+
+    /* ⚠️ THE CASE AGAINST IS BUILT EVEN WHEN THE CANDIDATE SURVIVED, and this
+       is the accordion the brief cares most about. A surviving candidate has no
+       tolerated product carrying it — by construction — so the honest counter-
+       evidence is what the comparison could NOT rule out. */
+    const without = associated.length - h.inAssociated.length;
+    if (without > 0) {
+      against.push(
+        `${count(without, "product")} you were using at the time do not contain it, so it cannot explain ${without === 1 ? "that one" : "those"}.`
+      );
+    }
+    if (h.toleratedReadable < MIN_TOLERATED) {
+      against.push(
+        "There is very little tolerated history to compare against, so this has not been ruled out so much as never tested."
+      );
+    }
+    const blind = tolerated.filter((e) => !e.readable).length;
+    if (blind > 0) {
+      against.push(
+        `${count(blind, "product")} you tolerate ${blind === 1 ? "has" : "have"} no ingredient list, so ${blind === 1 ? "it" : "they"} could not be checked for it.`
+      );
+    }
+    if (against.length === 0) {
+      against.push(
+        "Nothing in what you recorded argues against this — which is not the same as evidence for it."
+      );
+    }
+  } else {
+    const [x, y] = h.actives;
+    interactions.push(
+      `${fullName(h.products[0])} contains ${ACTIVES[x].label}; ${fullName(h.products[1])} contains ${ACTIVES[y].label}.`
+    );
+    interactions.push(
+      "Used in the same period, these two may have increased irritation. That is a possibility about your routine, not a reaction between the products."
+    );
+    interactions.push(
+      "Concentration and formulation are unknown, and both change how much this matters."
+    );
+    relevance.push(
+      `Both were in your routine when the reaction started${h.bothNew ? ", and both entered it around the same time" : ""}.`
+    );
+    if (!h.bothNew) {
+      against.push(
+        "Only one of the two is new. If you had been using the other for a while without trouble, the pair alone is unlikely to be the whole story."
+      );
+    }
+    against.push(
+      "Whether these were actually layered, or used on different days, is not recorded."
+    );
+  }
+
+  /* ⚠️ THE PROFILE IS CONTEXT, NEVER PROOF — the brief says so in as many
+     words: "explain relevance ... without treating them as proof". */
+  const profile: string[] = [];
+  const skinType = a["skin-type"];
+  const tendencies = a.tendencies ?? [];
+  const conditions = (a.conditions ?? []).filter((c) => c !== "None");
+  if (skinType) {
+    profile.push(`You recorded ${skinType.toLowerCase()} skin.`);
+  }
+  if (tendencies.length > 0) {
+    profile.push(
+      `You recorded ${tendencies.map((t) => t.toLowerCase()).join(" and ")}, which makes an irritant reaction more likely to show — it does not make this explanation more likely than another.`
+    );
+  }
+  if (conditions.length > 0) {
+    profile.push(
+      `You recorded ${conditions.join(", ")}. General advice may not apply to you; a pharmacist or doctor can say whether it does.`
+    );
+  }
+  if (profile.length === 0) {
+    profile.push(
+      "You have not recorded a skin type or tendencies, so nothing here is weighted by them."
+    );
+  }
+
+  const excluded: string[] = [];
+  if (unreadable.length > 0) {
+    excluded.push(
+      `${count(unreadable.length, "product")} ${unreadable.length === 1 ? "has" : "have"} no ingredient list: ${unreadable.map((e) => fullName(e.product)).join(", ")}.`
+    );
+  }
+  if (unclear.length > 0) {
+    excluded.push(
+      `${count(unclear.length, "product")} could not be placed on the timeline and ${unclear.length === 1 ? "was" : "were"} left out of the comparison entirely.`
+    );
+  }
+  excluded.push(
+    "No ingredient concentration is known for any product here, and the product version you have was not confirmed."
+  );
+
+  const couldChange: string[] = [];
+  if (unreadable.length > 0) {
+    couldChange.push("Ingredient lists for the products that are missing them.");
+  }
+  if (unclear.length > 0) {
+    couldChange.push("Saying when you started the products whose timing is unclear.");
+  }
+  couldChange.push(
+    "Anything you used in the four weeks before the reaction that is not on the list yet — including products you do not suspect."
+  );
+  couldChange.push(
+    "Pausing one product for four weeks and recording what happens. That is the only thing here that produces new evidence rather than rearranging what you already gave me."
+  );
+
+  return { relevance, profile, interactions, against, excluded, couldChange };
+}
+
+/** "1 product" / "3 products" — used in enough sentences above to be worth
+ *  having in one place. */
+function count(n: number, noun: string): string {
+  return `${n} ${noun}${n === 1 ? "" : "s"}`;
+}
+
+/** § 08's evidence-against block, at the level of the whole analysis: the
+ *  candidates the user's own tolerated history knocked out. */
+export function ruledOut(h: IngredientHypothesis): string {
+  return `${h.name} — also in ${h.inTolerated.map(fullName).join(" and ")}, which you have used without problems.`;
+}
+
+/* ---------------------------------------------------------------------------
    § 11 — investigation priority
 
    "Show products ranked by INVESTIGATION PRIORITY, not medical risk." The

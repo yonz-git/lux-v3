@@ -1,0 +1,100 @@
+/* One hypothesis, § 07 + § 08. ⚠️ NOT IN FIGMA.
+
+   Surface System A — a frosted light card, the same species `/check/results`
+   gives a product. It is deliberately NOT a `DataCard`: System B is for
+   readouts, and this card is an argument the reader opens and works through. */
+
+.card {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-lg);
+  padding: var(--space-xl) 18px var(--space-sm);
+
+  border-radius: var(--radius-2xl);
+  background: var(--color-surface-frost-light);
+  border: var(--border-width-hairline) solid var(--color-border-subtle);
+  box-shadow: var(--shadow-frosted-row);
+  -webkit-backdrop-filter: blur(var(--blur-card));
+  backdrop-filter: blur(var(--blur-card));
+}
+
+.head {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-sm);
+}
+
+.kind {
+  margin: 0;
+  color: var(--color-text-secondary);
+}
+
+.headline {
+  margin: 0;
+  color: var(--color-text-primary);
+  text-wrap: balance;
+}
+
+.tags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-sm);
+}
+
+.products {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2xs);
+  margin: 0;
+  padding-left: var(--space-lg);
+  color: var(--color-text-secondary);
+}
+
+.product {
+  /* the marker is the list's own — these are "products involved", and a bullet
+     is the honest shape for an unordered set */
+  list-style: disc;
+}
+
+.reasoning {
+  display: flex;
+  flex-direction: column;
+}
+
+/* § 07 calls "See the reasoning" the PRIMARY ACTION. Here it labels a stack of
+   disclosures rather than a button, because the reasoning opens in place: a
+   button implies leaving, and the whole argument is on this screen. */
+.reasoningLabel {
+  margin: 0 0 var(--space-xs);
+  color: var(--color-text-muted);
+}
+
+.points {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-sm);
+  margin: 0;
+  padding-left: var(--space-lg);
+  color: var(--color-text-primary);
+}
+
+@media (min-width: 1024px) {
+  .card {
+    padding: var(--space-2xl) var(--space-2xl) var(--space-md);
+  }
+
+  /* 52ch is the measure `ResultCards.module.css` settled on and measured — the
+     reasoning is the longest reading matter in the app and needs it most. */
+  .points,
+  .products {
+    max-width: 52ch;
+  }
+}
+
+@media (prefers-reduced-transparency: reduce) {
+  .card {
+    background: var(--color-bg-surface-frost);
+    -webkit-backdrop-filter: none;
+    backdrop-filter: none;
+  }
+}
