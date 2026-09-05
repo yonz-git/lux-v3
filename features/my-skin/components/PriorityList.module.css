@@ -1,0 +1,93 @@
+/* § 11's investigation-priority list. ⚠️ NOT IN FIGMA.
+
+   One frosted card holding the rows, rather than a card per product: the list
+   is a RANKING, and a ranking read as separate cards loses the one thing it is
+   trying to say. `Disclosure` owns the hairline between rows. */
+
+.list {
+  display: flex;
+  flex-direction: column;
+  padding: 0 18px;
+  margin: 0;
+  list-style: none;
+
+  border-radius: var(--radius-2xl);
+  background: var(--color-surface-frost-light);
+  box-shadow: var(--shadow-frosted-row);
+  -webkit-backdrop-filter: blur(var(--blur-card));
+  backdrop-filter: blur(var(--blur-card));
+}
+
+.head {
+  display: flex;
+  align-items: center;
+  gap: var(--space-md);
+  min-width: 0;
+}
+
+/* The ordinal is a POSITION IN A QUEUE, not a score, so it is set as a quiet
+   meta figure rather than a metric — `t-metric2` here would read as a rating,
+   which is exactly what § 11 forbids this list from implying. */
+.rank {
+  flex: none;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 22px;
+  height: 22px;
+  border-radius: var(--radius-full);
+  background: var(--color-bg-brand);
+  color: var(--color-text-on-brand);
+  font-size: var(--font-size-xs);
+  line-height: 1;
+}
+
+.name {
+  min-width: 0;
+  color: var(--color-text-primary);
+}
+
+.section {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-sm);
+}
+
+.sectionTitle {
+  color: var(--color-text-secondary);
+}
+
+.reasons {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-xs);
+  margin: 0;
+  padding-left: var(--space-lg);
+  color: var(--color-text-primary);
+}
+
+.reasons[data-muted="true"] {
+  color: var(--color-text-muted);
+}
+
+.tail {
+  margin: 0;
+  color: var(--color-text-muted);
+}
+
+@media (min-width: 1024px) {
+  /* the reasons are the reading matter on this screen — 52ch is the measure
+     `ResultCards.module.css` already settled on, kept for consistency */
+  .reasons,
+  .tail {
+    max-width: 52ch;
+  }
+}
+
+@media (prefers-reduced-transparency: reduce) {
+  .list {
+    background: var(--color-bg-surface-frost);
+    -webkit-backdrop-filter: none;
+    backdrop-filter: none;
+  }
+}

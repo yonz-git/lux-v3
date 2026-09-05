@@ -1,0 +1,64 @@
+/* One expandable row. ⚠️ NOT IN FIGMA — the recipe follows
+   `ProductAccordionCard.module.css`, which is the app's only other disclosure:
+   frosted row, radius/2xl, the frosted-row inner shadow, gap 12 closed and 16
+   open. What differs is that these rows STACK into one block, so the card
+   padding is tighter and the divider between rows carries the grouping. */
+
+.row {
+  display: flex;
+  flex-direction: column;
+  border-top: var(--border-width-hairline) solid var(--color-border-subtle);
+}
+
+.row:first-child {
+  border-top: none;
+}
+
+.header {
+  display: flex;
+  align-items: center;
+  gap: var(--space-md);
+  width: 100%;
+  min-height: 52px;
+  padding: var(--space-md) 0;
+  text-align: left;
+  color: var(--color-text-primary);
+}
+
+.label {
+  flex: 1;
+  min-width: 0;
+}
+
+.meta {
+  color: var(--color-text-muted);
+  white-space: nowrap;
+}
+
+/* ⚠️ THE TINT IS NOT THE ONLY CARRIER. `feedback/success` marks the
+   evidence-AGAINST block because that block is the one arguing in the user's
+   favour — but warning and success are never distinguishable by colour alone
+   here either, so the row's own label always says "Evidence against this
+   explanation" in words. See non-negotiable 7 in AGENTS.md. */
+.row[data-tone="against"] .meta {
+  color: var(--color-feedback-success);
+}
+
+.chevron {
+  --icon-size: var(--size-icon-sm);
+  flex: none;
+  color: var(--color-text-muted);
+  transition: transform var(--duration-base) var(--ease-standard);
+}
+
+.row[data-open="true"] .chevron {
+  transform: rotate(180deg);
+}
+
+.panel {
+  padding: 0 0 var(--space-lg);
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-md);
+  color: var(--color-text-secondary);
+}

@@ -1,0 +1,108 @@
+/* `/investigation/findings`. ⚠️ NOT IN FIGMA — page `06. Screen Designs` has no
+   analysis frames outside CHECK, so every value here is decided in the
+   prototype and listed in `docs/figma-catchup.md`.
+
+   The stack follows `CheckResults`: an AI bubble carrying the verdict, then the
+   evidence, then the action. Surface System A throughout — frosted light rows
+   on the canvas — because this is an answer read on a form-side screen, not a
+   PROGRESS readout. */
+
+.bubble {
+  margin-bottom: var(--space-2xl);
+}
+
+/* The bubble spans the column the way `CheckResults` does, while the sentence
+   inside it keeps a reading measure. Same reasoning as `.verdict` there. */
+.verdict {
+  display: block;
+}
+
+.block {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-lg);
+  margin-bottom: var(--space-3xl);
+}
+
+.heading {
+  margin: 0;
+  color: var(--color-text-primary);
+}
+
+.lede {
+  margin: 0;
+  color: var(--color-text-secondary);
+}
+
+.gaps {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-md);
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+/* ⚠️ EACH GAP IS ITS OWN CARD AND THE PRIORITY LIST IS ONE. Deliberate: the
+   gaps are independent things to fix, and the priority list is a ranking whose
+   whole meaning is the order. Cards say "separate objects"; rows in one card
+   say "these belong to one sequence". */
+.gap {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-sm);
+  padding: var(--space-lg) 18px;
+
+  border-radius: var(--radius-2xl);
+  background: var(--color-surface-frost-light);
+  border: var(--border-width-hairline) solid var(--color-border-subtle);
+  box-shadow: var(--shadow-frosted-row);
+  -webkit-backdrop-filter: blur(var(--blur-card));
+  backdrop-filter: blur(var(--blur-card));
+}
+
+.gapTitle {
+  margin: 0;
+  color: var(--color-text-primary);
+}
+
+.gapBody {
+  margin: 0;
+  color: var(--color-text-secondary);
+}
+
+.gapAction {
+  align-self: flex-start;
+  margin-top: var(--space-2xs);
+}
+
+.primary {
+  margin-bottom: var(--space-3xl);
+}
+
+@media (min-width: 1024px) {
+  /* 52ch is the measure `ResultCards.module.css` settled on and measured —
+     kept here so the two answer screens read at the same width. */
+  .verdict,
+  .gapBody,
+  .lede {
+    max-width: 52ch;
+  }
+
+  /* Match Continue's desktop footprint (`QuestionScreen.module.css`) rather
+     than stretching across the 824 card. Element+class beats Button's own
+     single `.full` class, so this wins regardless of import order. */
+  a.primary,
+  button.primary {
+    width: 280px;
+    align-self: center;
+  }
+}
+
+@media (prefers-reduced-transparency: reduce) {
+  .gap {
+    background: var(--color-bg-surface-frost);
+    -webkit-backdrop-filter: none;
+    backdrop-filter: none;
+  }
+}
