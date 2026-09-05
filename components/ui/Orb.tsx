@@ -11,11 +11,12 @@
  * `animateIn` plays the "Spiral Assemble" entrance (Figma 670:31, Brand page) on
  * the sphere as it appears — see `.orb-assemble` in globals.css.
  *
- * `halo` wraps the orb so it can answer the pointer: a line of light runs along
- * its rim — see `.orb-halo` in globals.css. 00 Welcome and the CHECK landing
- * only, and ⚠️ NOT IN FIGMA. The light is the WHOLE response; the orb briefly
- * also scaled to 1.06 and that was removed, so the wrapper still exists for the
- * light and the hit region and no longer transforms.
+ * `halo` wraps the orb in an ambient line of light travelling along its rim —
+ * see `.orb-halo` in globals.css. 00 Welcome and the CHECK landing only, and
+ * ⚠️ NOT IN FIGMA. ⚠️ IT RUNS IN THE DEFAULT STATE and hover does nothing: it
+ * was hover-only until 5 Sep 2026, which meant it never existed at all on
+ * touch. The wrapper survives because the clipped SVG cannot hang the light off
+ * itself — it is no longer a hit region, and it never transforms.
  *
  * ⚠️ A CALLER THAT SPACES THE ORB WITH `> svg` MUST ALSO MATCH `> .orb-halo`,
  * or the wrapper breaks the selector and the orb silently loses its margin.
@@ -48,14 +49,13 @@ export function Orb({
    */
   thinking?: boolean;
   /**
-   * ⚠️ NOT IN FIGMA. Wrap the orb so it can answer the pointer — 00 Welcome and
-   * the CHECK landing only. It has to be a wrapper: the sphere fills its 129x129
+   * ⚠️ NOT IN FIGMA. Wrap the orb in the ambient rim light — 00 Welcome and the
+   * CHECK landing only. It has to be a wrapper: the sphere fills its 129x129
    * viewBox to within 8px and the group is clipped to that box, so a light
-   * straddling the edge has nowhere to go INSIDE the SVG. It is also the hover
-   * REGION, rounded so the square box's live corners do not switch the light on
-   * with the pointer clear of the sphere. (It once carried a hover scale too;
-   * that is gone and these two reasons are what is left.) See `.orb-halo` in
-   * globals.css; the keyframes MUST live there, not in a module.
+   * straddling the edge has nowhere to go INSIDE the SVG. That is now the only
+   * reason it exists — it was the hover region and it carried a hover scale, and
+   * both are gone. See `.orb-halo` in globals.css; the keyframes MUST live
+   * there, not in a module.
    */
   halo?: boolean;
 }) {

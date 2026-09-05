@@ -1142,7 +1142,7 @@ main[tabindex="-1"]:focus-visible {
 }
 
 /* ============================================================================
-   The orb HALO — a hover-only line of light travelling around the sphere's rim.
+   The orb HALO — an ambient line of light travelling around the sphere's rim.
 
    ⚠️ NOT IN FIGMA, AND ON TWO ROUTES ONLY (`<Orb halo />`): 00 Welcome and the
    CHECK landing. Both were asked for directly, and both are the same
@@ -1161,9 +1161,9 @@ main[tabindex="-1"]:focus-visible {
    ⚠️ IT IS AN ARC ON THE RIM, AND THAT WAS ASKED FOR DIRECTLY. The note on the
    thinking orb above argues a travelling ring is a progress idiom and keeps one
    off THAT screen, where it would compete with a literal progress bar. Welcome
-   has no progress to confuse it with, this one is hover-only, and it takes 8
-   seconds to go round — far too slow to read as a spinner. The argument still
-   stands where it was made; it does not reach this screen.
+   has no progress to confuse it with, and it takes 8 seconds to go round — far
+   too slow to read as a spinner. The argument still stands where it was made;
+   it does not reach this screen.
 
    THE GEOMETRY, since the numbers look arbitrary — every one is a ratio, so the
    line lands on the rim at any orb size:
@@ -1180,19 +1180,21 @@ main[tabindex="-1"]:focus-visible {
    light has a bright head and a long tail — a line travelling, rather than a
    block of arc sliding round.
 
-   THE MOTION IS ALWAYS RUNNING, THE OPACITY IS WHAT HOVER SWITCHES. Starting
-   the rotation on hover would have the light jump back to 12 o'clock every time
-   the pointer arrived; leaving it turning under an opacity of 0 means it fades
-   in wherever it had got to, and fades out still moving. One transform on one
-   element, so the cost of leaving it running is nothing next to the canvas
-   shader this screen already runs.
+   ⚠️ IT IS ON AT REST — IT IS NOT A HOVER RESPONSE, AND IT WAS ONE UNTIL
+   5 Sep 2026. The light used to sit at opacity 0 and fade in under the pointer;
+   it now runs in the DEFAULT state on both routes and hover changes nothing.
+   The orb is the brand object and the light is what makes it feel alive, so it
+   should not depend on a pointer the screen may never see: on touch — where
+   most of this prototype gets walked — `(hover: hover)` never matched and the
+   light simply never existed. One transform on one element, so the cost of
+   leaving it running is nothing next to the canvas shader Welcome already runs.
 
    8s is deliberately far slower than any motion token: those size transitions
    the user CAUSED, and this is ambient.
 
    `prefers-reduced-motion` is handled globally: it collapses the duration and
    forces one iteration, so the rotation lands back at 0deg (its resting value)
-   and hovering simply reveals a still arc across the top-right of the rim.
+   and the screen shows a still arc across the top-right of the rim.
    ========================================================================== */
 
 @keyframes lux-orb-halo {
@@ -1213,17 +1215,16 @@ main[tabindex="-1"]:focus-visible {
   /* the wrapper must measure exactly the orb and nothing more, or it changes
      the flex gap above the bubbles */
   line-height: 0;
-  /* ⚠️ THIS IS THE HOVER REGION, NOT DECORATION — the wrapper paints nothing.
-     Hit-testing is clipped by border-radius, so without it the corners of the
-     square box are live: the light switched on with the pointer 20px clear of
-     the sphere, and dragging across a corner flicked it on and off. That
-     flicker is most of what read as a snap. */
-  border-radius: var(--radius-full);
-  /* ⚠️ THE ORB DOES NOT CHANGE SIZE ON HOVER — REMOVED, DO NOT PUT IT BACK
+  /* ⚠️ THE WRAPPER PAINTS NOTHING AND ANSWERS NOTHING. It was once the hover
+     REGION as well — rounded, so the square box's live corners could not switch
+     the light on with the pointer clear of the sphere — and that job went with
+     the hover state on 5 Sep 2026. What is left is the positioning parent the
+     ::after hangs off, which the clipped SVG cannot provide itself.
+     ⚠️ THE ORB DOES NOT CHANGE SIZE ON HOVER — REMOVED, DO NOT PUT IT BACK
      WITHOUT ASKING. It scaled to 1.06 briefly and came out again: the motion
      board leans against it ("LUX does not bounce"), it was the only size change
      anywhere in the app, and the orb is the one object the system treats as
-     untouchable. The rim light alone is the hover response. */
+     untouchable. */
 }
 
 .orb-halo::after {
@@ -1259,32 +1260,20 @@ main[tabindex="-1"]:focus-visible {
   /* the orb is not a control and the halo must never eat a pointer that is
      really aimed at the canvas behind it */
   pointer-events: none;
-  opacity: 0;
-  /* ⚠️ THE FADE IS ASYMMETRIC, AND THIS IS THE VALUE ON THE WAY OUT. The light
-     answers the pointer promptly and then TRAILS OFF rather than being switched
-     off — an equal in-and-out on a thin bright arc reads as a snap at both
-     ends. 900ms is past the board's slowest token, deliberately: board 04b
-     sizes transitions the user CAUSED, and letting go of an ambient light is
-     not one. See the hover rule below for the way in. */
-  transition: opacity 900ms var(--ease-standard);
-  /* the layer is a conic gradient under a mask, which is expensive to rasterise
-     the first time. At opacity 0 the compositor has no reason to have done it,
-     so the first hover spent a frame or two on it and the fade started late and
-     abruptly. This keeps the layer on its own composited surface. */
-  will-change: opacity;
-  animation: lux-orb-halo 8000ms linear infinite;
-}
-
-/* ⚠️ HOVER-CAPABLE POINTERS ONLY. On touch the state sticks after the tap, and
-   a light that latches on because the user once brushed the orb reads as a
-   render bug rather than a response. */
-@media (hover: hover) {
-  .orb-halo:hover::after {
-    opacity: 1;
-    /* the way IN — quicker than the way out, so the orb feels responsive
-       without the light arriving all at once */
-    transition-duration: var(--duration-slower);
-  }
+  /* the resting value, and the only one — nothing switches this layer any more */
+  opacity: 1;
+  /* the rotation never stops, so the hint belongs on the property that actually
+     animates. The layer is a conic gradient under a mask and expensive to
+     rasterise; this keeps it on its own composited surface. */
+  will-change: transform;
+  /* TWO animations, and the second only runs once: the light must not be fully
+     lit on the first frame while the sphere is still assembling under it. It
+     arrives on the hero curve as the entrance settles (`orb-assemble` is 940ms)
+     — `backwards`, never `both`, so nothing is left in effect afterwards and
+     the declared opacity above is what holds. */
+  animation:
+    lux-orb-halo 8000ms linear infinite,
+    lux-fade-in var(--duration-slower) var(--ease-standard) 700ms backwards;
 }
 
 /* ============================================================================
