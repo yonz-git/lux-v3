@@ -61,6 +61,41 @@ export type Answers = Partial<{
   /** which check /check/results is showing; absent means the newest */
   viewingCheck: string;
 
+  /* ---- THE ANALYSIS — the culprit finder off step 5 ----------------------
+     ⚠️ NOT STEPS, THOUGH THEY LIVE UNDER `/investigation`.
+     `/investigation/{evidence,analyzing,findings}` are pushed result views with no progress track and no
+     `Save & exit`, the same standing `/check/results` has — see
+     `features/my-skin/analysis.ts`. They live under `/investigation` because
+     they report on what those five steps collected, not because they are a
+     sixth one. */
+
+  /**
+   * The user's own answer to "did you start this before or after the
+   * reaction?", keyed by product id.
+   *
+   * ⚠️ IT IS ONLY EVER ASKED WHERE THE TIMELINE IS GENUINELY AMBIGUOUS. The
+   * brief: "Do not force the user to label every product suspicious or safe.
+   * Show a compact confirmation list only when the AI's interpretation is
+   * ambiguous." `deriveEvidence` decides that; `needsConfirmation` is the list.
+   * A product missing from this map is not unanswered, it is unambiguous.
+   */
+  evidence: Record<string, "associated" | "tolerated">;
+
+  /**
+   * The routine roles the user has declared they do not use — `"cleanser"`,
+   * `"sunscreen"`.
+   *
+   * ⚠️ "I DON'T USE ONE" IS AN ANSWER AND ITS ABSENCE IS NOT. § 05 will not let
+   * the analysis run without a cleanser and a sunscreen accounted for, because
+   * both touch the whole face daily and leaving one out hides the product most
+   * likely to be involved. Without this key the gate could only ever be failed,
+   * never passed, by someone who genuinely uses neither.
+   */
+  routineNotUsed: ("cleanser" | "sunscreen")[];
+
+  /** the finding the user saved, which the PROGRESS record points at */
+  savedFinding: { id: string; date: string; summary: string };
+
   /* ---- THE DAILY CHECK-IN — the PROGRESS section -------------------------
      ⚠️ NOT AN INVESTIGATION STEP EITHER, and not part of CHECK. It is one
      question asked from `/progress`, and `/progress` is the only screen that

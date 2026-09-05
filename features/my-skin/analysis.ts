@@ -1,0 +1,671 @@
+/**
+ * THE ANALYSIS — the retrospective one, the thing LUX is named for.
+ *
+ * Source: `docs/product-brief.md` §§ 05–12, "Analysis model to communicate
+ * through the UI". Nothing in Figma covers it — page `06. Screen Designs` has
+ * no analysis frames outside CHECK — so every screen built on this module
+ * carries a `⚠️ NOT IN FIGMA` comment and a line in `docs/figma-catchup.md`.
+ *
+ * ⚠️ THIS IS NOT `features/check/check.ts` AND THE TWO MUST NOT CONVERGE. CHECK
+ * asks "is this product right for my skin?" — prospective, one product at a
+ * time, scored. This asks "which of the things I already use is associated with
+ * the reaction I recorded?" — retrospective, over a timeline, and the answer is
+ * an argument rather than a number. They share `lib/actives.ts` and nothing
+ * else. In particular this file cannot see `SCORING`, which is deliberate:
+ * those weights are tuned to reproduce a comp's five scores and have no
+ * business behind a sentence about what caused someone's reaction.
+ *
+ * ⚠️ AND IT IS NOT A SIXTH INVESTIGATION STEP. The five steps COLLECT; this
+ * REPORTS on what they collected, so it lives off `/investigation` as a pushed
+ * result view — the standing `/check/results` has to `/check/new`. `flow.ts` is
+ * untouched and `TOTAL_STEPS` is still 5.
+ *
+ * ---------------------------------------------------------------------------
+ * THE SHAPE OF THE ARGUMENT
+ *
+ *   1. Every product gets an EVIDENCE STATE from the timeline — associated with
+ *      the reaction, used without problems, or not enough history. Derived, and
+ *      confirmed by the user only where the derivation is genuinely ambiguous.
+ *   2. GATES decide whether an answer is possible at all. They are structural,
+ *      not a product count: see `MIN_CHECK_PRODUCTS` below.
+ *   3. The SUBTRACTION runs once and produces both halves of the case — the
+ *      candidates the tolerated set fails to clear are the evidence FOR, the
+ *      ones it clears are the evidence AGAINST. Same pass.
+ *   4. The PAIR pass asks the narrower same-routine question of `CONFLICTS`.
+ *   5. The OUTCOME is one of the brief's three, and one of them is a refusal.
+ *
+ * ⚠️ NO NUMBER EVER LEAVES THIS FILE AS A CONFIDENCE. The brief: "Do not show a
+ * scientific-looking percentage." A percentage dresses a judgement up as a
+ * measurement, and this judgement is made from four coarse duration buckets and
+ * an ingredient list of unknown concentration. `Confidence` is a word, and it is
+ * derived from the SHAPE of the subtraction — how much of the associated set
+ * carries the candidate, and how much tolerated evidence was available to clear
+ * it with. Counts of products are facts and may be shown; a score may not.
+ */
+import type { Answers } from "@/lib/store/answers";
+import type { SavedProduct } from "@/features/products/products";
+import { fullName } from "@/features/products/products";
+import type { ActiveId } from "@/lib/actives";
+import {
+  ACTIVES,
+  CONFLICTS,
+  activesOf,
+  hasReadableIngredients,
+} from "@/lib/actives";
+import { daysBetween, fromIso } from "@/lib/date";
+
+/* ---------------------------------------------------------------------------
+   The timeline
+
+   The only temporal data the app has is FOUR COARSE BUCKETS — "4+ weeks",
+   "1–4 weeks", "Less than 1 week", "Not sure" — measured from today, plus one
+   absolute flare date from step 4. Everything below is arithmetic on that, and
+   the imprecision is the reason the third evidence state exists at all.
+   -------------------------------------------------------------------------- */
+
+/**
+ * How many days ago a product was introduced, as a RANGE, because the duration
+ * answer is a bucket rather than a date. `max: null` means open-ended.
+ */
+type IntroWindow = { min: number; max: number | null };
+
+const INTRO_WINDOW: Record<SavedProduct["bucket"], IntroWindow | null> = {
+  "long-term": { min: 28, max: null },
+  recent: { min: 7, max: 28 },
+  "new-addition": { min: 0, max: 7 },
+  /* ⚠️ `Not sure` HAS NO WINDOW AND IS NOT BINNED INTO ONE. That is the whole
+     reason it is kept out of `BUCKETS` as its own group rather than filed under
+     Long term — see `UNSORTED_BUCKET` in `products.ts`. A product with no
+     timeline cannot be placed against the flare date, and pretending otherwise
+     is how an analysis invents evidence. */
+  "not-sure": null,
+};
+
+/**
+ * How long before the reaction started a product could have been introduced and
+ * still be a plausible suspect.
+ *
+ * ⚠️ 14 DAYS IS A JUDGEMENT, NOT A MEASUREMENT, AND THE UI MUST NOT IMPLY
+ * OTHERWISE. Irritant and allergic reactions can surface anywhere from hours to
+ * weeks after a product enters a routine; two weeks is a commonly used
+ * observation window and is the same length as half the four-week elimination
+ * period `ELIMINATION_WEEKS` already uses. It is here as one named constant
+ * precisely so it can be argued with, rather than being spread across three
+ * comparisons nobody can find.
+ */
+export const LEAD_IN_DAYS = 14;
+
+/**
+ * Where a product sits relative to the reaction. The brief's three states,
+ * verbatim from its controlled vocabulary — see `docs/product-brief.md`
+ * § "UX vocabulary". Do not rename these to anything stronger.
+ */
+export type EvidenceState = "associated" | "tolerated" | "unclear";
+
+export const EVIDENCE_LABEL: Record<EvidenceState, string> = {
+  associated: "Associated with this reaction",
+  tolerated: "Used without problems",
+  unclear: "Not enough history",
+};
+
+/**
+ * The evidence state the timeline implies, before the user confirms anything.
+ *
+ * The suspicion window runs from `LEAD_IN_DAYS` before the flare up to today.
+ * A product's introduction is a range, so there are three cases and not two:
+ * the range sits ENTIRELY inside the window (associated), ENTIRELY before it
+ * (tolerated), or STRADDLES the boundary — which is not a tie to break, it is
+ * the honest answer, and it is what § 05's confirmation list exists to resolve.
+ */
+export function deriveEvidence(
+  product: SavedProduct,
+  daysSinceFlare: number
+): EvidenceState {
+  const w = INTRO_WINDOW[product.bucket];
+  if (!w) return "unclear";
+
+  const boundary = daysSinceFlare + LEAD_IN_DAYS;
+  if (w.max !== null && w.max <= boundary) return "associated";
+  if (w.min > boundary) return "tolerated";
+  return "unclear";
+}
+
+/**
+ * A product with its evidence state resolved — derived, then overridden by the
+ * user's own answer where they gave one.
+ */
+export type ProductEvidence = {
+  product: SavedProduct;
+  state: EvidenceState;
+  /** true when the user answered the confirmation rather than the timeline */
+  confirmed: boolean;
+  /** whether there is an ingredient list to reason from */
+  readable: boolean;
+  actives: ActiveId[];
+};
+
+export function evidenceFor(a: Answers): ProductEvidence[] {
+  const flare = a.timing?.date ? fromIso(a.timing.date) : null;
+  if (!flare) return [];
+  const daysSinceFlare = Math.max(0, daysBetween(flare, new Date()));
+
+  return (a.products ?? []).map((product) => {
+    const confirmedState = a.evidence?.[product.id];
+    return {
+      product,
+      state: confirmedState ?? deriveEvidence(product, daysSinceFlare),
+      confirmed: Boolean(confirmedState),
+      readable: hasReadableIngredients(product),
+      actives: activesOf(product),
+    };
+  });
+}
+
+/* ---------------------------------------------------------------------------
+   § 05 — the gates
+
+   ⚠️ THESE ARE STRUCTURAL, AND `MIN_CHECK_PRODUCTS = 2` IS NOT THE MODEL. Two
+   products is the right floor for a COMPATIBILITY check — two is exactly when a
+   pair interaction becomes possible — and far too low for a CAUSAL one. But a
+   flat count is the wrong shape either way: five products all added last week,
+   with no tolerated history between them, gives a subtraction nothing to
+   subtract, while three products can answer cleanly if one of them entered the
+   routine in the window and two did not.
+
+   So each gate names a STRUCTURE the argument needs, and the step that can fix
+   it. From `docs/decisions.md`: "refusing to answer is the hardest thing to
+   design and the easiest thing to admire."
+   -------------------------------------------------------------------------- */
+
+export type GapId =
+  | "no-flare-date"
+  | "nothing-new"
+  | "no-tolerated-history"
+  | "routine-incomplete"
+  | "ingredients-missing";
+
+export type Gap = {
+  id: GapId;
+  /** what is missing, in the user's words */
+  title: string;
+  /** why the analysis cannot proceed without it */
+  body: string;
+  /** where the user goes to fix it */
+  href: string;
+  action: string;
+};
+
+/** Tolerated products carrying an ingredient list — what a subtraction needs
+ *  on the other side of the minus sign. Two, because one product clearing a
+ *  candidate is a coincidence and the brief asks for a pattern. */
+const MIN_TOLERATED = 2;
+
+/**
+ * The two product types § 05 requires to be present or explicitly declared.
+ *
+ * ⚠️ MATCHED ON THE NAME, WHICH IS A PROTOTYPE-GRADE HEURISTIC AND SAYS SO.
+ * Open Beauty Facts has a category field this should read instead; it is not
+ * requested by `openBeautyFacts.ts` today. The failure mode is mild and in the
+ * right direction — an unrecognised cleanser asks the user a question they can
+ * answer in one tap, rather than silently passing a gate.
+ */
+const ROUTINE_ROLES: { id: "cleanser" | "sunscreen"; label: string; re: RegExp }[] = [
+  { id: "cleanser", label: "cleanser", re: /cleans|wash|foaming|micellar|makeup remover/i },
+  { id: "sunscreen", label: "sunscreen", re: /spf|sunscreen|sun cream|uv\b|fluid uv/i },
+];
+
+function hasRole(products: SavedProduct[], re: RegExp): boolean {
+  return products.some((p) => re.test(`${p.brand} ${p.name} ${p.description ?? ""}`));
+}
+
+/**
+ * Everything standing between the recorded investigation and an answer.
+ *
+ * An empty array means the analysis can run. A non-empty one IS the
+ * no-conclusion screen's content — § 11 requires the exact reason, not a
+ * generic failure.
+ */
+export function gaps(a: Answers): Gap[] {
+  const out: Gap[] = [];
+
+  if (!a.timing?.date) {
+    out.push({
+      id: "no-flare-date",
+      title: "When the reaction started",
+      body: "Every product is compared against the day your skin changed. Without that day there is nothing to compare them to.",
+      href: "/investigation/timing",
+      action: "Add the date",
+    });
+    /* Nothing below can be computed without it, so stop here rather than
+       reporting five consequences of one missing answer. */
+    return out;
+  }
+
+  const evidence = evidenceFor(a);
+  const products = a.products ?? [];
+
+  if (products.length === 0 || !evidence.some((e) => e.state === "associated")) {
+    out.push({
+      id: "nothing-new",
+      title: "A product you were using around the time it started",
+      body: "Nothing in your list entered your routine near the reaction. Add anything you used in the four weeks before it — including products you do not suspect.",
+      href: "/investigation/products",
+      action: "Add products",
+    });
+  }
+
+  const tolerated = evidence.filter((e) => e.state === "tolerated" && e.readable);
+  if (tolerated.length < MIN_TOLERATED) {
+    out.push({
+      id: "no-tolerated-history",
+      title: "Products you have used for a while without problems",
+      body: "These are what rule an ingredient OUT. Without at least two, anything shared by your newer products stays a suspect and none of it can be cleared.",
+      href: "/investigation/products",
+      action: "Add products",
+    });
+  }
+
+  const missingRoles = ROUTINE_ROLES.filter(
+    (role) => !hasRole(products, role.re) && !(a.routineNotUsed ?? []).includes(role.id)
+  );
+  if (missingRoles.length > 0) {
+    out.push({
+      id: "routine-incomplete",
+      title: `No ${missingRoles.map((r) => r.label).join(" or ")} in your list`,
+      body: "These touch the whole face every day, so leaving one out hides the product most likely to be involved. Add it, or say you do not use one.",
+      href: "/investigation/products",
+      action: "Add or declare",
+    });
+  }
+
+  const readable = evidence.filter((e) => e.readable).length;
+  if (products.length > 0 && readable * 2 <= products.length) {
+    out.push({
+      id: "ingredients-missing",
+      title: "Ingredient lists for most of your products",
+      body: `${products.length - readable} of ${products.length} have no ingredient list, so there is nothing to compare between them.`,
+      href: "/investigation/evidence",
+      action: "Review products",
+    });
+  }
+
+  return out;
+}
+
+/* ---------------------------------------------------------------------------
+   § 05 — the confirmation list
+
+   "Do not force the user to label every product suspicious or safe. Show a
+   compact confirmation list only when the AI's interpretation is ambiguous."
+   -------------------------------------------------------------------------- */
+
+/** The products whose timeline straddles the boundary and which the user has
+ *  not already answered for. Exactly these get a question, and no others. */
+export function needsConfirmation(a: Answers): ProductEvidence[] {
+  return evidenceFor(a).filter((e) => e.state === "unclear" && !e.confirmed);
+}
+
+/* ---------------------------------------------------------------------------
+   The subtraction — hypothesis type A
+
+   "An ingredient appears across products associated with the reaction and is
+   absent — or less supported — in products used without problems."
+   -------------------------------------------------------------------------- */
+
+export type Confidence = "stronger" | "possible" | "weak";
+
+export const CONFIDENCE_LABEL: Record<Confidence, string> = {
+  stronger: "Stronger pattern",
+  possible: "Possible pattern",
+  weak: "Weak pattern",
+};
+
+export type IngredientHypothesis = {
+  kind: "ingredient";
+  id: string;
+  active: ActiveId;
+  name: string;
+  confidence: Confidence;
+  /** associated products containing it — the evidence FOR */
+  inAssociated: SavedProduct[];
+  /** tolerated products containing it — the evidence AGAINST */
+  inTolerated: SavedProduct[];
+  /** how many associated products there were to appear in */
+  associatedTotal: number;
+  /** how many tolerated products had a list to be absent from */
+  toleratedReadable: number;
+};
+
+export type PairHypothesis = {
+  kind: "pair";
+  id: string;
+  actives: [ActiveId, ActiveId];
+  confidence: Confidence;
+  /** the products carrying each half, in the order `actives` names them */
+  products: [SavedProduct, SavedProduct];
+  /** true when both halves entered the routine inside the window */
+  bothNew: boolean;
+};
+
+export type Hypothesis = IngredientHypothesis | PairHypothesis;
+
+/**
+ * The confidence word, from the shape of the subtraction and nothing else.
+ *
+ * ⚠️ IT IS NOT A THRESHOLD ON A SCORE, AND THERE IS NO SCORE. Three things
+ * decide it: how much of the associated set carries the candidate, whether any
+ * tolerated product carries it too, and — the one people forget — how much
+ * tolerated evidence there was to be absent from. A candidate absent from an
+ * empty tolerated set has not been cleared of anything, and calling that
+ * "stronger" would be the analysis crediting itself for evidence it never had.
+ */
+function confidenceFor(h: {
+  inAssociated: unknown[];
+  inTolerated: unknown[];
+  associatedTotal: number;
+  toleratedReadable: number;
+}): Confidence {
+  if (h.inTolerated.length > 0) return "weak";
+  if (h.inAssociated.length < 2) return "weak";
+  if (
+    h.inAssociated.length === h.associatedTotal &&
+    h.toleratedReadable >= MIN_TOLERATED
+  ) {
+    return "stronger";
+  }
+  return "possible";
+}
+
+/**
+ * Both halves of the case, from one pass.
+ *
+ * ⚠️ THE CLEARED CANDIDATES ARE NOT WASTE — THEY ARE § 08's "EVIDENCE AGAINST"
+ * ACCORDION, which no screen in LUX has a pattern for and which the brief
+ * requires on every hypothesis. An ingredient the user's own tolerated history
+ * argues against is the most useful thing this analysis produces, and it is
+ * free: it is the same subtraction, read from the other side. Returning only
+ * the survivors is how a reasoning screen turns into advocacy.
+ */
+export function subtract(evidence: ProductEvidence[]): {
+  candidates: IngredientHypothesis[];
+  cleared: IngredientHypothesis[];
+} {
+  const associated = evidence.filter((e) => e.state === "associated");
+  const tolerated = evidence.filter((e) => e.state === "tolerated" && e.readable);
+
+  const byActive = new Map<ActiveId, SavedProduct[]>();
+  for (const e of associated) {
+    for (const id of e.actives) {
+      byActive.set(id, [...(byActive.get(id) ?? []), e.product]);
+    }
+  }
+
+  const all: IngredientHypothesis[] = [...byActive.entries()]
+    .map(([active, inAssociated]) => {
+      const inTolerated = tolerated
+        .filter((t) => t.actives.includes(active))
+        .map((t) => t.product);
+      const h = {
+        inAssociated,
+        inTolerated,
+        associatedTotal: associated.length,
+        toleratedReadable: tolerated.length,
+      };
+      return {
+        kind: "ingredient" as const,
+        id: active,
+        active,
+        name: ACTIVES[active].name,
+        confidence: confidenceFor(h),
+        ...h,
+      };
+    })
+    /* Most of the associated set first, then the one with the most tolerated
+       evidence behind it — the order the argument is strongest in. */
+    .sort(
+      (a, b) =>
+        b.inAssociated.length - a.inAssociated.length ||
+        b.toleratedReadable - a.toleratedReadable
+    );
+
+  return {
+    candidates: all.filter((h) => h.inTolerated.length === 0),
+    cleared: all.filter((h) => h.inTolerated.length > 0),
+  };
+}
+
+/* ---------------------------------------------------------------------------
+   The pair pass — hypothesis type B
+
+   "Two or more ingredients that may increase irritation potential when layered
+   or used too frequently in the same period. These are context-dependent
+   possibilities, not universal incompatibilities."
+   -------------------------------------------------------------------------- */
+
+/**
+ * `CONFLICTS` pairs whose halves were both in the routine during the window.
+ *
+ * ⚠️ A NARROWER QUESTION THAN CHECK ASKS OF THE SAME LIST. CHECK asks whether
+ * both are in a basket the user is considering. This asks whether both were
+ * actually in use in the same period, AND requires at least one half to be new:
+ * a pair the user has been running for months without trouble did not start
+ * anything, and reporting it here would be CHECK's advice wearing the
+ * analysis's clothes.
+ */
+export function pairs(evidence: ProductEvidence[]): PairHypothesis[] {
+  const inRoutine = evidence.filter((e) => e.state !== "unclear" && e.readable);
+  const out: PairHypothesis[] = [];
+
+  for (const [x, y] of CONFLICTS) {
+    const carriersX = inRoutine.filter((e) => e.actives.includes(x));
+    const carriersY = inRoutine.filter((e) => e.actives.includes(y));
+
+    for (const cx of carriersX) {
+      for (const cy of carriersY) {
+        if (cx.product.id === cy.product.id) continue;
+        const isNew =
+          cx.state === "associated" || cy.state === "associated";
+        if (!isNew) continue;
+
+        out.push({
+          kind: "pair",
+          id: `${x}|${y}|${cx.product.id}|${cy.product.id}`,
+          actives: [x, y],
+          products: [cx.product, cy.product],
+          bothNew: cx.state === "associated" && cy.state === "associated",
+          /* ⚠️ NEVER "stronger". A pair is a context-dependent possibility that
+             depends on concentration, formulation and how often the two were
+             actually layered — none of which the app knows. The brief is
+             explicit: never infer an interaction from ingredient names alone
+             without showing uncertainty. */
+          confidence: cx.state === "associated" && cy.state === "associated"
+            ? "possible"
+            : "weak",
+        });
+      }
+    }
+  }
+
+  return out;
+}
+
+/* ---------------------------------------------------------------------------
+   § 07 — the outcome
+   -------------------------------------------------------------------------- */
+
+export type Outcome = "leading" | "several" | "none";
+
+export type Analysis = {
+  outcome: Outcome;
+  /** empty when the analysis ran; the reason it did not when it is `none` */
+  gaps: Gap[];
+  evidence: ProductEvidence[];
+  /** ranked, strongest first. Empty on `none`. */
+  hypotheses: Hypothesis[];
+  /** the candidates the user's own tolerated history argues against */
+  cleared: IngredientHypothesis[];
+};
+
+const RANK: Record<Confidence, number> = { stronger: 2, possible: 1, weak: 0 };
+
+export function analyseInvestigation(a: Answers): Analysis {
+  const blocking = gaps(a);
+  const evidence = evidenceFor(a);
+
+  if (blocking.length > 0) {
+    return { outcome: "none", gaps: blocking, evidence, hypotheses: [], cleared: [] };
+  }
+
+  const { candidates, cleared } = subtract(evidence);
+  const hypotheses: Hypothesis[] = [...candidates, ...pairs(evidence)].sort(
+    (x, y) => RANK[y.confidence] - RANK[x.confidence]
+  );
+
+  if (hypotheses.length === 0) {
+    /* ⚠️ THE GATES PASSED AND THERE IS STILL NO ANSWER, WHICH IS A REAL
+       OUTCOME AND NOT A BUG. Everything the associated products share was
+       cleared by the tolerated ones, or they share nothing at all. That is
+       information — it is just not a culprit. */
+    return {
+      outcome: "none",
+      gaps: [
+        {
+          id: "ingredients-missing",
+          title: "Nothing survived the comparison",
+          body:
+            cleared.length > 0
+              ? `Everything your newer products have in common also appears in products you have used without problems. That argues against all of them, and leaves no candidate.`
+              : "Your newer products have no ingredients in common, so there is no shared pattern to follow.",
+          href: "/investigation/products",
+          action: "Add more products",
+        },
+      ],
+      evidence,
+      hypotheses: [],
+      cleared,
+    };
+  }
+
+  /* A leading hypothesis needs to be leading — one hypothesis, or a clear step
+     down to the next. Two "possible" patterns is outcome 2, and the screen says
+     so rather than picking one. */
+  const leading =
+    hypotheses.length === 1 ||
+    RANK[hypotheses[0].confidence] > RANK[hypotheses[1].confidence];
+
+  return {
+    outcome: leading ? "leading" : "several",
+    gaps: [],
+    evidence,
+    hypotheses,
+    cleared,
+  };
+}
+
+/* ---------------------------------------------------------------------------
+   § 11 — investigation priority
+
+   "Show products ranked by INVESTIGATION PRIORITY, not medical risk." The
+   distinction is the point: this ranks by how much the user would LEARN from
+   pausing a product, not by how dangerous it is. Every card says why it ranks
+   where it does.
+   -------------------------------------------------------------------------- */
+
+export type PriorityEntry = {
+  product: SavedProduct;
+  /** why it ranks here — shown verbatim on the card */
+  reasons: string[];
+  /** what is not known about it, § 11's "missing information" */
+  missing: string[];
+};
+
+export function investigationPriority(a: Answers): PriorityEntry[] {
+  const evidence = evidenceFor(a);
+  const tolerated = evidence.filter((e) => e.state === "tolerated" && e.readable);
+
+  return evidence
+    .map((e) => {
+      const reasons: string[] = [];
+      const missing: string[] = [];
+      let weight = 0;
+
+      if (e.state === "associated") {
+        weight += 100;
+        reasons.push("Entered your routine around the time the reaction started");
+      } else if (e.state === "unclear") {
+        weight += 40;
+        reasons.push("Its timing against the reaction is still unclear");
+      } else {
+        reasons.push("Used without problems for longer than the reaction has lasted");
+      }
+
+      const named = e.actives.filter((id) => ACTIVES[id].concern);
+      if (named.length > 0) {
+        weight += named.length * 10;
+        reasons.push(
+          `Contains ${named.map((id) => ACTIVES[id].label).join(" and ")}`
+        );
+      }
+
+      /* An ingredient nothing else in the routine carries is the one a pause
+         actually tests — if it is shared, pausing one product proves little. */
+      const unique = e.actives.filter(
+        (id) => !tolerated.some((t) => t.actives.includes(id))
+      );
+      if (e.readable && unique.length > 0 && e.state === "associated") {
+        weight += 15;
+        reasons.push("Nothing you tolerate contains the same ingredients");
+      }
+
+      if (!e.readable) {
+        missing.push("No ingredient list — nothing to compare");
+      }
+      if (e.product.bucket === "not-sure") {
+        missing.push("How long you have used it");
+      }
+      if (e.state === "unclear" && !e.confirmed) {
+        missing.push("Whether you started it before or after the reaction");
+      }
+
+      return { entry: { product: e.product, reasons, missing }, weight };
+    })
+    .sort((x, y) => y.weight - x.weight)
+    .map((r) => r.entry);
+}
+
+/* ---------------------------------------------------------------------------
+   § 10 — the cautious next action
+   -------------------------------------------------------------------------- */
+
+/**
+ * ⚠️ TWO PRODUCTS CAN NEVER BE PROPOSED FOR A PAUSE, AND THIS IS AN EXCLUSION
+ * IN CODE RATHER THAN A LINE OF COPY. The brief: "Do not recommend pausing
+ * prescribed treatment. Do not recommend stopping sunscreen without an
+ * appropriate protection plan."
+ *
+ * The app cannot know what is prescribed — nothing asks — so the honest
+ * position is that the pause suggestion is a suggestion the user overrides, and
+ * the screen says as much. Sunscreen it CAN recognise, and it is excluded
+ * outright: a four-week observation that removes daily UV protection trades one
+ * skin problem for a worse one.
+ */
+export function pausableProducts(entries: PriorityEntry[]): PriorityEntry[] {
+  const sunscreen = ROUTINE_ROLES.find((r) => r.id === "sunscreen");
+  if (!sunscreen) return entries;
+  return entries.filter(
+    (e) => !sunscreen.re.test(`${e.product.brand} ${e.product.name}`)
+  );
+}
+
+/**
+ * The product § 10 proposes pausing: the top of the priority list that is
+ * allowed to be paused at all. `null` when everything is excluded.
+ */
+export function suggestedPause(a: Answers): PriorityEntry | null {
+  return pausableProducts(investigationPriority(a))[0] ?? null;
+}
+
+/** Every product in the analysis, with the name the screens show. */
+export function describe(p: SavedProduct): string {
+  return fullName(p);
+}
