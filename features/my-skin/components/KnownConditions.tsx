@@ -40,7 +40,7 @@ export function KnownConditions() {
   );
 
   return (
-    <QuestionScreen id="conditions">
+    <QuestionScreen id="conditions" tightTop>
       <div className={styles.heading}>
         {/* ⚠️ AN `<h2>`, NOT AN `<h1>` — the step's own title is the page's one
             `<h1>`, rendered by `QuestionScreen` (visually hidden here). This is a

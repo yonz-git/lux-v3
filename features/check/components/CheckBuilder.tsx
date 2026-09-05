@@ -235,6 +235,7 @@ export function CheckBuilder() {
         nav="check"
         backHref="/check"
         layout="card"
+        tightTop
       >
         <SkinProfileStrip {...skinProfile(answers)} />
 

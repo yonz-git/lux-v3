@@ -72,6 +72,7 @@ export function ProgressScreen() {
       subtitle="Your skin investigation"
       nav="progress"
       layout="grid"
+      tightTop
     >
       <SkinProfile
         className={styles.profile}

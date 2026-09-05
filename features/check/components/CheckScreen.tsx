@@ -47,6 +47,7 @@ export function CheckScreen() {
       nav="check"
       layout="plain"
       center
+      tightTop
       /* ⚠️ NOT IN FIGMA — 601:1952 paints this screen with the static
          `gradient/canvas-*`. `/check` now runs 00 Welcome's living canvas
          instead: it was asked for directly, and it is the one hub that earns it
@@ -137,6 +138,8 @@ export function CheckNoProfile() {
       nav="check"
       layout="plain"
       center
+      /* the same state of the same screen as `/check`, so the same top */
+      tightTop
     >
       <div className={styles.hero}>
         <Orb animateIn />

@@ -73,7 +73,7 @@ export function CheckAnalyzing() {
   }, []);
 
   return (
-    <HubScreen nav="check" backHref="/check/new" layout="plain" center>
+    <HubScreen nav="check" backHref="/check/new" layout="plain" center tightTop>
       <div className={styles.hero}>
         {/* the orb IS the AI doing the work — the handoff's deviation #1 for
             05 — Investigating, which this screen was cloned from.

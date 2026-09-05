@@ -48,7 +48,7 @@ export function SkinType() {
   );
 
   return (
-    <QuestionScreen id="skin-type">
+    <QuestionScreen id="skin-type" tightTop>
       <div className={styles.acknowledgement}>
         <ChatBubble from="ai">
           Thanks for sharing that. Let me ask a few questions about your skin

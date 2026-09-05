@@ -52,6 +52,7 @@ export function CheckHistory() {
         backHref="/check"
         layout="plain"
         center
+        tightTop
       >
         <div className={styles.empty}>
           <Orb animateIn />
@@ -73,6 +74,7 @@ export function CheckHistory() {
       nav="check"
       backHref="/check"
       layout="card"
+      tightTop
     >
       <ul className={styles.list}>
         {checks.map((check) => {

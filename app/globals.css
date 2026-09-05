@@ -672,10 +672,28 @@ main[tabindex="-1"]:focus-visible {
   align-items: center;
   background: var(--gradient-canvas-mobile);
   background-attachment: fixed;
+
+  /* THE TOP PAD IS A VARIABLE so the `data-tight-top` override below can move
+     it in one place and both the shorthand here and the desktop `padding-top`
+     follow. The default is unchanged: 40, "everywhere", per AGENTS.md. */
+  --content-top: var(--space-4xl);
+
   /* the fixed nav sits `--nav-inset-bottom` off the bottom and is 75 tall;
      16 of clearance above it is the same reservation the Figma screens make. */
-  padding: var(--space-4xl) var(--margin-mobile)
+  padding: var(--content-top) var(--margin-mobile)
     calc(var(--nav-inset-bottom) + var(--size-nav-height) + var(--space-lg));
+}
+
+/* ⚠️ NOT IN FIGMA, AND OPT-IN ONE SCREEN AT A TIME — the same terms as
+   `data-shader`. One step down the spacing scale (40 -> 32) rather than a
+   hand-written 30: the scale has no 30, and this is the kind of value that
+   becomes the app's first off-scale spacing if it is written literally.
+
+   Most screens pass it, so if the tighter top wins everywhere it belongs on
+   `.screen` outright and this attribute goes away — a Figma decision, not a
+   cleanup. */
+.screen[data-tight-top] {
+  --content-top: var(--space-3xl); /* 32 */
 }
 
 /* Flow screens carry their own header row and progress track, so they do not
@@ -693,7 +711,7 @@ main[tabindex="-1"]:focus-visible {
 @media (min-width: 1024px) {
   .screen[data-layout="flow"],
   .screen[data-layout="hub"] {
-    padding-top: var(--space-4xl);
+    padding-top: var(--content-top);
   }
 
   /* ⚠️ NO BOTTOM RESERVATION FOR A **CENTRED** HUB SCREEN ON DESKTOP. The desktop

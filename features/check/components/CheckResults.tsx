@@ -103,6 +103,7 @@ export function CheckResults() {
       nav="check"
       backHref="/check"
       layout="card"
+      tightTop
     >
       {/* 1 — the verdict, in the AI's voice. `full` so it spans the column the
              way 548:1141 does rather than hugging its text. */}

@@ -36,7 +36,7 @@ export function Timing() {
     setAnswer("timing", (prev) => ({ ...(prev ?? {}), ...patch }));
 
   return (
-    <QuestionScreen id="timing">
+    <QuestionScreen id="timing" tightTop>
       {/* ⚠️ AN `<h2>`, NOT AN `<h1>` — the step's own title is the page's one
           `<h1>`, rendered by `QuestionScreen` (visually hidden here). This is a
           question WITHIN that step, so it is a level down. Marking both as

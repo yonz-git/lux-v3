@@ -15,8 +15,21 @@
   flex-direction: column;
 }
 
+/* ⚠️ NOT IN FIGMA — 12 -> 20 mobile, 16 -> 24 desktop. The comps set 12 against
+   a 38-tall header row, taking that height from `Save & exit`, the tallest
+   child they drew. The BUILT row is 44: the back chevron's tap target is 44 at
+   every breakpoint and it is the taller child, so the same 12 reads tighter
+   than it was drawn.
+
+   ⚠️ 20, NOT THE 18 THAT WOULD RESTORE THE DRAWN GAP EXACTLY. The spacing
+   scale has no 18, and a literal `18px` here would be the app's first
+   off-scale spacing value. `--space-xl` is the step above, and the +4
+   mobile-to-desktop offset the comps use is preserved.
+
+   Shared by all five steps — the track is one element, and a per-step gap is
+   the kind of drift this file exists to prevent. */
 .progressWrap {
-  padding-top: var(--space-md); /* 12 */
+  padding-top: var(--space-xl); /* 20 */
 }
 
 .card {
@@ -62,7 +75,7 @@
   }
 
   .progressWrap {
-    padding-top: var(--space-lg); /* 16 */
+    padding-top: var(--space-2xl); /* 24 */
   }
 
   .card {

@@ -74,6 +74,7 @@ export function YourProducts() {
         contentGapDesktop={64}
         titleVisible
         nav="products"
+        tightTop
       >
         <ChatBubble from="ai" full className={styles.briefBubble}>
           Now let&rsquo;s look at the products you&rsquo;ve been using.

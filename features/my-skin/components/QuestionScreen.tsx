@@ -51,6 +51,7 @@ export function QuestionScreen({
   contentGapDesktop,
   titleVisible,
   nav = "my-skin",
+  tightTop,
 }: {
   id: StepId;
   children: ReactNode;
@@ -103,6 +104,8 @@ export function QuestionScreen({
    * investigation flow lives in; step 5 passes `products`. See the note above.
    */
   nav?: NavSection;
+  /** take the screen's top padding 40 -> 32, as the hub screens do */
+  tightTop?: boolean;
 }) {
   const router = useRouter();
   const { answers } = useInvestigation();
@@ -111,7 +114,11 @@ export function QuestionScreen({
   const canContinue = isComplete(answers);
 
   return (
-    <main className="screen" data-layout="flow">
+    <main
+      className="screen"
+      data-layout="flow"
+      data-tight-top={tightTop || undefined}
+    >
       <div className={styles.shell} data-reveal>
         <ScreenHeader backHref={prevHref(id)} />
 

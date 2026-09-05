@@ -56,6 +56,7 @@ export function HubScreen({
   belowHeading,
   center,
   shader,
+  tightTop,
   footer,
   children,
 }: {
@@ -89,6 +90,17 @@ export function HubScreen({
    * asked — see the doc comment on CanvasShader.tsx.
    */
   shader?: boolean;
+  /**
+   * Take the screen's top padding one step down the scale, 40 -> 32.
+   *
+   * ⚠️ NOT IN FIGMA, AND OPT-IN ONE SCREEN AT A TIME, like `shader`. The
+   * screens that take it are listed at their call sites; if the tighter top
+   * wins everywhere it belongs on `.screen` outright and this prop goes away.
+   * The rule is `.screen[data-tight-top]` in globals.css — it CANNOT live in
+   * this module, because `.screen` is a global class and a module would hash
+   * the selector to nothing.
+   */
+  tightTop?: boolean;
   /** pinned below the body — `Product added`'s two stacked buttons */
   footer?: ReactNode;
   children?: ReactNode;
@@ -120,6 +132,7 @@ export function HubScreen({
       data-layout="hub"
       data-center={center || undefined}
       data-shader={shader || undefined}
+      data-tight-top={tightTop || undefined}
     >
       {/* ⚠️ BEFORE THE SHELL, AND THE SHELL IS RAISED ABOVE IT. The canvas is
           opaque and covers the viewport; `[data-shader] .shell` in the

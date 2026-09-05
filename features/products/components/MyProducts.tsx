@@ -120,7 +120,7 @@ export function MyProducts() {
 
   if (products.length === 0) {
     return (
-      <HubScreen title="My Products" layout="plain" center>
+      <HubScreen title="My Products" layout="plain" center tightTop>
         <div className={styles.empty}>
           <Orb animateIn />
           <h2 className="t-h4-h3">No products added yet</h2>
@@ -148,6 +148,7 @@ export function MyProducts() {
         title="My Products"
         subtitle={`${products.length} product${products.length === 1 ? "" : "s"} added`}
         layout="card"
+        tightTop
         footer={
           /* ⚠️ NOT IN FIGMA — `Start analysis`. The hub listed the products and
            then ended: the one thing the user can DO with a library of products
