@@ -108,8 +108,94 @@
 
 /* ---- card · notes -------------------------------------------------------- */
 
+/* The overline and its action on one line. `baseline` rather than `center`
+   because an Overline (13/18 with 1.82 tracking) and a Label Small (12/16) are
+   different heights, and centring them leaves the word sitting a pixel above
+   the heading it belongs to. */
+.cardHead {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: var(--space-md); /* 12 */
+}
+
 .note {
   color: var(--color-text-on-data-secondary);
+}
+
+/* ⚠️ A TEXT BUTTON, WHICH IS A SHAPE THIS CARD DID NOT HAVE. `Button` and
+   `SmallButton` are both gradient pills — a sage pill on a sage card is the
+   nesting rule inverted, and either would outweigh the record it sits on. The
+   DS has no tertiary/text button and no edit glyph, so this is the smallest
+   honest thing: the label in `text/on-data`, underlined so it reads as a
+   control rather than a caption, and the hover step every other row on this
+   screen uses. **Raise a Text Button in Figma.** */
+.noteEdit {
+  flex: none;
+  padding: 0;
+  color: var(--color-text-on-data);
+  text-decoration: underline;
+  text-underline-offset: 3px;
+  transition: opacity var(--duration-fast) var(--ease-standard);
+}
+
+.noteEdit:hover {
+  opacity: 0.7;
+}
+
+@media (hover: none) {
+  .noteEdit:hover {
+    opacity: 1;
+  }
+}
+
+.noteEditor {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-md); /* 12 */
+}
+
+.noteActions {
+  display: flex;
+  gap: var(--space-sm); /* 8 */
+}
+
+/* The `Add a product you don't own yet` recipe at auto width — 1px
+   border/glass on the card's own ground, so the two actions read as controls on
+   the card rather than as a second surface inside it.
+   ⚠️ Rule 9 — the design height minus the border, so the box lands on 40 in
+   every state. */
+.noteAction {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: calc(11px - var(--border-width-hairline)) var(--space-lg);
+  border: var(--border-width-hairline) solid var(--color-border-glass);
+  border-radius: var(--radius-md);
+  color: var(--color-text-on-data);
+  transition: background-color var(--duration-fast) var(--ease-standard);
+}
+
+.noteAction:hover {
+  background: var(--color-state-hover-overlay);
+}
+
+@media (hover: none) {
+  .noteAction:hover {
+    background: none;
+  }
+}
+
+/* Cancel is the quieter of the two — same box, muted label. The pair is NOT
+   carried by colour alone: Save leads in DOM and reading order and Cancel says
+   what it does. */
+.noteCancel {
+  color: var(--color-text-on-data-secondary);
+}
+
+.noteHint {
+  margin: 0;
+  color: var(--color-text-on-data-muted);
 }
 
 /* ---- card · photos ------------------------------------------------------- */
@@ -325,6 +411,29 @@
   border-radius: var(--radius-md);
   color: var(--color-text-on-data);
   transition: background-color var(--duration-fast) var(--ease-standard);
+}
+
+/* ⚠️ WHITE, AND IT FAILS AA — asked for directly, 6 Sep 2026, and recorded
+   rather than quietly fixed. Non-negotiable 17 says SURFACE SYSTEM B's text is
+   DARK: `surface/data` composites too light for white at any alpha. Measured on
+   this well — `surface/data-strong` (62%) over `surface/data` (44%) over the
+   canvas gradient — white lands at **2.22:1** at the top of the gradient and
+   **2.42:1** at the bottom, against the **6.23:1 / 5.71:1** the inherited
+   `text/on-data` was getting. `t-label` is 14/500, so AA wants 4.5.
+
+   It is `text/on-brand` (the DS's white) rather than a raw `#fff`, and the
+   GLYPH follows it — asked for straight after the label, and right: a white
+   word beside a dark plus reads as two controls rather than one row. Scoped to
+   THIS button, because `.plus` is also the search results' glyph and those rows
+   keep `text/on-data-secondary`. Joins the known-failing list in
+   docs/decisions.md; a passing version needs either a darker well or the label
+   back on `text/on-data`. */
+.manualLabel {
+  color: var(--color-text-on-brand);
+}
+
+.manual .plus {
+  color: var(--color-text-on-brand);
 }
 
 .manual:hover {

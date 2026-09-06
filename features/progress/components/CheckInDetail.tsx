@@ -1,10 +1,11 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import styles from "./CheckInDetail.module.css";
 import { HubScreen } from "@/components/layout/HubScreen";
 import { DataCard } from "@/components/ui/DataCard";
 import { SearchField } from "@/components/ui/SearchField";
+import { TextField } from "@/components/ui/TextField";
 import { Tag } from "@/components/ui/Tag";
 import { CloseIcon, PlusIcon } from "@/components/ui/icons";
 import { AddProductMethodSheet } from "@/features/products/components/AddProductMethodSheet";
@@ -25,6 +26,7 @@ import {
   checkInOn,
   checkInsFor,
   dayNumber,
+  editNote,
   editProductsUsed,
   productsForCheckIn,
   progressView,
@@ -104,6 +106,20 @@ import {
  * headed by an overline is a promise the record does not keep. Severity is the
  * one card that always renders, because every check-in has one.
  *
+ * ⚠️ NOTES IS THE THIRD, AND FOR THE SAME REASON — 6 Sep 2026. The note is
+ * editable here: `Edit note` swaps the quotation for a `TextField` with
+ * Save/Cancel under it, and on a day that recorded none the card still draws,
+ * headed by `Add a note`. Both follow the products rule below — a card that
+ * carries the control that fills it is not an empty promise — and the write
+ * goes through `editNote` in `progress.ts`, which materialises a seeded day's
+ * whole record rather than writing a note-only entry over it.
+ *
+ * ⚠️ AND SAVING AN EMPTY FIELD DELETES THE NOTE, which is the only way to take
+ * one back. `CheckIn.note` is optional and every reader tests it for truth, so
+ * `editNote` drops the key rather than storing `""` — a stored empty string
+ * would draw as a pair of quotation marks with nothing between them. The
+ * editor says so in a caption rather than leaving it to be discovered.
+ *
  * ⚠️ PRODUCTS USED IS THE SECOND, AND ONLY BECAUSE IT BECAME EDITABLE. The rule
  * above is about a card that says nothing; this one carries the control that
  * fills it, so an empty list is a state the user can leave rather than a
@@ -124,6 +140,27 @@ export function CheckInDetail({ date, now }: { date: string; now: number }) {
      state anything else needs. */
   const [query, setQuery] = useState("");
   const [addingManually, setAddingManually] = useState(false);
+
+  /* ⚠️ THE DRAFT IS LOCAL AND THE STORE IS NOT WRITTEN UNTIL `Save`. An edit
+     that wrote on every keystroke would rewrite the day's record once per
+     character and make `Cancel` a promise nothing could keep — there is no undo
+     behind it. `editing` is separate from the draft's emptiness because an
+     empty draft is a legitimate edit: it is how a note is DELETED. */
+  const [editingNote, setEditingNote] = useState(false);
+  const [noteDraft, setNoteDraft] = useState("");
+  /* Focus goes back to the control that opened the field, the way `Sheet` puts
+     it back — leaving it on a button that just disappeared drops the keyboard
+     user at the top of the document.
+
+     ⚠️ IT IS AN EFFECT, NOT A CALL IN THE HANDLER, AND NOT A `requestAnimationFrame`
+     EITHER. The button does not exist at the moment `Save` runs — it is
+     rendered by the same state change that closes the editor — and measured,
+     the rAF version fired before React had committed that render, so
+     `noteEditRef.current` was still null and focus fell to `<main>`. The effect
+     runs after the commit, which is the only moment the button is there to
+     take it. The ref guard keeps it from stealing focus on the first render. */
+  const noteEditRef = useRef<HTMLButtonElement>(null);
+  const restoreNoteFocus = useRef(false);
 
   const title = day ? formatDay(day) : "Check-in record";
   /* `Day 4` — the same 1-based count the profile card writes, so the tag and
@@ -178,6 +215,30 @@ export function CheckInDetail({ date, now }: { date: string; now: number }) {
   }
 
   const ownedIdsWhenOpened = owned.map((p) => p.id);
+
+  function startEditingNote() {
+    setNoteDraft(entry?.note ?? "");
+    setEditingNote(true);
+  }
+
+  function closeNoteEditor() {
+    restoreNoteFocus.current = true;
+    setEditingNote(false);
+  }
+
+  /** ⚠️ SAVING AN EMPTY FIELD DELETES THE NOTE, and `editNote` owns that rule
+   *  along with the trimming — see `features/progress/progress.ts`. */
+  function saveNote() {
+    if (!entry) return;
+    setAnswer("checkIns", editNote(entry, noteDraft));
+    closeNoteEditor();
+  }
+
+  useEffect(() => {
+    if (editingNote || !restoreNoteFocus.current) return;
+    restoreNoteFocus.current = false;
+    noteEditRef.current?.focus();
+  }, [editingNote]);
 
   return (
     <HubScreen
@@ -264,26 +325,114 @@ export function CheckInDetail({ date, now }: { date: string; now: number }) {
               order — no `order` property, and nothing for a screen reader to
               disagree with. Only the desktop swaps the two, because 557:1353
               leads col-1 with the photos. */}
-          {(entry.note || entry.photo) && (
-            <div className={styles.col1}>
-              {entry.note && (
-                <DataCard
+          {/* ⚠️ THE WRAPPER IS NO LONGER CONDITIONAL, BECAUSE NOTES ALWAYS
+              RENDERS — see the card below. A day with no photo still has a
+              col-1; it holds one card instead of two. */}
+          <div className={styles.col1}>
+            <DataCard
                   className={`${styles.card} ${styles.notes}`}
                   aria-labelledby="checkin-notes"
                 >
-                  <h2
-                    id="checkin-notes"
-                    className={`${styles.label} t-overline`}
-                  >
-                    Notes
-                  </h2>
-                  {/* the quotes are the comp's and they are DISPLAY — what the user
-                  typed is stored without them */}
-                  <p className={`${styles.note} t-body3`}>
-                    &ldquo;{entry.note}&rdquo;
-                  </p>
+                  {/* ⚠️ THE CARD IS DRAWN EVEN WITH NO NOTE ON THE DAY, WHICH IS
+                      THE `Products used` EXEMPTION AGAIN — 6 Sep 2026. The rule
+                      above ("a card with nothing in it is not drawn") is about a
+                      card that can only ever state what the record holds; this
+                      one now carries the control that FILLS it, so an empty
+                      notes card is a state the user can leave rather than a
+                      promise the record cannot keep. Hiding it at zero notes
+                      would take the only way to write one with it. */}
+                  <div className={styles.cardHead}>
+                    <h2
+                      id="checkin-notes"
+                      className={`${styles.label} t-overline`}
+                    >
+                      Notes
+                    </h2>
+
+                    {!editingNote && (
+                      /* ⚠️ A WORD, NOT A PENCIL. The DS has thirteen icons and
+                         none of them is an edit glyph (AGENTS.md), and a screen
+                         does not get to invent a fourteenth — so the control
+                         says what it does. The label switches on whether there
+                         is anything to edit, because "Edit" on an empty card
+                         offers to change nothing. */
+                      <button
+                        ref={noteEditRef}
+                        type="button"
+                        className={`${styles.noteEdit} t-label-sm`}
+                        onClick={startEditingNote}
+                      >
+                        {entry.note ? "Edit note" : "Add a note"}
+                      </button>
+                    )}
+                  </div>
+
+                  {editingNote ? (
+                    <div className={styles.noteEditor}>
+                      {/* ⚠️ A `TextField`, NOT A TEXTAREA — the DS has no
+                          multi-line input, and the daily check-in collects this
+                          same note in this same single-line field. Inventing a
+                          textarea here would make the record's editor a
+                          different control from the one that wrote the note.
+                          Raise a Text Area in Figma. */}
+                      <TextField
+                        autoFocus
+                        value={noteDraft}
+                        onChange={(e) => setNoteDraft(e.target.value)}
+                        /* Enter commits and Escape abandons, which is what a
+                           single-line editor owes a keyboard user — there is no
+                           form here to submit, so both are wired by hand. */
+                        onKeyDown={(e) => {
+                          if (e.key === "Enter") {
+                            e.preventDefault();
+                            saveNote();
+                          } else if (e.key === "Escape") {
+                            e.preventDefault();
+                            closeNoteEditor();
+                          }
+                        }}
+                        placeholder="Anything worth remembering about today"
+                        aria-label="Your note"
+                      />
+
+                      <div className={styles.noteActions}>
+                        <button
+                          type="button"
+                          className={`${styles.noteAction} t-label`}
+                          onClick={saveNote}
+                        >
+                          Save
+                        </button>
+                        {/* ⚠️ `Cancel` IS HONEST HERE, WHERE `Sheet`'s WAS NOT.
+                            The tray renamed its dismissal `Done` because every
+                            view behind it had already committed; this editor
+                            commits nothing until Save, so there is a real edit
+                            to abandon. */}
+                        <button
+                          type="button"
+                          className={`${styles.noteAction} ${styles.noteCancel} t-label`}
+                          onClick={closeNoteEditor}
+                        >
+                          Cancel
+                        </button>
+                      </div>
+
+                      <p className={`${styles.noteHint} t-caption`}>
+                        Saving an empty note removes it from this day.
+                      </p>
+                    </div>
+                  ) : entry.note ? (
+                    /* the quotes are the comp's and they are DISPLAY — what the
+                       user typed is stored without them */
+                    <p className={`${styles.note} t-body3`}>
+                      &ldquo;{entry.note}&rdquo;
+                    </p>
+                  ) : (
+                    <p className={`${styles.empty} t-body3`}>
+                      No note recorded for this day.
+                    </p>
+                  )}
                 </DataCard>
-              )}
 
               {entry.photo && (
                 <DataCard
@@ -321,8 +470,7 @@ export function CheckInDetail({ date, now }: { date: string; now: number }) {
                   </div>
                 </DataCard>
               )}
-            </div>
-          )}
+          </div>
 
           <DataCard
             className={`${styles.card} ${styles.products}`}
@@ -445,7 +593,9 @@ export function CheckInDetail({ date, now }: { date: string; now: number }) {
                     onClick={() => setAddingManually(true)}
                   >
                     <PlusIcon className={styles.plus} />
-                    <span className="t-label">Add a product you don&rsquo;t own yet</span>
+                    <span className={`${styles.manualLabel} t-label`}>
+                      Add a product you don&rsquo;t own yet
+                    </span>
                   </button>
                 </div>
               )}

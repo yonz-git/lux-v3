@@ -619,6 +619,61 @@ longer reachable by reading `/progress`; walk a check-in to see it.
 redefined globally in `globals.css` (see SURFACE SYSTEM B above) and this screen
 inherits the fix rather than restating it.
 
+**⚠️ THE NOTE IS EDITABLE, AND THE CARD DRAWS EVEN WHEN THERE IS NONE — 6 Sep
+2026.** `Edit note` swaps the quotation for a `TextField` with `Save` /
+`Cancel`; a day that recorded no note draws the same card headed `Add a note`
+over "No note recorded for this day." That is the `Products used` exemption
+again — the rule "a card with nothing in it is not drawn" is about a card that
+can only state what the record holds, and this one now carries the control that
+fills it, so hiding it at zero notes would take the only way to write one with
+it.
+
+- **The draft is local; nothing is written until `Save`.** Writing on every
+  keystroke would rewrite the day's record once per character and make `Cancel`
+  a promise nothing could keep. `Cancel` is honest here in a way `Sheet`'s was
+  not — that tray renamed its dismissal `Done` because every view behind it had
+  already committed; this editor commits on Save alone.
+- **Saving an empty field DELETES the note.** `CheckIn.note` is optional and
+  every reader tests it for truth, so `editNote` drops the key rather than
+  storing `""`, which would draw as an empty pair of quotation marks. Trimming
+  lives in the module so the screen and the daily check-in cannot disagree about
+  what counts as blank. The editor says so in a caption.
+- **`editNote` mirrors `editProductsUsed`** — the updater form, and the fallback
+  to the rendered entry that materialises a SEEDED day's whole record on first
+  edit. Verified on 25 Aug (the seeded note day): after an edit the severity,
+  symptoms, photo and five products all survive.
+- **⚠️ A WORD, NOT A PENCIL, AND A `TextField`, NOT A TEXTAREA.** The DS has
+  thirteen icons and no edit glyph, and no multi-line input — so the control
+  says what it does, and the editor uses the same single-line field the daily
+  check-in collects the note in. Both are gaps: **raise a Text Button, an edit
+  glyph and a Text Area in Figma.**
+- **Enter saves, Escape cancels, and focus returns to the control that opened
+  the editor.** ⚠️ The focus restore is an EFFECT, not a call in the handler:
+  the button is rendered by the same state change that closes the editor, and
+  measured, a `requestAnimationFrame` fired before React had committed that
+  render — `ref.current` was null and focus fell to `<main>`.
+- Contrast, composited over the card at both ends of the canvas gradient:
+  `Edit note` **8.10:1 / 6.51:1**, the hint caption **5.96:1 / 4.79:1**. Both
+  pass AA. The white `Add a product you don't own yet` below is the one failure
+  on this screen, and it is asked for.
+
+**⚠️ `Add a product you don't own yet` IS WHITE, AND IT FAILS AA — asked for
+directly, 6 Sep 2026.** Non-negotiable 17 holds everywhere else: SURFACE
+SYSTEM B's text is dark because `surface/data` composites too light for white.
+Measured on this well — `surface/data-strong` (62%) over `surface/data` (44%)
+over the canvas gradient — the label is **2.22:1** at the top of the gradient
+and **2.42:1** at the bottom, where the inherited `text/on-data` was getting
+**6.23:1 / 5.71:1**; `t-label` is 14/500, so AA wants 4.5. Reproduced as asked
+rather than quietly corrected, the way the `/chat` failures are. The `PlusIcon`
+beside it went white too, asked for straight after and right — a white word next
+to a dark glyph reads as two controls rather than one row — so the rule is
+scoped to this button and the search-result rows keep
+`text/on-data-secondary`. The glyph is decorative and carries no information the
+label does not, so its contrast is not an AA failure of its own; the label's
+is. A passing version needs either a darker well or the label back on
+`text/on-data` — a Figma decision.
+
+
 ## CHECK — the compatibility check
 
 `HANDOFF — CHECK` (`613:2434`) is the authority, and it is unusually complete —

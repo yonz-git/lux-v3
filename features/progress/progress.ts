@@ -698,6 +698,37 @@ export function productsForCheckIn(a: Answers, entry: CheckIn): SavedProduct[] {
  * first edit — severity, changes, note and photo included, so correcting a
  * product list cannot quietly drop the rest of the day.
  */
+/**
+ * The store update for one edit of a day's NOTE — the same reducer shape
+ * `editProductsUsed` has, and for the same two reasons: the updater form so two
+ * edits in one tick cannot start from the same rendered snapshot, and the
+ * fallback to `entry` so editing a SEEDED day materialises the whole record
+ * (severity, changes, products, photo) rather than writing a note-only entry
+ * that drops the rest of the day.
+ *
+ * ⚠️ AN EMPTY NOTE IS NO NOTE, NOT AN EMPTY ONE. `CheckIn.note` is optional and
+ * every reader tests it for truthiness, so clearing the field DELETES the key
+ * instead of storing `""` — otherwise the record would carry a note that the
+ * detail screen draws as an empty pair of quotation marks. Whitespace is
+ * trimmed here rather than in the screen, so both callers cannot disagree about
+ * what counts as blank.
+ */
+export function editNote(
+  entry: CheckIn,
+  note: string
+): (current: CheckIn[] | undefined) => CheckIn[] {
+  return (current) => {
+    const list = current ?? [];
+    const stored = list.find((c) => c.date === entry.date) ?? entry;
+    const trimmed = note.trim();
+    const { note: _dropped, ...rest } = stored;
+    return recordCheckIn(
+      list,
+      trimmed ? { ...rest, note: trimmed } : { ...rest }
+    );
+  };
+}
+
 export function editProductsUsed(
   a: Answers,
   entry: CheckIn,
