@@ -14,6 +14,27 @@
   background: var(--color-bg-surface-frost);
 }
 
+/* ⚠️ NOT IN FIGMA — the same well at `size/control-sm`, for a product card
+   nested inside a category group's box on the PRODUCTS hub. It is a `size`
+   prop rather than a class the caller passes in, so both sizes are declared in
+   this file: a width set from another module is one class against one class,
+   and which of them wins is decided by stylesheet order rather than by
+   anything either file can see. 8 is the radius the compact card carries, and
+   the well follows its card. */
+.thumb.sm {
+  width: var(--size-control-sm); /* 36 */
+  height: var(--size-control-sm);
+  border-radius: var(--radius-sm);
+  /* ⚠️ AND IT SITS SLIGHTLY OFF ITS CARD — `shadow-sm`, the app's lightest
+     elevation. The compact card is opaque and the well is opaque in the same
+     family, so at 36 the picture and the card it lies on were one flat shape
+     with a radius change in the middle of it. A hairline rim would have drawn
+     a frame; the shadow says the same thing by lifting the picture instead.
+     ⚠️ THE 48 WELL DOES NOT TAKE IT: it lies on `frost-light`, which already
+     has an edge under it, and it appears on four other screens. */
+  box-shadow: var(--shadow-sm);
+}
+
 .glyph {
   color: var(--color-icon-muted);
 }

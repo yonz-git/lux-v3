@@ -143,6 +143,20 @@
   backdrop-filter: blur(var(--blur-card));
 }
 
+/* ⚠️ NOT IN FIGMA — the box as an empty category group opens it, inside that
+   group's own surface on the PRODUCTS hub. Same recipe the compact product
+   card takes there: 8 radius (concentric with the group's 16 less its 8 of
+   padding), opaque rather than frosted-on-frosted, and 20 of air rather than
+   32, because the box is now a panel in a box rather than the whole screen's
+   answer. See ProductAccordionCard.module.css. */
+.empty.emptyCompact {
+  padding: var(--space-xl) 0; /* 20 */
+  border-radius: var(--radius-sm);
+  background: var(--color-bg-surface-frost);
+  -webkit-backdrop-filter: none;
+  backdrop-filter: none;
+}
+
 .emptyLabel {
   color: var(--color-text-muted);
   text-align: center;

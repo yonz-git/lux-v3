@@ -24,18 +24,32 @@ import type { CatalogProduct } from "@/features/products/products";
  * is all a photo needs; an illustration needs to know WHICH product it is
  * drawing. Every call site already had the product in hand.
  *
+ * ⚠️ AND IT HAS A SECOND SIZE, 36 (`size/control-sm`), NOT IN FIGMA — for the
+ * compact product card a category group opens on the PRODUCTS hub. Same well,
+ * same drawing, one step down; the module says why the size is a prop rather
+ * than a class the caller passes in.
+ *
  * `04 — Confirm product`'s larger `product-image` is the same idea at 352x140 —
  * see ProductCard.
  */
 export function ProductThumb({
   className,
   product,
+  size = "md",
 }: {
   className?: string;
   product: CatalogProduct;
+  /* ⚠️ NOT IN FIGMA — `sm` is 36 (`size/control-sm`), the well as a card
+     nested inside a hub category group draws it. See the module. */
+  size?: "md" | "sm";
 }) {
   return (
-    <span className={[styles.thumb, className].filter(Boolean).join(" ")} aria-hidden="true">
+    <span
+      className={[styles.thumb, size === "sm" && styles.sm, className]
+        .filter(Boolean)
+        .join(" ")}
+      aria-hidden="true"
+    >
       <ProductArt product={product} className={styles.art} />
     </span>
   );

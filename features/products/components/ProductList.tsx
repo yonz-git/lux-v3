@@ -146,10 +146,24 @@ export function AddProductRow({
  * The "nothing here yet" box — a frosted panel with a single muted line.
  * radius/2xl rather than radius/lg, which is what `empty-state` (574:1391)
  * draws.
+ *
+ * ⚠️ `compact` IS THE SAME BOX INSIDE ANOTHER ONE, and it exists for exactly
+ * one caller: an empty category group on the PRODUCTS hub, which opens onto
+ * this box INSIDE the row's own surface. It matches what the product cards do
+ * there — 8 radius, opaque fill, less air — because an empty group and a full
+ * one have to open onto the same shape or the box looks like a different kind
+ * of thing. See `.compact` in ProductAccordionCard.module.css for the
+ * reasoning; this is that recipe, not a second one.
  */
-export function EmptyBox({ children }: { children: ReactNode }) {
+export function EmptyBox({
+  children,
+  compact = false,
+}: {
+  children: ReactNode;
+  compact?: boolean;
+}) {
   return (
-    <div className={styles.empty}>
+    <div className={`${styles.empty}${compact ? ` ${styles.emptyCompact}` : ""}`}>
       <p className={`${styles.emptyLabel} t-body3`}>{children}</p>
     </div>
   );

@@ -50,21 +50,40 @@ import { fullName, type SavedProduct } from "@/features/products/products";
  * component. What stays here is what is particular to the HUB's card: the
  * frosted surface, the header, and the Remove action.
  *
+ * ⚠️ AND IT HAS A COMPACT FORM, BECAUSE IT IS NOW A BOX INSIDE A BOX. The hub
+ * group's cards used to hang under the row as siblings of it, on the canvas,
+ * at the full width of the list; they render INSIDE the row's own surface now
+ * (see `MyProducts`), and a 24-radius frosted card at the full card padding
+ * inside a 16-radius frosted box read as two surfaces arguing rather than as a
+ * group containing its products. `compact` steps the whole recipe down one —
+ * padding, gap, radius, thumb, title — and makes the fill opaque, which is the
+ * house rule for a frosted fill on a frosted surface rather than a decision
+ * taken here. The module carries the numbers and the reasoning for each.
+ *
+ * It is a PROP, not a second component: the card's anatomy, its disclosure,
+ * its details panel and its one action are identical in both forms, and the
+ * only caller that wants the small one is the hub.
+ *
  * The design system has no accordion component; this is composed from the
  * frosted card recipe. It is on the missing-from-the-DS list.
  */
 export function ProductAccordionCard({
   product,
   onRemove,
+  compact = false,
 }: {
   product: SavedProduct;
   onRemove: () => void;
+  compact?: boolean;
 }) {
   const [open, setOpen] = useState(false);
   const panelId = `product-${product.id}`;
 
   return (
-    <div className={styles.card} data-open={open}>
+    <div
+      className={`${styles.card}${compact ? ` ${styles.compact}` : ""}`}
+      data-open={open}
+    >
       <button
         type="button"
         className={styles.header}
@@ -72,9 +91,17 @@ export function ProductAccordionCard({
         aria-controls={panelId}
         onClick={() => setOpen((o) => !o)}
       >
-        <ProductThumb product={product} />
+        <ProductThumb product={product} size={compact ? "sm" : "md"} />
         <span className={styles.copy}>
-          <span className={`${styles.name} t-h6`}>{fullName(product)}</span>
+          {/* ⚠️ `Label` COMPACT, `H6` OTHERWISE — both are real styles from the
+              ramp, and the smaller card takes the smaller of the two rather
+              than an ad-hoc size. Medium weight either way: this is still the
+              card's title, not its body. */}
+          <span
+            className={`${styles.name} ${compact ? "t-label" : "t-h6"}`}
+          >
+            {fullName(product)}
+          </span>
           <span className={`${styles.size} t-label-sm`}>{product.size}</span>
         </span>
         <ChevronDownIcon className={styles.chevron} />

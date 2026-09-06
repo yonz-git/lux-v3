@@ -22,6 +22,38 @@
   gap: var(--space-lg); /* 16 expanded */
 }
 
+/* ⚠️ NOT IN FIGMA — the card as it renders INSIDE a category group's box on
+   the PRODUCTS hub. Same anatomy, one step down: padding 12 rather than 16/18,
+   gap 8 rather than 12, the thumb at `size/control-sm` (36) rather than 48 and
+   the name at `Label` rather than `H6`. Nothing is removed and nothing moves —
+   it is the same card, smaller, because it is now a box inside a box rather
+   than a card on the canvas.
+
+   ⚠️ AND IT IS OPAQUE, WHICH IS THE RULE AND NOT A PREFERENCE. `frost-light` on
+   the group's `frost-nav` is a frosted fill on a frosted surface: the two
+   translucencies composite into one pale smear with no edge between them, and
+   the stack of cards stops reading as separate cards. `bg/surface-frost` is
+   frost-light's opaque counterpart — the same relationship `bg/nav` has to
+   `surface/frost-nav` — and the blur goes with it, since the group behind it
+   has already blurred what is under both.
+
+   8 is concentric, not a taste: the group's box is 16 and insets these by 8,
+   so 16 − 8 is the radius that keeps the two curves parallel. Change either
+   and change both — see `.panel` in MyProducts.module.css. */
+.card.compact {
+  gap: var(--space-sm); /* 8 collapsed */
+  padding: var(--space-md); /* 12 */
+
+  border-radius: var(--radius-sm);
+  background: var(--color-bg-surface-frost);
+  -webkit-backdrop-filter: none;
+  backdrop-filter: none;
+}
+
+.card.compact[data-open="true"] {
+  gap: var(--space-md); /* 12 expanded */
+}
+
 .header {
   display: flex;
   align-items: center;
@@ -96,6 +128,8 @@
 }
 
 
+/* the compact card is opaque in every mode already, so this is the frosted one
+   catching up to it rather than a second recipe */
 @media (prefers-reduced-transparency: reduce) {
   .card {
     background: var(--color-bg-surface-frost);

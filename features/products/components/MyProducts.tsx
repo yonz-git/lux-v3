@@ -71,12 +71,27 @@ import {
  * was trying to decide about.
  *
  * ⚠️ THE PREVIEW FADES OUT WHEN THE GROUP OPENS, AND IT KEEPS ITS WIDTH. Open,
- * the row is a header for cards sitting 12 below it that draw the same vessels
- * at 48 — the deck would be the same five pictures twice, smaller, exactly
- * where the eye should be moving down. It fades rather than unmounting so the
- * row does not reflow mid-gesture, and the reserved width is deliberate: a
- * title that ellipsises closed and does not open is worse than one that does
- * neither.
+ * the row is the header of a box whose contents draw the same vessels a few
+ * pixels below it — the deck would be the same pictures twice, smaller,
+ * exactly where the eye should be moving down. It fades rather than unmounting
+ * so the row does not reflow mid-gesture, and the reserved width is
+ * deliberate: a title that ellipsises closed and does not open is worse than
+ * one that does neither.
+ *
+ * ⚠️ AND AN OPEN GROUP IS ONE BOX, NOT A ROW AND A STACK — NOT IN FIGMA, and
+ * the second half of the same idea. The cards used to open UNDER the row as
+ * siblings of it, 12 away and at the list's full width, which is the same
+ * distance and the same width the NEXT category sits at: the only thing saying
+ * which row owned which cards was that they happened to follow it, and with
+ * two groups open at once the screen was six boxes in a column. The frosted
+ * fill moved off the row and onto the group, so the row is now the header of a
+ * container and its products are inside it, inset 8 from three sides. The row
+ * itself did not change — same 56, same fill, same radius, and closed the box
+ * IS the row.
+ *
+ * The cards inside step down to match — `ProductAccordionCard`'s `compact`
+ * form, opaque because a frosted fill on a frosted surface does not read. See
+ * that component for what changes and why it is a prop.
  *
  * ⚠️ THE CATEGORY ROWS ARE DROPDOWNS, NOT LINKS — AND `/products/[bucket]` IS
  * GONE. NOT IN FIGMA either: 579:1607 gives each row a trailing `chevron-right`
@@ -112,9 +127,10 @@ import {
  * would replace that whole list with the one product just added — the same
  * trap the remove path below documents.
  *
- * ⚠️ AN EMPTY GROUP STILL OPENS, onto the same `EmptyBox` the pushed view used.
- * The hub deliberately lists all three designed periods including empty ones,
- * so a row that refused to open would be the only dead row on the screen.
+ * ⚠️ AN EMPTY GROUP STILL OPENS, onto the same `EmptyBox` the pushed view used
+ * — in its compact form, so an empty group and a full one open onto the same
+ * shape. The hub deliberately lists all three designed periods including empty
+ * ones, so a row that refused to open would be the only dead row on the screen.
  */
 export function MyProducts() {
   const { answers, setAnswer } = useInvestigation();
@@ -280,7 +296,12 @@ function ThumbStack({ products }: { products: SavedProduct[] }) {
  * screen that stacks four of them. That was the whole reason the deck won over
  * a full-size preview strip — the strip is more legible and costs the comp's
  * height on the screen that can least afford it.
- */
+ *
+ * ⚠️ AND THE PANEL IS A CHILD OF THE BOX, NOT A SIBLING OF THE ROW. `.group`
+ * carries the surface; the button is its header and the panel its contents.
+ * The two cannot be nested in the DOM the way they are on screen — a `<button>`
+ * may not contain a list of buttons — so `aria-controls` on the row and `id` on
+ * the panel are what say the row owns them, exactly as before. */
 function CategoryGroup({
   bucket,
   products,
@@ -327,13 +348,14 @@ function CategoryGroup({
       {open && (
         <div id={panelId} className={`${styles.panel} reveal-quick`}>
           {n === 0 ? (
-            <EmptyBox>No products in this list yet</EmptyBox>
+            <EmptyBox compact>No products in this list yet</EmptyBox>
           ) : (
             <ul className={styles.stack}>
               {products.map((p) => (
                 <li key={p.id}>
                   <ProductAccordionCard
                     product={p}
+                    compact
                     onRemove={() => onRemove(p.id)}
                   />
                 </li>
