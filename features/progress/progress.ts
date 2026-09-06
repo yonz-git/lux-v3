@@ -242,9 +242,17 @@ export function demoCheckIns(start: Date, today: Date): CheckIn[] {
  * whichever way the severity moved from the day before — the same fact turn 1
  * of the chat asks for — and the symptoms are the demo profile's own, prefixed
  * exactly as `changeOptions` prefixes them. So the seeded series cannot claim
- * "Less redness" on a day its own plotted point went up. The first day has no
- * previous point and therefore no direction, which is also true of a real first
- * check-in.
+ * "Less redness" on a day its own plotted point went up.
+ *
+ * ⚠️ AND DAY 1 IS NOT DIRECTIONLESS — IT IS MEASURED AGAINST THE SAME BASE THE
+ * CHAT USES. This returned nothing for the first day, on the grounds that it
+ * has no previous point; `severityAfter` disagrees, and it is the writer. A
+ * real first check-in has no previous point either, and the chat still asks
+ * turn 1 and still applies the delta — to `SEVERITY_MAX / 2`, the midpoint it
+ * assumes when there is nothing to compare against. So the seed's day 1 gets
+ * that same base rather than an exemption, and 2 Aug stops being the one
+ * record in nine with no SYMPTOMS REPORTED card on it, which read as a hole in
+ * the demo rather than as a state the screen handles.
  *
  * ⚠️ THE NOTE SITS ON ONE DAY, and it is the comp's own: offset 3 is 5 Aug
  * 2026, `Check-in detail`'s date, and the note is the comp's sentence. Every
@@ -289,19 +297,17 @@ const DEMO_NOTE =
 const DEMO_PHOTO = "captured";
 
 function demoExtras(i: number, offset: number): Partial<CheckIn> {
-  const changes = demoChanges(i);
-
   return {
-    ...(changes ? { changes } : {}),
+    changes: demoChanges(i),
     photo: DEMO_PHOTO,
     ...(offset === DEMO_NOTE_OFFSET ? { note: DEMO_NOTE } : {}),
   };
 }
 
-function demoChanges(i: number): string[] | null {
-  if (i === 0) return null;
-
-  const previous = DEMO_SEVERITY[i - 1];
+function demoChanges(i: number): string[] {
+  /* the midpoint `severityAfter` applies a first check-in's delta to — see the
+     day-1 note above */
+  const previous = i === 0 ? SEVERITY_MAX / 2 : DEMO_SEVERITY[i - 1];
   const severity = DEMO_SEVERITY[i];
   if (severity === previous) return [NO_CHANGE];
 

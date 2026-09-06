@@ -162,6 +162,18 @@
     margin-bottom: 0;
   }
 
+  /* ⚠️ BUT A `plain` OR `grid` SCREEN PUTS ITS HEADING DIRECTLY UNDER THE
+     HEADER ROW, and zeroing the margin above left the h1 sitting on the back
+     chevron — measured on `/progress/check-in/<date>` at 1440, the 24 the
+     mobile frame draws between the chevron and the date had collapsed to 0.
+     The card's 32 is the CARD's, so the gap comes back here for the two
+     layouts whose heading is a page header rather than the card's first
+     child. `.header + .heading` matches only those: on a `card` screen the
+     heading is inside the body and never the header's sibling. */
+  .header + .heading {
+    margin-top: var(--space-2xl); /* 24 — the same gap mobile gives it */
+  }
+
   .body[data-layout="card"] {
     margin-top: var(--space-3xl); /* 32 */
     align-self: center;
