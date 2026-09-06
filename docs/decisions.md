@@ -2232,10 +2232,32 @@ weaker explanations."*
 
 ---
 
-# `/chat` — the conversation panel, and why it is a fifth feature folder
+# `/chat` — the conversation panel, and why it WAS a fifth feature folder
+
+⚠️ **DELETED 7 SEP 2026 — THE ROUTE AND THE FOLDER ARE BOTH GONE.** This entry
+is kept as the record of why it existed and how it ended, not as a description
+of the build. `app/chat/page.tsx` went first, which left `features/chat/`
+unreachable with nothing outside it importing it, and the folder followed the
+same day. That is the standing rule resolving as written — "it gets a section or
+it gets deleted; it does not quietly become another section's" — in favour of
+deleted, after the panel had sat linked-from-nothing since 4 Sep.
+
+⚠️ **THE DAILY CHECK-IN WAS NEVER AFFECTED, AND THE REASON MATTERS.** The shared
+chat chrome is `components/layout/ChatPanel.tsx` and always was; `CheckInPanel`
+imports it directly and takes its glyphs from `components/ui/icons`. The
+dependency was checked per EXPORT before deleting — `ChatScreen`,
+`SEEDED_CONVERSATION`, `ChatMessage`, `ChatAuthor`, `SendArrowIcon` — rather
+than inferred from the folder path, and the only outside mentions were a comment
+in `ChatPanel.module.css` and a line in `docs/figma-catchup.md`. Both are prose.
+
+⚠️ **`SendArrowIcon` WENT WITH IT.** The send disc's glyph was one of the two the
+design system does not have (see below). If a conversation screen is ever built
+again, that gap is still open in Figma and is not closed by this deletion.
+
+---
 
 Built 4 Sep 2026 from Figma `chat-page / mobile` (270:96), on the request to see
-how it looks. It is a look-see: nothing links to it, and nothing reads what is
+how it looks. It was a look-see: nothing linked to it, and nothing read what was
 typed into it.
 
 ## It is a PANEL, not a screen — which is the whole reading of the frame

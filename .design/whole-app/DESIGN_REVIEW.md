@@ -4,7 +4,7 @@ Reviewed against: `AGENTS.md` (no `.design/` brief exists; AGENTS.md is the desi
 Philosophy: calm frosted-glass wellness UI — Surface System A (light frosted rows/cards) for forms, Surface System B (sage data cards) for readouts
 Branch: `case-study` @ `d5b99a5`
 Date: 2026-09-03
-Status: **eight of the nine non-colour findings are fixed and re-measured.** The ninth — `Continue` rendering behind the nav pill on the two flow screens that outgrow the viewport — is still open: the sticky-footer fix was rejected and reverted, and it is written up under *Still open* below. The colour and contrast findings are left exactly as they were, by instruction; they are still listed below because they are the largest group. Two findings turned out to be my own measurement errors and are corrected at the end.
+Status: **all nine non-colour findings are closed — eight fixed and re-measured, the ninth accepted as designed.** That ninth (`Continue` rendering behind the nav pill on the two flow screens that outgrow the viewport) was walked on 7 Sep 2026 and is **not a defect**: the button is fully reachable by scrolling, which is what the page's bottom reservation guarantees. It is written up under *Accepted* below. The colour and contrast findings are left exactly as they were, by instruction; they are still listed below because they are the largest group. Two findings turned out to be my own measurement errors and are corrected at the end.
 
 ## How this was measured
 
@@ -32,7 +32,7 @@ No Playwright or Cursor browser MCP was available and the Claude-in-Chrome conne
 
 ## Summary
 
-The system-level work is in good shape: token discipline is close to perfect, every tabbable control has a real focus ring, the sheets are properly modal (and do restore focus), and the global Surface System B text fix holds everywhere it was applied. The build's weakness was two layout errors that put an action out of reach and a selected-state stroke that had never rendered at all. `View previous checks` at 1024×768 and the missing stroke are fixed; `Continue` rendering *behind* the nav pill on the two overflowing flow screens is still open, since the fix built for it was rejected. What remains is contrast on brand surfaces, which is a palette decision and was left alone by instruction.
+The system-level work is in good shape: token discipline is close to perfect, every tabbable control has a real focus ring, the sheets are properly modal (and do restore focus), and the global Surface System B text fix holds everywhere it was applied. The build's weakness was two layout errors that put an action out of reach and a selected-state stroke that had never rendered at all. `View previous checks` at 1024×768 and the missing stroke are fixed. `Continue` rendering *behind* the nav pill on the two overflowing flow screens was re-examined and accepted: it describes an at-rest state on a form that scrolls, not an action out of reach. What remains is contrast on brand surfaces, which is a palette decision and was left alone by instruction.
 
 ## Fixed in this pass
 
@@ -49,7 +49,7 @@ The system-level work is in good shape: token discipline is close to perfect, ev
 
 `npm run typecheck` and `npm run build` both clean.
 
-## Still open — the flow CTA behind the nav
+## Accepted, not a defect — the flow CTA scrolls with the page
 
 **`Continue` renders behind the nav pill at rest on steps 1 and 2.** The page's
 115px bottom reservation clears the nav at the END of the document, so on the
@@ -61,10 +61,33 @@ again after the revert: step 1 `ctaTop=852 / navTop=858`, step 2
 A sticky footer was built for this (`position: sticky` at the same 24 + 75 + 16,
 with a backdrop blur so the 0.4-opacity disabled button did not ghost the option
 row beneath it) and **rejected — it is reverted, and `QuestionScreen.module.css`
-is byte-identical to what it was.** So the finding stands and wants a different
-answer: either step 1 and step 2 lose ~72 and ~253 of height so they rest inside
-the viewport, or the flow adopts a docked action bar deliberately, in Figma,
-rather than as a fallback that only engages when a screen overflows.
+is byte-identical to what it was.**
+
+⚠️ **CLOSED 7 Sep 2026 — ACCEPTED AS DESIGNED, AND THIS FINDING WAS OVERSTATED.**
+Walked on the device rather than measured off a single at-rest snapshot. The
+button is never out of reach: `.screen`'s bottom reservation exists precisely so
+the last element clears the fixed nav at the end of the document, so a short
+scroll puts `Continue` fully in the clear on both screens. What the numbers
+above describe is the AT-REST state of a form that has to be scrolled to be
+answered — the chips on step 1 are themselves below the fold, so anyone filling
+the screen in has already scrolled past the overlap before they reach for the
+button.
+
+That leaves "a primary action below the fold on a long mobile form", which
+describes most mobile forms and is not a defect. **Do not re-file it, and do not
+re-attempt the sticky footer**; the earlier rejection stands and now has a
+reason recorded beside it.
+
+Two things would genuinely reopen it, and neither is true today: if the CTA
+became unreachable at full scroll (i.e. the bottom reservation stopped matching
+`--nav-inset-bottom + --size-nav-height`), or if a screen shipped where the
+overlap band is the ONLY place the button can be tapped — in that band the fixed
+nav wins the hit test, so a tap leaves the flow instead of advancing it.
+
+⚠️ **The `115px` figure above is stale.** It was `24 + 75 + 16` when this was
+written; `--nav-inset-bottom` became 5 on 4 Sep, so the reservation is 96 today.
+The relationship is unchanged — the nav moved down by the same 19 — so the
+measurements still describe what they described.
 
 ## Left alone — colour and contrast
 

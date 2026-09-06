@@ -67,13 +67,22 @@ comment is enough.
 **One folder per nav section.** `features/<section>/` holds that section's
 screens AND its data module. The four folders are named for the four nav items.
 
-⚠️ **AND THERE IS A FIFTH, `features/chat/`, WHICH BELONGS TO NO NAV SECTION.**
-It holds the standalone conversation panel at `/chat` — a look-see built from
-Figma `chat-page / mobile` (270:96) on 4 Sep 2026, which nothing links to and
-nothing reads. It is filed on its own rather than pushed into `progress` for
-the reason the rule exists: a screen that belongs to no section should say so.
-It gets a section or it gets deleted; it does not quietly become another
-section's. **Do not add a sixth** — see `docs/decisions.md`.
+⚠️ **THERE IS NO FIFTH FOLDER ANY MORE, AND `features/chat/` IS THE REASON THE
+RULE IS WORDED THAT WAY.** It existed from 4 Sep 2026 — the standalone
+conversation panel from Figma `chat-page / mobile` (270:96), filed on its own
+because a screen belonging to no section should say so, under the standing
+terms "it gets a section or it gets deleted; it does not quietly become another
+section's". **On 7 Sep 2026 that resolved in favour of deleted:** the route
+`/chat` went first, which left the folder unreachable with nothing outside it
+importing it, and the folder followed.
+
+⚠️ **DELETING IT DID NOT TOUCH THE DAILY CHECK-IN, AND COULD NOT HAVE.** The
+shared chat chrome is `components/layout/ChatPanel.tsx` and always was;
+`CheckInPanel` reaches it directly and takes its glyphs from
+`components/ui/icons`. Nothing in the check-in chain ever imported
+`features/chat/` — verified per export before the delete, not assumed from the
+folder path. **Do not add a fifth section**: four folders, four nav items. See
+`docs/decisions.md`.
 
 ```
 app/                 routes only — every page.tsx is a thin shell
@@ -92,8 +101,6 @@ features/progress/   progress.ts + ProgressScreen, CheckIn, CheckInDetail,
                      CheckInCalendar, CheckInPhotoArt, SymptomTrend, SkinProfile
 features/check/      check.ts + the check screens, CompatCard, ResultCards,
                      CheckBasket, SkinProfileStrip
-features/chat/       ⚠️ NOT A NAV SECTION — chat.ts + ChatScreen and the two
-                     glyphs the DS does not have (see above)
 lib/store/           answers.ts + InvestigationProvider.tsx
 lib/                 date.ts  demo.ts  pageTitles.ts  actives.ts
 ```
@@ -128,7 +135,9 @@ Four placement facts that look like mistakes and are not:
 
 ## The route map
 
-Nineteen routes — eighteen, plus `/chat`, which is in no nav section.
+Eighteen routes, all in a nav section. ⚠️ **It was nineteen until 7 Sep 2026**,
+when `/chat` — prototype-only and in no section — was deleted, along with the
+`features/chat/` folder behind it.
 `features/my-skin/flow.ts` owns the step order, the 1-based track position, the
 Figma frame ids and each step's `isComplete` rule.
 
@@ -152,7 +161,6 @@ Figma frame ids and each step's `isComplete` rule.
 | `/check/analyzing` | pushed view | `check` |
 | `/check/results` | pushed view | `check` |
 | `/check/history` | pushed view | `check` |
-| `/chat` | ⚠️ prototype-only — a panel, in no section, linked from nothing | `none` |
 
 **⚠️ HUB vs FLOW — the header tells you which, and `HubScreen` vs
 `QuestionScreen` encodes it.** A screen is an investigation step if and only if
@@ -648,12 +656,23 @@ losing that race announces the screen the user just left.
   thing has got to, not what it is. axe calls this `aria-progressbar-name`, and
   it fired serious on all five flow screens until `StepProgress` got an
   `aria-label`.
-- ⚠️ **Known open, do not re-report:** `Continue` renders behind the nav pill at
-  rest on flow steps 1 and 2, the two screens that outgrow the viewport
-  (measured 440: step 1 `cta=852` against `nav=858`; step 2 `cta=1033`, i.e.
-  off-screen). A sticky footer was built for it and **rejected and reverted**.
-  It wants either less height on those two screens or a docked action bar
-  decided in Figma — see `.design/whole-app/DESIGN_REVIEW.md`.
+- ⚠️ **Settled, do not re-report: THE FLOW CTA SCROLLS WITH THE PAGE, AND THAT
+  IS THE DESIGN.** `Continue` sits behind the nav pill *at rest* on flow steps 1
+  and 2, the two screens that outgrow the viewport (measured 440: step 1
+  `cta=852` against `nav=858`; step 2 `cta=1033`, i.e. below the fold). It is
+  **not** out of reach: `.screen`'s bottom reservation
+  (`--nav-inset-bottom + --size-nav-height + --space-lg` = 96) exists so the
+  last element clears the fixed nav at the end of the document, and a short
+  scroll puts the button fully in the clear. The chips on those screens are
+  themselves below the fold, so anyone answering the screen has already
+  scrolled past the overlap. Accepted 7 Sep 2026 after walking it.
+- ⚠️ **AND DO NOT "FIX" IT.** A sticky footer was built for this once and
+  **rejected and reverted** — `QuestionScreen.module.css` is byte-identical to
+  what it was. What WOULD be a real defect: the reservation drifting out of step
+  with the nav tokens so the button never clears at full scroll, or a screen
+  where the overlap band is the only place the button can be tapped — the fixed
+  nav wins the hit test there, so a tap leaves the flow instead of advancing it.
+  See `.design/whole-app/DESIGN_REVIEW.md`.
 - Contrast: ⚠️ **do not trust a clean axe run.** Every screen sits on the canvas
   gradient, so `color-contrast` degrades to INCOMPLETE — never to a violation —
   the moment a background is a gradient or a stack of translucent fills. All 17

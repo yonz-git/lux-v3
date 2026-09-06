@@ -50,11 +50,14 @@ const HUB_TITLES: Record<string, string> = {
      screens for one question read as three more steps. One route now, with the
      wait as its first state. */
   "/investigation/analysis": "Analysis",
-  /* ⚠️ PROTOTYPE-ONLY AND IN NO NAV SECTION. `/chat` is the standalone
-     conversation panel (270:96); nothing links to it. It still needs a title —
-     an untitled route is the WCAG 2.4.2 failure this file exists to fix, and
+  /* ⚠️ `/chat` USED TO BE HERE AND THE ROUTE IS GONE — 7 Sep 2026. It was the
+     standalone conversation panel (270:96), prototype-only and in no nav
+     section; `app/chat/page.tsx` was deleted, so a title for it would name a
+     pathname that 404s. `features/chat/` went the same day, so there is no
+     screen left for it to title either.
+     ⚠️ If the route ever comes back it needs its entry back with it — an
+     untitled route is the WCAG 2.4.2 failure this file exists to fix, and
      "prototype" is not an exemption from it. */
-  "/chat": "Conversation",
 };
 
 /**
