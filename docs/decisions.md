@@ -1217,6 +1217,29 @@ rather than three separate features. Nothing about the two engines requires
 three vocabularies. **The word is "analysis"**, and as of this change the
 retrospective side uses it everywhere: the route, the title, the screen.
 
+### What has already moved (6 Sep 2026)
+
+Two steps taken toward the merge, both small and both reversible:
+
+- **Step 4 continues to `/check/new`, not to `/investigation/products`.** Those
+  two screens were doing the same job — search a catalogue, build a list of your
+  products — in two sections with two vocabularies, which is this problem in its
+  most concrete form. Step 5 is untouched, still 5/5 and still reachable from
+  the Products tab; it is just no longer the only way through.
+  ⚠️ **The back chevron on `/check/new` follows where you came from**, keyed off
+  `timing.date` — only step 4 sets it, so its presence IS "part-way through an
+  investigation", and no query param or new state was needed.
+  ⚠️ **AND IT IS NOT FINISHED.** `/check/new` collects PRODUCTS, not DURATIONS,
+  and the duration is the entire mechanism of the analysis — `bucketFor` turns
+  it into a group and `deriveEvidence` compares that against the flare date. A
+  basket built there has no timeline, so the analysis can only refuse. The
+  builder needs the duration question before this hand-off is whole.
+- **Both analysing screens use the same pass list.** `components/ui/PassList`,
+  with each section owning its own lines (`ANALYSIS_PASSES`, `CHECK_PASSES`).
+  Six and five respectively, and they must NOT be reconciled: CHECK has no
+  timeline and no tolerated set, so claiming those passes would be narrating
+  work it does not do.
+
 ### Where the separation is real, and it is NOT about the code
 
 The two engines take different inputs and cannot become one function:

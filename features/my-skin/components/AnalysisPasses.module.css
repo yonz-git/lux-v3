@@ -1,7 +1,11 @@
 /* § 06, the analysis running. ⚠️ NOT IN FIGMA; the hero follows
    `CheckAnalyzing.module.css`, which was itself cloned from
-   `05 — Investigating`. What differs is the body: six named passes instead of a
+   `05 — Investigating`. What differs is the body: named passes instead of a
    bar, because the brief lists them and the transparency IS the screen.
+
+   ⚠️ ONLY THE HERO IS HERE. The list is `components/ui/PassList` and owns its
+   own type, spacing, tick and transitions — it is shared with
+   `/check/analyzing` now, so a rule for it does not belong in a feature.
 
    ⚠️ IT IS A STATE INSIDE `/investigation/analysis` NOW, NOT ITS OWN ROUTE, so
    it sits in the page card rather than centring a whole screen — the padding
@@ -20,64 +24,4 @@
   margin: 0;
   text-align: center;
   color: var(--color-text-primary);
-}
-
-.passes {
-  display: flex;
-  flex-direction: column;
-  gap: var(--space-md);
-  width: 100%;
-  max-width: 340px;
-  margin: 0;
-  padding: 0;
-  list-style: none;
-}
-
-.pass {
-  display: flex;
-  align-items: flex-start;
-  gap: var(--space-md);
-  color: var(--color-text-muted);
-  /* ⚠️ A COLOUR AND AN OPACITY TRANSITION, NOT AN ANIMATION. A named
-     `@keyframes` in a CSS Module compiles to a scoped name with no matching
-     keyframes and silently does nothing — AGENTS.md, motion. A transition
-     carries no name, so it is safe here. */
-  transition:
-    color var(--duration-base) var(--ease-standard),
-    opacity var(--duration-base) var(--ease-standard);
-  opacity: 0.45;
-}
-
-.pass[data-state="active"] {
-  color: var(--color-text-primary);
-  opacity: 1;
-}
-
-.pass[data-state="done"] {
-  color: var(--color-text-secondary);
-  opacity: 1;
-}
-
-/* A fixed slot so the lines do not shift sideways as ticks appear — the list is
-   being read while it changes, and reflowing text under the reader's eye is the
-   one thing a progress list must not do. */
-.mark {
-  flex: none;
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  width: var(--size-icon-sm);
-  height: var(--size-icon-sm);
-  margin-top: 2px;
-}
-
-.tick {
-  --icon-size: var(--size-icon-sm);
-  color: var(--color-feedback-success);
-}
-
-@media (min-width: 1024px) {
-  .passes {
-    max-width: 420px;
-  }
 }

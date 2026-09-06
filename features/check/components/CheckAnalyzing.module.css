@@ -1,8 +1,13 @@
 /* Check — analyzing (605:2163).
 
-   orb -> 32 -> status-title -> 20 -> analysis-bar -> 16 -> status-description.
+   orb -> 32 -> status-title -> 20 -> the passes -> 16 -> status-description.
    The gaps are explicit spacer frames in the comp with no gap on the stack, so
-   these are the literal distances. */
+   these are the literal distances.
+
+   ⚠️ THE COMP'S `analysis-bar` IS NOT DRAWN ANY MORE. It sat in the 20-gap slot
+   the pass list now occupies, so the rhythm is unchanged — see
+   `CheckAnalyzing.tsx` for why the bar went and `docs/figma-catchup.md` for the
+   catch-up entry. */
 
 .hero {
   display: flex;
@@ -16,35 +21,11 @@
   margin-top: var(--space-3xl); /* 32 */
 }
 
-/* ⚠️ 8 TALL, NOT the 4px --size-progress-track — see CheckAnalyzing.tsx.
-   240 wide, track border/subtle, fill bg/brand. */
-.bar {
-  width: 240px;
-  height: 8px;
+/* The list is `components/ui/PassList` and owns its own type, spacing and
+   ticks; this is only the interval above it, which is the comp's. */
+.passes {
   margin-top: var(--space-xl); /* 20 */
-  overflow: hidden;
-  border-radius: var(--radius-full);
-  background: var(--color-border-subtle);
 }
-
-.fill {
-  display: block;
-  width: 0;
-  height: 100%;
-  border-radius: var(--radius-full);
-  background: var(--color-bg-brand);
-  /* ease/standard, and 2600 to match the route's own timer. Not a token: this
-     is the length of a fake analysis, not a UI transition. */
-  transition: width 2600ms var(--ease-standard);
-}
-
-.fill[data-running] {
-  width: 100%;
-}
-
-/* prefers-reduced-motion collapses durations globally, which would snap the bar
-   to full immediately — correct: the wait still happens, it just is not
-   animated at someone who asked for less movement. */
 
 .description {
   margin-top: var(--space-lg); /* 16 */

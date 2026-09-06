@@ -256,6 +256,34 @@ export function ingredientCount(basket: CatalogProduct[]): number {
 }
 
 /* ---------------------------------------------------------------------------
+   What the analysing screen says it is doing
+   -------------------------------------------------------------------------- */
+
+/**
+ * The passes `/check/analyzing` names while it waits.
+ *
+ * ⚠️ EACH LINE NAMES WORK THIS FILE ACTUALLY DOES, IN ORDER, and that is the
+ * only reason the screen is allowed to list them: `activesOf` reading each
+ * product (1), `analyse` scoring it against the profile (2), the 10-point
+ * `risky` cut that produces the ingredient tags (3), `conflictsFor` finding
+ * pairs across the basket (4), and `routineAdvice` turning all of it into
+ * something to do (5). If a step is removed from the model, its line goes too —
+ * a progress list narrating work the app is not doing is a claim.
+ *
+ * ⚠️ FIVE, NOT THE ANALYSIS'S SIX. The two screens share the component and the
+ * shape, not the content: CHECK has no timeline to compare and no tolerated set
+ * to subtract from, so it must not claim those passes. Matching the counts for
+ * symmetry would be inventing work.
+ */
+export const CHECK_PASSES = [
+  "Reading the ingredients in each product",
+  "Scoring each one against your skin profile",
+  "Flagging ingredients that commonly irritate",
+  "Checking for pairs that clash in one routine",
+  "Working out what to change in your routine",
+] as const;
+
+/* ---------------------------------------------------------------------------
    History
    -------------------------------------------------------------------------- */
 

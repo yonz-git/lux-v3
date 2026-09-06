@@ -16,6 +16,7 @@ import { Disclosure } from "./Disclosure";
 import { useInvestigation } from "@/lib/store/InvestigationProvider";
 import {
   analyseInvestigation,
+  gaps,
   investigationPriority,
   forgottenRoles,
   needsConfirmation,
@@ -73,11 +74,25 @@ export function Analysis() {
   const { answers } = useInvestigation();
   const analysis = analyseInvestigation(answers);
 
-  /* ⚠️ THE PASSES RUN ONCE, ON ARRIVAL — not on every render and not when the
-     user answers the confirmation strip below. Re-running a two-second wait
-     because someone corrected a date would punish the correction. */
-  const [running, setRunning] = useState(true);
+  /* ⚠️ THE PASSES ONLY RUN IF THERE IS SOMETHING TO COMPARE. `gaps()` non-empty
+     means the analysis was stopped before it started — no flare date, or
+     nothing new and nothing readable — and narrating six comparisons for two
+     seconds before admitting none of them happened is precisely the thing the
+     pass list is documented as not doing. Deep-link here with an empty store
+     and the answer is immediate.
+
+     ⚠️ AND WHEN THEY DO RUN, THEY RUN ONCE, ON ARRIVAL — not on every render
+     and not when the user answers the confirmation strip. Re-running a
+     two-second wait because someone corrected a date would punish the
+     correction. */
+  const [running, setRunning] = useState(() => gaps(answers).length === 0);
+  /* biome-ignore lint/correctness/useExhaustiveDependencies: RUNS ONCE, ON
+     MOUNT. The initial `running` is computed from the gates in the `useState`
+     initialiser above, so this timer only ever needs to end the wait — listing
+     `answers` would restart it every time the user taps the confirmation
+     strip, which is the one interaction that must not cost two seconds. */
   useEffect(() => {
+    if (!running) return;
     const t = setTimeout(() => setRunning(false), PASSES_TOTAL_MS);
     return () => clearTimeout(t);
   }, []);
@@ -360,12 +375,16 @@ function Confirmations() {
 function Reminder() {
   const { answers } = useInvestigation();
   const missing = forgottenRoles(answers);
-  if (missing.length === 0) return null;
+  /* ⚠️ NOT WHEN THE LIST IS EMPTY. With no products at all, the screen is
+     already asking for products; adding "and by the way, no cleanser either" is
+     the same request twice, in a quieter voice. */
+  if (missing.length === 0 || (answers.products?.length ?? 0) === 0) return null;
 
   return (
     <p className={`${styles.reminder} t-body3`}>
-      No {missing.join(" or ")} in your list — if you use one, adding it may
-      change this.{" "}
+      No {missing.join(" or ")} in your list — if you use{" "}
+      {missing.length === 1 ? "one" : "either"}, adding{" "}
+      {missing.length === 1 ? "it" : "them"} may change this.{" "}
       {/* ⚠️ `Link`, NOT `<a href>`. The answer store is in memory only, so a
           hard navigation here would drop everything the user just entered. */}
       <Link href="/investigation/products" className={styles.reminderLink}>

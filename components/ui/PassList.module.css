@@ -1,0 +1,60 @@
+/* A list of named steps ticking off. ⚠️ NOT IN FIGMA — no frame draws one; both
+   analysing screens drew a bar. See `docs/figma-catchup.md`. */
+
+.list {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-md);
+  width: 100%;
+  max-width: 340px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  text-align: left;
+}
+
+.pass {
+  display: flex;
+  align-items: flex-start;
+  gap: var(--space-md);
+  color: var(--color-text-muted);
+  /* ⚠️ A COLOUR AND AN OPACITY TRANSITION, NOT AN ANIMATION. A named
+     `@keyframes` written in a CSS Module compiles to a scoped name with no
+     matching keyframes and silently does nothing — AGENTS.md, motion. A
+     transition carries no name, so it is safe here. */
+  transition:
+    color var(--duration-base) var(--ease-standard),
+    opacity var(--duration-base) var(--ease-standard);
+  opacity: 0.45;
+}
+
+.pass[data-state="active"] {
+  color: var(--color-text-primary);
+  opacity: 1;
+}
+
+.pass[data-state="done"] {
+  color: var(--color-text-secondary);
+  opacity: 1;
+}
+
+.mark {
+  flex: none;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: var(--size-icon-sm);
+  height: var(--size-icon-sm);
+  margin-top: 2px;
+}
+
+.tick {
+  --icon-size: var(--size-icon-sm);
+  color: var(--color-feedback-success);
+}
+
+@media (min-width: 1024px) {
+  .list {
+    max-width: 420px;
+  }
+}

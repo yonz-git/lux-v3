@@ -138,8 +138,8 @@ Figma frame ids and each step's `isComplete` rule.
 | `/investigation/start` | flow step 1/5 · also the `my-skin` landing | `my-skin` |
 | `/investigation/skin-type` | flow step 2/5 | `my-skin` |
 | `/investigation/conditions` | flow step 3/5 | `my-skin` |
-| `/investigation/timing` | flow step 4/5 | `my-skin` |
-| `/investigation/products` | flow step 5/5 — ⚠️ the one flow screen lighting `products` | `products` |
+| `/investigation/timing` | flow step 4/5 — ⚠️ continues to `/check/new`, not to step 5 | `my-skin` |
+| `/investigation/products` | flow step 5/5 — ⚠️ the one flow screen lighting `products`, and no longer the only way through | `products` |
 | `/investigation/analysis` | pushed view — ⚠️ NOT a step: the retrospective analysis | `my-skin` |
 | `/products` | hub landing | `products` |
 | `/progress` | hub landing — **the default**, opens populated | `progress` |

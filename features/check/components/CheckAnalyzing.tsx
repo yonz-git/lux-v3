@@ -1,17 +1,18 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect } from "react";
 import { useRouter } from "next/navigation";
 import styles from "./CheckAnalyzing.module.css";
 import { HubScreen } from "@/components/layout/HubScreen";
 import { Orb } from "@/components/ui/Orb";
+import { PassList, passesDuration } from "@/components/ui/PassList";
 import { useInvestigation } from "@/lib/store/InvestigationProvider";
-import { ingredientCount } from "@/features/check/check";
+import { CHECK_PASSES, ingredientCount } from "@/features/check/check";
 import { toIso } from "@/lib/date";
 
-/** How long the analysis takes. Long enough to read the copy, short enough not
- *  to be a tax on every check. */
-const ANALYSIS_MS = 2600;
+/** How long the analysis takes — the length of the pass list, so the screen
+ *  cannot leave before it has finished ticking or hang after it has. */
+const ANALYSIS_MS = passesDuration(CHECK_PASSES.length);
 
 /**
  * `Check — analyzing` (605:2163) at `/check/analyzing`.
@@ -22,15 +23,18 @@ const ANALYSIS_MS = 2600;
  * per the handoff, the orb visibly doing the work — and a compatibility result
  * that appeared instantly would read as a lookup rather than an analysis.
  *
- * ⚠️ THE BAR IS 8 TALL, DELIBERATELY NOT THE 4px `size/progress-track`. The
- * handoff calls this out: at 4 it would be mistaken for the investigation's
- * step track, which is exactly what CHECK is not.
+ * ⚠️ THE PROGRESS BAR IS GONE, REPLACED BY A NAMED PASS LIST — decided 6 Sep
+ * 2026, after the same list shipped on the investigation's analysis and read
+ * better. `Check — analyzing` (605:2163) draws an 8px `analysis-bar` and the
+ * handoff calls out its height (8, not the 4px `size/progress-track`, so it is
+ * not mistaken for the investigation's step track). All of that is now moot:
+ * a bar says only that something is happening, while the list says WHAT is
+ * being compared, which is the same argument the product brief makes for the
+ * other screen. ⚠️ NOT IN FIGMA — on the catch-up list.
  *
- * ⚠️ THE FILL IS A TRANSITION, NOT AN ANIMATION. A named `@keyframes` written
- * in a CSS Module compiles to a scoped name with no matching keyframes and
- * silently does nothing (AGENTS.md, motion). A width transition needs no name,
- * so it can live in the module: the bar mounts at 0 and is set to 100% on the
- * next frame.
+ * ⚠️ FIVE PASSES HERE, SIX ON THE INVESTIGATION'S. They share the component,
+ * not the content: CHECK has no timeline and no tolerated set, so it must not
+ * claim those passes. See `CHECK_PASSES` in `check.ts`.
  *
  * On completion it saves the check and replaces itself in history, so `back`
  * from the results goes to `/check`, never to a spinner that would immediately
@@ -39,16 +43,8 @@ const ANALYSIS_MS = 2600;
 export function CheckAnalyzing() {
   const router = useRouter();
   const { answers, setAnswer } = useInvestigation();
-  const [running, setRunning] = useState(false);
 
   const basket = answers.checkBasket ?? [];
-
-  useEffect(() => {
-    // next frame, so the bar has rendered at 0 and the transition has something
-    // to run from
-    const raf = requestAnimationFrame(() => setRunning(true));
-    return () => cancelAnimationFrame(raf);
-  }, []);
 
   /* biome-ignore lint/correctness/useExhaustiveDependencies: THIS RUNS ONCE, ON
      PURPOSE — it is a fixed-length wait that ends in a route change, not a
@@ -93,13 +89,11 @@ export function CheckAnalyzing() {
           LUX is checking compatibility…
         </h1>
 
-        <div
-          className={styles.bar}
-          role="progressbar"
-          aria-label="Checking compatibility"
-        >
-          <span className={styles.fill} data-running={running || undefined} />
-        </div>
+        <PassList
+          className={styles.passes}
+          passes={CHECK_PASSES}
+          label="Checking compatibility"
+        />
 
         <p className={`${styles.description} t-body3`}>
           Analysing {basket.length}{" "}

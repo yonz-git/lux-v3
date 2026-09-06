@@ -101,7 +101,27 @@ export const STEPS: Step[] = [
   // prefer" and carries a "Skip this question" link — so Continue is available
   // from the start. The only requirement is that a ticked "Other" is filled in.
   { id: "conditions", step: 3, href: "/investigation/conditions", title: "Known conditions", figma: { mobile: "476:2566", desktop: "476:2695" }, isComplete: (a) => otherIsFilled(a.conditions, a.conditionsOther) },
-  { id: "timing",     step: 4, href: "/investigation/timing",     title: "Timing", figma: { mobile: "488:851",  desktop: "491:1031" }, isComplete: (a) => Boolean(a.timing?.date && a.timing?.status) },
+  // ⚠️ TIMING CONTINUES TO `/check/new`, NOT TO STEP 5 — decided 6 Sep 2026, and
+  // it is the first move of the CHECK/analysis merge rather than a reroute.
+  // `/investigation/products` and `/check/new` were two screens doing the same
+  // job — search a catalogue, build a list of your products — in two sections
+  // with two vocabularies, which is the "analysis, check and investigation
+  // should be one thing" problem in its most concrete form. The flow now hands
+  // off to the shared builder.
+  //
+  // ⚠️ AND STEP 5 IS STILL A STEP, STILL 5/5, AND STILL REACHABLE. It is not
+  // deleted: the Products tab links to it and `TOTAL_STEPS` is unchanged. It is
+  // simply no longer the only way through, while the merge is decided.
+  //
+  // ⚠️ THE OPEN PROBLEM, WRITTEN HERE BECAUSE IT IS INVISIBLE FROM THE ROUTE:
+  // `/check/new` collects PRODUCTS, not DURATIONS. Step 5 asks "how long have
+  // you used this?" once per product, and that answer is the entire mechanism
+  // of the analysis — `bucketFor` turns it into a group and `deriveEvidence`
+  // compares that against step 4's flare date. A basket built at `/check/new`
+  // has no timeline, so the analysis can only refuse. See the note in
+  // `features/my-skin/analysis.ts` and "the naming" in `docs/decisions.md`:
+  // the builder needs the duration question before this hand-off is finished.
+  { id: "timing",     step: 4, href: "/investigation/timing",     title: "Timing", figma: { mobile: "488:851",  desktop: "491:1031" }, isComplete: (a) => Boolean(a.timing?.date && a.timing?.status), next: "/check/new" },
 
   // ---- Step 5: PRODUCTS ---------------------------------------------------
   // ⚠️ ONE SCREEN NOW, NOT SIX. `Add products intro`, `Long-term products` and

@@ -166,6 +166,32 @@ export function evidenceFor(a: Answers): ProductEvidence[] {
 }
 
 /* ---------------------------------------------------------------------------
+   § 06 — what the analysing state says it is doing
+   -------------------------------------------------------------------------- */
+
+/**
+ * The six passes, in the brief's own words — § 06, verbatim.
+ *
+ * ⚠️ THEY ARE NOT DECORATION AND THEY ARE NOT INVENTED. Each line names a pass
+ * THIS FILE actually runs, in the order it runs them: `deriveEvidence` (1),
+ * `subtract` (2 and 3), `pairs` (4), the skin profile `reasoningFor` reads (5),
+ * and `hasReadableIngredients` (6). They live here rather than in the component
+ * precisely so that they sit beside the functions they describe — if a pass is
+ * ever removed, its line is in the same file and goes with it.
+ *
+ * A progress list narrating work the app is not doing is exactly what the brief
+ * means by "do not imply laboratory-level certainty".
+ */
+export const ANALYSIS_PASSES = [
+  "Comparing when each product was introduced",
+  "Finding ingredients shared by the newer ones",
+  "Checking those against what you already tolerate",
+  "Checking for combinations used in the same period",
+  "Considering your skin type and symptoms",
+  "Checking what the ingredient data cannot tell us",
+] as const;
+
+/* ---------------------------------------------------------------------------
    § 05 — the two gates, and everything that is NOT one
 
    ⚠️ ONLY TWO THINGS STOP THE ANALYSIS, AND NEITHER IS ABOUT COMPLETENESS.

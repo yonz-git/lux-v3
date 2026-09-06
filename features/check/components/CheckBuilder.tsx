@@ -234,10 +234,21 @@ export function CheckBuilder() {
 
   return (
     <>
+      {/* ⚠️ THE BACK CHEVRON FOLLOWS WHERE YOU CAME FROM. Step 4 of the
+          investigation continues HERE now rather than to `/investigation/products`
+          — this screen and step 5 were two builders doing the same job in two
+          sections, and the merge starts by having one. So someone arriving from
+          the flow must be able to go back INTO the flow; a fixed `/check` would
+          drop them out of it.
+
+          ⚠️ THE SIGNAL IS THE FLARE DATE, NOT A QUERY PARAM OR NEW STATE. Only
+          step 4 sets `timing.date`, so its presence IS "this person is part-way
+          through an investigation". A `?from=` would have to survive the tray,
+          the search and a reload; an answer already in the store does not. */}
       <HubScreen
         title="Add products to check"
         nav="check"
-        backHref="/check"
+        backHref={answers.timing?.date ? "/investigation/timing" : "/check"}
         layout="card"
         tightTop
       >
