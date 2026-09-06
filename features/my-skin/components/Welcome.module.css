@@ -99,6 +99,23 @@
   grid-area: stack;
 }
 
+/* ⚠️ NOT IN FIGMA. The reply bubble is narrower on MOBILE too, 264 against the
+   322 ceiling every other mobile bubble gets — requested directly, matching the
+   desktop rule below. The box is not the text: a bubble is a flex item whose
+   max-content is one unbroken line, so it always renders AT its ceiling and the
+   slack sits inside as dead space on the right. At 322 the longest line
+   measured 256 against 286 of content box — 30px of it. 264 keeps the same
+   THREE lines and the same 106px height (measured: the wrap moves from
+   226/256/70 to 226/225/101), so nothing below it shifts, while the longest
+   line now lands 2px off the padding edge. Below 240 it breaks to four lines.
+   The question bubble is shorter than the ceiling and is unaffected.
+   Same [data-from] specificity bump as the desktop rule below:
+   ChatBubble.module.css's own .bubble is one class, and CSS Modules load in
+   bundle order, so a bare .bubbleReply could silently lose. */
+.bubbleReply[data-from="ai"] {
+  max-width: min(100%, 264px);
+}
+
 /* the actions settle in after the hero, so the eye lands on the orb first */
 .actions {
   animation-delay: var(--duration-base);
