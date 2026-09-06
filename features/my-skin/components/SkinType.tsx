@@ -2,7 +2,6 @@
 
 import styles from "./SkinType.module.css";
 import { QuestionScreen } from "./QuestionScreen";
-import { ChatBubble } from "@/components/ui/ChatBubble";
 import { OptionRow } from "@/components/ui/OptionRow";
 import { useInvestigation } from "@/lib/store/InvestigationProvider";
 import { toggleMulti } from "@/lib/store/answers";
@@ -22,6 +21,11 @@ import { toggleMulti } from "@/lib/store/answers";
  * checkboxes but clear every other tendency when picked; see toggleMulti().
  *
  * Continue stays disabled until BOTH questions are answered.
+ *
+ * ⚠️ THE OPENING AI BUBBLE IS GONE — removed 6 Sep 2026, not yet reflected in
+ * Figma. "Thanks for sharing that. Let me ask a few questions about your skin
+ * first." restated the step's own title and desktop already hid it as padding,
+ * so the screen now opens on its first question at both widths.
  *
  * NOTHING starts selected — the Figma frames show options already chosen
  * because a comp has to show a filled-in state.
@@ -49,13 +53,6 @@ export function SkinType() {
 
   return (
     <QuestionScreen id="skin-type" tightTop>
-      <div className={styles.acknowledgement}>
-        <ChatBubble from="ai">
-          Thanks for sharing that. Let me ask a few questions about your skin
-          first.
-        </ChatBubble>
-      </div>
-
       {/* ⚠️ AN `<h2>`, NOT AN `<h1>` — the step's own title is the page's one
           `<h1>`, rendered by `QuestionScreen` (visually hidden here). This is a
           question WITHIN that step, so it is a level down. Marking both as
@@ -63,7 +60,7 @@ export function SkinType() {
           titles with nothing saying the questions belong to the step. The
           `t-h4-h3` class carries every visual property, so the tag change moves
           nothing on screen. */}
-      <h2 className={`${styles.prompt} ${styles.question} t-h4-h3`}>
+      <h2 className={`${styles.question} t-h4-h3`}>
         Which description fits your skin most often?
       </h2>
 
@@ -83,7 +80,7 @@ export function SkinType() {
         ))}
       </div>
 
-      <h2 className={`${styles.prompt} ${styles.tendenciesPrompt} ${styles.question} t-h4-h3`}>
+      <h2 className={`${styles.tendenciesPrompt} ${styles.question} t-h4-h3`}>
         Do any of these usually apply?
       </h2>
 

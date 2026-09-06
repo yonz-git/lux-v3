@@ -2,9 +2,16 @@
    (485:755 / 489:960) on one screen. See the doc comment in SkinType.tsx —
    this merge has no matching Figma frame yet.
 
-   Conversation turns are 12 apart; each option group starts 20 below its
-   prompt and its rows are 12 apart (spacing/md — 14 and 18 were drift and
-   corrected). The tendencies block keeps its own divider recipe: the
+   ⚠️ NO ACKNOWLEDGEMENT BUBBLE — REMOVED 6 SEP 2026, NOT YET IN FIGMA. The
+   screen opened on an AI bubble ("Thanks for sharing that…") that said nothing
+   the step's own title does not, and desktop already hid it as padding. The
+   first question is now the first thing on the screen, flush under the card's
+   top padding as on `StartInvestigation` — which is why neither `.prompt` nor
+   the `.acknowledgement + .prompt` desktop fix exists any more.
+
+   Each option group starts 20 below its prompt and its rows are 12 apart
+   (spacing/md — 14 and 18 were drift and corrected). The tendencies block
+   keeps its own divider recipe: the
    exclusive options ("None", "Not sure") sit in a second group under a
    border/default divider — border/subtle is invisible against the canvas
    gradient.
@@ -23,14 +30,6 @@
      40  between the two questions (48 on desktop)
    40/48 is the same between-question value `StartInvestigation` uses, so the
    two merged screens in this flow separate their groups by the same amount. */
-
-.acknowledgement {
-  margin-top: var(--space-md);
-}
-
-.prompt {
-  margin-top: var(--space-xl);
-}
 
 /* the boundary between the two questions — the widest interval on the screen,
    which is the whole point of the ladder above */
@@ -76,21 +75,6 @@
 }
 
 @media (min-width: 1024px) {
-  /* the acknowledgement is padding; the recap carries state */
-  .acknowledgement {
-    display: none;
-  }
-
-  /* ⚠️ HIDING THE BUBBLE LEAVES ITS SIBLING'S MARGIN BEHIND. `.prompt` still
-     carries margin-top 20, so with the bubble display:none the first VISIBLE
-     element sat 20 below the card's 48 padding — a 68 top inset where every
-     other screen in the flow opens flush on 48. Adjacent-sibling selector on
-     purpose: the real first child is QuestionScreen's visually-hidden <h1>, so
-     :first-child misses whatever the prompt's own tag is. */
-  .acknowledgement + .prompt {
-    margin-top: 0;
-  }
-
   /* the between-question boundary widens with the card, as on StartInvestigation */
   .tendenciesPrompt {
     margin-top: var(--space-5xl); /* 48 */
