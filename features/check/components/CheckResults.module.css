@@ -1,11 +1,12 @@
 /* Check results (476:2841), reordered to 06 — Results (548:1134).
 
    title -> 24 (HubScreen) -> AI bubble -> 24 -> skin-profile -> 16 -> summary
-   -> 16 -> ingredients -> 16 -> what to do next -> 16 -> compared-products
-   -> 14 -> analysis cards, 12 apart.
+   -> 16 -> ingredients -> 16 -> what to do next -> 16 -> the compared-products
+   box, whose 56 header is followed by its cards 8 apart.
 
-   The 16 between the sage cards is `06 — Results`' own spacing; the 14 and 12
-   inside the product block are this screen's. */
+   The 16 between the sage cards is `06 — Results`' own spacing; the 8s inside
+   the product box are the box's own padding. ⚠️ The cards used to be siblings
+   of the header row at 14 and 12 — see `.group`. */
 
 /* ⚠️ THE BUBBLE HUGS ITS SENTENCE — NOT IN FIGMA. 548:1141 draws a full-width
    ai-bubble-row, and the bubble used to be built that way: width 100% with a
@@ -55,43 +56,67 @@
   margin-top: var(--space-lg); /* 16 */
 }
 
-/* `compared-products` (476:2851) — 56 tall, padding 18/16, the frosted row
-   recipe. Not a ProductRow: no thumb, and the trailing slot is a link. */
-.compared {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: var(--space-md);
-  width: 100%;
-  min-height: 56px;
-  /* rule 8b: fixed-height row, so min-height + no vertical padding rather than
-     padding that a border would add to */
-  padding: 0 18px;
+/* --- block 5, the compared-products box -------------------------------------
 
-  border: var(--border-width-hairline) solid var(--color-border-subtle);
-  border-radius: var(--radius-lg);
-  background: var(--color-surface-frost-light);
+   ⚠️ ONE BOX, NOT A ROW AND A STACK — NOT IN FIGMA, 6 Sep 2026. The header row
+   and the five cards used to be siblings on the canvas, 14 apart, with the
+   cards 12 from each other; the only thing saying the row owned them was that
+   they followed it. `MyProducts` made exactly this move for its category groups
+   the day before and the reasoning is the same, so the recipe is the same one:
+   the frosted fill moves off the header onto the container, the header keeps
+   its 56 and its 18 padding but declares no surface of its own, and the cards
+   become the box's contents inset 8 from three sides.
+
+   ⚠️ THE FILL IS `surface/frost-nav`, NOT `frost-light`. 476:2851 draws the row
+   on frost-light, which was right while the row was a row. It is the header of
+   a container now, holding cards that are themselves frost-light's opaque
+   counterpart — a frost-light box around them would have no edge at all.
+   frost-nav (#dbeded @88%) is the app's existing darker frosted fill, already
+   the pill the nav and the search field share, and `bg/nav` is its opaque
+   reduced-transparency counterpart. A token swap inside one family, not a new
+   surface. */
+.group {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-sm); /* 8 — the same distance as the box's own padding */
+
+  border-radius: var(--radius-lg); /* 16 */
+  background: var(--color-surface-frost-nav);
   box-shadow: var(--shadow-frosted-row);
   -webkit-backdrop-filter: blur(var(--blur-card));
   backdrop-filter: blur(var(--blur-card));
 }
 
+/* the header keeps 476:2851's own geometry: 56 tall, padding 18, the label at
+   `H6` and `Edit` at `Label` on the right.
+   ⚠️ rule 9: fixed-height row, so min-height + no vertical padding rather than
+   padding a border would add to. It has no border and no fill now — `.group`
+   above is the surface. */
+.compared {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-md);
+  min-height: 56px;
+  padding: 0 18px;
+}
+
 .comparedLabel {
   flex: 1;
   min-width: 0;
+  margin: 0;
   color: var(--color-text-primary);
 }
 
-/* A <button> now, not a link — it discloses the tray rather than navigating.
-   ⚠️ the UA button padding is 1px 6px, not zero (non-negotiable 13). */
+/* ⚠️ NO CHEVRON. 476:2851 draws one beside `Edit` because the control opened a
+   tray; it toggles this box's own edit affordances now, and a disclosure glyph
+   on a control that discloses nothing was the thing that made the row look like
+   it collapsed the list. `aria-pressed` is what says it is a toggle. */
 .edit {
-  display: inline-flex;
-  align-items: center;
-  gap: var(--space-lg); /* the comp sets the chevron 36 from the label's start */
   flex: none;
   padding: 0;
   color: var(--color-text-primary);
-  text-decoration: none;
+  border-radius: var(--radius-sm);
   transition: opacity var(--duration-fast) var(--ease-standard);
 }
 
@@ -105,21 +130,338 @@
   }
 }
 
-.editIcon {
-  width: var(--size-icon-sm); /* 20 */
-  height: var(--size-icon-sm);
+/* the box's contents — 8 in from three sides, with the header's gap above.
+   16 − 8 is also what leaves the cards their concentric 8 radius; see
+   `.card.compact` in CompatCard.module.css. Change either and change both. */
+.panel {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-sm); /* 8 */
+  padding: 0 var(--space-sm) var(--space-sm);
 }
 
-.cards {
+.stack {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-sm); /* 8 — inside the box every gap is the box's own 8 */
+}
+
+/* a product added since the check ran — the compact card's geometry without the
+   disclosure, because there is nothing yet to disclose. `min-height` rather than
+   vertical padding (rule 9), matching the 52 the picker's rows take. */
+.pendingRow {
+  display: flex;
+  align-items: center;
+  gap: var(--space-sm);
+  min-height: 52px;
+  padding: var(--space-sm) var(--space-md);
+
+  border-radius: var(--radius-sm);
+  background: var(--color-bg-surface-frost);
+  box-shadow: var(--shadow-frosted-row);
+}
+
+.pendingName {
+  flex: 1;
+  min-width: 0;
+  color: var(--color-text-primary);
+}
+
+/* neutral, and deliberately not a band pill: this row HAS no band, and reusing
+   the pill treatment for "no result yet" would put a fourth thing in a
+   three-value scale */
+.pendingTag {
+  flex: none;
+}
+
+.pendingRemove {
+  flex: none;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: var(--size-control-sm); /* 36 */
+  height: var(--size-control-sm);
+  padding: 0;
+  border-radius: var(--radius-full);
+  color: var(--color-icon-default);
+  transition: opacity var(--duration-fast) var(--ease-standard);
+}
+
+.pendingRemove:hover {
+  opacity: 0.7;
+}
+
+@media (hover: none) {
+  .pendingRemove:hover {
+    opacity: 1;
+  }
+}
+
+.pendingRemoveIcon {
+  --icon-size: var(--size-icon-sm); /* 20 */
+}
+
+/* --- the picker, and the question it can raise ------------------------------
+
+   Both are nested blocks on the cards' own surface: opaque, 8 radius, the same
+   12 padding. Neither is a card — a card inside a box inside a box is three
+   surfaces doing one job.
+
+   ⚠️ AND BOTH CARRY `shadow/frosted-row`, LIKE EVERY OTHER SURFACE IN THIS BOX.
+   They shipped without it and it showed: the group, the compact cards and the
+   add row all have the inset edge, so a flat block between them read as a hole
+   in the stack rather than as another surface. It is the recipe's second half —
+   "a translucent fill always needs its inner shadow or it reads flat"
+   (non-negotiable 11) — and it applies to the opaque counterparts too, since
+   what the shadow draws is the EDGE, not the transparency. Same call
+   `CompatCard`'s own `.recommendation` makes for the same kind of nested
+   block. */
+.picker {
+  display: flex;
+  flex-direction: column;
+  /* 12 between the head, the field and what the field returns — 8 read as the
+     field being part of the head row rather than the thing the panel is for */
+  gap: var(--space-md);
+  /* ⚠️ 20 ABOVE, 12 EVERYWHERE ELSE. The panel opens with the field as its one
+     live control and the search is the whole panel now that nothing is listed
+     until you type; at an even 12 the field sat tight under the title and read
+     as a caption to it. The extra 8 is the only asymmetry in the box and it is
+     doing the work a heading margin usually does. */
+  padding: var(--space-xl) var(--space-md) var(--space-md);
+
+  border-radius: var(--radius-sm);
+  background: var(--color-bg-surface-frost);
+  box-shadow: var(--shadow-frosted-row);
+}
+
+.pickerHead {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-md);
+}
+
+.pickerTitle {
+  color: var(--color-text-secondary);
+}
+
+.cancel {
+  padding: 0;
+  color: var(--color-text-primary);
+  border-radius: var(--radius-sm);
+  transition: opacity var(--duration-fast) var(--ease-standard);
+}
+
+.cancel:hover {
+  opacity: 0.7;
+}
+
+@media (hover: none) {
+  .cancel:hover {
+    opacity: 1;
+  }
+}
+
+/* ⚠️ CAPPED AND SCROLLING. Eight rows at 52 is 416, which on a 440 frame pushes
+   the re-run action off the bottom of the screen. 4.5 rows shows that the list
+   continues without the panel taking the page over. */
+.pickerList {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-xs); /* 4 */
+  max-height: 240px;
+  overflow-y: auto;
+  overscroll-behavior: contain;
+}
+
+.pick {
+  display: flex;
+  align-items: center;
+  gap: var(--space-md);
+  width: 100%;
+  min-height: 52px;
+  padding: var(--space-sm);
+  text-align: left;
+
+  border-radius: var(--radius-sm);
+  color: inherit;
+  transition: background-color var(--duration-fast) var(--ease-standard);
+}
+
+.pick:hover {
+  background: var(--color-bg-nav);
+}
+
+@media (hover: none) {
+  .pick:hover {
+    background: transparent;
+  }
+}
+
+.pickCopy {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2xs);
+}
+
+.pickName {
+  color: var(--color-text-primary);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.pickMeta {
+  color: var(--color-text-muted);
+}
+
+.pickPlus {
+  flex: none;
+  --icon-size: var(--size-icon-sm); /* 20 */
+  color: var(--color-icon-default);
+}
+
+.pickerNote {
+  color: var(--color-text-secondary);
+}
+
+/* the question. ⚠️ `bg/nav` rather than the cards' near-white `bg/surface-frost`
+   — it is the one block in the box the user has to answer, and on the same fill
+   as the rows above it there was nothing saying a question had appeared. Same
+   opaque teal the nav and the AI bubble share, so it reads as LUX asking. */
+.ask {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  padding: var(--space-md);
+
+  border-radius: var(--radius-sm);
+  background: var(--color-bg-nav);
+  box-shadow: var(--shadow-frosted-row);
+}
+
+.askTitle {
+  color: var(--color-text-primary);
+}
+
+.askText {
+  color: var(--color-text-secondary);
+}
+
+/* the four duration radios — `OptionRow`'s own 12 gap, as the add tray sets it.
+   ⚠️ 8 above them rather than the block's 6: the question and its explanation
+   are one paragraph, the options are the answer to it. */
+.askOptions {
   display: flex;
   flex-direction: column;
   gap: var(--space-md); /* 12 */
-  margin-top: 14px;
+  margin-top: var(--space-sm);
+}
+
+/* the decline as text, the action as a pill on the right.
+   ⚠️ THE DECLINE IS CENTRED IN WHAT THE PILL LEAVES, not flush left. The row was
+   `space-between`, which pinned "Not now" to the far edge with a wide gap
+   between it and the confirm — two controls at opposite ends of a 312 row read
+   as unrelated, and the left one read as a stray label rather than as the other
+   half of the answer. The slot takes the slack and centres the button inside
+   it; `space-between` comes off, since the slot's own `flex: 1` is what puts
+   the pill on the right now. */
+.askActions {
+  display: flex;
+  align-items: center;
+  gap: var(--space-md);
+  margin-top: 6px;
+}
+
+.declineSlot {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  justify-content: center;
+}
+
+/* the pill keeps its own width — it must not absorb the slack or shrink to make
+   room for it */
+.askConfirm {
+  flex: none;
+}
+
+/* The re-run block, revealed by the first removal. `reveal-quick` is not used
+   here because a module may not name an animation (motion section); the block
+   arrives with the box's own layout change instead.
+
+   ⚠️ NO SURFACE — IT IS THE BOX'S FOOTER, NOT ANOTHER CARD. It had the nested
+   recipe every other block in here has (opaque fill, 8 radius, 12 padding, the
+   frosted-row edge) and that was one card too many: the products are cards, the
+   picker and the question are cards, and a fourth one holding a line of copy
+   and a button made the box read as a stack of five things rather than as a
+   list with an action under it. A footer is the one thing in a container that
+   should NOT have its own edge — it belongs to the box, so it sits on the box.
+
+   Centred, both of them: with no surface there is no left edge for the note to
+   start from, and the button was already centred under it. */
+.rerun {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--space-md); /* 12 */
+  padding: var(--space-xs) var(--space-sm); /* 4 / 8 — spacing, not a box */
+}
+
+.rerunNote {
+  text-align: center;
+  color: var(--color-text-secondary);
+}
+
+/* ⚠️ 15% SHORTER THAN A `Button`, AND 53 IS AN OFF-SCALE LITERAL ON PURPOSE.
+   `size/control-*` has 48 and 62 and nothing between, so binding either token
+   would name this as a size it is not; the app already carries two deliberate
+   off-scale literals for the same reason (`--nav-inset-bottom` at 5, the 28
+   preview well on the PRODUCTS hub). It is set through `--button-height`, the
+   hook `Button` exposes — never as a `min-height` from this module, which
+   would be decided by CSS-Module load order rather than by intent.
+
+   It applies to THIS button and no other: the re-run action sits inside the
+   compared-products box under a single line of copy, beside a row of 36-tall
+   controls, so
+   a full 62 pill made the box's own action the tallest thing on a screen whose
+   real actions are all above it. Every page-level `Button` keeps its 62. Raise
+   a shorter Button size in Figma and this becomes a token. */
+.rerunButton {
+  --button-height: 53px;
+}
+
+/* the question's decline. ⚠️ IT WAS `.undo` AND IS THE ONLY CALLER LEFT — the
+   re-run block's `Undo` is gone, so the name now describes what it does rather
+   than the control it was shared with. */
+.decline {
+  padding: 0;
+  color: var(--color-text-primary);
+  border-radius: var(--radius-sm);
+  transition: opacity var(--duration-fast) var(--ease-standard);
+}
+
+.decline:hover {
+  opacity: 0.7;
+}
+
+@media (hover: none) {
+  .decline:hover {
+    opacity: 1;
+  }
 }
 
 @media (prefers-reduced-transparency: reduce) {
-  .compared {
-    background: var(--color-bg-surface-frost);
+  .group {
+    background: var(--color-bg-nav);
     -webkit-backdrop-filter: none;
     backdrop-filter: none;
   }

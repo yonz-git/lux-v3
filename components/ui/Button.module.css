@@ -59,7 +59,16 @@
   justify-content: center;
   gap: var(--space-sm);
 
-  min-height: var(--size-control-lg);
+  /* ⚠️ THE DEFAULT IS THE `var()` FALLBACK, NOT A DECLARATION — the same shape
+     `--icon-size` and `--bubble-width` take, and it is load-bearing. Declaring
+     `--button-height: var(--size-control-lg)` on this rule would SHADOW any
+     value a caller set, since a local declaration beats an inherited one and a
+     caller's own class ties on specificity — the load-order trap
+     non-negotiable 13 records, in its custom-property costume. As a fallback
+     there is nothing to shadow: `size/control-lg` (62) is what every caller
+     that says nothing gets, and a caller that wants a shorter pill sets
+     `--button-height` and is simply the only declaration. */
+  min-height: var(--button-height, var(--size-control-lg));
   padding: var(--space-md) var(--space-2xl);
   border-radius: var(--radius-full);
 

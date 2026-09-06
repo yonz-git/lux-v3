@@ -140,9 +140,15 @@ button.takePhoto {
      and it outweighed Continue. Hugging its own label at 48 puts it back in
      proportion. Both values are on the control scale — this is a size change,
      not a new treatment, so the gradient, shadow and hover all still come from
-     `Button`. */
+     `Button`.
+
+     ⚠️ SET THROUGH `--button-height`, NOT AS A `min-height` FROM THIS MODULE.
+     It was the latter, and it happened to win: two single-class rules for the
+     same property on the same element are decided by CSS-Module bundle order,
+     which is the load-order trap non-negotiable 13 records. `Button` exposes
+     the height as a hook for exactly this — see Button.module.css. */
   align-self: center;
-  min-height: var(--size-control-md);
+  --button-height: var(--size-control-md);
   padding: 0 var(--space-xl);
 }
 

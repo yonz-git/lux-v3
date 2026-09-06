@@ -24,6 +24,32 @@
   backdrop-filter: blur(var(--blur-card));
 }
 
+/* ⚠️ NOT IN FIGMA — the card as it renders INSIDE the compared-products box.
+   Same anatomy one step down, and the reasoning is `ProductAccordionCard`'s,
+   which states it in full: `frost-light` on the group's `frost-nav` is a
+   frosted fill on a frosted surface, so the two translucencies composite into
+   one pale smear with no edge between the cards. `bg/surface-frost` is
+   frost-light's opaque counterpart and the blur goes with it, since the group
+   behind it has already blurred what is under both.
+
+   8 is concentric, not a taste: the box is 16 and insets these by 8, so 16 − 8
+   keeps the two curves parallel. Change either and change both — see `.panel`
+   in CheckResults.module.css.
+
+   ⚠️ AND THE BORDER GOES, WHICH IS WHY THE PADDING STOPS SUBTRACTING IT. The
+   full-size card writes `calc(16px - hairline)` under rule 9 so a bordered box
+   lands on the design height; with no border there is nothing to subtract and
+   the value is the plain 12. */
+.card.compact {
+  padding: var(--space-md); /* 12 */
+
+  border: none;
+  border-radius: var(--radius-sm); /* 8 */
+  background: var(--color-bg-surface-frost);
+  -webkit-backdrop-filter: none;
+  backdrop-filter: none;
+}
+
 .card[data-band="risky"] {
   --band: var(--color-feedback-warning);
   --band-subtle: var(--color-feedback-warning-subtle);
@@ -34,8 +60,20 @@
   --band-subtle: var(--color-feedback-error-subtle);
 }
 
+/* the toggle plus, in edit mode, the remove glyph beside it. A `<button>` may
+   not contain another, so the two are siblings and the heading takes the slack.
+   ⚠️ 8 rather than the row's own 12: the ✕ belongs to the row it closes, and at
+   12 it drifted far enough from the chevron to read as the box's control. */
+.head {
+  display: flex;
+  align-items: center;
+  gap: var(--space-sm);
+}
+
 /* the <h3> is structure for the outline, not a visual element */
 .heading {
+  flex: 1;
+  min-width: 0;
   margin: 0;
   font: inherit;
 }
@@ -153,6 +191,39 @@
 
 .recBody {
   color: var(--color-text-secondary);
+}
+
+/* ⚠️ ONLY RENDERED WHILE THE BOX IS EDITING — see CompatCard's own note for
+   why it is here rather than under the recommendation. `size/control-sm` (36)
+   is the tap target the app's other glyph-only buttons take; the glyph inside
+   it is `icon-sm`. It is `icon/default`, not `text/error`: it sits on every row
+   at once while edit mode is on, and eight red crosses down a list read as
+   eight warnings rather than as one available action. */
+.remove {
+  flex: none;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: var(--size-control-sm); /* 36 */
+  height: var(--size-control-sm);
+  padding: 0;
+  border-radius: var(--radius-full);
+  color: var(--color-icon-default);
+  transition: opacity var(--duration-fast) var(--ease-standard);
+}
+
+.removeIcon {
+  --icon-size: var(--size-icon-sm); /* 20 */
+}
+
+.remove:hover {
+  opacity: 0.7;
+}
+
+@media (hover: none) {
+  .remove:hover {
+    opacity: 1;
+  }
 }
 
 @media (prefers-reduced-transparency: reduce) {

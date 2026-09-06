@@ -15,19 +15,14 @@ import { Tag } from "@/components/ui/Tag";
 import { CheckBasketBar, CheckBasketSheet } from "./CheckBasket";
 import { AddProductMethodSheet } from "@/features/products/components/AddProductMethodSheet";
 import { useInvestigation } from "@/lib/store/InvestigationProvider";
-import {
-  MAX_CHECK_PRODUCTS,
-  checkSearchTerms,
-  matchedActives,
-} from "@/features/check/check";
+import { MAX_CHECK_PRODUCTS, matchedActives } from "@/features/check/check";
+import { useCheckSearch } from "@/features/check/useCheckSearch";
 import { ownedProducts, skinProfile } from "@/lib/demo";
 import {
   type CatalogProduct,
   fullName,
   resultMeta,
-  searchCatalog,
 } from "@/features/products/products";
-import { useOpenBeautyFactsSearch } from "@/features/products/useOpenBeautyFactsSearch";
 
 /**
  * `/check/new` — build the check.
@@ -66,17 +61,6 @@ import { useOpenBeautyFactsSearch } from "@/features/products/useOpenBeautyFacts
  * the handoff's rule, and Tag is non-interactive by contract: removal happens
  * in the basket, not in the list.
  */
-/** Live results first, then anything the local ingredient index found that the
- *  live list did not already contain. First occurrence of an id wins. */
-function dedupe(products: CatalogProduct[]): CatalogProduct[] {
-  const seen = new Set<string>();
-  return products.filter((p) => {
-    if (seen.has(p.id)) return false;
-    seen.add(p.id);
-    return true;
-  });
-}
-
 export function CheckBuilder() {
   const router = useRouter();
   const { answers, setAnswer } = useInvestigation();
@@ -117,27 +101,14 @@ export function CheckBuilder() {
      same cream. The real fix was upstream: seed the product library
      (`ownedProducts`), so the primary case — "do these two things I own work
      together?" — is what the screen actually opens on. */
-  const searching = query.trim() !== "";
-  /* ⚠️ THE SAME SEARCH THE PRODUCTS TRAY RUNS — `useOpenBeautyFactsSearch`.
-     This screen used to search the 13-product offline fixture ALONE while the
-     add-product tray searched Open Beauty Facts live, so the same query typed
-     two screens apart returned two unrelated lists and neither explained
-     itself: search "cerave" in the tray and you get the real shelf, search it
-     here and you got four fixture rows plus whatever the ingredient index
-     dragged in. One search function, one debounce, one fixture fallback.
-
-     ⚠️ THE INGREDIENT INDEX SURVIVES, AS A LOCAL PASS. `checkSearchTerms` is
-     what makes "salicylic" find the BHA Exfoliant — a compatibility question,
-     and the reason this screen searched differently in the first place. It runs
-     over the fixture and is MERGED UNDER the live results rather than replacing
-     them, so the ingredient case still works and the list still leads with what
-     the user typed. Live results carry their own INCI list, so the checker
-     reads their actives directly; see `activesOf` in lib/check.ts. */
-  const { results: live, loading } = useOpenBeautyFactsSearch(query);
-  const byIngredient = searching ? searchCatalog(query, checkSearchTerms) : [];
-  const results: CatalogProduct[] = searching
-    ? dedupe([...live, ...byIngredient])
-    : owned;
+  /* ⚠️ THE SAME SEARCH `/check/results`' PICKER RUNS, and the same one the
+     PRODUCTS tray runs underneath it — `useCheckSearch`, which holds the live
+     pass, the ingredient pass and the merge. It used to be written out here,
+     and was lifted the day the results box grew a picker of its own: two
+     copies of "one search function, one debounce, one fixture fallback" is not
+     one search function. The reasoning lives on the hook. */
+  const { results: found, loading, searching } = useCheckSearch(query);
+  const results: CatalogProduct[] = searching ? found : owned;
   /* ⚠️ THE COUNT IS PART OF THE LABEL, and it matters more now the results are
      a capped panel: "did it find one thing or nine?" is a question you can no
      longer answer by looking at the page, because the panel clips its own list.

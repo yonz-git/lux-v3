@@ -113,6 +113,13 @@ export function CheckBasketBar({
  *
  * ⚠️ 0–1 PRODUCTS DISABLES THE CTA AND SHOWS THE HELPER; 2–8 ENABLES IT. The
  * handoff's rule, and the cap is 8. You cannot compare one product with itself.
+ *
+ * ⚠️ `/check/new` IS ITS ONLY CALLER, AND THAT IS THE POINT. `Check results`
+ * used to open this same sheet behind its `Edit` — over a screen that was
+ * already listing the same products, so one set appeared twice and the copy of
+ * it that could be edited covered the copy that carried the answers. That
+ * screen edits its set in place now and this sheet lost its `submitLabel` prop
+ * with it. See `CheckResults`.
  */
 export function CheckBasketSheet({
   open,
@@ -121,7 +128,6 @@ export function CheckBasketSheet({
   onRemove,
   onAddAnother,
   onSubmit,
-  submitLabel = "Start analysis",
 }: {
   open: boolean;
   onClose: () => void;
@@ -129,9 +135,6 @@ export function CheckBasketSheet({
   onRemove: (id: string) => void;
   onAddAnother: () => void;
   onSubmit: () => void;
-  /** `Check results` opens this same tray to EDIT a check, where the action is
-   *  a re-run rather than a first run — see CheckResults. */
-  submitLabel?: string;
 }) {
   const enough = products.length >= MIN_CHECK_PRODUCTS;
   const full = products.length >= MAX_CHECK_PRODUCTS;
@@ -205,7 +208,7 @@ export function CheckBasketSheet({
         onClick={onSubmit}
         aria-describedby={enough ? undefined : "check-helper"}
       >
-        {submitLabel}
+        Start analysis
       </Button>
 
       {/* the 1-product state's helper, and the only thing that explains a

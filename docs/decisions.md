@@ -717,6 +717,156 @@ never covering the list, counting up. The drawn sheet is still exactly the drawn
 sheet, opened deliberately to review or remove. Every treatment is used; only the
 resting state changed. Two states instead of three. See `CheckBasket.tsx`.
 
+**⚠️ `/check/results` LISTED ITS PRODUCTS TWICE, AND THE EDIT TRAY IS GONE —
+6 Sep 2026.** The screen carried the check's five products as five `CompatCard`s
+on the canvas, under a `compared-products` header row (476:2851) whose `Edit`
+opened `CheckBasketSheet` — a scrim'd modal listing **the same five products
+again** as removable rows. One set, two lists, and the only copy you could edit
+was the one covering the copy that carried the answers.
+
+Both halves were fixed by the same move, and it is the one `MyProducts` made for
+its category groups the day before:
+
+- **The header row became the header of a BOX, and the cards became its
+  contents.** The frosted fill moved off the row onto a `.group` container, the
+  cards sit inside it inset 8 from three sides, and the fill stepped from
+  `surface/frost-light` to `surface/frost-nav` for the same reason it did on the
+  hub — a frost-light box around frost-light cards has no edge. `CompatCard`
+  gained a `compact` form to match (padding 12, radius 8, opaque, no border),
+  exactly as `ProductAccordionCard` did. Closed, the box would simply BE the row.
+- **`Edit` became a MODE on the box** rather than a door to another screen, and
+  it is what reveals the destructive affordances: a ✕ on each row and the
+  `Add another product` row at the foot. ⚠️ **Neither is there at rest** — a
+  permanent add row under a set the user had just finished assembling reads as
+  an unfinished list rather than as a finished check. The chevron beside `Edit`
+  went with the tray: a disclosure glyph on a control that discloses nothing is
+  what made the header look like it collapsed the list. `aria-pressed` says it
+  is a toggle.
+- **The ✕ is on the row, not in the card body.** `ProductAccordionCard` puts its
+  `Remove` under the details and this one deliberately does not, because that
+  card has no edit mode and this box does. A mode exists to surface what it
+  turns on: with the remove buried, entering edit mode changed nothing visible,
+  and taking a product out cost a tap to open a row whose scores you did not
+  want to read plus a tap to remove.
+- **Adding happens in the box**, from a picker that SEARCHES. It opened as a
+  plain catalogue list, which answers "add one more of the things the app
+  already knows" and nothing else: the moment the product you wanted was not
+  among the thirteen, the only route was to leave the screen. Anything already
+  in the check is filtered out rather than shown with an `Added` tag: the
+  builder is a list you assemble FROM and its rows must keep their place, this
+  panel is opened to add one thing and closes when you have.
+- ⚠️ **AND IT LISTS NOTHING UNTIL YOU TYPE — the opposite of `/check/new`, on
+  purpose.** It first shipped with that screen's rule (empty query = your
+  products, typing = the catalogue) and the rule does not transfer. `/check/new`
+  exists to assemble a set out of your library, so an opening list IS its
+  primary path. This panel opens from a check that is already built, so the
+  products you own are by and large already in it — what was left to list was
+  the catalogue remainder, and a column of products the user has never mentioned
+  reads as a random list rather than as a suggestion. Nothing to suggest means
+  nothing to show: the field asks, the results answer, and the empty state is
+  one line saying what to type.
+- **The `Add another product` row is `AddProductRow`, the PRODUCTS hub's own
+  component.** It was a local compact one — opaque, 8 radius, the cards' 12
+  padding — on the argument that a box's contents take the box's surface. But
+  "add a product" is one action the user meets in three places and it has to
+  look like itself in all of them.
+
+**⚠️ AND THE SEARCH WAS LIFTED INTO `features/check/useCheckSearch.ts` RATHER
+THAN WRITTEN TWICE.** CHECK searches differently from the rest of the app on
+purpose — a live Open Beauty Facts pass MERGED OVER a local ingredient index, so
+"salicylic" finds the BHA Exfoliant, which is a compatibility question. That
+merge lived inline in `CheckBuilder`, and the promise it was written to keep is
+literally "one search function, one debounce, one fixture fallback". Two copies
+of that is not one search function, so the moment `/check/results` grew a picker
+the merge moved to a hook and the builder now calls it too. Same results, same
+debounce, same fallback, one place to reason about.
+
+**⚠️ ADDING A PRODUCT ASKS HOW LONG YOU HAVE USED IT.** A check does not imply
+ownership — half the reason to run one is a product you are *considering* — so
+putting everything you compare into `answers.products` would quietly fill the
+library with things the user has never opened, and the investigation reads that
+library as "what I am using". Equally, a product you compare and DO use should
+not have to be entered twice. So a question appears under the row it is about:
+*"How long have you used <product>?"*, the four `DURATIONS` as radios, with
+`Not now` beside `Add to my products`. It fires for a catalogue product and
+never for one already in your library.
+
+⚠️ **IT ASKS THE DURATION RATHER THAN YES/NO, AND THAT IS THE SECOND VERSION.**
+It shipped as a yes/no that filed everything under `Not sure` — honest, because
+nothing had asked, but it made the one group that means "I genuinely do not
+know" the destination for every product added this way, and the analysis reads
+that timeline. `bucketFor` derives the group from the duration and from NOTHING
+else, so asking is the fix: this is the same question the add tray asks, in the
+same `OptionRow` radios, and `Not sure` goes back to being one of four answers
+rather than the default.
+
+**Answering IS the consent** — "how long have you used it?" cannot be answered
+by someone who is not using it — which is why there is no separate confirm, only
+the decline beside it. The action is disabled until it is answered, for the
+reason `Continue` is on every flow step: there is no group to file the product
+under until it is.
+
+It is a question rather than a checkbox on the picker row because "I am using
+this" is a claim about the user's routine, not a preference: PRODUCTS is what
+the analysis subtracts from, and a wrong entry there changes what the app
+concludes.
+
+⚠️ **A PRODUCT ADDED SINCE THE CHECK RAN HAS NO SCORE AND MUST NOT BORROW ONE.**
+`results` comes from the check that ran, so an added product has no entry in it
+— filtering the rendered list by the pending set alone silently DROPPED it and
+the row the user had just added never appeared. It renders as a scoreless
+`PendingRow` tagged *Not analysed yet*, which is the true statement: it is in
+the set, and the numbers above do not include it. Not a `CompatCard` with a
+blank score — a disclosure that opens onto an empty panel is worse than no
+disclosure.
+
+⚠️ **EDITING THE SET DOES NOT RE-SCORE THE SCREEN, AND MUST NOT.** `analyseCheck`
+scores every product AGAINST THE BASKET — conflicts are half the model — so
+dropping one silently changes the other four numbers. A removal therefore edits a
+**pending** set only: that product's card goes, everything above it is untouched,
+and the box grows a `Re-run analysis` action whose note says in words that the
+results on screen are the previous set's, and one `Re-run analysis` below it —
+both centred, on the box's own surface with no card of their own. Re-running writes a NEW check under a new date, which is what `Edit`
+always did.
+
+⚠️ **THERE IS NO `Undo`.** It shipped beside the button as the ghost of a pair
+and came off: a change is not stranded without it, because a removed product is
+still in the picker — putting the set back is `Edit` → `Add another product` →
+pick it — and re-running is the only thing this block exists to offer. With one
+control the row has nothing to balance, so the button centres rather than
+pinning right against the gap where the text button was. The question above it
+keeps its text-left / pill-right pair, because it HAS two answers.
+
+⚠️ **AND THE FOOTER HAS NO SURFACE.** It carried the nested recipe every other
+block in the box has — opaque fill, 8 radius, 12 padding, the frosted-row edge —
+and that was one card too many: the products are cards, the picker and the
+question are cards, and a fourth one holding a line of copy and a button made
+the box read as a stack of five things rather than as a list with an action
+under it. A footer is the one thing in a container that should NOT have its own
+edge, because it belongs to the box rather than sitting on it. With the surface
+gone there is no left edge for the note to start from either, so the note
+centres with the button.
+
+⚠️ **AND "CHANGED" IS SET EQUALITY, NOT "HAS THE USER TOUCHED IT".** Removing a
+product and adding it straight back leaves a pending set holding the check's own
+members, and the banner then said "the results above are for the previous set"
+about the set on screen. Order does not count — the box renders worst-first
+regardless, so two sets with the same members are the same check. The re-run
+block is also NOT gated on the edit mode: a change survives leaving the mode, so
+hiding the only way to act on it behind `Edit` again would strand it.
+
+⚠️ **THE PENDING SET IS LOCAL STATE, NOT `answers.checkBasket`.** The basket is
+`/check/new`'s working set; it is written only when the user leaves for one of
+the two screens that reads it. That also fixes what `Edit` never managed — it
+handed `/check/new` whatever the basket happened to hold, so opening a check from
+the history and pressing Edit edited a different set, and on a cold load an empty
+one.
+
+`CheckBasketSheet` keeps its one honest caller, `/check/new`, and lost the
+`submitLabel` prop that existed for this screen alone. ⚠️ **NOT IN FIGMA** —
+476:2841 draws the row and the cards as siblings, and the transition map says
+"Edit on Compared Products reopens the tray".
+
 **⚠️ THREE MORE DECIDED-HERE CHANGES, all flagged in the code:**
 
 - **`/check` OPENS READY TO CHECK, not on "No skin profile yet".** Same call
@@ -988,6 +1138,41 @@ module would localize the name and resolve to nothing) and both end on their
 resting value, so the global `prefers-reduced-motion` collapse leaves a still
 orb rather than a half-faded mark.
 
+
+## `Button`'s height is a hook, and one caller shortens it
+
+`Button` is `size/control-lg` (62) and that stays the default. Two callers want
+less, and both now say so through **`--button-height`** rather than a
+`min-height` declared from their own module:
+
+- `StartInvestigation`'s **Take a photo** — `size/control-md` (48). The optional
+  side path off step 1, which at 62 outweighed `Continue` on a screen whose
+  actual task is the chips and the face diagram. On the scale; a size change,
+  not a treatment.
+- `CheckResults`' **Re-run analysis** — **53**, 15% under the 62. It sits inside
+  the compared-products box under a single line of copy, beside a row of
+  36-tall controls,
+  so a full pill made the box's own action the tallest thing on a screen whose
+  real actions are all above it. ⚠️ **53 is off the control scale on purpose** —
+  `size/control-*` has 48 and 62 and nothing between, so binding either token
+  would name it as a size it is not. Same class of deliberate literal as
+  `--nav-inset-bottom` (5) and the 28 preview well on the PRODUCTS hub. Raise a
+  shorter Button size in Figma and it becomes a token.
+
+⚠️ **THE DEFAULT IS THE `var()` FALLBACK, NOT A DECLARATION ON `.button`, AND
+THAT IS LOAD-BEARING.** `min-height: var(--button-height, var(--size-control-lg))`
+— written the other way round, as `--button-height: var(--size-control-lg)`
+inside `.button`, the component's own local declaration would SHADOW anything a
+caller set, because a local custom-property declaration beats an inherited one
+and a caller's own class ties on specificity. As a fallback there is nothing to
+shadow. Same shape as `--icon-size` on `icons.tsx` and `--bubble-width` on
+`ChatBubble`.
+
+**Take a photo used to do it with `min-height` and happened to win.** Two
+single-class rules for one property on one element are decided by CSS-Module
+bundle order, not by intent — non-negotiable 13's trap, in its custom-property
+costume. It was moved to the hook when the hook arrived, so the fragile
+precedent is not there to copy.
 
 ## Things the design system does not have, faked here
 

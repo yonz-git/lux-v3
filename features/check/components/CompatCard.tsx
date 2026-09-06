@@ -2,7 +2,7 @@
 
 import { useId, useState } from "react";
 import styles from "./CompatCard.module.css";
-import { ChevronDownIcon } from "@/components/ui/icons";
+import { ChevronDownIcon, CloseIcon } from "@/components/ui/icons";
 import { BAND_LABEL, type CheckAnalysis } from "@/features/check/check";
 import { fullName } from "@/features/products/products";
 
@@ -25,12 +25,50 @@ import { fullName } from "@/features/products/products";
  * best rows, so every card states its band in the toggle's accessible name
  * regardless. The colour is never the only carrier.
  *
- * ⚠️ NOT `BucketProductsList`'s accordion. That one is the PRODUCTS hub's, on a
- * different surface with a different header and no band. Two accordions, and
- * the design system still has neither — both are composed from the frosted card
- * recipe. See AGENTS.md.
+ * ⚠️ NOT `ProductAccordionCard`. That one is the PRODUCTS hub's, on a different
+ * surface with a different header and no band. Two accordions, and the design
+ * system still has neither — both are composed from the frosted card recipe.
+ * See AGENTS.md.
+ *
+ * ⚠️ `compact` IS THE CARD AS IT RENDERS INSIDE THE COMPARED-PRODUCTS BOX —
+ * NOT IN FIGMA. 476:2857 draws it as a card on the canvas, which is what it was
+ * while the list hung under the header row as a sibling of it. The list is
+ * inside the group's own surface now (see `CheckResults`), and the same rule
+ * `ProductAccordionCard.compact` states applies here for the same reason: a
+ * frosted fill on a frosted surface composites into one pale smear, and a
+ * 16-radius card at full padding inside a 16-radius box reads as two surfaces
+ * arguing. Padding steps 16/18 → 12, the radius 16 → 8 (concentric with the
+ * box's 16 less its 8 inset), the border goes and the fill becomes
+ * `bg/surface-frost`, frost-light's opaque counterpart. It is a PROP, not a
+ * second component: the anatomy, the pill, the bar and the body are identical.
+ *
+ * ⚠️ `onRemove` IS THE EDIT MODE'S GLYPH, AND IT IS ON THE ROW RATHER THAN
+ * INSIDE THE CARD. It replaces the `Edit` tray that used to list the same
+ * products a second time in a modal sheet — see `CheckResults`.
+ *
+ * It sits beside the chevron, not under the recommendation where
+ * `ProductAccordionCard` puts its `Remove`, and the difference is that this box
+ * has an EDIT MODE and that card does not. A mode exists to surface its
+ * destructive affordances: with the remove buried in the body, entering edit
+ * mode changed nothing you could see, and taking a product out cost a tap to
+ * open the row plus a tap to remove — on a row whose scores you did not want to
+ * read. Passed only while the box is editing, so the resting list is exactly
+ * the read-only accordion it was.
+ *
+ * ⚠️ IT IS A SIBLING OF THE TOGGLE, NOT A CHILD. A `<button>` may not contain
+ * another one, so `.head` is the flex row and the `<h3>` takes the slack.
  */
-export function CompatCard({ analysis }: { analysis: CheckAnalysis }) {
+export function CompatCard({
+  analysis,
+  compact = false,
+  onRemove,
+}: {
+  analysis: CheckAnalysis;
+  /** rendered inside the compared-products box rather than on the canvas */
+  compact?: boolean;
+  /** absent = the card cannot be removed, which is every read-only caller */
+  onRemove?: () => void;
+}) {
   const [open, setOpen] = useState(false);
   const bodyId = useId();
 
@@ -38,34 +76,53 @@ export function CompatCard({ analysis }: { analysis: CheckAnalysis }) {
   const name = fullName(product);
 
   return (
-    <div className={styles.card} data-band={band} data-open={open || undefined}>
-      <h3 className={styles.heading}>
-        <button
-          type="button"
-          className={styles.toggle}
-          aria-expanded={open}
-          aria-controls={bodyId}
-          onClick={() => setOpen((o) => !o)}
-        >
-          <span className={`${styles.name} t-h6`}>{name}</span>
+    <div
+      className={`${styles.card}${compact ? ` ${styles.compact}` : ""}`}
+      data-band={band}
+      data-open={open || undefined}
+    >
+      <div className={styles.head}>
+        <h3 className={styles.heading}>
+          <button
+            type="button"
+            className={styles.toggle}
+            aria-expanded={open}
+            aria-controls={bodyId}
+            onClick={() => setOpen((o) => !o)}
+          >
+            <span className={`${styles.name} t-h6`}>{name}</span>
 
-          <span className={styles.score}>
-            {/* only Risky and Avoid draw a pill — compatible is the absence */}
-            {band !== "compatible" && (
-              <span className={`${styles.pill} t-label-sm`}>
-                {BAND_LABEL[band]}
-              </span>
-            )}
-            <span className={`${styles.percent} t-h6`}>{score}%</span>
-            <ChevronDownIcon className={styles.chevron} />
-          </span>
+            <span className={styles.score}>
+              {/* only Risky and Avoid draw a pill — compatible is the absence */}
+              {band !== "compatible" && (
+                <span className={`${styles.pill} t-label-sm`}>
+                  {BAND_LABEL[band]}
+                </span>
+              )}
+              <span className={`${styles.percent} t-h6`}>{score}%</span>
+              <ChevronDownIcon className={styles.chevron} />
+            </span>
 
-          {/* the band in words for everyone, including the rows with no pill */}
-          <span className="visually-hidden">
-            {score}% compatible — {BAND_LABEL[band]}
-          </span>
-        </button>
-      </h3>
+            {/* the band in words for everyone, including the rows with no pill */}
+            <span className="visually-hidden">
+              {score}% compatible — {BAND_LABEL[band]}
+            </span>
+          </button>
+        </h3>
+
+        {onRemove && (
+          <button
+            type="button"
+            className={styles.remove}
+            /* the glyph is the whole control, so the name has to carry both
+               the action and which product it acts on */
+            aria-label={`Remove ${name} from this analysis`}
+            onClick={onRemove}
+          >
+            <CloseIcon className={styles.removeIcon} />
+          </button>
+        )}
+      </div>
 
       {/* ⚠️ `reveal-quick` IS A GLOBAL CLASS, not a module one. A rule that NAMES
           an animation must live in globals.css — a CSS Module scopes the

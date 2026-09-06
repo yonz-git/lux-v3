@@ -424,6 +424,40 @@ covering the list, counting up. The drawn sheet (`604:2103`) is still exactly
 the drawn sheet, opened deliberately to review or remove. Every treatment is
 used; only the resting state changed.
 
+### `Check results` listed its products twice — the Edit tray is gone (`476:2841`, `476:2851`)
+
+`compared-products` (`476:2851`) drew a header row with `Edit`, and the
+transition map says Edit "reopens the tray" — `bottom-sheet` (`604:2103`), which
+lists **the same products the five `analysis/…` cards below the row are already
+listing**. One set, two lists, and the editable copy covered the copy carrying
+the answers.
+
+The row is the header of a BOX now and the cards are its contents, the same move
+`My Products — filled` (`579:1607`) took for its category groups: fill on the
+container, cards inset 8, `surface/frost-nav` rather than `frost-light` because a
+frost-light box around frost-light cards has no edge. `analysis/…` needs a
+COMPACT variant to match — padding 12, radius 8, opaque fill, no stroke —
+alongside `product · …`'s, which is the same variant for the same reason.
+
+`Edit` stays, as a MODE on the box rather than a door to the tray — it reveals a
+✕ on each row and an `Add another product` row at the foot, neither of which is
+there at rest. Its chevron goes: a disclosure glyph on a control that discloses
+nothing made the header read as collapsing the list.
+
+Adding opens a picker inside the box — a `Search Field` over `/check/new`'s own
+search, listing results and nothing else. ⚠️ It deliberately does NOT open on a
+list the way `/check/new` does: this panel opens from a check that is already
+built, so the products the user owns are already in it and the remainder is a
+column of things they have never mentioned.
+⚠️ **Figma has no frame for the question this raises:** a check does not imply
+ownership, so adding a product that is not already in the user's library asks
+*"How long have you used <product>?"* — the same four `DURATIONS` radios the add
+tray asks, since `bucketFor` derives the group from that answer and nothing
+else — with `Not now` beside `Add to my products`. It needs a frame, and so does
+the scoreless *Not analysed yet* row a just-added product renders as: editing
+the set does not re-score the screen, so a product added since the check ran has
+no percentage to show and must not borrow one.
+
 ### Step 5 is the one flow screen that does not light `My skin` (`574:1342`, `582:1612`)
 
 It is still an investigation step in every other respect — track, `Save & exit`,
