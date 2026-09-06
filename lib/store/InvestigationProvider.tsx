@@ -10,24 +10,37 @@ import {
 } from "react";
 import type { Answers } from "./answers";
 import { LEGACY_STORAGE_KEY } from "./answers";
+import { readPersisted, writePersisted } from "./persistence";
 
 /**
  * The investigation's answer store.
  *
- * ⚠️ IN MEMORY ONLY — DO NOT PERSIST THIS.
+ * ⚠️ EVERY FLOW SELECTION IS IN MEMORY ONLY — DO NOT PERSIST THOSE.
  *
- * Answers carry across the steps because `app/investigation/layout.tsx` wraps
- * every step, so the provider stays mounted through client-side navigation.
- * That is all the flow needs: 02a can recap what was chosen on 01, and 02b can
- * echo the skin type from 02a.
+ * Answers carry across the steps because `app/layout.tsx` wraps the whole app,
+ * so the provider stays mounted through client-side navigation. It is mounted
+ * at the ROOT rather than at `app/investigation/layout.tsx` because the
+ * PRODUCTS hub reads what step 5 writes and is reached from the bottom nav
+ * rather than from inside the flow.
  *
- * It deliberately does NOT persist. An earlier version wrote to localStorage on
- * the reasoning that "Save & exit" implies a resumable flow — but the effect was
- * that opening the prototype showed options already selected from a previous
- * visit, which reads as though the screens ship pre-filled. For a prototype the
- * expectation is a clean slate every time: **nothing is selected until the user
- * selects it.** Real resumability belongs to a real backend, not to a store that
- * silently reproduces stale answers.
+ * ⚠️ THE STORE IS SPLIT, AND ONLY HALF OF IT IS WRITTEN TO DISK. An earlier
+ * version persisted the WHOLE store on the reasoning that "Save & exit" implies
+ * a resumable flow — and the effect was that opening the prototype showed
+ * options already selected from a previous visit, which reads as though the
+ * screens ship pre-filled. That rule still holds for every control: the flow
+ * steps, the drafts, the baskets and the search fields all start empty every
+ * time. **Nothing is selected until the user selects it.**
+ *
+ * What now survives a refresh is the COMPLETED work — added products, checks
+ * run, days recorded, a saved finding — because those render as readouts, and
+ * `/products`, `/check` and `/progress` are specified to open populated
+ * anyway. `lib/store/persistence.ts` owns that seam and carries the reasoning;
+ * `PERSISTED_KEYS` is the whole list.
+ *
+ * ⚠️ THIS IS STILL NOT RESUMABILITY. One device, one browser. `Save & exit`
+ * does not resume a flow, and a deep link to another visitor's check-in has no
+ * data behind it. That needs a backend, and the split does not pretend to be
+ * one — see `docs/decisions.md`.
  */
 type Ctx = {
   answers: Answers;
@@ -52,16 +65,45 @@ export function InvestigationProvider({
   children: React.ReactNode;
 }) {
   const [answers, setAnswers] = useState<Answers>({});
+  const [hydrated, setHydrated] = useState(false);
 
-  // one-time cleanup: an earlier build persisted answers, and that data would
-  // otherwise sit in visitors' browsers forever doing nothing
+  /**
+   * ⚠️ HYDRATE IN AN EFFECT, NEVER IN THE `useState` INITIALISER. The server
+   * renders with no storage, so seeding initial state from localStorage makes
+   * the first client render disagree with the server's HTML and React throws a
+   * hydration mismatch. Starting empty and filling in after mount is the only
+   * shape that is correct in the App Router.
+   */
   useEffect(() => {
+    // one-time cleanup: an earlier build persisted the WHOLE store, and that
+    // data — the flow selections this build refuses to restore — would
+    // otherwise sit in visitors' browsers forever. It is deleted, never read.
     try {
       window.localStorage.removeItem(LEGACY_STORAGE_KEY);
     } catch {
       // storage unavailable (private mode) — nothing to clean up
     }
+
+    const saved = readPersisted();
+    if (Object.keys(saved).length) {
+      // merge UNDER anything already set this session: an effect runs after
+      // paint, so a fast first interaction must not be overwritten by disk
+      setAnswers((prev) => ({ ...saved, ...prev }));
+    }
+    setHydrated(true);
   }, []);
+
+  /**
+   * ⚠️ GATED ON `hydrated` AS STATE, NOT A REF. Effects run in declaration
+   * order on mount, so a ref set above would already read true here while
+   * `answers` is still the empty first-render value — and this would write `{}`
+   * straight over the records it had just read. The state flag defers the first
+   * write to the render AFTER hydration, when `answers` actually holds them.
+   */
+  useEffect(() => {
+    if (!hydrated) return;
+    writePersisted(answers);
+  }, [answers, hydrated]);
 
   const setAnswer = useCallback<Ctx["setAnswer"]>((key, value) => {
     setAnswers((prev) => ({

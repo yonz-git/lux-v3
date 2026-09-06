@@ -176,11 +176,17 @@ export function toggleMulti(current: string[], option: string): string[] {
 }
 
 /**
- * ⚠️ NOT a storage key any more — answers are held IN MEMORY only.
- * Kept solely so the provider can delete data written by an earlier build that
- * did persist; opening the prototype then showed a previous visit's selections
- * as though the screens shipped pre-filled. Remove this once it has shipped for
- * long enough that no stale data remains.
+ * ⚠️ A KEY THAT IS ONLY EVER DELETED, NEVER READ.
+ *
+ * It holds whole-store snapshots written by an earlier build that persisted
+ * EVERYTHING; opening the prototype then showed a previous visit's selections
+ * as though the screens shipped pre-filled. The provider deletes it on mount.
+ *
+ * ⚠️ DO NOT REPOINT PERSISTENCE AT IT. The current store does persist — but
+ * only completed records, under `STORAGE_KEY` in `lib/store/persistence.ts`,
+ * and never a flow selection. This key's contents are exactly the data that
+ * rule exists to keep off the screen. Remove it once it has shipped for long
+ * enough that no stale data remains.
  */
 export const LEGACY_STORAGE_KEY = "lux.investigation.v1";
 

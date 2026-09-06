@@ -257,13 +257,32 @@ types depending on which tab you are on.
 step in `flow.ts` (`isComplete`), never in the screen, so a new screen cannot
 forget it. `QuestionScreen` reads it and owns the button.
 
-Answers live in `lib/store/InvestigationProvider.tsx` — React context, **in
-memory only**, provided from `app/layout.tsx` so the PRODUCTS hub reads what
-step 5 writes. Read them with `useInvestigation()`.
+Answers live in `lib/store/InvestigationProvider.tsx` — React context,
+provided from `app/layout.tsx` so the PRODUCTS hub reads what step 5 writes.
+Read them with `useInvestigation()`.
 
-⚠️ **DO NOT PERSIST THE ANSWER STORE.** localStorage made every visit open with
-the previous visit's selections still ticked — which reads exactly like the
-screens shipping pre-filled. Real resumability belongs to a backend.
+⚠️ **DO NOT PERSIST A CONTROL'S STATE — THE STORE IS SPLIT, AND ONLY COMPLETED
+RECORDS ARE WRITTEN TO DISK.** Every flow selection, draft, basket and search
+field is **in memory only**: localStorage once made every visit open with the
+previous visit's selections still ticked, which reads exactly like the screens
+shipping pre-filled. What DOES survive a refresh, since 6 Sep 2026, is the work
+the user finished — `products`, `checks`, `checkIns`, `savedFinding` — because
+those render as readouts, and `/products`, `/check` and `/progress` are
+specified to open populated anyway. It is the same controls-vs-readouts line
+drawn two paragraphs above.
+
+`lib/store/persistence.ts` owns the seam: `PERSISTED_KEYS` is the whole list,
+`PersistedAnswers` is derived from it, and the split is a **type** so a new key
+has to be placed deliberately. Hydration happens in an effect (never in the
+`useState` initialiser — that is a hydration mismatch) and the write is gated on
+`hydrated` as **state, not a ref**, or the first write clobbers what it just
+read. Anything failing its shape check on read is dropped.
+
+⚠️ **THIS IS NOT RESUMABILITY.** One device, one browser, no account. `Save &
+exit` still does not resume a flow, and a deep link to another visitor's
+check-in still has no data behind it. Real resumability belongs to a backend —
+**do not add an affordance that promises it.** See `docs/decisions.md`,
+"PERSISTENCE".
 
 ⚠️ **USE THE UPDATER FORM FOR ANY TOGGLE:**
 `setAnswer("start", (prev) => toggleMulti(prev ?? [], option))`. A value

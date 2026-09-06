@@ -1203,6 +1203,109 @@ risk. All are on the missing-from-the-DS list.
 
 ---
 
+## PERSISTENCE — the store is SPLIT, and only completed records are written
+
+**6 Sep 2026.** Everything the user did lived in RAM and died on refresh. That
+was deliberate for a prototype and it is recorded as a rule in `AGENTS.md`:
+
+> ⚠️ **DO NOT PERSIST THE ANSWER STORE.** localStorage made every visit open
+> with the previous visit's selections still ticked — which reads exactly like
+> the screens shipping pre-filled.
+
+That rule was right about what it saw and **it still stands for every control.**
+What it got wrong is the scope: it forbade *persistence*, when the thing that
+actually caused the bug was persisting **one bucket that mixed two kinds of
+state**. The old build wrote the whole of `Answers` and read the whole of it
+back, so a revisit restored `conditions`, `skin-type` and `start` — the flow
+opened with chips ticked and looked pre-filled.
+
+### The seam already existed, one paragraph up
+
+`AGENTS.md` draws exactly the line that resolves this, and draws it for a
+different purpose:
+
+> ⚠️ **THIS IS ABOUT CONTROLS, NOT READOUTS.** `/progress` and `/check`
+> deliberately open populated — they have nothing to select, and an empty
+> readout shows nothing.
+
+Persistence follows the SAME line. A restored **control** is the bug. A restored
+**record** is the populated readout those two screens are specified to show.
+
+| Never persisted — restoring these *is* the bug | Persisted — completed work, rendered as readouts |
+| --- | --- |
+| `start` · `skin-type` · `tendencies` · `conditions` · `conditionsOther` · `location` · `timing` | `products` — the library the user built |
+| `productDraft` · `checkBasket` — in-flight, half-built | `checks` — checks actually run |
+| `productQuery` · `checkQuery` — search field text | `checkIns` — the daily diary |
+| `selfie` · `scan` — capture sentinels | `savedFinding` — the § 09 investigation record |
+| `viewingCheck` · `evidence` — view and flow state | |
+
+⚠️ **THE SPLIT IS A TYPE, NOT A FILTER AT THE CALL SITE.** `PERSISTED_KEYS` in
+`lib/store/persistence.ts` is the whole list and `PersistedAnswers` is derived
+from it, so a new key has to be placed deliberately. The original bug was
+invisible precisely because **nothing in the store said which keys were safe**.
+
+### Three things that are load-bearing
+
+- ⚠️ **HYDRATE IN AN EFFECT, NEVER IN THE `useState` INITIALISER.** The server
+  renders with no storage, so seeding initial state from localStorage makes the
+  first client render disagree with the server's HTML and React throws a
+  hydration mismatch.
+- ⚠️ **THE WRITE IS GATED ON `hydrated` AS STATE, NOT A REF.** Effects run in
+  declaration order on mount, so a ref set in the hydrating effect already reads
+  true in the writing one while `answers` is still the empty first-render
+  value — and the write puts `{}` straight over the records it just read. The
+  state flag defers the first write to the render AFTER hydration.
+- ⚠️ **A MALFORMED ROW IS DROPPED, NEVER REPAIRED.** Everything off disk is
+  shape-checked. `CheckIn[]` goes straight into `CheckInCalendar`, which indexes
+  by date and throws on a bad row; half a check-in is not a record.
+
+### ⚠️ THE COROLLARY: NO COMPONENT MAY SNAPSHOT A PROP INTO `useState`
+
+Records arrive **one render after mount** — hydration is an effect, and it has
+to be (the server renders with no storage, so reading it during render is a
+hydration mismatch). Nothing can change that: `useSyncExternalStore` with a
+server snapshot lands the data at the same moment. So the rule is on the
+CONSUMER instead.
+
+`CheckInCalendar` broke on exactly this, 7 Sep 2026. Its opening month was a
+`useState` initialiser reading the `checkIns` prop — a snapshot, taken on the
+first render, that no later value could move. In a real investigation that
+first render sees an EMPTY list (no seed merges in once step 4 is answered), so
+the month fell through to today's, hydration then delivered the records, and
+they were off-screen in the month before. **Measured on 7 Sep with check-ins on
+20–21 Aug: opened on September, should have been August, 0 of 2 visible.**
+
+The fix is `defaultMonth(checkIns, today)` as a pure function evaluated every
+render, with the user's own paging as the only state (`paged ?? default`). ⚠️
+**An effect that corrects the month afterwards is NOT the fix** — it paints the
+wrong month first and then jumps, and it fights the user's paging.
+
+**Before adding `useState(() => somethingFrom(props))` in PROGRESS, CHECK or
+PRODUCTS, check whether the prop is downstream of the store.** If it is, derive
+it instead.
+
+### `lux.investigation.v1` is deleted and never read
+
+⚠️ **DO NOT REPOINT PERSISTENCE AT THE LEGACY KEY.** It holds whole-store
+snapshots from the reverted build — exactly the flow selections this design
+refuses to restore. The new key is `lux.records.v2`; bump the name again rather
+than widening it if the shape changes.
+
+### What this does NOT do
+
+⚠️ **THIS IS NOT RESUMABILITY, AND IT MUST NOT BE DESCRIBED AS ANY.** One
+device, one browser, no account. `Save & exit` still does not resume a flow —
+it never could, since the flow answers are the half that stays in memory by
+design. A deep link to `/progress/check-in/[date]` still has no data behind it
+for anyone but the original visitor, and photos are still the string
+`"captured"` because images need real storage.
+
+The audit at `#storage` is right that the product needs a backend and auth; this
+closes the *durability* half of that seam on one device and no more. **Do not
+add a "resume your investigation" affordance on the strength of it.**
+
+---
+
 # Evidence behind the non-negotiables
 
 `AGENTS.md` states these as one-line rules. The measurements and the
