@@ -42,7 +42,7 @@ export function CheckScreen() {
 
   return (
     <HubScreen
-      title="Check"
+      title="Analysis"
       subtitle="Product compatibility"
       nav="check"
       layout="plain"
@@ -61,7 +61,7 @@ export function CheckScreen() {
          frozen at #acc5cc (see CanvasShader.tsx), so that floor IS this
          screen's worst case whatever the field does. Against it: the h1 and
          the bubble copy in `text/primary` 7.64:1, the subtitle in
-         `text/secondary` 4.75:1, `View previous checks` in `text/brand`
+         `text/secondary` 4.75:1, `View previous analyses` in `text/brand`
          6.59:1, and the strip's translucent `surface/data` composites to
          #97b8bd, giving `text/on-data` 6.52:1 and `-secondary` 4.79:1. All AA.
          Nothing on this screen sits on bare canvas below `text/secondary`, so
@@ -100,7 +100,7 @@ export function CheckScreen() {
           same routine.
         </ChatBubble>
         <Button href="/check/new" className={styles.cta}>
-          Start a check
+          Start analysis
         </Button>
         {/* ⚠️ THE TRAILING CHEVRON IS NOT IN FIGMA. 601:1952 draws this as a
             bare text link, which reads as the one thing on the screen that
@@ -110,7 +110,7 @@ export function CheckScreen() {
             `icon-sm`, currentColor, so it takes `text/brand` from the link and
             cannot drift from it. Nothing else about the link changed. */}
         <Link href="/check/history" className={`${styles.link} t-body3`}>
-          <span className={styles.linkLabel}>View previous checks</span>
+          <span className={styles.linkLabel}>View previous analyses</span>
           <ChevronRightIcon className={styles.linkArrow} />
         </Link>
       </div>
@@ -133,7 +133,7 @@ export function CheckScreen() {
 export function CheckNoProfile() {
   return (
     <HubScreen
-      title="Check"
+      title="Analysis"
       subtitle="Product compatibility"
       nav="check"
       layout="plain"

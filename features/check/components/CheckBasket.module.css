@@ -254,18 +254,29 @@
   background: var(--color-border-glass);
 }
 
-.submit {
-  width: 100%;
-}
-
-/* The same `width/action` every other primary action takes on desktop, rather
+/* The same `width/action` every other primary action in the app takes, rather
    than stretching across the tray. No centring needed here — `Sheet`'s tray is
    a flex column with `align-items: center`, so a child that is not full width
-   is already on the axis. */
-@media (min-width: 1024px) {
-  .submit {
-    width: var(--width-action);
-  }
+   is already on the axis.
+
+   ⚠️ THE CAP IS UNCONDITIONAL, NOT DESKTOP-ONLY — that was the bug. `Sheet`'s
+   tray is `left: 0; right: 0` until 1024, so between a phone and that
+   breakpoint it is as wide as the VIEWPORT, and a `width: 100%` CTA grew with
+   it: measured at a 988 window the button was ~948 while `Start analysis` —
+   the same primary action one section over — was 392, because `HubScreen`
+   caps its mobile column. Every screen-level action in LUX is bounded; the one
+   inside the tray was not.
+
+   `max-width` rather than `width` so a narrow phone is unaffected — at 416 and
+   below the tray's content box is under 376 and the button fills it outright.
+   Between there and 440 (the Figma canvas, content box 400) the cap leaves a
+   12 gutter either side of a CTA the rows still span; that is the price of
+   having no breakpoint between mobile and 1024 to hang this on, and 12 is
+   cheaper than the ~570 of overshoot it replaces. Non-negotiable 12 forbids a
+   440 media query, so the cap is unconditional. */
+.submit {
+  width: 100%;
+  max-width: var(--width-action);
 }
 
 /* sits directly under the disabled CTA, so the reason is next to the control it

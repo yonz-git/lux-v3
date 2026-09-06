@@ -20,7 +20,7 @@ import {
 /**
  * `Check — previous checks` (652:2554) at `/check/history`.
  *
- * The destination for "View previous checks" on the Check landing — the handoff
+ * The destination for "View previous analyses" on the Analysis landing — the handoff
  * added this screen precisely so that link was no longer dangling.
  *
  * ⚠️ A ROW'S PILL IS THE CHECK'S WORST BAND, and no pill means every product in
@@ -47,7 +47,7 @@ export function CheckHistory() {
   if (checks.length === 0) {
     return (
       <HubScreen
-        title="Previous checks"
+        title="Previous analyses"
         nav="check"
         backHref="/check"
         layout="plain"
@@ -56,7 +56,7 @@ export function CheckHistory() {
       >
         <div className={styles.empty}>
           <Orb animateIn />
-          <h2 className="t-h4-h3">No checks yet</h2>
+          <h2 className="t-h4-h3">No analyses yet</h2>
           <p className={`${styles.emptyText} t-body3-body2`}>
             Run a compatibility check and it will appear here.
           </p>
@@ -70,7 +70,7 @@ export function CheckHistory() {
 
   return (
     <HubScreen
-      title="Previous checks"
+      title="Previous analyses"
       nav="check"
       backHref="/check"
       layout="card"

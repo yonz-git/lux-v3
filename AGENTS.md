@@ -146,7 +146,7 @@ Figma frame ids and each step's `isComplete` rule.
 | `/progress/empty` | ⚠️ prototype-only empty state | `progress` |
 | `/progress/check-in` | pushed view — the daily check-in chat | `progress` |
 | `/progress/check-in/[date]` | pushed view — ⚠️ the app's ONE dynamic route | `progress` |
-| `/check` | hub landing — **the default**, opens ready to check | `check` |
+| `/check` | hub landing — **the default**. ⚠️ Titled `Analysis`; the id and the route are still `check` | `check` |
 | `/check/no-profile` | ⚠️ prototype-only empty state | `check` |
 | `/check/new` | pushed view — build the check | `check` |
 | `/check/analyzing` | pushed view | `check` |
@@ -410,6 +410,11 @@ variant structures — read `docs/design.md`.
    ⚠️ **The reversal only animates because of the `--grad-*` plumbing.** CSS
    cannot interpolate `background-image`; the endpoints are registered
    `<color>` properties in `globals.css`. Motion is `duration/hover` (400ms).
+⚠️ **THE NAV'S THIRD ITEM READS `Analysis`, AND ITS ID IS STILL `check`.** The
+label is the word the user sees; the id keys the route map, the `NavSection`
+type and every `nav=` prop. Do not "fix" the mismatch by renaming the id — see
+`docs/decisions.md`, "the naming".
+
 6. **The bottom nav is fixed and identical on every screen**:
    `--nav-inset-bottom` from the bottom, centred, `--z-nav`, 380 wide mobile /
    598 desktop. `active="none"` is a real state, not a fallback. ⚠️ **FOUR

@@ -86,13 +86,13 @@ export function CheckAnalyzing() {
         <Orb className="reveal-hero" thinking />
 
         <h1 className={`${styles.title} t-h4`}>
-          LUX is checking compatibility…
+          LUX is analysing…
         </h1>
 
         <PassList
           className={styles.passes}
           passes={CHECK_PASSES}
-          label="Checking compatibility"
+          label="Analysing your products"
         />
 
         <p className={`${styles.description} t-body3`}>

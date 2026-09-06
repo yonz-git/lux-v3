@@ -1219,7 +1219,17 @@ retrospective side uses it everywhere: the route, the title, the screen.
 
 ### What has already moved (6 Sep 2026)
 
-Two steps taken toward the merge, both small and both reversible:
+Three steps taken toward the merge, all small and all reversible:
+
+- **The CHECK section is called Analysis to the user.** The nav item, the
+  landing, its CTA, the builder, the analysing screen, the results and the
+  history all say *analysis* now. ⚠️ **THE `check` ID DID NOT CHANGE** — it keys
+  the route map, the `NavSection` type and every screen's `nav=` prop, and
+  renaming it would touch a dozen files to change a word nobody sees. The label
+  is the word the user reads; the id is plumbing. ⚠️ **The ROUTES are still
+  `/check/*`** for the same reason, which means the URL and the title disagree
+  until the merge is decided — noted here rather than fixed, because moving the
+  routes is the merge, not a rename.
 
 - **Step 4 continues to `/check/new`, not to `/investigation/products`.** Those
   two screens were doing the same job — search a catalogue, build a list of your

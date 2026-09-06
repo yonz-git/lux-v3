@@ -246,7 +246,7 @@ export function CheckBuilder() {
           through an investigation". A `?from=` would have to survive the tray,
           the search and a reload; an answer already in the store does not. */}
       <HubScreen
-        title="Add products to check"
+        title="Add your products"
         nav="check"
         backHref={answers.timing?.date ? "/investigation/timing" : "/check"}
         layout="card"
@@ -286,7 +286,7 @@ export function CheckBuilder() {
               setAnswer("checkQuery", v);
               setDismissed(false);
             }}
-            label="Search products to check"
+            label="Search products to analyse"
           />
 
           {/* the count is inside a panel a screen reader has to find, and the

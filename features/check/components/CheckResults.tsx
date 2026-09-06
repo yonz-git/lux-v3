@@ -99,7 +99,7 @@ export function CheckResults() {
 
   return (
     <HubScreen
-      title="Check Results"
+      title="Analysis results"
       nav="check"
       backHref="/check"
       layout="card"
@@ -120,7 +120,7 @@ export function CheckResults() {
       {/* 2 — the numbers */}
       <div className={styles.block}>
         <SummaryCard
-          label="Check summary"
+          label="Analysis summary"
           stats={[
             { value: summary.products, label: "Products checked" },
             { value: summary.ingredients, label: "Ingredients checked" },
@@ -205,13 +205,13 @@ export function CheckResults() {
       {/* ⚠️ RE-RUNNING WRITES A NEW CHECK, IT DOES NOT MUTATE THIS ONE. A check
           happened at a point in time and appears in the history under that
           date; editing the set and running it again is a second check, which is
-          why the action says "Re-run check" rather than "Save". Cancel leaves
+          why the action says "Re-run analysis" rather than "Save". Cancel leaves
           the results on screen untouched. */}
       <CheckBasketSheet
         open={editing}
         onClose={() => setEditing(false)}
         products={basket}
-        submitLabel="Re-run check"
+        submitLabel="Re-run analysis"
         onRemove={(id) =>
           setAnswer("checkBasket", (prev) => (prev ?? []).filter((p) => p.id !== id))
         }

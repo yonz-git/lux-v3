@@ -55,7 +55,13 @@ export type NavSection = "none" | "my-skin" | "progress" | "check" | "products";
 const items = [
   { id: "my-skin", label: "My skin", Icon: MySkinIcon, href: "/investigation/start" },
   { id: "progress", label: "Progress", Icon: ProgressIcon, href: "/progress" },
-  { id: "check", label: "Check", Icon: CheckIcon, href: "/check" },
+  /* ⚠️ THE LABEL IS `Analysis`, THE ID IS STILL `check`. The id keys the route
+     map, the `NavSection` type and every screen's `nav=` prop; renaming it
+     would touch a dozen files to change a word the user never sees. The LABEL
+     is the word the user sees, and the word the product means is analysis —
+     the app was calling one idea "check", "investigation" and "findings". See
+     `docs/decisions.md`, "the naming". */
+  { id: "check", label: "Analysis", Icon: CheckIcon, href: "/check" },
   { id: "products", label: "Products", Icon: ProductsIcon, href: "/products" },
 ] as const;
 

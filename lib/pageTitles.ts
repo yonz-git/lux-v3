@@ -35,12 +35,12 @@ const HUB_TITLES: Record<string, string> = {
   "/progress": "Progress",
   "/progress/empty": "Progress — no check-ins yet",
   "/progress/check-in": "Daily check-in",
-  "/check": "Compatibility check",
-  "/check/no-profile": "Compatibility check — no skin profile",
-  "/check/new": "Build a check",
-  "/check/analyzing": "Analysing your check",
-  "/check/results": "Check results",
-  "/check/history": "Previous checks",
+  "/check": "Analysis",
+  "/check/no-profile": "Analysis — no skin profile",
+  "/check/new": "Add products",
+  "/check/analyzing": "Analysing your products",
+  "/check/results": "Analysis results",
+  "/check/history": "Previous analyses",
   /* ⚠️ UNDER `/investigation`, AND NOT A FLOW STEP — so it belongs here rather
      than coming from `flow.ts`. The five steps COLLECT; this reports on what
      they collected, and carries no progress track and no `Save & exit`. See

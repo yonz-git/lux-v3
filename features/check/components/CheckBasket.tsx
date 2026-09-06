@@ -57,7 +57,7 @@ import { fullName, type CatalogProduct } from "@/features/products/products";
  *
  *   0 products   the GOAL        "Pick 2 products to compare"
  *   1 product    the PROGRESS    "1 of 2 — pick one more"
- *   2-8          the ACTION      "N products · review & check"
+ *   2-8          the ACTION      "N products · review & analyse"
  *
  * ⚠️ IT IS INERT BELOW TWO, on purpose. With nothing to review there is nothing
  * for the sheet to show, and a control that opens an empty tray teaches the
@@ -78,7 +78,7 @@ export function CheckBasketBar({
   const ready = count >= MIN_CHECK_PRODUCTS;
 
   const label = ready
-    ? `${count} products · review & check`
+    ? `${count} products · review & analyse`
     : count === 0
       ? `Pick at least ${MIN_CHECK_PRODUCTS} products`
       : `${count} of ${MIN_CHECK_PRODUCTS} — pick one more`;
@@ -121,7 +121,7 @@ export function CheckBasketSheet({
   onRemove,
   onAddAnother,
   onSubmit,
-  submitLabel = "Check compatibility",
+  submitLabel = "Start analysis",
 }: {
   open: boolean;
   onClose: () => void;
