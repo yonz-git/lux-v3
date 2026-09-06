@@ -18,14 +18,14 @@
  * screen states about it — the day count, the percentage, "3 days ago" — is
  * computed from the series rather than transcribed from the comp, so the screen
  * stays internally consistent whatever date it runs from. That start date is the
- * user's own answer once they have given one, and the fixed demo date until
+ * user's own answer once they have given one, and `today - DEMO_SPAN` until
  * then; see THE DEMO INVESTIGATION below for why `/progress` opens populated.
  * Every entry point is named `demo*` so nothing mistakes them for a data layer.
  * Delete them the moment CHECK writes real check-ins.
  */
 import type { Answers } from "@/lib/store/answers";
 import { DEMO_PROFILE, ownedProducts, skinProfile } from "@/lib/demo";
-import { type IsoDate, daysBetween, fromIso, toIso } from "@/lib/date";
+import { type IsoDate, addDays, daysBetween, fromIso, toIso } from "@/lib/date";
 import type { SavedProduct } from "@/features/products/products";
 
 /**
@@ -52,6 +52,24 @@ export type CheckIn = {
   note?: string;
   /** the capture is a placeholder, so this records THAT a photo was taken */
   photo?: string;
+  /**
+   * The products this record says were in use that day — ids into the user's
+   * own library. Written by `Check-in detail`, which edits the list in place.
+   *
+   * ⚠️ ABSENT IS NOT EMPTY. Absent means nobody has touched this day's list, so
+   * `productsForCheckIn` derives it from `addedOn` the way the screen always
+   * has. An array — including an empty one — means the list is the user's and
+   * is allowed to be empty: exactly the distinction `ownedProducts` draws on
+   * the library itself.
+   *
+   * ⚠️ IDS, NOT PRODUCTS. `checkBasket` stores whole products because a basket
+   * row can be a live Open Beauty Facts result that exists in no library; a
+   * check-in's row is something you OWN, so the id keeps ONE copy of the name,
+   * the size and `addedOn` rather than a snapshot that goes stale the moment
+   * the library entry changes. An id whose product has left the library drops
+   * out of the list.
+   */
+  products?: string[];
 };
 
 /** The chart's y-axis runs 0–10, and the comp labels 10 / 5 / 0. */
@@ -83,48 +101,55 @@ export function investigationStart(a: Answers): Date | null {
    completely — walk the flow and the profile, dates and trend are all theirs.
    `Progress — empty` is still built and still reachable, at `/progress/empty`.
 
-   ⚠️ THE DEMO CLOCK IS FIXED, AND NOT `new Date()`. Two reasons.
+   ⚠️ THE DEMO CLOCK IS THE REAL CLOCK, AND THE SEED IS MEASURED BACK FROM IT.
+   It used to be frozen at 17 Aug 2026 so the demo path was a pure function of
+   nothing and could prerender safely. The freeze is gone: the calendar rings
+   the real today, and `demoStart` is simply `today - DEMO_SPAN`, so the whole
+   seeded fortnight slides along with the date the reader is actually on.
 
-   1. Correctness. This branch renders during SSR — it is what an unanswered
-      store produces, so it is what gets prerendered. `new Date()` there bakes
-      the BUILD date into static HTML and then disagrees with the client on
-      hydration. Frozen dates make the whole demo path a pure function of
-      nothing, so it prerenders safely and never mismatches. The real-answer
-      branch may call `new Date()` freely: it is unreachable until the user has
-      answered step 4, which can only happen client-side.
-   2. Fidelity. Anchored to 2 Aug 2026 the seeded offsets put the comp's own
-      five days on Aug 2, 5, 9, 11 and 14 — exactly the points it plots — under
-      an "August 2026" calendar header, exactly the comp's. A relative clock
-      would drift off both.
+   ⚠️ NOTHING IN THIS MODULE READS A CLOCK, AND THAT IS WHAT MAKES IT SAFE.
+   `new Date()` called during render is exactly what the freeze existed to
+   avoid — it bakes a date into the prerendered HTML, and the server keeps UTC
+   where the reader keeps local time, so for some hours of every day the two
+   disagree about what day it is and React hydrates a mismatch. So the clock is
+   a PARAMETER here and the components take it from `useToday`, which reproduces
+   the server's timestamp on the first client render and corrects to the
+   browser's own afterwards. See `lib/useToday.ts`.
 
-   The cost is that the ringed "today" is a fixed day rather than the real one.
-   For a prototype whose calendar is mock data either way, matching the design
-   deterministically is worth more. To make it track the real clock instead,
-   return `new Date()` from `demoToday()` and `demoStart()` becomes
-   `today - 15 days` — nothing else changes, but see reason 1 first.
+   ⚠️ THE COMP'S FIVE DATES ARE GONE AND THE COMP'S SHAPE IS NOT. Anchored to a
+   fixed 2 Aug the offsets landed the comp's own days on Aug 2, 5, 9, 11 and 14
+   under an "August 2026" header. What the frame is really specifying is a
+   RELATIVE picture — a fortnight of check-ins, the last of them three days
+   back, today a ring on an empty day — and `DEMO_SPAN` plus `DEMO_OFFSETS`
+   still reproduce all three on whatever date the app is opened. The absolute
+   dates were the transcription; the intervals are the design.
+
+   ⚠️ ONE THING THE REAL CLOCK COSTS, and it is worth knowing before you chase
+   it: `DEMO_PRODUCTS` in lib/demo.ts still carries FIXED `addedOn` dates
+   (Jun–Aug 2026), so `productsUsedOn` now returns all five on every seeded day
+   instead of a routine that grows across the fortnight. Making those relative
+   too means threading a clock through `ownedProducts`, which PRODUCTS and CHECK
+   both call from screens that have none. Left alone rather than half-done.
    -------------------------------------------------------------------------- */
 
 /* The seeded profile lives in lib/demo.ts — PROGRESS and CHECK share it, so the
    demo cannot claim two different skin types depending on the tab. */
 
-/** 2 Aug 2026 — the comp's "Started Aug 2, 2026". */
-export function demoStart(): Date {
-  return new Date(2026, 7, 2);
-}
-
 /**
- * 17 Aug 2026 — chosen, not transcribed.
+ * How far back the seeded investigation began — 15 days, and the number is
+ * load-bearing.
  *
- * The comp rings 11 Aug as today, but it also marks a check-in on the 14th and
- * captions the button "Last check-in: 3 days ago", and no single day satisfies
- * all three. 15 days after the start does: every seeded check-in falls in the
- * past, the last of them (14 Aug) is three days ago as captioned, and today
- * stays a ring on a day with no disc, which is the picture the comp is going
- * for. The comp's own five — Aug 2, 5, 9, 11, 14 — are all still in the series;
- * see `DEMO_OFFSETS` for the four filled in between them.
+ * `DEMO_OFFSETS` ends at 12, so a 15-day span puts the last seeded check-in
+ * three days ago, which is what makes the button's caption read "Last check-in:
+ * 3 days ago" — one of the three facts the comp states at once. It also leaves
+ * today a ring on a day with no disc, which is the picture the frame draws, and
+ * keeps every seeded day in the past. Change it and all three move.
  */
-export function demoToday(): Date {
-  return new Date(2026, 7, 17);
+const DEMO_SPAN = 15;
+
+/** Where the seeded investigation started: `DEMO_SPAN` days before today. */
+export function demoStart(today: Date): Date {
+  return addDays(today, -DEMO_SPAN);
 }
 
 /** Everything the Progress screen needs, from the user's answers or the demo. */
@@ -137,26 +162,19 @@ export type ProgressView = {
   tendencies?: string[];
 };
 
-export function progressView(a: Answers): ProgressView {
+/**
+ * ⚠️ `today` IS PASSED IN, NEVER READ FROM THE CLOCK HERE — see the note above.
+ * Callers get it from `useToday`.
+ */
+export function progressView(a: Answers, today: Date): ProgressView {
   const answered = investigationStart(a);
 
   const profile = skinProfile(a);
 
-  if (!answered) {
-    return {
-      isDemo: true,
-      start: demoStart(),
-      today: demoToday(),
-      skinType: profile.skinType,
-      tendencies: profile.tendencies,
-    };
-  }
-
   return {
-    isDemo: false,
-    start: answered,
-    /* safe: this branch cannot render on the server — see the note above */
-    today: new Date(),
+    isDemo: !answered,
+    start: answered ?? demoStart(today),
+    today,
     skinType: profile.skinType,
     tendencies: profile.tendencies,
   };
@@ -196,9 +214,9 @@ export function dayNumber(start: Date, today: Date): number {
  * ends where it did: 9 → 1, "Improving, symptoms decreased 89%".
  *
  * ⚠️ IT STILL ENDS AT OFFSET 12, AND THAT IS A CONSTRAINT, NOT A GAP. 12 is
- * 14 Aug, three days before `demoToday`, which is what makes the comp's caption
- * "Last check-in: 3 days ago" true — one of the three facts that pins the demo
- * clock at all (see `demoToday`). Filling 13 and 14 flipped the caption to
+ * three days before today on a 15-day span, which is what makes the button's
+ * caption "Last check-in: 3 days ago" true — one of the three facts that fix
+ * `DEMO_SPAN` at all (see it). Filling 13 and 14 flipped the caption to
  * "yesterday" and quietly broke the frame it was matching. Fill BETWEEN the
  * comp's days; do not extend past the last one. */
 const DEMO_OFFSETS = [0, 1, 3, 4, 5, 7, 9, 10, 12];
@@ -548,9 +566,9 @@ export function recordCheckIn(current: CheckIn[], entry: CheckIn): CheckIn[] {
  * `SymptomTrend` and the calendar both already render.
  *
  * ⚠️ IN DEMO MODE THE TWO ARE MERGED, on purpose. A check-in recorded during a
- * demo walk is dated the demo's frozen today (17 Aug 2026 — see `demoToday`),
- * so it lands three days after the last seeded point and joins the same series
- * rather than stranding itself weeks to the right of it. That is the whole
+ * demo walk is dated the demo's today, which is the real one, so it lands three
+ * days after the last seeded point and joins the same series rather than
+ * stranding itself to the right of it. That is the whole
  * value of the button on a portfolio walk: tap it and the calendar fills today,
  * the chart grows a sixth point and the caption flips to "Last check-in: today".
  * A user entry always wins over a seeded one on the same day.
@@ -560,11 +578,11 @@ export function recordCheckIn(current: CheckIn[], entry: CheckIn): CheckIn[] {
  * checked in on a day that has not arrived. Nothing BEFORE `view.start` is
  * dropped for the mirror-image reason, and it is what stops a demo walk
  * leaking into a real investigation: check in on the demo screen and the entry
- * is dated the frozen 17 Aug 2026, then answer step 4 with a real flare date
- * and the clock becomes `new Date()`. The seed disappears as it should, but
- * that one 17 Aug entry survived in the store — so the calendar opened on
- * AUGUST with a single stranded disc, today's ring was off in September where
- * nothing could see it, and the chart plotted a point weeks before day 1. A
+ * is dated today, then answer step 4 with a flare date LATER than that. The
+ * seed disappears as it should, but that entry survived in the store — so the
+ * calendar could open on a month behind the one today is in, showing a single
+ * stranded disc with today's ring nowhere in sight, and the chart plotted a
+ * point before day 1 of the investigation. A
  * record from before the investigation began is the readout inventing data,
  * which is the exact failure the demo clip above was added to fix.
  *
@@ -589,10 +607,15 @@ export function checkInsFor(a: Answers, view: ProgressView): CheckIn[] {
 /* ---------------------------------------------------------------------------
    CHECK-IN DETAIL — `Check-in detail` (556:1330 / 557:1353)
 
-   The historical record for ONE day, opened from the Progress calendar. Nothing
-   here is new state: a check-in already carries its severity, changes, note and
-   photo, and the products are the ones the user owned on the day. The screen
-   reads; the chat writes.
+   The historical record for ONE day, opened from the Progress calendar. The
+   severity, the changes, the note and the photo are the ones the chat wrote —
+   the screen reads them and states nothing it cannot derive.
+
+   ⚠️ THE PRODUCT LIST IS THE ONE EXCEPTION, AND IT IS NEW STATE. It began as a
+   pure derivation from `addedOn` and stays one until the user edits it, at
+   which point the day's list becomes `CheckIn.products` and the derivation
+   steps aside. See `productsUsedOn` for why the derivation was right on its
+   own and no longer is.
    -------------------------------------------------------------------------- */
 
 /** One day's record, or null if the user did not check in that day. */
@@ -621,14 +644,21 @@ export function severityLabel(severity: number): string {
 /**
  * `card · products used` — what was in the routine on the day of a check-in.
  *
- * ⚠️ IT IS DERIVED FROM `addedOn`, NOT RECORDED BY THE CHECK-IN — and that is a
- * decision, flagged in `CheckInDetail`. The chat's three turns ask about skin,
- * not about products, so nothing writes a per-day product list; adding a fourth
- * turn would change a screen the frame draws. What the app does already know is
- * when each product entered the library, so "used on 5 Aug" is every product
+ * ⚠️ IT IS THE DEFAULT, NOT THE ANSWER — see `productsForCheckIn`. The chat's
+ * three turns ask about skin, not about products, so nothing WRITES a per-day
+ * product list at the moment the check-in is recorded, and adding a fourth turn
+ * would change a screen the frame draws. What the app already knows is when
+ * each product entered the library, so "used on 5 Aug" starts as every product
  * added on or before it. A product added later cannot have been in that day's
  * routine, which is the error the screen would otherwise make on every day but
  * the most recent.
+ *
+ * ⚠️ WHAT THE DERIVATION CANNOT KNOW is that you own a cleanser and did not use
+ * it that day, or that you used something you only entered into the library
+ * afterwards. Owning a product is not using it, and the record is the user's.
+ * So the list is editable on the screen, and an edit stores `CheckIn.products`
+ * — from then on this function is the thing that day's list was BEFORE anyone
+ * corrected it, and no longer what it shows.
  *
  * ⚠️ THE COMP'S SECOND LINE — "Moisturizer · Applied Morning & Night" — HAS NO
  * DATA BEHIND IT. LUX stores no product category and no routine time; inventing
@@ -637,4 +667,47 @@ export function severityLabel(severity: number): string {
  */
 export function productsUsedOn(a: Answers, date: IsoDate): SavedProduct[] {
   return ownedProducts(a).filter((p) => p.addedOn <= date);
+}
+
+/**
+ * What the record's `Products used` card actually lists — the user's own list
+ * once they have edited one, the `addedOn` derivation until then.
+ *
+ * ⚠️ THE ORDER IS THE LIBRARY'S, IN BOTH BRANCHES. Filtering `ownedProducts`
+ * rather than mapping the stored ids is what guarantees that: a list you have
+ * edited reads in the same order as one you have not, so adding a product back
+ * does not park it at the bottom where it looks like a different kind of row.
+ * The stored order therefore carries no meaning, which is why nothing preserves
+ * it.
+ */
+export function productsForCheckIn(a: Answers, entry: CheckIn): SavedProduct[] {
+  if (!entry.products) return productsUsedOn(a, entry.date);
+  const ids = new Set(entry.products);
+  return ownedProducts(a).filter((p) => ids.has(p.id));
+}
+
+/**
+ * The store update for one edit of a day's product list.
+ *
+ * ⚠️ IT RESOLVES THE ENTRY AGAINST THE LIST IT IS UPDATING, not against the one
+ * the screen rendered — the updater-form rule, and it earns its keep twice
+ * here. Two taps in one tick would otherwise both start from the same rendered
+ * snapshot and the first would be lost; and on the demo path the day being
+ * edited usually has NO entry in the store at all, because it is seeded. The
+ * fallback to `entry` is what materialises the seeded record, whole, on the
+ * first edit — severity, changes, note and photo included, so correcting a
+ * product list cannot quietly drop the rest of the day.
+ */
+export function editProductsUsed(
+  a: Answers,
+  entry: CheckIn,
+  change: (ids: string[]) => string[]
+): (current: CheckIn[] | undefined) => CheckIn[] {
+  return (current) => {
+    const list = current ?? [];
+    const stored = list.find((c) => c.date === entry.date) ?? entry;
+    const ids =
+      stored.products ?? productsUsedOn(a, entry.date).map((p) => p.id);
+    return recordCheckIn(list, { ...stored, products: change(ids) });
+  };
 }

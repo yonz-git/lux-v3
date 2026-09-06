@@ -7,6 +7,14 @@ import { metadataTitleFor } from "@/lib/pageTitles";
    reader hears on navigation cannot drift apart. */
 export const metadata: Metadata = { title: metadataTitleFor("/progress") };
 
+
+/* ⚠️ DYNAMIC ON PURPOSE, AND IT IS ABOUT THE CLOCK. `now` seeds the first
+   client render so hydration matches (see `lib/useToday.ts`); prerendered, it
+   would be the BUILD time, and the correction to the browser's date would then
+   have to travel however stale the deployment is. Rendered per request it is
+   within a timezone of the reader's own clock. */
+export const dynamic = "force-dynamic";
+
 export default function Page() {
-  return <ProgressScreen />;
+  return <ProgressScreen now={Date.now()} />;
 }

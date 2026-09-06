@@ -1,4 +1,4 @@
-import type { CSSProperties } from "react";
+import { useId, type CSSProperties } from "react";
 import styles from "./SymptomTrend.module.css";
 import { DataCard } from "@/components/ui/DataCard";
 import { SEVERITY_MAX, type CheckIn, trendSummary } from "@/features/progress/progress";
@@ -27,6 +27,31 @@ import { fromIso } from "@/lib/date";
  *   Checks out against the comp: its top point plots at 8.9, i.e. y = 18, and
  *   the first ellipse is at y = 14 with a height of 8 — centre 18. ✓
  *
+ * ⚠️ THE CARD IS `surface/data-deep`, NOT `surface/data` — NOT IN FIGMA, BY
+ * EXPLICIT REQUEST, and it is the one place in PROGRESS where SURFACE SYSTEM
+ * B's dark ink is deliberately reversed. Non-negotiable 17 darkened
+ * `text/on-data` globally because white failed AA on the 44% sage; this card
+ * takes the darker 62% sage instead and puts the white back, scoped to itself
+ * by redefining the three text tokens on its own element (see the stylesheet —
+ * that is what makes it specificity-proof rather than a race with DataCard's
+ * own rule). Hierarchy is carried by size and weight, exactly as the
+ * non-negotiable says, so all three tokens resolve to the same white.
+ *
+ * ⚠️ MEASURE IT BEFORE YOU TRUST IT. `surface/data-deep` is translucent, so
+ * what white actually sits on is the sage composited over the canvas gradient
+ * AT THIS CARD'S POSITION — the measurement is in the stylesheet, and it is the
+ * reason this is flagged rather than quietly shipped.
+ *
+ * ⚠️ THE GRIDLINES AND THE AREA FILL ARE NOT IN FIGMA EITHER. The frame draws
+ * three y-axis numbers and a bare line, which reads as figures floating beside
+ * a squiggle: the numbers name values that nothing on the plot lines up with.
+ * Three rules at 10 / 5 / 0 give them something to be true about, and the
+ * baseline is stronger than the two above it because zero is the axis and the
+ * others are guides. The area under the line is the same white at 18% fading
+ * out — it is what makes a two-pixel stroke read as a QUANTITY rather than a
+ * path. Both are chart furniture the DS has no opinion about, because the DS
+ * has no chart; raise them with the line chart itself.
+ *
  * ⚠️ THE LINE STRETCHES, THE DOTS MUST NOT. The card is fluid (392 mobile, 616
  * desktop), so the plot is an SVG with `preserveAspectRatio="none"` — which
  * would also stretch a circle into an ellipse and thicken the stroke
@@ -43,6 +68,9 @@ export function SymptomTrend({
   className?: string;
 }) {
   const summary = trendSummary(checkIns);
+  /* the area fill's gradient needs a document-unique id — two of these on one
+     page would otherwise both resolve to the first one's <defs> */
+  const fillId = useId();
 
   /* x is a plain percentage across the plot; the plot box is inset by the dot's
      radius (see the stylesheet) so the first and last dots sit fully inside the
@@ -50,13 +78,16 @@ export function SymptomTrend({
   const points = checkIns.map((c, i) => ({
     ...c,
     x: checkIns.length > 1 ? (i / (checkIns.length - 1)) * 100 : 50,
-    y: 102 - (c.severity / SEVERITY_MAX) * 94,
+    y: BASELINE_Y - (c.severity / SEVERITY_MAX) * PLOT_SPAN,
   }));
 
   const labelled = axisLabelIndices(points.length);
 
   return (
-    <DataCard className={className} aria-labelledby="trend-title">
+    <DataCard
+      className={[styles.card, className].filter(Boolean).join(" ")}
+      aria-labelledby="trend-title"
+    >
       <h2 id="trend-title" className={`${styles.title} t-h5`}>
         Symptom Trend
       </h2>
@@ -86,6 +117,7 @@ export function SymptomTrend({
                 <svg>. */}
             <div className={styles.canvas} aria-hidden="true">
               <div className={styles.plot}>
+                <div className={styles.gridlines} />
                 {points.length > 1 && (
                   <svg
                     className={styles.line}
@@ -94,6 +126,27 @@ export function SymptomTrend({
                     focusable="false"
                     aria-hidden="true"
                   >
+                    <defs>
+                      {/* ⚠️ `gradientUnits` STAYS THE DEFAULT (objectBoundingBox)
+                          so the fade follows the polygon's own box however wide
+                          the card gets — a userSpaceOnUse gradient would be
+                          stretched by preserveAspectRatio along with it. */}
+                      <linearGradient id={fillId} x1="0" y1="0" x2="0" y2="1">
+                        <stop offset="0%" stopColor="currentColor" stopOpacity="0.18" />
+                        <stop offset="100%" stopColor="currentColor" stopOpacity="0" />
+                      </linearGradient>
+                    </defs>
+                    {/* closed on the ZERO line (y=102), not on the viewBox floor
+                        (110) — the plot's bottom 8px is the y-axis label's half
+                        line box, not part of the scale, and filling into it
+                        would draw a quantity below zero */}
+                    <polygon
+                      points={`${points[0].x},${BASELINE_Y} ${points
+                        .map((p) => `${p.x},${p.y}`)
+                        .join(" ")} ${points[points.length - 1].x},${BASELINE_Y}`}
+                      fill={`url(#${fillId})`}
+                      stroke="none"
+                    />
                     <polyline
                       points={points.map((p) => `${p.x},${p.y}`).join(" ")}
                       fill="none"
@@ -164,6 +217,13 @@ export function SymptomTrend({
  * the breakpoints have to be clones, so both get five.
  */
 const MAX_X_LABELS = 5;
+
+/* Where 0 and 10 land in the 110-tall plot — the y-axis labels are 16-tall boxes
+   spread top to bottom, so their centres sit at 8, 55 and 102. Named because
+   three things now depend on them: the point mapping, the area fill's closing
+   edge, and the gridlines in the stylesheet. ⚠️ CHANGE ONE AND CHANGE THE CSS. */
+const BASELINE_Y = 102;
+const PLOT_SPAN = 94;
 
 function axisLabelIndices(count: number): Set<number> {
   if (count <= MAX_X_LABELS) {

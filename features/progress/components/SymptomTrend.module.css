@@ -4,6 +4,56 @@
    The chart row is a 20-wide y-axis, an 8 gap, then the plot filling the rest.
    Everything is 110 tall. */
 
+/* ⚠️ THE SURFACE AND THE INK ARE OVERRIDDEN BY REDEFINING TOKENS, NOT BY
+   RESTATING PROPERTIES — NOT IN FIGMA, BY EXPLICIT REQUEST.
+
+   `DataCard` writes `background: var(--color-surface-data)` and
+   `color: var(--color-text-on-data)` from its OWN module. Re-declaring
+   `background` here would be a single class against a single class, i.e. a
+   load-order race — the same trap non-negotiable 13 documents for the focus
+   ring, where a module's own shadow silently beat the global outline. Setting
+   the custom properties on this element instead is not a race at all: the two
+   rules touch different properties, and `var()` resolves against whatever the
+   element itself computes. It also carries the whole recipe with it — the
+   `prefers-reduced-transparency` fallback in DataCard composites
+   `--color-surface-data` over the canvas, so it picks the deep sage up for
+   free.
+
+   ⚠️ WHITE IS BACK HERE, AGAINST NON-NEGOTIABLE 17, AND IT DOES NOT PASS AA.
+   Measured on `/progress` at this card's own position rather than estimated —
+   `surface/data-deep` (`#538b8d` @ 62%) composited over the canvas gradient
+   where the card actually sits lands on **rgb(128,169,172)**, and against it:
+
+     white                         2.56:1   ✗  (needs 4.5, or 3 for the title)
+     white on the old surface/data 1.84:1   ✗  what this replaces
+     text/on-data      #2e2a3f     5.41:1   ✓
+     -secondary/-muted #354446     3.98:1   ✓ for the title, ✗ for body
+
+   So the deeper card is a real improvement on white's old footing and still
+   fails, and the row that passes is the one this card just stopped using.
+   ⚠️ THE CHEAPEST WAY TO A PASSING CARD IS TO KEEP THIS SURFACE AND PUT THE
+   DARK INK BACK — 5.41:1, no new token, delete four lines below. Keeping the
+   white needs an OPAQUE dark sage: `sage/700` is the step System B never had,
+   and raising it in Figma fixes this card, `ResultCards`' emphasis block and
+   the basket rows in one move. Left white by explicit request, flagged rather
+   than quietly shipped — the same open question those two already carry.
+
+   All three text tokens resolve to the same white on purpose. System B carries
+   hierarchy by size, weight and tracking (non-negotiable 17), and stepping the
+   secondary and muted ones down in alpha would take a failing ratio and make
+   it worse on exactly the smallest text. */
+.card {
+  --color-surface-data: var(--color-surface-data-deep);
+  --color-text-on-data: var(--color-text-on-data-inverse);
+  --color-text-on-data-secondary: var(--color-text-on-data-inverse);
+  --color-text-on-data-muted: var(--color-text-on-data-inverse);
+
+  /* the two chart-furniture alphas, named so the gridline rule below reads as
+     a scale rather than as three magic numbers */
+  --trend-grid: rgba(255, 255, 255, 0.18);
+  --trend-baseline: rgba(255, 255, 255, 0.34);
+}
+
 .title {
   color: var(--color-text-on-data);
 }
@@ -45,6 +95,35 @@
   inset: 0 4px;
 }
 
+/* ⚠️ THREE RULES AT 10 / 5 / 0, AND THE POSITIONS ARE THE COMPONENT'S OWN
+   CONSTANTS. `BASELINE_Y` is 102 and `PLOT_SPAN` 94, so 10 sits at 8, 5 at 55
+   and 0 at 102 — the same centres the y-axis labels' 16-tall boxes land on,
+   which is what makes a gridline line up with the number naming it. Change
+   either constant and change these three offsets with it.
+
+   ⚠️ ONE ELEMENT, THREE BACKGROUND IMAGES, NOT THREE DIVS AND NOT SVG LINES.
+   The plot's SVG is `preserveAspectRatio="none"`, so anything drawn inside it
+   is stretched horizontally; a background image is laid out by the box and
+   cannot be. `background-size: 100% 1px` keeps every rule exactly one device
+   pixel whatever the card is wide.
+
+   The baseline is the stronger of the two alphas because zero is the AXIS —
+   the line the quantity is measured from — while 10 and 5 are guides. */
+.gridlines {
+  position: absolute;
+  inset: 0;
+  background-image:
+    linear-gradient(var(--trend-grid), var(--trend-grid)),
+    linear-gradient(var(--trend-grid), var(--trend-grid)),
+    linear-gradient(var(--trend-baseline), var(--trend-baseline));
+  background-size: 100% 1px;
+  background-repeat: no-repeat;
+  background-position:
+    0 8px,
+    0 55px,
+    0 102px;
+}
+
 /* preserveAspectRatio="none" on a 0 0 100 110 viewBox makes y map 1:1 to the
    110px height while x stretches to whatever the card is wide — so the plotted
    y values are literal pixels and x is a percentage. The stroke is kept at 2
@@ -54,13 +133,20 @@
   width: 100%;
   height: 100%;
   overflow: visible;
-  /* the trend line is WHITE on a data card — the handoff's rule. currentColor
-     so the stroke follows it. */
+  /* the trend line is WHITE on a data card — the handoff's rule, and true again
+     here because `.card` above puts `text/on-data` back to white on the deeper
+     sage. currentColor so the stroke, and the area fill's two gradient stops,
+     all follow the one token. */
   color: var(--color-text-on-data);
+  /* the fill is a quantity under the line; the line is the reading. */
+  position: relative;
 }
 
 .point {
   position: absolute;
+  /* above the gridlines and the area fill — a dot half-hidden behind a rule
+     reads as a kink in the line rather than as a reported value */
+  z-index: 1;
   width: 8px;
   height: 8px;
   /* left/top are the point's CENTRE, set inline from the data */

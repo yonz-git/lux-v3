@@ -20,6 +20,7 @@ import {
   addMonths,
   formatFull,
   formatMonth,
+  fromIso,
   monthGridSunday,
   sameDay,
   startOfMonth,
@@ -66,12 +67,29 @@ export function CheckInCalendar({
   today: Date;
   className?: string;
 }) {
-  /* Opens on the month with the most recent check-in in it, falling back to
-     today's — landing on an empty month because the flare started last month
-     would show a calendar with nothing in it. */
+  /* ⚠️ TODAY'S MONTH WINS WHEN IT HAS ANYTHING IN IT, and only then does the
+     most recent check-in decide. It used to be the check-in's month outright,
+     on the reasoning that landing on an empty month — because the flare started
+     last month — shows a calendar with nothing in it. Both halves of that are
+     still true, but the demo clock is the real clock now (`demoStart` is
+     `today - 15 days`), so the seeded fortnight straddles a month boundary for
+     roughly half of every month. Opening on the older month put today's ring —
+     the thing the legend names — off in a month the reader had to page to.
+
+     Now the ring is on screen whenever today's month has a disc, which on the
+     seeded window is every day but the first two of a month, and the fallback
+     still catches the case the old rule was written for. */
   const [view, setView] = useState<Date>(() => {
+    const thisMonth = startOfMonth(today);
+    const inThisMonth = checkIns.some((c) => {
+      const d = fromIso(c.date);
+      return d !== null && sameDay(startOfMonth(d), thisMonth);
+    });
+    if (inThisMonth) return thisMonth;
+
     const last = checkIns[checkIns.length - 1];
-    return startOfMonth(last ? new Date(`${last.date}T00:00:00`) : today);
+    const lastDate = last ? fromIso(last.date) : null;
+    return startOfMonth(lastDate ?? today);
   });
 
   /* ⚠️ FORWARD PAGING STOPS AT TODAY'S MONTH, AND BACKWARD PAGING DOES NOT.

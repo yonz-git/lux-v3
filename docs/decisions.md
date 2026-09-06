@@ -443,7 +443,7 @@ finally READS `changes`, `note` and `photo`; nothing on it is stored twice.
 | severity | "Moderate" + "6 / 10" + an indigo meter | `CheckIn.severity` |
 | notes | the note in quotes | `CheckIn.note` |
 | photos | the capture | `CheckIn.photo` |
-| products used | thumb + name + size/date | `productsUsedOn` |
+| products used | thumb + name + size/date, EDITABLE | `productsForCheckIn` |
 
 **⚠️ A PUSHED VIEW, NOT A HUB LANDING AND NOT A FLOW STEP.** Back chevron, nav
 `progress`, no track and no `Save & exit` — the same standing as the check-in
@@ -475,11 +475,52 @@ calendar only links days that have one, so this is reachable by typed URL only.
 the symptom AND which way it moved. Dropping the prefix to match the comp throws
 away the half of the answer the check-in exists to collect.
 
-**⚠️ "PRODUCTS USED" IS DERIVED FROM `addedOn`, NOT RECORDED.** The chat's three
-turns ask about skin, not products, so nothing writes a per-day product list and
-adding a fourth turn would change a screen the frame draws. What the app knows is
-when each product entered the library, so "used on 5 Aug" is every product added
-on or before it — a product added later cannot have been in that day's routine.
+**⚠️ "PRODUCTS USED" STARTS DERIVED FROM `addedOn`, AND IS THE ONE THING ON THE
+RECORD THE USER CAN EDIT.** The chat's three turns ask about skin, not products,
+so nothing writes a per-day product list at the moment the check-in is recorded
+and adding a fourth turn would change a screen the frame draws. What the app
+knows is when each product entered the library, so "used on 5 Aug" STARTS as
+every product added on or before it — a product added later cannot have been in
+that day's routine.
+
+**⚠️ WHAT THE DERIVATION CANNOT KNOW is that you own a cleanser and did not use
+it, or that you used something you only entered afterwards.** Owning a product
+is not using it. So each row carries a ✕ and the card carries a search field
+under the list; an edit stores `CheckIn.products` (ids), and from then on
+`productsForCheckIn` shows the user's list and `productsUsedOn` is only what the
+day was before anyone corrected it. **The other four cards stay read-only,
+deliberately** — they are what you SAID on the day, and a record you can rewrite
+after the fact is not a record. The product list was never something you said.
+
+**⚠️ IT EDITS IN PLACE: NO EDIT MODE, NO SAVE, NO SECOND SCREEN — NOT IN FIGMA.**
+Every change writes immediately. A mode would put a second state on a card whose
+whole content is five rows, and a Save button would imply the record could be
+left half-edited. Three consequences worth knowing:
+
+- **The card now draws at zero products**, which is the one exception to the
+  rule above it: it carries the control that fills it, so an empty list is a
+  state the user can leave rather than a promise the record cannot keep — and
+  hiding the card at zero would take the only way back with it.
+- **The field searches `ownedProducts`, not the catalogue.** A day's routine can
+  only hold things you own, and a row here needs a real `addedOn` to write its
+  meta line. When nothing you own matches, the panel hands over to the PRODUCTS
+  tray rather than inventing a library entry with a duration nobody answered —
+  the same handover `/check/new` makes for the same dead end, and whatever the
+  tray adds joins the day. `AddProductMethodSheet` is now opened from three
+  places.
+- **The seeded day is materialised whole on the first edit.** In demo mode the
+  day being edited usually has no entry in the store at all, so `editProductsUsed`
+  falls back to the merged entry and writes severity, changes, note and photo
+  with it: correcting a product list cannot quietly drop the rest of the day.
+  The reducer also resolves against the list it is updating rather than the one
+  the screen rendered, so five ✕ taps in one tick remove five rows.
+
+⚠️ **The search itself is `searchProducts`, the catalogue ranking pointed at a
+list the caller supplies** — the alternative was a second, weaker matcher beside
+it that does not fold `La Roche-Posay`, does not read a size and does not rank a
+word-start hit above a mid-word one, so the three things `products.ts` already
+knows how to do would be true of the catalogue and false of your own shelf.
+
 **⚠️ AND THE COMP'S SECOND LINE HAS NO DATA BEHIND IT**: "Moisturizer · Applied
 Morning & Night" needs a category and a routine time, and LUX stores neither, so
 the row writes the size and the date the product was added instead. Raise both

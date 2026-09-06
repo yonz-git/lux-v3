@@ -21,5 +21,5 @@ export default async function Page({
   params: Promise<{ date: string }>;
 }) {
   const { date } = await params;
-  return <CheckInDetail date={date} />;
+  return <CheckInDetail date={date} now={Date.now()} />;
 }

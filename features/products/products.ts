@@ -429,12 +429,35 @@ export function searchCatalog(
   query: string,
   extraTerms?: (product: CatalogProduct) => string[]
 ): CatalogProduct[] {
+  return searchProducts(CATALOG, query, extraTerms);
+}
+
+/**
+ * The same search, over a list the caller supplies rather than the catalogue.
+ *
+ * ⚠️ ONE IMPLEMENTATION, TWO HAYSTACKS — the ranking above was the catalogue's
+ * alone, so a screen that had to search the products the USER owns (the
+ * check-in record's product list) would have written a second, weaker matcher
+ * beside it: a lowercase `includes` that does not fold `La Roche-Posay`, does
+ * not read a size, and does not rank a word-start hit above a mid-word one. The
+ * three things this file already knows how to do would then be true of the
+ * catalogue and false of your own shelf.
+ *
+ * Generic in the element type so an owned `SavedProduct[]` comes back as
+ * `SavedProduct[]` — the caller keeps `addedOn` and the group, which is what
+ * makes the result rows renderable.
+ */
+export function searchProducts<T extends CatalogProduct>(
+  list: T[],
+  query: string,
+  extraTerms?: (product: CatalogProduct) => string[]
+): T[] {
   const terms = normalizeForSearch(query).split(" ").filter(Boolean);
   if (terms.length === 0) return [];
 
-  const scored: { product: CatalogProduct; score: number }[] = [];
+  const scored: { product: T; score: number }[] = [];
 
-  for (const product of CATALOG) {
+  for (const product of list) {
     const fields: Record<SearchField, string> = {
       name: normalizeForSearch(product.name),
       brand: normalizeForSearch(product.brand),

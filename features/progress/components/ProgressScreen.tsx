@@ -9,6 +9,7 @@ import { InvestigationRecord } from "./InvestigationRecord";
 import { CheckInCalendar } from "./CheckInCalendar";
 import { SymptomTrend } from "./SymptomTrend";
 import { useInvestigation } from "@/lib/store/InvestigationProvider";
+import { useToday } from "@/lib/useToday";
 import { formatLong } from "@/lib/date";
 import {
   checkInsFor,
@@ -42,7 +43,12 @@ import {
  * assumed until the user starts a real one — then their own answers take over
  * entirely. This is NOT a breach of "the prototype starts EMPTY": that rule is
  * about selection controls rendering pre-ticked, and there are no controls here.
- * `lib/progress.ts` has the full reasoning and the fixed demo clock.
+ * `lib/progress.ts` has the full reasoning.
+ *
+ * ⚠️ `now` IS THE SERVER'S TIMESTAMP, AND IT IS NOT THE CLOCK. It only seeds
+ * the first render so hydration matches; `useToday` corrects to the browser's
+ * own date immediately after. See `lib/useToday.ts` — the demo clock is real
+ * now, and the seeded fortnight is measured back from whatever today is.
  *
  * ⚠️ `Check in today` IS WIRED, AND IT DOES NOT GO TO THE CHECK TAB. It leads to
  * `/progress/check-in` — one question, one answer, back here. The handoff put
@@ -59,9 +65,9 @@ import {
  * handoff's own deviations: "Progress empty/active drop the unlabelled top-right
  * icon from the wireframe — its purpose is undefined, so it was not invented."
  */
-export function ProgressScreen() {
+export function ProgressScreen({ now }: { now: number }) {
   const { answers } = useInvestigation();
-  const view = progressView(answers);
+  const view = progressView(answers, useToday(now));
   const { start, today, skinType, tendencies } = view;
   const checkIns = checkInsFor(answers, view);
   const current = currentLine(answers, view);

@@ -13,6 +13,7 @@ import { Sheet } from "@/components/ui/Sheet";
 import { CameraCapture } from "@/components/ui/CameraCapture";
 import { CameraIcon, NoteIcon } from "@/components/ui/icons";
 import { useInvestigation } from "@/lib/store/InvestigationProvider";
+import { useToday } from "@/lib/useToday";
 import { toggleMulti } from "@/lib/store/answers";
 import { toIso } from "@/lib/date";
 import {
@@ -97,7 +98,7 @@ import {
  * always opens on turn 1. Re-answering REPLACES the day's entry
  * (`recordCheckIn`), and the screen says so in a caption.
  */
-export function CheckIn() {
+export function CheckIn({ now }: { now: number }) {
   const router = useRouter();
   const { answers, setAnswer } = useInvestigation();
 
@@ -111,13 +112,13 @@ export function CheckIn() {
 
   const choice = SKIN_TREND_CHOICES.find((c) => c.label === trend);
 
-  /* The check-in is dated the VIEW's today, not `new Date()`. During a demo walk
-     that is the frozen 17 Aug 2026, so the new point joins the seeded series
-     three days after its last one instead of stranding itself weeks to the right
-     of a chart it cannot connect to. Once step 4 is answered the clock is real
-     and so is this date. See lib/progress.ts — and note the real branch cannot
-     render on the server, which is what keeps `new Date()` out of the prerender. */
-  const view = progressView(answers);
+  /* The check-in is dated the VIEW's today, not a bare `new Date()`. They are
+     the same day now that the demo clock is real — but the view's is the one
+     the calendar rings and the chart plots against, and reading the clock twice
+     is how the two come to disagree. `useToday` is also the only safe way to
+     ask: calling `new Date()` during render bakes a date into the prerender and
+     hydrates a mismatch. See lib/useToday.ts. */
+  const view = progressView(answers, useToday(now));
   const today = toIso(view.today);
   const alreadyToday = (answers.checkIns ?? []).some((c) => c.date === today);
 
