@@ -1,5 +1,6 @@
 "use client";
 
+import { useState } from "react";
 import styles from "./ProgressScreen.module.css";
 import { HubScreen } from "@/components/layout/HubScreen";
 import { Button } from "@/components/ui/Button";
@@ -8,6 +9,7 @@ import { SkinProfile } from "./SkinProfile";
 import { InvestigationRecord } from "./InvestigationRecord";
 import { CheckInCalendar } from "./CheckInCalendar";
 import { SymptomTrend } from "./SymptomTrend";
+import { CheckInOverlay } from "./CheckInOverlay";
 import { useInvestigation } from "@/lib/store/InvestigationProvider";
 import { useToday } from "@/lib/useToday";
 import { formatLong } from "@/lib/date";
@@ -67,6 +69,12 @@ import {
  */
 export function ProgressScreen({ now }: { now: number }) {
   const { answers } = useInvestigation();
+  /* ⚠️ THE CHECK-IN OPENS HERE, IT DOES NOT NAVIGATE — 6 Sep 2026. `Check in
+     today` used to push `/progress/check-in`; the same conversation now opens
+     as a modal panel over this dashboard, and submitting it closes back onto
+     the numbers it just changed. The route still exists for deep links and for
+     the analysis's "pause and check in" — see `CheckInOverlay`. */
+  const [checkingIn, setCheckingIn] = useState(false);
   const view = progressView(answers, useToday(now));
   const { start, today, skinType, tendencies } = view;
   const checkIns = checkInsFor(answers, view);
@@ -108,13 +116,19 @@ export function ProgressScreen({ now }: { now: number }) {
         />
       )}
 
-      <Button href="/progress/check-in" className={styles.cta}>
+      <Button className={styles.cta} onClick={() => setCheckingIn(true)}>
         Check in today
       </Button>
 
       {lastCheckIn && (
         <p className={`${styles.lastCheckIn} t-caption`}>{lastCheckIn}</p>
       )}
+
+      <CheckInOverlay
+        open={checkingIn}
+        now={now}
+        onClose={() => setCheckingIn(false)}
+      />
     </HubScreen>
   );
 }

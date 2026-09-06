@@ -1,0 +1,42 @@
+/* The check-in as an overlay on `/progress` — see CheckInOverlay.tsx.
+
+   No panel geometry lives here. `ChatPanel` owns the surface (375 mobile / 450
+   desktop, the 36 radius, its gradient); this file only reproduces the FRAME
+   the routed check-in gets from `.screen[data-layout="panel"]` — the same top
+   inset, the same mobile margins and the same nav reservation — so the panel
+   lands in the identical place whether it was routed to or opened over the
+   dashboard. Two panels that differ by a few pixels depending on how you got
+   there is the failure this is written to avoid.
+   ========================================================================== */
+
+/* The same recipe `Sheet` uses, and the same caveat: `state/pressed-overlay` at
+   14% is the only darkening token LUX has and it is weak for a modal. One scrim
+   value for both modal surfaces — a real scrim token belongs in Figma. */
+.scrim {
+  position: fixed;
+  inset: 0;
+  z-index: var(--z-overlay);
+  background: var(--color-state-pressed-overlay);
+}
+
+/* ⚠️ `--z-overlay` (300), NOT `--z-sheet` (400), AND THE ORDER MATTERS. It has
+   to clear `--z-nav` (200), because a dashboard's nav showing through the
+   check-in would offer a way out the conversation cannot survive. It must stay
+   BELOW `--z-sheet`, because the photo capture is a `Sheet` opened from inside
+   this overlay: at equal z-index the tray would paint under the panel that
+   opened it. */
+.overlay {
+  position: fixed;
+  inset: 0;
+  z-index: var(--z-overlay);
+
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+
+  /* `.screen[data-layout="panel"]`'s padding, verbatim: 16 at the top (the
+     panel screens sit 24 higher than every other screen), the mobile margin at
+     the sides, and the nav's own clearance under it. */
+  padding: var(--space-lg) var(--margin-mobile)
+    calc(var(--nav-inset-bottom) + var(--size-nav-height) + var(--space-lg));
+}

@@ -164,6 +164,18 @@ view keeps the back chevron and still has no track. Nothing outside
 **Two overlays are not routes:** the selfie capture off step 1 and the products
 add tray. Both are `Sheet` overlays, deliberately. See `docs/decisions.md`.
 
+⚠️ **AND A THIRD OVERLAY IS ALSO A ROUTE — THE DAILY CHECK-IN, FROM 6 Sep 2026.**
+`Check in today` on `/progress` no longer navigates: it opens the same
+conversation as a modal `ChatPanel` over the dashboard
+(`features/progress/components/CheckInOverlay.tsx`), and submitting it closes
+back onto the numbers it just changed. `/progress/check-in` still exists,
+unchanged, for deep links and for the analysis's "pause and check in" push.
+⚠️ **BOTH RENDER `CheckInPanel`** — the conversation is written once and the
+only thing that varies is the way out (`closeHref` + push, or `onClose` +
+close). Do not fork it. The focus trap, Escape and focus restoration come from
+`lib/useModalDialog.ts`, shared with `Sheet`; the scrim deliberately does NOT
+close this one, because the store holds no partial check-in.
+
 ⚠️ **STEP 1 CARRIES A SAFETY NOTICE, AND THE BRIEF'S INTERRUPT IS DELIBERATELY
 NOT BUILT — read this before touching step 1.** The product brief requires the
 flow to INTERRUPT and show urgent-care guidance on nine clinical triggers

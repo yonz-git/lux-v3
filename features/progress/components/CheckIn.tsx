@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, type ReactNode } from "react";
 import { useRouter } from "next/navigation";
 import styles from "./CheckIn.module.css";
 import { BottomNav } from "@/components/layout/BottomNav";
@@ -29,6 +29,11 @@ import {
 
 /**
  * The daily check-in — `Check-in chat` (555:1268), at `/progress/check-in`.
+ *
+ * ⚠️ AND SINCE 6 Sep 2026 IT IS ALSO AN OVERLAY ON `/progress` — `Check in
+ * today` opens `CheckInOverlay` rather than navigating here. This file holds
+ * the route; `CheckInPanel` below is the conversation both homes render, and
+ * `CheckInOverlay.tsx` carries the argument for the change.
  *
  * A chat that builds itself one turn at a time as the user taps a pill:
  *
@@ -100,6 +105,55 @@ import {
  */
 export function CheckIn({ now }: { now: number }) {
   const router = useRouter();
+
+  return (
+    <main className="screen" data-layout="panel">
+      <CheckInPanel
+        now={now}
+        closeHref="/progress"
+        onSubmitted={() => router.push("/progress")}
+      />
+      <BottomNav active="progress" />
+    </main>
+  );
+}
+
+/**
+ * The conversation itself, without a page around it — the panel, its three
+ * turns and the photo overlay.
+ *
+ * ⚠️ IT IS SPLIT OUT BECAUSE THE CHECK-IN NOW HAS TWO HOMES. `/progress/check-in`
+ * is still a route (deep links, the analysis's "pause and check in" push, the
+ * route map), and `/progress` ALSO opens the same conversation as an overlay
+ * over the dashboard rather than navigating — see `CheckInOverlay`. Both render
+ * this, so the two cannot drift into two check-ins that ask different questions.
+ *
+ * The only thing that varies is the way out: the route passes `closeHref` and
+ * pushes on submit, the overlay passes `onClose` and closes on submit. Neither
+ * decision lives in here.
+ */
+export function CheckInPanel({
+  now,
+  closeHref,
+  onClose,
+  onSubmitted,
+  heading,
+}: {
+  now: number;
+  /** the route form — the X is a link back to `/progress` */
+  closeHref?: string;
+  /** the overlay form — the X closes the overlay, going nowhere */
+  onClose?: () => void;
+  /** run after the check-in is written: navigate, or close */
+  onSubmitted: () => void;
+  /**
+   * ⚠️ THE HEADING IS THE CALLER'S, BECAUSE THE TWO HOMES SIT AT DIFFERENT
+   * DEPTHS. On the route this is the page's `<h1>`; in the overlay `/progress`
+   * already owns the `<h1>` and a second one would claim the check-in is a
+   * second page. Default is the route's.
+   */
+  heading?: ReactNode;
+}) {
   const { answers, setAnswer } = useInvestigation();
 
   const [trend, setTrend] = useState<string | null>(null);
@@ -159,15 +213,16 @@ export function CheckIn({ now }: { now: number }) {
         ...(photo ? { photo: "captured" } : {}),
       })
     );
-    router.push("/progress");
+    onSubmitted();
   };
 
   return (
-    <main className="screen" data-layout="panel">
+    <>
       <ChatPanel
-        closeHref="/progress"
+        closeHref={closeHref}
+        onClose={onClose}
         closeLabel="Close check-in"
-        heading={<h1 className="visually-hidden">Daily Check-in</h1>}
+        heading={heading ?? <h1 className="visually-hidden">Daily Check-in</h1>}
         footer={
           /* ⚠️ ALWAYS RENDERED, DISABLED UNTIL COMPLETE — which is what the comp
              draws (it shows the button greyed while the chat is part-answered),
@@ -337,8 +392,6 @@ export function CheckIn({ now }: { now: number }) {
             the chat. */}
       </ChatPanel>
 
-      <BottomNav active="progress" />
-
       <Sheet open={camera} onClose={() => setCamera(false)} title="Take a photo">
         <div className={styles.camera}>
           <CameraCapture
@@ -353,6 +406,6 @@ export function CheckIn({ now }: { now: number }) {
           />
         </div>
       </Sheet>
-    </main>
+    </>
   );
 }

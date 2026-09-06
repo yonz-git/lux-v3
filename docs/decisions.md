@@ -297,6 +297,46 @@ A chat that builds itself one turn at a time as the user taps a pill:
 
 then `Submit check-in`.
 
+**⚠️ IT OPENS AS AN OVERLAY ON `/progress`, AND IT IS STILL A ROUTE — 6 Sep
+2026.** `Check in today` used to push `/progress/check-in`. It now opens the
+same conversation as a modal `ChatPanel` over the dashboard
+(`features/progress/components/CheckInOverlay.tsx`), and submitting it closes
+straight back onto the calendar and the trend line it just moved — the check-in
+is a daily action off a hub that always ended by returning you to the hub, so
+the navigation was a round trip that showed the user nothing on the way. The
+panel already argued for this: `ChatPanel` is drawn as a surface that FLOATS on
+the canvas, its X reads "this goes away" rather than "step back", and
+`ChatPanel.tsx` records that reading in as many words. THE PROTOTYPE LEADS ON
+FLOW.
+
+**The route survives and is not a duplicate.** `/progress/check-in` keeps its
+`metadata`, its `<h1>` and its back-chevron-less panel, because a deep link
+needs somewhere to land and the analysis's "pause and check in" pushes it.
+⚠️ **Both render `CheckInPanel`** — one conversation, two ways in. What varies
+is only the way out: the route passes `closeHref` and pushes on submit, the
+overlay passes `onClose` and closes. The overlay reproduces
+`.screen[data-layout="panel"]`'s frame (16 top, the mobile margin, the nav's
+clearance) rather than inventing one, so the panel lands in the same place
+either way in — measured at 500x788: panel top 16, bottom 692, nav top 708.
+
+**⚠️ THE SCRIM DOES NOT DISMISS IT, UNLIKE `Sheet`'S.** A tray closed by a
+mistap costs you a menu; this one would cost a part-answered conversation,
+because the store holds no partial check-in — the same fact that keeps the note
+field and the photo capture on the screen instead of behind a route. The X and
+Escape are the ways out, and both are deliberate acts.
+
+**⚠️ `--z-overlay` (300), BETWEEN THE NAV AND THE SHEET, AND BOTH BOUNDS ARE
+LOAD-BEARING.** Above `--z-nav` (200), because a nav showing through the
+check-in offers a way out the conversation cannot survive; below `--z-sheet`
+(400), because the photo capture is a `Sheet` opened from INSIDE this overlay
+and at equal z-index the tray would paint under the panel that opened it.
+
+**⚠️ THE FOCUS TRAP IS NOW SHARED — `lib/useModalDialog.ts`.** Escape, the Tab
+wrap and the return of focus to whatever opened the dialog were `Sheet`'s, in
+`Sheet.tsx`. The check-in overlay is a `ChatPanel`, not a tray, so it could not
+simply BE a `Sheet` — and a second copy of a focus trap drifts apart the first
+time one of them is fixed. `Sheet` is unchanged in behaviour; it calls the hook.
+
 **⚠️ IT IS A PROGRESS SCREEN, THOUGH THE FRAME'S NAV SAYS `Check`.** The handoff
 assigns `Check-in chat` to the CHECK section and the frame lights that tab.
 Not taken, for two reasons: `Check — start` offers only "Start a check" and

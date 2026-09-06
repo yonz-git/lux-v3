@@ -60,6 +60,7 @@ import { CloseIcon } from "@/components/ui/icons";
  */
 export function ChatPanel({
   closeHref,
+  onClose,
   closeLabel,
   heading,
   footer,
@@ -67,7 +68,16 @@ export function ChatPanel({
   children,
 }: {
   /** where the X goes — the screen's own way out, not a shared destination */
-  closeHref: string;
+  closeHref?: string;
+  /**
+   * ⚠️ THE OTHER HALF OF THE X, FOR A PANEL THAT IS NOT A ROUTE. PROGRESS opens
+   * the check-in as an overlay ON `/progress`, so there is nowhere to link to —
+   * closing it is a state change, not a navigation. Exactly one of `closeHref`
+   * and `onClose` is supplied; `onClose` wins if both are, and the control is a
+   * `<button>` rather than a `<Link>` because it goes nowhere. Nothing else
+   * about the header changes: same glyph, same slot, same accessible name.
+   */
+  onClose?: () => void;
   /** the X's accessible name; it names what closes, so it is per-caller */
   closeLabel: string;
   /**
@@ -93,13 +103,24 @@ export function ChatPanel({
           <p className="t-body1">Hi, I&rsquo;m LUX</p>
         </div>
 
-        <Link
-          href={closeHref}
-          className={`${styles.headerButton} ${styles.close}`}
-          aria-label={closeLabel}
-        >
-          <CloseIcon />
-        </Link>
+        {onClose ? (
+          <button
+            type="button"
+            onClick={onClose}
+            className={`${styles.headerButton} ${styles.close}`}
+            aria-label={closeLabel}
+          >
+            <CloseIcon />
+          </button>
+        ) : (
+          <Link
+            href={closeHref ?? "/"}
+            className={`${styles.headerButton} ${styles.close}`}
+            aria-label={closeLabel}
+          >
+            <CloseIcon />
+          </Link>
+        )}
       </div>
 
       <div {...bodyProps} className={styles.body}>
