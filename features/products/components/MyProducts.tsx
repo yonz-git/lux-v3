@@ -6,6 +6,7 @@ import { HubScreen } from "@/components/layout/HubScreen";
 import { Button } from "@/components/ui/Button";
 import { Orb } from "@/components/ui/Orb";
 import { ProductAccordionCard } from "./ProductAccordionCard";
+import { ProductArt } from "./ProductArt";
 import { AddProductRow, EmptyBox } from "./ProductList";
 import { AddProductMethodSheet } from "./AddProductMethodSheet";
 import { ChevronDownIcon } from "@/components/ui/icons";
@@ -60,6 +61,22 @@ import {
  * same baseline alignment, same `BUCKET_WINDOW` lookup. ⚠️ NOT IN FIGMA:
  * `My Products — filled` (579:1607) draws the row as title + count only.
  * The row stays exactly 56 — the window sits BESIDE the name, not under it.
+ *
+ * ⚠️ AND EACH ROW NOW SHOWS WHAT IT HOLDS — see `ThumbStack` below. NOT IN
+ * FIGMA either: closed, this screen was four text rows and four counts, so the
+ * only way to find out which group a product was in was to open every one of
+ * them in turn. The artwork that answers that already existed — `ProductArt`
+ * draws every product, tinted per brand and shaped per packaging — and it was
+ * locked inside the cards, which is to say behind the very disclosure the user
+ * was trying to decide about.
+ *
+ * ⚠️ THE PREVIEW FADES OUT WHEN THE GROUP OPENS, AND IT KEEPS ITS WIDTH. Open,
+ * the row is a header for cards sitting 12 below it that draw the same vessels
+ * at 48 — the deck would be the same five pictures twice, smaller, exactly
+ * where the eye should be moving down. It fades rather than unmounting so the
+ * row does not reflow mid-gesture, and the reserved width is deliberate: a
+ * title that ellipsises closed and does not open is worse than one that does
+ * neither.
  *
  * ⚠️ THE CATEGORY ROWS ARE DROPDOWNS, NOT LINKS — AND `/products/[bucket]` IS
  * GONE. NOT IN FIGMA either: 579:1607 gives each row a trailing `chevron-right`
@@ -201,6 +218,55 @@ export function MyProducts() {
 }
 
 /**
+ * ⚠️ HOW MANY OF THE GROUP'S PRODUCTS THE DECK DRAWS, AND IT IS PAIRED WITH
+ * CSS. `.previewThumb`'s three `:nth-child` rules stack the wells front to
+ * back, so a fourth well would render behind the third rather than in front of
+ * it. Change both or neither.
+ *
+ * Three is not a shortening of the list — the count beside the deck already
+ * says how many there are, so a "+2" badge on top of it would be the same
+ * number twice.
+ */
+const PREVIEW_MAX = 3;
+
+/**
+ * ⚠️ NOT IN FIGMA — the deck of the group's first three products, on its closed
+ * row. `My Products — filled` (579:1607) draws the row as title + window +
+ * count only; see the screen's own note above for why that was not enough.
+ *
+ * It is `ProductArt` at 28 in the same opaque well `ProductThumb` uses at 48 —
+ * the existing recipe at a smaller size, not a new one. What the drawings carry
+ * is IDENTITY rather than detail: same brand → same tint, same packaging → same
+ * silhouette. At 28 a vessel is not identifiable and is not meant to be; three
+ * distinct tints and shapes are enough to say "this is the group with the two
+ * CeraVe bottles in it", which is the question a closed row leaves open.
+ *
+ * ⚠️ 28 IS A LITERAL AND OFF THE SIZE SCALE, deliberately. `--size-*` has 24
+ * and 32 and nothing between, and this well is neither an icon nor a control,
+ * so binding either token would name it as something it is not. It is half the
+ * row's own 56, which is the relationship that actually holds it: the deck
+ * fills the row's vertical middle without touching its edges. Raise a
+ * `product-thumb / small` in Figma and this becomes a token.
+ *
+ * ⚠️ DECORATIVE, AND THE ROW IS ALREADY NAMED. `CategoryGroup` sets an
+ * `aria-label` stating the title, the window and the count in words, so the
+ * deck says nothing a screen reader has not been told — hence `aria-hidden`,
+ * and no per-product alt text. The drawings are an illustration of a group, not
+ * a list of products.
+ */
+function ThumbStack({ products }: { products: SavedProduct[] }) {
+  return (
+    <span className={styles.preview} aria-hidden="true">
+      {products.slice(0, PREVIEW_MAX).map((p) => (
+        <span key={p.id} className={styles.previewThumb}>
+          <ProductArt product={p} className={styles.previewArt} />
+        </span>
+      ))}
+    </span>
+  );
+}
+
+/**
  * One category: the 56-tall row, and the products it opens onto.
  *
  * The row keeps every part of `My Products — filled`'s recipe — name, window,
@@ -208,6 +274,12 @@ export function MyProducts() {
  * `chevron-down`, because it no longer goes anywhere. It is a `<button>` with
  * `aria-expanded` / `aria-controls` rather than a link, which is what tells a
  * screen reader the difference.
+ *
+ * ⚠️ IT IS STILL 56. `ThumbStack` sits BETWEEN the copy and the count, not
+ * under the name: a second line would take the row to ~92 and this is the one
+ * screen that stacks four of them. That was the whole reason the deck won over
+ * a full-size preview strip — the strip is more legible and costs the comp's
+ * height on the screen that can least afford it.
  */
 function CategoryGroup({
   bucket,
@@ -245,6 +317,9 @@ function CategoryGroup({
             {BUCKET_WINDOW[bucket]}
           </span>
         </span>
+        {/* nothing to preview in an empty group — and an empty span would
+            still take the row's two 12 gaps on either side of it */}
+        {n > 0 && <ThumbStack products={products} />}
         <span className={`${styles.count} t-h6`}>{n}</span>
         <ChevronDownIcon className={styles.chevron} />
       </button>
