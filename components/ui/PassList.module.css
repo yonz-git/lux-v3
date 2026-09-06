@@ -7,10 +7,22 @@
   gap: var(--space-md);
   width: 100%;
   max-width: 340px;
-  margin: 0;
   padding: 0;
   list-style: none;
   text-align: left;
+}
+
+/* ⚠️ THE `ol` MARGIN RESET IS `:where()`, AT ZERO SPECIFICITY, AND THAT IS
+   LOAD-BEARING. A caller passes `className` to set the interval above the list
+   — `CheckAnalyzing`'s `.passes` does — and that is one class, the same
+   specificity as `.list`. CSS Modules load after each other in import order, so
+   at a tie the LAST sheet wins: this one did, silently, and the 32 the check's
+   analysing screen asks for above the list computed to 0 with the rule sitting
+   right there looking correct. It is the same failure AGENTS.md records for the
+   focus ring and for `icons.tsx`, and the same fix. `:where()` still beats the
+   UA sheet's `1em 0`, so the reset holds where nobody overrides it. */
+:where(.list) {
+  margin: 0;
 }
 
 .pass {

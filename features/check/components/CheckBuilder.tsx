@@ -224,7 +224,7 @@ export function CheckBuilder() {
             label="Add"
             arrow={false}
             disabled={full}
-            aria-label={`Add ${fullName(p)} to this check`}
+            aria-label={`Add ${fullName(p)} to this analysis`}
             onClick={() => add(p)}
           />
         )}

@@ -170,7 +170,7 @@ export function CheckBasketSheet({
               <button
                 type="button"
                 className={styles.remove}
-                aria-label={`Remove ${fullName(p)} from this check`}
+                aria-label={`Remove ${fullName(p)} from this analysis`}
                 onClick={() => onRemove(p.id)}
               >
                 <CloseIcon className={styles.removeIcon} />
