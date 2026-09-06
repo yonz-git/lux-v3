@@ -74,6 +74,22 @@ export function CheckInCalendar({
     return startOfMonth(last ? new Date(`${last.date}T00:00:00`) : today);
   });
 
+  /* ⚠️ FORWARD PAGING STOPS AT TODAY'S MONTH, AND BACKWARD PAGING DOES NOT.
+     The two directions are not symmetrical. A month after this one cannot hold
+     a check-in — `demoCheckIns` and `checkInsFor` both clip the future on the
+     grounds that you cannot have checked in on a day that has not arrived — so
+     › led only into grids that are guaranteed empty, forever, as far as 2099.
+     ‹ leads into months that merely HAPPEN to be empty, which is a different
+     thing and stays reachable.
+
+     Clamping backward too — at the first check-in's month — was the other
+     option and is rejected: in the demo the first check-in is 2 Aug and today
+     is the 17th, so both arrows would be dead at rest on the one screen whose
+     month paging is worth demonstrating. `disabled` rather than a hidden
+     button, so the header keeps its shape and the control keeps announcing
+     itself; the fade is the DS's own opacity/disabled (non-negotiable 5). */
+  const atLatestMonth = sameDay(view, startOfMonth(today));
+
   const checkedIn = new Set(checkIns.map((c) => c.date));
   const cells = monthGridSunday(view);
   const weeks = Array.from({ length: cells.length / 7 }, (_, i) =>
@@ -105,6 +121,7 @@ export function CheckInCalendar({
           <button
             type="button"
             className={styles.arrow}
+            disabled={atLatestMonth}
             aria-label={`Next month, ${formatMonth(addMonths(view, 1))}`}
             onClick={() => setView((v) => addMonths(v, 1))}
           >

@@ -548,11 +548,32 @@ export function recordCheckIn(current: CheckIn[], entry: CheckIn): CheckIn[] {
  * value of the button on a portfolio walk: tap it and the calendar fills today,
  * the chart grows a sixth point and the caption flips to "Last check-in: today".
  * A user entry always wins over a seeded one on the same day.
+ *
+ * ⚠️ THE WINDOW IS CLIPPED AT BOTH ENDS, AND THE SECOND CLIP IS THE DEMO→REAL
+ * HANDOFF. Nothing in the future has always been dropped — you cannot have
+ * checked in on a day that has not arrived. Nothing BEFORE `view.start` is
+ * dropped for the mirror-image reason, and it is what stops a demo walk
+ * leaking into a real investigation: check in on the demo screen and the entry
+ * is dated the frozen 17 Aug 2026, then answer step 4 with a real flare date
+ * and the clock becomes `new Date()`. The seed disappears as it should, but
+ * that one 17 Aug entry survived in the store — so the calendar opened on
+ * AUGUST with a single stranded disc, today's ring was off in September where
+ * nothing could see it, and the chart plotted a point weeks before day 1. A
+ * record from before the investigation began is the readout inventing data,
+ * which is the exact failure the demo clip above was added to fix.
+ *
+ * One filter, both branches, no special case: the demo's own start is 2 Aug and
+ * its offsets begin at 0, so the demo path is unchanged. ⚠️ The cost is that
+ * moving your flare date LATER discards check-ins now behind it — correct, on
+ * the same reasoning, but it is a decision rather than an obvious truth.
  */
 export function checkInsFor(a: Answers, view: ProgressView): CheckIn[] {
-  const recorded = (a.checkIns ?? []).filter(
-    (c) => daysBetween(fromIso(c.date) ?? view.today, view.today) >= 0
-  );
+  const recorded = (a.checkIns ?? []).filter((c) => {
+    const day = fromIso(c.date) ?? view.today;
+    return (
+      daysBetween(day, view.today) >= 0 && daysBetween(view.start, day) >= 0
+    );
+  });
 
   if (!view.isDemo) return recorded;
 

@@ -55,6 +55,26 @@
   }
 }
 
+/* ⚠️ ONLY › EVER TAKES THIS, and it takes the DS's disabled recipe rather than
+   one of its own: the whole control at opacity/disabled (non-negotiable 5),
+   nothing recoloured. See the component for why forward paging clamps at
+   today's month and backward paging does not.
+
+   Written AFTER `.arrow:hover` on purpose. `:hover` still MATCHES a disabled
+   button — it is the click that is swallowed, not the pointer — and the two
+   selectors are the same specificity, so at any earlier position the 0.7 hover
+   would repaint a disabled arrow to look live under the cursor. The guard
+   below covers the same collision for the pointer that is already resting on
+   the arrow when it goes disabled. */
+.arrow:disabled {
+  opacity: var(--opacity-disabled);
+  cursor: not-allowed;
+}
+
+.arrow:disabled:hover {
+  opacity: var(--opacity-disabled);
+}
+
 /* table-layout: fixed is what makes the seven columns equal (352/7 = 50.2857 in
    the mobile comp) without a single width being written down. */
 .grid {
