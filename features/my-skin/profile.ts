@@ -259,26 +259,35 @@ export const COPY = {
   locationSpoken: (regions: string[]) => `On the face: ${regions.join(", ")}.`,
   conditionsLabel: "Known skin conditions",
   /**
-   * "Started Aug 31, 2026 · Day 8" — the one line the SYMPTOMS block carries.
+   * The SYMPTOMS block's first meta pair — `Started on` over
+   * "Aug 31, 2026 · Day 8".
    *
    * ⚠️ IT SITS WITH THE SYMPTOMS, NOT WITH THE SKIN TYPE — asked for directly,
    * 7 Sep 2026. A date on its own is a date; under the pills naming what was
    * noticed it is the age of THOSE symptoms, which is the only thing the
    * reading is for.
+   *
+   * ⚠️ IT IS A LABEL NOW, NOT THE FIRST WORD OF A SENTENCE — asked for
+   * directly, 8 Sep 2026, when both meta lines took the sage card's
+   * label-over-value shape. "Started Aug 31" ran the label into the value and
+   * only worked because the verb happened to govern the date; a label sitting
+   * on its own line has to name the field, so it gains the preposition the
+   * running sentence carried implicitly.
    */
-  startedWord: "Started",
+  startedLabel: "Started on",
   dayWord: "Day",
   /* ---- step 4, now two lines inside the symptoms block ---- */
   startedUnknown: "No start date given",
   /**
-   * ⚠️ "Now" IS ENOUGH HERE, WHERE "Symptoms now" WAS NEEDED BEFORE. The rule
-   * below is that a recap's labels name their subject, and it was written when
-   * step 4 had a block of its own carrying two dates among four other answers.
-   * These two lines now sit INSIDE `What you noticed`, directly under the pills
-   * that name the symptoms, so the subject is already on screen — and repeating
-   * it would make the block say "symptoms" three times in four lines.
+   * ⚠️ IT WAS "Now" UNTIL 8 Sep 2026, AND "Current state" REPLACED IT — asked
+   * for directly. The subject still does not need naming: these two lines sit
+   * INSIDE `What you noticed`, directly under the pills that name the symptoms,
+   * so "Symptoms now" would make the block say "symptoms" three times in four
+   * lines. What the bare "Now" lacked was a NOUN — beside "Started", a lone
+   * adverb reads as another point on the same timeline rather than as the label
+   * of a different fact about a different moment.
    */
-  nowWord: "Now",
+  statusLabel: "Current state",
   /* ---- the hand-off ---- */
   cta: "Add products",
   /**

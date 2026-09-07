@@ -282,17 +282,40 @@
   overflow: hidden;
   border-radius: var(--radius-lg); /* 16 */
   background: var(--color-surface-data-strong);
+  /* the frame the drawing is positioned out of — see `.photoArt` */
+  position: relative;
 }
 
+/* ⚠️ TAKEN OUT OF FLOW SO IT CANNOT SIZE THE WELL, AND THAT IS A DESKTOP FIX
+   RATHER THAN A NICETY. `CheckInPhotoArt` is a `120 / 120` SVG, so in flow at
+   `height: 100%` against an indefinite height it falls back to its own square
+   ratio — a ~354 intrinsic contribution. Paired, that contribution is what the
+   grid row measured: the photo column asked for 354 of picture PLUS its button,
+   came out ~90 taller than the face column, and the face card was left sitting
+   above a band of empty fill the height of the button. Positioned, the well
+   contributes nothing of its own and the row is sized by the FACE — which is
+   the block that actually has a drawn size to keep — with the picture then
+   filling whatever that leaves. `slice` crops it, so no ratio is imposed. */
 .photoArt {
+  position: absolute;
+  inset: 0;
   width: 100%;
   height: 100%;
 }
 
 /* the one control on the screen, so it owes its own gap rather than inheriting
-   one — 12, the same interval the block's label takes above the content */
+   one — 12, the same interval the block's label takes above the content.
+
+   ⚠️ `align-self` IS WHAT KEEPS IT LABEL-WIDTH ON DESKTOP. Paired, the block
+   becomes the flex column that hands its spare height to the well, and a flex
+   column's default `align-items: stretch` pulled this control to the full 292
+   of that column — a `SmallButton` the width of a photograph, and the one
+   control on the screen drawn larger than the primary `Continue`. `flex-start`
+   hands it back to `inline-flex`'s own hug, which is the width it already has
+   on mobile where the block is not a flex container at all. */
 .photoAction {
   margin-top: var(--space-md); /* 12 */
+  align-self: flex-start;
 }
 
 /* ---------------------------------------------------------------------------
@@ -315,27 +338,41 @@
    screen.
    -------------------------------------------------------------------------- */
 
-.started {
-  margin: var(--space-md) 0 0; /* 12 */
-  color: var(--color-text-secondary);
+/* ⚠️ THE CARD'S LABEL-OVER-VALUE SHAPE, NOT TWO RUNNING LINES — asked for
+   directly, 8 Sep 2026. Both facts were `t-body3` sentences ("Started Aug 31,
+   2026 · Day 9", "Current state: Getting worse"), which drew step 4 as footnotes
+   under the pills while every other answer on the screen is a labelled value.
+   The geometry is `.headlineLabel` / `.headlineValue` two hundred lines up: 2
+   between a label and its value, the value at `t-button`. The INK is this
+   surface's, not that one's — System A's `text/muted` over `text/primary`,
+   where the card takes `text/on-data*`. */
+.meta {
+  margin-top: var(--space-md); /* 12 — the interval the block's own label takes */
 }
 
-/* the two lines are a pair — when it started, and where it has got to — so they
-   sit closer to each other than either does to the pills above them */
-.started + .started {
-  margin-top: var(--space-xs); /* 4 */
+/* the two pairs are still a pair — when it started, and where it has got to —
+   so they sit closer to each other than either does to the pills above them.
+   ⚠️ 8, NOT THE 4 THE RUNNING LINES USED: each pair is now two lines deep with
+   2 inside it, and 4 between them left the four lines reading as one column. */
+.meta + .meta {
+  margin-top: var(--space-sm); /* 8 */
 }
 
-/* "Now" is a label, not the answer; the user's own word for the status is */
-.startedWord {
+.metaLabel {
+  margin: 0 0 var(--space-2xs); /* 2 — the card's own label gap */
   color: var(--color-text-muted);
 }
 
+.metaValue {
+  margin: 0;
+  color: var(--color-text-primary);
+}
+
 /* ⚠️ ADJACENCY, NOT A FIXED TOP MARGIN. `TagList` renders NOTHING when step 4's
-   dates are the only thing this block holds, and a margin on the line itself
+   dates are the only thing this block holds, and a margin on the pair itself
    then stacked on the label's own 12 and opened 24 under a heading with one
    line beneath it. */
-.blockLabel + .started {
+.blockLabel + .meta {
   margin-top: 0;
 }
 
@@ -440,7 +477,13 @@
      rule below hands that extra height to the PHOTO WELL rather than leaving it
      as dead space under the button. Two cards of the same height with two
      images of the same height is the point; two cards of the same height with
-     one of them half empty would just be a different unevenness. */
+     one of them half empty would just be a different unevenness.
+
+     ⚠️ IT ONLY BECAME TRUE ON 8 Sep 2026, AND THE OTHER PICTURE WAS WHY. The
+     photo's SVG measured itself square in flow, so the PHOTO column was the
+     taller of the two and the face card was the one left with the dead space —
+     the exact reading this rule was written to prevent. `.photoArt` is out of
+     flow now; the note there has the mechanism. */
   .pictures[data-pair] {
     display: grid;
     grid-template-columns: 1fr 1fr;

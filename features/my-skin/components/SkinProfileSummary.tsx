@@ -94,11 +94,12 @@ import type { ProfileRecap } from "@/features/my-skin/profile";
  * NONE — cut 7 Sep 2026, asked for directly. It was a two-node timeline rail
  * (10px discs, a hairline between them, vertical on mobile and horizontal on
  * desktop), and for an hour it was ALSO the sage card's lower half. Both are
- * gone and the whole of step 4 is two meta lines under the symptom pills:
- * `Started Aug 31, 2026 · Day 8` and `Now: Getting worse`. The reasoning is
- * that a date is only the age of something when it sits under the something —
- * on its own it is a date, and a rail is a lot of apparatus for two lines of
- * text. ⚠️ **The block's flag counts the timeline**, so a walk that answered
+ * gone and the whole of step 4 is two labelled pairs under the symptom pills:
+ * `Started on` over `Aug 31, 2026 · Day 8`, and `Current state` over `Getting
+ * worse` — see `Meta` below for the shape and 8 Sep 2026's move onto it. The
+ * reasoning is that a date is only the age of something when it sits under the
+ * something — on its own it is a date, and a rail is a lot of apparatus for two
+ * lines of text. ⚠️ **The block's flag counts the timeline**, so a walk that answered
  * step 4 and nothing on step 1 still has somewhere to show it.
  *
  * ⚠️ THE INTERVALS DO THE GROUPING, AND THEY WERE ALL 16 UNTIL THE LAYOUT PASS
@@ -191,7 +192,7 @@ export function SkinProfileSummary({ now }: { now: number }) {
   /* ⚠️ THE TIMELINE COUNTS TOWARD THIS BLOCK NOW THAT IT HAS NO BLOCK OF ITS
      OWN. Step 4 answered on its own — a deep link, or a walk that skipped step
      1 — would otherwise have nowhere to appear at all. The block then renders
-     as its heading and two meta lines, which `.blockLabel + .started` in the
+     as its heading and two meta pairs, which `.blockLabel + .meta` in the
      stylesheet already spaces correctly. */
   const hasNoticed = profile.symptoms.length > 0 || Boolean(profile.timeline);
   const hasLocation =
@@ -230,22 +231,22 @@ export function SkinProfileSummary({ now }: { now: number }) {
                   that says "Started: no start date given" is a screen reporting
                   on its own gaps. */}
               {profile.timeline?.day && (
-                <p className={`${styles.started} t-body3`}>
-                  {COPY.startedWord} {profile.timeline.started} ·{" "}
-                  {profile.timeline.day}
-                </p>
+                <Meta
+                  label={COPY.startedLabel}
+                  value={`${profile.timeline.started} · ${profile.timeline.day}`}
+                />
               )}
-              {/* ⚠️ STEP 4's STATUS, AND IT IS A SEPARATE LINE RATHER THAN A
-                  THIRD `·` SEGMENT ON THE ONE ABOVE. "Started Aug 31 · Day 8"
-                  is one fact — a span — and the verb "Started" governs both
-                  halves of it. "Getting worse" is a different fact about a
-                  different moment, and hanging it off the same verb reads as
-                  something the start did. */}
+              {/* ⚠️ STEP 4's STATUS, AND IT IS A SEPARATE PAIR RATHER THAN A
+                  THIRD `·` SEGMENT ON THE ONE ABOVE. "Aug 31 · Day 8" is one
+                  fact — a span, both halves of it answering `Started on`.
+                  "Getting worse" is a different fact about a different moment,
+                  and hanging it off the same label reads as something the start
+                  did. */}
               {profile.timeline?.status && (
-                <p className={`${styles.started} t-body3`}>
-                  <span className={styles.startedWord}>{COPY.nowWord}: </span>
-                  {profile.timeline.status}
-                </p>
+                <Meta
+                  label={COPY.statusLabel}
+                  value={profile.timeline.status}
+                />
               )}
             </Block>
           )}
@@ -469,6 +470,31 @@ function Block({
       </h2>
       {children}
     </section>
+  );
+}
+
+/**
+ * One of step 4's two facts, drawn in the sage card's label-over-value shape.
+ *
+ * ⚠️ IT WAS TWO RUNNING LINES OF `t-body3` UNTIL 8 Sep 2026 — "Started Aug 31,
+ * 2026 · Day 9" and "Current state: Getting worse" — and it was asked to match
+ * the card above it. The shape is the card's: a muted `t-body3` label over the
+ * answer at `t-button` (17, the ramp's only declared 17 and never a font-size
+ * on a screen). The INK is not the card's: these sit on a light frosted block,
+ * so they take `text/muted` over `text/primary` rather than the card's
+ * `text/on-data*` pair, which is Surface System B's.
+ *
+ * ⚠️ AND THE COLON WENT WITH THE CHANGE. `Current state: Getting worse` needed
+ * one because the label ran into the answer on one line; a label on its own
+ * line is already separated from what it labels, and the card's three pairs
+ * carry none.
+ */
+function Meta({ label, value }: { label: string; value: string }) {
+  return (
+    <div className={styles.meta}>
+      <p className={`${styles.metaLabel} t-body3`}>{label}</p>
+      <p className={`${styles.metaValue} t-button`}>{value}</p>
+    </div>
   );
 }
 

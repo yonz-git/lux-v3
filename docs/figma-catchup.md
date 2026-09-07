@@ -309,7 +309,7 @@ assembled from recipes page 06 already holds:
 | other locations | **inside `face-diagram-card`**, in step 1's own chip row, drawn as step 1's SELECTED `Chip` (40, `Label`, `bg/brand`) |
 | where on the face | `face-diagram-card` from step 1, in a **read-only mode that Figma has no variant for** |
 | the photo | its own block: `Check-in detail`'s photo well (`surface/data-strong`, `radius/lg`) + `CheckInPhotoArt`, with a `SmallButton` opening the existing `SelfieSheet` |
-| all of step 4 | two meta lines inside the *What you noticed* block, under the pills — `Started <date> · Day <n>` and `Now: <status>` |
+| all of step 4 | two meta lines inside the *What you noticed* block, under the pills — `Started on` over `<date> · Day <n>`, and `Current state` over `<status>`, both in the card's label-over-value shape |
 | the action | `Button` primary, full width mobile / `width/action` desktop |
 
 **Two things on it have no Figma component at all**, and they are the real ask
@@ -342,12 +342,14 @@ of this section:
 component; whether the timeline earns a real DS component (PROGRESS and the
 analysis both have spans of time they currently draw differently); and whether
 the label wording is right — *What you noticed*, *Where you noticed it*,
-*Known skin conditions*, *Started*, *Day n* and *Now* are all decided here.
-⚠️ **The last three are short on purpose, and they were longer.** *Symptoms
+*Known skin conditions*, *Started on*, *Day n* and *Current state* are all decided
+here. ⚠️ **They do not name the symptoms, and they were longer.** *Symptoms
 started* / *Symptoms now* were right while step 4 had a block of its own among
 four other answers; sitting under the pills that name the symptoms, the subject
 is already on screen and repeating it made the block say "symptoms" three times
-in four lines.
+in four lines. ⚠️ **The last one was a bare *Now* until 8 Sep 2026** — beside
+*Started*, an adverb with no noun read as another point on the same timeline
+rather than as a different fact about a different moment.
 
 **⚠️ It replaced step 4's direct hand-off to `/check/new`.** That route was
 itself a prototype decision (6 Sep 2026, the first move of the CHECK/analysis

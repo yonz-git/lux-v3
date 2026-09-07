@@ -294,10 +294,15 @@ a string and not a `boolean`), so a retake visibly changes the picture — the
 only feedback available in a prototype whose viewfinder cannot show what a
 camera sees. ⚠️ **Step 4 has no block at all** — it was a
 two-node timeline rail, and for an hour it was also the sage card's lower half;
-both were cut on 7 Sep 2026, asked for directly. All of it is now two meta lines
-inside `What you noticed`, under the pills: `Started <date> · Day <n>` and
-`Now: <status>`. A date is only the AGE of something when it sits under the
-something. ⚠️ **The block renders whenever step 4 was answered**, even with
+both were cut on 7 Sep 2026, asked for directly. All of it is now two meta PAIRS
+inside `What you noticed`, under the pills — `Started on` over
+`<date> · Day <n>`, and `Current state` over `<status>`. A date is only the AGE
+of something when it sits under the something. ⚠️ **They were running lines of
+`t-body3` until 8 Sep 2026** and now take the sage card's label-over-value shape
+(muted `t-body3` label, 2, value at `t-button`) with THIS surface's ink —
+`text/muted` over `text/primary`, never the card's `text/on-data*`. The colon
+went with the change: a label on its own line is already separated from its
+value. ⚠️ **The block renders whenever step 4 was answered**, even with
 nothing from step 1, or the answer would have nowhere to appear. ⚠️ **The generic "From your answers" heading
 is gone**: it named a card holding five different kinds of thing, which is the
 heading a block gets when nobody has decided what the block is.
