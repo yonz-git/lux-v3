@@ -121,7 +121,27 @@ export const STEPS: Step[] = [
   // has no timeline, so the analysis can only refuse. See the note in
   // `features/my-skin/analysis.ts` and "the naming" in `docs/decisions.md`:
   // the builder needs the duration question before this hand-off is finished.
-  { id: "timing",     step: 4, href: "/investigation/timing",     title: "Timing", figma: { mobile: "488:851",  desktop: "491:1031" }, isComplete: (a) => Boolean(a.timing?.date && a.timing?.status), next: "/check/new" },
+  // ⚠️ AND AS OF 7 SEP 2026 IT CONTINUES TO `/investigation/profile`, NOT
+  // STRAIGHT TO `/check/new`. The recap of what steps 1-4 collected now sits
+  // between them; its "Add products" button carries on to step 5. Everything
+  // above still stands — `/check/new` remains the shared builder and is still
+  // reachable from CHECK — but the flow no longer LEAVES the investigation to
+  // reach a products list.
+  //
+  // ⚠️ THIS ALSO CLOSES THE OPEN PROBLEM WRITTEN DIRECTLY ABOVE, WHICH IS THE
+  // REAL ARGUMENT FOR IT. The note says a basket built at `/check/new` has no
+  // timeline, because that screen collects PRODUCTS but not DURATIONS, and the
+  // duration is the entire mechanism of the analysis — so the hand-off left
+  // `deriveEvidence` with nothing to compare against step 4's flare date and
+  // the analysis could only refuse. Routing through the recap to step 5 puts
+  // the duration question back on the path. The merge is not reverted; the
+  // shortcut past the duration is.
+  //
+  // ⚠️ THE RECAP IS NOT A STEP AND MUST NOT BE ADDED TO THIS ARRAY. No progress
+  // track, no `Save & exit` — the rule at the top of this file — so
+  // `TOTAL_STEPS` is still 5 and the track still reads 4/5 here and 5/5 on
+  // products. See `features/my-skin/profile.ts`.
+  { id: "timing",     step: 4, href: "/investigation/timing",     title: "Timing", figma: { mobile: "488:851",  desktop: "491:1031" }, isComplete: (a) => Boolean(a.timing?.date && a.timing?.status), next: "/investigation/profile" },
 
   // ---- Step 5: PRODUCTS ---------------------------------------------------
   // ⚠️ ONE SCREEN NOW, NOT SIX. `Add products intro`, `Long-term products` and
@@ -146,7 +166,12 @@ export const STEPS: Step[] = [
   // `Save & exit`, so by the rule at the top of this file it is not in `STEPS`
   // and `TOTAL_STEPS` is still 5. The flow COLLECTS; the analysis REPORTS on
   // what it collected.
-  { id: "products", step: 5, href: "/investigation/products", title: "Your products", figma: { mobile: "574:1342", desktop: "582:1612" }, isComplete: () => true, next: "/investigation/analysis" },
+  //
+  // ⚠️ IT NAMES ITS OWN `back` NOW, AND IT HAS TO. The array neighbour is
+  // `timing`, but the screen the user actually arrived from is the recap at
+  // `/investigation/profile` — so without this, Back skipped a screen and
+  // returned to a question the user had already answered twice over.
+  { id: "products", step: 5, href: "/investigation/products", title: "Your products", figma: { mobile: "574:1342", desktop: "582:1612" }, isComplete: () => true, back: "/investigation/profile", next: "/investigation/analysis" },
 ];
 
 /**

@@ -10,12 +10,13 @@ import {
 } from "react";
 import type { Answers } from "./answers";
 import { LEGACY_STORAGE_KEY } from "./answers";
-import { readPersisted, writePersisted } from "./persistence";
+import { readFlow, readPersisted, writeFlow, writePersisted } from "./persistence";
 
 /**
  * The investigation's answer store.
  *
- * ⚠️ EVERY FLOW SELECTION IS IN MEMORY ONLY — DO NOT PERSIST THOSE.
+ * ⚠️ THE FLOW'S ANSWERS SURVIVE FOR A DAY; NOTHING ELSE ABOUT A CONTROL EVER
+ * SURVIVES. Drafts, baskets and search fields are in memory only, always.
  *
  * Answers carry across the steps because `app/layout.tsx` wraps the whole app,
  * so the provider stays mounted through client-side navigation. It is mounted
@@ -23,24 +24,38 @@ import { readPersisted, writePersisted } from "./persistence";
  * PRODUCTS hub reads what step 5 writes and is reached from the bottom nav
  * rather than from inside the flow.
  *
- * ⚠️ THE STORE IS SPLIT, AND ONLY HALF OF IT IS WRITTEN TO DISK. An earlier
- * version persisted the WHOLE store on the reasoning that "Save & exit" implies
- * a resumable flow — and the effect was that opening the prototype showed
- * options already selected from a previous visit, which reads as though the
- * screens ship pre-filled. That rule still holds for every control: the flow
- * steps, the drafts, the baskets and the search fields all start empty every
- * time. **Nothing is selected until the user selects it.**
+ * ⚠️ THE STORE IS SPLIT THREE WAYS, AND EACH SLICE HAS ITS OWN LIFETIME.
  *
- * What now survives a refresh is the COMPLETED work — added products, checks
- * run, days recorded, a saved finding — because those render as readouts, and
- * `/products`, `/check` and `/progress` are specified to open populated
- * anyway. `lib/store/persistence.ts` owns that seam and carries the reasoning;
- * `PERSISTED_KEYS` is the whole list.
+ *   completed records   forever      `PERSISTED_KEYS`  products, checks,
+ *                                    check-ins, a saved finding
+ *   the flow's answers  24 hours     `FLOW_KEYS`       steps 1–4, sliding
+ *   everything else     the tab      by construction   drafts, baskets,
+ *                                    search fields, the ambiguity answers
  *
- * ⚠️ THIS IS STILL NOT RESUMABILITY. One device, one browser. `Save & exit`
- * does not resume a flow, and a deep link to another visitor's check-in has no
- * data behind it. That needs a backend, and the split does not pretend to be
- * one — see `docs/decisions.md`.
+ * ⚠️ THE MIDDLE ROW IS NEW — 7 Sep 2026, ASKED FOR — AND IT IS A REAL CHANGE TO
+ * A RULE THIS FILE USED TO STATE ABSOLUTELY. An earlier version persisted the
+ * WHOLE store on the reasoning that "Save & exit" implies a resumable flow, and
+ * was reverted because opening the prototype then showed options selected in
+ * some previous visit, which reads as though the screens ship pre-filled. The
+ * fix at the time was "never persist a control". The fix now is narrower and
+ * says what actually went wrong: state that belongs to NOBODY is the problem,
+ * not state that belongs to the person still looking at the screen. Answers
+ * from the last day are theirs; answers from three weeks ago are furniture.
+ *
+ * ⚠️ SO `/investigation/start` CAN NOW OPEN WITH CHIPS TICKED, AND THAT IS NOT
+ * THE OLD BUG RETURNING. It happens only inside the window and only for
+ * selections this browser made. Past it, `readFlow` drops the envelope AND
+ * deletes it, and every screen is empty again. **Anything that makes a control
+ * open filled from anywhere else is still the bug.**
+ *
+ * `lib/store/persistence.ts` owns both seams and carries the reasoning;
+ * `PERSISTED_KEYS` and `FLOW_KEYS` are the whole of both lists.
+ *
+ * ⚠️ THIS IS STILL NOT RESUMABILITY. One device, one browser, no account, and
+ * now also one day. `Save & exit` still does not resume a flow — it never
+ * promised to reach another device, and it still cannot — and a deep link to
+ * another visitor's check-in still has no data behind it. That needs a backend,
+ * and the split does not pretend to be one — see `docs/decisions.md`.
  */
 type Ctx = {
   answers: Answers;
@@ -84,7 +99,10 @@ export function InvestigationProvider({
       // storage unavailable (private mode) — nothing to clean up
     }
 
-    const saved = readPersisted();
+    /* ⚠️ ONE `now` FOR THE READ, TAKEN HERE. `readFlow` needs a moment to
+       measure the envelope's age against; taking it once means the expiry
+       cannot be decided by a clock that moved between two calls. */
+    const saved = { ...readPersisted(), ...readFlow(Date.now()) };
     if (Object.keys(saved).length) {
       // merge UNDER anything already set this session: an effect runs after
       // paint, so a fast first interaction must not be overwritten by disk
@@ -103,6 +121,11 @@ export function InvestigationProvider({
   useEffect(() => {
     if (!hydrated) return;
     writePersisted(answers);
+    /* ⚠️ EVERY WRITE RE-STAMPS THE WINDOW, WHICH IS WHAT MAKES IT SLIDING —
+       see `FLOW_TTL_MS`. `Date.now()` is safe in an effect and would not be in
+       render. An emptied store removes both keys rather than writing `{}`, so
+       `reset()` needs nothing of its own. */
+    writeFlow(answers, Date.now());
   }, [answers, hydrated]);
 
   const setAnswer = useCallback<Ctx["setAnswer"]>((key, value) => {

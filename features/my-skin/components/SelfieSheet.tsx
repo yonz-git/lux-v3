@@ -35,6 +35,26 @@ import { useInvestigation } from "@/lib/store/InvestigationProvider";
  * The viewfinder is a placeholder, not a live camera: wiring getUserMedia would
  * make the prototype demand a camera permission just to walk the flow. Tapping
  * the shutter records that a capture happened.
+ *
+ * ⚠️ THE SHUTTER ONLY EVER CAPTURES — IT USED TO TOGGLE, AND THAT WAS A BUG THE
+ * CONTROL'S OWN LABEL ALREADY CONTRADICTED. It wrote `undefined` when a photo
+ * existed, so the second tap of a "retake" DELETED the capture and a third was
+ * needed to make a new one, while the button announced itself as `Retake photo`
+ * and the helper said "tap the shutter again to retake". Harmless-looking on
+ * step 1, where the photo is optional and the tray is right there; destructive
+ * from the recap, where `Update photo` opened this tray over a photo BLOCK that
+ * then vanished behind it on the first tap. A shutter is not a delete button.
+ * **There is now no way to remove a capture** — there never was a labelled one,
+ * and if the product wants one it is an explicit `Remove photo` action, not a
+ * second meaning silently loaded onto this control.
+ *
+ * ⚠️ EACH CAPTURE WRITES A NEW ID, NOT THE STRING "captured". Nothing compares
+ * the value to a literal — it is read for its truthiness and, on the recap, as
+ * the SEED for the drawn photograph (`CheckInPhotoArt`). So a retake produces a
+ * different picture there, which is the only feedback in a prototype whose
+ * viewfinder cannot show what the camera sees. It is also what makes the retake
+ * inside this tray legible at all: the status line is keyed on it, so it
+ * re-enters and re-announces rather than sitting there unchanged.
  */
 export function SelfieSheet({
   open,
@@ -57,7 +77,14 @@ export function SelfieSheet({
       <div className={styles.viewfinder} data-captured={captured}>
         <span className={styles.guide} aria-hidden="true" />
         {captured && (
-          <p role="status" className={`${styles.captured} reveal-quick t-label`}>
+          /* keyed on the capture so a RETAKE re-mounts this line: it replays
+             `reveal-quick` and is announced again, where an unchanged node
+             would report nothing and look like a dead shutter */
+          <p
+            key={answers.selfie}
+            role="status"
+            className={`${styles.captured} reveal-quick t-label`}
+          >
             Photo captured
           </p>
         )}
@@ -68,7 +95,7 @@ export function SelfieSheet({
           type="button"
           className={styles.shutter}
           aria-label={captured ? "Retake photo" : "Capture photo"}
-          onClick={() => setAnswer("selfie", captured ? undefined : "captured")}
+          onClick={() => setAnswer("selfie", `captured-${Date.now()}`)}
         >
           <span className={styles.shutterCore} aria-hidden="true" />
         </button>

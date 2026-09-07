@@ -1244,6 +1244,62 @@ Persistence follows the SAME line. A restored **control** is the bug. A restored
 from it, so a new key has to be placed deliberately. The original bug was
 invisible precisely because **nothing in the store said which keys were safe**.
 
+### ⚠️ SUPERSEDED IN PART — the flow's answers persist for 24 hours (7 Sep 2026)
+
+Asked for directly:
+
+> *"can we use local storage for these profile info to be saved for a certain
+> time?"*
+
+**The left-hand column of that table is no longer all one thing.** Its first
+row — `start`, `location`, `selfie`, `skin-type`, `tendencies`, `conditions`,
+`conditionsOther`, `timing` — is now written, under its own key, with a
+**24-hour sliding window**. Every other row still never touches disk at any age.
+
+**Why that is not the reverted build coming back.** This section already argues
+that the old bug was persisting *one bucket that mixed two kinds of state*. The
+same argument taken one step further is that the bucket also mixed two
+LIFETIMES. What made a restored control read as a pre-filled screen was never
+the restoring — it was that the state belonged to **nobody**: a demo opened
+three weeks later greeted a new reader with a stranger's skin type, and no
+reader can tell that apart from a screen that ships filled in. Answers from the
+last day are the same reader's own work, still in front of them. So the rule
+sharpens rather than reverses: **state that has outlived its owner is the bug.**
+
+| | records | flow answers | everything else |
+| --- | --- | --- | --- |
+| Lives | forever | 24 hours, sliding | the tab |
+| Key | `lux.records.v2` | `lux.flow.v1` | — |
+| List | `PERSISTED_KEYS` | `FLOW_KEYS` | by construction |
+
+**Five things that are load-bearing, beyond the three below.**
+
+- ⚠️ **TWO KEYS, NOT ONE WIDER BLOB.** One blob with a mixed lifetime has to
+  either drop the records with the answers or keep the answers with the
+  records, and both are wrong. Splitting the key splits the clock.
+- ⚠️ **THE PAYLOAD IS AN ENVELOPE — `{ savedAt, answers }`.** A payload with no
+  numeric `savedAt` is not "answers of unknown age", it is data this build did
+  not write. The reverted whole-store format is exactly that shape, so refusing
+  it is what keeps `lux.investigation.v1`-era data from walking back in through
+  the new key.
+- ⚠️ **THE WINDOW SLIDES, MEASURED FROM THE LAST ANSWER.** A walk through the
+  flow cannot time out underneath someone who is still walking it.
+- ⚠️ **A FUTURE STAMP IS STALE TOO.** A clock that moved backwards — a timezone
+  fix, a corrected system time — would otherwise pin the slice open forever,
+  since `now - savedAt` never grows past the window.
+- ⚠️ **EXPIRY IS ENFORCED ON READ, AND A STALE ENVELOPE IS DELETED.** Nothing
+  sweeps storage on a schedule, so reading is the only moment the app can know
+  it is past the window — and ignoring the key without removing it would leave
+  one visitor's answers on the machine indefinitely.
+
+⚠️ **`products` DID NOT MOVE.** Step 5's products are a completed record and
+still persist with no expiry: `/products` is specified to open populated. The
+step that collects them is the one flow step whose answer outlives the day.
+
+**Still not resumability.** One device, one browser, no account, and now also
+one day. `Save & exit` still does not resume a flow, and nothing on any screen
+promises that it does.
+
 ### Three things that are load-bearing
 
 - ⚠️ **HYDRATE IN AN EFFECT, NEVER IN THE `useState` INITIALISER.** The server
@@ -1668,6 +1724,31 @@ Three steps taken toward the merge, all small and all reversible:
   it into a group and `deriveEvidence` compares that against the flare date. A
   basket built there has no timeline, so the analysis can only refuse. The
   builder needs the duration question before this hand-off is whole.
+
+  ⚠️ **SUPERSEDED 7 Sep 2026 — STEP 4 CONTINUES TO `/investigation/profile`, AND
+  THAT SCREEN CONTINUES TO STEP 5.** The recap of what steps 1–4 collected now
+  sits between them, and its one action is `Add products`. **This is not a
+  reversal of the merge**: `/check/new` is still the shared builder, still
+  reachable from CHECK, and still carries the back chevron keyed off
+  `timing.date` — nothing about the two-screens-one-job argument above has
+  changed. What changed is that the flow no longer LEAVES the investigation to
+  reach a products list, which closes the unfinished business flagged in the
+  paragraph directly above: the path runs back through step 5, so the duration
+  question is asked again and `deriveEvidence` has a timeline to compare against
+  step 4's flare date. The builder still ought to grow a duration question — a
+  basket built at `/check/new` from the CHECK side has the same hole — but the
+  investigation's own path no longer depends on it.
+
+  ⚠️ **THE RECAP IS NOT A STEP.** No progress track, no `Save & exit`, so
+  `TOTAL_STEPS` is still 5 and the track still reads 4/5 on Timing and 5/5 on
+  Products. It also does NOT resolve `skinProfile()` from `lib/demo.ts`: that
+  helper falls back to `DEMO_PROFILE` so a readout tab never opens blank, which
+  is right for PROGRESS and CHECK and wrong for a screen whose entire claim is
+  "here is what you told us" — answering a deep link with the demo's skin type
+  would put words in the user's mouth. It reads the raw answers and renders a
+  real empty state. `features/my-skin/profile.ts` owns the derivation and every
+  string on the screen; there is no Figma frame for any of it, so it is listed
+  in `docs/figma-catchup.md` § 5.
 - **Both analysing screens use the same pass list.** `components/ui/PassList`,
   with each section owning its own lines (`ANALYSIS_PASSES`, `CHECK_PASSES`).
   Six and five respectively, and they must NOT be reconciled: CHECK has no

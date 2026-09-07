@@ -40,7 +40,7 @@ export function SkinProfileStrip({
       aria-labelledby="skin-profile-strip-title"
     >
       <h2 id="skin-profile-strip-title" className={`${styles.label} t-overline`}>
-        Skin profile
+        Your skin profile
       </h2>
       <p className={`${styles.value} t-body2`}>{parts.join(" · ")}</p>
     </section>

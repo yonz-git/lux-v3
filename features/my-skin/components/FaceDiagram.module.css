@@ -287,3 +287,82 @@
 
   /* the regions are opaque (see .region), so only the card needs a fallback */
 }
+
+/* ---------------------------------------------------------------------------
+   THE READ-ONLY FACE — the recap at `/investigation/profile`
+
+   ⚠️ NOT A DISABLED STATE, AND IT MUST NOT LOOK LIKE ONE. Disabled fades a
+   control to `opacity/disabled` because the user cannot use it YET; this is a
+   picture of an answer already given, so the PICKED pills keep their full
+   selected treatment — the indigo fill, the lift — and only the regions the
+   user did not pick step back. They stay on the card rather than being removed:
+   a face showing two pills and no others has lost the map that makes those two
+   mean anything.
+
+   `pointer-events: none` is what stops `.region:hover` from firing on a span
+   that nothing can click; the hover rules above are written against the class,
+   not against `button`, so without this a mouse would still deepen the
+   hairline on a pill that does nothing.
+   -------------------------------------------------------------------------- */
+
+.diagram[data-readonly="true"] .region {
+  pointer-events: none;
+}
+
+.diagram[data-readonly="true"] .region[data-selected="false"] {
+  opacity: 0.55;
+  box-shadow: none;
+}
+
+/* ⚠️ THE READ-ONLY CHIP ROW IS PULLED UP INTO THE DIAGRAM BOX'S OWN DEAD AIR —
+   asked for directly, 7 Sep 2026, and this is the same move the comment at
+   `.diagram` records being retired for the INTERACTIVE mode. It is right here
+   and was wrong there because the two rows sit under different things: on step
+   1 the row is a live control group and needs its clearance, while these are
+   read-only pills under a picture, and the picture stops well before its box
+   does.
+
+   The numbers, in the 392x300 coordinate space every value in this file uses:
+   the dome (`.form::before`) bottoms out at y=280, so the last 20 of the box is
+   empty, and `.card`'s own 12 row gap then sits under THAT. Measured from the
+   dome rather than from the box, the row was ~30 away. Pulling 20 leaves a net
+   -8 against the gap, which lands the pills ~12 under the dome and still ~23
+   clear of the `Chin / jaw` pill above them. Nothing overlaps: the space being
+   closed is empty in every state, because the regions are fixed coordinates
+   rather than content that can grow.
+
+   ⚠️ SCOPED TO THE READ-ONLY LIST. `.chips` in the interactive mode keeps the
+   full gap — see above. */
+.chipList {
+  margin: calc(var(--space-xl) * -1) 0 0; /* -20 */
+  padding: 0;
+  list-style: none;
+}
+
+/* ⚠️ STEP 1's CHIP, IN THE STATE THE ANSWER PUTS IT IN — matched to
+   `/investigation/start`, asked for directly. Every value here is read off
+   `Chip.module.css`: the 40 height, the 16 padding, `radius/full`, and the
+   SELECTED fill, because the recap only ever draws the locations that were
+   picked. The pale unselected pill said the opposite of what the answer was,
+   and it disagreed with the region pills right above it, which keep their full
+   indigo when chosen.
+
+   ⚠️ IT DOES NOT CARRY `.region`'s LIFT. `Chip` has no shadow in either state;
+   the region pills do because they sit ON the drawn face and need seating on
+   it. Copying the shadow here would make the row a third pill rather than step
+   1's. */
+.readOnlyChip {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 40px;
+  padding: 0 var(--space-lg); /* 16 */
+  border-radius: var(--radius-full);
+
+  background: var(--color-bg-brand);
+  /* the border holds the geometry only — same colour as the fill, the way
+     `Chip[data-selected="true"]` does it */
+  border: var(--border-width-hairline) solid var(--color-bg-brand);
+  color: var(--color-text-on-brand);
+  white-space: nowrap;
+}

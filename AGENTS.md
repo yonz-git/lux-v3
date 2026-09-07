@@ -135,9 +135,12 @@ Four placement facts that look like mistakes and are not:
 
 ## The route map
 
-Eighteen routes, all in a nav section. ⚠️ **It was nineteen until 7 Sep 2026**,
-when `/chat` — prototype-only and in no section — was deleted, along with the
-`features/chat/` folder behind it.
+Nineteen routes, all in a nav section. ⚠️ **It was eighteen between 7 Sep 2026
+and the skin-profile recap landing later the same day.** `/chat` —
+prototype-only and in no section — was deleted, along with the `features/chat/`
+folder behind it, taking the count from nineteen to eighteen; then
+`/investigation/profile` took it back to nineteen. The two are unrelated: one
+was a screen belonging to no section, the other belongs to `my-skin`.
 `features/my-skin/flow.ts` owns the step order, the 1-based track position, the
 Figma frame ids and each step's `isComplete` rule.
 
@@ -147,7 +150,8 @@ Figma frame ids and each step's `isComplete` rule.
 | `/investigation/start` | flow step 1/5 · also the `my-skin` landing | `my-skin` |
 | `/investigation/skin-type` | flow step 2/5 | `my-skin` |
 | `/investigation/conditions` | flow step 3/5 | `my-skin` |
-| `/investigation/timing` | flow step 4/5 — ⚠️ continues to `/check/new`, not to step 5 | `my-skin` |
+| `/investigation/timing` | flow step 4/5 — ⚠️ continues to `/investigation/profile`, not to step 5 | `my-skin` |
+| `/investigation/profile` | pushed view — ⚠️ NOT a step: the recap of steps 1–4 | `my-skin` |
 | `/investigation/products` | flow step 5/5 — ⚠️ the one flow screen lighting `products`, and no longer the only way through | `products` |
 | `/investigation/analysis` | pushed view — ⚠️ NOT a step: the retrospective analysis | `my-skin` |
 | `/products` | hub landing | `products` |
@@ -184,6 +188,19 @@ close). Do not fork it. The focus trap, Escape and focus restoration come from
 `lib/useModalDialog.ts`, shared with `Sheet`; the scrim deliberately does NOT
 close this one, because the store holds no partial check-in.
 
+⚠️ **THE SELFIE SHUTTER ONLY EVER CAPTURES — IT USED TO TOGGLE, AND ITS OWN
+LABEL ALREADY SAID OTHERWISE.** `SelfieSheet`'s shutter wrote `undefined` when a
+photo existed, so the second tap of a "retake" DELETED the capture and a third
+made a new one, while the control announced `Retake photo` and the helper said
+"tap the shutter again to retake". It survived on step 1, where the photo is
+optional; it was destructive from the recap, where `Update photo` opened the
+tray over a photo block that then vanished behind it. **A shutter is not a
+delete button.** ⚠️ **There is now no way to remove a capture** — there never
+was a labelled one, and if the product wants one it is an explicit
+`Remove photo` action, not a second meaning loaded onto the shutter.
+⚠️ **Each capture writes a NEW id**, never the literal `"captured"`: nothing
+compares the value, and the recap seeds the drawn photograph on it.
+
 ⚠️ **STEP 1 CARRIES A SAFETY NOTICE, AND THE BRIEF'S INTERRUPT IS DELIBERATELY
 NOT BUILT — read this before touching step 1.** The product brief requires the
 flow to INTERRUPT and show urgent-care guidance on nine clinical triggers
@@ -202,6 +219,130 @@ reinstating it is a product decision about whether LUX triages at all. Two
 things stay open: no locale-appropriate emergency number, and
 `/progress/check-in` records worsening and escalates nothing. See
 "⚠️ SAFETY" in `docs/decisions.md`.
+
+⚠️ **NEITHER IS `/investigation/profile`, AND IT IS THE SAME RULE.** It is the
+recap of what steps 1–4 collected, and its one action, `Add products`, continues
+to step 5. No progress track and no `Save & exit`, so by the rule above it is
+not a step and `TOTAL_STEPS` is still 5. `features/my-skin/profile.ts` owns the
+derivation and every string on it.
+
+⚠️ **ONE BLOCK PER ANSWER, DRAWN AS WHAT THE ANSWER IS — it was a card of
+`label: value` rows for a few hours on 7 Sep 2026 and that is not what shipped.**
+Every answer below the card gets its own light block that says its own name.
+⚠️ **THE SAGE CARD IS EVERYTHING TRUE BETWEEN EPISODES, AND THE LIGHT BLOCKS
+ARE THE EPISODE — that is the screen's one split and the surface systems carry
+it.** In the card, under a `YOUR SKIN PROFILE` overline: skin type and
+tendencies as two labelled columns pushed to opposite edges, then **known skin
+conditions as a full-width row under them** (a row, not a third column — it has
+the longest label and its value can be a typed sentence). Values at **17px
+(`t-button`, the ramp's only declared 17 — never a font-size on a screen)**.
+⚠️ **Both multi-selects in the card are JOINED with commas, not pilled** — the
+one place on this screen that trades a set for a glance. No divider and no
+dates. ⚠️ **It carried both for
+about an hour on 7 Sep 2026** — a supplied comp gave it a `border/glass` rule
+with `Current: <symptoms> on <places>` and `Started <date> · Day <n>` under it —
+**and both were cut the same day, asked for directly.** ⚠️ **The overline was
+cut too and then asked back**: it repeats the h1 24px above it, which is what
+got "From your answers" deleted, and the word that earns it is **"Your"** — the
+h1 names the page, the overline names what is in the card. The gap under it is
+`DataCard`'s own 16, not the comp's looser one; the card's internal rhythm is
+the component's recipe. The card holds what is true BETWEEN
+episodes; everything about the episode is drawn as itself in the blocks below.
+⚠️ **The start date lives in the `What you noticed` block**, under the symptom
+pills, because a date under a skin type is a date and a date under those pills
+is the age of those symptoms. ⚠️ **The joined tendencies are the ONE exception
+to the set rule below**, the same trade `SkinProfileStrip` makes.
+
+A multi-select is a SET, so the symptoms and the other locations are `Tag`s and
+never a sentence with commas in it — the card above is the exception, not these. ⚠️ **Those tags wear `Chip`'s default fill and
+hairline** — `bg/frost-light-muted` + `border/chip`, asked for directly, because
+`Tag`'s own strokeless `bg/surface-frost` leaves an answer with no edge on a
+frosted block. Geometry, type and ink stay `Tag`'s. ⚠️ **It is fenced to this
+screen**: a read-only label dressed as a control is only safe where nothing
+beside it is one. The recap now has exactly one control — `Update photo`, a
+`SmallButton` with the secondary gradient and 36 height — which is a different
+object from a 26-tall pill, but the fence matters more than it did. **Do not
+lift the class onto a screen that mixes tags with chips** — raise the variant in
+Figma instead. The location answer is
+**step 1's own face diagram in a read-only mode** — the coordinates ARE that
+answer, and "Cheeks (L), Chin / jaw" is the coordinates thrown away. ⚠️ **The
+non-face chips ("Neck", "Whole face", "Other") are `Tag`s INSIDE that card**,
+in the row step 1's own chips already use, wearing the region pill's fill and
+hairline rather than the light blocks' — they are the same answer as
+"Cheeks (L)", given in the same tap, and the only reason they have no
+coordinate is that the neck is not on the face. ⚠️ **The card renders even with
+nothing picked on the face**, which is what "Neck" alone looks like: seven
+dimmed pills and one lit chip is the honest reading of *not there, here*.
+⚠️ **The non-face chips are drawn as step 1's SELECTED `Chip`** — 40 tall,
+`Label`, indigo `bg/brand` on `text/on-brand` — because the recap only ever
+shows the ones that were picked. That is the same rule the regions follow, and
+drawing them as the pale unselected pill said the opposite of what the answer
+was. They are `span`s with a local class, not `Chip`s (a control) or `Tag`s (26
+tall, `Label Small` — a different pill).
+
+⚠️ **THE SELFIE IS A BLOCK WITH THE PICTURE IN IT, AND IT WAS A LINE OF TEXT
+TWICE FIRST.** `Photo added` sat under the symptom pills, then on the face card;
+both merely stated that a capture exists, and a recap of a photograph should BE
+the photograph. It is now its own block: `CheckInDetail`'s well
+(`surface/data-strong`, `radius/lg`, capped at 392 like the face) holding
+`CheckInPhotoArt`, with an `Update photo` `SmallButton` under it that opens the
+same `SelfieSheet` step 1 uses. ⚠️ **That button is the ONE control on this
+screen** — everything else reads an answer back, this one can change it, because
+a photo is the answer a reader is most likely to want to redo. The art is seeded
+on the capture's own id (`answers.selfie`, which is why `ProfileRecap.photo` is
+a string and not a `boolean`), so a retake visibly changes the picture — the
+only feedback available in a prototype whose viewfinder cannot show what a
+camera sees. ⚠️ **Step 4 has no block at all** — it was a
+two-node timeline rail, and for an hour it was also the sage card's lower half;
+both were cut on 7 Sep 2026, asked for directly. All of it is now two meta lines
+inside `What you noticed`, under the pills: `Started <date> · Day <n>` and
+`Now: <status>`. A date is only the AGE of something when it sits under the
+something. ⚠️ **The block renders whenever step 4 was answered**, even with
+nothing from step 1, or the answer would have nowhere to appear. ⚠️ **The generic "From your answers" heading
+is gone**: it named a card holding five different kinds of thing, which is the
+heading a block gets when nobody has decided what the block is.
+
+⚠️ **THE SPACING BETWEEN THOSE BLOCKS IS THE GROUPING — IT WAS A UNIFORM 16
+UNTIL 7 Sep 2026 AND THAT SAID THE WRONG THING.** Four identical cards at one
+interval is four peers. `What you noticed`, `Where you noticed it` and `How long
+this has been going on` are three readings of ONE episode; `Known skin
+conditions` was true before it started. The episode closes to **12** — tighter
+than the cards' own 20 padding, which is what makes three cards read as one
+group — the standing fact sits **24** from it, the sage statement **32** above,
+and the hand-off **40** below. ⚠️ **No heading was added to name the group**:
+that is what proximity is for, and a label naming a group is what this screen
+deleted once already. On desktop the recap takes a **640 column**
+(`width/card-focus`), left-aligned, rather than the card's full 824 — and the
+read-only face is capped at the **392** it is drawn at, because `width: 100%`
+over a `392 / 300` box rendered it about 600 tall there. Step 1's face is
+untouched: there the diagram IS the screen and its regions are targets.
+
+⚠️ **AND ITS LABELS NAME THEIR SUBJECT.** `Symptoms started` and `Symptoms now`,
+never step 4's own `Approximate start date` and `Current status` — those are
+short because that screen's question is still above them saying what "this" is.
+On a recap carrying four other answers, `Started` leaves the reader to guess
+which of them started and `Current status` reads like the status of the
+investigation.
+
+⚠️ **IT IS THE ONE `/investigation` ROUTE THAT IS `force-dynamic`**, because it
+is the only one that measures a span against today ("18 days ago"). `now` is the
+server timestamp seeding the first render and `useToday` corrects it — see
+`lib/useToday.ts`; prerendered, that `now` would be the BUILD time.
+
+⚠️ **IT IS WHY STEP 4 NO LONGER POINTS AT `/check/new`** — the hand-off now runs
+timing → recap → step 5 → analysis. That is not a reversal of the CHECK/analysis
+merge: `/check/new` is still the shared builder and is still reachable from
+CHECK. It closes the gap `flow.ts` had already written down against the
+shortcut — `/check/new` collects PRODUCTS but not DURATIONS, and the duration is
+the entire mechanism of the analysis, so a basket built there left the analysis
+able only to refuse.
+
+⚠️ **IT DOES NOT USE `skinProfile()` FROM `lib/demo.ts`, DELIBERATELY.** That
+helper falls back to `DEMO_PROFILE` so a readout tab never opens blank, which is
+right for PROGRESS and CHECK and wrong here: this screen's whole claim is "here
+is what you told us", and answering a deep link with the demo's skin type would
+put words in the user's mouth. It reads the raw answers and renders a real empty
+state instead.
 
 ⚠️ **`/investigation/analysis` IS NOT A STEP, AND `TOTAL_STEPS` IS STILL 5.** It
 is the retrospective analysis — the culprit finder the product brief specifies
@@ -269,28 +410,54 @@ Answers live in `lib/store/InvestigationProvider.tsx` — React context,
 provided from `app/layout.tsx` so the PRODUCTS hub reads what step 5 writes.
 Read them with `useInvestigation()`.
 
-⚠️ **DO NOT PERSIST A CONTROL'S STATE — THE STORE IS SPLIT, AND ONLY COMPLETED
-RECORDS ARE WRITTEN TO DISK.** Every flow selection, draft, basket and search
-field is **in memory only**: localStorage once made every visit open with the
-previous visit's selections still ticked, which reads exactly like the screens
-shipping pre-filled. What DOES survive a refresh, since 6 Sep 2026, is the work
-the user finished — `products`, `checks`, `checkIns`, `savedFinding` — because
+⚠️ **THE STORE IS SPLIT THREE WAYS, AND EACH SLICE HAS ITS OWN LIFETIME.**
+
+| Slice | Survives | Owned by |
+| ----- | -------- | -------- |
+| what the user COMPLETED — `products`, `checks`, `checkIns`, `savedFinding` | forever | `PERSISTED_KEYS` |
+| the FLOW'S ANSWERS — steps 1–4 | **24 hours, sliding** | `FLOW_KEYS` |
+| everything else — drafts, baskets, search fields, `evidence`, `scan` | the tab | by construction |
+
+The first row is the controls-vs-readouts line drawn two paragraphs above:
 those render as readouts, and `/products`, `/check` and `/progress` are
-specified to open populated anyway. It is the same controls-vs-readouts line
-drawn two paragraphs above.
+specified to open populated anyway.
 
-`lib/store/persistence.ts` owns the seam: `PERSISTED_KEYS` is the whole list,
-`PersistedAnswers` is derived from it, and the split is a **type** so a new key
-has to be placed deliberately. Hydration happens in an effect (never in the
-`useState` initialiser — that is a hydration mismatch) and the write is gated on
-`hydrated` as **state, not a ref**, or the first write clobbers what it just
-read. Anything failing its shape check on read is dropped.
+⚠️ **THE MIDDLE ROW ARRIVED 7 Sep 2026 AND IT CHANGED A RULE THIS FILE USED TO
+STATE ABSOLUTELY.** It read "do not persist a control's state", because
+localStorage once made every visit open with the previous visit's selections
+still ticked — which reads exactly like the screens shipping pre-filled. **That
+is still the failure to avoid, but the cause was the LIFETIME, not the writing.**
+State that belongs to nobody is furniture; state from the last day belongs to
+the person still looking at the screen. So `/investigation/start` may now open
+with chips ticked, and it is only ever THIS browser's answers from the last 24
+hours. Past the window `readFlow` drops the envelope **and deletes it**, and
+every screen is empty again.
 
-⚠️ **THIS IS NOT RESUMABILITY.** One device, one browser, no account. `Save &
-exit` still does not resume a flow, and a deep link to another visitor's
-check-in still has no data behind it. Real resumability belongs to a backend —
-**do not add an affordance that promises it.** See `docs/decisions.md`,
-"PERSISTENCE".
+⚠️ **A DRAFT, A BASKET AND A SEARCH FIELD ARE STILL NEVER WRITTEN, AT ANY
+AGE.** `productDraft`, `productQuery`, `checkBasket`, `checkQuery`, `scan`,
+`viewingCheck`, `evidence` — the user was mid-gesture there, not answering a
+question, and restoring a search field with yesterday's query is the pre-filled
+bug with none of the value.
+
+`lib/store/persistence.ts` owns both seams: `PERSISTED_KEYS` and `FLOW_KEYS` are
+the whole of both lists, `PersistedAnswers` and `PersistedFlow` are derived from
+them, and each split is a **type** so a new key has to be placed deliberately.
+⚠️ **TWO STORAGE KEYS, BECAUSE THERE ARE TWO LIFETIMES** — `lux.records.v2` and
+`lux.flow.v1`, the second holding an envelope (`{ savedAt, answers }`) so an
+unstamped payload can be refused rather than trusted. The window is **sliding**:
+every write re-stamps it, so 24 hours means a day of not touching the
+investigation. Expiry is enforced **on read**, not by a timer. Hydration happens
+in an effect (never in the `useState` initialiser — that is a hydration
+mismatch) and the write is gated on `hydrated` as **state, not a ref**, or the
+first write clobbers what it just read. Anything failing its shape check on read
+is dropped, and a stamp in the FUTURE counts as stale (a clock that moved
+backwards would otherwise pin the slice open forever).
+
+⚠️ **THIS IS STILL NOT RESUMABILITY.** One device, one browser, no account, and
+now also one day. `Save & exit` still does not resume a flow, and a deep link to
+another visitor's check-in still has no data behind it. Real resumability
+belongs to a backend — **do not add an affordance that promises it.** See
+`docs/decisions.md`, "PERSISTENCE".
 
 ⚠️ **USE THE UPDATER FORM FOR ANY TOGGLE:**
 `setAnswer("start", (prev) => toggleMulti(prev ?? [], option))`. A value

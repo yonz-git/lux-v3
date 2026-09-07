@@ -286,6 +286,76 @@ confusion, and this string is not new copy — it is the label
 `Check — no profile` (`606:2183`) already gives this exact destination. The frame
 name is the odd one out.
 
+### The flow now recaps the profile before it asks for products
+
+⚠️ **NO FRAME AT ALL.** `/investigation/profile` sits between step 4 (Timing) and
+step 5 (Your products) and reads back what steps 1–4 collected. Its one action,
+`Add products`, continues to step 5.
+
+**A pushed view, not a step** — no progress track, no `Save & exit`, back
+chevron kept, so `TOTAL_STEPS` is still 5 and the track still reads 4/5 on
+Timing and 5/5 on Products.
+
+⚠️ **IT IS ONE BLOCK PER ANSWER, NOT A CARD OF `label: value` ROWS.** The rows
+version existed for a few hours on 7 Sep 2026 and was rebuilt the same day: a
+multi-select is a SET and wants pills, and a face region is a PLACE and wants
+the diagram it was picked on. Almost nothing on it is drawn new even so — it is
+assembled from recipes page 06 already holds:
+
+| Block | Recipe borrowed from |
+| ----- | -------------------- |
+| skin type + tendencies + known conditions | the sage `DataCard` — Surface System B, as `Analysis`'s verdict — a `t-overline` heading over two labelled columns, then a full-width row; values at `t-button` (17), both multi-selects JOINED rather than pilled |
+| symptoms | `Tag` (256:85), `Neutral`, **wearing `Chip`'s default fill and hairline** (see below), in a frosted light block (System A) |
+| other locations | **inside `face-diagram-card`**, in step 1's own chip row, drawn as step 1's SELECTED `Chip` (40, `Label`, `bg/brand`) |
+| where on the face | `face-diagram-card` from step 1, in a **read-only mode that Figma has no variant for** |
+| the photo | its own block: `Check-in detail`'s photo well (`surface/data-strong`, `radius/lg`) + `CheckInPhotoArt`, with a `SmallButton` opening the existing `SelfieSheet` |
+| all of step 4 | two meta lines inside the *What you noticed* block, under the pills — `Started <date> · Day <n>` and `Now: <status>` |
+| the action | `Button` primary, full width mobile / `width/action` desktop |
+
+**Two things on it have no Figma component at all**, and they are the real ask
+of this section:
+
+1. **A read-only face diagram.** Same dome, same seven pills at the same
+   coordinates, picked ones filled, the rest at 55% and without their lift —
+   **and the same chip row under them**, as read-only pills rather than `Chip`
+   controls **in their selected state**. In code it is one `readOnly` prop on the existing component; in
+   Figma it wants a `State=Read-only` variant on `face-diagram-card` rather than
+   a second frame, and the variant has to cover the chip row too.
+2. **A component for a span of time.** ⚠️ **The recap no longer draws one** —
+   it shipped a two-node rail (10px discs, `border/default` far and `bg/brand`
+   near, a `border/subtle` hairline between; vertical at 440, horizontal at
+   1440) and that was cut on 7 Sep 2026, asked for directly, in favour of two
+   lines of text. The ASK survives the cut: PROGRESS, the analysis and this
+   screen all state spans of time and none of the three draw them the same way.
+   That is a DS gap whether or not the recap is the screen that needs it.
+3. **A `Tag` variant carrying `Chip`'s ground.** Asked for directly on 7 Sep
+   2026: the recap's pills take `bg/frost-light-muted` and a `border/chip`
+   hairline — `Chip`'s default state — because `Tag`'s own `bg/surface-frost`
+   with no stroke leaves an answer with no edge on a frosted block. Everything
+   else stays `Tag`'s: 26 tall, `Label Small`, `text/secondary`. In code it is a
+   class on this one screen, deliberately fenced (a tag dressed as a chip is
+   only safe where there are no chips, and this screen has no controls at all).
+   In Figma it wants a real third style on 256:85 — `Style=Outlined` or similar
+   — so the borrowing stops being a local override.
+
+**What Figma needs to decide:** whether the read-only face is a variant or a new
+component; whether the timeline earns a real DS component (PROGRESS and the
+analysis both have spans of time they currently draw differently); and whether
+the label wording is right — *What you noticed*, *Where you noticed it*,
+*Known skin conditions*, *Started*, *Day n* and *Now* are all decided here.
+⚠️ **The last three are short on purpose, and they were longer.** *Symptoms
+started* / *Symptoms now* were right while step 4 had a block of its own among
+four other answers; sitting under the pills that name the symptoms, the subject
+is already on screen and repeating it made the block say "symptoms" three times
+in four lines.
+
+**⚠️ It replaced step 4's direct hand-off to `/check/new`.** That route was
+itself a prototype decision (6 Sep 2026, the first move of the CHECK/analysis
+merge) and is listed below. The merge is not reverted — `/check/new` remains the
+shared builder, reachable from CHECK — but the flow no longer leaves the
+investigation to reach a products list, which restores the duration question
+that the analysis depends on.
+
 ### The investigation ends in an ANALYSIS, and page 06 has no frames for it
 
 ⚠️ **The biggest gap in this file.** `/investigation/evidence`,

@@ -101,21 +101,72 @@ const TIERS = [
 /** So "Whole face" can select/clear every region pill in one tap — see StartInvestigation. */
 export const FACE_REGION_IDS = REGIONS.map((r) => r.id);
 
-export function FaceDiagram({
-  selected,
-  onToggle,
-  locationChips,
-}: {
-  selected: string[];
-  onToggle: (id: string) => void;
-  locationChips: string[];
-}) {
+/**
+ * ⚠️ TWO MODES, AND THE PROPS ARE A UNION SO THE WRONG ONE CANNOT COMPILE.
+ * `readOnly` is the recap at `/investigation/profile` reading the location
+ * answer back: the same dome, the same seven pills at the same coordinates,
+ * with the picked ones filled and the rest dimmed. It exists rather than a
+ * chip list because the coordinates ARE the answer — "Cheeks (L)" only means
+ * the left cheek because of where the pill sits, and a comma-separated line
+ * throws exactly that away.
+ *
+ * The read-only face takes no `onToggle`: there is nothing to toggle. It does
+ * take `otherLocations`, and the union means the interactive `locationChips`
+ * and the read-only list cannot be swapped by accident.
+ *
+ * ⚠️ THE NON-FACE ANSWERS COME INSIDE THE CARD IN BOTH MODES — asked for
+ * directly, 7 Sep 2026. In the recap they were `Tag`s in the light block
+ * BESIDE this card, which split one answer across two surfaces: "Neck" is the
+ * same answer as "Cheeks (L)", given in the same tap, and the only reason it
+ * has no coordinate is that the neck is not on the face. Inside, it reads as
+ * what it is. The interactive mode already made this move (see the note above);
+ * the recap was the half that had not caught up.
+ *
+ * ⚠️ THE READ-ONLY CHIPS ARE THE SAME PILL STEP 1 DRAWS, IN THE STATE THE
+ * ANSWER PUTS THEM IN — matched to `/investigation/start`, asked for directly.
+ * Step 1's location chips are `Chip`s: 40 tall, `Label`, `radius/full`, and
+ * INDIGO once picked. The recap only ever shows the ones that were picked, so
+ * the pill it draws is the selected one — exactly the rule the face regions
+ * above already follow, where a chosen region keeps its full indigo treatment
+ * and only the others step back. Drawing them as the pale unselected pill said
+ * the opposite of what the answer was.
+ *
+ * They are `span`s with a local class rather than `Chip`s or `Tag`s: `Chip` is
+ * a `role="checkbox"` control and there is nothing here to check, and `Tag` is
+ * 26 tall with `Label Small`, which is a different pill from the one step 1
+ * draws. The region pills beside them are `span`s for the same reason.
+ *
+ *
+ * ⚠️ AND THE DIAGRAM IS `aria-hidden` — DELIBERATELY, NOT AN OVERSIGHT. In
+ * read-only mode it is an illustration of an answer the recap also writes out
+ * in text; announcing seven pills, five of them dimmed and meaningless without
+ * their position, would be the screen reader getting the worse half of the
+ * picture twice. ⚠️ **The chip row below it is NOT hidden** — it sits outside
+ * the diagram, its labels mean what they say without a position, and it is a
+ * `<ul>` so the count is announced. The interactive mode keeps its
+ * `role="group"` and every pill's `role="checkbox"`.
+ */
+type FaceDiagramProps =
+  | {
+      readOnly?: false;
+      selected: string[];
+      onToggle: (id: string) => void;
+      locationChips: string[];
+    }
+  | { readOnly: true; selected: string[]; otherLocations?: string[] };
+
+export function FaceDiagram(props: FaceDiagramProps) {
+  const { selected } = props;
+  const readOnly = props.readOnly === true;
+
   return (
     <div className={styles.card}>
       <div
         className={styles.diagram}
-        role="group"
-        aria-label="Face regions"
+        data-readonly={readOnly || undefined}
+        role={readOnly ? undefined : "group"}
+        aria-label={readOnly ? undefined : "Face regions"}
+        aria-hidden={readOnly || undefined}
       >
         {/* the form is decorative — the pills carry the meaning */}
         <span className={styles.form} aria-hidden="true">
@@ -134,39 +185,71 @@ export function FaceDiagram({
             />
           ))}
         </span>
-        {REGIONS.map((r) => (
-          <button
-            key={r.id}
-            type="button"
-            role="checkbox"
-            aria-checked={selected.includes(r.id)}
-            data-selected={selected.includes(r.id)}
-            className={`${styles.region} t-label-sm`}
-            style={{
-              left: `${(r.x + r.w / 2) * 100}%`,
-              top: `${r.y * 100}%`,
-            }}
-            onClick={() => onToggle(r.id)}
-          >
-            {r.id}
-          </button>
-        ))}
+        {REGIONS.map((r) => {
+          const position = {
+            left: `${(r.x + r.w / 2) * 100}%`,
+            top: `${r.y * 100}%`,
+          };
+
+          /* The read-only pill is a `span`, not a disabled `button`. Disabled
+             is a control the user cannot use yet; this is not a control at
+             all, and the recap should not tell a screen reader otherwise. */
+          return readOnly ? (
+            <span
+              key={r.id}
+              data-selected={selected.includes(r.id)}
+              className={`${styles.region} t-label-sm`}
+              style={position}
+            >
+              {r.id}
+            </span>
+          ) : (
+            <button
+              key={r.id}
+              type="button"
+              role="checkbox"
+              aria-checked={selected.includes(r.id)}
+              data-selected={selected.includes(r.id)}
+              className={`${styles.region} t-label-sm`}
+              style={position}
+              onClick={() => props.onToggle(r.id)}
+            >
+              {r.id}
+            </button>
+          );
+        })}
       </div>
 
-      <div
-        className={styles.chips}
-        role="group"
-        aria-label="Other locations"
-      >
-        {locationChips.map((c) => (
-          <Chip
-            key={c}
-            label={c}
-            selected={selected.includes(c)}
-            onToggle={() => onToggle(c)}
-          />
-        ))}
-      </div>
+      {readOnly
+        ? props.otherLocations &&
+          props.otherLocations.length > 0 && (
+            <ul
+              className={`${styles.chips} ${styles.chipList}`}
+              aria-label="Other locations"
+            >
+              {props.otherLocations.map((c) => (
+                <li key={c}>
+                  <span className={`${styles.readOnlyChip} t-label`}>{c}</span>
+                </li>
+              ))}
+            </ul>
+          )
+        : (
+          <div
+            className={styles.chips}
+            role="group"
+            aria-label="Other locations"
+          >
+            {props.locationChips.map((c) => (
+              <Chip
+                key={c}
+                label={c}
+                selected={selected.includes(c)}
+                onToggle={() => props.onToggle(c)}
+              />
+            ))}
+          </div>
+        )}
     </div>
   );
 }

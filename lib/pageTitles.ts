@@ -50,6 +50,15 @@ const HUB_TITLES: Record<string, string> = {
      screens for one question read as three more steps. One route now, with the
      wait as its first state. */
   "/investigation/analysis": "Analysis",
+  /* ⚠️ ALSO UNDER `/investigation` AND ALSO NOT A FLOW STEP — the recap of what
+     steps 1–4 collected, sitting between Timing and Products. Same reason it is
+     here rather than in `flow.ts`: no progress track, no `Save & exit`, so it is
+     not in `STEPS` and `TOTAL_STEPS` is still 5. See `features/my-skin/profile.ts`.
+
+     The title is the KIND of page, not its content — "Skin profile", never the
+     user's own skin type, which is the rule every other entry in this file
+     follows. */
+  "/investigation/profile": "Skin profile",
   /* ⚠️ `/chat` USED TO BE HERE AND THE ROUTE IS GONE — 7 Sep 2026. It was the
      standalone conversation panel (270:96), prototype-only and in no nav
      section; `app/chat/page.tsx` was deleted, so a title for it would name a

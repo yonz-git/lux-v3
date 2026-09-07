@@ -1,0 +1,432 @@
+/* The skin profile recap — see SkinProfileSummary.tsx.
+
+   ⚠️ NOT IN FIGMA. There is no recap frame on `06. Screen Designs`, so nothing
+   here is transcribed; it is assembled from recipes that already exist, which is
+   the rule for a screen shape the design system has not drawn yet. The sage
+   card is `DataCard` untouched, the light blocks are the frosted-card recipe
+   every light card in the flow uses, the pills are `Tag`, the face is step 1's
+   own diagram in its read-only mode, and the button is `Button`. The only
+   decisions this file makes are the gaps between those blocks. Nothing on the
+   screen is drawn new any more: the two-node timeline rail was the one such
+   thing and it was cut with the block that held it.
+
+   ⚠️ `HubScreen`'s BODY HAS NO ROW GAP — `.body > .heading + *` gives the first
+   block its 24 under the title and "every other gap belongs to the screen". So
+   the spacing between the blocks is owed here, as gaps on the two wrappers
+   below, rather than inherited from the shell.
+
+   ⚠️ THE SCREEN SPLITS ON WHAT IS TRUE BETWEEN EPISODES AND WHAT IS TRUE NOW,
+   AND THE SURFACE SYSTEMS CARRY THE SPLIT. The sage card holds the standing
+   facts — skin type, tendencies, known conditions — and the light blocks hold
+   the episode: what was noticed, when it started, where it is. That is why
+   there is exactly one interval inside the recap and it is a tight one.
+
+     24   the page title to the sage card (HubScreen's, not ours)
+     32   the card to the episode — the widest interval inside the recap,
+          because it is also the one place the surface system changes
+     12   between the episode's blocks, tighter than the cards' own 20 padding
+          so the pair reads as one group rather than two neighbours
+     40   the recap to the hand-off, the largest gap on the page because it is
+          the only place the user leaves it
+
+   ⚠️ IT WAS 16 EVERYWHERE UNTIL 7 Sep 2026, over four identical frosted cards,
+   which is four things of equal weight and not what the screen holds. It then
+   ran 12/24 over two groups of light blocks, until the conditions moved into
+   the sage card and the timeline block was cut. Nothing here needed a heading
+   to say "these belong together" — that is what proximity is for, and a label
+   naming a group is the thing this screen already deleted once ("From your
+   answers"). */
+
+/* ---------------------------------------------------------------------------
+   THE HEADLINE — Surface System B, the screen's one statement
+
+   `DataCard` carries the whole recipe (surface/data, the frosted-data shadow,
+   radius/2xl, 20/24 padding, a 16 gap, NO stroke), so this only positions it and
+   colours its lines. Same split `Analysis` makes with its verdict card.
+
+   ⚠️ THE CARD IS EVERYTHING TRUE BETWEEN EPISODES: the skin type and the
+   tendencies as two columns, and the known conditions as a full-width row under
+   them. Every answer about the episode itself — what was noticed, when, where —
+   is drawn in the light blocks below, as what it is. A supplied comp also gave
+   this card a `border/glass` rule with a current-symptoms line and a start date
+   under it; those were cut the same day, asked for directly, and there is no
+   divider left because there are no longer two halves to divide.
+
+   ⚠️ THE CONDITIONS ARRIVED LAST AND THEY ARE WHY THE SPLIT IS CLEAN. They had
+   a light block of their own, which put a standing fact about the skin in among
+   the episode. Moved here, each surface system says one thing: sage for what
+   the skin IS, light for what it is DOING.
+
+   ⚠️ THE GAP UNDER THE OVERLINE IS `DataCard`'s OWN 16 AND IS NOT WRITTEN HERE.
+   The comp draws it looser, but the card's internal rhythm is the component's
+   recipe (20/24 padding, a 16 row gap) and every other sage card in the app
+   keeps it. A local override would make this the one data card in LUX that
+   spaces its own heading differently.
+   -------------------------------------------------------------------------- */
+
+.headline {
+  margin-bottom: var(--space-3xl); /* 32 — see the interval run above */
+}
+
+/* ⚠️ THE SECOND COLUMN IS RIGHT-ALIGNED AND THAT IS THE WHOLE LAYOUT. Two
+   labelled values pushed to opposite edges read as one row of facts about the
+   same subject; the same two stacked read as two sections. `align-items:
+   flex-start` keeps the labels on one line when the tendencies wrap onto two,
+   and `min-width: 0` on the columns lets them wrap at all rather than pushing
+   the row wider than the card. */
+.identity {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: var(--space-lg); /* 16 */
+}
+
+.identityCol {
+  min-width: 0;
+}
+
+.identityEnd {
+  text-align: right;
+}
+
+/* the card's own heading. `t-overline` supplies the caps and the 1.82px
+   tracking; `DataCard`'s row gap supplies the space under it, so this only
+   zeroes the paragraph margin and picks the ink. */
+.cardLabel {
+  margin: 0;
+  color: var(--color-text-on-data-muted);
+}
+
+.headlineLabel {
+  margin: 0 0 var(--space-2xs); /* 2 */
+  color: var(--color-text-on-data-muted);
+}
+
+.headlineValue {
+  margin: 0;
+  color: var(--color-text-on-data);
+  /* the skin type is one or three words — balanced so "Normal or balanced"
+     does not break with a single word stranded on line two */
+  text-wrap: balance;
+}
+
+/* ---------------------------------------------------------------------------
+   THE EPISODE
+
+   ⚠️ A WRAPPER, NOT MARGINS ON THE BLOCKS, AND THE REASON IS THE OPTIONAL ONES.
+   Either block here can be absent — a deep link, or a visitor who answered part
+   of step 1 — and a `margin-bottom` per card plus a `:last-of-type` exception
+   has to be re-reasoned for each of those combinations. A `gap` states the
+   interval BETWEEN whatever actually rendered and cannot leave a stray margin
+   under the last one.
+   -------------------------------------------------------------------------- */
+
+.blocks {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-md); /* 12 — inside the episode */
+}
+
+/* ---------------------------------------------------------------------------
+   THE BLOCKS — Surface System A, one per answer
+
+   ⚠️ SYSTEM A DELIBERATELY, THOUGH THEY SIT UNDER A SAGE CARD. A sage card
+   inside a light screen is a LUX pattern and the reverse is not, so the answers
+   stay light: they are the detail you read, not the statement you take away.
+   Making all five sage would leave the screen with no focal point at all.
+   -------------------------------------------------------------------------- */
+
+.block {
+  /* rule 9: the border is on the box, so the padding loses its width and the
+     card lands on 20 in every state */
+  padding: calc(var(--space-xl) - var(--border-width-hairline));
+
+  border-radius: var(--radius-2xl);
+  background: var(--color-surface-frost-light);
+  border: var(--border-width-hairline) solid var(--color-border-subtle);
+  box-shadow: var(--shadow-frosted-row);
+  -webkit-backdrop-filter: blur(var(--blur-card));
+  backdrop-filter: blur(var(--blur-card));
+}
+
+.blockLabel {
+  margin: 0 0 var(--space-md); /* 12 */
+  color: var(--color-text-muted);
+}
+
+/* ---------------------------------------------------------------------------
+   THE PILLS — a multi-select answer, drawn as a set
+
+   `Tag` owns the pill itself (26 tall, radius/full, its own fill and label
+   style). The list only has to be a list: no bullets, no indent, and the 10
+   gap the Chip grid uses in Figma — off the spacing scale there too, which is
+   why it is a literal here.
+   -------------------------------------------------------------------------- */
+
+.tags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+/* ⚠️ THE PILL WEARS THE CHIP'S FILL AND HAIRLINE — asked for directly, 7 Sep
+   2026. `Tag`'s neutral fill is `bg/surface-frost` with no stroke, which on
+   these frosted blocks left the answers with no edge of their own; step 1's
+   unselected `Chip` already solves exactly that problem on exactly that ground,
+   so the recap borrows its two values rather than inventing a third pill.
+   `bg/frost-light-muted` + a `border/chip` hairline, and nothing else: the
+   26-tall geometry, the `Label Small` type and the `text/secondary` ink are
+   still `Tag`'s.
+
+   ⚠️ A READ-ONLY LABEL NOW LOOKS LIKE A CONTROL, WHICH IS ONLY SAFE BECAUSE OF
+   WHERE IT IS. The `Tag` / `Chip` split is a contract — a chip is a
+   `role="checkbox"`, a tag is a label — and dressing one as the other would
+   normally be the way to break it. This screen has NO controls on it at all
+   (the face diagram is read-only too, and the one button is a `Button`), so
+   there is nothing here for a pill to be mistaken for. **Do not lift this class
+   onto a screen that mixes tags with chips.** The real fix is a `Tag` variant
+   in Figma carrying this fill; see `docs/figma-catchup.md`.
+
+   ⚠️ THE CLASS IS DOUBLED ON PURPOSE, AND IT IS NON-NEGOTIABLE 13's TRAP. As a
+   single `.pill` it ties with `Tag.module.css`'s own `.tag` at (0,1,0), and
+   which one paints is then CSS-Module load order — the same silent coin-toss
+   that lost the focus ring across the app. `.pill.pill` is (0,2,0) and wins by
+   the cascade's own rules instead. */
+.pill.pill {
+  background: var(--color-bg-frost-light-muted);
+  /* rule 9: the pill is sized by `min-height` and box-sizing is border-box, so
+     the 1px sits INSIDE the 26 — but the horizontal padding still has to lose
+     its width or the label moves 1px in on each side */
+  border: var(--border-width-hairline) solid var(--color-border-chip);
+  padding: 0 calc(var(--space-md) - var(--border-width-hairline));
+}
+
+/* ---------------------------------------------------------------------------
+   THE FACE — step 1's own diagram, read back
+
+   ⚠️ THE WRAPPER EXISTS TO OWN THE CAP. `FaceDiagram` brings its whole card
+   with it — `surface/data-strong`, its own padding, its own radius — and takes
+   no `className`, so its width cannot be written on the card itself. It is the
+   sage card nested in a light one, which is the LUX nesting direction, and as
+   of 7 Sep 2026 it is the ONLY thing in this block: the non-face chips moved
+   inside the card, where the rest of the same answer already was.
+
+   ⚠️ THE CAP IS 392, THE WIDTH THE CARD IS DRAWN AT. `.card` is `width: 100%`
+   over a `392 / 300` diagram box, so on the desktop card it took the whole
+   column and rendered a ~600-tall face: the one answer with a picture became
+   the size of everything else on the screen put together. On step 1 that is
+   correct — the diagram IS the screen and the user has to hit its regions. Here
+   it is one of five answers and is not a target at all, so it is held at the
+   size it was designed at. Left-aligned rather than centred, so its edge lands
+   on the same line as the block's label and the pills beneath it.
+   -------------------------------------------------------------------------- */
+
+.face {
+  max-width: 392px;
+}
+
+/* ---------------------------------------------------------------------------
+   THE PHOTO — the capture, shown as a capture
+
+   ⚠️ IT WAS A LINE OF TEXT TWICE BEFORE IT WAS THIS. "Photo added" sat under
+   the symptom pills, then on the face card; both stated that a capture exists,
+   which is the least a recap of a photograph can say. The well is
+   `CheckInDetail`'s, one recipe over: `surface/data-strong` — the nested
+   emphasis fill, and the one place the stronger sage belongs — at `radius/lg`,
+   with the drawing cropped to fill it the way a photograph would be.
+
+   ⚠️ A SAGE WELL INSIDE A LIGHT BLOCK IS THE LUX NESTING DIRECTION, the same
+   one the face card takes two blocks up. A light well on a light card would
+   invert it.
+
+   ⚠️ CAPPED AT 392, LIKE THE FACE. The two blocks hold the only pictures on the
+   screen and they line up on one left edge and one width; without the cap the
+   desktop column would draw a 590-wide photograph of nothing in particular.
+   3 / 2 rather than the check-in's fixed 120, because that well is one of two
+   columns in a dashboard and this one is the block's whole content.
+   -------------------------------------------------------------------------- */
+
+.photo {
+  margin: 0;
+}
+
+.photoWell {
+  max-width: 392px;
+  aspect-ratio: 3 / 2;
+  overflow: hidden;
+  border-radius: var(--radius-lg); /* 16 */
+  background: var(--color-surface-data-strong);
+}
+
+.photoArt {
+  width: 100%;
+  height: 100%;
+}
+
+/* the one control on the screen, so it owes its own gap rather than inheriting
+   one — 12, the same interval the block's label takes above the content */
+.photoAction {
+  margin-top: var(--space-md); /* 12 */
+}
+
+/* ---------------------------------------------------------------------------
+   STEP 4 — two meta lines under the symptoms they belong to
+
+   ⚠️ ALL OF STEP 4 LIVES HERE NOW. It had the sage card's lower half, then a
+   block of its own drawn as a two-node timeline rail; both are gone, asked for
+   directly, 7 Sep 2026. A date under a skin type is a date and a date under the
+   pills that name what was noticed is the AGE of those symptoms — which is the
+   only reading it was ever there for — and once the date sits here the status
+   has nowhere else it can honestly go either.
+
+   ⚠️ THE RAIL WENT WITH IT, AND IT WAS THE ONE DRAWING ON THIS SCREEN WITH NO
+   EXISTING RECIPE. Two 10px discs joined by a hairline, vertical on mobile and
+   horizontal across a grid on desktop. It is not a loss worth mourning: a
+   two-node rail is a lot of apparatus for two lines of text, and the span it
+   drew is stated in five words here. The ask stays open in
+   `docs/figma-catchup.md` because PROGRESS and the analysis both draw spans of
+   time and none of the three agree — but it belongs to the DS, not to this
+   screen.
+   -------------------------------------------------------------------------- */
+
+.started {
+  margin: var(--space-md) 0 0; /* 12 */
+  color: var(--color-text-secondary);
+}
+
+/* the two lines are a pair — when it started, and where it has got to — so they
+   sit closer to each other than either does to the pills above them */
+.started + .started {
+  margin-top: var(--space-xs); /* 4 */
+}
+
+/* "Now" is a label, not the answer; the user's own word for the status is */
+.startedWord {
+  color: var(--color-text-muted);
+}
+
+/* ⚠️ ADJACENCY, NOT A FIXED TOP MARGIN. `TagList` renders NOTHING when step 4's
+   dates are the only thing this block holds, and a margin on the line itself
+   then stacked on the label's own 12 and opened 24 under a heading with one
+   line beneath it. */
+.blockLabel + .started {
+  margin-top: 0;
+}
+
+/* ---------------------------------------------------------------------------
+   THE HAND-OFF
+   -------------------------------------------------------------------------- */
+
+.actions {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-lg); /* 16 */
+  margin-top: var(--space-4xl); /* 40 — the largest interval on the page */
+}
+
+/* ⚠️ THE ONE CASE WHERE THE 40 WOULD DOUBLE UP. With nothing answered but the
+   skin type there are no blocks between the sage card and the button, and the
+   card's own 32 plus this 40 opens 72 under a two-line card. The statement's
+   own interval is the right one there, so this yields to it. */
+.headline + .actions {
+  margin-top: 0;
+}
+
+/* The button's box. See the note at the call site: `Button` owns its own
+   `fullWidth`, so the only safe place to say how wide it is is the box around
+   it. */
+.cta {
+  width: 100%;
+}
+
+.ctaHelp {
+  margin: 0;
+  color: var(--color-text-secondary);
+  text-wrap: pretty;
+}
+
+/* ---------------------------------------------------------------------------
+   THE EMPTY STATE — the window lapsed, a fresh browser, or a reset
+
+   ⚠️ THE BUTTON IS NOT IN HERE — it is `HubScreen`'s `footer`, which is where
+   the action goes on a screen with almost nothing above it. The footer's
+   `margin-top: auto` drops it to the bottom of the phone rather than leaving it
+   stranded under two short paragraphs in the upper third; that is the exact
+   case the rule was written for (see `HubScreen.module.css`). The filled state
+   does NOT use it, because its button is half of a pair with the sentence above
+   it and the footer's own desktop width would break that sentence's measure.
+   -------------------------------------------------------------------------- */
+
+.empty {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-sm); /* 8 */
+}
+
+.emptyTitle {
+  margin: 0;
+  color: var(--color-text-primary);
+}
+
+.emptyBody {
+  margin: 0;
+  color: var(--color-text-secondary);
+  text-wrap: pretty;
+}
+
+/* ---------------------------------------------------------------------------
+   DESKTOP
+
+   ⚠️ THE RECAP TAKES A COLUMN, NOT THE CARD'S FULL WIDTH. `HubScreen`'s `card`
+   layout is `width/card-form` (920) less 48 of padding either side, so a block
+   holding an overline and three pills was drawn 824 wide and about 90 tall —
+   four stacked bars of mostly empty fill, and the same content at a density
+   nothing on the page justifies. Held at `width/card-focus` (640) the blocks
+   read as blocks again. It is the width the app already uses for a single
+   column of content (`HubScreen`'s `plain` layout), and it is LEFT-aligned so
+   every edge on the screen — the page title, the labels, the pills, the face —
+   lands on one line.
+
+   The CTA stops being full width inside that column, which is the move every
+   flow screen already makes at this breakpoint.
+   -------------------------------------------------------------------------- */
+
+@media (min-width: 1024px) {
+  .headline,
+  .blocks,
+  .actions {
+    max-width: var(--width-card-focus); /* 640 */
+  }
+
+  .block {
+    padding: calc(var(--space-2xl) - var(--border-width-hairline));
+  }
+
+  /* the cards' own padding steps 20 -> 24 here, so the interval that groups
+     them steps with it */
+  .blocks {
+    gap: var(--space-lg); /* 16 */
+  }
+
+  .actions {
+    align-items: center;
+  }
+
+  /* ⚠️ `width/action`, NOT THE 280 THIS FILE SHIPPED WITH. Every action in the
+     app was unified onto that token — `Continue` included, and its own comment
+     records the same 280 being retired — so a hardcoded 280 here made the
+     recap's button the one button in the product that changes size when you
+     walk into it. Applied to the BOX so `Button`'s `fullWidth` fills it; see
+     the note at the call site for why not to the control itself. */
+  .cta {
+    width: var(--width-action);
+  }
+
+  .ctaHelp {
+    max-width: 520px;
+    text-align: center;
+  }
+}
