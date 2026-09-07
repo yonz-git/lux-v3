@@ -550,7 +550,7 @@ function ConfirmView({
       {stage === "verify" && draft && (
         <div className={styles.confirmBlock}>
           <p
-            className={`${styles.confirmLabel} t-label-sm`}
+            className={`${styles.confirmLabel} t-h5`}
             id="add-product-confirm"
           >
             {isScan ? "Is this correct?" : "Is this the right product?"}
@@ -581,7 +581,7 @@ function ConfirmView({
       {stage === "duration" && draft && (
         <div className={styles.confirmBlock}>
           <p
-            className={`${styles.confirmLabel} t-label-sm`}
+            className={`${styles.confirmLabel} t-h5`}
             id="add-product-duration"
           >
             How long have you used this product?
