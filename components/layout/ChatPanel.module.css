@@ -21,18 +21,33 @@
    ========================================================================== */
 
 .panel {
-  /* Raw fill off the frame. ⚠️ NOT A PAINT STYLE — `get_design_context` reports
-     only gradient/brand, gradient/brand-indigo and surface/chat-bubble as named
-     styles here, so the panel's own gradient is a local fill with no variable
-     behind it. It is close to but NOT `gradient/canvas-mobile` (#dce7ea ->
-     #cedee2 -> #acc5cc): lighter at the top and markedly lighter at the bottom,
-     which is what separates the panel from the canvas it sits on. Raise it as
-     `gradient/chat-panel`. */
+  /* ⚠️ NOT IN FIGMA — THE PANEL IS NOW DARKER THAN THE CANVAS IT SITS ON,
+     asked for directly. The frame's own fill was #dbebed -> #d1e1e5 -> #c3cdd9,
+     which read LIGHTER than `gradient/canvas-mobile` (#dce7ea -> #cedee2 ->
+     #acc5cc) at both ends; the panel now reads darker at both ends instead. The
+     geometry is untouched — same 116.756deg, same three stops at 36.39 / 53.77 /
+     105.01 — so only the colours moved, and the panel still separates from the
+     canvas by contrast, just in the other direction.
+
+     ⚠️ STILL NOT A PAINT STYLE. `get_design_context` reports only
+     gradient/brand, gradient/brand-indigo and surface/chat-bubble as named
+     styles on this frame, so this is a local fill with no variable behind it —
+     and it is now a local fill that DIVERGES from the frame as well. Raise it as
+     `gradient/chat-panel` with these values, not the frame's.
+
+     ⚠️ THE BUBBLES DID NOT MOVE AND MUST NOT. `bg/bubble-ai` (#dbeded) and
+     `bg/bubble-user` (#cadfdf) are opaque, so they now sit clearly proud of the
+     ground rather than melting into it — which is the point of the change.
+     What DOES need watching is `text/secondary` (#4b4b57): measured against the
+     bottom stop it lands at 3.3:1, below AA, and CheckIn's `.note` and
+     `.captured` are the two lines that use it inside this panel. Flagged, not
+     "fixed" — non-negotiable 17: a chosen design value is not improved toward a
+     passing one without asking. */
   --chat-panel-gradient: linear-gradient(
     116.756deg,
-    #dbebed 36.39%,
-    #d1e1e5 53.77%,
-    #c3cdd9 105.01%
+    #b6cece 36.39%,
+    #b8cecf 53.77%,
+    #94a0af 105.01%
   );
   /* ⚠️ OFF THE RADIUS SCALE — `3xl` is 32 and `full` is 999, so 36 is a value
      the system does not publish. Raise `radius/4xl`. */
@@ -154,10 +169,22 @@
   overflow-y: auto;
   overscroll-behavior: contain;
 
+  /* ⚠️ THE BAR IS HIDDEN, THE SCROLL IS NOT — the same recipe `html` carries in
+     globals.css, and for the same reason: LUX hides OS scrollbar chrome so the
+     frosted surfaces stay chrome-free. This is a SECOND scroll container, so
+     the global rule never reached it, and the panel was the one surface in the
+     app drawing a bar down its side. */
+  scrollbar-width: none; /* Firefox */
+  -ms-overflow-style: none; /* legacy Edge */
+
   display: flex;
   flex-direction: column;
   gap: var(--space-lg); /* 16 */
   padding-block: var(--space-md) var(--space-xl); /* 12 / 20 */
+}
+
+.body::-webkit-scrollbar {
+  display: none; /* Chrome, Safari, Chromium Edge */
 }
 
 /* ---------------------------------------------------------------------------

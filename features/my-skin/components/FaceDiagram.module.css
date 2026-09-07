@@ -24,8 +24,72 @@
      deeper one, painted TWICE: 62% over 62% composites to an effective 86%,
      which is the depth this card needs and is still the same one sage. A
      third alpha would be a new token for one screen; the DS should grow a
-     real `surface/data-deep` instead. */
-  background: linear-gradient(
+     real `surface/data-deep` instead.
+
+     ⚠️ A RADIAL SITS ON TOP OF THAT FLAT BASE — DARK IN THE MIDDLE, CLEARING
+     TOWARD THE EDGES — asked for directly, NOT IN FIGMA. It is
+     `surface/data-deep` (#538b8d @62%), the one darker sage the app already
+     has (declared in globals.css, used by `ResultCards`' emphasis block and
+     the basket rows), rather than a fourth alpha invented for this screen. The
+     note on that token says System B's third step belongs in Figma as a real
+     `sage/700`; this is a third caller for that ask, not a new value.
+
+     ⚠️ THE DARK CORE IS BEHIND THE FACE, SO WHAT YOU SEE IS A HALO. `.form`'s
+     dome is filled from the OPAQUE sage primitives (`--gradient-face-form`,
+     sage-200 -> sage-400), so it occludes the centre completely. The gradient
+     therefore reads as depth hugging the face's edge and lifting toward the
+     card's corners — which is the intent, and is why the core is carried flat
+     out to 45% rather than peaking at a point nobody can see.
+
+     ⚠️ THE 42% IS THE DOME'S CENTRE, NOT THE CARD'S, AND IT IS APPROXIMATE ON
+     PURPOSE. The card is the diagram box (aspect 392/300) plus a chip row that
+     WRAPS, so the dome's centre moves between ~36% of the card's height on
+     mobile (three rows of pills) and ~47% on desktop (one row). 42% splits
+     that; a single exact number does not exist while the row can rewrap. Centre
+     it on the card's own 50% and the halo goes thin above the face and thick
+     below it.
+
+     The outer stop is `transparent`, which is safe here because CSS
+     interpolates gradients in PREMULTIPLIED alpha — the grey-haze bug that
+     rule of thumb comes from does not apply.
+
+     ⚠️ ALL THREE STOPS ARE CHOSEN VALUES, SUPPLIED DIRECTLY — NOT IN FIGMA, and
+     raw hex rather than a token because `02 Color` has no role for any of them.
+     Per the convention the other explicit-request colours follow
+     (`surface/data-deep`, `bg/brand-soft`, both declared in globals.css), these
+     want raising as a real `gradient/face-card`. Until then they live here,
+     greppable, and this comment is the record.
+
+     ⚠️ IT IS PAINTED ONCE NOW, WHERE IT USED TO BE PAINTED TWICE. The doubling
+     existed to deepen a core that was `surface/data-deep` at 62% with nothing
+     under it but the card's own sage; these stops name the centre outright, so
+     a second pass would composite 62% over 62% and render the middle markedly
+     darker than the value written here. If it wants to be deeper, move the hex
+     — do not restore the second layer, or the declaration stops describing what
+     is on screen.
+
+     ⚠️ AND THE OUTER STOP IS OPAQUE, WHICH RETIRED THE SEPARATE RIM LAYER. The
+     lift toward the card's corners used to be a second radial
+     (`--face-card-rim`, transparent -> `surface/frost-light`) painted UNDER this
+     one, because this one faded to `transparent` and let it through. `#a9cfcf`
+     at full alpha carries that brightening itself and simultaneously occludes
+     anything beneath it out there, so keeping the rim would have left a layer
+     that does nothing at the corners and muddies these stops in the band before
+     them. One gradient now states both ends of the range.
+
+     ⚠️ THE BASE UNDERNEATH IS STILL LOAD-BEARING. The inner stops are 62%, so
+     the two `surface/data-strong` layers and the backdrop blur still read
+     through the middle of the card — this is a wash over that ground, not a
+     replacement for it. */
+  --face-card-halo: radial-gradient(
+    circle at 50% 42%,
+    #577e809e 0%,
+    #6a999b9e 45%,
+    #a9cfcf 100%
+  );
+
+  background: var(--face-card-halo),
+    linear-gradient(
       var(--color-surface-data-strong),
       var(--color-surface-data-strong)
     ),
@@ -203,7 +267,12 @@
   .card {
     /* surface/data-strong composited over the canvas — the same move `Sheet`
        and `DataCard` make, since the DS has no opaque counterpart for it */
-    background: linear-gradient(
+    /* the radial rides along — it is a layer of the card's own paint, not a
+       transparency effect, so dropping it here would make the reduced
+       -transparency card a different DESIGN rather than the same one without the
+       blur */
+    background: var(--face-card-halo),
+      linear-gradient(
         var(--color-surface-data-strong),
         var(--color-surface-data-strong)
       ),

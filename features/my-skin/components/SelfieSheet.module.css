@@ -49,10 +49,31 @@
   border-radius: 50%;
 }
 
+/* ⚠️ WHITE, MATCHING `.guide`'s OVAL — asked for directly, and the same call
+   already made on `CameraCapture`'s copy of this label. It binds
+   `effect/rim-highlight` (white @90%), the SAME token the oval above and
+   `.shutterCore` below use, rather than a bare `#fff`: the guide and its label
+   are one object and should move together.
+
+   ⚠️ IT DUPLICATES A RULE THAT LIVES IN TWO FILES, WHICH IS THE COST THIS
+   SCREEN ACCEPTED. `components/ui/CameraCapture.module.css` carries the same
+   `.captured` for the check-in overlay and the PRODUCTS scan view; the doc
+   comment on SelfieSheet.tsx explains why this sheet was deliberately NOT
+   folded into that component (its viewfinder is 392x400 with a portrait OVAL
+   guide, against the shared 392x300 with a rounded rectangle). So a change to
+   the label has to be made twice, on purpose. Keep them in step.
+
+   ⚠️ IT FAILS AA — NON-NEGOTIABLE 17's EXACT CASE, same as the shared copy.
+   `surface/data` is rgba(125, 167, 169, 0.44) and composites too light for
+   white text at any alpha; measured here it lands near 1.8:1 where AA wants
+   4.5. `text/on-data` (#2e2a3f) was passing. A chosen design value overriding a
+   measured one, flagged in the file that carries it rather than silently
+   reverted. Do not copy the move onto `.question` or `.helper`, which stay
+   dark. */
 .captured {
   position: absolute;
   bottom: var(--space-xl);
-  color: var(--color-text-on-data);
+  color: var(--color-effect-rim-highlight);
 }
 
 .controls {
