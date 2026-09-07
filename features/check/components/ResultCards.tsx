@@ -65,10 +65,11 @@ export function SummaryCard({
  * `card · ingredients of concern` (549:1139) — the ingredient-major view.
  *
  * ⚠️ THE ACCENT BAR IS A SECOND CARRIER, NOT DECORATION. High likelihood is
- * `feedback/warning`, moderate is `text/on-data-muted` — but those two are only
- * distinguishable if you can compare them, so the likelihood is ALSO a Tag with
- * words in it, and the entry's accessible name says it too. Same rule the
- * compatibility pills follow.
+ * `bg/brand`, moderate is `bg/brand-soft` — each bar carrying its own pill's
+ * fill rather than the comp's warning/muted pair, see the CSS. But two weights
+ * of one hue are only distinguishable if you can compare them, so the
+ * likelihood is ALSO a Tag with words in it, and the entry's accessible name
+ * says it too. Same rule the compatibility pills follow.
  */
 export function IngredientsCard({
   concerns,
@@ -123,6 +124,13 @@ export function IngredientsCard({
  * The emphasis block is `surface/data-strong` — the handoff's rule for a nested
  * block on a data card, NOT a light card. A sage card inside a light card is a
  * LUX pattern; the reverse is not.
+ *
+ * ⚠️ `badgeBand` DRESSES THE BLOCK, NOT ONLY THE PILL — NOT IN FIGMA. It lands
+ * as `data-band` on the emphasis div, where the module turns it into a `--band`
+ * custom property; the 2px stroke around the block and the pill's fill both
+ * read that one value, so the verdict outlines the product it is about. It stays
+ * optional, and a block with no band gets a transparent border rather than none,
+ * so the geometry does not move between the two states.
  *
  * `schedule` and `actions` are optional because the two screens want different
  * halves of this: the investigation prescribes an elimination period and offers
@@ -183,7 +191,7 @@ export function NextStepsCard({
     <DataCard aria-label={label}>
       <p className={`${styles.sectionLabel} t-overline`}>{label}</p>
 
-      <div className={styles.emphasis}>
+      <div className={styles.emphasis} data-band={badgeBand}>
         <div className={styles.emphasisHead}>
           {art}
           <p className={`${styles.emphasisTitle} t-h6`}>{title}</p>

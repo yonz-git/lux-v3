@@ -67,16 +67,33 @@
   gap: var(--space-md); /* 12 */
 }
 
-/* 4 wide, full height of the entry, radius/full */
+/* 4 wide, full height of the entry, radius/full.
+
+   ⚠️ EACH BAR TAKES ITS OWN PILL'S FILL, AND NEITHER IS THE COMP'S — NOT IN
+   FIGMA. The comp paints high #c9918e (feedback/warning) and moderate
+   text/on-data-muted #354446, so every entry carried TWO colours for one
+   judgement: a pink-red rule beside an indigo pill, a near-black rule beside a
+   lilac one. The bar and the pill are the same statement, so they now say it in
+   the same colour — bg/brand for high, bg/brand-soft for moderate, exactly the
+   pair the pills already use.
+
+   The two levels still differ by weight, which is what the bar was for; only
+   the hue it borrows changed. And nothing is lost by dropping the warning hue:
+   non-negotiable 17's rule is that a warning must never be carried by COLOUR
+   ALONE, and the pill under each bar says "High likelihood" or "Moderate
+   likelihood" in words.
+
+   `moderate` is the base rule rather than its own selector because the type has
+   exactly two values — a third would need to declare itself here. */
 .accent {
   flex: none;
   width: 4px;
   border-radius: var(--radius-full);
-  background: var(--color-text-on-data-muted);
+  background: var(--color-bg-brand-soft);
 }
 
 .accent[data-likelihood="high"] {
-  background: var(--color-feedback-warning);
+  background: var(--color-bg-brand);
 }
 
 .concernBody {
@@ -122,12 +139,26 @@
    emphasis block: a sage card inside a light card is a LUX pattern, the reverse
    is not. */
 .emphasis {
+  --emphasis-border: 2px;
+
   display: flex;
   flex-direction: column;
   align-items: flex-start;
   gap: var(--space-md); /* 12 */
   width: 100%;
-  padding: var(--space-xl); /* 20 */
+  /* ⚠️ 20 MINUS THE BORDER, per non-negotiable 9. A Figma stroke does not add
+     to a frame's height and a CSS border does, so a box whose height is
+     CONTENT-driven has to give the stroke back out of its own padding or it
+     lands 4 taller and 4 wider than the block beside it. */
+  padding: calc(var(--space-xl) - var(--emphasis-border));
+  /* ⚠️ THE BAND, AGAIN — NOT IN FIGMA. The block's stroke is the same colour as
+     the badge sitting in it, so the verdict outlines the thing it is about
+     rather than only labelling it. `--band` is declared on the BLOCK now
+     (below) and inherits down to the pill, which is why one value can feed
+     both. Falls back to transparent: `badgeBand` is optional — a check with no
+     primary product renders this block with no pill — and an undefined var
+     would compute the border to currentColor and paint a white rule. */
+  border: var(--emphasis-border) solid var(--band, transparent);
   border-radius: var(--radius-lg);
   /* ⚠️ `surface/data-deep`, NOT `-data-strong` — BY EXPLICIT REQUEST. Sage at
      62% inside a sage card gave the block almost no edge against the card it
@@ -136,6 +167,21 @@
   box-shadow: var(--shadow-frosted-data);
   -webkit-backdrop-filter: blur(var(--blur-card));
   backdrop-filter: blur(var(--blur-card));
+}
+
+/* ⚠️ 24 UNDER THE BLOCK, WHERE THE CARD'S OWN RHYTHM IS 16 — NOT IN FIGMA. The
+   block now carries a 2px band stroke, which closes it off as its own object;
+   at the card's flex gap it sat too close to the first numbered step and the
+   step read as if it were inside the outline. 8 on top of that gap lands on 24,
+   a real spacing step, and the stroke gets room to be seen as an edge.
+
+   ⚠️ ON THE NEXT SIBLING, NOT AS THE BLOCK'S OWN margin-bottom. `steps`,
+   `schedule` and `actions` are all optional, so the block can be the card's
+   LAST child — a trailing margin would then pad the bottom of the card with
+   space nobody asked for. An adjacent-sibling rule only exists when there is
+   something to be spaced from. */
+.emphasis + * {
+  margin-top: var(--space-sm); /* 8, on top of the card's 16 gap = 24 */
 }
 
 /* ⚠️ WHITE, BY EXPLICIT REQUEST — AND IT DOES NOT MEET AA. Everything else on a
@@ -174,15 +220,18 @@
   color: var(--color-text-on-data-inverse);
 }
 
-.emphasis .badge[data-band="avoid"] {
+/* ⚠️ SET ON THE BLOCK, NOT THE PILL, because the block's border needs it too
+   and a custom property inherits downward. The pill above still reads
+   `var(--band)`; it just gets it from its parent now. */
+.emphasis[data-band="avoid"] {
   --band: var(--color-feedback-error);
 }
 
-.emphasis .badge[data-band="risky"] {
+.emphasis[data-band="risky"] {
   --band: var(--color-feedback-warning);
 }
 
-.emphasis .badge[data-band="compatible"] {
+.emphasis[data-band="compatible"] {
   --band: var(--color-feedback-success);
 }
 
