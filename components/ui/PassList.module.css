@@ -1,11 +1,20 @@
 /* A list of named steps ticking off. ⚠️ NOT IN FIGMA — no frame draws one; both
    analysing screens drew a bar. See `docs/figma-catchup.md`. */
 
+/* ⚠️ `fit-content`, NOT `width: 100%` — THE BOX HUGS THE LINES OR THE BLOCK
+   READS OFF-CENTRE. Both callers centre this list in a centred hero, and at
+   `width: 100%` the box took the whole cap (420 on desktop) while the longest
+   line only ever measures about 300. A centred box of left-aligned text that
+   never reaches its own right edge puts the INK left of centre — measured on
+   `/check/analyzing` at 1127: the box centred exactly, the lines sat 60px left
+   of the title and the description above and below them. The max-width is the
+   WRAP cap now rather than the width: a line longer than it still wraps there,
+   and anything shorter leaves no dead column beside it. */
 .list {
   display: flex;
   flex-direction: column;
   gap: var(--space-md);
-  width: 100%;
+  width: fit-content;
   max-width: 340px;
   padding: 0;
   list-style: none;
