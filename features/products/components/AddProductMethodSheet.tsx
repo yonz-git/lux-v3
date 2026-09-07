@@ -550,7 +550,7 @@ function ConfirmView({
       {stage === "verify" && draft && (
         <div className={styles.confirmBlock}>
           <p
-            className={`${styles.confirmLabel} t-label`}
+            className={`${styles.confirmLabel} t-label-sm`}
             id="add-product-confirm"
           >
             {isScan ? "Is this correct?" : "Is this the right product?"}
@@ -581,7 +581,7 @@ function ConfirmView({
       {stage === "duration" && draft && (
         <div className={styles.confirmBlock}>
           <p
-            className={`${styles.confirmLabel} t-label`}
+            className={`${styles.confirmLabel} t-label-sm`}
             id="add-product-duration"
           >
             How long have you used this product?
@@ -631,7 +631,7 @@ function ConfirmView({
 
       {(stage === "added" || stage === "rejected") && (
         <div className={styles.confirmBlock}>
-          <p className={`${styles.confirmLabel} t-label`}>
+          <p className={`${styles.confirmLabel} t-label-sm`}>
             {stage === "added"
               ? "Add another product"
               : "Search for a different product"}
@@ -646,7 +646,7 @@ function ConfirmView({
 
       {addedProducts.length > 0 && stage !== "verify" && (
         <div className={styles.confirmBlock}>
-          <p className={`${styles.confirmLabel} t-label`}>Added products</p>
+          <p className={`${styles.confirmLabel} t-label-sm`}>Added products</p>
           <ul className={styles.addedList}>
             {addedProducts.map((p) => (
               <li key={p.id}>

@@ -306,6 +306,7 @@
 
 .confirmLabel {
   color: var(--color-text-on-data-secondary);
+  text-align: center;
 }
 
 .confirmAnswers {
