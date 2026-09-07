@@ -229,6 +229,29 @@
 }
 
 /* ---------------------------------------------------------------------------
+   THE TWO PICTURE BLOCKS
+
+   `Where you noticed it` and `Photo` are the only blocks whose content is an
+   image, and they are the reason the desktop card has something to do with its
+   width. Stacked, each leaves most of an 824 row empty beside a picture drawn
+   at 392; side by side they fill it, and each image lands at ~354 — within a
+   whisker of the 392 it is designed at, so neither is stretched.
+
+   ⚠️ THE PAIRING IS A DATA ATTRIBUTE, NOT `auto-fit`, BECAUSE EITHER BLOCK CAN
+   BE ABSENT. `repeat(auto-fit, minmax(…, 1fr))` collapses a lone block to the
+   full 824, which is exactly the width that made the face render ~600 tall.
+   The screen knows whether it has two, so it says so and the grid only exists
+   when there is a pair to grid. One picture falls back to the stack, where the
+   392 cap holds it at its drawn size.
+   -------------------------------------------------------------------------- */
+
+.pictures {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-md); /* 12 — the same interval as the blocks around it */
+}
+
+/* ---------------------------------------------------------------------------
    THE PHOTO — the capture, shown as a capture
 
    ⚠️ IT WAS A LINE OF TEXT TWICE BEFORE IT WAS THIS. "Photo added" sat under
@@ -380,35 +403,75 @@
 /* ---------------------------------------------------------------------------
    DESKTOP
 
-   ⚠️ THE RECAP TAKES A COLUMN, NOT THE CARD'S FULL WIDTH. `HubScreen`'s `card`
-   layout is `width/card-form` (920) less 48 of padding either side, so a block
-   holding an overline and three pills was drawn 824 wide and about 90 tall —
-   four stacked bars of mostly empty fill, and the same content at a density
-   nothing on the page justifies. Held at `width/card-focus` (640) the blocks
-   read as blocks again. It is the width the app already uses for a single
-   column of content (`HubScreen`'s `plain` layout), and it is LEFT-aligned so
-   every edge on the screen — the page title, the labels, the pills, the face —
-   lands on one line.
+   ⚠️ THE RECAP FILLS THE CARD, AND IT SPENT AN HOUR AT 640 NOT DOING SO. The
+   reasoning for the narrower column was density: `HubScreen`'s `card` layout is
+   `width/card-form` (920) less 48 of padding either side, and a block holding
+   an overline and three pills drawn 824 wide is a bar of mostly empty fill.
+   Held at `width/card-focus` (640) the blocks read as blocks. What that missed
+   is that the CARD does not narrow with them — so the fix traded a loose block
+   for 184px of dead card down the right-hand side of the whole screen, which is
+   the louder emptiness of the two and reads as a broken layout rather than a
+   generous one. The blocks fill the card again.
 
-   The CTA stops being full width inside that column, which is the move every
-   flow screen already makes at this breakpoint.
+   ⚠️ THE DENSITY IS ANSWERED BY PAIRING INSTEAD — see `.pictures`. The two
+   blocks that hold a picture sit side by side here, which is what the extra
+   width is actually good for, and it lands both images near the size they are
+   drawn at rather than stretching or stranding them.
+
+   The CTA stops being full width and centres in the card, which is the move
+   every flow screen already makes at this breakpoint.
    -------------------------------------------------------------------------- */
 
 @media (min-width: 1024px) {
-  .headline,
-  .blocks,
-  .actions {
-    max-width: var(--width-card-focus); /* 640 */
-  }
-
   .block {
     padding: calc(var(--space-2xl) - var(--border-width-hairline));
   }
 
   /* the cards' own padding steps 20 -> 24 here, so the interval that groups
      them steps with it */
-  .blocks {
+  .blocks,
+  .pictures {
     gap: var(--space-lg); /* 16 */
+  }
+
+  /* ⚠️ THE PAIR IS ONE ROW OF EQUAL BOXES — asked for directly. Grid stretches
+     both blocks to the taller of the two by default (the face card, whose
+     height is set by the diagram's own 392/300 box plus the chip row), and the
+     rule below hands that extra height to the PHOTO WELL rather than leaving it
+     as dead space under the button. Two cards of the same height with two
+     images of the same height is the point; two cards of the same height with
+     one of them half empty would just be a different unevenness. */
+  .pictures[data-pair] {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+  }
+
+  /* the block becomes the column that distributes that height */
+  .pictures[data-pair] .block {
+    display: flex;
+    flex-direction: column;
+  }
+
+  /* ⚠️ THE FIGURE IS THE FLEXING CHILD, NOT THE WELL — the well is inside it,
+     beside a `visually-hidden` caption, so the growth has to be passed down one
+     level. `min-height: 0` because a flex item's default `min-height: auto`
+     refuses to shrink below its content and would push the block past the row
+     if the face card were ever the shorter of the two. */
+  .pictures[data-pair] .photo {
+    display: flex;
+    flex: 1;
+    min-height: 0;
+  }
+
+  /* ⚠️ `aspect-ratio` YIELDS TO THE ROW HERE. It is what sizes the well when it
+     stands alone (mobile, or a recap with no face); paired, the row's height is
+     the better authority and the drawn photograph crops to whatever it gets —
+     `CheckInPhotoArt` is `preserveAspectRatio="xMidYMid slice"`, so it fills
+     and crops the way a photograph in a well does rather than distorting. */
+  .pictures[data-pair] .photoWell {
+    aspect-ratio: auto;
+    flex: 1;
+    min-height: 0;
   }
 
   .actions {

@@ -250,72 +250,89 @@ export function SkinProfileSummary({ now }: { now: number }) {
             </Block>
           )}
 
-          {hasLocation && (
-            <Block label={COPY.locationLabel} id="profile-location">
-              {/* ⚠️ THE DIAGRAM IS `aria-hidden` AND THIS LINE IS WHY. A pill
-                  only means the left cheek because of where it sits, which is
-                  worth nothing read aloud — so the picture is for the eye and
-                  this sentence is the answer in words. Two ways of saying one
-                  thing, never two announcements of it. The non-face chips need
-                  no such line: they are a real list inside the card and their
-                  labels mean what they say. */}
-              {profile.faceRegions.length > 0 && (
-                <p className="visually-hidden">
-                  {COPY.locationSpoken(profile.faceRegions)}
-                </p>
+          {(hasLocation || profile.photo) && (
+            /* ⚠️ THE TWO BLOCKS THAT HOLD A PICTURE, PAIRED WHEN BOTH EXIST.
+               `data-pair` is what turns the stack into two columns at 1024 —
+               the screen knows whether it has two images and says so, because
+               a grid that discovers it for itself (`auto-fit`) gives a LONE
+               block the full 824 and renders the face about 600 tall. See
+               `.pictures` in the stylesheet. */
+            <div
+              className={styles.pictures}
+              data-pair={(hasLocation && profile.photo) || undefined}
+            >
+              {hasLocation && (
+                <Block label={COPY.locationLabel} id="profile-location">
+                  {/* ⚠️ THE DIAGRAM IS `aria-hidden` AND THIS LINE IS WHY. A
+                      pill only means the left cheek because of where it sits,
+                      which is worth nothing read aloud — so the picture is for
+                      the eye and this sentence is the answer in words. Two ways
+                      of saying one thing, never two announcements of it. The
+                      non-face chips need no such line: they are a real list
+                      inside the card and their labels mean what they say. */}
+                  {profile.faceRegions.length > 0 && (
+                    <p className="visually-hidden">
+                      {COPY.locationSpoken(profile.faceRegions)}
+                    </p>
+                  )}
+                  {/* ⚠️ THE CARD RENDERS EVEN WITH NOTHING PICKED ON THE FACE,
+                      which happens when the only answer was "Neck" or "Other".
+                      Seven dimmed pills and one lit chip under them is the
+                      honest reading of that — NOT on the face, here instead —
+                      where dropping the diagram would leave a chip with nothing
+                      to be measured against. */}
+                  <div className={styles.face}>
+                    <FaceDiagram
+                      readOnly
+                      selected={profile.faceRegions}
+                      otherLocations={profile.otherLocations}
+                    />
+                  </div>
+                </Block>
               )}
-              {/* ⚠️ THE CARD RENDERS EVEN WITH NOTHING PICKED ON THE FACE, which
-                  happens when the only answer was "Neck" or "Other". Seven
-                  dimmed pills and one lit chip under them is the honest reading
-                  of that — NOT on the face, here instead — where dropping the
-                  diagram would leave a chip with nothing to be measured
-                  against. */}
-              <div className={styles.face}>
-                <FaceDiagram
-                  readOnly
-                  selected={profile.faceRegions}
-                  otherLocations={profile.otherLocations}
-                />
-              </div>
-            </Block>
-          )}
-          {/* ⚠️ THE PHOTO IS A BLOCK, NOT A LINE — asked for directly, 7 Sep
-              2026, after it had been a "Photo added" line under the symptoms
-              and then the same line on the face card. Both stated that a
-              capture exists; a recap of a photograph should BE the photograph.
-              The well is `Check-in detail`'s, one recipe over — see the import.
 
-              ⚠️ AND IT IS THE ONE CONTROL ON THE SCREEN. Every other thing
-              here reads back an answer; this one can change it, because a
-              photo is the single answer a reader is likely to want to redo
-              from the recap ("that one came out dark") and the tray to redo it
-              already exists. `SelfieSheet` writes `selfie` in the store, which
-              is what this block reads — and its shutter only ever CAPTURES, so
-              opening this tray can no longer empty the block underneath it. */}
-          {profile.photo && (
-            <Block label={COPY.photoLabel} id="profile-photo">
-              <figure className={styles.photo}>
-                <div className={styles.photoWell}>
-                  {/* ⚠️ SEEDED ON THE CAPTURE ITSELF. `profile.photo` is the
-                      capture's id, so the drawn photograph changes when — and
-                      only when — the user actually retakes it. That is the
-                      whole visible result of `Update photo` in a prototype
-                      whose viewfinder cannot show what a camera sees. */}
-                  <CheckInPhotoArt
-                    seed={profile.photo}
-                    className={styles.photoArt}
+              {/* ⚠️ THE PHOTO IS A BLOCK, NOT A LINE — asked for directly, 7
+                  Sep 2026, after it had been a "Photo added" line under the
+                  symptoms and then the same line on the face card. Both stated
+                  that a capture exists; a recap of a photograph should BE the
+                  photograph. The well is `Check-in detail`'s, one recipe over —
+                  see the import.
+
+                  ⚠️ AND IT IS THE ONE CONTROL ON THE SCREEN. Every other thing
+                  here reads back an answer; this one can change it, because a
+                  photo is the single answer a reader is likely to want to redo
+                  from the recap ("that one came out dark") and the tray to redo
+                  it already exists. `SelfieSheet` writes `selfie` in the store,
+                  which is what this block reads — and its shutter only ever
+                  CAPTURES, so opening the tray can no longer empty the block
+                  underneath it. */}
+              {profile.photo && (
+                <Block label={COPY.photoLabel} id="profile-photo">
+                  <figure className={styles.photo}>
+                    <div className={styles.photoWell}>
+                      {/* ⚠️ SEEDED ON THE CAPTURE ITSELF. `profile.photo` is
+                          the capture's id, so the drawn photograph changes when
+                          — and only when — the user actually retakes it. That
+                          is the whole visible result of `Update photo` in a
+                          prototype whose viewfinder cannot show what a camera
+                          sees. */}
+                      <CheckInPhotoArt
+                        seed={profile.photo}
+                        className={styles.photoArt}
+                      />
+                    </div>
+                    <figcaption className="visually-hidden">
+                      {COPY.photoCaption}
+                    </figcaption>
+                  </figure>
+                  <SmallButton
+                    label={COPY.photoUpdate}
+                    className={styles.photoAction}
+                    onClick={() => setPhotoOpen(true)}
                   />
-                </div>
-                <figcaption className="visually-hidden">
-                  {COPY.photoCaption}
-                </figcaption>
-              </figure>
-              <SmallButton
-                label={COPY.photoUpdate}
-                className={styles.photoAction}
-                onClick={() => setPhotoOpen(true)}
-              />
-            </Block>
+                </Block>
+              )}
+            </div>
           )}
         </div>
       )}
