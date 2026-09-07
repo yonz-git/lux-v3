@@ -207,18 +207,48 @@
 /* ⚠️ NOT IN FIGMA — the trailing slot on a result row, sized once so the
    `Add` → `Added` swap does not resize the control or shift the row's right
    edge. 76 is the wider of the two at their Figma paddings ("Added" in
-   Label Small + 12 either side); the height is the Small Button's
-   size/control-sm, which is the taller of the pair. Both children stretch to
-   fill it and keep their own fill, radius and type — only the box they sit in
-   is shared. */
+   Label Small + 12 either side).
+
+   ⚠️ ONE HEIGHT FOR BOTH STATES, AND IT IS NEITHER COMPONENT'S OWN. Sizing the
+   slot to the taller of the pair (the Small Button's size/control-sm, 36) only
+   sized the BOX: `Add` kept the Small Button's 8/16 padding and stood 38 tall
+   while `Added` sat at the Tag's 26, so the two states of one control were
+   visibly different heights down the list. Matching them at the Tag's 26 fixed
+   that and read too short for a tap target, so the pair sits at **30** — 26
+   +15%, chosen by eye on the running screen.
+
+   ⚠️ 30 IS A LITERAL AND HAS TO BE. It is off the spacing scale and there is no
+   size/control step between sm (36) and nothing; --space-* is for gaps, not
+   control heights. Written once here as `--slot-h` so the three rules below
+   cannot drift apart. Both children keep their own fill, radius and type — only
+   the box they sit in is shared. */
 .trailing {
+  --slot-h: 30px;
+
   flex: none;
   display: flex;
   width: 76px;
-  min-height: var(--size-control-sm); /* 36 */
+  min-height: var(--slot-h);
 }
 
 .trailing > * {
   width: 100%;
-  min-height: var(--size-control-sm);
+  min-height: var(--slot-h);
+}
+
+/* ⚠️ TWO CLASSES DEEP ON PURPOSE, BOTH OF THEM. `.trailing > *` is one class,
+   and so are Small Button's own `.button` and Tag's `.tag` — at equal
+   specificity the winner is module load order, which is not something this file
+   gets to decide. Naming each child outranks its component's rule, so the
+   height lands whichever way the bundler orders them. The Small Button also
+   needs its vertical padding gone: 8 + a 22 line-height is 38, and a min-height
+   cannot pull a box back below its content. Side padding stays 16 on the
+   button, 12 on the tag. */
+.trailing .add {
+  min-height: var(--slot-h);
+  padding-block: 0;
+}
+
+.trailing .added {
+  min-height: var(--slot-h);
 }

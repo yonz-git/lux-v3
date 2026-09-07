@@ -189,11 +189,14 @@ export function CheckBuilder() {
     return (
       <span className={styles.trailing}>
         {basketIds.includes(p.id) ? (
-          <Tag variant="brand">Added</Tag>
+          <Tag variant="brand" className={styles.added}>
+            Added
+          </Tag>
         ) : (
           <SmallButton
             label="Add"
             arrow={false}
+            className={styles.add}
             disabled={full}
             aria-label={`Add ${fullName(p)} to this analysis`}
             onClick={() => add(p)}
