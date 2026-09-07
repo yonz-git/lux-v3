@@ -377,12 +377,12 @@ export function SkinProfileSummary({ now }: { now: number }) {
  * made the card look like two cards.
  *
  * ⚠️ AND IT DOES CARRY THE COMP'S OVERLINE, AFTER ALL — ASKED FOR, AFTER THE
- * FIRST BUILD LEFT IT OUT. The objection was that `Skin profile` is already the
- * h1 24px above it, and naming the page twice is what got "From your answers"
- * deleted from this screen. The answer is the word "Your": the h1 names the
- * PAGE, the overline names what is in THIS CARD and hands it to the reader. The
- * two are not the same sentence, and the card was the only block on the screen
- * with nothing at the top of it saying what it held.
+ * FIRST BUILD LEFT IT OUT. The objection was that the h1 24px above it said the
+ * same thing, and naming the page twice is what got "From your answers" deleted
+ * from this screen. It was answered first by the word "Your" — the h1 names the
+ * PAGE, the overline names what is in THIS CARD — and then settled outright
+ * when the page title became `About your skin`. The card was also the only
+ * block on the screen with nothing at the top of it saying what it held.
  */
 function Headline({ profile }: { profile: ProfileRecap }) {
   const { skinType, tendencies, conditions } = profile;

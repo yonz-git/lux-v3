@@ -55,10 +55,10 @@ const HUB_TITLES: Record<string, string> = {
      here rather than in `flow.ts`: no progress track, no `Save & exit`, so it is
      not in `STEPS` and `TOTAL_STEPS` is still 5. See `features/my-skin/profile.ts`.
 
-     The title is the KIND of page, not its content — "Skin profile", never the
-     user's own skin type, which is the rule every other entry in this file
+     The title is the KIND of page, not its content — "About your skin", never
+     the user's own skin type, which is the rule every other entry in this file
      follows. */
-  "/investigation/profile": "Skin profile",
+  "/investigation/profile": "About your skin",
   /* ⚠️ `/chat` USED TO BE HERE AND THE ROUTE IS GONE — 7 Sep 2026. It was the
      standalone conversation panel (270:96), prototype-only and in no nav
      section; `app/chat/page.tsx` was deleted, so a title for it would name a

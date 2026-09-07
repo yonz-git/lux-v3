@@ -208,22 +208,33 @@ export function isEmpty(p: ProfileRecap): boolean {
    ⚠️ AND THERE IS NO "From your answers" HEADING ANY MORE, for the same
    reason in reverse. It labelled a card holding six unrelated facts, which is
    the heading a block gets when nobody has decided what the block is. The card
-   is now four cards that each say what they hold, and the whole screen is
-   already titled "Skin profile" — the generic heading was naming the page a
-   second time.
+   is now blocks that each say what they hold, and the whole screen is already
+   titled — the generic heading was naming the page a second time.
    -------------------------------------------------------------------------- */
 
 export const COPY = {
-  /** the page title */
-  headlineLabel: "Skin profile",
+  /**
+   * The page title — the `<h1>` and the `<title>`, which is why it is also
+   * `lib/pageTitles.ts`'s entry for this route and has to stay in step with it.
+   *
+   * ⚠️ IT WAS "Skin profile" UNTIL 7 Sep 2026 — changed, asked for directly.
+   * The screen is not the profile, it is what the investigation has been told
+   * about the skin so far, and "About your skin" says the second. It also
+   * settles an argument this file used to carry: the card's own
+   * `YOUR SKIN PROFILE` overline was justified by the word "Your" doing enough
+   * work to stop it repeating the page title. It no longer has to — the two
+   * headings now say different things outright.
+   */
+  headlineLabel: "About your skin",
   /**
    * The sage card's own heading, rendered uppercase by `t-overline`.
    *
    * ⚠️ IT SAYS "Your", AND THE PAGE TITLE DOES NOT, WHICH IS THE WHOLE REASON
-   * IT CAN BE HERE. `Skin profile` names the page; `YOUR SKIN PROFILE` names
-   * what is inside this card and claims it for the reader. Asked for directly,
-   * 7 Sep 2026, after being left out of the first build of the card on the
-   * grounds that it repeated the h1 24px above it.
+   * IT CAN BE HERE. The page is titled `About your skin`; `YOUR SKIN PROFILE`
+   * names what is inside this card and claims it for the reader. Asked for
+   * directly, 7 Sep 2026, after being left out of the first build of the card
+   * on the grounds that it repeated the h1 24px above it — which was true of
+   * the title the page had then and is not true of the one it has now.
    */
   cardLabel: "Your skin profile",
   /* ---- the blocks, in the order the screen draws them ---- */
