@@ -221,9 +221,9 @@ things stay open: no locale-appropriate emergency number, and
 "⚠️ SAFETY" in `docs/decisions.md`.
 
 ⚠️ **NEITHER IS `/investigation/profile`, AND IT IS THE SAME RULE.** It is the
-recap of what steps 1–4 collected, and its one action, `Add products`, continues
-to step 5. No progress track and no `Save & exit`, so by the rule above it is
-not a step and `TOTAL_STEPS` is still 5. `features/my-skin/profile.ts` owns the
+recap of what steps 1–4 collected, and its one action, `Add your products`,
+continues to step 5. No progress track and no `Save & exit`, so by the rule
+above it is not a step and `TOTAL_STEPS` is still 5. `features/my-skin/profile.ts` owns the
 derivation and every string on it.
 
 ⚠️ **ONE BLOCK PER ANSWER, DRAWN AS WHAT THE ANSWER IS — it was a card of
@@ -337,8 +337,14 @@ than the cards' own 20 padding, which is what makes three cards read as one
 group — the standing fact sits **24** from it, the sage statement **32** above,
 and the hand-off **40** below. ⚠️ **No heading was added to name the group**:
 that is what proximity is for, and a label naming a group is what this screen
-deleted once already. On desktop the recap takes a **640 column**
-(`width/card-focus`), left-aligned, rather than the card's full 824 — and the
+deleted once already. ⚠️ **On desktop the recap FILLS THE CARD at 824, and this
+file said 640 for a day** — the narrower `width/card-focus` column was tried and
+reverted the same day it landed, because the CARD does not narrow with the
+blocks: it traded a loose block for 184px of dead card down the right of the
+whole screen. The density that column was for is answered by PAIRING instead —
+the two blocks that hold a picture sit side by side at this breakpoint. The
+reasoning is on `.pictures` in `SkinProfileSummary.module.css`; **do not
+re-apply `width/card-focus` here.** The
 read-only face is capped at the **392** it is drawn at, because `width: 100%`
 over a `392 / 300` box rendered it about 600 tall there. Step 1's face is
 untouched: there the diagram IS the screen and its regions are targets.
@@ -409,7 +415,31 @@ deliberately; the split is recorded in `docs/decisions.md`.
 ⚠️ **THE ANALYSIS IS ALLOWED TO REFUSE — BUT ONLY WHEN THERE IS NOTHING TO
 COMPARE.** "Not enough evidence for a responsible conclusion" is one of § 07's
 three outcomes and is a designed state, not an error. It fires on exactly two
-things: no flare date, or nothing new plus nothing readable. ⚠️ **It used to
+things: no flare date, or nothing new plus nothing readable.
+
+⚠️ **AND "NOTHING NEW" NO LONGER SWALLOWS "NOT SURE YET" — a third gap landed 8
+Sep 2026 and it is a QUESTION, not a refusal.** `deriveEvidence` returns
+`unclear` when a product's introduction range STRADDLES the reaction, and § 05's
+confirmation strip exists to resolve exactly that. With no `associated` product
+the refusal used to fire anyway, so the screen said "Nothing in your list is
+new" and sent the user off to add more — while the one question that settles it
+sat unasked, and the strip was unreachable in the only case it was built for.
+`unresolved-timeline` now takes that state: it carries **no `href` and no
+action**, because the answer is the strip rendered directly under it, and
+answering one chip re-runs the comparison in place. `Gap.href` and `Gap.action`
+are optional for this reason. ⚠️ **The strip renders in BOTH outcomes now** —
+`Hypotheses` and `NoConclusion` — and it drops its own overline in the refusal,
+where the verdict card above is already saying it.
+
+⚠️ **THE ANALYSIS READS `ownedProducts()`, NOT `answers.products`.** Reading the
+raw key meant the seeded demo library was invisible to it: `/products` counted
+five products and the analysis compared none, so the deployed prototype
+dead-ended on the screen the app is named for. Every product surface in the app
+resolves through `lib/demo.ts`; `evidenceFor` and `forgottenRoles` are not
+exceptions. `AddProductMethodSheet` and `CheckBuilder` still are — they compute
+what the USER added.
+
+⚠️ **It used to
 fire on five**, including a missing cleanser or sunscreen, and the result was a
 screen that lectured the user about what they had not typed in before it would
 say anything. Everything else now LOWERS THE CONFIDENCE instead — which the
@@ -620,6 +650,13 @@ for:
 - **Feedback:** `success` `#5f8a6e` · `warning` `#c9918e` · `error` `#a86561`.
   ⚠️ Warning and error share a hue — **never carry the distinction by colour
   alone**, always pair with a label.
+  ⚠️ **`feedback/success` IS A FILL, AND GREEN TEXT TAKES `text/success-ink`
+  `#46664f` INSTEAD — added 8 Sep 2026.** #5f8a6e measures 3.28:1 at 440 as 12px
+  text on a light frosted card (the analysis screen's `Evidence against this
+  explanation` count); the ink tier measures 5.36:1 on the same pixels. It is a
+  SECOND token declared on `:root` in `globals.css`, not a retune — every fill
+  and every 4px rule keeps `feedback/success`. Raise the pair in Figma; see
+  `docs/figma-catchup.md`.
 
 ### Entrance reveals — three classes and two data attributes
 
@@ -865,12 +902,22 @@ not using it until 8 Sep 2026** — it had the heading, two paragraphs and a
 bottom-pinned button, which left roughly 1000px of canvas between them at 440.
 
 ⚠️ **THE HEADING STAYS AT THE TOP; ONLY THE BLOCK IS CENTRED.** That is what
-`layout="plain"` buys, and it is why the recipe specifies it. ⚠️ **`center` with
-`layout="card"` does NOT work** — the card layout renders the heading INSIDE
-`.body`, so centring the block floats the page title into the middle of the
-screen above the card. It was tried on `/investigation/analysis` on 8 Sep 2026
-and reverted; see the note in `Analysis.tsx`. If a `card` screen ever needs
-centring, `HubScreen` has to hoist the heading out of the centred region first.
+`layout="plain"` buys, and it is why the recipe specifies it. ⚠️ **`center` NOW
+WORKS WITH `layout="card"` TOO, AS OF 8 Sep 2026 — and it did not before.** The
+card layout renders the heading INSIDE `.body`, so centring the block used to
+float the page title into the middle of the screen above the card; it was tried
+on `/investigation/analysis` and reverted the same day. `HubScreen` hoists the
+heading out of the centred region for `card` + `center` now, which is the fix
+that note asked for, and `/investigation/analysis`'s refusal state is the one
+caller. ⚠️ **The refusal state ONLY** — the `unresolved-timeline` state carries
+the confirmation strip and is as tall as any answer, so it is not centred. A
+screen that centres a question is a screen that floats a strip of chips in the
+middle of the viewport.
+
+⚠️ **THE ANALYSIS'S REFUSAL IS NOT A FIFTH DRAWER OF THE RECIPE.** It borrows
+the CENTRING and nothing else — it has a verdict card rather than an orb, and it
+keeps `layout="card"`. Do not count it toward the "if a fifth appears, lift it"
+line below.
 
 ⚠️ **IT IS NOT A SHARED COMPONENT, DELIBERATELY.** Four screens is past the
 usual bar, but each differs in what goes in the block and the recipe is four

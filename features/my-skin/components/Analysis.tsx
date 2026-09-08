@@ -21,6 +21,7 @@ import {
   forgottenRoles,
   needsConfirmation,
   ruledOut,
+  severalVerdict,
   splitHypotheses,
   suggestedPause,
   recordSummary,
@@ -86,6 +87,9 @@ export function Analysis() {
      two-second wait because someone corrected a date would punish the
      correction. */
   const [running, setRunning] = useState(() => gaps(answers).length === 0);
+
+  /* the one refusal that is a question rather than a dead end — see `center` */
+  const unresolved = analysis.gaps[0]?.id === "unresolved-timeline";
   /* biome-ignore lint/correctness/useExhaustiveDependencies: RUNS ONCE, ON
      MOUNT. The initial `running` is computed from the gates in the `useState`
      initialiser above, so this timer only ever needs to end the wait — listing
@@ -104,7 +108,20 @@ export function Analysis() {
       backHref="/investigation/products"
       layout="card"
       tightTop
-      /* ⚠️ NOT `center`, AND IT WAS TRIED ON 8 Sep 2026. `NoConclusion` is
+      /* ⚠️ CENTRED ONLY WHEN THE SCREEN IS A REFUSAL, AND NOT WHEN IT IS A
+         QUESTION. `NoConclusion` is two shapes: the genuine dead end — no flare
+         date, or nothing new and nothing readable — which is a verdict card,
+         one sentence and one button, and the `unresolved-timeline` state, which
+         carries the confirmation strip and is as tall as any answer. Centring
+         the first is the empty-state recipe every other short screen in the app
+         uses; centring the second would float a strip of chips in the middle of
+         the viewport.
+
+         The history below is kept because the trap it describes is real and the
+         fix for it is a shared component's behaviour, not this screen's.
+
+         ⚠️ IT WAS `NOT center` UNTIL 8 Sep 2026, AND HERE IS WHY IT NOW IS.
+         `NoConclusion` is
          allowed to be three short blocks — a verdict card, one sentence and one
          button — which at 440 leaves roughly 700px of bare canvas under the
          button. `HubScreen`'s `center` looked like the answer and is not: with
@@ -115,12 +132,14 @@ export function Analysis() {
          at the top — that is what makes the pattern work on `/progress/empty`
          and `/check/no-profile`.
 
-         So the two ways to close this are: hoist the heading out of the centred
-         region for `card` + `center` in `HubScreen` (a shared-component change,
-         and this is the only caller that would use it), or give the refusal
-         outcome its own `plain` shell. Both are real options; neither is a
-         one-line fix, and the void is a resting-state looseness rather than a
-         defect. Left as it is, written down rather than half-solved. */
+         The first of the two options written down here is the one taken:
+         `HubScreen` hoists the heading out of the centred region for
+         `card` + `center`, so the title stays at the top and only the block
+         below it centres — the same composition `plain` has always had. The
+         other option, giving the refusal its own `plain` shell, would have made
+         one screen render in two different desktop containers depending on its
+         outcome. */
+      center={!running && analysis.outcome === "none" && !unresolved}
     >
       {running ? (
         <AnalysisPasses />
@@ -186,10 +205,16 @@ function Hypotheses({ analysis }: { analysis: AnalysisResult }) {
 
   return (
     <>
-      <Verdict overline={several ? "Two explanations still fit" : "Best fit so far"}>
-        {several
-          ? "Neither is better supported than the other, so here are both."
-          : verdictLine(analysis)}
+      <Verdict
+        overline={
+          several
+            ? leading.length === 2
+              ? "Two explanations still fit"
+              : `${leading.length} explanations still fit`
+            : "Best fit so far"
+        }
+      >
+        {several ? severalVerdict(analysis) : verdictLine(analysis)}
       </Verdict>
 
       <Confirmations />
@@ -291,19 +316,34 @@ function NoConclusion({ analysis }: { analysis: AnalysisResult }) {
   const { answers } = useInvestigation();
   const priority = investigationPriority(answers);
   const gap = analysis.gaps[0];
+  const unresolved = gap?.id === "unresolved-timeline";
 
   return (
     <>
-      <Verdict overline="Not enough to go on yet">
+      {/* ⚠️ AN UNRESOLVED TIMELINE IS NOT "NOT ENOUGH TO GO ON" — it is one
+          question away from an answer, and the question is on this screen.
+          Saying "not enough" over a strip the user can settle in one tap
+          describes the app's own hesitation as the user's missing homework. */}
+      <Verdict overline={unresolved ? "One thing to settle first" : "Not enough to go on yet"}>
         {gap ? gap.title : "Nothing survived the comparison."}
       </Verdict>
 
       {gap ? (
         <div className={styles.gap}>
           <p className={`${styles.nextBody} t-body3`}>{gap.body}</p>
-          <Button href={gap.href}>{gap.action}</Button>
+          {/* a gap with no destination is answered inline — see `Gap.href` */}
+          {gap.href && gap.action ? (
+            <Button href={gap.href}>{gap.action}</Button>
+          ) : null}
         </div>
       ) : null}
+
+      {/* § 05's confirmation list. ⚠️ IT RENDERS HERE TOO, AND NOT RENDERING IT
+          WAS THE BUG. `Hypotheses` has carried it since the evidence screen was
+          deleted, but the refusal outcome — the one state where the ambiguity
+          is the ONLY thing standing between the user and an answer — did not,
+          so the strip was unreachable in exactly the case it was built for. */}
+      <Confirmations headed={!unresolved} />
 
       <Reminder />
 
@@ -339,7 +379,7 @@ function NoConclusion({ analysis }: { analysis: AnalysisResult }) {
  * range straddles the reaction, so this is usually absent. Answering re-runs
  * the comparison in place — no wait, no navigation.
  */
-function Confirmations() {
+function Confirmations({ headed = true }: { headed?: boolean }) {
   const { answers, setAnswer } = useInvestigation();
   const ambiguous = needsConfirmation(answers);
   if (ambiguous.length === 0) return null;
@@ -347,11 +387,22 @@ function Confirmations() {
   const set = (id: string, state: "associated" | "tolerated") =>
     setAnswer("evidence", (prev) => ({ ...(prev ?? {}), [id]: state }));
 
+  /* ⚠️ THE HEADING GOES WHEN THE VERDICT ABOVE IS ALREADY IT. On the
+     `unresolved-timeline` screen the sage card reads "One product could go
+     either way" and this overline read "Could go either way" 24px under it —
+     the same sentence twice, in two type styles. The section keeps a name for
+     assistive tech either way; it just stops drawing one. */
   return (
-    <section className={styles.confirm} aria-labelledby="confirm-heading">
-      <h2 id="confirm-heading" className={`${styles.confirmTitle} t-overline`}>
-        Could go either way
-      </h2>
+    <section
+      className={styles.confirm}
+      aria-labelledby={headed ? "confirm-heading" : undefined}
+      aria-label={headed ? undefined : "Could go either way"}
+    >
+      {headed ? (
+        <h2 id="confirm-heading" className={`${styles.confirmTitle} t-overline`}>
+          Could go either way
+        </h2>
+      ) : null}
       {ambiguous.map((e) => (
         <div key={e.product.id} className={styles.confirmRow}>
           <p className={`${styles.confirmName} t-body3`}>

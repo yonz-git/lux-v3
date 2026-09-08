@@ -162,9 +162,17 @@
   color: var(--color-text-secondary);
 }
 
+/* ⚠️ `text/secondary`, NOT `text/muted`, AND THE TOKEN'S OWN NOTE SAYS WHY.
+   The block above `--color-text-muted` in globals.css records that the value is
+   measured against frosted rows and cards and that "a new screen that sets
+   muted text straight on the gradient needs a darker value, not this one".
+   These two lines are exactly that screen — they sit on bare canvas, low on a
+   long page where the gradient is at its darkest — and measured 3.62:1
+   (fineprint) and 4.02:1 against the composited backdrop at 440. At
+   `text/secondary` they measure above 4.5:1 on the same pixels. */
 .fineprint {
   margin: 0;
-  color: var(--color-text-muted);
+  color: var(--color-text-secondary);
 }
 
 .lone {
@@ -182,13 +190,18 @@
   border-top: var(--border-width-hairline) solid var(--color-border-subtle);
 }
 
+/* same measurement as `.fineprint` above — muted on bare canvas does not clear
+   AA this far down the gradient */
 .reminder {
   margin: 0 0 var(--space-2xl);
-  color: var(--color-text-muted);
+  color: var(--color-text-secondary);
 }
 
+/* the link keeps a step of its own now that the prose has moved up to
+   secondary; it is underlined either way, so the colour is not the only
+   carrier */
 .reminderLink {
-  color: var(--color-text-secondary);
+  color: var(--color-text-primary);
 }
 
 @media (min-width: 1024px) {

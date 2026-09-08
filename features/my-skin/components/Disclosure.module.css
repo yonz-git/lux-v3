@@ -30,8 +30,16 @@
   min-width: 0;
 }
 
+/* ⚠️ `text/secondary`, BECAUSE THIS ROW IS NOT ALWAYS ON A CARD. Two of the
+   analysis screen's disclosures — `Also possible, on thinner evidence` and
+   `Or investigate one product at a time` — sit directly on the canvas gradient,
+   where muted measured 3.94:1 at 440 as 12px text. The block above
+   `--color-text-muted` in globals.css says the value is measured against
+   frosted rows and that bare canvas needs a darker one; rather than split the
+   component in two for a count, the count takes the darker step everywhere. It
+   is still a step below the label, which is `text/primary`. */
 .meta {
-  color: var(--color-text-muted);
+  color: var(--color-text-secondary);
   white-space: nowrap;
 }
 
@@ -39,9 +47,15 @@
    evidence-AGAINST block because that block is the one arguing in the user's
    favour — but warning and success are never distinguishable by colour alone
    here either, so the row's own label always says "Evidence against this
-   explanation" in words. See non-negotiable 7 in AGENTS.md. */
+   explanation" in words. See non-negotiable 7 in AGENTS.md.
+
+   ⚠️ AND IT IS THE INK TIER, NOT THE FILL — changed 8 Sep 2026.
+   `feedback/success` is #5f8a6e, which measured 3.28:1 at 440 and 3.63:1 at
+   1440 as 12px text on this card: a green that reads as green and not as text.
+   `text/success-ink` is the same hue at 5.36 / 5.93:1; the block above it in
+   globals.css carries the measurements. */
 .row[data-tone="against"] .meta {
-  color: var(--color-feedback-success);
+  color: var(--color-text-success-ink);
 }
 
 .chevron {

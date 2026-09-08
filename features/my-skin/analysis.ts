@@ -53,6 +53,7 @@ import {
   hasReadableIngredients,
 } from "@/lib/actives";
 import { daysBetween, fromIso } from "@/lib/date";
+import { ownedProducts } from "@/lib/demo";
 
 /* ---------------------------------------------------------------------------
    The timeline
@@ -148,12 +149,26 @@ export type ProductEvidence = {
   actives: ActiveId[];
 };
 
+/**
+ * ⚠️ IT READS `ownedProducts`, NOT `a.products`, AND READING THE RAW KEY WAS A
+ * BUG — fixed 8 Sep 2026. Everything else that shows the user's products goes
+ * through `lib/demo.ts`, which falls back to the seeded library when the user
+ * has never touched the list. This function did not, so on a cold store
+ * `/products` counted five products and the analysis compared none: it answered
+ * "Nothing in your list is new" and pointed at the very screen already showing
+ * five. That is the hub-says-2/list-says-0 failure `ownedProducts`' own comment
+ * describes, landed on the screen the product is named for.
+ *
+ * The seeded products carry a `duration` like any other, and the evidence state
+ * is derived from the BUCKET rather than from `addedOn`, so the demo library
+ * places against whatever flare date the user gives.
+ */
 export function evidenceFor(a: Answers): ProductEvidence[] {
   const flare = a.timing?.date ? fromIso(a.timing.date) : null;
   if (!flare) return [];
   const daysSinceFlare = Math.max(0, daysBetween(flare, new Date()));
 
-  return (a.products ?? []).map((product) => {
+  return ownedProducts(a).map((product) => {
     const confirmedState = a.evidence?.[product.id];
     return {
       product,
@@ -218,7 +233,10 @@ export const ANALYSIS_PASSES = [
    not its call — decided 6 Sep 2026, after the first build did exactly that.
    -------------------------------------------------------------------------- */
 
-export type GapId = "no-flare-date" | "nothing-to-compare";
+export type GapId =
+  | "no-flare-date"
+  | "nothing-to-compare"
+  | "unresolved-timeline";
 
 export type Gap = {
   id: GapId;
@@ -226,9 +244,16 @@ export type Gap = {
   title: string;
   /** why it is needed — ONE short sentence, never a paragraph */
   body: string;
-  /** where the user goes to fix it */
-  href: string;
-  action: string;
+  /**
+   * Where the user goes to fix it — ABSENT when the fix is on this screen.
+   *
+   * ⚠️ `unresolved-timeline` has no href and no action, because the answer is
+   * the confirmation strip rendered directly under it. Sending someone to
+   * another screen to resolve a question this one is already asking is the
+   * shape the deleted evidence screen had.
+   */
+  href?: string;
+  action?: string;
 };
 
 /**
@@ -270,7 +295,8 @@ function hasRole(products: SavedProduct[], re: RegExp): boolean {
  * and this produces one line of copy.
  */
 export function forgottenRoles(a: Answers): string[] {
-  const products = a.products ?? [];
+  /* the same list the comparison ran on — see `evidenceFor` */
+  const products = ownedProducts(a);
   return ROUTINE_ROLES.filter((role) => !hasRole(products, role.re)).map(
     (r) => r.label
   );
@@ -296,6 +322,34 @@ export function gaps(a: Answers): Gap[] {
   const evidence = evidenceFor(a);
   const suspects = evidence.filter((e) => e.state === "associated");
   const readable = evidence.filter((e) => e.readable);
+  const straddling = evidence.filter((e) => e.state === "unclear");
+
+  /* ⚠️ AMBIGUITY IS NOT ABSENCE, AND SAYING "NOTHING IS NEW" WHEN SOMETHING
+     MIGHT BE WAS WRONG — fixed 8 Sep 2026. `deriveEvidence` returns `unclear`
+     when a product's introduction range STRADDLES the reaction, and § 05's
+     confirmation list exists to resolve exactly that. With no `associated`
+     product the gate below used to fire anyway, so the screen said "Nothing in
+     your list is new" and sent the user off to add more products — while the
+     one question that would settle it sat unasked. That is the likeliest real
+     walk through the flow: a product started in the last month, and a reaction
+     that started inside the same fortnight.
+
+     So this gap carries no destination. The screen renders the confirmation
+     strip under it, and answering one chip re-runs the comparison in place. */
+  if (suspects.length === 0 && straddling.length > 0) {
+    const one = straddling.length === 1;
+    return [
+      {
+        id: "unresolved-timeline",
+        title: one
+          ? "One product could go either way"
+          : `${straddling.length} products could go either way`,
+        body: one
+          ? "Say whether you started it around the reaction and the comparison can run."
+          : "Say whether you started them around the reaction and the comparison can run.",
+      },
+    ];
+  }
 
   if (suspects.length === 0 || readable.length === 0) {
     return [
@@ -573,6 +627,34 @@ export function splitHypotheses(a: Analysis): {
     leading: a.hypotheses.filter((h) => RANK[h.confidence] === cut),
     alsoConsidered: a.hypotheses.filter((h) => RANK[h.confidence] < cut),
   };
+}
+
+/**
+ * The verdict sentence for outcome `several` — two or more explanations that
+ * the subtraction cannot separate.
+ *
+ * ⚠️ IT SAYS WHEN THEY ALL COME OUT OF ONE BOTTLE, added 8 Sep 2026. The
+ * leading pair is very often two ingredients of the SAME product — a BHA
+ * exfoliant carrying both salicylic acid and denatured alcohol is the seeded
+ * example — and drawn as two numbered cards that reads as two suspects. They
+ * are two mechanisms, which is worth keeping separate, but the reader is owed
+ * the fact that pausing one thing tests both of them.
+ */
+export function severalVerdict(analysis: Analysis): string {
+  const { leading } = splitHypotheses(analysis);
+  const products = leading.flatMap((h) => hypothesisProducts(h));
+  const ids = new Set(products.map((p) => p.id));
+  const shared = ids.size === 1 ? products[0] : null;
+  const two = leading.length === 2;
+
+  const evenly = two
+    ? "Neither is better supported than the other"
+    : "None is better supported than the others";
+
+  if (shared) {
+    return `${evenly}, and ${two ? "both" : "all"} are in ${fullName(shared)}.`;
+  }
+  return `${evenly}, so here ${two ? "are both" : "they all are"}.`;
 }
 
 export function analyseInvestigation(a: Answers): Analysis {

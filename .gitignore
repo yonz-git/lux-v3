@@ -30,6 +30,7 @@ yarn-error.log*
 # The review prose beside them (.design/whole-app/DESIGN_REVIEW.md) IS tracked; the
 # captures are not, so a repo that holds no other images stays clonable.
 .design/whole-app/screenshots/
+.design/whole-app/screenshots-*/
 
 # case-study write-up and its captures — portfolio work-product, kept locally and
 # published as an artifact rather than carried in the repo.

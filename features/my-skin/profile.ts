@@ -318,12 +318,14 @@ export const COPY = {
    */
   statusLabel: "Current state",
   /* ---- the hand-off ---- */
-  cta: "Add products",
+  cta: "Add your products",
   /**
    * ⚠️ SAYS WHY, NOT JUST WHAT. The products list is where the investigation
    * gets the thing it cannot derive — what you actually put on your skin, and
    * when you started it. A bare "Add products" button at the end of a recap
-   * reads as an unrelated errand.
+   * reads as an unrelated errand — and the label says "your" for the same
+   * reason the card's overline does: the recap is the user's own answers, and
+   * the products it hands off to are the ones they actually use.
    */
   ctaHelp:
     "Next, add the products you use so the investigation has something to compare against.",

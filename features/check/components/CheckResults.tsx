@@ -340,7 +340,14 @@ export function CheckResults() {
                 instead: the ✕ on each row and the add row at the foot. */}
             <button
               type="button"
-              className={`${styles.edit} t-label`}
+              /* ⚠️ `tap-target` BECAUSE THE LABEL IS 25x20 AND SC 2.5.8 WANTS
+                 24x24. `Edit`/`Done` is a bare text control in a header row
+                 whose height the comp fixes, so the box cannot grow — the
+                 utility's `::after` clears 24 in both directions without
+                 moving the text or the row. The `pressable` overlay is
+                 deliberately NOT added: this control's result is the same box
+                 changing under the finger, which is feedback already. */
+              className={`${styles.edit} tap-target t-label`}
               aria-pressed={editing}
               onClick={() => {
                 setEditing((e) => !e);

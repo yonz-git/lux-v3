@@ -157,6 +157,29 @@ the roles keeps divergence possible.
   it: `check.ts` states the band in text on every row and in an `aria-label`
   on all of them, including the compatible ones.
 
+### `text/success-ink` — a NEW role, because the one green is a fill
+
+⚠️ **`02 Color` ships a single green.** `feedback/success` and `text/success`
+both alias `green/500` #5f8a6e, which is right as a fill or a rule and fails as
+text: measured by compositing on the analysis screen's `Evidence against this
+explanation` count — 12px, `t-label-sm` — it is **3.28:1 at 440** and **3.63:1
+at 1440** on the light frosted card, against AA's 4.5:1.
+
+| Role | Figma | Code | Caller |
+| ---- | ----- | ---- | ------ |
+| `feedback/success` | `#5f8a6e` | unchanged | the cleared block's 4px rule, every green fill |
+| **`text/success-ink`** | — | **`#46664f`** | `Disclosure[data-tone="against"]`'s count |
+
+- Measures **5.36:1** at 440, **5.93:1** at 1440, and **4.94:1** on the darkest
+  frosted card the app puts a disclosure on. Same hue family, ink weight.
+- ⚠️ **It is an ADDITION, not a retune** — the opposite call to the
+  warning/error entry above, and for the opposite reason: those two roles are
+  only ever fills, so moving them moved everything. Green is used as both, so
+  the two uses need two values. `text/success` (the existing alias, no caller in
+  the build) is the natural place for this if Figma would rather not add a name.
+- The same shape as `text/on-data` vs `surface/data`: a surface token and the
+  ink that is allowed to sit on it are two tokens, not one.
+
 ---
 
 ## 2. Needs a human decision — do not auto-fix

@@ -478,6 +478,30 @@
   --color-text-muted: #63636f;
 }
 
+/* ==========================================================================
+   GREEN AS INK — `feedback/success` IS A FILL COLOUR AND FAILS AS TEXT.
+
+   ⚠️ NOT IN FIGMA, AND THE SAME BUG AS THE TWO BLOCKS ABOVE. `02 Color` ships
+   one green, `feedback/success` #5f8a6e (`green/500`), and it is right where it
+   is used as a fill or a stripe — the analysis screen's cleared block draws a
+   4px rule in it. Set as TEXT on a light frosted card it measures 3.28:1 at 440
+   and 3.63:1 at 1440 under the analysis screen's `Evidence against this
+   explanation` count, i.e. under AA at 12px either way.
+
+   #46664f is the same hue at ink weight: 5.36 / 5.93:1 on those two backdrops
+   and 4.94:1 on the darkest frosted card the app puts a disclosure on. Measured
+   by compositing the fill stack, the way non-negotiable 17's values were.
+
+   ⚠️ IT IS A SECOND TOKEN, NOT A REPLACEMENT. `--color-feedback-success` keeps
+   its Figma value and every fill keeps using it; this is the text tier, the
+   same split `text/on-data` vs `surface/data` already draws. Raise the pair in
+   Figma rather than darkening the fill.
+   ========================================================================== */
+
+:root {
+  --color-text-success-ink: #46664f;
+}
+
 /* ⚠️ THE NAV'S OFFSET FROM THE BOTTOM EDGE, AS ONE TOKEN — asked for at 5,
    against non-negotiable 6's 24 and off the spacing scale (the nearest step is
    `--space-xs`, 4). It was `--space-2xl` written out at six sites: the nav

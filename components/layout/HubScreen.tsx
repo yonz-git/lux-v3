@@ -154,14 +154,25 @@ export function HubScreen({
 
         {/* on a `plain` or `grid` screen the heading sits at the top of the
             full-width column; on a `card` screen it moves inside the card with
-            the body */}
-        {layout !== "card" && heading}
+            the body.
+
+            ⚠️ UNLESS THE CARD SCREEN IS ALSO CENTRED — added 8 Sep 2026, and it
+            is what made `center` usable with `layout="card"` at all. The
+            heading is the body's first child on a card screen, so centring the
+            body used to centre the page title with it: "Analysis" floated to
+            the middle of the screen above its own card. Every `plain` caller
+            works because its heading sits OUT here, at the top, while only the
+            block below is centred — so a centred card screen hoists its heading
+            the same way. The 24 under it comes from `.header + .heading` on
+            desktop and from `.heading` itself on mobile; the body's own
+            `.body > .heading + *` rule simply has no heading to match. */}
+        {(layout !== "card" || center) && heading}
         {belowHeading}
 
         {center && <div className={styles.flex} aria-hidden="true" />}
 
         <div className={styles.body} data-layout={layout} data-reveal data-reveal-stagger>
-          {layout === "card" && heading}
+          {layout === "card" && !center && heading}
           {children}
         </div>
 
