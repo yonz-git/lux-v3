@@ -106,7 +106,7 @@ const SCORING: Record<ActiveId, Scoring> = {
   "salicylic-acid": {
     penalty: 20,
     advice:
-      "Exfoliating acid — use two or three times a week at most, never on broken or irritated skin.",
+      "Exfoliating acid, use two or three times a week at most, never on broken or irritated skin.",
   },
   retinol: {
     penalty: 18,
@@ -115,7 +115,7 @@ const SCORING: Record<ActiveId, Scoring> = {
   },
   "alcohol-denat": {
     penalty: 18,
-    advice: "Drying on sensitive skin — follow with a barrier moisturiser.",
+    advice: "Drying on sensitive skin, follow with a barrier moisturiser.",
   },
   fragrance: {
     penalty: 15,
@@ -227,7 +227,7 @@ export function analyse(
   const lines = [
     ...conflicts.map(
       (c) =>
-        `Do not combine with ${fullName(c.other)} in the same routine — alternate days.`
+        `Do not combine with ${fullName(c.other)} in the same routine, alternate days.`
     ),
     ...actives.map((a) => SCORING[a].advice),
   ];
@@ -521,7 +521,7 @@ export function routineAdvice(basket: CatalogProduct[]): NextStep[] {
         id: key,
         title: `Keep ${product.name} and ${c.other.name} on alternate nights`,
         body: involvesPaused
-          ? `${ACTIVES[c.mine].label} and ${ACTIVES[c.theirs].label} irritate in the same routine — so this pair settles itself while ${worst.product.name} is out, and matters again the day it comes back.`
+          ? `${ACTIVES[c.mine].label} and ${ACTIVES[c.theirs].label} irritate in the same routine, so this pair settles itself while ${worst.product.name} is out, and matters again the day it comes back.`
           : `${ACTIVES[c.mine].label} and ${ACTIVES[c.theirs].label} irritate in the same routine. One tonight, the other tomorrow.`,
         products: [product, c.other],
       });

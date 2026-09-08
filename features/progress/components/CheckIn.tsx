@@ -246,7 +246,7 @@ export function CheckInPanel({
       >
         {alreadyToday && (
           <p className={`${styles.note} t-caption`}>
-            You have already checked in today — a new answer replaces it.
+            You have already checked in today, a new answer replaces it.
           </p>
         )}
 

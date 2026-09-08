@@ -218,8 +218,8 @@ export function CheckInCalendar({
                     {(isCheckedIn || isToday) && (
                       <span className="visually-hidden">
                         {formatFull(date)}
-                        {isCheckedIn && " — checked in"}
-                        {isToday && " — today"}
+                        {isCheckedIn && ", checked in"}
+                        {isToday && ", today"}
                       </span>
                     )}
                   </>

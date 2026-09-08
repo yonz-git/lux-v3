@@ -713,7 +713,7 @@ function verdict(
         ? `Most of these are fine together${worst ? `, but ${worst} needs care` : ""}.`
         : `${worst ?? "One of these"} looks like a poor match for your skin.`;
 
-  return `${head} This is not a diagnosis — it highlights patterns worth discussing with a dermatologist.`;
+  return `${head} This is not a diagnosis, it highlights patterns worth discussing with a dermatologist.`;
 }
 
 /**

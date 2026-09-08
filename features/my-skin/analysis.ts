@@ -307,7 +307,7 @@ export function gaps(a: Answers): Gap[] {
             : "No ingredient lists to compare",
         body:
           suspects.length === 0
-            ? "Add anything you started in the four weeks before your skin changed — including products you do not suspect."
+            ? "Add anything you started in the four weeks before your skin changed, including products you do not suspect."
             : "None of your products came with an ingredient list, so there is nothing to compare between them.",
         href: "/investigation/products",
         action: "Add products",
@@ -708,7 +708,7 @@ export function verdictLine(analysis: Analysis): string {
   if (!top) return "Nothing survived the comparison.";
 
   if (top.kind === "pair") {
-    return `${subject(top)} — used in the same period, which may have added up.`;
+    return `${subject(top)}, used in the same period, which may have added up.`;
   }
 
   const inAll = top.inAssociated.length === top.associatedTotal;
@@ -720,7 +720,7 @@ export function verdictLine(analysis: Analysis): string {
       ? `, and in none of the ${top.toleratedReadable} you have used for longer`
       : ", though there is nothing older to compare it against";
 
-  return `${top.name} — ${where}${against}.`;
+  return `${top.name}, ${where}${against}.`;
 }
 
 /** The products a hypothesis is about. */
@@ -786,7 +786,7 @@ export function reasoningFor(
     }
     if (against.length === 0) {
       against.push(
-        "Nothing in what you recorded argues against this — which is not the same as evidence for it."
+        "Nothing in what you recorded argues against this, which is not the same as evidence for it."
       );
     }
   } else {
@@ -824,7 +824,7 @@ export function reasoningFor(
   }
   if (tendencies.length > 0) {
     profile.push(
-      `You recorded ${tendencies.map((t) => t.toLowerCase()).join(" and ")}, which makes an irritant reaction more likely to show — it does not make this explanation more likely than another.`
+      `You recorded ${tendencies.map((t) => t.toLowerCase()).join(" and ")}, which makes an irritant reaction more likely to show, it does not make this explanation more likely than another.`
     );
   }
   if (conditions.length > 0) {
@@ -861,7 +861,7 @@ export function reasoningFor(
     couldChange.push("Saying when you started the products whose timing is unclear.");
   }
   couldChange.push(
-    "Anything you used in the four weeks before the reaction that is not on the list yet — including products you do not suspect."
+    "Anything you used in the four weeks before the reaction that is not on the list yet, including products you do not suspect."
   );
   couldChange.push(
     "Pausing one product for four weeks and recording what happens. That is the only thing here that produces new evidence rather than rearranging what you already gave me."
@@ -879,7 +879,7 @@ function count(n: number, noun: string): string {
 /** § 08's evidence-against block, at the level of the whole analysis: the
  *  candidates the user's own tolerated history knocked out. */
 export function ruledOut(h: IngredientHypothesis): string {
-  return `${h.name} — also in ${h.inTolerated.map(fullName).join(" and ")}, which you have used without problems.`;
+  return `${h.name}, also in ${h.inTolerated.map(fullName).join(" and ")}, which you have used without problems.`;
 }
 
 /* ---------------------------------------------------------------------------
@@ -938,7 +938,7 @@ export function investigationPriority(a: Answers): PriorityEntry[] {
       }
 
       if (!e.readable) {
-        missing.push("No ingredient list — nothing to compare");
+        missing.push("No ingredient list, nothing to compare");
       }
       if (e.product.bucket === "not-sure") {
         missing.push("How long you have used it");
@@ -1000,11 +1000,11 @@ export const OBSERVATION_WEEKS = 4;
  */
 export function recordSummary(analysis: Analysis): string {
   const top = analysis.hypotheses[0];
-  if (!top) return "No conclusion yet — not enough evidence to point at anything.";
+  if (!top) return "No conclusion yet, not enough evidence to point at anything.";
   const others = analysis.hypotheses.length - 1;
   return others > 0
-    ? `${headline(top)} — ${CONFIDENCE_LABEL[top.confidence].toLowerCase()}, with ${others} other explanation${others === 1 ? "" : "s"} still open.`
-    : `${headline(top)} — ${CONFIDENCE_LABEL[top.confidence].toLowerCase()}.`;
+    ? `${headline(top)}, ${CONFIDENCE_LABEL[top.confidence].toLowerCase()}, with ${others} other explanation${others === 1 ? "" : "s"} still open.`
+    : `${headline(top)}, ${CONFIDENCE_LABEL[top.confidence].toLowerCase()}.`;
 }
 
 /**

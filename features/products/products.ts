@@ -351,7 +351,7 @@ export function fullName(p: CatalogProduct): string {
  *  Beauty Facts entries sometimes carry no size, so the dash is dropped
  *  rather than trailing on nothing. */
 export function resultMeta(p: CatalogProduct): string {
-  return p.size ? `${p.brand} — ${p.size}` : p.brand;
+  return p.size ? `${p.brand}, ${p.size}` : p.brand;
 }
 
 /**

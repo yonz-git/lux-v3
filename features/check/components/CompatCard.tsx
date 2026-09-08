@@ -105,7 +105,7 @@ export function CompatCard({
 
             {/* the band in words for everyone, including the rows with no pill */}
             <span className="visually-hidden">
-              {score}% compatible — {BAND_LABEL[band]}
+              {score}% compatible, {BAND_LABEL[band]}
             </span>
           </button>
         </h3>

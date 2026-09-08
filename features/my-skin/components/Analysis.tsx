@@ -219,7 +219,7 @@ function Hypotheses({ analysis }: { analysis: AnalysisResult }) {
             <ul className={styles.plain}>
               {alsoConsidered.map((h) => (
                 <li key={h.id} className="t-body3">
-                  {subject(h)} — {CONFIDENCE_LABEL[h.confidence].toLowerCase()}
+                  {subject(h)}, {CONFIDENCE_LABEL[h.confidence].toLowerCase()}
                 </li>
               ))}
             </ul>
@@ -316,7 +316,7 @@ function NoConclusion({ analysis }: { analysis: AnalysisResult }) {
             meta={String(priority.length)}
           >
             <p className={`${styles.fineprint} t-caption`}>
-              Ranked by what you would learn from pausing each one — not by how
+              Ranked by what you would learn from pausing each one, not by how
               risky they are.
             </p>
             <PriorityList entries={priority} />
@@ -355,7 +355,7 @@ function Confirmations() {
       {ambiguous.map((e) => (
         <div key={e.product.id} className={styles.confirmRow}>
           <p className={`${styles.confirmName} t-body3`}>
-            {fullName(e.product)} — did you start it around the reaction?
+            {fullName(e.product)}, did you start it around the reaction?
           </p>
           {/* ⚠️ CHIPS, NOT RADIO ROWS. The selection-controls contract allows a
               radio CHIP only for a short ordinal scale, so these two carry
@@ -399,7 +399,7 @@ function Reminder() {
 
   return (
     <p className={`${styles.reminder} t-body3`}>
-      No {missing.join(" or ")} in your list — if you use{" "}
+      No {missing.join(" or ")} in your list, if you use{" "}
       {missing.length === 1 ? "one" : "either"}, adding{" "}
       {missing.length === 1 ? "it" : "them"} may change this.{" "}
       {/* ⚠️ `Link`, NOT `<a href>`. The answer store is in memory only, so a

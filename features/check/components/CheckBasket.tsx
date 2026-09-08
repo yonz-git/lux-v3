@@ -81,7 +81,7 @@ export function CheckBasketBar({
     ? `${count} products · review & analyse`
     : count === 0
       ? `Pick at least ${MIN_CHECK_PRODUCTS} products`
-      : `${count} of ${MIN_CHECK_PRODUCTS} — pick one more`;
+      : `${count} of ${MIN_CHECK_PRODUCTS}, pick one more`;
 
   const content = (
     <>

@@ -88,7 +88,7 @@ export function CheckHistory() {
                 type="button"
                 className={`${styles.row} pressable`}
                 onClick={() => open(check)}
-                aria-label={`Analysis of ${date}, ${products.length} products — ${BAND_LABEL[band]}`}
+                aria-label={`Analysis of ${date}, ${products.length} products, ${BAND_LABEL[band]}`}
               >
                 <span className={styles.copy}>
                   <span className={`${styles.date} t-h6`}>{date}</span>

@@ -149,7 +149,7 @@ export function YourProducts() {
             className={`${styles.skip} t-label`}
             onClick={() => router.push(done)}
           >
-            None — skip to next
+            None, skip to next
           </button>
         )}
       </QuestionScreen>

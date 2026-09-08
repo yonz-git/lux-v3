@@ -257,7 +257,7 @@ export function NextStepsCard({
                 />
                 <span className={styles.nodeText}>
                   <span className={`${styles.week} t-h6`}>
-                    Week {node.week} — {formatScheduleDate(node.date)}
+                    Week {node.week}, {formatScheduleDate(node.date)}
                   </span>
                   {node.note && (
                     <span className={`${styles.nodeNote} t-label-sm`}>

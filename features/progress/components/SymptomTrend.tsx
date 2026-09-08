@@ -99,7 +99,7 @@ export function SymptomTrend({
            empty series, and an axis with no line reads as broken. One line of
            on-data-secondary body copy, the same treatment the summary gets. */
         <p className={`${styles.empty} t-body3`}>
-          No check-ins yet — your symptom trend appears once you have checked in
+          No check-ins yet, your symptom trend appears once you have checked in
           a few times.
         </p>
       ) : (

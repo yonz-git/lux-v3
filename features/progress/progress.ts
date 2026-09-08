@@ -353,12 +353,12 @@ export function trendSummary(checkIns: CheckIn[]): string | null {
   const change = Math.round(((first - last) / first) * 100);
 
   if (change > 0) {
-    return `Trending: Improving — symptoms decreased ${change}% since start`;
+    return `Trending: Improving, symptoms decreased ${change}% since start`;
   }
   if (change < 0) {
-    return `Trending: Worsening — symptoms increased ${-change}% since start`;
+    return `Trending: Worsening, symptoms increased ${-change}% since start`;
   }
-  return "Trending: Steady — symptoms unchanged since start";
+  return "Trending: Steady, symptoms unchanged since start";
 }
 
 /** "Last check-in: 3 days ago" — the caption under `Check in today`. */
