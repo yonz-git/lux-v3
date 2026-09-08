@@ -420,10 +420,29 @@
    it and the footer's own desktop width would break that sentence's measure.
    -------------------------------------------------------------------------- */
 
+/* ⚠️ THE APP'S EMPTY-STATE HERO, MEASURED OFF `ProgressScreen`'s OWN `.empty`
+   RATHER THAN RE-INVENTED. Orb -> 32 -> title -> 12 -> body -> 32 -> action,
+   centred, text-centred. `/progress/empty` and `/check/no-profile` are the two
+   built examples and this screen now matches them to the pixel.
+
+   ⚠️ IT IS NOT LIFTED INTO A SHARED COMPONENT, DELIBERATELY. Three screens is
+   the point at which that becomes tempting, and the rule in AGENTS.md is that a
+   thing goes in `components/` only once two sections already use it — which is
+   true here — but each of the three states differs in what it puts in the
+   block (this one has no subtitle, `/check/no-profile` has two lines of body)
+   and the recipe is four spacing values. Lifting it would trade four numbers
+   for a component with three configurations. If a FOURTH empty state appears,
+   lift it then. */
 .empty {
   display: flex;
   flex-direction: column;
-  gap: var(--space-sm); /* 8 */
+  align-items: center;
+  text-align: center;
+  color: var(--color-text-primary);
+}
+
+.empty > svg {
+  margin-bottom: var(--space-3xl); /* 32 */
 }
 
 .emptyTitle {
@@ -432,9 +451,22 @@
 }
 
 .emptyBody {
-  margin: 0;
+  margin: var(--space-md) 0 0; /* 12 */
   color: var(--color-text-secondary);
   text-wrap: pretty;
+}
+
+/* full width of the 392 column on mobile; 280 on desktop rather than spanning
+   the whole 640 block — the same pair `ProgressScreen`'s `.emptyCta` uses */
+.emptyCta {
+  width: 100%;
+  margin-top: var(--space-3xl); /* 32 */
+}
+
+@media (min-width: 1024px) {
+  .emptyCta {
+    width: var(--width-action);
+  }
 }
 
 /* ---------------------------------------------------------------------------

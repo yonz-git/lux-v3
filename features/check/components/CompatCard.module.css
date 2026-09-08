@@ -101,6 +101,10 @@
   align-items: center;
   gap: 10px;
   flex: none;
+  /* percentages stacked down a list of products read as a column, so the
+     figures take one width — 98% and 71% have to align on their own `%`.
+     See the note in globals.css. */
+  font-variant-numeric: tabular-nums;
 }
 
 /* 26 tall: 5 + 16 + 5 */

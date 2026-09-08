@@ -154,14 +154,22 @@
 .itemLabel {
   flex: 1;
   min-width: 0;
-  /* ⚠️ WHITE ON A SAGE ROW, BY EXPLICIT REQUEST — the same exception
-     `ResultCards`' emphasis block carries, and it does NOT meet AA: the
-     basket sheet's row measured 1.64–2.13:1 against white when it was
-     `surface/data-strong`, which is why globals.css redefined `text/on-data`
-     dark in the first place. On the `surface/data-deep` fill the row carries
-     now it computes to ~2.9:1 — better, and still short of 4.5:1. Named via `text/on-data-inverse` rather than a raw `#fff`
-     so the exception stays greppable and the module does not reach into the
-     primitives block (non-negotiable 2). */
+  /* ⚠️ WHITE ON A SAGE ROW, BY EXPLICIT REQUEST — AND IT DOES NOT MEET AA. The
+     row sits on `surface/data-deep` (`#4f838f @85%`), which composites over the
+     tray to #5a8b96, where white measures **3.77:1** against 4.5:1.
+
+     ⚠️ THE NUMBERS IT CAME THROUGH: 1.64–2.13:1 on `surface/data-strong` (which
+     is why globals.css redefined `text/on-data` dark in the first place), then
+     ~2.9:1 on the 62% `-deep`, now 3.77:1. All three are composites over
+     whatever sits behind the tray, so all three are ranges rather than numbers.
+
+     ⚠️ THE INK IS NOT THE WAY OUT — it measures 3.67:1 on the same fill, BELOW
+     the white. The surface sits where the two inks cross over; see the table on
+     `--color-surface-data-deep` in globals.css.
+
+     Named via `text/on-data-inverse` rather than a raw `#fff` so the
+     surface-and-ink pairing stays greppable and the module does not reach into
+     the primitives block (non-negotiable 2). */
   color: var(--color-text-on-data-inverse);
 }
 
@@ -215,7 +223,7 @@
      stays one surface with the list it appends to */
   background: var(--color-surface-data-deep);
   box-shadow: var(--shadow-frosted-row);
-  /* white by explicit request, same exception as `.itemLabel` above */
+  /* the deep sage's paired ink, same exception as `.itemLabel` above */
   color: var(--color-text-on-data-inverse);
   transition: opacity var(--duration-fast) var(--ease-standard);
 }

@@ -12,14 +12,23 @@
   flex-direction: column;
   gap: var(--space-md);
 
-  /* ⚠️ WHITE BY REQUEST, AND IT FAILS WCAG AA. AGENTS.md redefines
-     `text/on-data*` dark globally because white on light sage measures
-     1.49-2.63:1 against 4.5:1. Scoped to this list only, so the rest of the
-     app keeps the accessible values. Revert by deleting these four lines. */
-  --color-text-on-data: #ffffff;
-  --color-text-on-data-secondary: #ffffff;
-  --color-text-on-data-muted: #ffffff;
-  --color-icon-on-data: #ffffff;
+  /* ⚠️ WHITE BY REQUEST, AND IT DOES NOT MEET AA. These tiles sit on
+     `surface/data-deep` (`#4f838f @85%`), which composites over the tray to
+     #5a8b96 — white 3.77:1, hover 3.43:1, against 4.5:1. It was 1.49–2.63:1
+     before that surface existed, which is why globals.css redefines
+     `text/on-data*` dark for the rest of the app. That global default is still
+     right for `surface/data`; this list is not on `surface/data`, and the ink
+     measures 3.67:1 here, below the white. See the measurement table on
+     `--color-surface-data-deep` in globals.css.
+
+     ⚠️ NAMED, NOT RAW `#fff`. These were four literal hexes; they now take
+     `text/on-data-inverse`, which is the ink the deep-sage surface is paired
+     with. The pairing is what the exception rests on, so the token is what
+     should be greppable, not the colour. */
+  --color-text-on-data: var(--color-text-on-data-inverse);
+  --color-text-on-data-secondary: var(--color-text-on-data-inverse);
+  --color-text-on-data-muted: var(--color-text-on-data-inverse);
+  --color-icon-on-data: var(--color-text-on-data-inverse);
 }
 
 /* 70 tall on mobile / 78 on desktop, padding 14/18, gap 12, radius/lg.
@@ -47,8 +56,8 @@
      same swap the basket sheet's rows and `ResultCards`' emphasis block take.
      A 62% sage card on the 44% sage tray is two steps of one hue with almost
      nothing between them; the darker sage separates the cards from the tray.
-     It also lifts the white this list scopes above from ~1.6:1 to ~2.9:1 —
-     better, still short of AA. See globals.css. */
+     `#4f838f @85%` as of 8 Sep 2026, which is what lifts the white above from
+     ~1.6:1 to 3.77:1 — better, still short of AA. See globals.css. */
   background: var(--color-surface-data-deep);
   box-shadow: var(--shadow-frosted-row);
   -webkit-backdrop-filter: blur(var(--blur-card));
@@ -57,11 +66,17 @@
   transition: background-color var(--duration-fast) var(--ease-standard);
 }
 
-/* hover still LIGHTENS by one step — the step is now deep → strong rather than
-   strong → data, so the card keeps a visible hover without landing back on the
-   tray's own value */
+/* hover LIGHTENS by one step, and the step is now WITHIN the opaque scale.
+
+   ⚠️ IT USED TO HOVER TO `surface/data-strong` AND THAT BROKE ON 8 Sep 2026.
+   That was a real step while `data-deep` was a 62% sage; once `data-deep` went
+   opaque `#407375`, `-strong` (#7da7a9 @62%) composited far lighter, so hover
+   was a jump rather than a step — and it dropped this list's white label from
+   5.35:1 to about 2.4:1. The hover would have been the one state that failed.
+   `surface/data-deep-hover` is the same hue two lightness steps up, still
+   opaque, white at 4.71:1. */
 .method:hover {
-  background: var(--color-surface-data-strong);
+  background: var(--color-surface-data-deep-hover);
 }
 
 @media (hover: none) {

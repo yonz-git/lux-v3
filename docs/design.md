@@ -22,6 +22,20 @@ Companion to the **Lux** Figma file. Read this **before** touching the design sy
 > not the modal sheet (§5); and PRODUCTS' twelve-screen add flow is one screen
 > and one tray (§5).
 >
+> **8 Sep 2026 — A VISUAL POLISH PASS MOVED TWO COLOUR DECISIONS AND ADDED A
+> SURFACE.** ⚠️ **`gradient/brand` IS INDIGO NOW** — `#657792 → #39386F` in
+> code, where Figma still holds the sage `#BBD3D9 → #637073`. It is a
+> REASSIGNMENT, not a retune: the button had been sitting in the sage GROUND
+> family with its chroma drained out and read as a disabled pill. ⚠️ **The
+> 4 Sep line above — "`gradient/brand`'s start is `#A2B9BF` in code" — and the
+> instruction in §4 to change Figma to match it and stop there are BOTH STALE.**
+> So is the rule that `gradient/brand-indigo` is for marks and accents only.
+> ⚠️ **System B is TWO surfaces now**: `surface/data` with the dark ink, and a
+> new `surface/data-deep` `#4F838F @85%` with WHITE — the `sage/700` §7's open
+> list has been asking for, which Figma still has no step for. Both are in §4.
+> Also: four text roles take lining figures, and `::selection` / the caret /
+> native accents bind `bg/brand` — neither of which Figma can express (§7).
+>
 > ⚠️ **THIS FILE IS THE FIGMA SIDE; `AGENTS.md` (repo root) IS THE CODE SIDE.** They
 > answer different questions — this one says what the design system *is* and how
 > to build in Figma; that one says how to build a screen in the repo without
@@ -151,10 +165,16 @@ Two layers: **primitives** hold raw values, everything else is **semantic** and 
 
 ## 4. Colour & style values (the actual numbers)
 
-- **Brand indigo** `#3B305C` (selection, accents, checked) · deep `#2E2447` · violet `#4D4785`.
+- **Brand indigo** ⚠️ **`#39386F` as of 8 Sep 2026** (was `#3B305C`, `indigo/700`) — selection, accents, checked. It is `gradient/brand`'s dark end, so the primary button and every "selected" mark are one indigo; they sit side by side on `/progress` and used to be two violets 11° apart. Hover ⚠️ **`#2C2A5F`** (was `#2E2447`) and the moderate pill ⚠️ **`#8284C0`** (was `indigo/300` `#8E80BC`) moved with it to hold one hue. Violet `#4D4785` untouched. **All still to change in Figma** — the code overrides them on `:root`; do NOT repoint the `indigo/700` primitive instead.
 - **Text on light:** primary `#2E2A3F` · secondary `#4B4B57` · muted ⚠️ **`#63636F` as of 4 Sep 2026** (was `#9A9AA5`). The old value measured **2.13–2.57:1** on the three surfaces it actually lands on — product-row meta lines, `DateField`'s "Select a date", the PRODUCTS hub's windows and counts, `CheckHistory`'s counts — at 12–16px, where the large-text allowance never applies. `#63636F` measures **4.54–5.47:1** on all three. **Still to change in Figma.**
 - **Backgrounds:** mobile `#DCE7EA → #CEDEE2 → #ACC5CC` (`gradient/canvas-mobile`); desktop `#DCE7EA → #CEDEE2 → #B9D1D7` (`gradient/canvas-desktop`). **Use the paint styles, not raw fills.**
-- ⚠️ **`gradient/brand` is the SAGE button gradient** `#BBD3D9 → #637073` — ⚠️ **the START is `#A2B9BF` in code as of 4 Sep 2026, one step darker, and Figma still holds `#BBD3D9`.** The white label measures 2.05:1 at the left edge, 2.67:1 at the first glyph, 3.73:1 at the last, against 4.5:1; the gradient sweeps light-to-dark so **no single ink clears both ends** and the surface has to move. A version that passes (`#5F7275 → #3C4B4E`) was built and **rejected as too dark**. `#A2B9BF` is a chosen value — change Figma to match it and stop there. Not the indigo one. The indigo `#3F326D → #5C5E9E` is now `gradient/brand-indigo` and is for marks/accents only.
+- ⚠️ **`gradient/brand` — FIGMA HOLDS THE SAGE `#BBD3D9 → #637073`; THE CODE MOVED TO INDIGO `#657792 → #39386F` ON 8 Sep 2026.** Both statements are true at once, which is what this file and `AGENTS.md` are for: this is what Figma holds, that is what shipped. ⚠️ **THE OLD INSTRUCTION HERE — "the START is `#A2B9BF`… change Figma to match it and stop there" — IS RETIRED. Do not act on it.** It was written when the only question was how far down the sage ramp the start could go.
+  - **What changed and why.** Plotted in OKLCH, LUX runs a sage GROUND family (canvas 215, `surface/data` 199.8, `bg/nav` 196.8) and an indigo FIGURE family (`bg/brand` 293.5 at the time, `gradient/brand-indigo` 280.8–290.8). The button sat in the GROUND family at hue 213–215 with chroma **0.016–0.027**, i.e. sage with the colour taken out of it, and read on screen as a disabled steel pill. The new value sits at hue **258 → 282, chroma 0.047 → 0.092** — it gains chroma as it darkens where the old one lost it.
+  - **What it closed.** The white label ran 2.05:1 at the left edge → 5.13:1 at the right. It now runs **4.56:1 → 10.66:1**, clearing AA across the whole sweep. That was the app's widest contrast failure.
+  - **It is not the rejected fix.** A passing SAGE gradient (`#5F7275 → #3C4B4E`) was built and **rejected as too dark** because it read as a flat slab. That rejection was about the sage ramp and stands. This one holds a 24° hue rotation across the sweep, so it still reads as a sweep.
+  - **What Figma has to change:** `gradient/brand`'s two stops, `button/bg-default-start` / `-end` which mirror them, and `gradient/brand-hover` which is the pair reversed. Full write-up in `docs/figma-catchup.md` §2 and §6.
+  - ⚠️ **THE RULE THAT `gradient/brand-indigo` `#3F326D → #5C5E9E` IS "FOR MARKS AND ACCENTS ONLY" DIED WITH THIS CHANGE.** The primary button is indigo now. The two indigo gradients are different values and both are live; decide in Figma whether they should be one.
+  - ⚠️ **CLOSED THE SAME DAY — `bg/brand` MOVED TO MATCH.** The button's dark end is hue 282 and `bg/brand` was 293.5; they appear together on `/progress` and read as two violets. `bg/brand` is now `#39386F`, the same value, and its `-hover` and `-soft` steps were re-hued with it. See the Brand indigo line above.
 - **`border/highlight`** `#FFFFFF @90%` (neumorphic rim).
 - **Nav pill:** `surface/frost-nav` ⚠️ **`#DBEDED @88%` as of 22 Aug 2026** (was `#DDE8EB @83%`), blur 28, radius full. Same colour as `bg/bubble-ai`, so the nav sits on the AI bubble's hue. **`bg/nav` is its opaque counterpart `#DBEDED` and must be kept in step** — it is the `prefers-reduced-transparency` fallback and a fallback must not be translucent or a different hue. ⚠️ **`Search Field` `248:70` binds `surface/frost-nav` as well**: one frosted-pill surface, two components. All 8 `Bottom-Nav-Bar` variants bind their fill to the token (resolved 18 Aug 2026; they were a loose hex), which is why a single variable edit moved every one of them. ~~`bg/nav` `#9CAEAF @55%` is an orphan~~ — stale twice over: `bg/nav` is the reduced-transparency fallback and now holds `#DBEDED`.
 
@@ -163,7 +183,7 @@ Two layers: **primitives** hold raw values, everything else is **semantic** and 
 
 ⚠️ **A frosted fill ON a frosted surface does not read.** `surface/frost-light` at 55% over a `surface/frost-light` card is the same fill twice and the inner element loses its edge. That is what **`bg/frost-light` `#F4FEFF`** (added 22 Aug 2026) is for — the opaque counterpart, exactly the relationship `bg/nav` has to `surface/frost-nav`. First used by the face-diagram region chips. It is also the correct `prefers-reduced-transparency` fallback for any frost-light surface; those previously fell back to `bg/surface-frost` `#EEF6F7`, which is a different colour.
 
-**B) Data / dashboards:** `surface/data` `#7DA7A9 @44%`, radius 24–28, blur 28, drop `0 12 32 -8 rgba(46,36,71,.12)`, **DARK text** ⚠️ **changed 4 Sep 2026 — it was WHITE** (`text/on-data` 100 / `-secondary` 85 / `-muted` 62). Accents indigo `#3B305C`.
+**B) Data / dashboards:** `surface/data` `#7DA7A9 @44%`, radius 24–28, blur 28, drop `0 12 32 -8 rgba(46,36,71,.12)`, **DARK text** ⚠️ **changed 4 Sep 2026 — it was WHITE** (`text/on-data` 100 / `-secondary` 85 / `-muted` 62). Accents indigo ⚠️ **`#39386F`** (was `#3B305C` — see the Brand indigo line above).
 
 ⚠️ **WHITE CANNOT BE MADE TO WORK ON THIS SURFACE.** Measured on `/check/results`, white failed WCAG AA on **38 of 59 text nodes**: overlines and 12px stat labels at **1.49:1**, body and metrics at **1.86:1**. `surface/data` composites to ≈rgb(170,194,198), and even at **100% opacity** that hue gives white only **2.63:1** — no alpha passes. Darkening the text is the only fix that keeps the sage card; the alternative is a dark-sage surface, i.e. redesigning System B.
 
@@ -173,6 +193,19 @@ Two layers: **primitives** hold raw values, everything else is **semantic** and 
 | `-secondary` and `-muted` (body + labels) | `#354446`, sage-tinted | 4.61–5.97:1 |
 
 The two lower tiers **share one value on purpose**: the muted tier styles 12–13px LABELS, so it must also clear 4.5:1, and the ink at 82% already fails (4.43:1). Hierarchy is carried by size, weight and the overline's tracking. Still white, deliberately: the `border/glass` divider inside a data card, and the check-in discs' `text/on-brand` (indigo ground, passes). ⚠️ Open: the calendar's `Today` ring is `border/glass` on `surface/data` at **1.44:1** where SC 1.4.11 wants 3:1, and today has no other indicator. **All still to change in Figma.**
+
+⚠️ **SYSTEM B GREW A SECOND SURFACE IN CODE ON 8 Sep 2026, AND FIGMA HAS NO STEP FOR IT.** Everything above describes `surface/data`. The deep tier is **`surface/data-deep` `#4F838F @85%`**, declared on `:root` in `globals.css` — it is the `sage/700` §7's open list has been asking for, and it takes **WHITE** (`text/on-data-inverse`), not the dark ink.
+
+| Tier | Fill | Ink | White measures |
+|---|---|---|---|
+| `surface/data` | `#7DA7A9 @44%` | `#2E2A3F` dark | 1.87:1 — never |
+| `surface/data-deep` | `#4F838F @85%` | `#FFFFFF` | 3.42–3.77:1 |
+
+**The pairing is the contract and neither half is portable.** White on `surface/data` is the failure the table above exists to stop; the dark ink on the deep tier is 3.67:1. Four surfaces take the deep tier — `Symptom Trend`'s card, `Check results`' emphasis block, the check basket's rows, the add-product method tiles — and they were four separate white-on-sage exceptions measuring 1.64–2.32:1 before it existed.
+
+⚠️ **IT DOES NOT CLEAR AA EITHER, AND NO INK FIXES IT.** On the `surface/data` backdrop white is 3.71:1 and the app ink is 3.73:1 — the surface sits almost exactly where the two cross over, so only the SURFACE can move, and meaningfully: an opaque `#407375` was built the same day and gives white 5.35:1; going lighter returns the ink to 4.6:1+ and gives up the white. ⚠️ **`#4F838F @85%` is a chosen design value — do not "improve" it toward a passing one without asking**, and do not "correct" its hue onto the sage line either (214.1 against `surface/data`'s 199.8, deliberately cooler).
+
+⚠️ **An interactive deep surface hovers to `surface/data-deep-hover` `#588C98 @85%`, not to `surface/data-strong`.** The method tiles hovered to `-strong` while `-deep` was `#538B8D @62%`, where it happened to land one step lighter; it is not one step at any other value. **Raise both in Figma as real surface roles** — see `docs/figma-catchup.md` §2.
 
 A sage card **inside** a light card is correct. The reverse is not a pattern.
 
@@ -620,6 +653,28 @@ Put the whole treatment — blur and shadow — in the style.
 - **No opaque sage.** `surface/data-strong` is 62% with no solid counterpart, so
   a `prefers-reduced-transparency` tray has nothing to fall back to. `bg/nav` is
   the model to copy: same colour, fully opaque.
+  ⚠️ **STILL TRUE, AND NOW IT COSTS MORE.** The code added a THIRD sage step on
+  8 Sep 2026 — `surface/data-deep` `#4F838F @85%` plus a hover — and four
+  surfaces depend on it, all of them putting white text on it. At 85% it is
+  still translucent, so its contrast is a composite and varies with what is
+  behind it (3.42–3.77:1 across the backdrops it actually lands on). An opaque
+  counterpart would make the ratio a property of the token instead of the scroll
+  position. **Raise `sage/700` and its hover as real surface roles** — §4 and
+  `docs/figma-catchup.md` §2 carry the values and the measurements.
+- ⚠️ **NO WAY TO SAY "LINING FIGURES" ON A TEXT STYLE, AND FOUR ROLES NEED
+  THEM.** Figtree's default figures are proportional, so a calendar grid wobbles
+  column to column, a metric jitters as it changes, and two scores in a list do
+  not align on their own `%`. The code sets `font-variant-numeric: tabular-nums`
+  on the calendar grid, the chart axes, `Metric 1`/`Metric 2` and the compat
+  score. It is an OpenType feature rather than a variable — either turn it on
+  for those styles in Figma or note on the guide boards that the comps and the
+  build differ here.
+- ⚠️ **NOTHING IN FIGMA CAN DRAW TEXT SELECTION, THE CARET OR A NATIVE PICKER**,
+  and until 8 Sep 2026 all three shipped at the browser default: a Windows-blue
+  highlight, a black caret and a blue OS date picker, on a page where nothing
+  else is blue. All three now bind `bg/brand` in code. Not a Figma gap so much
+  as a Figma blind spot — worth a line on a guide board so nobody files it as
+  drift.
 - **No product or bottle icon outside the bottom nav** — every product thumb and
   image well in the file shows a camera glyph.
 - **No accordion, no stepper, no general text field, no shutter.**

@@ -186,18 +186,22 @@
 
 /* ⚠️ WHITE, BY EXPLICIT REQUEST — AND IT DOES NOT MEET AA. Everything else on a
    sage surface was moved to the ink (see the SURFACE SYSTEM B block in
-   globals.css); this one nested emphasis block was asked to stay white.
+   globals.css); this nested emphasis block was asked to stay white.
 
-   Measured on `/check/results` when the block was `surface/data-strong` nested
-   INSIDE a `surface/data` card: the sage stacked twice, composited to
-   rgb(141,177,179), and white measured **2.32:1** against a 4.5:1 requirement.
+   The three surfaces it has sat on, measured on `/check/results`:
 
-   ⚠️ THE DARK SAGE ARRIVED AND STILL DOES NOT CLOSE IT. `surface/data-deep`
-   (globals.css) is the `sage/700` this note used to call missing, but at the
-   same 62% alpha it composites to rgb(116,160,163), where white computes to
-   ~**2.9:1** — better than 2.32:1, still failing. Only an OPAQUE dark sage
-   would make white legitimate here. Raise `sage/700` in Figma as a real surface
-   role; the ink computes to ~4.8:1 on this fill if the request is withdrawn. */
+     surface/data-strong inside a surface/data card   rgb(141,177,179)   2.32:1
+     surface/data-deep at #538b8d @62%                rgb(116,160,163)   2.90:1
+     surface/data-deep at #4f838f @85%                #5d8c97            3.71:1
+
+   against 4.5:1. Better each time and still short.
+
+   ⚠️ THE INK IS NO LONGER THE ALTERNATIVE. On this fill `text/on-data`
+   (#2e2a3f) measures 3.73:1 — within 0.02 of the white — because the surface
+   sits almost exactly where the two inks cross over. Withdrawing the white
+   request would change nothing. Only the surface can move; see the measurement
+   table on `--color-surface-data-deep` in globals.css. Still to raise
+   `sage/700` in Figma as a real surface role. */
 .emphasisTitle,
 .emphasisText {
   color: var(--color-text-on-data-inverse);

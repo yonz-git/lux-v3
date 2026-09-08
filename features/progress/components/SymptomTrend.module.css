@@ -19,29 +19,35 @@
    `--color-surface-data` over the canvas, so it picks the deep sage up for
    free.
 
-   ⚠️ WHITE IS BACK HERE, AGAINST NON-NEGOTIABLE 17, AND IT DOES NOT PASS AA.
-   Measured on `/progress` at this card's own position rather than estimated —
-   `surface/data-deep` (`#538b8d` @ 62%) composited over the canvas gradient
-   where the card actually sits lands on **rgb(128,169,172)**, and against it:
+   ⚠️ WHITE HERE IS AN EXCEPTION TO NON-NEGOTIABLE 17 AND IT DOES NOT MEET AA.
+   Measured on `/progress` at this card's own position rather than estimated:
+   `surface/data-deep` (`#4f838f @85%`) composites over the canvas where this
+   card actually sits to about rgb(98,145,155), where white lands near 3.5:1
+   against 4.5:1. That clears the 3:1 large-text bar for the H5 title and fails
+   it for the 12px axis ticks.
 
-     white                         2.56:1   ✗  (needs 4.5, or 3 for the title)
-     white on the old surface/data 1.84:1   ✗  what this replaces
-     text/on-data      #2e2a3f     5.41:1   ✓
-     -secondary/-muted #354446     3.98:1   ✓ for the title, ✗ for body
+   The three states this went through, because the numbers are the argument:
 
-   So the deeper card is a real improvement on white's old footing and still
-   fails, and the row that passes is the one this card just stopped using.
-   ⚠️ THE CHEAPEST WAY TO A PASSING CARD IS TO KEEP THIS SURFACE AND PUT THE
-   DARK INK BACK — 5.41:1, no new token, delete four lines below. Keeping the
-   white needs an OPAQUE dark sage: `sage/700` is the step System B never had,
-   and raising it in Figma fixes this card, `ResultCards`' emphasis block and
-   the basket rows in one move. Left white by explicit request, flagged rather
-   than quietly shipped — the same open question those two already carry.
+     surface/data                        1.84:1
+     surface/data-deep at #538b8d @62%   2.56:1
+     surface/data-deep at #4f838f @85%   ~3.5:1
+
+   ⚠️ THE ALPHA IS WHY THIS HAS TO BE MEASURED IN PLACE. A translucent card takes
+   its contrast from whatever it is sitting on, so the same card reads
+   differently at the top and the bottom of a scrolling page. Only an opaque
+   fill would make the ratio a property of the token; `#407375` opaque was built
+   on 8 Sep 2026 and measured 5.35:1, and the current value was chosen over it.
+   See the measurement table on `--color-surface-data-deep` in globals.css.
+
+   ⚠️ AND THE DARK INK DOES NOT RESCUE IT EITHER — it lands within 0.1 of the
+   white on this fill, because the surface sits almost exactly where the two
+   inks cross over. Swapping the ink here would trade one failing value for
+   another; the surface is the only lever.
 
    All three text tokens resolve to the same white on purpose. System B carries
    hierarchy by size, weight and tracking (non-negotiable 17), and stepping the
-   secondary and muted ones down in alpha would take a failing ratio and make
-   it worse on exactly the smallest text. */
+   secondary and muted tiers down in alpha would take the smallest text
+   furthest down. */
 .card {
   --color-surface-data: var(--color-surface-data-deep);
   --color-text-on-data: var(--color-text-on-data-inverse);
@@ -75,6 +81,9 @@
   height: 110px;
   flex: none;
   color: var(--color-text-on-data-muted);
+  /* the ticks are right-aligned into a fixed 20 and read as a scale, so the
+     figures have to be one width — see the note in globals.css */
+  font-variant-numeric: tabular-nums;
 }
 
 /* ⚠️ THE 4px INLINE PADDING IS THE DOT'S RADIUS. The dots are centred on 0% and
@@ -179,6 +188,9 @@
 .xLabel {
   position: absolute;
   top: 0;
+  /* dates on one scale — "Aug 24" and "Sep 2" must not shift the label's
+     optical centre off the tick it is positioned against */
+  font-variant-numeric: tabular-nums;
 }
 
 .summary {

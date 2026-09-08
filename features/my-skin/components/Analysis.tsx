@@ -104,6 +104,23 @@ export function Analysis() {
       backHref="/investigation/products"
       layout="card"
       tightTop
+      /* ⚠️ NOT `center`, AND IT WAS TRIED ON 8 Sep 2026. `NoConclusion` is
+         allowed to be three short blocks — a verdict card, one sentence and one
+         button — which at 440 leaves roughly 700px of bare canvas under the
+         button. `HubScreen`'s `center` looked like the answer and is not: with
+         `layout="card"` the page heading renders INSIDE `.body`, so centring the
+         block centres the title with it and "Analysis" floated to the middle of
+         the screen above a card. Every other `center` caller in the app pairs it
+         with `layout="plain"`, where the heading sits outside the body and stays
+         at the top — that is what makes the pattern work on `/progress/empty`
+         and `/check/no-profile`.
+
+         So the two ways to close this are: hoist the heading out of the centred
+         region for `card` + `center` in `HubScreen` (a shared-component change,
+         and this is the only caller that would use it), or give the refusal
+         outcome its own `plain` shell. Both are real options; neither is a
+         one-line fix, and the void is a resting-state looseness rather than a
+         defect. Left as it is, written down rather than half-solved. */
     >
       {running ? (
         <AnalysisPasses />

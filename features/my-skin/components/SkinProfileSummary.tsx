@@ -5,6 +5,7 @@ import styles from "./SkinProfileSummary.module.css";
 import { HubScreen } from "@/components/layout/HubScreen";
 import { DataCard } from "@/components/ui/DataCard";
 import { Button } from "@/components/ui/Button";
+import { Orb } from "@/components/ui/Orb";
 import { SmallButton } from "@/components/ui/SmallButton";
 import { Tag } from "@/components/ui/Tag";
 import { FaceDiagram } from "./FaceDiagram";
@@ -166,24 +167,37 @@ export function SkinProfileSummary({ now }: { now: number }) {
         title={COPY.headlineLabel}
         nav="my-skin"
         backHref="/investigation/timing"
-        layout="card"
-        tightTop
-        /* ⚠️ THE FOOTER, WHERE THE FILLED STATE USES ITS OWN BLOCK. There are
-           two short paragraphs above this and nothing else, so in the body the
-           button sat in the upper third of the phone with 600px of canvas under
-           it — the stranded action `HubScreen`'s `.footer` documents and solves
-           with `margin-top: auto`. The filled state cannot use it: its button
-           is half of a pair with the sentence above it, and the footer's own
-           desktop width would break that sentence's measure. */
-        footer={
-          <Button href="/investigation/start" fullWidth>
-            {COPY.emptyCta}
-          </Button>
-        }
+        /* ⚠️ `plain` + `center` + the orb — THE APP'S EMPTY-STATE PATTERN, AND
+           THIS SCREEN WAS THE ONE PLACE NOT USING IT. `ProgressEmpty` names it
+           as "the standing exception every LUX empty state has": the heading
+           stays at the top of the page, the hero block floats centred between
+           two equal spacers, and on desktop it is a 640 column on bare gradient
+           with no card. `My Products — empty` and `/check/no-profile` both
+           follow it.
+
+           What was here instead: `layout="card"` with the button in
+           `HubScreen`'s footer. The footer solved the right problem the wrong
+           way — it stopped the action being stranded in the upper third by
+           pinning it to the bottom, which left a heading, two short paragraphs
+           and then roughly 1000px of empty canvas above the button on a 957
+           viewport. `center` closes that gap by centring the whole block rather
+           than pushing its two halves to opposite edges, and it makes this
+           screen read as the same kind of screen as the other three empty
+           states, which is what it is.
+
+           ⚠️ IT KEEPS ITS BACK CHEVRON, unlike the other three. They are hub
+           LANDINGS with nothing behind them; this is a pushed view off step 4,
+           so the chevron is correct here and its absence is correct there. */
+        layout="plain"
+        center
       >
         <div className={styles.empty}>
-          <p className={`${styles.emptyTitle} t-h5`}>{COPY.emptyTitle}</p>
+          <Orb animateIn />
+          <p className={`${styles.emptyTitle} t-h4-h3`}>{COPY.emptyTitle}</p>
           <p className={`${styles.emptyBody} t-body3-body2`}>{COPY.emptyBody}</p>
+          <Button href="/investigation/start" className={styles.emptyCta}>
+            {COPY.emptyCta}
+          </Button>
         </div>
       </HubScreen>
     );

@@ -101,6 +101,20 @@ Variable-level bugs. The code already overrides all of them on `:root` in
 - `bg/nav` is the solid twin of `surface/frost-nav`; `surface/data-strong` has
   no equivalent, so the reduced-transparency path composites the sage over
   `bg/canvas` by hand.
+- ⚠️ **`surface/data-deep` has the same gap and it now matters more**, since
+  four surfaces depend on that one and all of them put white text on it. See
+  section 2.
+
+### `::selection`, `caret-color`, `accent-color` — Figma cannot hold these
+
+⚠️ **NEW 8 Sep 2026. Nothing to change in Figma; listed so nobody files it as
+drift.** A comp has no text selection, no caret and no OS date picker, so all
+three shipped at the browser default — a Windows-blue highlight, a black caret
+and a blue native picker, on a page where nothing else is blue. All three now
+bind `bg/brand` in `globals.css`, the same indigo LUX already uses for every
+selection it *does* draw. Selection text takes `text/on-brand` (11.91:1).
+
+If Figma ever grows a "browser chrome" note, this is its content.
 
 ### `feedback/warning` and `feedback/error` share a hue
 
@@ -115,19 +129,109 @@ Variable-level bugs. The code already overrides all of them on `:root` in
 Measured failures that are **not** token corrections: fixing them moves a
 surface, which is a design call. Deliberately left failing in the build.
 
-### `gradient/brand` — the primary button label, on every screen (`37:5`, `37:9`)
+### `gradient/brand` — REASSIGNED FROM SAGE TO INDIGO (`37:5`, `37:9`)
 
-- White label measures **2.05:1** at the left edge, **2.67:1** at the first
-  glyph, **3.73:1** at the last. Against 4.5:1.
-- Gradient runs `#a2b9bf` → `#637073`. A centred label sits across a
-  light-to-dark sweep, so **no single ink colour clears both ends** — the
-  surface has to move.
-- Two rounds already: the fix that passes (`#5f7275` → `#3c4b4e`, 4.87:1 to
-  9.10:1) was built and **rejected as too dark**. The start was then darkened
-  one step by hand from `#bbd3d9` to `#a2b9bf`, which improves every figure by
-  about half a point and still fails.
-- **`#a2b9bf` is a chosen design value. Do not nudge it toward a passing one
-  without asking.**
+⚠️ **This entry changed shape on 8 Sep 2026. It is no longer a contrast failure
+awaiting a decision — the decision was taken, and it is a token reassignment
+Figma has not absorbed.**
+
+- **Figma holds:** `#bbd3d9` → `#637073` — the sage button gradient.
+- **The build uses:** `#657792` → `#39386f` — indigo, overridden in
+  `globals.css` along with the `@property` initial values.
+
+**Why it is a reassignment and not a retune.** Plotted in OKLCH, LUX runs two
+families: sage is the ground (canvas 215, `surface/data` 199.8, `bg/nav` 196.8)
+and indigo is the figure (`bg/brand`, 293.5 at the time, `gradient/brand-indigo` 280.8–290.8).
+The old button sat at hue **213–215 with chroma 0.016–0.027** — in the ground
+family, with the colour drained out of it, and it read on screen as a disabled
+steel pill. The new value sits at hue **258 → 282, chroma 0.047 → 0.092**.
+
+**What it closes.** The white label was the app's widest contrast failure. It
+now clears AA across the whole sweep:
+
+| | old | new |
+| --- | --- | --- |
+| left edge | 2.05:1 | **4.56:1** |
+| first glyph | 2.52:1 | 5.62:1 |
+| centre | 3.12:1 | 6.90:1 |
+| last glyph | 3.99:1 | 8.59:1 |
+| right edge | 5.13:1 | **10.66:1** |
+
+**Why it does not re-open the rejected fix.** A passing sage gradient
+(`#5f7275` → `#3c4b4e`) was built and rejected as too dark, because it read as a
+flat slab rather than a sweep. This one holds a 24° hue rotation and nearly
+doubles its chroma on the way down, so it still reads as a sweep. The earlier
+rejection was about the *sage* ramp and stands.
+
+**What Figma has to change with it.**
+
+1. `gradient/brand`'s two stops → `#657792` and `#39386f`.
+2. `button/bg-default-start` / `-end` → the same two, as they mirror it.
+3. `gradient/brand-hover` → the same two reversed.
+4. **The rule that `gradient/brand-indigo` is "for marks and accents only" is
+   dead.** The primary button is indigo now; that note is on the `design.md`
+   side (§4) and has to go with this change.
+
+⚠️ **AND `bg/brand` MOVED WITH IT — a second, separate token change on the same
+day.** The button's dark end is hue 282; `bg/brand` was `indigo/700` `#3b305c`
+at 293.5. They appear together on `/progress` (the button beside the checked-in
+calendar discs) and read as two violets. The build now sets `bg/brand` to
+`#39386f`, the identical value, so the primary action and every "selected" mark
+are one indigo.
+
+| Token | Figma holds | The build uses | White |
+| ----- | ----------- | -------------- | ----- |
+| `bg/brand` | `indigo/700` `#3b305c` | `#39386f` | 11.91 → **10.66:1** |
+| `bg/brand-hover` | `indigo/800` `#2e2447` | `#2c2a5f` | 14.39 → 13.10:1 |
+| `bg/brand-soft` | *(no role — see section 3)* | `#8284c0` | 3.52 → 3.49:1 |
+
+The two dependents follow the first so the family holds one hue; `-soft` in
+particular has to, since it is the lighter half of a two-point likelihood scale
+with `bg/brand` and two hues would break it.
+
+⚠️ **CHANGE THE SEMANTIC TOKENS, NOT THE `indigo/700` PRIMITIVE.** Repointing the
+ramp step would drag anything else aliasing it, and binding a component to a
+primitive is forbidden anyway. Raise `bg/brand` and `bg/brand-hover` as direct
+values, and `bg/brand-soft` as the new role section 3 already asks for.
+
+⚠️ **`bg/brand-soft` STILL FAILS AA** at 3.49:1 for its 12px white label — the
+same open question `CompatCard`'s band pills carry, moved by 0.03 and not
+created by this change.
+
+### `surface/data-deep` — the third System B step, still short of AA
+
+⚠️ **NEW 8 Sep 2026, AND IT REPLACES THE "NESTED EMPHASIS BLOCK" ENTRY BELOW.**
+
+- **Figma holds:** nothing. There is no `sage/700` and never was.
+- **The build uses:** `#4f838f @85%`, declared on `:root` in `globals.css`, with
+  a hover step `#588c98 @85%`.
+
+Four surfaces were forcing white text onto sage and all four were failing:
+`SymptomTrend`'s card, `ResultCards`' emphasis block, `CheckBasket`'s product
+rows, `AddProductMethodSheet`'s method tiles — 1.64:1 to 2.32:1. They now share
+one declared tier with one declared paired ink (`text/on-data-inverse`), which
+lifts them to **3.42–3.77:1** depending on backdrop. Better by more than a point
+and a half, and still under 4.5:1.
+
+⚠️ **THE PART THAT NEEDS A HUMAN.** On the `surface/data` backdrop white
+measures 3.71:1 and the app ink measures **3.73:1** — the surface sits almost
+exactly where the two inks cross over, so *neither* passes and no ink choice
+fixes it. Only the surface can move, and it has to move meaningfully:
+
+- **darker** — an opaque `#407375` was built the same day and measures 5.35:1
+  for white; it was not the value chosen;
+- **lighter** — returns the ink to its usual 4.6:1+ and gives up the white.
+
+`#4f838f @85%` is a chosen design value. **Do not nudge it toward a passing one
+without asking** — the same standing instruction `gradient/brand` used to carry.
+
+⚠️ **It is also 15° off the sage hue line** (214.1 against `surface/data`'s
+199.8), so it reads cooler than the tier it nests in. Also chosen; also do not
+"correct" it unasked.
+
+Raise it in Figma as a real `sage/700` surface role, with the ink pairing
+recorded beside it: deep sage takes white, `surface/data` takes the app ink, and
+neither ink is portable to the other surface.
 
 ### Compatibility band pills — `Check results` `476:2841`
 
@@ -135,10 +239,12 @@ surface, which is a design call. Deliberately left failing in the build.
   on the check history screen.
 - Either darken the bands or drop the white pill text.
 
-### Nested emphasis block — `Check results` `476:2841`
+### ~~Nested emphasis block — `Check results` `476:2841`~~ — SUPERSEDED
 
-- The sage-inside-sage block on the result cards: **2.22:1**.
-- Needs either a darker ground or the dark ink the rest of System B now uses.
+⚠️ Rolled into the `surface/data-deep` entry above on 8 Sep 2026. The block was
+measured at 2.22:1 as a sage-inside-sage; it now takes the declared deep tier
+and measures 3.71:1. Still failing, and now failing as one of four surfaces
+rather than as a one-off, which is the whole reason the tier exists.
 
 ---
 
@@ -259,6 +365,25 @@ the model or change the row.
 No prototype wiring anywhere, which is why the CHECK handoff had to write its
 transition map out in prose.
 
+### Figtree's figures are proportional; four roles need lining ones
+
+⚠️ **NEW 8 Sep 2026. A code-side fix with a Figma-side consequence.** Figtree's
+default figures are proportional — `1` is narrower than `0` — which is right for
+running prose and wrong wherever LUX stacks digits. Four roles now set
+`font-variant-numeric: tabular-nums` in code:
+
+| Role | Where | What it fixed |
+| ---- | ----- | ------------- |
+| the calendar grid | `Check-in chat` calendar, `/progress` | the 11/21 column did not line up with the 30 below it |
+| the chart axes | `Symptom Trend` | ticks are right-aligned into a fixed 20 and read as a scale |
+| `Metric 1` / `Metric 2` | data-card figures | a metric that changes in place jittered |
+| the compat score | `CompatCard`, `Check results`, history | 98% and 71% did not align on their own `%` |
+
+Figma has no variable for this — it is an OpenType feature on the text style.
+Either turn on lining/tabular figures for the `Metric 1`, `Metric 2` and
+`Label Small` styles where they carry a grid, or note on the guide boards that
+the code does it and the comps do not.
+
 ### Mobile frames pad 58 at the top; the build uses 40
 
 40 is the value every other screen uses, and page-level whitespace is what
@@ -311,6 +436,20 @@ assembled from recipes page 06 already holds:
 | the photo | its own block: `Check-in detail`'s photo well (`surface/data-strong`, `radius/lg`) + `CheckInPhotoArt`, with a `SmallButton` opening the existing `SelfieSheet` |
 | all of step 4 | two meta lines inside the *What you noticed* block, under the pills — `Started on` over `<date> · Day <n>`, and `Current state` over `<status>`, both in the card's label-over-value shape |
 | the action | `Button` primary, full width mobile / `width/action` desktop |
+
+⚠️ **ITS EMPTY STATE IS THE APP'S EMPTY-STATE RECIPE, AS OF 8 Sep 2026 —
+NOTHING NEW TO DRAW.** The recap is reachable with nothing behind it: the flow's
+answers expire after 24 hours, so a lapsed window, a different browser or a deep
+link all land here. It renders orb → 32 → `t-h4-h3` title → 12 → body → 32 →
+primary action, centred on bare gradient with no card, which is exactly what
+`Progress — empty` and `Check — no profile` already draw.
+
+It was the one empty state in the build NOT using that recipe — it had the
+heading, two paragraphs and a bottom-pinned button, which left roughly 1000px of
+canvas between them at 440. Fixed in code; Figma needs a frame for it only if
+page 06 wants every state drawn, and if so it is an instance of the recipe, not
+a new one. ⚠️ **It keeps its back chevron**, unlike the other two, which are hub
+landings with nothing behind them.
 
 **Two things on it have no Figma component at all**, and they are the real ask
 of this section:
@@ -559,19 +698,25 @@ holds still.
 
 | Style | Default | Hover |
 | --- | --- | --- |
-| Primary | `#a2b9bf` → `#637073` | reversed |
+| Primary | `#657792` → `#39386f` | reversed |
 | Secondary | `#deeff3` → `#b7c6ca` | reversed |
 
 Disabled, both styles: the whole control at `opacity/disabled` **0.4**.
 
-### Delta 1 — `gradient/brand`'s start value
+### Delta 1 — `gradient/brand` IS INDIGO NOW, AND BOTH STOPS MOVED
 
-- **Figma holds:** `#bbd3d9`
-- **The build uses:** `#a2b9bf` (overridden in `globals.css`)
+⚠️ **CHANGED 8 Sep 2026, AND THIS IS NO LONGER A ONE-STOP NUDGE.** The earlier
+version of this delta said "change Figma to `#a2b9bf` and stop there". That is
+stale: the token was reassigned from the sage family to the indigo one.
 
-One step darker, for the white label's contrast. **Change Figma to `#a2b9bf`
-and stop there** — it still fails (2.05:1 at the left edge) and is a chosen value.
-See section 2; do not carry it further toward a passing one.
+- **Figma holds:** `#bbd3d9` → `#637073`
+- **The build uses:** `#657792` → `#39386f`
+
+Both stops, plus `button/bg-default-start` / `-end` which mirror them, plus
+`gradient/brand-hover` which is the pair reversed. The full reasoning and the
+measured sweep are in section 2 — read that entry before changing Figma, because
+it also retires `design.md` §4's rule that the indigo gradient is for marks and
+accents only.
 
 ### Delta 2 — Secondary's 1px `border/default` — UNRESOLVED
 
@@ -674,8 +819,10 @@ until the DS publishes it. Adds to the list in section 3.
 Hand-composited: the text is hidden, the surface underneath is screenshotted,
 and the rendered pixel at the element's own position is read. Both fail; both
 are reproduced as drawn rather than quietly darkened, because the frame is the
-authority on colour and `#a2b9bf`-class values in this file have already been
-established as chosen rather than accidental. **Both need a Figma decision**
+authority on colour and this file has already established the precedent of a
+value that is chosen rather than accidental. ⚠️ **That precedent used to be
+`#a2b9bf`, which no longer exists** — it is now `surface/data-deep`
+`#4f838f @85%` (section 2). **Both need a Figma decision**
 (section 2's list).
 
 | Text | Ink | Behind it | Ratio | Needs |

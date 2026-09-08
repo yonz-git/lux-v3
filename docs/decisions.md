@@ -248,8 +248,18 @@ label is `Overline` in `-muted`. Accents are indigo `bg/brand` — check-in disc
 timeline dots, meter fills — and the trend line is `text/on-data`, i.e. dark
 since the contrast fix below. A divider inside one is
 1px `border/glass`, never `border/subtle`. A nested emphasis block is
-`surface/data-strong`: **a sage card inside a light card is a LUX pattern, the
-reverse is not.** `components/ui/DataCard.tsx` is the whole recipe; use it.
+⚠️ **`surface/data-deep` as of 8 Sep 2026, not `surface/data-strong`** — a 62%
+sage inside a 44% sage is two steps of one hue with almost nothing between them,
+and every caller that put white on it was failing. **A sage card inside a light
+card is a LUX pattern, the reverse is not.** `components/ui/DataCard.tsx` is the
+whole recipe; use it.
+
+⚠️ **AND SYSTEM B IS TWO SURFACES WITH TWO INKS.** `surface/data` takes the dark
+ink; `surface/data-deep` `#4f838f @85%` takes white (`text/on-data-inverse`).
+Neither ink is portable to the other surface — white on `surface/data` is
+1.87:1, the dark ink on the deep tier is 3.67:1. An interactive deep surface
+hovers to `surface/data-deep-hover`, never back to `-strong`. Full numbers and
+the standing "do not retune" instruction are in the contrast section below.
 
 **⚠️ THE CTA AND ITS CAPTION SIT IN col-1 NOW, UNDER THE CALENDAR — NOT IN
 FIGMA.** The handoff gives col-2 four blocks and col-1 the calendar alone,
@@ -662,7 +672,9 @@ directly, 6 Sep 2026.** Non-negotiable 17 holds everywhere else: SURFACE
 SYSTEM B's text is dark because `surface/data` composites too light for white.
 Measured on this well — `surface/data-strong` (62%) over `surface/data` (44%)
 over the canvas gradient — the label is **2.22:1** at the top of the gradient
-and **2.42:1** at the bottom, where the inherited `text/on-data` was getting
+and **2.42:1** at the bottom ⚠️ **(the well took `surface/data-deep` on 8 Sep
+2026, which lifts these to roughly 3.7:1 — better, still short)**, where the
+inherited `text/on-data` was getting
 **6.23:1 / 5.71:1**; `t-label` is 14/500, so AA wants 4.5. Reproduced as asked
 rather than quietly corrected, the way the `/chat` failures are. The `PlusIcon`
 beside it went white too, asked for straight after and right — a white word next
@@ -992,21 +1004,86 @@ darkest surface has to set the value, is on that block.
 These are measured and deliberately unfixed — each wants a decision in Figma, not
 a patch here:
 
-- **`gradient/brand`, i.e. the PRIMARY BUTTON on every screen.** Its white label
-  measures **2.67:1 at the first glyph and 3.73:1 at the last** (2.05:1 at the
-  left edge), against 4.5:1. The gradient runs `#a2b9bf` → `#637073`, so the
-  centred label sits across a light-to-dark sweep and **no ink colour clears
-  both ends** — the surface has to move, which makes it a design decision, not a
-  token correction. Two rounds on it: the fix that actually passes (`#5f7275` →
-  `#3c4b4e`, 4.87:1 – 9.10:1) was built and **rejected as too dark**, then the
-  start was darkened one step by hand, `#bbd3d9` → `#a2b9bf`, which improves
-  every figure by roughly half a point and still fails. **`#a2b9bf` is a chosen
-  design value — do not "improve" it toward a passing one without asking.** The
-  start lives on `:root` in `globals.css` (with `button/bg-default-start`, its
-  mirror, and the `@property --grad-start` initial value); full numbers there.
+- ~~**`gradient/brand`, i.e. the PRIMARY BUTTON on every screen.**~~
+  ⚠️ **CLOSED 8 Sep 2026 — AND NOT BY THE ROUTE THIS ENTRY KEPT LOOKING DOWN.**
+  It ran `#a2b9bf` → `#637073` with a white label at 2.05:1 / 2.67:1 / 3.73:1 /
+  5.13:1 across the sweep, and the entry's own reasoning was that no ink clears
+  both ends so the surface has to move — correct, and it assumed the surface
+  could only move DOWN the sage ramp. Two rounds went that way: a passing
+  version (`#5f7275` → `#3c4b4e`) was built and **rejected as too dark**, then
+  the start was nudged `#bbd3d9` → `#a2b9bf` and still failed.
+
+  **The axis nobody had tried was hue.** In OKLCH the old gradient sat at hue
+  213–215 with chroma **0.016–0.027** — inside LUX's sage GROUND family (canvas,
+  nav, bubbles, data cards) with the chroma drained out, which is why it read as
+  a disabled steel pill rather than as the app's one primary action. Indigo is
+  LUX's FIGURE family — selection, chips, checked days, the orb's mark — and the
+  button belongs to it. It now runs **`#657792` → `#39386f`**, hue 258 → 282,
+  chroma 0.047 → **0.092**: it GAINS colour as it darkens where the old one lost
+  it.
+
+  White now measures **4.56 / 5.62 / 6.90 / 8.59 / 10.66** across the sweep. AA
+  everywhere, on the app's widest-reaching failure.
+
+  ⚠️ **THE "TOO DARK" REJECTION STILL STANDS AND THIS DOES NOT REOPEN IT.** That
+  was about seating the whole thing lower on the SAGE ramp, where the result
+  read as a flat slab. This keeps a 24° hue rotation and doubles its chroma, so
+  it still reads as a sweep. ⚠️ **The instruction "`#a2b9bf` is a chosen design
+  value, do not improve it" is retired with the value.**
+
+  Both stops live on `:root` in `globals.css` with their `button/bg-default-*`
+  mirrors and the two `@property` initial values — ⚠️ **a registered property
+  takes no `var()`, so the initial values are hand-written and have to move with
+  the tokens** or the previous colour flashes for a frame. Figma still holds the
+  sage; see `docs/figma-catchup.md` §2 and §6. ⚠️ **It also retires the rule that
+  `gradient/brand-indigo` is "for marks and accents only"** — the primary button
+  is indigo now, and whether the two indigo gradients should be one value is an
+  open question for Figma.
+
+  ⚠️ **CLOSED THE SAME DAY, BY MOVING `bg/brand`.** The button's dark end is hue
+  282 and `bg/brand` was 293.5 — they sit side by side on `/progress`, the
+  button beside the checked-in calendar discs, and read as two violets rather
+  than one. `bg/brand` is now `#39386f`, the identical value: **the primary
+  action and the mark that says "selected" are the same indigo.** That is the
+  right end to move, because the button is the thing with the argument behind
+  it and `bg/brand` was only ever `indigo/700` by default.
+
+  ⚠️ **ITS TWO SIBLINGS MOVED WITH IT, AND ONLY `bg/brand` WAS ASKED FOR.**
+  `-hover` `#2e2447` → `#2c2a5f` (same lightness delta, new hue) and `-soft`
+  `#8e80bc` → `#8284c0` (same L and C, new hue). `-soft` had no choice: it is
+  the moderate-likelihood pill on `ResultCards` and its entire job is to read as
+  one scale with `bg/brand`, which two hues would break. Reverting the two
+  dependents is three lines.
+
+  White holds: 11.91 → **10.66:1** on `bg/brand` and 14.39 → 13.10:1 on
+  `-hover`, across the checked-in discs, selected chips and option rows,
+  `StepProgress`' fill, the face diagram's picked regions, the "High likelihood"
+  pill and `::selection`. `-soft` goes 3.52 → 3.49:1 — the failure it already
+  carried, moved by 0.03, not a new one.
+
+  ⚠️ **DO NOT REPOINT `--color-indigo-700` INSTEAD.** Non-negotiable 2 forbids a
+  component binding a primitive, and moving the ramp step would drag anything
+  else aliasing it. The three semantic tokens are overridden on `:root` in
+  `globals.css`; Figma still holds `indigo/700`.
 - `CompatCard`'s band colours and their white pill text, **2.03–4.47:1** on
   `/check/results`; the same pill on `/check/history`.
-- `ResultCards`' nested emphasis block, **2.22:1**, noted on `.emphasisTitle`.
+- ~~`ResultCards`' nested emphasis block, **2.22:1**, noted on
+  `.emphasisTitle`.~~ ⚠️ **SUPERSEDED 8 Sep 2026 — it is one of four now, not a
+  one-off.** `SymptomTrend`'s card, `ResultCards`' emphasis block,
+  `CheckBasket`'s rows and `AddProductMethodSheet`'s tiles were four separate
+  white-on-sage exceptions measuring 1.64–2.32:1. They now share one declared
+  tier, `surface/data-deep` `#4f838f @85%`, with one declared paired ink
+  (`text/on-data-inverse`), measuring **3.42–3.77:1**.
+
+  ⚠️ **STILL FAILING, AND THE REASON IS WORTH KNOWING.** On the `surface/data`
+  backdrop white measures 3.71:1 and the app ink measures **3.73:1** — the
+  surface sits almost exactly where the two inks cross over, so *neither* passes
+  and no ink choice fixes it. Only the surface can move, and meaningfully: an
+  opaque `#407375` was built the same day and gives white 5.35:1; lighter
+  returns the ink to 4.6:1+ and gives up the white. `#4f838f @85%` is a chosen
+  design value — **do not "improve" it toward a passing one without asking**,
+  and do not "correct" its hue onto the sage line (214.1 against `surface/data`'s
+  199.8, deliberately cooler).
 
 ⚠️ **AXE CANNOT SEE ANY OF THIS, AND A CLEAN AXE RUN IS NOT EVIDENCE.** Every
 screen in the app sits on the canvas gradient, and `color-contrast` degrades to
@@ -1174,6 +1251,97 @@ bundle order, not by intent — non-negotiable 13's trap, in its custom-property
 costume. It was moved to the hook when the hook arrived, so the fragile
 precedent is not there to copy.
 
+## The browser's own surfaces, and who owns them
+
+⚠️ **DECIDED 8 Sep 2026. Text selection, the caret and native control accents
+belong to the design system, and until this they belonged to nobody.**
+
+A Figma frame has no text selection, no blinking caret and no OS date picker, so
+none of the three was ever specified — and what shipped was the browser default:
+a Windows-blue selection highlight, a black caret, and a blue native picker on a
+page where nothing else in the app is blue. It is the cheapest tell that a page
+was assembled rather than built, and it lands on exactly the moments a user is
+most deliberate — dragging to select, typing, picking a date.
+
+All three now bind `bg/brand`, the indigo LUX already uses for every selection it
+DOES draw: a selected chip, a checked option row, a checked-in calendar disc. The
+argument is that a selection is a selection, and the app should not have two
+languages for it depending on whether the control was drawn in Figma.
+
+⚠️ **`::selection` ALSO SETS THE INK, AND THAT IS NOT OPTIONAL.** `bg/brand` is
+opaque, so a selection has ONE ground wherever it lands — a System A frosted row
+and a System B sage card alike — and the ink has to be the one that passes on
+THAT ground rather than on the surface underneath. Letting it inherit put
+`text/on-data` (#2e2a3f) on indigo at **1.36:1** on every data card. White on
+`#39386f` is 10.66:1 (it was `#3b305c` at 11.91:1 until 8 Sep 2026).
+
+**The scrollbar stays hidden.** That one WAS a decision, taken earlier and still
+right: the app's surfaces are chrome-free frosted glass and an OS scrollbar
+track is the one piece of chrome that cannot be made to match. Hiding it is not
+the same failure as leaving selection at the default — one is a choice about a
+surface the DS owns, the other was a surface nobody had looked at.
+
+## Digits that stack take lining figures
+
+⚠️ **DECIDED 8 Sep 2026, BY ROLE AND NEVER GLOBALLY.** Figtree's default figures
+are proportional — `1` is narrower than `0` — which is correct for running prose
+and wrong everywhere LUX puts numbers in a column or changes one in place.
+
+Four roles set `font-variant-numeric: tabular-nums`:
+
+| Role | What it was doing |
+| ---- | ----------------- |
+| the calendar grid | a 7-column month did not line up down its own columns; worst on the 11/21 column against the 30 below |
+| the chart axes | the y ticks are right-aligned into a fixed 20 and read as a scale; the x dates are positioned against their own ticks |
+| `.t-metric1` / `.t-metric2` | a metric that counts or changes jitters as its digits swap width |
+| the compat score | 98% and 71% down a list did not align on their own `%` |
+
+⚠️ **NOT ON `body`.** Prose should keep the proportional figures it was designed
+with — a date inside a sentence is not a column. Adding a fifth role is a line in
+that component's module, which is also what keeps the list above honest.
+
+⚠️ **FIGMA CANNOT EXPRESS THIS AS A VARIABLE** — it is an OpenType feature on the
+text style, so either the styles carrying a grid turn it on or the guide boards
+note that the build and the comps differ here. Logged in
+`docs/figma-catchup.md` §4.
+
+## Every empty state is one recipe, and one screen was not using it
+
+⚠️ **The recipe was already there and already documented** — `ProgressScreen`
+calls it "the standing exception every LUX empty state has": `HubScreen` with
+`layout="plain"` and `center`, holding orb → 32 → `t-h4-h3` title → 12 → body →
+32 → primary action, centred, on bare gradient with no card at either
+breakpoint. `/progress/empty`, `/check/no-profile` and `My Products — empty` all
+draw it.
+
+⚠️ **`/investigation/profile`'s empty state was not, until 8 Sep 2026.** It had
+the heading, two short paragraphs and the button in `HubScreen`'s footer. The
+footer solved the right problem the wrong way: `margin-top: auto` exists to stop
+an action being stranded in the upper third, and it does — by pinning it to the
+bottom, which on a 957 viewport left roughly 1000px of bare canvas between the
+paragraphs and the button. `center` closes that by centring the whole block
+instead of pushing its two halves to opposite edges.
+
+⚠️ **`center` WITH `layout="card"` DOES NOT WORK, AND IT WAS TRIED THE SAME DAY
+ON `/investigation/analysis`.** The card layout renders the page heading INSIDE
+`.body`, so centring the block centres the title with it — "Analysis" floated to
+mid-screen above its own card, which is worse than the void it was meant to fix.
+Every working `center` caller pairs it with `layout="plain"`, where the heading
+sits outside the body and stays at the top. Reverted, and written up in
+`Analysis.tsx`. **If a `card` screen ever needs centring, `HubScreen` has to
+hoist the heading out of the centred region first** — that is a shared-component
+change and it currently has exactly one would-be caller.
+
+⚠️ **THE RECIPE IS NOT A COMPONENT, DELIBERATELY.** Four screens is past the
+usual "two sections and it moves to `components/`" bar. Each differs in what
+goes in the block, and the recipe is four spacing values — lifting it would
+trade four numbers for a component with four configurations. If a fifth appears,
+lift it then.
+
+⚠️ **A PUSHED VIEW KEEPS ITS BACK CHEVRON.** The profile recap has one; the
+other three are hub landings with nothing behind them and correctly have none.
+The recipe does not touch that rule.
+
 ## Things the design system does not have, faked here
 
 Each of these is composed from tokens in Figma too, so the code is not inventing
@@ -1192,7 +1360,7 @@ risk. All are on the missing-from-the-DS list.
 | `My skin` nav icon | `MySkinIcon` in `components/ui/icons.tsx`               | The nav's fourth glyph. `Bottom-Nav-Bar` (410:258) ships three icons and the DS has no face or skin mark anywhere else — `FaceDiagram` is a picker, not an icon. ⚠️ STROKE-drawn, unlike its three filled neighbours: a solid disc at 24 is a far heavier mark than Progress/Check/Products draw, and the face only reads at that size with the eyes and mouth left open. currentColor throughout, so the active/inactive opacity treatment is untouched. Replace it in the DS first, not here. |
 | Product imagery    | `features/products/components/ProductArt.tsx`                          | ⚠️ **THE CAMERA GLYPH IS GONE — DECIDED HERE, NOT IN FIGMA.** No product or bottle icon exists outside the bottom nav, so every thumb (`ProductThumb`, 48) and image well (`ProductCard`, 352x140) drew a camera. That reads as "no photo yet" once and as nothing at all down a list — `/check/new`, the PRODUCTS hub and the add tray all show the same mark on every row, so the thumbnail identifies nothing. `ProductArt` draws the vessel instead: **nine** silhouettes (tub, pump, tube, dropper, bottle, airless, spray, sachet, tin) by packaging type, tinted per brand, so same brand → same tint and same type → same shape. ⚠️ **IT WAS FIVE FORMS AND ONE FALLBACK TINT, WHICH WAS ENOUGH ONLY WHILE THE CATALOGUE WAS THE SEARCH.** Both searches are live now, so the list is whatever the database holds — masks, mists, sticks, ointments — and every one of them fell through `formFor`'s default to the same pump on a `sage` body. A column of identical pumps is the camera glyph with an extra step. Three axes of variety, all keyed on a stable FNV-1a `hash` (never `Math.random()` or an index — a thumbnail that changes identity between two screens is worse than one that repeats): unnamed brands hash into a 7-tint `RING`, unrecognised names hash across all nine `FORMS`, and `labelVariant` picks one of three label treatments off the product id so two products of the same form AND brand still differ. Brand strings are diacritic-folded before hashing, because OBF files the same house as both "Avene" and "Avène". ⚠️ **AND IT IS THE ONLY PICTURE — THE API'S PHOTOS ARE NOT READ.** Open Beauty Facts carries `image_front_url` and it used to win over the drawing. Its images are crowdsourced with no quality gate, so a result list mixed usable front-of-package shots with stubs, angled boxes and rows that fell back to a drawing anyway — two kinds of picture in one column, which is worse at telling rows apart than either alone. `features/products/openBeautyFacts.ts` no longer requests the image fields, `CatalogProduct` has no `imageUrl`, and `useProductPhoto` is deleted; `artFor` serves live results via `formFor`/`paletteFor`. **The API still supplies every WORD** — name, brand, size and the INCI list. The pigments are LOCAL LITERALS drawn from the LUX family and must not become tokens — `02 Color` has no "bottle glass" role, and binding a lid to `bg/brand` would move the artwork every time the brand colour did. **Raise a real illustration set in Figma.** |
 | Check-in photo     | `features/progress/components/CheckInPhotoArt.tsx`                     | ⚠️ **NOT IN FIGMA.** `Check-in detail` draws its photo wells as a camera glyph, the same hole `ProductThumb` had and the same failure: the PHOTOS card's entire content is the picture, so a camera icon there says "no photo" on the record of one the user took. Drawn instead — a soft crop of skin with the flushed patch the investigation is about, `slice`-cropped to fill the well the way a photograph would be, grained with `feTurbulence` because three overlapping gradients in a picture frame read as a loading state. **No feature is drawn and it is not anyone's face.** Tone and blush position are keyed on the DAY with the same FNV-1a hash `ProductArt` uses, never `Math.random()`. Pigments are LOCAL LITERALS — `02 Color` has no skin-tone role and should not grow one for a placeholder. Every capture surface in LUX is a placeholder; this is the record of one. **Raise real imagery in Figma.** |
-| Opaque sage        | `components/ui/Sheet.module.css`                                   | `surface/data-strong` is 62% and has no solid counterpart the way `bg/nav` is `surface/frost-nav`'s. The `prefers-reduced-transparency` tray composites the same sage over `bg/canvas`.                                                                                                                                                                                           |
+| Opaque sage        | `components/ui/Sheet.module.css`                                   | `surface/data-strong` is 62% and has no solid counterpart the way `bg/nav` is `surface/frost-nav`'s. The `prefers-reduced-transparency` tray composites the same sage over `bg/canvas`. ⚠️ **Worse since 8 Sep 2026:** `surface/data-deep` `#4f838f @85%` is the new third step and four surfaces put WHITE on it, so its contrast is a composite that moves with whatever is behind it (3.42–3.77:1). An opaque counterpart would make the ratio a property of the token rather than of the scroll position. |
 | Data card          | `components/ui/DataCard.tsx`                            | The whole of SURFACE SYSTEM B. `surface/data` + `surface/frosted-data` + `radius/2xl` + 20/24 padding, **no stroke**. Not a component in Figma — every PROGRESS and CHECK card is composed from those tokens. Its `prefers-reduced-transparency` fallback composites the same sage over `bg/canvas`, exactly as `Sheet` does.                                                       |
 | Calendar (record)  | `features/progress/components/CheckInCalendar.tsx`                     | On the handoff's own missing list. ⚠️ THE SECOND CALENDAR IN THE APP AND NOT THE SAME ONE — `DateField` is a Monday-first interactive date PICKER, this is a Sunday-first read-only RECORD, and both match their frames. Do not merge them; raise the week-start split in Figma instead.                                                                                            |
 | Line chart         | `features/progress/components/SymptomTrend.tsx`                        | On the handoff's missing list. Drawn from the data, NOT from the comp's baked vector — the series is the card's whole content. `preserveAspectRatio="none"` + `vector-effect` for the line; the dots are positioned elements so they stay round (the desktop comp exports its "circles" at 13.33 x 8).                                                                              |
@@ -2445,7 +2613,9 @@ Measured by compositing, since axe reports INCOMPLETE on every gradient screen:
   frame's #606d75. `text/muted` is worse here (2.27:1); `text/secondary` passes
   at 7.01:1 and is the fix to make in Figma.
 
-Both are what the frame draws, and `#a2b9bf` is already precedent in this file
-for a value that is chosen rather than accidental — so neither was quietly
-darkened. Both are logged in `docs/figma-catchup.md` §7e for a Figma decision.
+Both are what the frame draws, and this file already has precedent for a value
+that is chosen rather than accidental — so neither was quietly darkened.
+⚠️ **That precedent used to be `#a2b9bf`, which no longer exists**; it is now
+`surface/data-deep` `#4f838f @85%` (see the contrast list above). Both are
+logged in `docs/figma-catchup.md` §7e for a Figma decision.
 

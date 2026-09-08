@@ -110,6 +110,12 @@
   width: 32px;
   height: 32px;
   border-radius: var(--radius-full);
+  /* ⚠️ LINING FIGURES, OR THE GRID WOBBLES. Figtree's default figures are
+     proportional, so `1` is narrower than `0` and a 7-column month does not
+     line up down its own columns — most visible on the 11/21 column against
+     the 30 below it. The disc is a fixed 32 either way; this is about where
+     the numeral sits inside it. See the note in globals.css. */
+  font-variant-numeric: tabular-nums;
   /* the unremarkable days sit back at 85% so the checked-in discs carry the
      card; on-data-muted would drop them below the weekday header */
   color: var(--color-text-on-data-secondary);

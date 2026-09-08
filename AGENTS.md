@@ -568,12 +568,20 @@ for:
 - **Text on light:** `text/primary` `#2e2a3f` · `-secondary` `#4b4b57` ·
   `-muted` `#63636f`
 - **Text on a data card:** `text/on-data` `#2e2a3f` · `-secondary` and `-muted`
-  both `#354446` — **dark, not white** (non-negotiable 17)
+  both `#354446` — **dark, not white** (non-negotiable 17). ⚠️ **That is the ink
+  for `surface/data`. The DEEP tier takes `text/on-data-inverse` (white)** —
+  see non-negotiable 17.
 - **Surfaces:** `surface/frost-light` (translucent) vs `bg/frost-light`
   (opaque) — ⚠️ a frost fill ON a frost surface does not read; use the opaque
   one. Same relationship as `surface/frost-nav` → `bg/nav`.
-- **Brand:** `bg/brand` `#3b305c` indigo, for selection and accents.
-  `gradient/brand` is the SAGE button gradient, not the indigo one.
+- **Brand:** `bg/brand` `#39386f` indigo, for selection and accents — ⚠️ **it
+  was `#3b305c` (`indigo/700`) until 8 Sep 2026.** It is the same value as
+  `gradient/brand`'s dark end on purpose: one indigo for the primary action and
+  for every mark that says "selected". `-hover` `#2c2a5f`, `-soft` `#8284c0`,
+  both re-hued with it.
+  ⚠️ **`gradient/brand` IS INDIGO TOO AS OF 8 Sep 2026 — every older note
+  calling it "the SAGE button gradient, not the indigo one" is stale.** It runs
+  `#657792 → #39386f`. See non-negotiable 5.
 - **Feedback:** `success` `#5f8a6e` · `warning` `#c9918e` · `error` `#a86561`.
   ⚠️ Warning and error share a hue — **never carry the distinction by colour
   alone**, always pair with a label.
@@ -618,9 +626,40 @@ variant structures — read `docs/design.md`.
    | Secondary | `gradient/secondary` + 1px `border/default` | `gradient/secondary-hover` |
    | Ghost | no fill | ⚠️ `bg/accent-mint`, a variable no longer in `02 Color` |
 
+   ⚠️ **`gradient/brand` IS INDIGO, AND IT WAS SAGE UNTIL 8 Sep 2026.** It runs
+   `#657792 → #39386f`, declared on `:root` in `globals.css` (Figma still holds
+   the sage `#bbd3d9 → #637073`; see `docs/figma-catchup.md` §2 and §6). This is
+   a REASSIGNMENT, not a retune: plotted in OKLCH, LUX runs a sage GROUND family
+   (canvas, nav, bubbles, data cards; hue 197–216) and an indigo FIGURE family
+   (selection, chips, checked days, the orb's mark; hue 281–295). The button sat
+   in the ground family at hue 213–215 with chroma **0.016–0.027** — the colour
+   drained out of it — and read on ten routes as a disabled steel pill. It now
+   sits at hue 258 → 282, chroma 0.047 → 0.092.
+
+   ⚠️ **THE OLD NOTE THAT `#a2b9bf` IS A CHOSEN VALUE NOT TO BE IMPROVED IS
+   RETIRED**, along with the whole "no ink clears both ends" block that went
+   with it. The white label now measures **4.56:1 at the left edge and 10.66:1
+   at the right** — AA across the entire sweep, which was the app's widest
+   contrast failure. The sage version that passed (`#5f7275 → #3c4b4e`) is still
+   rejected and still too dark; this is not that. It keeps a 24° hue rotation
+   and nearly doubles its chroma on the way down, so it reads as a sweep rather
+   than a slab.
+
+   ⚠️ **CLOSED THE SAME DAY: `bg/brand` MOVED TO THE BUTTON'S DARK END.** The
+   button and the checked-in calendar discs appear together on `/progress` and
+   were two violets eleven degrees apart. `bg/brand` is `#39386f` now — the same
+   value — so the primary action and the selection accent are one indigo. Its
+   two siblings moved with it to stay on one hue: `-hover` `#2e2447` → `#2c2a5f`,
+   `-soft` `#8e80bc` → `#8284c0`. White holds everywhere: 11.91 → **10.66:1** on
+   `bg/brand`, 14.39 → 13.10:1 on `-hover`. `-soft` goes 3.52 → 3.49:1, i.e. the
+   failure it already carried, unchanged in substance.
+
    ⚠️ **The reversal only animates because of the `--grad-*` plumbing.** CSS
    cannot interpolate `background-image`; the endpoints are registered
    `<color>` properties in `globals.css`. Motion is `duration/hover` (400ms).
+   ⚠️ **The `@property` initial-values are hand-written and must move with the
+   tokens** — a registered property takes no `var()`, so a stale initial-value
+   flashes the previous colour for a frame.
 ⚠️ **THE NAV'S THIRD ITEM READS `Analysis`, AND ITS ID IS STILL `check`.** The
 label is the word the user sees; the id keys the route map, the `NavSection`
 type and every `nav=` prop. Do not "fix" the mismatch by renaming the id — see
@@ -692,17 +731,62 @@ type and every `nav=` prop. Do not "fix" the mismatch by renaming the id — see
     `H6` is 24 where `Label` is 20); desktop chat bubbles are **`Body 1`
     (18/28), not `Body 2`** — use `t-body2-body1`; and **every page title is
     `t-h4-h3`, including a hub's**, which the comps draw one step larger.
-17. ⚠️ **SURFACE SYSTEM B's TEXT IS DARK, NOT WHITE.** `surface/data` composites
-    too light for white text at any alpha — measured, it failed WCAG AA on 38 of
-    59 text nodes on `/check/results`. `text/on-data` is `#2e2a3f` and
-    `-secondary`/`-muted` share `#354446`; hierarchy is carried by size, weight
-    and tracking. Redefined on `:root` in `globals.css`. Still white,
-    deliberately: the `border/glass` divider and the check-in discs'
-    `text/on-brand`. Two sheets opt back out and both fail — flagged in their
-    own files. Known-failing and awaiting a Figma decision: `gradient/brand`'s
-    white button label, `CompatCard`'s band pills, `ResultCards`' emphasis
-    block. ⚠️ **`#a2b9bf` is a chosen design value — do not "improve" it toward
-    a passing one without asking.**
+17. ⚠️ **SURFACE SYSTEM B's TEXT IS DARK, NOT WHITE — ON `surface/data`.**
+    That surface composites too light for white text at any alpha; measured, it
+    failed WCAG AA on 38 of 59 text nodes on `/check/results`. `text/on-data` is
+    `#2e2a3f` and `-secondary`/`-muted` share `#354446`; hierarchy is carried by
+    size, weight and tracking. Redefined on `:root` in `globals.css`. Still
+    white, deliberately: the `border/glass` divider and the check-in discs'
+    `text/on-brand`.
+
+    ⚠️ **SYSTEM B HAS A SECOND SURFACE AS OF 8 Sep 2026, AND ITS INK IS WHITE.**
+    The rule above is about `surface/data`, not about sage. `surface/data-deep`
+    (`#4f838f @85%`, declared in `globals.css`) is the deep tier, and it is
+    paired with `text/on-data-inverse` — white. **The pairing is the contract
+    and neither half is portable:** white on `surface/data` is 1.87:1, and the
+    app ink on the deep tier is 3.67:1. Putting `text/on-data-inverse` on a
+    `surface/data` card re-creates exactly the failure this rule exists to stop.
+
+    Four surfaces take the deep tier — `SymptomTrend`'s card, `ResultCards`'
+    emphasis block, `CheckBasket`'s rows, `AddProductMethodSheet`'s tiles. They
+    were four separate white-on-sage exceptions measuring 1.64–2.32:1; they are
+    now one declared tier measuring **3.42–3.77:1** depending on backdrop.
+
+    ⚠️ **IT STILL DOES NOT CLEAR AA, AND NO INK FIXES IT.** On the `surface/data`
+    backdrop white is 3.71:1 and the app ink is 3.73:1 — the surface sits almost
+    exactly where the two inks cross over. Only the SURFACE can move, and it has
+    to move meaningfully: an opaque `#407375` was built the same day and gives
+    white 5.35:1; going lighter returns the ink to 4.6:1+ and gives up the white.
+    ⚠️ **`#4f838f @85%` is a chosen design value — do not "improve" it toward a
+    passing one without asking**, and do not "correct" its hue onto the sage line
+    either (it is 214.1 against `surface/data`'s 199.8, deliberately cooler).
+
+    ⚠️ **AN INTERACTIVE DEEP SURFACE HOVERS TO `surface/data-deep-hover`, NOT TO
+    `-strong`.** The method tiles hovered to `surface/data-strong` for as long as
+    `-deep` was `#538b8d @62%`, where it happened to be one step lighter. It is
+    not one step at any other value — different hue, different alpha — so the
+    hover token exists to make the step structural.
+
+    Still known-failing and awaiting a Figma decision: `CompatCard`'s band pills
+    and the deep tier above. ⚠️ **`gradient/brand`'s white label is no longer on
+    that list** — it clears AA across the sweep since the indigo reassignment
+    (non-negotiable 5).
+
+18. ⚠️ **THE BROWSER'S OWN SURFACES BELONG TO THE DESIGN SYSTEM TOO.** Text
+    selection, the caret and native control accents ship at the browser default
+    unless something claims them, and Figma cannot draw any of them — so they
+    stayed a Windows-blue highlight, a black caret and a blue OS date picker on
+    a page where nothing else is blue. All three bind `bg/brand` in
+    `globals.css`; `::selection` also sets `text/on-brand`, because `bg/brand` is
+    opaque and the ink has to pass on THAT ground rather than on the surface
+    underneath (letting it inherit put `text/on-data` on indigo at 1.36:1 on
+    every System B card). The scrollbar is deliberately hidden and stays so.
+
+19. ⚠️ **DIGITS THAT STACK TAKE `font-variant-numeric: tabular-nums`.** Figtree's
+    default figures are proportional, which is right for prose and wrong for a
+    column. Applied BY ROLE, never globally: the calendar grid, the chart axes,
+    `.t-metric1`/`.t-metric2`, and the compat score. Adding a fifth role is a
+    line in the relevant module, not a change to `body`.
 
 ## Two surface systems — do not mix them
 
@@ -714,8 +798,53 @@ type and every `nav=` prop. Do not "fix" the mismatch by renaming the id — see
   `border/subtle`. Accents are indigo `bg/brand`. `components/ui/DataCard.tsx`
   is the whole recipe; use it.
 
-⚠️ **A sage card inside a light card is a LUX pattern; the reverse is not.** A
-nested emphasis block is `surface/data-strong`.
+⚠️ **SYSTEM B IS TWO SURFACES, NOT ONE — AND EACH CARRIES ITS OWN INK.**
+
+| Tier | Fill | Ink | White measures |
+| ---- | ---- | --- | -------------- |
+| `surface/data` | `#7da7a9 @44%` | `text/on-data` (dark) | 1.87:1 — never |
+| `surface/data-deep` | `#4f838f @85%` | `text/on-data-inverse` (white) | 3.42–3.77:1 |
+
+The deep tier is for a block that has to read as EMPHASIS rather than as one
+more sage card, and it is what a nested emphasis block takes. ⚠️ **It was
+`surface/data-strong` until 8 Sep 2026** — a 62% sage inside a 44% sage is two
+steps of one hue with almost nothing between them, and every caller that put
+white on it was failing at 1.64–2.32:1. Non-negotiable 17 has the numbers and
+the standing instruction not to retune it unasked.
+
+⚠️ **A sage card inside a light card is a LUX pattern; the reverse is not.**
+
+## Empty states — one recipe, four screens
+
+⚠️ **THERE IS A PATTERN AND EVERY EMPTY STATE USES IT.** `ProgressScreen` calls
+it "the standing exception every LUX empty state has": `HubScreen` with
+`layout="plain"` and `center`, and inside it
+
+    Orb (animateIn) → 32 → `t-h4-h3` title → 12 → body → 32 → primary action
+
+centred, text-centred, on bare gradient with **no card** at either breakpoint.
+The action is full-width on mobile and `width/action` (280) on desktop.
+`/progress/empty`, `/check/no-profile`, `My Products — empty` and
+`/investigation/profile` all draw it. ⚠️ **The profile recap was the one screen
+not using it until 8 Sep 2026** — it had the heading, two paragraphs and a
+bottom-pinned button, which left roughly 1000px of canvas between them at 440.
+
+⚠️ **THE HEADING STAYS AT THE TOP; ONLY THE BLOCK IS CENTRED.** That is what
+`layout="plain"` buys, and it is why the recipe specifies it. ⚠️ **`center` with
+`layout="card"` does NOT work** — the card layout renders the heading INSIDE
+`.body`, so centring the block floats the page title into the middle of the
+screen above the card. It was tried on `/investigation/analysis` on 8 Sep 2026
+and reverted; see the note in `Analysis.tsx`. If a `card` screen ever needs
+centring, `HubScreen` has to hoist the heading out of the centred region first.
+
+⚠️ **IT IS NOT A SHARED COMPONENT, DELIBERATELY.** Four screens is past the
+usual bar, but each differs in what goes in the block and the recipe is four
+spacing values — lifting it would trade four numbers for a component with four
+configurations. If a fifth appears, lift it then.
+
+⚠️ **A PUSHED VIEW KEEPS ITS BACK CHEVRON.** `/investigation/profile` has one;
+the other three are hub landings with nothing behind them and have none. The
+recipe does not change that rule.
 
 ## Selection controls — the shape is the contract
 

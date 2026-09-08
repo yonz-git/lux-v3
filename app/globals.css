@@ -31,13 +31,13 @@
 @property --grad-start {
   syntax: "<color>";
   inherits: false;
-  initial-value: #a2b9bf;
+  initial-value: #657792;
 }
 
 @property --grad-end {
   syntax: "<color>";
   inherits: false;
-  initial-value: #637073;
+  initial-value: #39386f;
 }
 
 /* ==========================================================================
@@ -91,43 +91,140 @@
   --color-text-on-data-muted: #354446;
   --color-icon-on-data: var(--color-text-primary);
 
-  /* ⚠️ THE ONE SAGE SURFACE THAT KEPT ITS WHITE, by explicit request:
-     `ResultCards`' nested emphasis block. It does NOT meet AA — 2.32:1 — and
-     the reasoning is on `.emphasisTitle` there. Named rather than left as a raw
-     `#fff` in the module so the exception is greppable and so the module is not
-     reaching into the primitives block, which non-negotiable 2 forbids. */
+  /* THE WHITE INK OF SYSTEM B's SECOND TIER. Non-negotiable 17 says System B's
+     text is dark, and that is still right for `surface/data` — this is the ink
+     for the surface that rule does not cover.
+
+     ⚠️ IT IS STILL THE APP'S STANDING EXCEPTION, AND IT STILL DOES NOT MEET AA.
+     On `surface/data-deep` (`#4f838f @85%`) white composites to 3.42–3.77:1
+     depending on the backdrop, against 4.5:1 — better than the 1.64–2.32:1 the
+     callers measured before that surface existed, and short of the bar. The
+     full measurement table and the reason no ink fixes it are on
+     `--color-surface-data-deep` above.
+
+     ⚠️ IT IS ONLY EVER FOR `surface/data-deep`. On `surface/data` white measures
+     1.87:1, which is the failure non-negotiable 17 was written to stop. The
+     pairing is the contract; the token is not portable.
+
+     Named rather than left as a raw `#fff` in the modules so the pairing is
+     greppable, and so no module reaches into the primitives block, which
+     non-negotiable 2 forbids. */
   --color-text-on-data-inverse: #ffffff;
 
   /* surface/data-deep — ⚠️ DECLARED HERE, NOT IN `tokens.css`, and NOT IN
-     FIGMA, BY EXPLICIT REQUEST. `#538b8d @62%`: the same alpha as
-     `surface/data-strong` on a darker sage than the ramp holds — it is the
-     `sage/700` the note on `ResultCards`' `.emphasisTitle` says is missing,
-     i.e. the third step System B never had. It exists so a nested emphasis
-     block reads as EMPHASIS rather than as one more 62% sage: the two surfaces
-     that use it (`ResultCards`' "what to do next" block and the basket sheet's
-     product rows) both sit on `surface/data` and both were asked to keep white
-     text.
+     FIGMA. It is the `sage/700` System B never had: the third step, the one a
+     nested emphasis block and a white-ink card both need.
 
-     ⚠️ IT DOES NOT RESCUE THE WHITE. Composited over the `surface/data` card
-     (rgb(170,194,198)) it lands at rgb(116,160,163), where white measures
-     ~2.9:1 against a 4.5:1 requirement — better than the 2.32:1 it replaces on
-     the emphasis block and the 1.64–2.13:1 on the basket rows, and still
-     failing. Only an OPAQUE dark sage closes that gap. Raise `sage/700` in
-     Figma as a real surface role. */
-  --color-surface-data-deep: #538b8d9e;
+     `#4f838f @85%` — L 0.578, C 0.0585, hue 214.1 in OKLCH. ⚠️ IT IS NOT ON THE
+     SAGE HUE LINE: `surface/data` is 199.8 and `bg/nav` 196.8, so this sits
+     ~15° bluer than the tier below it and reads cooler than the card it nests
+     in. That is a chosen value, asked for directly on 8 Sep 2026 — do not
+     "correct" it onto the sage line without asking.
 
-  /* ⚠️ NOT IN FIGMA, BY EXPLICIT REQUEST — the two result pills that needed a
-     fill of their own. `02 Color` has no semantic role for either, so both are
-     named here rather than left as raw hex (or as a reach into the primitives
-     block, which non-negotiable 2 forbids) — declared, greppable, and to be
-     raised in Figma.
+     ⚠️ WHERE IT LEAVES THE WHITE, measured by compositing at 85% over each
+     backdrop it actually lands on:
 
-     `brand-soft` is indigo/300, the moderate-likelihood pill on
-     `ResultCards`' ingredients card: the high one is `bg/brand` and the two
-     have to read as one scale, which a neutral frost pill did not. White on it
-     measures 3.52:1 — under AA for a 12px label, the same open question the
-     CompatCard band pills already carry. */
-  --color-bg-brand-soft: #8e80bc;
+       backdrop                          composites to   white     ink #2e2a3f
+       surface/data-strong tray            #5a8b96       3.77:1      3.67:1
+       surface/data card                   #5d8c97       3.71:1      3.73:1
+       canvas, mid                         #62919b       3.48:1      3.98:1
+
+     against 4.5:1. So it clears the 3:1 large-text bar and fails AA for the
+     12px overlines, axis ticks and meta lines its four callers put on it.
+
+     ⚠️ AND NEITHER INK PASSES, WHICH IS THE THING TO KNOW ABOUT THIS VALUE.
+     White and the app ink land within 0.06 of each other on the card backdrop —
+     3.71 against 3.73 — because the surface sits almost exactly at the
+     lightness where the two cross over. There is no ink colour that fixes it;
+     only the SURFACE can move, and it has to move meaningfully in one direction
+     or the other. Darker (`#407375`, opaque) gives white 5.35:1; lighter gives
+     the ink its usual 4.6:1+. This is the same shape of problem `gradient/brand`
+     documents further down, and the same answer applies: it is a design
+     decision, not a token correction.
+
+     ⚠️ THE ALPHA IS ALSO WHY THE RATIO IS A RANGE RATHER THAN A NUMBER. A
+     translucent surface takes its contrast from whatever it is sitting on, so
+     the same card measures differently at the top and the bottom of a scrolling
+     page — which is why `SymptomTrend`'s note has to measure "at this card's
+     own position". Only an opaque fill makes the ratio a property of the token.
+
+     Four callers: `SymptomTrend`'s card, `ResultCards`' "what to do next"
+     emphasis block, `CheckBasket`'s product rows, and
+     `AddProductMethodSheet`'s method tiles. Still to raise in Figma as a real
+     `sage/700` surface role. */
+  --color-surface-data-deep: #4f838fd9;
+
+  /* surface/data-deep · HOVER — ⚠️ DECLARED HERE, NOT IN `tokens.css`, and NOT
+     IN FIGMA. The method tiles lighten on hover, and they used to lighten to
+     `surface/data-strong` — a real step while `-deep` was `#538b8d @62%`, and
+     not one at any other value, since `-strong` is a different hue at a
+     different alpha and the "step" was a coincidence of those two numbers.
+
+     This is the same colour and alpha as the base, one lightness step up
+     (L 0.578 -> 0.608), so hover is a step BY CONSTRUCTION rather than by
+     coincidence. It costs contrast in the direction hover always does on a
+     white label — 3.43:1 on the tray against the base's 3.77:1 — which is the
+     lesser problem while the base itself is at 3.77. */
+  --color-surface-data-deep-hover: #588c98d9;
+
+  /* ==========================================================================
+     THE INDIGO FAMILY — moved to hue 282 on 8 Sep 2026.
+
+     ⚠️ NOT IN FIGMA. `bg/brand` was `indigo/700` `#3b305c` (hue 293.5) and is
+     now `#39386f` (hue 281.7), asked for directly. It is the same value as
+     `gradient/brand`'s dark end, which is the point: the primary button and the
+     accent that marks a selection are the same indigo now, rather than two
+     violets eleven degrees apart appearing side by side on `/progress` (the
+     button beside the checked-in calendar discs). That was written up as the
+     one open question left by the button reassignment; this closes it.
+
+     ⚠️ ALL THREE STEPS MOVE TOGETHER, AND ONLY `bg/brand` WAS ASKED FOR. The
+     other two are defined relative to it and would have been left stranded on
+     the old hue:
+
+       bg/brand        #3b305c -> #39386f   L 0.343->0.371  H 293.5->281.7
+       bg/brand-hover  #2e2447 -> #2c2a5f   the same lightness delta, new hue
+       bg/brand-soft   #8e80bc -> #8284c0   the same L and C, new hue
+
+     `-soft` in particular HAS to follow: it is the moderate-likelihood pill on
+     `ResultCards` and its whole job is to read as one scale with `bg/brand`,
+     which two different hues would break. Reverting the two dependents is three
+     lines if that is wanted; `bg/brand` itself is the asked-for change.
+
+     ⚠️ WHITE STILL PASSES EVERYWHERE IT WAS PASSING. `text/on-brand` on
+     `bg/brand` goes 11.91:1 -> **10.66:1**, and on `-hover` 14.39:1 ->
+     13.10:1 — both far clear of AA. The roles are the checked-in calendar
+     discs, selected chips and option rows, `StepProgress`' fill, the face
+     diagram's picked regions, the "High likelihood" pill and `::selection`.
+
+     ⚠️ `bg/brand-soft` STILL FAILS, AS IT DID BEFORE. White on it goes 3.52:1
+     -> 3.49:1 — a 0.03 change, i.e. the same open question it already carried,
+     not a new one. It is indigo/300's job to be the lighter half of a
+     two-point scale, and a fill light enough to read as "less" is a fill white
+     struggles on. Listed with `CompatCard`'s band pills in AGENTS.md
+     non-negotiable 17.
+
+     ⚠️ DECLARED HERE, NOT IN `tokens.css` — that file is generated from the
+     Figma variables and Figma still holds `indigo/700`. Raise all three there;
+     see `docs/figma-catchup.md`. ⚠️ AND DO NOT REPOINT THE PRIMITIVE
+     `--color-indigo-700` INSTEAD: non-negotiable 2 forbids a component binding
+     a primitive, and moving the ramp step would drag anything else aliasing it.
+     ========================================================================== */
+  --color-bg-brand: #39386f;
+  --color-bg-brand-hover: #2c2a5f;
+
+  /* ⚠️ NOT IN FIGMA, BY EXPLICIT REQUEST — the moderate-likelihood pill on
+     `ResultCards`' ingredients card. `02 Color` has no semantic role for it, so
+     it is named here rather than left as a raw hex (or as a reach into the
+     primitives block, which non-negotiable 2 forbids) — declared, greppable,
+     and to be raised in Figma.
+
+     It is `indigo/300` re-hued to match `bg/brand` above: the high-likelihood
+     pill is `bg/brand` and the two have to read as one scale, which a neutral
+     frost pill did not and which two different hues would not either. White on
+     it measures 3.49:1 — under AA for a 12px label, the same open question
+     `CompatCard`'s band pills already carry. */
+  --color-bg-brand-soft: #8284c0;
 
   /* bg/frost-light-muted — ⚠️ DECLARED HERE, NOT IN `tokens.css`, and NOT IN
      FIGMA. The face-diagram region pills need an OPAQUE fill (the face outline
@@ -246,10 +343,12 @@
    ========================================================================== */
 
 :root {
-  --color-gradient-brand-start: #a2b9bf;
+  --color-gradient-brand-start: #657792;
+  --color-gradient-brand-end: #39386f;
 
-  /* the mirror of the line above — this is the one `Button` actually reads */
-  --color-button-bg-default-start: #a2b9bf;
+  /* the mirrors of the two lines above — these are the ones `Button` reads */
+  --color-button-bg-default-start: #657792;
+  --color-button-bg-default-end: #39386f;
 }
 
 /* ==========================================================================
@@ -379,6 +478,78 @@ body {
   background: var(--color-gradient-canvas-mid);
   -webkit-font-smoothing: antialiased;
   text-rendering: optimizeLegibility;
+}
+
+/* ==========================================================================
+   THE SURFACES LUX DOES NOT DRAW — selection, caret, native control accents.
+
+   ⚠️ NOT IN FIGMA, AND FIGMA CANNOT HOLD THEM. A comp has no text selection, no
+   text cursor and no OS date picker, so these three shipped at the browser
+   default: a flat #0078d7-ish blue highlight, a black caret and a blue
+   checkbox, on a page where nothing else is blue. They are the parts of the
+   product a user reaches by dragging, typing or opening a native picker, i.e.
+   the parts they touch most deliberately, and until now none of them belonged
+   to the design system.
+
+   All three take `bg/brand` — the indigo LUX already uses for exactly this
+   job everywhere it DOES draw the control: a selected chip, a checked option
+   row, a checked-in calendar disc. Selection is a selection.
+
+   ⚠️ SELECTION TAKES `text/on-brand`, NOT THE INHERITED INK. `bg/brand` is
+   opaque indigo, so a selection has one ground wherever it lands — the light
+   frosted rows of System A and the sage cards of System B alike — and the ink
+   has to be the one that passes on THAT ground, not on the surface underneath.
+   White on `#39386f` measures 10.66:1. Letting the ink inherit would put
+   `text/on-data` (#2e2a3f) on indigo at 1.29:1 on every System B card.
+
+   `::selection` does not inherit and does not accept a shorthand, so it is
+   written once against the universal selector rather than on `body`. The
+   `-moz-` prefix is still required in Firefox.
+   ========================================================================== */
+
+::selection {
+  background: var(--color-bg-brand);
+  color: var(--color-text-on-brand);
+}
+
+::-moz-selection {
+  background: var(--color-bg-brand);
+  color: var(--color-text-on-brand);
+}
+
+:root {
+  /* the OS date picker `DateField` opens, and any native control the app has
+     not drawn itself */
+  accent-color: var(--color-bg-brand);
+}
+
+/* The typing cursor. `TextField`, `SearchField` and `DateField` all inherit
+   `text/primary` for their ink, and a caret in the ink colour is invisible as
+   an object — it reads as a glitch in the text rather than as the app's own
+   cursor. Indigo makes it the same accent as everything else that says "you
+   are here". */
+input,
+textarea {
+  caret-color: var(--color-bg-brand);
+}
+
+/* ==========================================================================
+   LINING FIGURES WHERE DIGITS STACK.
+
+   ⚠️ Figtree's default figures are PROPORTIONAL, which is right for running
+   prose and wrong for every place in LUX where numbers form a column or change
+   in place. A proportional `1` is narrower than a `0`, so a calendar grid
+   wobbles column to column, a metric that counts up jitters as it changes, and
+   two scores in a list do not line up on their own decimal.
+
+   Applied by ROLE, not globally: prose keeps the proportional figures it should
+   have. The four roles that stack are the metric ramp (the big figures on data
+   cards), the calendar grid, the chart's axis labels and the compat score.
+   ========================================================================== */
+
+.t-metric1,
+.t-metric2 {
+  font-variant-numeric: tabular-nums;
 }
 
 button {

@@ -18,8 +18,8 @@
      BE FIXED. Measured: white on `feedback/warning` (#c9918e) is **2.65:1** and
      fails AA outright — which is why `CompatCard`'s band pills are on the
      known-failing list in AGENTS.md non-negotiable 17. `text/primary` on the
-     same fill is **5.22:1** and passes. On `bg/brand` (#3b305c) it is the other
-     way round: white 11.91, ink 1.16. So the ink travels with the band, and a
+     same fill is **5.22:1** and passes. On `bg/brand` (#39386f, re-hued 8 Sep 2026) it is the other
+     way round: white 10.66, ink 1.29. So the ink travels with the band, and a
      new component does not inherit an old component's failure. */
   --band: var(--color-feedback-warning);
   --band-ink: var(--color-text-primary);
