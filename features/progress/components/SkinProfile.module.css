@@ -46,14 +46,17 @@
   background: var(--color-border-glass);
 }
 
+/* ⚠️ 4, NOT the pair's own 2. The label sits 2 off its value; the `Started …`
+   meta sits 4 off it, so the bond that reads tightest is the one that is
+   actually a pair. */
 .details {
   display: flex;
   flex-direction: column;
-  gap: var(--space-2xs); /* 2 */
+  gap: var(--space-xs); /* 4 */
 }
 
-.current {
-  color: var(--color-text-on-data);
+.currentPair {
+  margin: 0;
 }
 
 .started {

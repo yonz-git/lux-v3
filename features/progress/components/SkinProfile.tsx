@@ -1,5 +1,6 @@
 import styles from "./SkinProfile.module.css";
 import { DataCard } from "@/components/ui/DataCard";
+import type { CurrentState } from "../progress";
 
 /**
  * `card · your skin profile` — Figma 552:1241 (mobile) / 554:1399 (desktop).
@@ -14,6 +15,17 @@ import { DataCard } from "@/components/ui/DataCard";
  * is optional, because /progress is reachable from the nav on a deep link with
  * an empty store — a missing answer drops its row rather than rendering an
  * empty one.
+ *
+ * ⚠️ EVERY ANSWER ON THIS CARD IS A LABEL OVER A VALUE, AS OF 8 Sep 2026 — the
+ * current state was the exception and it looked like one. It ran as a single
+ * `t-body3` line, `Current: Redness on Whole face, …`, wearing its label inline
+ * as a colon prefix while the two pairs above it put a muted `t-label-sm` label
+ * over a `t-h6` value. It now takes that same shape: `Current state` over the
+ * symptoms and places, at the size `Not sure` and `Sensitive` are drawn at.
+ * The label comes from `formatCurrent`, not from here, because locations
+ * without symptoms are `Affected areas` instead. ⚠️ The `Started …` meta stays
+ * a `t-label-sm` line under the value and is NOT a third pair — it is the age
+ * of the state above it, not another answer.
  */
 export function SkinProfile({
   skinType,
@@ -25,8 +37,8 @@ export function SkinProfile({
   skinType?: string;
   /** step 2's tendencies — multi-select, so it can be more than the comp's one */
   tendencies?: string[];
-  /** "Current: Redness, Itching on Cheeks" */
-  current?: string | null;
+  /** `Current state` over "Redness, Itching on Cheeks" */
+  current?: CurrentState | null;
   /** "Started Aug 2, 2026 · Day 12" */
   started?: string | null;
   className?: string;
@@ -58,7 +70,15 @@ export function SkinProfile({
 
       {hasDetails && (
         <div className={styles.details}>
-          {current && <p className={`${styles.current} t-body3`}>{current}</p>}
+          {current && (
+            /* Its own <dl> rather than a row in the one above: that list is a
+               flex ROW pushing its two pairs to the card's edges, and this pair
+               is full-width under the divider. A <p> cannot live inside a <dl>,
+               which is why the meta line sits outside it. */
+            <dl className={styles.currentPair}>
+              <Pair label={current.label} value={current.value} />
+            </dl>
+          )}
           {started && <p className={`${styles.started} t-label-sm`}>{started}</p>}
         </div>
       )}

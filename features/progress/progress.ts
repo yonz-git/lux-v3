@@ -377,11 +377,20 @@ export function lastCheckInLabel(
 }
 
 /**
- * The profile card's "Current: Redness, Itching on Cheeks" line — symptoms
- * placed on locations.
+ * The profile card's current-state readout — symptoms placed on locations,
+ * as a LABEL over a VALUE rather than one prefixed sentence.
  *
- * Both halves are optional, so a deep link straight to /progress renders
- * whichever half exists instead of a stranded "Current:" or a bare " on ".
+ * ⚠️ IT WAS `Current: Redness, Itching on Cheeks` ON ONE `t-body3` LINE UNTIL
+ * 8 Sep 2026, AND THAT WAS THE ODD ONE OUT ON THIS CARD. Everything above it —
+ * skin type, tendency — is a muted label over a value a size up, and the
+ * card's only other fact wore its label inline as a colon prefix instead. It is
+ * a pair now, drawn exactly like the two above it, so the answer reads as an
+ * answer and not as a caption.
+ *
+ * Both halves are still optional, so a deep link straight to /progress renders
+ * whichever half exists instead of a stranded label or a bare " on " — and the
+ * LABEL moves with them: locations alone are `Affected areas`, because "Whole
+ * face, Forehead" is not a state.
  *
  * ⚠️ A PURE FORMATTER, SPLIT OUT OF `currentSymptoms`. It used to read the
  * answer store directly, which meant the demo had to carry the finished STRING
@@ -390,21 +399,28 @@ export function lastCheckInLabel(
  * Now there is one formatter and three callers feed it: step 1's answers, the
  * demo's symptoms/locations, and today's check-in.
  */
+export type CurrentState = { label: string; value: string };
+
 export function formatCurrent(
   symptoms: readonly string[],
   locations: readonly string[]
-): string | null {
+): CurrentState | null {
   const s = symptoms.filter(Boolean);
   const l = locations.filter(Boolean);
   if (s.length === 0 && l.length === 0) return null;
 
-  if (s.length === 0) return `Affected areas: ${l.join(", ")}`;
-  if (l.length === 0) return `Current: ${s.join(", ")}`;
-  return `Current: ${s.join(", ")} on ${l.join(", ")}`;
+  if (s.length === 0)
+    return { label: "Affected areas", value: l.join(", ") };
+  if (l.length === 0)
+    return { label: "Current state", value: s.join(", ") };
+  return {
+    label: "Current state",
+    value: `${s.join(", ")} on ${l.join(", ")}`,
+  };
 }
 
 /** Step 1's symptoms on step 1's locations. */
-export function currentSymptoms(a: Answers): string | null {
+export function currentSymptoms(a: Answers): CurrentState | null {
   return formatCurrent(a.start ?? [], a.location ?? []);
 }
 
@@ -414,14 +430,17 @@ export function latestCheckIn(list: CheckIn[]): CheckIn | null {
 }
 
 /**
- * The profile card's `Current:` line — the demo's symptoms and locations, or
- * the user's own once they have answered step 1.
+ * The profile card's current-state pair — the demo's symptoms and locations,
+ * or the user's own once they have answered step 1.
  *
  * ⚠️ IT LIVES HERE RATHER THAN ON `ProgressView` because the demo half is now
  * assembled from data like every other half. `ProgressView.current` used to
  * carry the finished string straight out of `DEMO_PROFILE`; see the note there.
  */
-export function currentLine(a: Answers, view: ProgressView): string | null {
+export function currentLine(
+  a: Answers,
+  view: ProgressView
+): CurrentState | null {
   return view.isDemo
     ? formatCurrent(DEMO_PROFILE.symptoms, DEMO_PROFILE.locations)
     : formatCurrent(a.start ?? [], a.location ?? []);
