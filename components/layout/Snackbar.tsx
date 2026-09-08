@@ -52,7 +52,21 @@ import { SmallButton } from "@/components/ui/SmallButton";
  * back two while claiming to walk back one.
  */
 
-const DISMISS_MS = 6000;
+/* ⚠️ THE BAR HOLDS FOR 4s AND THEN TAKES 320ms TO GO — IT WAS 6s AND A CUT.
+   Six seconds is longer than it takes to read four words and decide, so the bar
+   sat over the last row of the page long after it had been answered; and it
+   left by being unmounted, which is a frame-perfect disappearance in a design
+   system whose first sentence is "nothing snaps". The hold is the window to
+   notice a mistake — 4s, with the pause below covering anyone who needs longer
+   — and the exit is `duration/slow`, the token board 04b gives to anything
+   overlay-scale leaving the screen. The two are separate numbers because the
+   pause has to be able to cancel one and not the other. */
+const DISMISS_MS = 4000;
+/* ⚠️ KEEP IN STEP WITH `--duration-slow` (320ms) — the fade is a CSS transition
+   on `.bar` and this timeout only decides when the faded-out bar unmounts. Too
+   short and it is cut off; too long and the live region holds a message nobody
+   can see. */
+const EXIT_MS = 320;
 
 type Snack = {
   /** identity, so a repeat of the same message still restarts the timer */
@@ -81,25 +95,50 @@ export function useSnackbar() {
 export function SnackbarProvider({ children }: { children: React.ReactNode }) {
   const [snack, setSnack] = useState<Snack | null>(null);
   const [paused, setPaused] = useState(false);
+  /* ⚠️ THE EXIT REMEMBERS WHY IT STARTED, AND IT HAS TO. An auto-dismiss that
+     has begun fading is cancelled by the pointer arriving (below); a dismissal
+     the user asked for by pressing the action is not — and the pointer is by
+     definition on the bar at that moment, so one flag for both would have the
+     press cancel itself. */
+  const [leaving, setLeaving] = useState<"auto" | "action" | null>(null);
   const nextId = useRef(0);
 
   const show = useCallback(({ message, actionLabel = "Undo", onAction }: ShowArgs) => {
     nextId.current += 1;
     setPaused(false);
+    setLeaving(null);
     setSnack({ id: nextId.current, message, actionLabel, onAction });
   }, []);
 
-  /* ⚠️ THE TIMER PAUSES WHILE THE BAR IS HOVERED OR HOLDS FOCUS. Six seconds is
-     the window to notice a mistake and reach the control; it is not enough to
-     read the message, decide, move a pointer across the screen and land on a
-     36px button, and a bar that vanishes from under the cursor on the way to it
-     is worse than no bar. Keyboard users get the same guarantee for the same
-     reason: tabbing to the action must not be a race. */
+  /* ⚠️ THE TIMER PAUSES WHILE THE BAR IS HOVERED OR HOLDS FOCUS, AND THAT IS
+     WHAT PAYS FOR THE SHORTER HOLD. Four seconds is the window to notice a
+     mistake and reach the control; it is not enough to read the message,
+     decide, move a pointer across the screen and land on a 36px button, and a
+     bar that vanishes from under the cursor on the way to it is worse than no
+     bar. Keyboard users get the same guarantee for the same reason: tabbing to
+     the action must not be a race. */
   useEffect(() => {
-    if (!snack || paused) return;
-    const timer = setTimeout(() => setSnack(null), DISMISS_MS);
+    if (!snack || paused || leaving) return;
+    const timer = setTimeout(() => setLeaving("auto"), DISMISS_MS);
     return () => clearTimeout(timer);
-  }, [snack, paused]);
+  }, [snack, paused, leaving]);
+
+  /* The fade itself is CSS — `.bar[data-state="leaving"]` transitions to
+     opacity 0. This only unmounts what has finished fading, and hands the
+     pointer arriving mid-fade its bar back rather than letting it vanish from
+     under the cursor a few pixels short of the button. */
+  useEffect(() => {
+    if (!leaving) return;
+    if (leaving === "auto" && paused) {
+      setLeaving(null);
+      return;
+    }
+    const timer = setTimeout(() => {
+      setSnack(null);
+      setLeaving(null);
+    }, EXIT_MS);
+    return () => clearTimeout(timer);
+  }, [leaving, paused]);
 
   const value = useMemo(() => ({ show }), [show]);
 
@@ -128,7 +167,11 @@ export function SnackbarProvider({ children }: { children: React.ReactNode }) {
         onBlur={() => setPaused(false)}
       >
         {snack && (
-          <div key={snack.id} className={`${styles.bar} reveal-quick`}>
+          <div
+            key={snack.id}
+            className={`${styles.bar} reveal-quick`}
+            data-state={leaving ? "leaving" : undefined}
+          >
             <span className={`${styles.message} t-body3`}>{snack.message}</span>
             <SmallButton
               className={styles.action}
@@ -136,7 +179,7 @@ export function SnackbarProvider({ children }: { children: React.ReactNode }) {
               arrow={false}
               onClick={() => {
                 snack.onAction();
-                setSnack(null);
+                setLeaving("action");
               }}
             />
           </div>
