@@ -210,7 +210,14 @@ export function SkinProfileSummary({ now }: { now: number }) {
      stylesheet already spaces correctly. */
   const hasNoticed = profile.symptoms.length > 0 || Boolean(profile.timeline);
   const hasLocation =
-    profile.faceRegions.length > 0 || profile.otherLocations.length > 0;
+    profile.faceRegions.length > 0 ||
+    profile.otherLocations.length > 0 ||
+    /* ⚠️ A TYPED DESCRIPTION IS A LOCATION ANSWER ON ITS OWN. The field and the
+       `Other` chip are two controls, and step 1 does not make one require the
+       other — so someone can say where in words without tapping anything. The
+       block has to render for that, or the only part of the answer the user
+       actually wrote is the part that disappears. */
+    Boolean(profile.locationNote);
   /* ⚠️ THE THREE FACETS OF ONE EPISODE, GROUPED BY PROXIMITY. What was noticed,
      where it was noticed and how long it has been going on are three readings
      of a single thing that is happening now; the known conditions are a
@@ -296,12 +303,40 @@ export function SkinProfileSummary({ now }: { now: number }) {
                       honest reading of that — NOT on the face, here instead —
                       where dropping the diagram would leave a chip with nothing
                       to be measured against. */}
-                  <div className={styles.face}>
-                    <FaceDiagram
-                      readOnly
-                      selected={profile.faceRegions}
-                      otherLocations={profile.otherLocations}
-                    />
+                  {/* ⚠️ THE DIAGRAM AND THE TYPED ANSWER SHARE THE BLOCK —
+                      asked for directly, 8 Sep 2026: "the face diagram should
+                      shrink in size and give space for the typed in text". The
+                      row is what spends the space the diagram gives up; the
+                      diagram alone keeps the whole block and its 392, because
+                      there is nothing to share it with. `data-with-note` is how
+                      the block says which of the two it is — see `.located` and
+                      `.face[data-with-note]`. */}
+                  <div
+                    className={styles.located}
+                    data-with-note={profile.locationNote ? "" : undefined}
+                  >
+                    <div className={styles.face}>
+                      <FaceDiagram
+                        readOnly
+                        selected={profile.faceRegions}
+                        otherLocations={profile.otherLocations}
+                      />
+                    </div>
+                    {/* ⚠️ A `Meta` PAIR, NOT A `Tag` AND NOT A CAPTION. The
+                        pills on this screen are SETS drawn as sets; this is one
+                        typed sentence, which is the shape the label-over-value
+                        pair already exists for (step 4's two facts use it, and
+                        so do the sage card's three). ⚠️ AND BESIDE THE PICTURE
+                        RATHER THAN UNDER IT WHEREVER THERE IS ROOM, which is
+                        the difference between a caption and an answer: a
+                        caption describes the picture above it, this is the part
+                        of the answer the picture could not draw. */}
+                    {profile.locationNote && (
+                      <Meta
+                        label={COPY.locationOtherLabel}
+                        value={profile.locationNote}
+                      />
+                    )}
                   </div>
                 </Block>
               )}

@@ -85,6 +85,19 @@ export type ProfileRecap = {
   /** step 1 — "Whole face", "Neck", "Other": the chips under the diagram */
   otherLocations: string[];
   /**
+   * step 1 — what the user TYPED under the diagram, or null.
+   *
+   * ⚠️ IT WAS MISSING FROM THIS RECAP UNTIL 8 Sep 2026, AND NOT BECAUSE THE
+   * SCREEN FORGOT IT. The description lived in a localStorage key of step 1's
+   * own, outside the answer store, so there was nothing here to read: the recap
+   * showed the `Other` chip lit with no sign of the words that said what
+   * "other" meant, which is the one part of that answer only the user can
+   * supply. It is `answers.locationOther` now — see `lib/store/answers.ts`.
+   *
+   * Trimmed and nulled when empty, so whitespace does not open a block.
+   */
+  locationNote: string | null;
+  /**
    * step 1 — the capture's id, or null. Never an image; see below.
    *
    * ⚠️ AN ID RATHER THAN A `boolean`, BECAUSE THE RECAP DRAWS THE PHOTOGRAPH.
@@ -125,6 +138,7 @@ export function recap(a: Answers, today: Date): ProfileRecap {
     symptoms: a.start ?? [],
     faceRegions: locations.filter((l) => FACE_REGION_IDS.includes(l)),
     otherLocations: locations.filter((l) => !FACE_REGION_IDS.includes(l)),
+    locationNote: a.locationOther?.trim() || null,
     /* ⚠️ THE PHOTO IS AN ID, NEVER AN IMAGE. `selfie` holds a per-capture
        string and no pixels — every capture surface in LUX is a placeholder —
        so the recap draws `CheckInPhotoArt` seeded on it, the same illustration
@@ -180,6 +194,7 @@ export function isEmpty(p: ProfileRecap): boolean {
     p.symptoms.length === 0 &&
     p.faceRegions.length === 0 &&
     p.otherLocations.length === 0 &&
+    p.locationNote === null &&
     !p.photo &&
     p.conditions.length === 0 &&
     p.timeline === null
@@ -254,6 +269,20 @@ export const COPY = {
   photoCaption: "The photo you added",
   photoUpdate: "Update photo",
   locationLabel: "Where you noticed it",
+  /**
+   * The label over step 1's typed description.
+   *
+   * ⚠️ IT NAMES THE CHIP IT EXPLAINS, the same way every other label on this
+   * screen names its subject. The value is a sentence the user wrote, sitting
+   * under a diagram of pills nobody wrote — without "Other" on it, a line of
+   * free text under a face reads as a caption for the face rather than as the
+   * answer the `Other` chip stands in for.
+   *
+   * ⚠️ AND IT SAYS "in your words" RATHER THAN "described as", because the
+   * recap never characterises an answer, it reads one back. The distinction is
+   * the whole reason this screen's copy lives in one file: see the header.
+   */
+  locationOtherLabel: "Other, in your words",
   /** the visually-hidden line that states the diagram's answer in text — the
    *  face itself is `aria-hidden`, see `FaceDiagram` */
   locationSpoken: (regions: string[]) => `On the face: ${regions.join(", ")}.`,

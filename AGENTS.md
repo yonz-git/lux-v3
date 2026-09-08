@@ -280,6 +280,27 @@ drawing them as the pale unselected pill said the opposite of what the answer
 was. They are `span`s with a local class, not `Chip`s (a control) or `Tag`s (26
 tall, `Label Small` — a different pill).
 
+⚠️ **AND THE TYPED `Other` IS SHOWN, AS OF 8 Sep 2026 — IT USED NOT TO BE, AND
+THE RECAP WAS NOT THE BUG.** Step 1's `Other – describe in detail` field wrote
+to a localStorage key of its own, outside the store, so nothing could read it
+and the recap drew the lit `Other` chip with none of the words. It is
+`answers.locationOther` now — a `FLOW_KEYS` answer like every other, expiring
+with them — and it renders under the diagram as a `Meta` pair,
+`Other, in your words` over the sentence. ⚠️ **The face steps down from 392 to
+300 when that note exists and the two share a wrapping flex row**, asked for
+directly — the diagram is one of two answers in the block then, not the block,
+so it gives up the width and the words take it: side by side on desktop (~776
+of block), stacked at 440 (~352). No media query; the flex bases
+(`300 + 16 + 190`) decide it. ⚠️ **300 is a FLOOR** — below it the diagram's
+percentage-positioned pills, whose labels are a fixed 14, start covering each
+other (7/6px of drawn overlap at 300–392, 11/10 at 280). ⚠️ **The field and the `Other` chip are still
+independent** — either can exist without the other, and the location block
+renders for either. ⚠️ **A typed description now UNLOCKS Continue on its own**,
+since the field asks `Describe where you noticed it`: `isComplete` for step 1
+takes a location chip OR a non-empty `locationOther`. It never blocks — a ticked
+`Other` with an empty field is still fine here, unlike step 3's `otherIsFilled`,
+because this field is collapsed behind a button.
+
 ⚠️ **THE SELFIE IS A BLOCK WITH THE PICTURE IN IT, AND IT WAS A LINE OF TEXT
 TWICE FIRST.** `Photo added` sat under the symptom pills, then on the face card;
 both merely stated that a capture exists, and a recap of a photograph should BE

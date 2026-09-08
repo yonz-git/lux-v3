@@ -92,7 +92,21 @@ export const STEPS: Step[] = [
   // track and its `Save & exit` — it is a flow step that the nav happens to
   // point at, not a hub, and the "no back chevron on a hub landing" rule does
   // not reach it. See `components/BottomNav.tsx`.
-  { id: "start",      step: 1, href: "/investigation/start",      title: "Create skin profile", figma: { mobile: "476:2542", desktop: "476:2670" }, isComplete: (a) => (a.start?.length ?? 0) > 0 && (a.location?.length ?? 0) > 0, next: "/investigation/skin-type" },
+  // ⚠️ A TYPED LOCATION IS A LOCATION, AS OF 8 Sep 2026. The free-text field
+  // under the diagram asks `Describe where you noticed it` now (it used to ask
+  // what was happening — see `StartInvestigation.tsx`), so an answer typed into
+  // it and nothing tapped on the face is a complete answer to the question the
+  // screen puts. Gating on the chips alone left someone who had said where, in
+  // words, looking at a dead Continue with nothing on screen saying why.
+  //
+  // ⚠️ IT IS NOT STEP 3's `otherIsFilled` RULE IN REVERSE, AND MUST NOT BECOME
+  // IT. There, a ticked "Other" REQUIRES its text, because the row and its
+  // field are one unit and the field is always visible. Here the `Other` chip
+  // and the field are independent controls and the field is collapsed behind a
+  // button, so requiring the text would dead-end a user with no visible reason
+  // — the fix would have to be opening the field from the chip, which is a
+  // different decision. This only ever UNLOCKS.
+  { id: "start",      step: 1, href: "/investigation/start",      title: "Create skin profile", figma: { mobile: "476:2542", desktop: "476:2670" }, isComplete: (a) => (a.start?.length ?? 0) > 0 && ((a.location?.length ?? 0) > 0 || Boolean(a.locationOther?.trim())), next: "/investigation/skin-type" },
   // Skin type (02a, 484:722/489:902) and Skin tendencies (02b, 485:755/489:960)
   // combined onto one screen — see components/SkinType.tsx. Continue needs
   // both answers, which used to gate two separate steps.

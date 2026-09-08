@@ -234,6 +234,72 @@
   max-width: 392px;
 }
 
+/* ⚠️ AND THE DIAGRAM SHARES THE BLOCK WHEN THERE IS A TYPED ANSWER — asked for
+   directly, 8 Sep 2026, in as many words: "the face diagram should shrink in
+   size and give space for the typed in text to be displayed". The first build
+   of that shrank the picture and put the sentence under it, which freed the
+   space and then left it empty — the block was the same shape, only smaller.
+   The row spends it.
+
+   ⚠️ THE FLEX BASES ARE WHAT DECIDE SIDE-BY-SIDE vs STACKED, AND NOTHING ELSE
+   DOES. `300 + 16 + 190` needs 506 of content box, so at 440 (block inner width
+   ~352) the pair cannot fit and the note wraps under a 300-wide diagram; on
+   desktop the block has ~776 and it fits, so the answer reads across — picture,
+   then the part of the answer the picture could not draw. No media query, and
+   deliberately not: this wraps on the CONTENT, and the same block is ~776 wide
+   on the desktop card and ~352 on a phone for reasons that have nothing to do
+   with a breakpoint.
+
+   ⚠️ `align-items: flex-start` IS LOAD-BEARING. Stretched, the `Meta` pair
+   would grow to the diagram's ~200 of height and its label would float in the
+   middle of it; the two things line up on their tops, where the block's own
+   label already is. */
+.located[data-with-note] {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: flex-start;
+  gap: var(--space-lg); /* 16 */
+}
+
+/* ⚠️ THE DIAGRAM STEPS DOWN FROM ITS DRAWN 392 ONLY IN THE ROW. The cap above
+   is the width the card is DRAWN at and is right for a block whose only content
+   is the diagram; here it is one of two answers, and 392 over a `392 / 300` box
+   is ~300 of picture before the chip row — enough that on a 440 phone the typed
+   line started below the fold. 300 takes the box to ~230.
+
+   ⚠️ AND IT DOES NOT GO BELOW 300 — 250 WAS BUILT FIRST AND BROKE THE PICTURE.
+   The diagram positions its region pills as PERCENTAGES of the box but sets
+   their labels at a fixed `t-label` 14, so below a certain width the pills stop
+   scaling with the box and start eating each other. Measured on the middle row:
+   `Cheeks (L)` / `Nose` / `Cheeks (R)` sit at -7 and -6 — the overlap the
+   diagram is DRAWN with — at every width from 300 up to its own 392, and go to
+   -11 and -10 at 280, where the selected pill covers the label beside it. 300
+   is the last width the face reads as itself. Anything that wants it narrower
+   has to make the labels responsive first, which is a `FaceDiagram` change and
+   a Figma question.
+
+   ⚠️ IT IS A LITERAL FOR THE SAME REASON 392 IS. Both are widths in the
+   diagram's own coordinate space, not steps on the spacing scale — writing
+   `--space-*` arithmetic here would dress a drawing measurement up as a layout
+   one. */
+.located[data-with-note] .face {
+  flex: 0 1 300px;
+  max-width: 300px;
+}
+
+/* ⚠️ THE NOTE TAKES THE REST, AND ITS BASIS IS A MEASURE RATHER THAN A SHARE.
+   190 is the narrowest this sentence can be set before it breaks into a column
+   of two-word lines; below that the row is worse than the stack, so the basis
+   is what forces the wrap rather than a breakpoint deciding it. ⚠️ THE `Meta`'s
+   OWN 12 TOP MARGIN GOES, in both directions, because the FLEX GAP is doing
+   that job now: beside the picture a top margin would drop the label below the
+   diagram's top edge, and under it the wrapped line already carries the row
+   gap's 16. A margin on top of a gap is two spacings for one interval. */
+.located[data-with-note] .meta {
+  flex: 1 1 190px;
+  margin-top: 0;
+}
+
 /* ---------------------------------------------------------------------------
    THE TWO PICTURE BLOCKS
 
@@ -325,7 +391,9 @@
 }
 
 /* ---------------------------------------------------------------------------
-   STEP 4 — two meta lines under the symptoms they belong to
+   THE LABELLED PAIR — a single typed or stated fact, under the answer it
+   belongs to. Step 4's two lines under the symptom pills, and step 1's typed
+   "Other" under the face.
 
    ⚠️ ALL OF STEP 4 LIVES HERE NOW. It had the sage card's lower half, then a
    block of its own drawn as a two-node timeline rail; both are gone, asked for
@@ -373,6 +441,13 @@
   margin: 0;
   color: var(--color-text-primary);
 }
+
+/* ⚠️ THE PAIR IS SHARED WITH THE LOCATION BLOCK AS OF 8 Sep 2026 and needed
+   nothing of its own to go there: 12 under the face is the same interval it
+   takes under the pills, because both are "the block's own label gap", and the
+   ink is this surface's either way. What it is NOT is a caption — a caption
+   describes the picture above it, and this describes the answer the picture
+   could not draw. */
 
 /* ⚠️ ADJACENCY, NOT A FIXED TOP MARGIN. `TagList` renders NOTHING when step 4's
    dates are the only thing this block holds, and a margin on the pair itself

@@ -21,6 +21,18 @@ export type Answers = Partial<{
   /** free text for the "Other" option on 02c — required once Other is ticked */
   conditionsOther: string;
   location: string[];
+  /**
+   * Step 1's free-text "Other" description — what the user typed under the face
+   * diagram when the place has no pill on it.
+   *
+   * ⚠️ IT LIVED IN ITS OWN localStorage KEY UNTIL 8 Sep 2026, OUTSIDE THIS
+   * STORE, and that is why the recap showed no sign of it: a value nothing else
+   * can read is a value the rest of the app has to pretend was never given.
+   * It is an answer to step 1 like any other, so it sits with them — the same
+   * shape `conditionsOther` has for step 3's typed condition. It still does not
+   * gate Continue; a location chip does that.
+   */
+  locationOther: string;
   selfie: string;
   timing: { status?: string; date?: string };
   /** step 5 — the products the user has added, and what the hub reads */
@@ -189,5 +201,19 @@ export function toggleMulti(current: string[], option: string): string[] {
  * enough that no stale data remains.
  */
 export const LEGACY_STORAGE_KEY = "lux.investigation.v1";
+
+/**
+ * ⚠️ THE SECOND KEY THAT IS ONLY EVER DELETED — step 1's own, orphaned 8 Sep
+ * 2026.
+ *
+ * The free-text "Other" description used to be written straight to this key by
+ * `StartInvestigation`, outside the store, and nothing else could read it: that
+ * is why the profile recap showed the `Other` chip with none of the words. The
+ * answer is `locationOther` now and this key is never read again — but a typed
+ * sentence left behind in a visitor's browser is the same dead data
+ * `LEGACY_STORAGE_KEY` exists to sweep up, and it has no expiry of its own to
+ * do it. Deleted on mount alongside it.
+ */
+export const LEGACY_START_OTHER_KEY = "lux-start-other-description";
 
 export type AnswerKey = keyof Answers & StepId;

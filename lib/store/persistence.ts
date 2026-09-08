@@ -77,6 +77,7 @@ export type PersistedAnswers = Pick<Answers, PersistedKey>;
 export const FLOW_KEYS = [
   "start",
   "location",
+  "locationOther",
   "selfie",
   "skin-type",
   "tendencies",
@@ -312,6 +313,7 @@ export function pickFlow(answers: Answers): PersistedFlow {
   const out: PersistedFlow = {};
   if (answers.start?.length) out.start = answers.start;
   if (answers.location?.length) out.location = answers.location;
+  if (answers.locationOther) out.locationOther = answers.locationOther;
   if (answers.selfie) out.selfie = answers.selfie;
   if (answers["skin-type"]) out["skin-type"] = answers["skin-type"];
   if (answers.tendencies?.length) out.tendencies = answers.tendencies;
@@ -357,6 +359,7 @@ export function parseFlow(raw: string | null, now: number): PersistedFlow {
   const out: PersistedFlow = {};
   if (isStringArray(answers.start)) out.start = answers.start;
   if (isStringArray(answers.location)) out.location = answers.location;
+  if (isString(answers.locationOther)) out.locationOther = answers.locationOther;
   if (isString(answers.selfie)) out.selfie = answers.selfie;
   if (isString(answers["skin-type"])) out["skin-type"] = answers["skin-type"];
   if (isStringArray(answers.tendencies)) out.tendencies = answers.tendencies;

@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useRef, useState } from "react";
+import { useRef, useState } from "react";
 import styles from "./StartInvestigation.module.css";
 import { QuestionScreen } from "./QuestionScreen";
 import { Chip } from "@/components/ui/Chip";
@@ -71,14 +71,29 @@ import { SYMPTOMS, needsProfessionalNotice } from "@/features/my-skin/safety";
 
 const LOCATION_CHIPS = ["Whole face", "Neck", "Other"];
 
-/**
- * ⚠️ SCOPED, DELIBERATE EXCEPTION to "do not persist the answer store"
- * (AGENTS.md). The free-text "Other" description has nowhere else to live yet
- * — there is no backend — so it is saved to localStorage on its own, outside
- * InvestigationProvider. It does not gate Continue and is not read by any
- * other step. This is a stopgap; a real backend should own it instead.
- */
-const OTHER_STORAGE_KEY = "lux-start-other-description";
+/* ⚠️ AND ITS COPY ASKS ABOUT A PLACE, AS OF 8 Sep 2026. The field read
+   `Other – describe in detail` over the placeholder `Describe what's
+   happening` — a symptom question sitting under the face diagram, between the
+   location chips and the camera, whose answer the recap reads back under
+   `Where you noticed it`. Three surfaces, two subjects. The placeholder was the
+   odd one out and it predates this screen: 01 (Start investigation) and 03b
+   (Location) were separate Figma frames and this field came from the half that
+   asked what was happening. It asks where now — `Other, describe where` over
+   `Describe where you noticed it` — which is the question the chip beside it
+   is an answer to. ⚠️ **The dash went with it**: an en dash in a sentence the
+   app says is the one that survived the em-dash sweep, and a comma is what the
+   rest of the app's copy uses (the recap's own `Other, in your words` included).
+
+   ⚠️ THE "Other" DESCRIPTION IS AN ANSWER IN THE STORE NOW — `locationOther`,
+   changed 8 Sep 2026. It used to be written to a bespoke localStorage key of
+   its own, outside `InvestigationProvider`, on the reasoning that a free-text
+   note had nowhere else to live; the cost of that was invisible here and
+   obvious one screen later. Nothing except this file could read the key, so
+   `/investigation/profile` recapped a location answer with the typed part
+   silently missing — the user tapped `Other`, said where, and the recap showed
+   `Other` and nothing else. It is step 1's answer like every other, so it sits
+   with them and expires with them (`FLOW_KEYS`, 24 hours). It still gates
+   nothing: `isComplete` for this step asks for a symptom and a location. */
 
 export function StartInvestigation() {
   const { answers, setAnswer } = useInvestigation();
@@ -103,18 +118,17 @@ export function StartInvestigation() {
 
   const [photoOpen, setPhotoOpen] = useState(false);
   const [otherOpen, setOtherOpen] = useState(false);
-  const [otherText, setOtherText] = useState("");
+  const otherText = answers.locationOther ?? "";
   const inputRef = useRef<HTMLInputElement>(null);
 
-  // localStorage isn't available during SSR — hydrate after mount so a saved
-  // description reopens the field instead of staying hidden behind the button.
-  useEffect(() => {
-    const saved = window.localStorage.getItem(OTHER_STORAGE_KEY);
-    if (saved) {
-      setOtherText(saved);
-      setOtherOpen(true);
-    }
-  }, []);
+  /* ⚠️ THE FIELD IS OPEN IF IT WAS OPENED **OR** IF THERE IS AN ANSWER IN IT,
+     and the second half is what replaces the old hydrate-on-mount effect. The
+     store fills in from localStorage in an effect of its own (never in a
+     `useState` initialiser — that is the hydration mismatch), so a description
+     from an earlier visit arrives one render after this one. Deriving the
+     revealed state from the answer means it appears the moment it exists,
+     rather than needing a second piece of state kept in step with it. */
+  const otherRevealed = otherOpen || otherText.length > 0;
 
   const openOther = () => {
     setOtherOpen(true);
@@ -126,17 +140,7 @@ export function StartInvestigation() {
   // saved behind a closed field.
   const closeOther = () => {
     setOtherOpen(false);
-    setOtherText("");
-    window.localStorage.removeItem(OTHER_STORAGE_KEY);
-  };
-
-  const handleOtherChange = (value: string) => {
-    setOtherText(value);
-    if (value) {
-      window.localStorage.setItem(OTHER_STORAGE_KEY, value);
-    } else {
-      window.localStorage.removeItem(OTHER_STORAGE_KEY);
-    }
+    setAnswer("locationOther", undefined);
   };
 
   return (
@@ -180,16 +184,16 @@ export function StartInvestigation() {
       </div>
 
       <div className={styles.other}>
-        {otherOpen ? (
+        {otherRevealed ? (
           <div className={styles.otherFieldWrap}>
             <TextField
               className="reveal-quick"
               ref={inputRef}
               value={otherText}
-              placeholder="Describe what's happening"
-              aria-label="Other – describe in detail"
+              placeholder="Describe where you noticed it"
+              aria-label="Other, describe where you noticed it"
               style={{ paddingRight: 52 }}
-              onChange={(e) => handleOtherChange(e.target.value)}
+              onChange={(e) => setAnswer("locationOther", e.target.value)}
               onKeyDown={(e) => {
                 if (e.key === "Escape") closeOther();
               }}
@@ -211,7 +215,7 @@ export function StartInvestigation() {
           >
             <PlusIcon />
             <span className={`${styles.otherLabel} t-body2`}>
-              Other – describe in detail
+              Other, describe where
             </span>
           </button>
         )}

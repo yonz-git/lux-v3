@@ -641,6 +641,22 @@ Four new components go with it; see § 3.
 screen each, with Continue gating on both answers. *03a Observable symptoms* was
 dropped entirely. The track reads 1/5, not 1/8.
 
+### Step 1's free-text `Other` asks WHERE, and its answer is stored (8 Sep 2026)
+
+The field under the face diagram read `Other – describe in detail` over the
+placeholder `Describe what's happening` — 01's question surviving on a screen
+where the diagram above it and the recap that reads it back both ask about a
+PLACE. It is `Other, describe where` over `Describe where you noticed it` now,
+with `Other, describe where you noticed it` as the accessible name, and the en
+dash is a comma (the app's copy carries no prose dashes).
+
+For Figma this needs: the field drawn in both states on the merged step-1 frame
+with the new strings, and — the part that has never been drawn — a state for the
+FILLED field, since `/investigation/profile` now reads the answer back under
+`Where you noticed it` as `Other, in your words` over the sentence. The
+description was not in the answer store at all until this date; see
+`docs/decisions.md`, "THE TYPED `Other` HAD NOWHERE TO GO".
+
 ### Step 1 carries a CONDITIONAL safety notice (`476:2542`, `476:2670`)
 
 New block, and no frame draws it. Ticking `Swelling` or `Rash` — the only two

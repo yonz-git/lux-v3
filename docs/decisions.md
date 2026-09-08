@@ -1610,9 +1610,11 @@ Asked for directly:
 > time?"*
 
 **The left-hand column of that table is no longer all one thing.** Its first
-row — `start`, `location`, `selfie`, `skin-type`, `tendencies`, `conditions`,
-`conditionsOther`, `timing` — is now written, under its own key, with a
-**24-hour sliding window**. Every other row still never touches disk at any age.
+row — `start`, `location`, `locationOther`, `selfie`, `skin-type`,
+`tendencies`, `conditions`, `conditionsOther`, `timing` — is now written, under
+its own key, with a **24-hour sliding window**. (⚠️ `locationOther` joined the
+list on 8 Sep 2026 — step 1's typed "Other" description, which until then was
+not in the store at all; see "THE TYPED `Other` HAD NOWHERE TO GO" below.) Every other row still never touches disk at any age.
 
 **Why that is not the reverted build coming back.** This section already argues
 that the old bug was persisting *one bucket that mixed two kinds of state*. The
@@ -1704,6 +1706,105 @@ it instead.
 snapshots from the reverted build — exactly the flow selections this design
 refuses to restore. The new key is `lux.records.v2`; bump the name again rather
 than widening it if the shape changes.
+
+### ⚠️ THE TYPED `Other` HAD NOWHERE TO GO — fixed 8 Sep 2026
+
+Reported from the running prototype:
+
+> *"when other is chosen and i typed in where, no where shows here
+> /investigation/profile"*
+
+**And the recap was not at fault.** Step 1's free-text description — the
+`Other – describe in detail` field under the face diagram — was never in the
+answer store. It was written to a bespoke localStorage key of its own,
+`lux-start-other-description`, on the reasoning recorded in
+`StartInvestigation.tsx` at the time: a free-text note has nowhere to live
+without a backend, it gates nothing, and no other step reads it. The first two
+were true. The third stopped being true the moment `/investigation/profile`
+existed, and the cost was exact: the recap drew the lit `Other` chip and none
+of the words, so the one part of that answer only the user could supply was the
+one part the app forgot.
+
+**A key nothing else can read is a value the rest of the app has to pretend was
+never given.** The description is `answers.locationOther` now, beside
+`conditionsOther` — step 3's typed condition, which has had this shape all
+along and which the recap has always been able to read. It joins `FLOW_KEYS`,
+so it lives and expires exactly as the answers around it do (24 hours,
+sliding), and the old key is deleted unread on mount next to
+`lux.investigation.v1` — a typed sentence left in a visitor's browser with
+nothing to read it is the same dead data that sweep exists for.
+
+⚠️ **AND A TYPED LOCATION NOW COUNTS AS ONE.** `isComplete` for step 1 asked
+for a symptom and a location CHIP, which was right while the field asked what
+was happening and wrong the moment it asked where: someone who typed
+"behind my left ear" and tapped nothing on the face was looking at a dead
+Continue with nothing on screen saying why. It reads
+`(a.location?.length ?? 0) > 0 || Boolean(a.locationOther?.trim())` now.
+
+⚠️ **IT ONLY EVER UNLOCKS, AND IT IS NOT STEP 3's RULE IN REVERSE.** There,
+`otherIsFilled` REQUIRES the text once "Other" is ticked — correct, because the
+row and its field are one always-visible unit. Here the chip and the field are
+independent controls and the field is collapsed behind a button, so requiring
+the text would dead-end someone with no visible cause; the fix for that would be
+opening the field from the chip, which is a different decision and has not been
+taken. The recap likewise renders the location block if EITHER exists.
+
+⚠️ **AND THE FIELD'S REVEALED STATE IS DERIVED, NOT STORED.** It used to hydrate
+itself from localStorage in an effect of its own. The store hydrates in an
+effect too, so a saved description now arrives one render after the first —
+`otherOpen || otherText.length > 0` opens the field the moment the answer
+exists, rather than a second piece of state needing to be kept in step with the
+first.
+
+⚠️ **THE DIAGRAM SHRINKS AND THE WORDS TAKE THE SPACE** — asked for directly,
+in as many words: *"the face diagram should shrink in size and give space for
+the typed in text to be displayed"*. 392 is the width the face card is drawn at
+and is right while the diagram is the block's only content; with a typed answer
+it is one of two things in the block, so it drops to **300** and the two sit in
+a wrapping flex row.
+
+⚠️ **THE FIRST BUILD SHRANK THE PICTURE AND PUT THE SENTENCE UNDER IT, AND THAT
+IS NOT WHAT THE ASK SAID.** It freed the space and left it empty — the same
+block, only smaller. The row spends it: `300 + 16 + 190` needs 506 of content
+box, so on the desktop card's ~776 the answer reads across (picture, then the
+part of the answer the picture could not draw) and at 440, where the block has
+~352, the note wraps under a 300-wide diagram. **No media query** — it wraps on
+the content, which is the only thing that knows.
+
+⚠️ **300 IS A FLOOR, NOT A PREFERENCE.** The diagram positions its region pills
+as percentages of the box and sets their labels at a fixed 14, so below a
+certain width the pills stop scaling and start covering each other. Measured on
+the middle row: `Cheeks (L)` / `Nose` / `Cheeks (R)` overlap by 7 and 6 px — the
+overlap the picture is DRAWN with — at every width from 300 to 392, and by 11
+and 10 at 280, where the selected pill covers the label beside it. A 250 build
+was made and reverted for exactly that. Narrower needs responsive labels in
+`FaceDiagram` first.
+
+The note itself is the screen's existing label-over-value pair
+(`Other, in your words`), not a caption: a caption describes the picture above
+it, and this describes the answer the picture could not draw.
+
+⚠️ **AND THE COPY NOW ASKS ABOUT A PLACE — settled the same day, asked for
+directly.** The field read `Other – describe in detail` over the placeholder
+`Describe what's happening`, which is a symptom question sitting between the
+location chips and the camera, whose answer the recap reads back under
+`Where you noticed it`. The placeholder was the odd one out and it predates this
+screen: 01 (Start investigation) and 03b (Location) were separate Figma frames,
+and the field came from the half that asked what was happening. It is
+`Other, describe where` over `Describe where you noticed it` now — the question
+the chip beside it is an answer to — and the accessible name is the long form,
+`Other, describe where you noticed it`, since the button's text is gone once the
+field is open.
+
+⚠️ **THE DASH WENT WITH IT.** `Other – describe in detail` held the app's last
+prose en dash: the em-dash sweep of 7 Sep 2026 traded them for commas in every
+line the app says, and the remaining `–`s are all numeric ranges (`1–4 weeks`),
+which is what an en dash is for. The recap's own label uses the same comma —
+`Other, in your words`.
+
+⚠️ **FIGMA STILL HAS NEITHER FRAME.** This screen is already a prototype-only
+merge of 01 and 03b (see `StartInvestigation.tsx`), so the copy change rides
+along with the merge in `docs/figma-catchup.md` rather than being a new gap.
 
 ### What this does NOT do
 

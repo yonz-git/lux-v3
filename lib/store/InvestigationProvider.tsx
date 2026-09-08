@@ -9,7 +9,7 @@ import {
   useState,
 } from "react";
 import type { Answers } from "./answers";
-import { LEGACY_STORAGE_KEY } from "./answers";
+import { LEGACY_STORAGE_KEY, LEGACY_START_OTHER_KEY } from "./answers";
 import { readFlow, readPersisted, writeFlow, writePersisted } from "./persistence";
 
 /**
@@ -95,6 +95,9 @@ export function InvestigationProvider({
     // otherwise sit in visitors' browsers forever. It is deleted, never read.
     try {
       window.localStorage.removeItem(LEGACY_STORAGE_KEY);
+      // step 1's own free-text key, orphaned when the description became
+      // `locationOther` — never read, so it can only sit there
+      window.localStorage.removeItem(LEGACY_START_OTHER_KEY);
     } catch {
       // storage unavailable (private mode) — nothing to clean up
     }
