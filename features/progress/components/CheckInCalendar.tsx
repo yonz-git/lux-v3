@@ -230,7 +230,7 @@ export function CheckInCalendar({
                     {isCheckedIn ? (
                       <Link
                         href={`/progress/check-in/${toIso(date)}`}
-                        className={`${styles.day} t-label-sm`}
+                        className={`${styles.day} t-label-sm pressable`}
                         data-checked-in
                         data-today={isToday || undefined}
                       >

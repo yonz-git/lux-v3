@@ -12,6 +12,7 @@ import { SearchField } from "@/components/ui/SearchField";
 import { ProductRow } from "./ProductList";
 import { ProductThumb } from "./ProductThumb";
 import { useInvestigation } from "@/lib/store/InvestigationProvider";
+import { useSnackbar } from "@/components/layout/Snackbar";
 import { SearchIcon, CameraIcon, ChevronRightIcon, CloseIcon } from "@/components/ui/icons";
 import {
   BUCKET_LIST_TITLE,
@@ -83,6 +84,7 @@ export function AddProductMethodSheet({
   base?: SavedProduct[];
 }) {
   const { answers, setAnswer } = useInvestigation();
+  const { show } = useSnackbar();
   const [view, setView] = useState<View>("method");
   const [confirmSource, setConfirmSource] = useState<ConfirmSource>("search");
   const [stage, setStage] = useState<ConfirmStage>("verify");
@@ -180,8 +182,18 @@ export function AddProductMethodSheet({
     setStage("added");
   }
 
+  /** ⚠️ THE SAME UNDO THE HUB'S `Remove` GETS, AND FOR THE SAME REASON: this
+   *  removes from `answers.products`, the library that persists forever, not
+   *  from anything local to the tray. The snapshot is the store's own value so
+   *  a seeded library comes back seeded — see `MyProducts.removeProduct`. */
   function removeProduct(id: string) {
+    const before = answers.products;
+    const removed = (answers.products ?? base).find((p) => p.id === id);
     setAnswer("products", (prev) => (prev ?? base).filter((p) => p.id !== id));
+    show({
+      message: removed ? `Removed ${fullName(removed)}` : "Product removed",
+      onAction: () => setAnswer("products", before),
+    });
   }
 
   const title =
@@ -311,7 +323,7 @@ function MethodCard({
   onClick: () => void;
 }) {
   return (
-    <button type="button" className={styles.method} onClick={onClick}>
+    <button type="button" className={`${styles.method} pressable`} onClick={onClick}>
       <span className={styles.methodIcon}>{icon}</span>
       <span className={styles.methodCopy}>
         <span className={`${styles.methodTitle} t-h6`}>{title}</span>

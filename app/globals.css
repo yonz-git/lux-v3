@@ -226,6 +226,83 @@
      `CompatCard`'s band pills already carry. */
   --color-bg-brand-soft: #8284c0;
 
+  /* ==========================================================================
+     feedback/error + feedback/warning — THE COMPATIBILITY BANDS, RETUNED
+     8 Sep 2026, ASKED FOR DIRECTLY.
+
+     ⚠️ DECLARED HERE, NOT IN `tokens.css` — that file is generated from the
+     Figma variables and Figma still holds `rose/500` (#c9918e) and `red/500`
+     (#a86561). Raise both there; see `docs/figma-catchup.md`.
+
+     ⚠️ AND STILL DO NOT REPOINT THE PRIMITIVES `--color-rose-500` /
+     `--color-red-500`, EVEN THOUGH EVERY ROLE THAT ALIASES THEM NOW MOVES.
+     Five semantic roles read those two steps and all five are declared below,
+     so repointing the ramp would be equivalent today and two lines shorter —
+     and it would still be wrong, for the reason the `bg/brand` block above
+     gives: a primitive is not a role, non-negotiable 2 forbids a component
+     binding one, and the next role that wants to stay behind would have
+     nowhere to stand. The roles are named so that divergence stays possible.
+
+     Both moved together because Avoid and Risky are one scale: #a86561 and
+     #c9918e are a dusty red and a dusty rose four steps of chroma apart, and
+     the two bands read as different families rather than as two rungs. The
+     new pair is one hue with a real step between them.
+
+     Measured, white on the fill (the pill in `CompatCard` and `CheckHistory`,
+     and the badge on `ResultCards`' emphasis block):
+
+       Avoid  #a86561 -> #c65953   4.47:1 -> 4.24:1
+       Risky  #c9918e -> #d47873   2.65:1 -> 3.12:1
+
+     Risky gains 0.47 and still fails AA — it is the known-failing band pill
+     already listed under non-negotiable 17, unchanged in substance. Avoid
+     gives up 0.23 and drops just under AA with it, which is a WIDENING of that
+     same open question rather than a new one; the band pills are on the
+     Figma-decision list either way. ⚠️ Do not "fix" either by putting the app
+     ink on the fill — `HypothesisCard` does that deliberately and the note on
+     its `--band-ink` is why it cannot be lifted here. */
+  --color-feedback-error: #c65953;
+  --color-feedback-warning: #d47873;
+
+  /* text/error + text/warning + border/error — THE SAME TWO VALUES, ASKED FOR
+     8 Sep 2026, A TURN AFTER THE BANDS.
+
+     ⚠️ THEY WERE DELIBERATELY LEFT BEHIND FIRST AND THAT WAS REVERSED, WHICH
+     IS WHY THIS IS A SECOND BLOCK RATHER THAN THREE MORE LINES ABOVE. The
+     first pass moved only `feedback/*`, on the argument that a destructive
+     control is not a compatibility band; the answer was that LUX gets ONE red,
+     not a band red and a control red six points of saturation apart. It is the
+     same reasoning that collapsed `bg/brand` onto the button gradient's dark
+     end.
+
+     ⚠️ ONE OF THE THREE HAS A CALLER, AND IT IS NOT WHAT THE FIRST PASS SAID.
+     `text/error` is the **Remove** action on `ProductAccordionCard` — a
+     `t-label` (14/20) destructive control, not an inline validation message.
+     Measured on `surface/frost-light` composited over the canvas gradient at
+     three positions:
+
+       start #dce7ea   3.98:1 -> 3.77:1
+       mid   #cedee2   3.82:1 -> 3.62:1
+       end   #acc5cc   3.42:1 -> 3.25:1
+
+     ⚠️ IT FAILED 1.4.3 BEFORE AND FAILS BY ~0.2 MORE NOW — a 14px label needs
+     4.5:1 and the old red never reached it at any position on the gradient.
+     A pre-existing failure widened, not a new one; logged with the band pills
+     in `docs/figma-catchup.md` § 2. ⚠️ Do not close it by exempting this one
+     token from the red: the fix is a DARKER red for all of them, or the Remove
+     action stops carrying its meaning in colour — it is the only destructive
+     control on these screens and the word already says what it does.
+
+     `text/warning` and `border/error` have NO callers in the build. They move
+     anyway, so that a first caller inherits the red the app actually uses
+     rather than the one Figma still holds. ⚠️ The `-subtle` tints (`rose/100`,
+     `red/100`) did NOT move — nothing asked them to, they are near-neutral
+     either way, and `CompatCard`'s tinted tag is the only thing reading
+     them. */
+  --color-text-error: #c65953;
+  --color-text-warning: #d47873;
+  --color-border-error: #c65953;
+
   /* bg/frost-light-muted — ⚠️ DECLARED HERE, NOT IN `tokens.css`, and NOT IN
      FIGMA. The face-diagram region pills need an OPAQUE fill (the face outline
      passes behind them, and a translucent pill shows the ellipse through
@@ -475,6 +552,23 @@ body {
   font-family: var(--font-family-sans);
   font-weight: var(--font-weight-regular);
   color: var(--color-text-primary);
+  /* ⚠️ WCAG 1.4.12, AND IT IS THE ONE PROPERTY THAT HAS TO BE INHERITED RATHER
+     THAN APPLIED BY ROLE. A user's own text-spacing overrides (line-height 1.5,
+     letter-spacing 0.12em, word-spacing 0.16em) widen every word, and measured
+     over all 18 routes at 320/440/1440 that pushed text out of five boxes:
+     `ProductList`'s name and meta in a `/check/new` row, `ResultCards`'
+     `.statLabel` and `.emphasisTitle`, and `CompatCard`'s name — all of them a
+     flex column that has already collapsed to 56–75px at 320, where one long
+     product word no longer fits. `break-word` breaks that word instead of
+     letting it spill.
+
+     ⚠️ IT CHANGES NOTHING UNLESS A WORD CANNOT FIT, which is why it is safe as
+     an inherited default where `text-wrap` and `tabular-nums` are not: those
+     restyle text that was already fitting, this one only acts at the point
+     where the alternative is overflow. `break-word`, NOT `anywhere` — `anywhere`
+     also shrinks a flex item's min-content width, which would let these columns
+     collapse further than the layout intends. */
+  overflow-wrap: break-word;
   background: var(--color-gradient-canvas-mid);
   -webkit-font-smoothing: antialiased;
   text-rendering: optimizeLegibility;
@@ -845,6 +939,54 @@ main[tabindex="-1"]:focus-visible {
 }
 .t-h6 {
   line-height: 24px;
+}
+
+/* ============================================================================
+   Typographic wrapping — applied BY ROLE, the same way tabular figures are.
+
+   ⚠️ NOT IN FIGMA, AND FIGMA CANNOT DRAW IT. A comp breaks a heading wherever
+   its fixed 440 or 1440 canvas happens to break it; the build breaks it at
+   whatever width the reader's device is. `text-wrap: balance` evens the lines
+   of a heading so a title never strands one word alone on its last line, and
+   `pretty` keeps a paragraph off an orphan. Neither moves a font-size, a
+   line-height or a measured width — only where the break lands, which is the
+   one typographic decision the comp was never able to make.
+
+   ⚠️ DECLARED ON THE RAMP, NOT PER SCREEN, BECAUSE IT WAS ALREADY BEING
+   WRITTEN BY HAND. `HypothesisCard`, `Analysis` (twice) and
+   `SkinProfileSummary` each reached for it locally; a heading that balances on
+   the analysis and not on the recap is the kind of inconsistency nobody can
+   name and everybody sees. Those local declarations are now redundant rather
+   than wrong, and they are removed.
+
+   ⚠️ `balance` IS FOR HEADINGS ONLY — deliberately NOT `.t-label`,
+   `.t-label-sm`, `.t-button`, `.t-button-sm` or `.t-overline`. Those style
+   CONTROLS — chips, buttons, section labels — whose widths are measured against
+   Figma, and balancing a two-line chip label would move the pill. The browser
+   also caps `balance` at a handful of lines, so it is a heading tool by
+   construction.
+   ========================================================================== */
+
+.t-h1,
+.t-h2,
+.t-h3,
+.t-h4,
+.t-h5,
+.t-h6,
+.t-h4-h3,
+.t-h3-h2,
+.t-display1,
+.t-display2 {
+  text-wrap: balance;
+}
+
+.t-body1,
+.t-body2,
+.t-body3,
+.t-body2-body1,
+.t-body3-body2,
+.t-caption {
+  text-wrap: pretty;
 }
 
 /* ============================================================================
@@ -1668,6 +1810,57 @@ main[tabindex="-1"]:focus-visible {
   min-height: 24px;
   width: 100%;
   height: 100%;
+}
+
+/* ============================================================================
+   PRESSED — board 04b's own recipe, as a utility so every control can wear it.
+
+   "LUX motion is calm. Nothing snaps." The board answers what a pressed control
+   looks like — `state/pressed-overlay` at 14%, and no scale transform, because
+   LUX does not bounce — and `Button` has drawn it since 22 Aug 2026. Nothing
+   else in the app did: the nav items, the back chevron, `SmallButton`, the
+   accordion headers, the history rows and the calendar days all shipped with
+   hover and focus and NO press.
+
+   ⚠️ THAT GAP IS A TOUCH GAP, WHICH IS WHERE THE APP ACTUALLY LIVES. Hover does
+   not exist on a phone, so on every one of those controls a tap produced no
+   feedback at all until the thing it did finished — a route change, a sheet, a
+   detail view. A control that navigates is exactly the one that cannot afford
+   to stay silent for the 100ms before the next screen paints.
+
+   ⚠️ `::before`, NOT `::after` — `.tap-target` above owns `::after`, and the
+   two classes land on the same element wherever a small text control both
+   grows its hit area and takes a press (`Remove` on a product card is both).
+   Same reason `Button` keeps its own `::after`: it is not a `.pressable`, it
+   already carries this recipe inline, and moving it here would be churn.
+
+   ⚠️ AN OPT-IN CLASS, NOT A BARE `button:active` RULE. Half the app's controls
+   are already instant — a chip fills, a row ticks, a toggle opens — and
+   darkening those adds a second signal to a state change the user can already
+   see. It goes on the controls whose result arrives LATER. Applied via a class
+   for the same reason `.tap-target` is: it stays a decision, and it stays
+   greppable.
+   ========================================================================== */
+
+.pressable {
+  position: relative;
+}
+
+.pressable::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  /* the overlay follows the control's own shape — a pill press must not land
+     as a rectangle */
+  border-radius: inherit;
+  background: var(--color-state-pressed-overlay);
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity var(--duration-fast) var(--ease-standard);
+}
+
+.pressable:active:not(:disabled)::before {
+  opacity: 1;
 }
 
 /* ============================================================================

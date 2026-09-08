@@ -116,11 +116,46 @@ selection it *does* draw. Selection text takes `text/on-brand` (11.91:1).
 
 If Figma ever grows a "browser chrome" note, this is its content.
 
-### `feedback/warning` and `feedback/error` share a hue
+### `feedback/warning` and `feedback/error` — RETUNED IN CODE 8 Sep 2026
 
-- They differ only in lightness, so as pill **fills** Risky and Avoid are not
-  distinguishable — the pill's text is doing all the work.
-- Separate the hues, or accept that the label is load-bearing and document it.
+⚠️ **Figma still holds `rose/500` #c9918e and `red/500` #a86561.** The code
+overrides all **five** semantic roles that alias those two steps, on `:root` in
+`globals.css`. The primitives themselves are untouched, deliberately — the same
+call the `bg/brand` entry in § 2 makes: a primitive is not a role, and naming
+the roles keeps divergence possible.
+
+| Role | Figma | Code | Caller |
+| ---- | ----- | ---- | ------ |
+| `feedback/error` | `#a86561` | **`#c65953`** | the Avoid band pill, ×3 places |
+| `feedback/warning` | `#c9918e` | **`#d47873`** | the Risky band pill, ×3, and the analysis's Stronger pill |
+| `text/error` | `#a86561` | **`#c65953`** | the **Remove** action on `ProductAccordionCard` |
+| `text/warning` | `#c9918e` | **`#d47873`** | none in the build |
+| `border/error` | `#a86561` | **`#c65953`** | none in the build |
+
+- ⚠️ **The last three moved a turn later than the first two, and the first
+  pass's reasoning for leaving them behind was withdrawn.** That reasoning was
+  that a destructive control is not a compatibility band; the decision is that
+  LUX gets ONE red rather than a band red and a control red six points of
+  saturation apart — the same argument that collapsed `bg/brand` onto the
+  button gradient's dark end.
+- The two roles with no caller move anyway, so a first caller inherits the red
+  the app uses rather than the one Figma holds.
+- The `-subtle` tints (`rose/100` `#f4e7e6`, `red/100` `#f5e7e6`) did **not**
+  move. Only `CompatCard`'s tinted tag reads them and they are near-neutral
+  either way.
+
+- Asked for directly. Both moved together because Avoid and Risky are one
+  scale: the old pair was a dusty red beside a dusty rose 6 points of
+  saturation apart, so the two bands read as different families rather than as
+  two rungs of one.
+- The new pair is **one hue at 3.1°**, differing in lightness (55.1% / 64.1%)
+  with saturation nearly matched (50.2% / 53.0%).
+- ⚠️ **Which makes the note below literally exact rather than approximate:**
+  they differ only in lightness, so as pill **fills** Risky and Avoid are not
+  distinguishable — the pill's text is doing all the work. Separate the hues,
+  or accept that the label is load-bearing and document it. The build accepts
+  it: `check.ts` states the band in text on every row and in an `aria-label`
+  on all of them, including the compatible ones.
 
 ---
 
@@ -235,9 +270,40 @@ neither ink is portable to the other surface.
 
 ### Compatibility band pills — `Check results` `476:2841`
 
-- Band colours and their white pill text: **2.03:1 to 4.47:1**. Same pill again
+- Band colours and their white pill text: **2.03:1 to 4.24:1**. Same pill again
   on the check history screen.
 - Either darken the bands or drop the white pill text.
+- ⚠️ **The range moved on 8 Sep 2026 and its top end is now a FAILURE.** The
+  two band tokens were retuned (§1 above): Risky rose 2.65 → 3.12:1 and Avoid
+  fell 4.47 → 4.24:1, so the one band pill that used to clear AA no longer
+  does. This widens the open question rather than adding a new one — both pills
+  were always going to be decided together — but the entry can no longer be
+  closed by fixing "the pink one".
+- ⚠️ **AND IT PULLED IN A THIRD PILL — the confidence pill on
+  `/investigation/analysis`.** `HypothesisCard` aliases `feedback/warning` but
+  puts the app ink on it rather than white, which measured **5.22:1** and
+  passed. On `#d47873` it is **4.43:1** — under AA for its 12px `t-label-sm`,
+  by 0.07.
+- Pinning that card to its own `#c9918e` was offered and **refused on 8 Sep
+  2026**: the analysis pill is to be the same colour as the CHECK pills, since
+  two warm pinks one step apart for two different meanings is what the retune
+  was done to end. So this entry now covers three pills on two sections, and
+  **only the FILL can close it** — the analysis card has already taken the
+  better of the two available inks.
+
+### The `Remove` action — `My Products` `581:1593`
+
+- `text/error` as a `t-label` (14/20) destructive control on
+  `ProductAccordionCard`, over `surface/frost-light` on the canvas gradient.
+  Measured at three positions along it: **3.98 / 3.82 / 3.42:1** before the red
+  moved, **3.77 / 3.62 / 3.25:1** after.
+- ⚠️ **It never cleared 1.4.3's 4.5:1 at any position** — this is a
+  pre-existing failure widened by roughly 0.2, listed here because § 1 now
+  moves the token that causes it and the entry should not read as a new bug.
+- ⚠️ **Do not close it by exempting `text/error` from the red.** Either every
+  role above goes darker together, or the Remove action stops carrying its
+  meaning in colour — it is the only destructive control on these screens and
+  the word already says what it does.
 
 ### ~~Nested emphasis block — `Check results` `476:2841`~~ — SUPERSEDED
 
@@ -277,6 +343,7 @@ treatment — but there is no component to keep them in sync.
 | **Ranked list** | § 11's investigation-priority list: one card holding numbered rows, because the RANKING is the content and rows-as-cards would lose it. The ordinal is a small indigo disc, set as meta rather than as a metric — it is a position in a queue, not a score. |
 | **Pass list** | `components/ui/PassList` — named steps ticking off with `SuccessCheckIcon` in a fixed-width slot, so the lines do not reflow as ticks land. **Both analysing screens use it now**: the analysis names § 06's six passes, and `Check — analyzing` (`605:2163`) names five. ⚠️ **The comp's 8px `analysis-bar` is no longer drawn** — a bar says only that something is happening, the list says what is being compared. The counts differ on purpose: CHECK has no timeline and no tolerated set, so it must not claim those passes. No frame draws any of this. |
 | **Callout / notice** | The safety notice on `01 — Start investigation` is composed from the frosted-card recipe the frame's own deleted DISCLAIMER card used (`radius/lg`, `surface/frost-light`, hairline `border/subtle`, `t-overline` over body). There is no callout component and no ACCENT of any kind for one — the DS also has no warning glyph — `02 Icons` has 13 and none of them means caution — so the block carries its meaning by position and label alone. Raise a Notice component with a `feedback/warning` accent, and note the notice is CONDITIONAL: no frame draws it. |
+| **Undo snackbar** | No toast, no snackbar, no transient message of any kind — the only trace of the idea is `--z-toast` (500), reserved in the token scale and unused until 8 Sep 2026. Drawn here as the `Bottom-Nav-Bar`'s own frosted pill (same fill, rim, shadow, blur and reduced-transparency fallback), because the file has exactly one recipe for something that floats over a screen. It departs on two content-driven values: **no fixed height** — a product name takes two lines at 380, more under a user's text-spacing overrides — and `radius/2xl` rather than `full`, since `full` on a two-line bar draws 26px lozenge ends that crowd the first and last words. Raise a `Snackbar` with a message slot and one action, sitting `nav-inset-bottom + size/nav-height + space/lg` above the bottom edge (the clearance every screen already reserves), and note on it that the dismiss is 6s, that it pauses while hovered or focused, and that only one is ever on screen. |
 
 ---
 
@@ -383,6 +450,36 @@ Figma has no variable for this — it is an OpenType feature on the text style.
 Either turn on lining/tabular figures for the `Metric 1`, `Metric 2` and
 `Label Small` styles where they carry a grid, or note on the guide boards that
 the code does it and the comps do not.
+
+### Every heading balances and every paragraph avoids orphans
+
+`text-wrap: balance` on the heading ramp, `text-wrap: pretty` on the prose ramp,
+declared once in `globals.css` (8 Sep 2026). Figma has no property for either
+and, more to the point, no NEED for one: a frame is a fixed 440 or 1440, so it
+breaks a title wherever that width breaks it, while the build breaks it at the
+reader's own width. Neither property changes a font-size, a line-height or a
+measured width.
+
+Nothing to fix in the file. Listed so a comp whose heading breaks 3 + 1 and a
+build that breaks it 2 + 2 is not re-raised as drift — the build is right, and
+the control classes (`Label`, `Label Small`, `Button`, `Button Small`,
+`Overline`) are deliberately left alone so no measured pill can rewrap.
+
+### Pressed exists on every action control, not just `Button`
+
+Board 04b (389:200) states the pressed treatment — `state/pressed-overlay` at
+14%, no scale transform — and the component sets carry no `State=Pressed`
+variant, so the board is the only source. In the build it is now a shared
+`.pressable` class (8 Sep 2026) worn by `Small Button`, both back chevrons, the
+`Bottom-Nav-Bar` items, `Check history`'s rows, the checked-in calendar discs
+and the add tray's method tiles.
+
+For Figma: either add a `State=Pressed` variant to `Small Button` (225:60/61)
+and `Bottom-Nav-Bar` (410:258), or note on 04b that the overlay is a state every
+navigating control takes and that the sets do not draw it. The inline text links
+(`View previous analyses`, the analysis's reminder link) are **not** covered —
+they have no radius or padding, so the overlay reads as a highlighter box, and
+what a pressed text link should look like is an open question for the file.
 
 ### Mobile frames pad 58 at the top; the build uses 40
 

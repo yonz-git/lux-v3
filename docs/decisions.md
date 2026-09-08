@@ -1305,6 +1305,195 @@ text style, so either the styles carrying a grid turn it on or the guide boards
 note that the build and the comps differ here. Logged in
 `docs/figma-catchup.md` §4.
 
+## Where a line breaks is the ramp's decision, not the screen's
+
+⚠️ **DECIDED 8 Sep 2026, BY ROLE, ALONGSIDE THE LINING FIGURES ABOVE.** Every
+heading class carries `text-wrap: balance` and every prose class carries
+`text-wrap: pretty`, declared once on the ramp in `globals.css`.
+
+| Role | Classes | What it fixes |
+| ---- | ------- | ------------- |
+| headings | `t-h1`–`t-h6`, `t-h4-h3`, `t-h3-h2`, `t-display1`/`-2` | a title that strands one word alone on its last line |
+| prose | `t-body1`/`-2`/`-3`, `t-body2-body1`, `t-body3-body2`, `t-caption` | a paragraph that ends on an orphan |
+
+⚠️ **THE COMP CANNOT MAKE THIS DECISION AND NEVER COULD.** A Figma frame is a
+fixed 440 or 1440, so it breaks a heading wherever that width happens to break
+it; the build breaks it at whatever width the reader's device is. Neither
+property moves a font-size, a line-height or a measured width — only where the
+break lands, which is the one typographic decision the comp was never in a
+position to make. Logged in `docs/figma-catchup.md`.
+
+⚠️ **IT WAS ALREADY BEING WRITTEN BY HAND, WHICH IS THE ARGUMENT FOR THE RAMP.**
+`HypothesisCard`, `Analysis` (twice) and `SkinProfileSummary` had each reached
+for it locally. A heading that balances on the analysis and not on the recap is
+the class of inconsistency nobody can name and everybody sees. Those four
+declarations are now redundant and are removed.
+
+⚠️ **THE CONTROL CLASSES ARE EXCLUDED, DELIBERATELY.** `t-label`, `t-label-sm`,
+`t-button`, `t-button-sm` and `t-overline` size chips, buttons and section
+labels whose widths are measured against Figma — balancing a two-line chip label
+moves the pill, which is exactly the drift the ramp exists to prevent. The
+browser also caps `balance` at a handful of lines, so it is a heading tool by
+construction.
+
+⚠️ **ONE LOCAL DECLARATION SURVIVES**, on `SkinProfileSummary`'s
+`.headlineValue`. It wears `t-button` — a control class — as a DATA VALUE on the
+recap's sage card, so the rule the ramp excludes it from is the rule it wants.
+That is the shape of a legitimate local `text-wrap`: a control class doing
+non-control duty. Anything else belongs on the ramp.
+
+## Pressed was one component's state and is now the app's
+
+⚠️ **BOARD 04b ALREADY ANSWERED THIS, AND ONE CONTROL WAS LISTENING.** "Pressed
+never uses a transform — LUX does not bounce. Overlay `state/pressed-overlay` at
+14% instead." `Button` has drawn that overlay since 22 Aug 2026. On 8 Sep 2026
+an audit of `:active` across the app found it in exactly two modules — `Button`
+and nothing that mattered — against roughly thirty interactive class rules.
+
+⚠️ **THE GAP WAS A TOUCH GAP, WHICH IS WHERE THE APP LIVES.** Every one of those
+controls had hover and a focus ring, and hover does not exist on a phone. So on
+the mobile frame the whole product is drawn at, a tap on the nav, on either back
+chevron, on a `SmallButton`, on a history row, on a checked-in calendar disc or
+on one of the add tray's method tiles produced **no feedback at all** until the
+thing it did finished. Those are precisely the controls that cannot afford
+silence: each one ends in a route change or a whole new sheet, so the gap
+between the tap and any visible answer is the longest in the app.
+
+The recipe moved to `globals.css` as `.pressable`, unchanged from the board:
+`state/pressed-overlay` at 14%, `duration/fast`, no transform.
+
+⚠️ **`::before`, NOT `::after`.** `.tap-target` — the WCAG 2.5.8 hit-area
+utility that has been in `globals.css` since the icon-sizing work — owns
+`::after`, and the two classes land on the same element wherever a small text
+control both grows its target and takes a press. `Remove` on a product accordion
+card is already both.
+
+⚠️ **AN OPT-IN CLASS, NOT A BLANKET `button:active` RULE, AND THAT IS THE WHOLE
+DESIGN OF IT.** Half the app's controls answer instantly on their own — a chip
+fills, an option row ticks, a disclosure opens, a face region lights. Darkening
+those adds a second signal to a state change the user is already looking at. The
+overlay goes on the controls whose result arrives LATER. Applied through a class
+for the same reason `.tap-target` is: it stays a decision, and it stays
+greppable.
+
+⚠️ **`Button` IS NOT A CALLER.** It carries its own copy of the recipe inline,
+on `::after`, with the gradient-reversal hover it has to coordinate with.
+Rewriting it to consume the class would be churn against a control that has been
+correct since August.
+
+⚠️ **INLINE TEXT LINKS ARE ALSO NOT CALLERS** — `CheckScreen`'s "View previous
+analyses" and the analysis's reminder link. They have no radius and no padding,
+so a 14% overlay lands as a highlighter box across the words rather than as a
+pressed surface. Those fade on `:hover` and would need a different pressed
+treatment, which is a Figma question rather than a code one.
+
+## Removing something is undoable
+
+⚠️ **NOTHING IN THE APP COULD BE UNDONE UNTIL 8 Sep 2026, AND TWO OF THE THINGS
+THAT COULD BE REMOVED PERSIST FOREVER.** `Remove` on a product accordion card
+deleted a product from the library outright, and the library is one of the four
+`PERSISTED_KEYS` slices — so a mis-tap on a 44px control was permanent, silent
+and unrecoverable except by retyping a name and a size. Taking a product off a
+day's check-in record was the same, and worse in one respect: the first edit of
+a SEEDED day materialises the whole record into the store, so the mis-tap also
+froze that day's other values in place.
+
+⚠️ **THE ANSWER IS UNDO, NOT A CONFIRM DIALOG, AND THE CHOICE IS THE POINT.** A
+confirm interrupts every removal — including the great majority that are
+deliberate — to protect against the few that are not, and it charges that
+interruption to the people who meant it. Undo charges them nothing and still
+gives the others a way back. It is also the pattern LUX can actually afford:
+the store already holds the previous value, so undo is one `setAnswer`, while a
+confirm would need a modal the design system does not have either.
+
+⚠️ **IT RESTORES A SLICE SNAPSHOT, NOT A REVERSED EDIT.** Each caller captures
+`answers.<key>` BEFORE it writes and hands that value back. Re-inserting the
+removed item would have to know where in the list it sat and, on the demo path,
+would have to reason about a slice that is still `undefined` because the library
+is SEEDED rather than stored. A snapshot answers both for free: restoring
+`undefined` puts the seeded library back exactly as it was, where restoring
+`DEMO_PRODUCTS` would materialise it and quietly turn a portfolio visitor's list
+into a stored one.
+
+⚠️ **ONE BAR AT A TIME.** A second `show()` replaces the first, which is the only
+correct behaviour for a snapshot undo: the second snapshot already contains the
+first removal, so undoing it walks back one step. Two stacked bars would each
+claim to walk back one step and the older one would walk back two.
+
+⚠️ **SIX SECONDS, PAUSED WHILE HOVERED OR FOCUSED.** Six is the window to notice
+a mistake and reach the control; it is not enough to read the message, decide,
+cross the screen and land on a 36px button, and a bar that vanishes from under
+the cursor on the way to it is worse than no bar. Measured in a real browser:
+shown at 0.3s, still shown at 3.3s, gone by 6.7s; hovered continuously it
+survives 7.2s and dismisses 6s after the pointer leaves. Keyboard users get the
+same guarantee through `focus`, because tabbing to the action must not be a race.
+
+⚠️ **THE PAUSE HANDLERS SIT ON THE REGION, NOT ON THE BAR.** `mouseenter` fires
+on an element when the pointer enters its SUBTREE, so the region hears the bar
+even though it is `pointer-events: none` itself, and `focus` bubbles from the
+button. It also keeps the bar a plain container — a `<div>` with interaction
+handlers and no role is what `noStaticElementInteractions` objects to, and the
+honest answer is that the interactive thing in there is the button.
+
+⚠️ **THE LIVE REGION IS ALWAYS MOUNTED, EMPTY OR NOT.** A live region has to be
+in the document BEFORE its content changes or the change is never announced —
+mounting the region together with its message is the classic way to ship a toast
+no screen reader ever reads. Empty, it takes no layout and no clicks.
+
+⚠️ **WHAT IS DELIBERATELY NOT WIRED.** CHECK's basket and the pending list on
+`/check/results` remove things too, and neither raises a bar: a basket you are
+building is not a destructive action, the item is still one tap away in the list
+beside it, and a message about it would fire constantly during ordinary use. The
+check-in draft's `Remove` for a captured photo is the same case.
+
+## The layout survives the user's own text spacing
+
+⚠️ **WCAG 1.4.12 (AA) IS THE ONE CRITERION NOTHING ELSE IN THIS REPO CAN SEE.** A
+user may override line-height to 1.5x, letter-spacing to 0.12em, word-spacing to
+0.16em and paragraph spacing to 2em, and nothing may be lost when they do. The
+build, `tsc` and axe all say nothing about it, because the failure only exists
+once those overrides land on a live layout at a real width. So it is measured:
+`npm run spacing` drives a headless Chrome over CDP with no dependencies, walks
+18 routes at 320, 440 and 1440, and reports what a box loses.
+
+⚠️ **IT RUNS TWICE AND REPORTS THE DIFFERENCE, WHICH IS THE WHOLE DESIGN OF IT.**
+A single "does anything overflow" pass reports about 80 boxes in this app and
+every one is a false positive: the transparent 44px hit areas (`.tap-target`,
+`Chip`'s `::after`) are absolutely positioned pseudo-elements that legitimately
+extend past their box and count toward `scrollHeight`. Only a box that overflows
+WITH the overrides and not without them is a failure. The baseline pass is what
+makes the result readable at all.
+
+Measured before the fix, six boxes lost content, all of them a flex column that
+had already collapsed to 56–75px at 320: `ProductList`'s name and meta in a
+`/check/new` row, `ResultCards`' `.statLabel` and `.emphasisTitle`,
+`CompatCard`'s name, and `MyProducts`' `.categoryName`.
+
+⚠️ **FIVE OF THEM ARE CLOSED BY `overflow-wrap: break-word` ON `body`, AND THAT
+IS THE ONE PROPERTY THAT HAS TO BE INHERITED RATHER THAN APPLIED BY ROLE.**
+Unlike `text-wrap` and `tabular-nums`, it restyles nothing that was already
+fitting — it acts only at the point where the alternative is text spilling out
+of its box. `break-word`, NOT `anywhere`: `anywhere` also shrinks a flex item's
+min-content width, which would let these columns collapse further than the
+layout intends.
+
+⚠️ **THE SIXTH REVERSED A WRITTEN DECISION, DELIBERATELY.** `.categoryName` on
+the PRODUCTS hub was `overflow: hidden` + `text-overflow: ellipsis` + nowrap,
+under the note "the name yields first — the window is the shorter, fixed string,
+and a truncated `4+ wee` would be worse than a truncated category name." That is
+still right about WHICH of the two yields; it was wrong about HOW. Under the
+overrides the ellipsis cut "Long-term products" at 440 and "Recent" at 320 —
+content the user cannot get back, caused by their own accessibility setting.
+It wraps now. **The row still stays 56 at every design width**, which is what
+the note on `.window` is actually protecting: measured, the longest name fits on
+one line at 440 and 1440, so nothing wraps and the comp height is unchanged. The
+row grows only at 320 — below the smallest comp — and under a user's own
+overrides, which is exactly when a fixed height is the thing that must give.
+
+After both changes the probe is clean: 18 routes x 3 widths, nothing clipped or
+spilled, and no page scrolls horizontally at 320 (which is 1.4.10 measured at
+the same time).
+
 ## Every empty state is one recipe, and one screen was not using it
 
 ⚠️ **The recipe was already there and already documented** — `ProgressScreen`
@@ -1366,6 +1555,7 @@ risk. All are on the missing-from-the-DS list.
 | Line chart         | `features/progress/components/SymptomTrend.tsx`                        | On the handoff's missing list. Drawn from the data, NOT from the comp's baked vector — the series is the card's whole content. `preserveAspectRatio="none"` + `vector-effect` for the line; the dots are positioned elements so they stay round (the desktop comp exports its "circles" at 13.33 x 8).                                                                              |
 | Skin-profile strip | `features/check/components/SkinProfileStrip.tsx`                    | The one sage element on a CHECK screen. Same System B recipe as `DataCard` but an 86-tall strip with 18/20 padding — a separate component rather than a size prop that would mean nothing.                                                                                                                                                                                         |
 | Compat accordion   | `features/check/components/CompatCard.tsx`                          | The SECOND accordion in the app; `ProductAccordionCard` is the other, on a different surface with a different header and no band. Neither exists in the DS. The band drives pill, score and bar fill through one `--band` custom property so they cannot drift.                                                                                                                       |
+| Undo snackbar      | `components/layout/Snackbar.tsx`                     | ⚠️ **NOT IN FIGMA AT ALL** — no toast, no snackbar, no transient message anywhere in the file. The one trace of the idea is `--z-toast` (500), reserved in the token scale and unused until 8 Sep 2026, which is why the component takes that layer rather than inventing one. Drawn as the NAV's own frosted pill — same fill, rim, shadow, blur and reduced-transparency fallback — because the app has exactly one recipe for a thing that floats over a screen and a second one for a message that lives six seconds would be drift. It departs on two values only, both content-driven: no fixed height (a name can take two lines, and more under a user's text-spacing overrides) and `radius/2xl` rather than `full`, since `full` on a two-line bar draws 26px lozenge ends that crowd the first and last words. **Raise a real Snackbar in Figma**, with the message/action split and the pause-on-hover behaviour recorded. |
 | Status pill        | `features/check/components/CompatCard.module.css`, `features/check/components/CheckHistory.module.css`   | Not `Tag` — Tag is Neutral/Brand only and these carry the feedback colours. ⚠️ `feedback/warning` and `feedback/error` share a hue and differ only in lightness, so the pill TEXT is what separates Risky from Avoid. Every row states its band in an aria-label, including the compatible ones that draw no pill at all.                                                            |
 
 

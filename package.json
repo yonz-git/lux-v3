@@ -8,7 +8,8 @@
     "start": "next start",
     "lint": "biome lint",
     "typecheck": "tsc --noEmit",
-    "vocab": "node scripts/vocab.mjs"
+    "vocab": "node scripts/vocab.mjs",
+    "spacing": "node scripts/text-spacing.mjs"
   },
   "dependencies": {
     "next": "^16.3.1",

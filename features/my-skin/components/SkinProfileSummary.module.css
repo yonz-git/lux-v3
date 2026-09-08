@@ -106,7 +106,13 @@
   margin: 0;
   color: var(--color-text-on-data);
   /* the skin type is one or three words — balanced so "Normal or balanced"
-     does not break with a single word stranded on line two */
+     does not break with a single word stranded on line two.
+
+     ⚠️ THE ONE LOCAL `balance` LEFT, AND IT HAS TO BE LOCAL. The ramp balances
+     HEADINGS; this value is `t-button` (17px), a CONTROL class the ramp
+     deliberately leaves alone so a chip or a button label cannot rewrap. Here
+     the class is doing duty as a data value on a card, so the rule it is
+     excluded from is the rule it wants. */
   text-wrap: balance;
 }
 
@@ -405,7 +411,6 @@
 .ctaHelp {
   margin: 0;
   color: var(--color-text-secondary);
-  text-wrap: pretty;
 }
 
 /* ---------------------------------------------------------------------------
@@ -453,7 +458,6 @@
 .emptyBody {
   margin: var(--space-md) 0 0; /* 12 */
   color: var(--color-text-secondary);
-  text-wrap: pretty;
 }
 
 /* full width of the 392 column on mobile; 280 on desktop rather than spanning

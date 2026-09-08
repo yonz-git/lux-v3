@@ -29,7 +29,7 @@ export function ScreenHeader({
 }) {
   return (
     <div className={styles.row}>
-      <Link href={backHref} className={styles.back} aria-label="Back">
+      <Link href={backHref} className={`${styles.back} pressable`} aria-label="Back">
         <ChevronLeftIcon />
       </Link>
       <SmallButton label="Save & exit" href={saveHref} />

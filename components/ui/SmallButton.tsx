@@ -33,7 +33,10 @@ export function SmallButton({ label, arrow = true, href, className, ...rest }: P
       )}
     </>
   );
-  const cls = [styles.button, className].filter(Boolean).join(" ");
+  /* `pressable` is board 04b's overlay, shared from globals.css — the same
+     recipe `Button` draws inline. Without it the app's two action controls
+     answered a tap differently. */
+  const cls = [styles.button, "pressable", className].filter(Boolean).join(" ");
 
   // a disabled control must not stay a link — links are not disableable
   if (href && !rest.disabled) {

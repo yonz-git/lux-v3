@@ -90,7 +90,7 @@ components/ui/       the design system: Button, SmallButton, Chip, OptionRow,
                      Tag, TextField, DateField, SearchField, ChatBubble, Sheet,
                      DataCard, Orb, CameraCapture, icons
 components/layout/   app chrome: BottomNav, HubScreen, ScreenHeader,
-                     RouteAnnouncer
+                     RouteAnnouncer, Snackbar
 features/my-skin/    flow.ts + safety.ts + analysis.ts, the investigation steps,
                      QuestionScreen, StepProgress, SelfieSheet, FaceDiagram, and
                      the three analysis screens (EvidenceCheck, Analyzing,
@@ -507,6 +507,20 @@ table is stale — say so rather than working around it.
 one class, never a media query you write. `t-h3-h2` is a real Figma style with
 **no caller**; page titles are `t-h4-h3`. See non-negotiable 16.
 
+⚠️ **THE RAMP ALSO OWNS WHERE A LINE BREAKS, AS OF 8 Sep 2026.** Every heading
+class (`t-h1`–`t-h6`, `t-h4-h3`, `t-h3-h2`, `t-display*`) carries
+`text-wrap: balance`; every prose class (`t-body*`, both responsive pairs,
+`t-caption`) carries `text-wrap: pretty`. Figma cannot express either — a comp
+breaks a title wherever its fixed 440 or 1440 canvas breaks it, and the build
+breaks it at the reader's width — so this is a code-side decision applied by
+ROLE, the same way tabular figures are (non-negotiable 19). ⚠️ **The CONTROL
+classes are deliberately excluded** — `t-label`, `t-label-sm`, `t-button`,
+`t-button-sm` and `t-overline` size chips, buttons and section labels whose
+widths are measured against Figma, and balancing a two-line chip label moves the
+pill. `SkinProfileSummary`'s `.headlineValue` is the one local `balance` left,
+because it wears `t-button` as a data value rather than as a control. **Do not
+write `text-wrap` in a module** unless you are in that same position.
+
 ### Spacing — `--space-*`
 
 `2xs` 2 · `xs` 4 · `sm` 8 · `md` 12 · `lg` 16 · `xl` 20 · `2xl` 24 · `3xl` 32 ·
@@ -884,7 +898,19 @@ from it toggles like an ordinary one and the bug is invisible in the screen.
 `--ease-standard` is the default for anything that enters and settles.
 
 - **Pressed never uses a transform** — "LUX does not bounce." Overlay
-  `state/pressed-overlay` at 14% instead.
+  `state/pressed-overlay` at 14% instead. ⚠️ **AND IT IS A SHARED CLASS NOW —
+  `pressable`, in `globals.css`, added 8 Sep 2026.** `Button` had drawn the
+  board's overlay since 22 Aug and NOTHING ELSE IN THE APP DID: the nav items,
+  both back chevrons, `SmallButton`, the history rows, the checked-in calendar
+  discs and the add tray's method tiles all shipped with hover and focus and no
+  press. Hover does not exist on a phone, so on touch — which is the frame the
+  whole app is drawn at — a tap on any of them produced no feedback at all until
+  the next screen painted. ⚠️ **It uses `::before`, because `.tap-target` owns
+  `::after`** and a small text control can want both. ⚠️ **It is an OPT-IN, not
+  a blanket `button:active` rule**: a chip, an option row and a disclosure change
+  the moment they are tapped, and darkening those adds a second signal to a
+  state change already on screen. It goes on the controls whose result arrives
+  LATER. `Button` keeps its own inline copy of the recipe and is not a caller.
 - ⚠️ **The rule that NAMES an animation must live in `globals.css`, never in a
   CSS Module.** Modules localize `@keyframes` names, so `animation: lux-fade-in`
   inside a module resolves to nothing while still reporting a duration in
@@ -941,6 +967,17 @@ losing that race announces the screen the user just left.
 ## Before you call a screen done
 
 - `npm run build` and `npm run typecheck` both clean.
+- ⚠️ **`npm run spacing` clean IF THE SCREEN'S LAYOUT CHANGED.** WCAG 1.4.12:
+  a user may override line-height to 1.5x and letter/word-spacing to
+  0.12/0.16em, and nothing may be lost when they do. Nothing else here can see
+  that failure — it exists only once those overrides land on a live layout — so
+  the script drives a headless Chrome over CDP (no dependencies) across 18
+  routes at 320/440/1440 and reports only what the OVERRIDES caused, by
+  differencing against a baseline pass. It needs a running server and a Chrome,
+  which is why it is not on the same footing as `vocab`; the header of
+  `scripts/text-spacing.mjs` has the three commands. `body` carries
+  `overflow-wrap: break-word` as the standing safety net — see
+  `docs/decisions.md`, "The layout survives the user's own text spacing".
 - ⚠️ **`npm run vocab` clean IF THE SCREEN SAYS ANYTHING ABOUT A PRODUCT'S
   EFFECT ON SKIN.** It checks user-facing strings against the product brief's
   forbidden list — "this caused your reaction", "safe for you", "toxic

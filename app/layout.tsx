@@ -3,6 +3,7 @@ import { Figtree } from "next/font/google";
 import "./globals.css";
 import { InvestigationProvider } from "@/lib/store/InvestigationProvider";
 import { RouteAnnouncer } from "@/components/layout/RouteAnnouncer";
+import { SnackbarProvider } from "@/components/layout/Snackbar";
 
 /**
  * Figtree is the LUX typeface. Poppins was used early on and must not come back.
@@ -53,7 +54,14 @@ export default function RootLayout({
         {/* speaks each client-side navigation and moves focus into the new
             screen — the App Router provides neither. See the component. */}
         <RouteAnnouncer />
-        <InvestigationProvider>{children}</InvestigationProvider>
+        {/* ⚠️ INSIDE THE ANSWER STORE, NOT OUTSIDE IT. Every snackbar this app
+            raises offers to put a slice of the store back, so the callers hold
+            both hooks and the undo action closes over a `setAnswer`. Mounted
+            once, at the root, for the same reason the nav is fixed once: a
+            message about what just happened must not be a screen's to draw. */}
+        <InvestigationProvider>
+          <SnackbarProvider>{children}</SnackbarProvider>
+        </InvestigationProvider>
       </body>
     </html>
   );

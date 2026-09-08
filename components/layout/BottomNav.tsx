@@ -82,7 +82,7 @@ export function BottomNav({ active = "none" }: { active?: NavSection }) {
             <Link
               key={id}
               href={href}
-              className={styles.item}
+              className={`${styles.item} pressable`}
               data-active={isActive}
               aria-current={isActive ? "page" : undefined}
             >
@@ -94,7 +94,7 @@ export function BottomNav({ active = "none" }: { active?: NavSection }) {
           <button
             key={id}
             type="button"
-            className={styles.item}
+            className={`${styles.item} pressable`}
             data-active={isActive}
             // no destination yet — see the note above
             onClick={() => {}}

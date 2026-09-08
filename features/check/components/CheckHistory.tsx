@@ -86,7 +86,7 @@ export function CheckHistory() {
             <li key={check.id}>
               <button
                 type="button"
-                className={styles.row}
+                className={`${styles.row} pressable`}
                 onClick={() => open(check)}
                 aria-label={`Analysis of ${date}, ${products.length} products — ${BAND_LABEL[band]}`}
               >

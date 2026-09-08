@@ -15,12 +15,36 @@
      is a claim the analysis is not making.
 
      ⚠️ `--band-ink` IS A SECOND PROPERTY BECAUSE THE PILL'S TEXT COLOUR CANNOT
-     BE FIXED. Measured: white on `feedback/warning` (#c9918e) is **2.65:1** and
-     fails AA outright — which is why `CompatCard`'s band pills are on the
-     known-failing list in AGENTS.md non-negotiable 17. `text/primary` on the
-     same fill is **5.22:1** and passes. On `bg/brand` (#39386f, re-hued 8 Sep 2026) it is the other
+     BE FIXED. Measured: white on `feedback/warning` is **3.12:1** and fails AA
+     outright — which is why `CompatCard`'s band pills are on the known-failing
+     list in AGENTS.md non-negotiable 17. `text/primary` on the same fill is
+     **4.43:1**. On `bg/brand` (#39386f, re-hued 8 Sep 2026) it is the other
      way round: white 10.66, ink 1.29. So the ink travels with the band, and a
-     new component does not inherit an old component's failure. */
+     new component does not inherit an old component's failure.
+
+     ⚠️ THAT INK PASSED UNTIL 8 Sep 2026 AND NOW MISSES BY 0.07, AND STAYING
+     ALIASED IS A DECISION, NOT AN OVERSIGHT. It measured **5.22:1** while
+     `feedback/warning` was the dusty rose #c9918e; the token was retuned to
+     #d47873 for CHECK's Avoid/Risky scale (see the block on
+     `--color-feedback-warning` in globals.css) and this card aliases it. The
+     ink is still the better of the two by 1.31, so the pairing above is
+     unchanged — but 4.43:1 is under AA for a 12px `t-label-sm`.
+
+     ⚠️ PINNING THIS CARD TO ITS OWN #c9918e WAS OFFERED AND REFUSED, 8 Sep
+     2026 — the analysis pill is to be the same #d47873 the CHECK pills are.
+     **Do not "restore" the passing value**: it would put two warm pinks one
+     step apart in the app for two different meanings, which is the exact
+     failure the token retune was done to end. The paragraph above still holds
+     as far as `feedback/error` goes — this band is the warning, never the
+     error, and the analysis still makes no danger claim — but the gap between
+     the two is now lightness alone, so the WORDS are carrying the distinction
+     here the same way `check.ts` says they carry it there.
+
+     The 0.07 is a real failure and is logged with the band pills in
+     `docs/figma-catchup.md` § 2. If it is ever closed, close it by moving the
+     FILL — a third ink is not available, since white on this fill is 3.12:1
+     and the app ink is the better half of a pairing that has nowhere else to
+     go. */
   --band: var(--color-feedback-warning);
   --band-ink: var(--color-text-primary);
 
@@ -93,7 +117,6 @@
 .headline {
   margin: 0;
   color: var(--color-text-primary);
-  text-wrap: balance;
 }
 
 .products {

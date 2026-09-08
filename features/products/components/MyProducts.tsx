@@ -11,6 +11,7 @@ import { AddProductRow, EmptyBox } from "./ProductList";
 import { AddProductMethodSheet } from "./AddProductMethodSheet";
 import { ChevronDownIcon } from "@/components/ui/icons";
 import { useInvestigation } from "@/lib/store/InvestigationProvider";
+import { useSnackbar } from "@/components/layout/Snackbar";
 import { ownedProducts, DEMO_PRODUCTS } from "@/lib/demo";
 import {
   BUCKETS,
@@ -18,6 +19,7 @@ import {
   BUCKET_WINDOW,
   UNSORTED_BUCKET,
   countIn,
+  fullName,
   type BucketId,
   type SavedProduct,
 } from "@/features/products/products";
@@ -134,11 +136,34 @@ import {
  */
 export function MyProducts() {
   const { answers, setAnswer } = useInvestigation();
+  const { show } = useSnackbar();
   const [sheetOpen, setSheetOpen] = useState(false);
   /* ⚠️ THE SEEDED LIBRARY WHEN THE USER OWNS NOTHING — see lib/demo.ts. The hub
      greeted a portfolio visitor with "No products added yet", which is the same
      empty-readout problem `/progress` and `/check` had. */
   const products: SavedProduct[] = ownedProducts(answers);
+
+  /**
+   * ⚠️ THE REMOVAL IS UNDOABLE, AND THE UNDO IS THE SLICE AS IT WAS. `products`
+   * is one of the four keys that persist FOREVER, so before this a mis-tap on
+   * the accordion's `Remove` deleted a product permanently, silently, and with
+   * no way back but retyping it. The snapshot is taken from the store, NOT from
+   * the resolved list above: on the demo path the key is still `undefined`
+   * because the library is seeded, and restoring `undefined` is what puts the
+   * seeded library back — restoring `DEMO_PRODUCTS` would materialise it and
+   * quietly turn a portfolio visitor's list into a stored one.
+   */
+  function removeProduct(id: string) {
+    const before = answers.products;
+    const removed = products.find((p) => p.id === id);
+    setAnswer("products", (prev) =>
+      (prev ?? DEMO_PRODUCTS).filter((x) => x.id !== id),
+    );
+    show({
+      message: removed ? `Removed ${fullName(removed)}` : "Product removed",
+      onAction: () => setAnswer("products", before),
+    });
+  }
 
   // ⚠️ THE THREE DESIGNED PERIODS ALWAYS, "Not sure" ONLY WHEN IT HAS SOMETHING.
   // The comp shows all three periods and a category that disappears when it
@@ -206,11 +231,7 @@ export function MyProducts() {
                  taking the list over: it materialises the seeded library into
                  the store minus that product, and from then on the list is
                  theirs — including when they empty it. */
-                onRemove={(id) =>
-                  setAnswer("products", (prev) =>
-                    (prev ?? DEMO_PRODUCTS).filter((x) => x.id !== id),
-                  )
-                }
+                onRemove={(id) => removeProduct(id)}
               />
             </li>
           ))}

@@ -12,6 +12,7 @@ import { AddProductMethodSheet } from "@/features/products/components/AddProduct
 import { ProductThumb } from "@/features/products/components/ProductThumb";
 import { CheckInPhotoArt } from "./CheckInPhotoArt";
 import { useInvestigation } from "@/lib/store/InvestigationProvider";
+import { useSnackbar } from "@/components/layout/Snackbar";
 import { useToday } from "@/lib/useToday";
 import { ownedProducts } from "@/lib/demo";
 import { formatDay, fromIso } from "@/lib/date";
@@ -128,6 +129,7 @@ import {
  */
 export function CheckInDetail({ date, now }: { date: string; now: number }) {
   const { answers, setAnswer } = useInvestigation();
+  const { show } = useSnackbar();
   const view = progressView(answers, useToday(now));
   const day = fromIso(date);
   const entry = day ? checkInOn(checkInsFor(answers, view), date) : null;
@@ -182,6 +184,23 @@ export function CheckInDetail({ date, now }: { date: string; now: number }) {
   function edit(change: (ids: string[]) => string[]) {
     if (!entry) return;
     setAnswer("checkIns", editProductsUsed(answers, entry, change));
+  }
+
+  /**
+   * ⚠️ TAKING A PRODUCT OFF A DAY IS UNDOABLE. `checkIns` persists forever, and
+   * the record being edited is often a SEEDED one — the first edit materialises
+   * the whole day into the store (see `editProductsUsed`), so a mis-tap here
+   * both drops a product and freezes the rest of the day's seeded values in
+   * place. Restoring the slice as it was undoes both halves of that; undoing the
+   * id list alone would leave the day materialised.
+   */
+  function removeProduct(id: string, name: string) {
+    const before = answers.checkIns;
+    edit((ids) => ids.filter((x) => x !== id));
+    show({
+      message: `Removed ${name} from this day`,
+      onAction: () => setAnswer("checkIns", before),
+    });
   }
 
   function addProduct(id: string) {
@@ -508,9 +527,7 @@ export function CheckInDetail({ date, now }: { date: string; now: number }) {
                       type="button"
                       className={styles.remove}
                       aria-label={`Remove ${fullName(p)} from this day`}
-                      onClick={() =>
-                        edit((ids) => ids.filter((x) => x !== p.id))
-                      }
+                      onClick={() => removeProduct(p.id, fullName(p))}
                     >
                       <CloseIcon className={styles.removeIcon} />
                     </button>

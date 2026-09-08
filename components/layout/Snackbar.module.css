@@ -1,0 +1,88 @@
+/* The undo snackbar — ⚠️ NOT IN FIGMA. The design system has no toast, no
+   snackbar and no transient message of any kind; `--z-toast` (500) is the only
+   trace of one, reserved in the token scale and never used until now. See
+   `docs/decisions.md`, "Removing something is undoable".
+
+   It is drawn as a SIBLING OF THE NAV rather than as a new surface: the app has
+   exactly one recipe for a thing that floats over a screen — the frosted pill —
+   and inventing a second one for a message that lives six seconds would be the
+   drift this file exists to prevent. Same fill, same rim, same shadow, same
+   blur, same radius. What differs is the height (content-driven, not 75) and
+   the position (directly above the nav, in the clearance every `.screen`
+   already reserves). */
+
+.region {
+  position: fixed;
+  /* the same reservation `.screen` makes for the nav, so the bar lands in the
+     gap the layout already keeps clear rather than over the last row of the
+     page. ⚠️ Never write these numbers — see non-negotiable 6. */
+  bottom: calc(
+    var(--nav-inset-bottom) + var(--size-nav-height) + var(--space-lg)
+  );
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: var(--z-toast);
+
+  width: var(--size-nav-width-mobile);
+  max-width: calc(100vw - (var(--margin-mobile) * 2));
+
+  /* the region is always mounted so the live region can announce into it (see
+     the component); with nothing in it, it must not intercept a tap meant for
+     the screen underneath */
+  pointer-events: none;
+}
+
+@media (min-width: 1024px) {
+  .region {
+    width: var(--size-nav-width-desktop);
+  }
+}
+
+.bar {
+  pointer-events: auto;
+
+  display: flex;
+  align-items: center;
+  gap: var(--space-md);
+  /* ⚠️ NO FIXED HEIGHT, DELIBERATELY. A removed product's name can take two
+     lines at 380, and it takes more of them under a user's own text-spacing
+     overrides — WCAG 1.4.12. The bar grows; nothing is clipped and nothing is
+     truncated. */
+  padding: var(--space-sm) var(--space-sm) var(--space-sm) var(--space-xl);
+  /* ⚠️ `2xl`, NOT `full`, AND IT IS THE ONE PLACE THIS SURFACE DEPARTS FROM THE
+     NAV. Every other floating thing in LUX is a pill because every other one is
+     a fixed height. This bar is content-height, so `full` resolves against
+     whatever it grew to: on two lines it draws 26px lozenge ends that crowd the
+     first and last words. `2xl` is the radius the app already uses for a
+     surface that holds a block of text. */
+  border-radius: var(--radius-2xl);
+
+  /* the nav's glass, verbatim — same fill, same hand-dialled rim, same pair of
+     shadows, same saturate() (see BottomNav.module.css for why each is what it
+     is) */
+  border: 0.5px solid #ffffff54;
+  background: var(--color-surface-frost-nav);
+  box-shadow: var(--shadow-nav);
+  -webkit-backdrop-filter: blur(var(--blur-card)) saturate(160%);
+  backdrop-filter: blur(var(--blur-card)) saturate(160%);
+}
+
+@media (prefers-reduced-transparency: reduce) {
+  .bar {
+    background: var(--color-bg-nav);
+    -webkit-backdrop-filter: none;
+    backdrop-filter: none;
+  }
+}
+
+.message {
+  flex: 1 1 auto;
+  /* a flex item's min-width is auto, which lets a long product name push the
+     action off the end of the bar instead of wrapping */
+  min-width: 0;
+  color: var(--color-text-primary);
+}
+
+.action {
+  flex: none;
+}

@@ -116,11 +116,22 @@
 .categoryName {
   min-width: 0;
   color: var(--color-text-primary);
-  /* the name yields first — the window is the shorter, fixed string, and a
-     truncated "4+ wee" would be worse than a truncated category name */
-  overflow: hidden;
-  text-overflow: ellipsis;
-  white-space: nowrap;
+  /* ⚠️ IT WRAPS RATHER THAN ELLIPSISING, CHANGED 8 Sep 2026 — WCAG 1.4.12. It
+     used to be `overflow: hidden` + `text-overflow: ellipsis` + nowrap, on the
+     reasoning that "the name yields first" because `.window` is the shorter,
+     fixed string and a truncated "4+ wee" would read worse than a truncated
+     category name. That reasoning holds for WHICH of the two yields; what it
+     got wrong is HOW. Measured with the WCAG text-spacing overrides applied,
+     the ellipsis cut "Long-term products" at 440 and "Recent" at 320 — content
+     the user cannot get back, caused by their own accessibility setting, which
+     is the failure 1.4.12 names. Wrapping loses nothing.
+
+     ⚠️ THE ROW STILL STAYS 56 AT EVERY DESIGN WIDTH, which is what the note on
+     `.window` below is actually protecting. Measured: at 440 and 1440 the
+     longest name fits on one line with room to spare, so nothing wraps and the
+     comp height is unchanged. The row grows only at 320 — below the smallest
+     comp — and under a user's own spacing overrides, which is precisely when a
+     fixed height is the thing that must give. */
 }
 
 /* ⚠️ THE ROW MUST STAY 56. The window sits BESIDE the name on one line, never

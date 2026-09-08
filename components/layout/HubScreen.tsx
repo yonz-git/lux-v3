@@ -142,7 +142,7 @@ export function HubScreen({
         {hasHeader && (
           <div className={styles.header}>
             {backHref ? (
-              <Link href={backHref} className={styles.back} aria-label="Back">
+              <Link href={backHref} className={`${styles.back} pressable`} aria-label="Back">
                 <ChevronLeftIcon />
               </Link>
             ) : (
