@@ -137,7 +137,7 @@
 }
 
 .day[data-today] {
-  border: var(--border-width-thin) solid var(--color-border-glass); /* 1.5 */
+  border: var(--border-width-thin) solid var(--color-text-on-data-inverse); /* 1.5 */
   color: var(--color-text-on-data);
 }
 
@@ -211,7 +211,7 @@
 }
 
 .dot[data-today] {
-  border: var(--border-width-thin) solid var(--color-border-glass);
+  border: var(--border-width-thin) solid var(--color-text-on-data-inverse);
 }
 
 .legendLabel {
