@@ -366,32 +366,65 @@
   margin-top: var(--space-sm);
 }
 
-/* the decline as text, the action as a pill on the right.
-   ⚠️ THE DECLINE IS CENTRED IN WHAT THE PILL LEAVES, not flush left. The row was
-   `space-between`, which pinned "Not now" to the far edge with a wide gap
-   between it and the confirm — two controls at opposite ends of a 312 row read
-   as unrelated, and the left one read as a stray label rather than as the other
-   half of the answer. The slot takes the slack and centres the button inside
-   it; `space-between` comes off, since the slot's own `flex: 1` is what puts
-   the pill on the right now. */
+/* the question's actions — ONE segmented pill, the same frosted-glass +
+   gradient-segment recipe as `SegmentedToggle` (the add-product tray's own
+   "Add product" / "Search again"), asked for directly so the two places the
+   app asks "keep this or not" read as one design.
+   ⚠️ NOT A TOGGLE: `askConfirm` and `decline` are two distinct actions, not
+   two states of one control — plain buttons, neither carries `role="tab"`.
+   `askConfirm` sits LEFT, the way the tray's own confirm segment does. */
 .askActions {
   display: flex;
-  align-items: center;
-  gap: var(--space-md);
+  gap: 4px;
+  padding: 5px;
   margin-top: 6px;
+  align-self: center;
+
+  border-radius: var(--radius-full);
+  background: var(--color-surface-frost-nav);
+  border: 1px solid var(--color-border-glass);
+  -webkit-backdrop-filter: blur(16px);
+  backdrop-filter: blur(16px);
 }
 
-.declineSlot {
-  flex: 1;
-  min-width: 0;
-  display: flex;
-  justify-content: center;
+@media (prefers-reduced-transparency: reduce) {
+  .askActions {
+    background: var(--color-bg-nav);
+    -webkit-backdrop-filter: none;
+    backdrop-filter: none;
+  }
 }
 
-/* the pill keeps its own width — it must not absorb the slack or shrink to make
-   room for it */
+/* the confirm segment — filled, like `SegmentedToggle`'s selected segment.
+   Buttons: one rule for every style (non-negotiable 5) — hover runs the
+   gradient end for end at full strength via the same registered --grad-start /
+   --grad-end properties (globals.css), disabled fades to `opacity/disabled`. */
 .askConfirm {
+  --grad-start: var(--color-gradient-brand-start);
+  --grad-end: var(--color-gradient-brand-end);
+
   flex: none;
+  padding: 11px 22px;
+  border: none;
+  border-radius: var(--radius-full);
+  background: linear-gradient(90deg, var(--grad-start) 0%, var(--grad-end) 100%);
+  color: var(--color-text-on-brand);
+  transition:
+    opacity var(--duration-hover) var(--ease-standard),
+    --grad-start var(--duration-hover) var(--ease-standard),
+    --grad-end var(--duration-hover) var(--ease-standard);
+}
+
+@media (hover: hover) {
+  .askConfirm:hover:not(:disabled) {
+    --grad-start: var(--color-gradient-brand-end);
+    --grad-end: var(--color-gradient-brand-start);
+  }
+}
+
+.askConfirm:disabled {
+  opacity: var(--opacity-disabled);
+  cursor: not-allowed;
 }
 
 /* The re-run block, revealed by the first removal. `reveal-quick` is not used
@@ -439,23 +472,29 @@
   --button-height: 53px;
 }
 
-/* the question's decline. ⚠️ IT WAS `.undo` AND IS THE ONLY CALLER LEFT — the
-   re-run block's `Undo` is gone, so the name now describes what it does rather
-   than the control it was shared with. */
+/* the decline segment — unfilled, `SegmentedToggle`'s unselected segment.
+   ⚠️ IT WAS `.undo` AND IS THE ONLY CALLER LEFT — the re-run block's `Undo` is
+   gone, so the name now describes what it does rather than the control it was
+   shared with. */
 .decline {
-  padding: 0;
-  color: var(--color-text-primary);
-  border-radius: var(--radius-sm);
-  transition: opacity var(--duration-fast) var(--ease-standard);
+  flex: none;
+  padding: 11px 22px;
+  border: none;
+  border-radius: var(--radius-full);
+  background: transparent;
+  color: var(--color-text-secondary);
+  transition: background-color var(--duration-fast) var(--ease-standard);
 }
 
-.decline:hover {
-  opacity: 0.7;
+@media (hover: hover) {
+  .decline:hover {
+    background: var(--color-state-hover-overlay);
+  }
 }
 
 @media (hover: none) {
   .decline:hover {
-    opacity: 1;
+    background: transparent;
   }
 }
 

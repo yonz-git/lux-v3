@@ -10,7 +10,6 @@ import { CompatCard } from "./CompatCard";
 import { ProductThumb } from "@/features/products/components/ProductThumb";
 import { SummaryCard, IngredientsCard, NextStepsCard } from "./ResultCards";
 import { Button } from "@/components/ui/Button";
-import { SmallButton } from "@/components/ui/SmallButton";
 import { OptionRow } from "@/components/ui/OptionRow";
 import { SearchField } from "@/components/ui/SearchField";
 import { Tag } from "@/components/ui/Tag";
@@ -427,44 +426,36 @@ export function CheckResults() {
                   ))}
                 </div>
 
-                {/* ⚠️ THE DECLINE IS A TEXT BUTTON, NOT A SECOND `SmallButton`.
-                    SmallButton has ONE style — the gradient pill — so a pair of
-                    them is two identical controls where one is the answer and
-                    one is the way out, and overriding the fill of one from this
-                    module is the box-shadow trap all over again (a module rule
-                    fighting a component's own). Text-left / pill-right is the
-                    pairing this box already used for its re-run action, which
-                    is now a single centred button — the question keeps the pair
-                    because it HAS two answers.
+                {/* ⚠️ THE PAIR IS ONE SEGMENTED PILL, THE SAME DESIGN AS THE
+                    ADD-PRODUCT TRAY'S `SegmentedToggle` — asked for directly so
+                    the two places the app asks "keep this or not" look like one
+                    decision. NOT an actual toggle, though: `Add to my products`
+                    and `Not now` are two distinct actions rather than two states
+                    of one control, so both render as plain buttons and neither
+                    carries `role="tab"`. The confirm sits LEFT, the way the
+                    tray's own "Add product" segment does.
 
-                    ⚠️ THE ACTION IS DISABLED UNTIL THE QUESTION IS ANSWERED,
+                    ⚠️ THE CONFIRM IS DISABLED UNTIL THE QUESTION IS ANSWERED,
                     for the reason `Continue` is on every flow step: there is no
                     group to file the product under until it is. */}
                 <div className={styles.askActions}>
-                  {/* ⚠️ THE DECLINE SITS IN A SLOT RATHER THAN BEING ONE. It
-                      centres in the space the pill leaves — but the CENTRING is
-                      the slot's job and the button keeps hugging its label,
-                      because a `flex: 1` button would make a two-word decline
-                      the widest tap target in the box and put it beside a
-                      smaller confirm. */}
-                  <span className={styles.declineSlot}>
-                    <button
-                      type="button"
-                      className={`${styles.decline} t-label tap-target`}
-                      onClick={() => setAsking(null)}
-                    >
-                      Not now
-                    </button>
-                  </span>
-                  <SmallButton
-                    className={styles.askConfirm}
-                    label="Add to my products"
-                    arrow={false}
+                  <button
+                    type="button"
+                    className={`${styles.askConfirm} t-label`}
                     disabled={!askedDuration}
                     onClick={() =>
                       askedDuration && keepUsing(asking, askedDuration)
                     }
-                  />
+                  >
+                    Add to my products
+                  </button>
+                  <button
+                    type="button"
+                    className={`${styles.decline} t-label tap-target`}
+                    onClick={() => setAsking(null)}
+                  >
+                    Not now
+                  </button>
                 </div>
               </div>
             )}
