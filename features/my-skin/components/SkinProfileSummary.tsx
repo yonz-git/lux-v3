@@ -31,19 +31,25 @@ import type { ProfileRecap } from "@/features/my-skin/profile";
  * `/investigation/analysis` and `/check/results` have. The rule at the top of
  * `flow.ts` is that a screen is a step if and only if it carries BOTH the track
  * and `Save & exit`; this carries neither because it asks nothing. The five
- * steps COLLECT, this READS BACK, and step 5 then continues the walk.
+ * steps COLLECT, this READS BACK.
  * **Do not add it to `STEPS`.**
  *
- * ⚠️ IT REPLACED A DIRECT HAND-OFF FROM TIMING TO `/check/new`, WHICH WAS A
- * DELIBERATE ROUTE AND IS WORTH KNOWING ABOUT. Step 4 pointed at CHECK's
- * builder from 6 Sep 2026 as the first move of the CHECK/analysis merge — two
- * screens were doing the same job in two sections. The note on the `timing`
- * step recorded the cost of that shortcut: `/check/new` collects PRODUCTS but
- * not DURATIONS, and the duration is the entire mechanism of the analysis, so a
- * basket built there leaves the analysis able only to refuse. Routing through
- * here to step 5 puts the duration question back on the path. The merge itself
- * is not undone — `/check/new` is still reachable from CHECK and still the
- * shared builder. See `flow.ts` and `docs/decisions.md`.
+ * ⚠️ THE CTA LEAVES THE FLOW NOW, ASKED FOR DIRECTLY 9 Sep 2026 — it used to
+ * continue to step 5 (`/investigation/products`) and now goes straight to the
+ * PRODUCTS hub (`/products`). It was routed through step 5 in the first place
+ * to keep a DIFFERENT shortcut from breaking: `/check/new` collects PRODUCTS
+ * but not DURATIONS, so a basket built there left the analysis able only to
+ * refuse (see the note this replaced, and `flow.ts`). `/products` does not
+ * share that gap — it renders the SAME add-product tray step 5 does
+ * (`AddProductMethodSheet`, which asks the duration question per product on
+ * add), not `/check/new`'s builder — so routing here loses nothing the flow
+ * needs. What it does give up is the flow's own completion: this exit no
+ * longer reaches `/investigation/analysis`, so a user who follows this CTA has
+ * to find their own way back to the analysis (or not look for it at all). See
+ * `docs/decisions.md` if that trade-off needs revisiting. Step 5 itself is
+ * unchanged and still reachable directly, still the one flow screen lighting
+ * `products`; `/check/new` is still reachable from CHECK and still the shared
+ * builder.
  *
  * ⚠️ NOT IN FIGMA AT ALL. Page `06. Screen Designs` has no recap frame, so
  * every measurement here is decided in the prototype — it is assembled from
@@ -403,7 +409,7 @@ export function SkinProfileSummary({ now }: { now: number }) {
             `.full`, and which one wins is then CSS-Module load order rather than
             anything written down (non-negotiable 13's exact trap). */}
         <div className={styles.cta}>
-          <Button href="/investigation/products" fullWidth>
+          <Button href="/products" fullWidth>
             {COPY.cta}
           </Button>
         </div>
