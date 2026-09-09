@@ -1,0 +1,99 @@
+/* Segmented Toggle — Figma node 75:23 ("Pattern / Segmented Toggle").
+   Two-option pill switcher with a frosted container and a gradient selector.
+
+   Backdrop-blur 16 (glass-soft from the effect styles), `surface/frost-nav`
+   at 88% opacity, 1px `border/glass` — the same frosted-pill language the
+   nav and SearchField use, scaled down to a control.
+
+   The gradient pill runs `gradient/brand` (#657792 → #39386f) via the
+   registered --grad-start / --grad-end properties from globals.css —
+   the same plumbing Button uses for its hover reversal — so the sweep
+   cross-fades rather than snapping on selection change. */
+
+.toggle {
+  display: flex;
+  gap: 4px;
+  padding: 5px;
+  border-radius: var(--radius-full);
+  background: var(--color-surface-frost-nav);
+  border: 1px solid var(--color-border-glass);
+  -webkit-backdrop-filter: blur(16px);
+  backdrop-filter: blur(16px);
+  align-self: center;
+}
+
+@media (prefers-reduced-transparency: reduce) {
+  .toggle {
+    background: var(--color-bg-nav);
+    -webkit-backdrop-filter: none;
+    backdrop-filter: none;
+  }
+}
+
+/* Each segment is a button — pill-shaped, t-label (14/20 Medium), no UA
+   padding (globals.css zeroes it on all buttons). The gradient layer sits
+   in a pseudo-element so background-color can transition the solid fill
+   independently while the gradient cross-fades via opacity. */
+
+.segment {
+  position: relative;
+  padding: 11px 22px;
+  border-radius: var(--radius-full);
+  border: none;
+  background: transparent;
+  color: var(--color-text-secondary);
+  cursor: pointer;
+  z-index: 0;
+  transition:
+    color var(--duration-base) var(--ease-standard);
+}
+
+@media (hover: hover) {
+  .segment:hover:not(.selected) {
+    background: var(--color-state-hover-overlay);
+  }
+}
+
+@media (hover: none) {
+  .segment:hover {
+    background: transparent;
+  }
+}
+
+/* The gradient pill layer — sits behind the text, fades in on selection.
+
+   Uses the same registered --grad-start / --grad-end properties from
+   globals.css that Button uses, so the gradient sweep cross-fades
+   smoothly via opacity rather than snapping between background-images. */
+
+.segment::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  z-index: -1;
+  background: linear-gradient(
+    90deg,
+    var(--grad-start) 0%,
+    var(--grad-end) 100%
+  );
+  opacity: 0;
+  transition: opacity var(--duration-base) var(--ease-standard);
+}
+
+/* Selected state — gradient pill visible, white label. */
+
+.segment.selected {
+  --grad-start: var(--color-gradient-brand-start);
+  --grad-end: var(--color-gradient-brand-end);
+  color: var(--color-text-on-brand);
+}
+
+.segment.selected::before {
+  opacity: 1;
+}
+
+.label {
+  position: relative;
+  z-index: 1;
+}

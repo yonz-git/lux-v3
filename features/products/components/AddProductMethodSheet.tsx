@@ -8,6 +8,7 @@ import { ChatBubble } from "@/components/ui/ChatBubble";
 import { ProductCard } from "./ProductCard";
 import { Button } from "@/components/ui/Button";
 import { OptionRow } from "@/components/ui/OptionRow";
+import SegmentedToggle from "./SegmentedToggle";
 import { SearchField } from "@/components/ui/SearchField";
 import { ProductRow } from "./ProductList";
 import { ProductThumb } from "./ProductThumb";
@@ -567,26 +568,10 @@ function ConfirmView({
           >
             {isScan ? "Is this correct?" : "Is this the right product?"}
           </p>
-          <div
-            className={styles.confirmAnswers}
-            role="group"
-            aria-labelledby="add-product-confirm"
-          >
-            <Button
-              className={styles.confirmAnswer}
-              variant="secondary"
-              onClick={onAccept}
-            >
-              {isScan ? "Yes, that's it" : "Add product"}
-            </Button>
-            <Button
-              className={styles.confirmAnswer}
-              variant="secondary"
-              onClick={onReject}
-            >
-              {isScan ? "No, let me search" : "Search again"}
-            </Button>
-          </div>
+          <SegmentedToggle
+            options={["Add product", "Search again"]}
+            onChange={(i) => (i === 0 ? onAccept() : onReject())}
+          />
         </div>
       )}
 
