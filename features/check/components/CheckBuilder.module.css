@@ -227,7 +227,7 @@
 
   flex: none;
   display: flex;
-  width: 76px;
+  width: 54px;
   min-height: var(--slot-h);
 }
 
@@ -251,4 +251,26 @@
 
 .trailing .added {
   min-height: var(--slot-h);
+}
+
+/* The button wrapping the `Added` tag — same hover recipe as CheckBasket's
+   own remove control (opacity 0.7, reset under `hover: none` so a tap does not
+   leave the state stuck). Radius matches the tag's own pill so the hover
+   affordance doesn't draw a squared-off box around a round one. */
+.trailing .remove {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: var(--radius-full);
+  transition: opacity var(--duration-fast) var(--ease-standard);
+}
+
+.trailing .remove:hover {
+  opacity: 0.7;
+}
+
+@media (hover: none) {
+  .trailing .remove:hover {
+    opacity: 1;
+  }
 }

@@ -57,9 +57,14 @@ import {
  * and whatever it adds joins the basket. Same class of dangling path the
  * PRODUCTS remap fixed.
  *
- * ⚠️ A ROW ALREADY IN THE BASKET SWAPS ITS `Add` FOR A READ-ONLY `Added` Tag —
- * the handoff's rule, and Tag is non-interactive by contract: removal happens
- * in the basket, not in the list.
+ * ⚠️ A ROW ALREADY IN THE BASKET SWAPS ITS `Add` FOR AN `Added` TAG, AND
+ * TAPPING IT REMOVES THE PRODUCT — NOT IN FIGMA. The handoff drew `Added` as a
+ * read-only Tag, with removal living only in the basket sheet. That meant
+ * undoing a tap required opening the basket to reach the same row you had just
+ * looked at. `Tag` itself stays non-interactive — the contract other callers
+ * (the duration badge, the match score) rely on — so this wraps it in a plain
+ * button, same pattern as `CheckBasket`'s own remove control, and the tag's
+ * fill/label are unchanged.
  */
 export function CheckBuilder() {
   const router = useRouter();
@@ -189,9 +194,16 @@ export function CheckBuilder() {
     return (
       <span className={styles.trailing}>
         {basketIds.includes(p.id) ? (
-          <Tag variant="brand" className={styles.added}>
-            Added
-          </Tag>
+          <button
+            type="button"
+            className={styles.remove}
+            aria-label={`Remove ${fullName(p)} from this analysis`}
+            onClick={() => remove(p.id)}
+          >
+            <Tag variant="brand" className={styles.added}>
+              Added
+            </Tag>
+          </button>
         ) : (
           <SmallButton
             label="Add"
