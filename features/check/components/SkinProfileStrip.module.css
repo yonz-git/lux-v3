@@ -11,7 +11,11 @@
 
   /* ⚠️ NO BORDER — a data card has no stroke. See DataCard.tsx. */
   background: var(--color-surface-data);
-  box-shadow: var(--shadow-frosted-data);
+  /* ⚠️ THE INSET IS `--shadow-frosted-row`, THE SAME ADDITION `DataCard` GOT —
+     see DataCard.module.css. This card is deliberately not a `DataCard` (see
+     the doc comment above), so the shadow has to be repeated here rather than
+     inherited. */
+  box-shadow: var(--shadow-frosted-data), var(--shadow-frosted-row);
   -webkit-backdrop-filter: blur(var(--blur-card));
   backdrop-filter: blur(var(--blur-card));
 }

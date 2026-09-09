@@ -16,7 +16,16 @@
 
   /* ⚠️ NO BORDER. A data card has no stroke — see the doc comment. */
   background: var(--color-surface-data);
-  box-shadow: var(--shadow-frosted-data);
+  /* ⚠️ THE INSET IS `--shadow-frosted-row` — THE FACE DIAGRAM CARD'S OWN
+     SHADOW, NOT A NEW VALUE. Decided here, NOT IN FIGMA: `--shadow-frosted-data`
+     was a drop shadow alone, so a translucent sage card had nothing carrying
+     non-negotiable 11's "a translucent fill always needs its inner shadow" —
+     every other frosted surface in the app (`.frosted-row`, the face diagram's
+     own card) already does. Layering the existing token on top keeps the
+     drop shadow's outer lift and adds the same inset every other frosted
+     surface already carries, rather than inventing a second shadow value for
+     one more surface. */
+  box-shadow: var(--shadow-frosted-data), var(--shadow-frosted-row);
   -webkit-backdrop-filter: blur(var(--blur-card));
   backdrop-filter: blur(var(--blur-card));
 
