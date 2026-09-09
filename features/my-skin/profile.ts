@@ -278,11 +278,12 @@ export const COPY = {
    * free text under a face reads as a caption for the face rather than as the
    * answer the `Other` chip stands in for.
    *
-   * ⚠️ AND IT SAYS "in your words" RATHER THAN "described as", because the
-   * recap never characterises an answer, it reads one back. The distinction is
-   * the whole reason this screen's copy lives in one file: see the header.
+   * ⚠️ SHORTENED FROM "Other, in your words" TO "Other" — asked for directly,
+   * 9 Sep 2026. The label-over-value pair already reads as one unit (see
+   * `.metaLabel`/`.metaValue` in SkinProfileSummary.module.css); "in your
+   * words" was explaining the pair rather than naming it.
    */
-  locationOtherLabel: "Other, in your words",
+  locationOtherLabel: "Other",
   /** the visually-hidden line that states the diagram's answer in text — the
    *  face itself is `aria-hidden`, see `FaceDiagram` */
   locationSpoken: (regions: string[]) => `On the face: ${regions.join(", ")}.`,

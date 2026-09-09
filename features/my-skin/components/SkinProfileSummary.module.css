@@ -254,10 +254,17 @@
    would grow to the diagram's ~200 of height and its label would float in the
    middle of it; the two things line up on their tops, where the block's own
    label already is. */
+/* ⚠️ CENTRED, NOT LEFT-HUNG — asked for directly, 9 Sep 2026. `.face` caps at
+   300 (below) and stops growing there, so on any row wider than ~300+16+190 it
+   used to sit flush against the block's left edge with dead air on the right.
+   Centring the line reads as one deliberate object instead of a box someone
+   forgot to size. It only visibly moves anything once a line has slack to give
+   — the side-by-side row still fills edge to edge on its own. */
 .located[data-with-note] {
   display: flex;
   flex-wrap: wrap;
   align-items: flex-start;
+  justify-content: center;
   gap: var(--space-lg); /* 16 */
 }
 
@@ -295,8 +302,19 @@
    that job now: beside the picture a top margin would drop the label below the
    diagram's top edge, and under it the wrapped line already carries the row
    gap's 16. A margin on top of a gap is two spacings for one interval. */
+/* ⚠️ CAPPED AT THE SAME 300 AS `.face`, added with the centring above. When
+   the note wraps onto its own line, `flex: 1 1 190px` used to grow it to fill
+   whatever the block's own width was, which put its LEFT edge back at the
+   block's edge — one line centred, one line not, reading as two different
+   alignments stacked on each other. Capped to match `.face`'s width, the two
+   lines centre to the SAME offset and the note's own left-aligned text lands
+   flush under the box's left edge instead. On the side-by-side row this same
+   cap narrows the note from filling the leftover ~460 down to 300 — the
+   trade for one consistent left edge instead of the note stretching wider
+   than the picture beside it. */
 .located[data-with-note] .meta {
   flex: 1 1 190px;
+  max-width: 300px;
   margin-top: 0;
 }
 

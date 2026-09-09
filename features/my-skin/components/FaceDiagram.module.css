@@ -13,6 +13,16 @@
   width: 100%;
   padding: var(--space-md);
 
+  /* ⚠️ A SECOND QUERY CONTAINER, ADDED 9 Sep 2026 — NOT IN FIGMA. `.diagram`
+     is already one for `.region` (see below); this one is for `.readOnlyChip`,
+     which sits OUTSIDE `.diagram` as `.chips`'s sibling and so can't see that
+     container. Nesting is fine — a descendant always resolves `cqw` against
+     its NEAREST container, so `.region` still reads `.diagram`'s width and
+     `.readOnlyChip` reads this one, which is ~24px wider (the card's own
+     padding) — close enough that the two rows read as one shrinking system
+     rather than two different rulers. */
+  container-type: inline-size;
+
   border-radius: var(--radius-2xl);
   /* ⚠️ `surface/data-strong` (62%), NOT `surface/data` (44%) — decided here.
      This card carries objects ON it (the face form and seven pills) rather
@@ -107,6 +117,16 @@
      face bottomed out at y=241 and nothing filled the rest; a -9% bottom margin
      pulled the chip row up into that dead air. The form now runs to y=280 of
      300, so the box is doing its own job and the pull-up is gone. */
+
+  /* ⚠️ A QUERY CONTAINER, ADDED 9 Sep 2026 — NOT IN FIGMA. `.region` sizes
+     itself off this box's own inline size (`cqw`) rather than a fixed px, so
+     the pills shrink WITH the diagram instead of holding their text width
+     while the percentage-positioned centres they sit on move closer together.
+     See `.region` for why: the middle row (`Cheeks (L)` / `Nose` /
+     `Cheeks (R)`) collides at a FIXED font size at any diagram width, not only
+     a narrow one, because their labels were never sized against the spacing
+     REGIONS actually gives them. */
+  container-type: inline-size;
 }
 
 .chips {
@@ -185,9 +205,28 @@
   /* Rule 8b: the pill is 30 tall (a 20px Label with 5 either side). It now
      carries a 1px border, so the vertical padding becomes a min-height and the
      horizontal padding loses the border width — the pill lands on the same box
-     it had when it was borderless. */
-  min-height: 30px;
-  padding: 0 calc(var(--space-sm) - var(--border-width-hairline));
+     it had when it was borderless.
+
+     ⚠️ ALL THREE SCALE WITH THE CONTAINER NOW, ADDED 9 Sep 2026 — NOT IN
+     FIGMA. `t-label-sm` (12/16, fixed) drew every pill at the same size
+     regardless of the diagram's own rendered width, so the middle row —
+     `Cheeks (L)` / `Nose` / `Cheeks (R)`, whose CENTRES sit 18.9%/19.4% of
+     the container apart (see REGIONS in FaceDiagram.tsx) — collided by 6-7px
+     even at the diagram's own drawn size, and by up to 20px once the note
+     column shrinks it further (see SkinProfileSummary.module.css `.face`).
+     `cqw` ties the pill to the SAME box the region centres are already
+     percentages of, so shrinking the diagram shrinks the label instead of
+     leaving it to eat its neighbour. The `clamp()` floor keeps the label off
+     illegibly small (a real device can still hit the container-query
+     minimum); the ceiling keeps a wide desktop card from drawing pills
+     bigger than the design ever specified. Chosen against the tightest gap
+     above: at the diagram's common 276px rendered width (the `.face` +
+     typed-note case) this lands the font at ~10px, `Cheeks (L)` and `Nose`
+     8-9px clear of each other where they used to overlap. */
+  min-height: clamp(20px, 9cqw, 30px);
+  padding: 0 clamp(3px, 1.8cqw, calc(var(--space-sm) - var(--border-width-hairline)));
+  font-size: clamp(8px, 3.6cqw, 12px);
+  line-height: 1.3;
 
   /* ⚠️ OPAQUE AND BRIGHT, WITH THE EDGE CARRIED BY A HAIRLINE — decided here,
      NOT IN FIGMA.
@@ -351,12 +390,22 @@
    the region pills do because they sit ON the drawn face and need seating on
    it. Copying the shadow here would make the row a third pill rather than step
    1's. */
+/* ⚠️ SCALED WITH THE REGION PILLS, ADDED 9 Sep 2026 — asked for directly, and
+   a departure from "matched to step 1" above: that pin was for the FIXED
+   40-tall pill, and once the region pills above it started shrinking with the
+   card, a fixed-size `Other` / `Whole face` sitting right under them read as
+   two different scales stacked on one card. Same `clamp(floor, cqw, ceiling)`
+   shape as `.region`, against THIS card's own width rather than the
+   diagram's — the ceiling is step 1's original 40/16/14, so nothing changes
+   until the card is narrow enough to need it. */
 .readOnlyChip {
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  min-height: 40px;
-  padding: 0 var(--space-lg); /* 16 */
+  min-height: clamp(24px, 8.7cqw, 40px);
+  padding: 0 clamp(6px, 3cqw, var(--space-lg)); /* 16 ceiling */
+  font-size: clamp(9px, 3.4cqw, 14px);
+  line-height: 1.3;
   border-radius: var(--radius-full);
 
   background: var(--color-bg-brand);
