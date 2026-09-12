@@ -539,7 +539,8 @@
   color: var(--color-text-primary);
 }
 
-.empty > svg {
+.empty > svg,
+.empty > :global(.lux-orb) {
   margin-bottom: var(--space-3xl); /* 32 */
 }
 

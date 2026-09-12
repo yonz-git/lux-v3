@@ -3,7 +3,7 @@
 import { useRef } from "react";
 import { createPortal } from "react-dom";
 import styles from "./Sheet.module.css";
-import { useModalDialog, useMounted } from "@/lib/useModalDialog";
+import { useDialogPresence, useModalDialog, useMounted } from "@/lib/useModalDialog";
 
 /**
  * The modal tray — Figma `04 — Add product · method sheet` (576:1376) on mobile
@@ -72,18 +72,38 @@ export function Sheet({
      check-in overlay is the second caller. */
   useModalDialog(open, onClose, trayRef);
 
-  if (!open || !mounted) return null;
+  /* ⚠️ `present` OUTLIVES `open` BY THE LENGTH OF THE EXIT — see
+     `useDialogPresence`. The tray used to leave in one frame after a 320ms
+     entrance. Every behaviour still keys off `open`, which is why the hook
+     above is not given `present`: the dialog stops BEING modal the moment the
+     user closes it, and only its painting lingers. */
+  const { present, leaving } = useDialogPresence(open);
+
+  if (!present || !mounted) return null;
 
   return createPortal(
     <>
       {/* `state/pressed-overlay` at 14% is the only darkening token LUX has, and
           it is weak for a modal. Flagged in the handoff panel rather than
           invented around — a real scrim token belongs in Figma. */}
-      <div className={styles.scrim} data-tray="scrim" onClick={onClose} aria-hidden="true" />
+      <div
+        className={styles.scrim}
+        data-tray="scrim"
+        data-state={leaving ? "leaving" : undefined}
+        /* a scrim on its way out must not take a second dismissal */
+        onClick={leaving ? undefined : onClose}
+        aria-hidden="true"
+      />
       <div
         ref={trayRef}
         className={styles.tray}
         data-tray="tray"
+        data-state={leaving ? "leaving" : undefined}
+        /* ⚠️ `inert` WHILE LEAVING, NOT JUST UNCLICKABLE. The dialog is already
+           closed as far as focus and assistive tech are concerned — focus has
+           gone back to the opener — so a fading copy of it must not be
+           reachable by pointer, Tab or a screen reader for those 200ms. */
+        inert={leaving}
         role="dialog"
         aria-modal="true"
         aria-label={title}

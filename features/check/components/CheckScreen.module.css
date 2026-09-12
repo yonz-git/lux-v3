@@ -21,7 +21,8 @@
 }
 
 /* + the 16 gap = the comp's 48 */
-.hero > svg {
+.hero > svg,
+.hero > :global(.lux-orb) {
   margin-bottom: var(--space-3xl); /* 32 */
 }
 
@@ -66,13 +67,15 @@
    16 gap. `.hero > svg` above is left alone deliberately — `/check/no-profile`
    uses it and takes no halo. */
 .heroChat > svg,
-.heroChat > :global(.orb-halo) {
+.heroChat > :global(.orb-halo),
+.heroChat > :global(.lux-orb) {
   margin-bottom: var(--space-xs); /* + the 16 gap = 20 */
 }
 
 @media (min-width: 1024px) {
   .heroChat > svg,
-  .heroChat > :global(.orb-halo) {
+  .heroChat > :global(.orb-halo),
+  .heroChat > :global(.lux-orb) {
     margin-bottom: var(--space-sm); /* + the 16 gap = 24 */
   }
 

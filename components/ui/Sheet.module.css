@@ -64,6 +64,16 @@
      and scroll internally rather than push past the top of the viewport. */
   max-height: calc(100dvh - var(--space-4xl));
   overflow-y: auto;
+  /* ⚠️ A SCROLL THAT STARTS IN THE TRAY STAYS IN THE TRAY — added 12 Sep 2026,
+     alongside the page-level lock in `useModalDialog`. Without it, reaching the
+     end of a long results list hands the rest of the gesture to the document
+     and the SCREEN BEHIND THE MODAL scrolls — on touch, in one unbroken drag,
+     which is where it is most obvious. `ChatPanel`'s body has carried this
+     since it shipped; the tray is the second scroll container in the app and
+     never got it. The two halves are separate mechanisms: the lock stops the
+     page moving at all, this stops the chaining that a lock alone cannot
+     express. */
+  overscroll-behavior: contain;
   /* a search results list is the thing most likely to push the tray into this
      scroll state — an OS scrollbar cutting into the frosted sage surface
      reads like a bug, so scroll is kept, the chrome is not. */

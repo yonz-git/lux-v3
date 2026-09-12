@@ -639,6 +639,28 @@ body {
   /* the OS date picker `DateField` opens, and any native control the app has
      not drawn itself */
   accent-color: var(--color-bg-brand);
+
+  /* ⚠️ THE FOURTH SURFACE, AND THE ONE THAT ONLY EXISTS ON THE DEVICE THIS APP
+     IS DRAWN FOR — added 12 Sep 2026. Tapping anything on a touch device paints
+     a translucent grey-black box over it for ~150ms, before and underneath
+     whatever the app does about the press. LUX does something very specific
+     about the press: board 04b's `state/pressed-overlay` at 14%, shaped to the
+     control by `border-radius: inherit` (see `.pressable`). The UA highlight
+     lands on the element's BORDER BOX — so on every pill in the app, a
+     rectangle flashed across a shape drawn at `radius/full`, in a colour from
+     no LUX token, for the exact duration the app was drawing its own answer.
+     Two press treatments at once, one of them nobody chose.
+
+     It is the same argument as `::selection` and `accent-color` above and it
+     belongs in the same rule: a surface the design system did not draw is still
+     a surface the user sees, and Figma cannot hold any of them.
+
+     ⚠️ REMOVING IT REMOVES NO FEEDBACK. `.pressable` and `Button`'s own overlay
+     cover every control whose result arrives later, which is the set board 04b
+     specifies; the highlight was duplicating them, not standing in for them.
+     ⚠️ It is `-webkit-` only and has no standard counterpart — that is the
+     property, not an omission. */
+  -webkit-tap-highlight-color: transparent;
 }
 
 /* The typing cursor. `TextField`, `SearchField` and `DateField` all inherit
@@ -1013,6 +1035,17 @@ main[tabindex="-1"]:focus-visible {
   text-wrap: pretty;
 }
 
+/* ⚠️ THE APP-WIDE CANVAS SHOWS THROUGH `.screen` ONLY ONCE IT HAS DRAWN.
+   `AppCanvas` (mounted once in app/layout.tsx) sits BEHIND every screen at
+   z-index -1, and `.screen` is positioned, so its token gradient would paint
+   straight over it. The canvas stamps `data-canvas-ready` on <html> after its
+   first real draw and removes it on a lost context — so no WebGL, a failed
+   compile or a lost context leaves this rule unmatched and the Figma gradient
+   is what you see. Never make `.screen` transparent unconditionally. */
+:root[data-canvas-ready] .screen {
+  background: transparent;
+}
+
 /* ============================================================================
    The screen shell
    Mobile = the canvas gradient, full viewport, with the bottom nav reserved.
@@ -1039,8 +1072,7 @@ main[tabindex="-1"]:focus-visible {
     calc(var(--nav-inset-bottom) + var(--size-nav-height) + var(--space-lg));
 }
 
-/* ⚠️ NOT IN FIGMA, AND OPT-IN ONE SCREEN AT A TIME — the same terms as
-   `data-shader`. One step down the spacing scale (40 -> 32) rather than a
+/* ⚠️ NOT IN FIGMA, AND OPT-IN ONE SCREEN AT A TIME. One step down the spacing scale (40 -> 32) rather than a
    hand-written 30: the scale has no 30, and this is the kind of value that
    becomes the app's first off-scale spacing if it is written literally.
 
@@ -1479,6 +1511,250 @@ main[tabindex="-1"]:focus-visible {
 }
 
 /* ============================================================================
+   The SIRI ORB — `components/ui/siri-orb.tsx`. ⚠️ DESIGN TRIAL, NOT IN FIGMA.
+
+   Ported 12 Sep 2026 from the 21st.dev community component `siri-orb`; Orb.tsx
+   renders it in place of the Figma export while `ORB_RENDERER` is "siri". The
+   recipe is the original's, unchanged except for three things:
+
+   1. IT LIVES HERE. The original was a `<style jsx>` block. The `@property`
+      and the keyframes must be global — a module localizes the keyframes name
+      and it resolves to nothing — so the whole recipe sits beside the orb's
+      other animations rather than splitting across two files.
+   2. EVERY CUSTOM PROPERTY IS NAMESPACED (`--siri-orb-*`). The original's
+      `--bg`, `--c1` and `--angle` are one collision away from a silent bug.
+   3. The demo's `drop-shadow-2xl` (0 25 25 @15% black) is folded in, tinted to
+      the LUX shadow ink rgba(46, 36, 71) that every `--shadow-*` token uses.
+   4. ⚠️ THE LOOP IS SEAMLESS, AND THE ORIGINAL'S WAS NOT. Each gradient turns
+      at a multiple of one angle, and the original's multiples (1.2, 0.8, -1.5,
+      2.1, -0.7) are not whole numbers: when the keyframes wrapped 360deg → 0,
+      a 1.2× gradient jumped from 432deg back to 0 — a visible cut every lap.
+      The fix is that every multiple × the keyframes' range must be a whole
+      number of turns. The range is now 720deg, the multiples are the nearest
+      HALF steps (1.5, 1, -1.5, 2, -0.5 — all × 720 land on multiples of 360),
+      and the duration is doubled so the pace is the one chosen. Keep both
+      rules if you retune a multiple: HALF steps only, or widen the range.
+
+   The component computes `--siri-orb-blur` and `--siri-orb-contrast` from its
+   pixel size; the colours arrive inline from Orb.tsx.
+   ========================================================================== */
+
+@property --siri-orb-angle {
+  syntax: "<angle>";
+  inherits: false;
+  initial-value: 0deg;
+}
+
+@keyframes lux-siri-orb-rotate {
+  from {
+    --siri-orb-angle: 0deg;
+  }
+  to {
+    --siri-orb-angle: 720deg;
+  }
+}
+
+.siri-orb {
+  display: grid;
+  grid-template-areas: "stack";
+  overflow: hidden;
+  border-radius: var(--radius-full);
+  position: relative;
+  /* the original's darker core for a light ground — in the LUX shadow ink
+     rather than black, which read as a grey smudge under a sage palette */
+  background: radial-gradient(
+    circle,
+    rgba(46, 36, 71, 0.08) 0%,
+    rgba(46, 36, 71, 0.03) 30%,
+    transparent 70%
+  );
+  filter: drop-shadow(0 25px 25px rgba(46, 36, 71, 0.15));
+}
+
+.siri-orb::before,
+.siri-orb::after {
+  content: "";
+  display: block;
+  grid-area: stack;
+  width: 100%;
+  height: 100%;
+  border-radius: var(--radius-full);
+}
+
+.siri-orb::before {
+  background:
+    conic-gradient(
+      from calc(var(--siri-orb-angle) * 1.5) at 30% 65%,
+      var(--siri-orb-c3) 0deg,
+      transparent 45deg 315deg,
+      var(--siri-orb-c3) 360deg
+    ),
+    conic-gradient(
+      from calc(var(--siri-orb-angle) * 1) at 70% 35%,
+      var(--siri-orb-c2) 0deg,
+      transparent 60deg 300deg,
+      var(--siri-orb-c2) 360deg
+    ),
+    conic-gradient(
+      from calc(var(--siri-orb-angle) * -1.5) at 65% 75%,
+      var(--siri-orb-c1) 0deg,
+      transparent 90deg 270deg,
+      var(--siri-orb-c1) 360deg
+    ),
+    conic-gradient(
+      from calc(var(--siri-orb-angle) * 2) at 25% 25%,
+      var(--siri-orb-c2) 0deg,
+      transparent 30deg 330deg,
+      var(--siri-orb-c2) 360deg
+    ),
+    conic-gradient(
+      from calc(var(--siri-orb-angle) * -0.5) at 80% 80%,
+      var(--siri-orb-c1) 0deg,
+      transparent 45deg 315deg,
+      var(--siri-orb-c1) 360deg
+    ),
+    radial-gradient(
+      ellipse 120% 80% at 40% 60%,
+      var(--siri-orb-c3) 0%,
+      transparent 50%
+    );
+  filter: blur(var(--siri-orb-blur)) contrast(var(--siri-orb-contrast))
+    saturate(var(--siri-orb-saturate, 1.2));
+  /* doubled: the keyframes run 720deg, so this keeps the chosen pace */
+  animation: lux-siri-orb-rotate calc(var(--siri-orb-duration) * 2) linear
+    infinite;
+  transform: translateZ(0);
+  will-change: transform;
+}
+
+.siri-orb::after {
+  background: radial-gradient(
+    circle at 45% 55%,
+    rgba(255, 255, 255, 0.1) 0%,
+    rgba(255, 255, 255, 0.05) 30%,
+    transparent 60%
+  );
+  mix-blend-mode: overlay;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .siri-orb::before {
+    animation: none;
+  }
+}
+
+/* The LUX dressing of the siri orb — what Orb.tsx applies. The recipe above is
+   left as the component shipped it; everything LUX-specific is on this class
+   (same single-class specificity, winning on source order — keep it BELOW).
+
+   1. A LIGHT body. The original's dark core read as a grey smudge on the sage
+      canvas; the sphere is filled light blue instead, lightest just up-left of
+      centre, and the turning blobs (translucent — see LUX_ORB_COLORS) tint it
+      rather than cover it.
+   2. A light-blue glow over the CENTRE, on ::after, so the middle stays light
+      even while a blob turns through it. Normal blend: the original's
+      `overlay` at 10% white did nothing visible on a light ground.
+   3. THE FIGMA ORB'S EDGE. `chat-ball-3x` (219:795) defined its rim with four
+      effects, and they are ported here verbatim from the exported SVG filter
+      (a Figma blur is a standard deviation, so the CSS radius is twice it):
+      a pale drop highlight up-left, a soft drop shadow down-right, and two
+      inner shadows. The inner pair goes on ::after because an inset shadow
+      paints UNDER a pseudo-element and ::before would cover it. This REPLACES
+      the demo's 25px drop-shadow, which blurred the edge instead of drawing it. */
+.siri-orb--lux {
+  background: radial-gradient(
+    ellipse 80% 80% at 45% 42%,
+    var(--color-bg-frost-light) 0%,
+    var(--color-bg-bubble-ai) 45%,
+    var(--color-gradient-canvas-mid) 100%
+  );
+  filter: none;
+  box-shadow:
+    -1px -1px 4px rgba(226, 246, 245, 0.3),
+    2px 4px 6px rgba(44, 69, 70, 0.125);
+}
+
+.siri-orb--lux::after {
+  background: radial-gradient(
+    circle at 48% 46%,
+    color-mix(in srgb, var(--color-bg-bubble-ai) 75%, transparent) 0%,
+    transparent 45%
+  );
+  mix-blend-mode: normal;
+  box-shadow:
+    inset -1px -1px 10px rgba(63, 100, 102, 0.39),
+    inset -2px -2px 4px rgba(255, 255, 255, 0.376);
+}
+
+/* The FLOAT — ⚠️ DESIGN TRIAL, asked for directly: the drift the WebGL trial's
+   shader had (a breathing radius and a noise-wobbled edge), kept far calmer.
+   Two animations on two elements, at periods that share no small multiple
+   (9s, 14s), so the combined motion never visibly repeats:
+
+   - `.lux-orb-float` — the layer Orb.tsx puts INSIDE `.lux-orb`, holding the
+     sphere, the mark and (on `halo` routes) the rim light, so all three drift
+     together and the light stays on the rim. It rises 3.45% of its own height
+     — ~4.5px at 130, ~1.7px in the 50px chat header — and breathes to 1.0138.
+     Both were 3% / 1.012 and were raised 15%, asked for directly.
+     ⚠️ It is an inner layer, not `.lux-orb` itself, because `.lux-orb` carries
+     `.reveal-hero` and a second `animation` there would replace the entrance.
+   - `.siri-orb--lux` — the OUTLINE eases between near-circles, never more than
+     2.5% off round (it was 1.5%, and was made more visible, asked for
+     directly — every offset from 50% scaled ~1.7×). Its pseudo-elements inherit the radius so the inner shadow
+     follows the shape rather than drawing a circle inside it.
+
+   ease-in-out on both, no overshoot: calm, and LUX does not bounce. */
+@keyframes lux-orb-float {
+  0%,
+  100% {
+    transform: translateY(0) scale(1);
+  }
+  50% {
+    transform: translateY(-3.45%) scale(1.0138);
+  }
+}
+
+@keyframes lux-orb-morph {
+  0%,
+  100% {
+    border-radius: 50% 50% 50% 50% / 50% 50% 50% 50%;
+  }
+  25% {
+    border-radius: 52.5% 47.5% 50.8% 49.2% / 48.3% 51.7% 49.2% 50.8%;
+  }
+  50% {
+    border-radius: 48.3% 51.7% 47.5% 52.5% / 51.7% 49.2% 52.5% 47.5%;
+  }
+  75% {
+    border-radius: 50.8% 49.2% 52.5% 47.5% / 47.5% 52.5% 50% 50%;
+  }
+}
+
+.lux-orb-float {
+  display: block;
+  position: relative;
+  width: 100%;
+  height: 100%;
+  animation: lux-orb-float 9s ease-in-out infinite;
+}
+
+.siri-orb--lux {
+  animation: lux-orb-morph 14s ease-in-out infinite;
+}
+
+.siri-orb--lux::before,
+.siri-orb--lux::after {
+  border-radius: inherit;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .lux-orb-float,
+  .siri-orb--lux {
+    animation: none;
+  }
+}
+
+/* ============================================================================
    The orb HALO — an ambient line of light travelling around the sphere's rim.
 
    ⚠️ NOT IN FIGMA, AND ON TWO ROUTES ONLY (`<Orb halo />`): 00 Welcome and the
@@ -1610,6 +1886,33 @@ main[tabindex="-1"]:focus-visible {
      the declared opacity above is what holds. */
   animation:
     lux-orb-halo 8000ms linear infinite,
+    lux-fade-in var(--duration-slower) var(--ease-standard) 700ms backwards;
+}
+
+/* ⚠️ DESIGN TRIAL — the halo around the SIRI ORB (Orb.tsx, `ORB_RENDERER`).
+   That orb fills its whole box, so its rim is at 0.5 of the box, not the
+   export's 0.442, and at `inset: 4%` the light ran ~4px INSIDE the edge. Same
+   ratio as above, re-solved: the rim sat at 96% of the layer's radius, so the
+   layer needs a radius of 0.5 / 0.96 = 0.52 — `inset: -2%`, and the band
+   (94–100% of it, 0.489–0.52) straddles the new rim the way it straddled the
+   old one.
+   It is also 20% SLOWER (8s → 10s a lap) and 20% DIMMER, asked for directly.
+   The dimming scales the light's own stops (55% → 44%, 100% → 80% of
+   `effect/rim-highlight`) rather than the layer's opacity, because the entrance
+   `lux-fade-in` animates opacity and a declared 0.8 would snap down from 1 the
+   moment that entrance ended. The animation list is restated whole — a
+   shorthand cannot override one of two comma-separated animations. */
+.orb-halo--siri::after {
+  inset: -2%;
+  background: conic-gradient(
+    from 0deg,
+    transparent 0deg,
+    color-mix(in srgb, var(--color-effect-rim-highlight) 44%, transparent) 44deg,
+    color-mix(in srgb, var(--color-effect-rim-highlight) 80%, transparent) 60deg,
+    transparent 78deg
+  );
+  animation:
+    lux-orb-halo 10000ms linear infinite,
     lux-fade-in var(--duration-slower) var(--ease-standard) 700ms backwards;
 }
 
@@ -1805,6 +2108,50 @@ main[tabindex="-1"]:focus-visible {
   }
 }
 
+/* ⚠️ AND IT LEAVES — ADDED 12 Sep 2026, AND THE ENTRANCE ABOVE IS WHY IT HAD
+   TO BE. `Sheet` returned `null` the instant `open` went false, so a tray that
+   rose and faded in over 320ms disappeared in a single frame. Something that
+   arrives with motion and vanishes without it does not read as dismissed, it
+   reads as a render fault — which is the one thing board 04b's "nothing snaps"
+   is actually about.
+
+   ⚠️ IT IS A TRANSITION AND THE ENTRANCE IS AN ANIMATION, DELIBERATELY. The
+   entrance has to run on mount, which only a keyframes animation can do from
+   markup alone; the exit runs on an attribute flip, which is what a transition
+   is for. `useDialogPresence` holds the node mounted for `EXIT_MS` and that
+   number and `duration/base` below are one value in two places — keep them in
+   step.
+
+   ⚠️ `animation: none` IS LOAD-BEARING, NOT TIDINESS. Close the tray inside the
+   320ms entrance and the still-running animation outranks these declarations in
+   the cascade, so the exit would not paint at all until the entrance finished.
+   Cancelling it hands the transition a start value of wherever the entrance had
+   got to, which is exactly the interruption behaviour wanted.
+
+   ⚠️ THE EXIT IS FASTER THAN THE ENTRANCE — `duration/base` (200) against
+   `duration/slow` (320). Arriving is where the user registers a new surface;
+   leaving is the app getting out of the way of the screen underneath, and at
+   320 it reads as reluctant. The tray also leaves the way it came — DOWN the
+   same 16px it rose — so the gesture is one movement reversed rather than two
+   unrelated fades. Desktop had no rise and gets none on the way out. */
+[data-tray="scrim"][data-state="leaving"],
+[data-tray="tray"][data-state="leaving"] {
+  animation: none;
+  opacity: 0;
+  transition: opacity var(--duration-base) var(--ease-standard),
+    transform var(--duration-base) var(--ease-standard);
+}
+
+[data-tray="tray"][data-state="leaving"] {
+  transform: translateY(16px);
+}
+
+@media (min-width: 1024px) {
+  [data-tray="tray"][data-state="leaving"] {
+    transform: none;
+  }
+}
+
 /* ============================================================================
    Target size — WCAG 2.5.8 (AA): an interactive target is at least 24x24.
 
@@ -1922,4 +2269,230 @@ textarea,
   clip-path: inset(50%);
   white-space: nowrap;
   border: 0;
+}
+
+
+/* ============================================================================
+   The entrance — components/layout/LogoEntrance.tsx
+
+   ⚠️ NOT IN FIGMA. The brand lockup appears over the whole viewport before
+   Welcome is handed the screen: the symbol and the wordmark fade in TOGETHER,
+   each drifting a short way inwards — the symbol from its left, the wordmark
+   from its right — and settle as the finished lockup. Requested directly.
+
+   ⚠️ IT WAS A PUSH UNTIL 12 Sep 2026, AND IT WAS REPLACED, NOT RETUNED. The
+   wordmark used to fly in from beyond the right edge, hold alone, and be shoved
+   into its slot by a symbol arriving from beyond the left. Asked to change
+   because it read as jumping. Everything that coupled the two halves went with
+   it — the viewport-relative runs, the contact keyframe, the second wrapper on
+   the wordmark and the orb's expo curve. Do not bring any of it back to
+   "restore" the push; see `docs/decisions.md`.
+
+   ⚠️ IT IS AN OVERLAY ON `/`, NOT A TWENTIETH ROUTE. The route map is nineteen
+   routes and every one of them is in a nav section; an entrance is in none, it
+   has no title worth announcing, it must not become a back-button destination,
+   and it must not take `/` away from Welcome (`metadataTitleFor("/")`, the
+   CTA's deep link, `BottomNav active="none"`). So it renders as a sibling
+   before `<Welcome>` in `app/page.tsx` and removes itself. See LogoEntrance.tsx.
+
+   THE TIMELINE — every phase is a keyframe PERCENTAGE, never an
+   `animation-delay`:
+
+     0 ...... 1600   both halves fade in and drift inwards, together
+     1600 ... 2000   held, complete  <- the assembly tracks END here
+     2000 ... 2520   the veil fades and Welcome takes over
+
+   ⚠️ "TOGETHER" IS STRUCTURAL, NOT A COINCIDENCE OF NUMBERS. The two halves run
+   separate keyframes only because they drift in opposite directions. Their
+   duration, their stops and their curve are identical, so they cannot fall out
+   of step — give one a stop the other lacks and they will.
+
+   THE DRIFT IS 15% OF THE LOCKUP'S WIDTH, EXPRESSED AGAINST EACH HALF'S OWN.
+   Measured against the half itself so it scales with the LOGO, not the
+   viewport: this is the lockup settling, not a journey across the screen. 0.15
+   of the 538-wide master is 24.53% of the wordmark's 329 and 38.61% of the
+   symbol's 209 — one distance for both, ~34px at 440 and ~42px at 1440. Much
+   more than that starts to read as travel again, which is what was asked away.
+
+   ⚠️ THE CURVE IS `--ease-standard`, AND THAT CHOICE IS MOST OF THE FIX. The
+   push ran on the orb's expo curve, `cubic-bezier(0.16, 1, 0.3, 1)`, which
+   LEAVES AT FULL SPEED — that first-frame lurch is most of what "jumping" was.
+   `--ease-standard` (0.2, 0, 0, 1) leaves from rest and spends most of its time
+   settling; it is the board's default for anything that enters and settles.
+   1600ms is past `duration/slower` on purpose: "slowly, elegantly" was the ask,
+   and this plays once per cold start.
+
+   ⚠️ TWO DURATIONS, 2000 AND 2520, AND THE SPLIT IS LOAD-BEARING. The two
+   assembly tracks run 2000 and finish at the exact moment Welcome's own
+   entrance has to be released (see the hand-off block below); the veil and the
+   bloom run 2520 and carry the dissolve. That makes the release a plain
+   `animationend` on `lux-entrance-mark-in` rather than a JS timer holding a
+   copy of a number that lives in this file — the two cannot drift, and the
+   reduced-motion collapse shortens both together.
+
+   ⚠️ THE "NO DELAYS" RULE IS THE REDUCED-MOTION CONTRACT, NOT A STYLE CHOICE.
+   The global collapse sets `animation-duration: 0.01ms` and leaves
+   `animation-delay` alone — correctly, since a delay is not motion. A timeline
+   built from delays would still take 2.5 real seconds for a user who asked for
+   no motion. Built from percentages, the whole thing collapses with the
+   duration and is over in a frame. Do not "tidy" these into delays.
+   ========================================================================== */
+
+:root {
+  /* above `--z-toast` (500), the previous ceiling: the entrance covers the app
+     entire, including anything that managed to raise a snackbar on load */
+  --z-entrance: 900;
+}
+
+@keyframes lux-entrance-veil {
+  0%,
+  79.37% {
+    opacity: 1;
+  }
+  100% {
+    opacity: 0;
+    visibility: hidden;
+  }
+}
+
+/* the lockup blooms very slightly as it dissolves, so it recedes rather than
+   simply switching off. 1.03 — "LUX does not bounce", and this is the smallest
+   scale that reads at all. */
+@keyframes lux-entrance-bloom {
+  0%,
+  79.37% {
+    transform: scale(1);
+  }
+  100% {
+    transform: scale(1.03);
+  }
+}
+
+/* the symbol: 15% of the lockup to its LEFT, drifting right into place */
+@keyframes lux-entrance-mark-in {
+  0% {
+    transform: translateX(-38.61%);
+    opacity: 0;
+  }
+  80%,
+  100% {
+    transform: translateX(0);
+    opacity: 1;
+  }
+}
+
+/* the wordmark: the same distance to its RIGHT, drifting left into place */
+@keyframes lux-entrance-word-in {
+  0% {
+    transform: translateX(24.53%);
+    opacity: 0;
+  }
+  80%,
+  100% {
+    transform: translateX(0);
+    opacity: 1;
+  }
+}
+
+/* the skip: any tap or any key cuts to the assembled lockup and clears it.
+   ⚠️ NO `from`. The tracks above are REPLACED when this one starts, so each
+   element falls back to its static style — which IS the finished lockup,
+   because every track ends at identity. Naming a `from` here would snap a
+   half-faded logo to full opacity before fading it. */
+@keyframes lux-entrance-skip {
+  to {
+    opacity: 0;
+    visibility: hidden;
+  }
+}
+
+/* ⚠️ THESE RULES MUST LIVE HERE, NOT IN LogoEntrance.module.css. A module
+   localizes `@keyframes` names, so `animation: lux-entrance-veil` written in a
+   module resolves to nothing while still reporting a duration in
+   `getComputedStyle`. The module carries the LAYOUT; this carries the names.
+
+   ⚠️ THE CURVE IS ON THE SHORTHAND BECAUSE A KEYFRAME CANNOT READ A TOKEN, AND
+   IT FAILS SILENTLY WHEN IT TRIES. `animation-timing-function: var(--ease-*)`
+   written INSIDE a `@keyframes` block is dropped — `var()` is not substituted
+   there — and the segment falls back to the default `ease` with no warning.
+   Measured on this entrance: the same keyframe moved 51.3px by 300ms with a
+   token and 87.7px with the cubic-bezier written out, and 51.3px is exactly
+   what declaring nothing gives. Every track here is one move between holds, and
+   easing a constant gives a constant, so one curve on the shorthand lands on
+   exactly the segment that moves. If a track ever needs two curves, write the
+   `cubic-bezier()` out LITERALLY in the keyframe; do not reach for `var()`.
+
+   ⚠️ `both`, AND THE REVEAL BLOCK'S WARNING ABOUT IT DOES NOT APPLY HERE. A
+   `forwards` opacity animation leaves a persistent stacking context — a defect
+   on a revealed block inside a screen, and exactly what is wanted on an overlay
+   that must STAY gone if the script that removes it never runs. It is also what
+   makes `visibility: hidden` stick, and a hidden element takes no pointer.
+   Nothing is left in effect over Welcome: the node is removed. */
+.lux-entrance {
+  animation: lux-entrance-veil 2520ms var(--ease-standard) both;
+}
+
+.lux-entrance-stage {
+  animation: lux-entrance-bloom 2520ms var(--ease-standard) both;
+}
+
+.lux-entrance-mark {
+  animation: lux-entrance-mark-in 2000ms var(--ease-standard) both;
+}
+
+.lux-entrance-word {
+  animation: lux-entrance-word-in 2000ms var(--ease-standard) both;
+}
+
+.lux-entrance[data-skip] {
+  animation: lux-entrance-skip var(--duration-base) var(--ease-standard) both;
+}
+
+/* the three tracks stop dead on a skip and their elements fall back to the
+   finished lockup — see the `lux-entrance-skip` note above */
+.lux-entrance[data-skip] .lux-entrance-stage,
+.lux-entrance[data-skip] .lux-entrance-mark,
+.lux-entrance[data-skip] .lux-entrance-word {
+  animation: none;
+}
+
+/* ----------------------------------------------------------------------------
+   The hand-off — why Welcome's own entrance has to be held
+
+   Welcome runs a 3.8s narrative of its own: the orb assembles (940ms), the CTA
+   reveals (200ms), the question arrives (1000ms) and is swapped for the reply
+   (3300ms). All of it starts at first paint. Left alone it would play out UNDER
+   an opaque entrance and the user would land in the middle of it — orb already
+   together, question already asked, only the swap still to come. The beat of
+   silence the bubble block describes would be spent behind a logo.
+
+   So `LogoEntrance` sets `data-entrance-hold` on the document element while it
+   is on screen. `animation-name: none` CANCELS every animation inside the
+   screen, dropping each element onto its STATIC style — for the reveals that is
+   opacity 1, i.e. visible. Releasing the attribute re-applies the names, and a
+   newly applied animation starts from the beginning. Welcome gets its entrance
+   back, in full, at the moment the veil starts to lift.
+
+   ⚠️ IT CANCELS RATHER THAN PAUSES, AND THAT IS THE SAFE DIRECTION.
+   `animation-play-state: paused` would freeze the reveals at their `backwards`
+   0% keyframe — opacity 0 — so a script that never released the hold would
+   leave the CTA and the disclaimer INVISIBLE on an otherwise working page.
+   Cancelling fails the other way: the worst case is a screen that is fully
+   visible and never animated.
+
+   ⚠️ THE HOLD IS SET AFTER HYDRATION AND THAT IS FINE. Welcome's animations do
+   run for the frames between first paint and the effect, and are then cut back
+   to their start. Every one of those frames is behind an opaque veil.
+
+   ⚠️ IT IS RELEASED AT 2000, WHEN THE VEIL IS STILL OPAQUE — NOT WHEN THE NODE
+   GOES. Releasing on the veil's own `animationend` would mean Welcome sat fully
+   formed and unanimated under a fading veil for 520ms, then blinked out and
+   restarted as the hold lifted.
+
+   Specificity: 0-2-1 against the 0-1-0 of `.reveal-hero`, `.bubble-ask-exit`
+   and every module rule — it wins the cascade without an `!important`, which
+   this file has exactly one of and it is not this.
+   ------------------------------------------------------------------------- */
+html[data-entrance-hold] .screen * {
+  animation-name: none;
 }

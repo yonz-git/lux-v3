@@ -1,0 +1,67 @@
+/* The entrance — the LAYOUT only.
+   The choreography, the timings and the hand-off to Welcome are in globals.css
+   under "The entrance"; the reasoning for all of it is in LogoEntrance.tsx.
+   ⚠️ Nothing here may NAME an animation — a module localizes `@keyframes` names
+   and the rule would resolve to nothing while still reporting a duration. */
+
+/* ⚠️ IT PAINTS `.screen`'s OWN GRADIENT, DELIBERATELY. The veil is not a
+   separate brand colour: it is the same `gradient/canvas` the app is drawn on,
+   at the same `background-attachment: fixed`, so the two are the same pixels.
+   The dissolve therefore reveals only the CONTENT of Welcome arriving — the
+   background does not change at all, and there is no cut between "entrance" and
+   "app". Give this its own fill and the hand-off becomes a crossfade between
+   two backgrounds, which is the thing it was built to avoid. */
+.entrance {
+  position: fixed;
+  inset: 0;
+  z-index: var(--z-entrance);
+  display: grid;
+  place-items: center;
+  /* each half starts a short drift outside its slot and the lockup blooms on
+     the way out; neither may widen the document */
+  overflow: hidden;
+  background: var(--gradient-canvas-mobile);
+  background-attachment: fixed;
+}
+
+/* ⚠️ THE STAGE IS THE MASTER'S BOX, AND THE TWO SHARES SUM TO 1. The lockup is
+   538x173; `LuxLogoMark` is viewBox 0 0 209 173 (the symbol PLUS the master's
+   clear space before the L) and `LuxLogoWord` is 209 0 329 173. At 209/538 and
+   329/538 of one width, with NO flex gap, they render at one scale and one
+   height and land pixel-for-pixel on the master. Putting the clear space in a
+   `gap` instead would let the lockup drift as the stage resizes, because a gap
+   in px does not scale with the two SVGs beside it. */
+.stage {
+  display: flex;
+  align-items: center;
+  width: min(51.4vw, 283px); /* 68% of the 76vw / 420 it was first drawn at */
+}
+
+.mark,
+.word {
+  flex: none;
+  /* both halves fade and drift for 1.6s over a gradient fill; the hint keeps
+     each on its own composited surface rather than repainting the veil under
+     them every frame */
+  will-change: transform, opacity;
+}
+
+/* ⚠️ NO `z-index` ON THE SYMBOL AND NO SECOND WRAPPER ON THE WORDMARK — BOTH
+   BELONGED TO THE PUSH. The symbol used to cross the L and had to paint over
+   it; the wordmark made two moves on one transform and needed an element for
+   each. The halves now start APART and drift together, so they never overlap
+   and each makes exactly one move. See "The entrance" in globals.css. */
+.mark {
+  width: 38.8476%; /* 209 / 538 */
+}
+
+.word {
+  width: 61.1524%; /* 329 / 538 */
+}
+
+@media (min-width: 1024px) {
+  /* matches `.screen`'s desktop canvas — see the note on `.entrance` */
+  .entrance {
+    background: var(--gradient-canvas-desktop);
+  }
+}

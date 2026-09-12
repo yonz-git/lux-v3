@@ -24,7 +24,8 @@
    side of it the real distance is 48 — the orb and the button each get room,
    while the title and its description stay tight at 16. Reading the gap alone
    and ignoring the spacer children makes the block 64 too short. */
-.empty > svg {
+.empty > svg,
+.empty > :global(.lux-orb) {
   margin-bottom: var(--space-3xl); /* + the 16 gap = 48 */
 }
 

@@ -2910,3 +2910,96 @@ that is chosen rather than accidental — so neither was quietly darkened.
 `surface/data-deep` `#4f838f @85%` (see the contrast list above). Both are
 logged in `docs/figma-catchup.md` §7e for a Figma decision.
 
+
+## The entrance is an overlay on `/`, not a twentieth route (12 Sep 2026)
+
+⚠️ **NOT IN FIGMA.** Asked for directly: the brand lockup appears over the whole
+viewport before Welcome is handed the screen. The symbol and the wordmark fade
+in **together**, each drifting 15% of the lockup's width inwards — the symbol
+from its left, the wordmark from its right — and settle as the finished lockup.
+`components/layout/LogoEntrance.tsx` and "The entrance" in `globals.css` carry
+the timeline; this entry is the decisions a later reader is most likely to undo.
+
+### It is not a route, and making it one would cost four things
+
+The route map is nineteen routes and every one of them is in a nav section. An
+entrance is in none. As a route it would also have to own `/` — taking it from
+Welcome, and with it `metadataTitleFor("/")`, the title `RouteAnnouncer` speaks
+on a client-side navigation, and the address people deep-link and share — and it
+would become a back-button destination, so leaving the app and coming back would
+replay it. As a sibling rendered before `<Welcome>` in `app/page.tsx` it is none
+of those: `/` is still Welcome, the document outline is still Welcome's, the
+route count is still nineteen, and the node is out of the DOM in under three
+seconds. **Do not promote it to a route.**
+
+### Welcome's own entrance is HELD, and it is cancelled rather than paused
+
+Welcome runs a 3.8s narrative — orb assembles at 940ms, CTA at 200ms, the
+question at 1000ms, the swap to the reply at 3300ms — and all of it starts at
+first paint. Left alone it plays out under an opaque veil and the user lands in
+the middle of it: orb already together, question already asked, only the swap
+still to come. So `LogoEntrance` sets `data-entrance-hold` on the document
+element, and `html[data-entrance-hold] .screen *` sets `animation-name: none`.
+
+⚠️ **`animation-name: none`, NEVER `animation-play-state: paused`.** Pausing
+freezes the reveals on their `backwards` 0% keyframe — opacity 0 — so a script
+that never lifted the hold would leave the CTA and the disclaimer **invisible**
+on an otherwise working page. Cancelling drops each element onto its static
+style, which for a reveal is opacity 1. The two failure directions are not
+symmetric and only one of them is survivable.
+
+The hold is released when the ASSEMBLY tracks end (2000ms, veil still fully
+opaque), not when the veil's own track ends (2520ms) — otherwise Welcome sits
+fully formed and unanimated under a fading veil, then blinks out and restarts.
+
+### ⚠️ SUPERSEDED THE SAME DAY — it was a push, and it read as jumping
+
+It first shipped as a sequence: the wordmark flew in from beyond the right edge,
+held centred alone, and was shoved into its slot by a symbol arriving from
+beyond the left, the two coupled so the symbol's leading edge met the L on the
+frame the wordmark began to yield. Asked to change: the halves appear at the
+same time, fade in with a short left/right drift rather than from the edge, and
+"elegantly appear rather than jump". It was **replaced, not retuned**:
+
+- **The jump was mostly the curve.** The push ran on the orb's expo curve,
+  `cubic-bezier(0.16, 1, 0.3, 1)`, which leaves at full speed. The drift runs
+  1600ms on `--ease-standard`, which leaves from rest.
+- **The distance is the logo's, not the viewport's.** The push needed runs of
+  `50vw + its own width` so the halves could start off-screen — travel measured
+  in the logo's own width had made both halves pop into existence inside the
+  viewport once the logo was scaled down. A drift that is meant to start on
+  screen has no such problem, so it is a percentage of each half again.
+- **The wordmark's second wrapper, the contact keyframe and the symbol's
+  `z-index` are gone.** They existed only so one element could fly and then be
+  pushed, and so the symbol could paint over the L it shoved.
+
+**Do not rebuild the push by retuning this.** Sequencing the halves again means
+a contact to couple, and that coupling was the fragile part.
+
+### `animation-timing-function: var(--token)` inside `@keyframes` is DROPPED
+
+⚠️ **A trap this repo will hit again.** A `var()` is not substituted for
+`animation-timing-function` inside a `@keyframes` block. It does not warn and it
+does not fall back to the token — the segment silently gets the default `ease`.
+Measured on this build: the same keyframe moved **51.3px** by 300ms with a
+`var()` token, **87.7px** with the `cubic-bezier()` written out, and **51.3px**
+with the line deleted entirely — i.e. the token form and no declaration at all
+are the same thing.
+
+It cost the first version its push: the symbol was only 57% of the way across
+when the wordmark began to yield, so the two never made contact. With the curve
+moved onto the `animation` shorthand — which **does** take `var()` — the contact
+landed to within 5px.
+
+**Put the curve on the shorthand.** Every track in the entrance is one move
+between holds, and easing a constant gives a constant, so one curve lands on
+exactly the segment that moves. If a track ever genuinely needs two curves,
+write the `cubic-bezier()` out literally in the keyframe and copy the token's
+value beside it in a comment — do not reach for `var()` there.
+
+⚠️ **And no `animation-delay` anywhere in this timeline.** The global
+reduced-motion collapse sets `animation-duration: 0.01ms` and leaves
+`animation-delay` alone, correctly — a delay is not motion. A timeline built
+from delays would still take 2.5 real seconds for a user who asked for no
+motion, holding them on a static logo. Built from keyframe percentages, the
+whole thing collapses with the duration and is over in a frame.

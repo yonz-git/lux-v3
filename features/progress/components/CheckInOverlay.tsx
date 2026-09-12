@@ -4,7 +4,7 @@ import { useRef } from "react";
 import { createPortal } from "react-dom";
 import styles from "./CheckInOverlay.module.css";
 import { CheckInPanel } from "./CheckIn";
-import { useModalDialog, useMounted } from "@/lib/useModalDialog";
+import { useDialogPresence, useModalDialog, useMounted } from "@/lib/useModalDialog";
 
 /**
  * The daily check-in opened OVER `/progress`, rather than navigated to.
@@ -58,14 +58,29 @@ export function CheckInOverlay({
      `lib/useModalDialog.ts`, shared with `Sheet`. */
   useModalDialog(open, onClose, overlayRef);
 
-  if (!open || !mounted) return null;
+  /* ⚠️ THE OVERLAY USED TO ARRIVE AND LEAVE WITH NO MOTION OF ITS OWN, and the
+     contents made that read worse rather than better: `ChatPanel` carries
+     `data-reveal`, so the orb, the bubble and the chips faded up over 320ms
+     INSIDE a panel that had snapped into existence around them. Closing was a
+     single frame for all of it. The panel is the object here — it fades as one,
+     and it leaves the same way it came. See `useDialogPresence`. */
+  const { present, leaving } = useDialogPresence(open);
+
+  if (!present || !mounted) return null;
 
   return createPortal(
     <>
-      <div className={styles.scrim} aria-hidden="true" />
+      <div
+        className={styles.scrim}
+        data-state={leaving ? "leaving" : undefined}
+        aria-hidden="true"
+      />
       <div
         ref={overlayRef}
         className={styles.overlay}
+        data-state={leaving ? "leaving" : undefined}
+        /* closed for focus and assistive tech already — see `Sheet` */
+        inert={leaving}
         role="dialog"
         aria-modal="true"
         aria-label="Daily check-in"

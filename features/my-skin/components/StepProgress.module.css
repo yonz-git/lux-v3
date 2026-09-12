@@ -15,11 +15,44 @@
   overflow: hidden;
 }
 
+/* ⚠️ `transition: width` ALONE WAS DEAD CODE FOR AS LONG AS IT EXISTED, AND
+   MEASURING IT IS THE ONLY WAY TO SEE THAT. Every step is its own ROUTE, so the
+   fill is not a surviving element whose width changes — it is a brand new node
+   mounted at its final width, and a transition has nothing to transition FROM.
+   Measured across step 1 -> 2 on the deployed build, 12 Sep 2026: the node
+   identity changed, the width mounted at its final 136.8px, and
+   `element.getAnimations()` returned an empty array. The one element on the
+   screen whose entire job is to show movement was the only one that never
+   moved.
+
+   `@starting-style` is the fix and it is the mount-time half of a transition:
+   it supplies the start value the new node has no history for. The track now
+   grows from where the flow WAS to where it is.
+
+   ⚠️ IT NAMES NO ANIMATION, WHICH IS WHY IT MAY LIVE IN A MODULE — see the
+   motion section of AGENTS.md. A keyframes name would localize to nothing here.
+
+   ⚠️ AND IT DEGRADES TO EXACTLY TODAY'S BEHAVIOUR. A browser (or a build
+   target) without `@starting-style` ignores the block, the fill mounts at
+   `--progress` and nothing animates — the state this replaces. There is no
+   fallback to write.
+
+   ⚠️ `--progress-from` IS THE COMPONENT'S JOB, NOT THIS FILE'S. It is the step
+   the user is coming FROM, which the component remembers across the
+   client-side navigation; going backwards the bar shrinks rather than growing
+   to the answer. See StepProgress.tsx. */
 .fill {
   height: 100%;
   border-radius: var(--radius-full);
   background: var(--color-bg-brand);
+  width: var(--progress);
   transition: width var(--duration-base) var(--ease-standard);
+}
+
+@starting-style {
+  .fill {
+    width: var(--progress-from);
+  }
 }
 
 @media (min-width: 1024px) {

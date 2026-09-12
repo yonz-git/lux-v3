@@ -19,6 +19,46 @@
   background: var(--color-state-pressed-overlay);
 }
 
+/* ⚠️ THE OVERLAY FADES IN AND OUT AS ONE OBJECT — ADDED 12 Sep 2026. Before
+   this it had no motion of its own at either end, while `ChatPanel`'s
+   `data-reveal` faded its CONTENTS up over 320ms: the orb and the first bubble
+   arrived gently inside a panel that had snapped in around them, and the whole
+   thing left in a single frame. The panel is the object the user is dismissing,
+   so the panel is what moves.
+
+   ⚠️ WRITTEN AS A TRANSITION PLUS `@starting-style`, NOT AS AN ANIMATION, AND
+   THAT IS WHAT MAKES IT LEGAL HERE. A rule that NAMES an animation may not live
+   in a CSS Module — the module localizes the keyframes name and it resolves to
+   nothing (AGENTS.md, motion). `@starting-style` names nothing: it is the
+   mount-time start value for the transition already declared, so the entrance
+   and the exit are one mechanism and both stay in the file that owns this
+   surface. A browser without it simply gets the old instant entrance and still
+   gets the exit.
+
+   ⚠️ NO TRANSFORM AT EITHER END, UNLIKE `Sheet`'s TRAY. The tray is a bottom
+   sheet and rising 16px is where it comes from; this is a near-full-height
+   panel inset 16 from the top, and sliding it would read as the screen itself
+   moving. Exit runs at `duration/base` against the entrance's `duration/slow`
+   for the reason written out on the tray's exit in globals.css. */
+.scrim,
+.overlay {
+  opacity: 1;
+  transition: opacity var(--duration-slow) var(--ease-standard);
+}
+
+@starting-style {
+  .scrim,
+  .overlay {
+    opacity: 0;
+  }
+}
+
+.scrim[data-state="leaving"],
+.overlay[data-state="leaving"] {
+  opacity: 0;
+  transition-duration: var(--duration-base);
+}
+
 /* ⚠️ `--z-overlay` (300), NOT `--z-sheet` (400), AND THE ORDER MATTERS. It has
    to clear `--z-nav` (200), because a dashboard's nav showing through the
    check-in would offer a way out the conversation cannot survive. It must stay
