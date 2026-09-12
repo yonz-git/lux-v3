@@ -165,10 +165,17 @@
        so nothing inside any of the four callers needed to change.
        ⚠️ A LITERAL, NOT `--color-surface-card-desktop` — asked for directly.
        Same hue (`blue/50` #edf8fb) at 24% instead of the token's 55%, a
-       lighter/more transparent tray than the flow card. */
+       lighter/more transparent tray than the flow card.
+       ⚠️ BLUR DROPPED TO `--blur-sm` (8px) TOO, ALSO ASKED FOR DIRECTLY. At
+       24% alpha, `--blur-card-desktop`'s 32px still smeared the rows behind
+       into a flat wash before the tint even landed on top, so the tray read
+       as an opaque card instead of glass — a light tint over a blurred-to-
+       mush backdrop looks the same as a light tint over nothing. 8px keeps
+       enough of the blur to soften text-legibility noise without erasing the
+       shapes of what is actually behind it. */
     background: #edf8fb3d;
-    -webkit-backdrop-filter: blur(var(--blur-card-desktop));
-    backdrop-filter: blur(var(--blur-card-desktop));
+    -webkit-backdrop-filter: blur(var(--blur-sm));
+    backdrop-filter: blur(var(--blur-sm));
   }
 
   .grabber {
