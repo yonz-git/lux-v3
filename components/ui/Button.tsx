@@ -64,7 +64,7 @@ export function Button({
      what SmallButton already does. */
   if (href && !rest.disabled) {
     return (
-      <Link href={href} className={cls}>
+      <Link href={href} className={cls} style={rest.style}>
         {icon}
         {label}
       </Link>

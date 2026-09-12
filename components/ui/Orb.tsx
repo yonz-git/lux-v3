@@ -53,8 +53,8 @@ const ORB_RENDERER: "svg" | "siri" = "siri";
      light blue
    - c1, the two LARGE wedges: `gradient/canvas` mobile end #acc5cc at 45% — a
      deeper grey-blue that gives the sphere form without shading it
-   - c2, the two SMALL wedges: `gradient/brand` start #657792 at 22% — the
-     button's indigo as a faint tint
+   - c2, the two SMALL wedges: `gradient/brand` start #657792 at 30% — the
+     button's indigo as a faint tint (22% until asked for "a tiny bit more")
    ⚠️ THE DARK TWO ARE TRANSLUCENT ON PURPOSE. At full strength they covered
    the light body and the orb read dark; at these alphas they tint it. The body
    itself is `.siri-orb--lux` in globals.css.
@@ -63,7 +63,7 @@ const ORB_RENDERER: "svg" | "siri" = "siri";
    toward a saturated blue, #acc5cc toward white. */
 const LUX_ORB_COLORS = {
   c1: "color-mix(in srgb, var(--color-gradient-canvas-end-mobile) 45%, transparent)",
-  c2: "color-mix(in srgb, var(--color-gradient-brand-start) 22%, transparent)",
+  c2: "color-mix(in srgb, var(--color-gradient-brand-start) 30%, transparent)",
   c3: "var(--color-bg-bubble-ai)",
 };
 

@@ -85,6 +85,12 @@
   padding: var(--space-lg) var(--space-xl) var(--space-2xl);
   border-radius: var(--chat-panel-radius);
   background: var(--chat-panel-gradient);
+  /* ⚠️ NOT IN FIGMA — asked for directly 12 Sep 2026. The frame has no drop
+     shadow of its own and the panel sat flush with the canvas gradient behind
+     it, hardest to tell apart as the check-in overlay over `/progress`.
+     `--shadow-frosted-data` is the existing lift every other System B surface
+     uses (`DataCard`, `CameraCapture`, `SkinProfileStrip`) — not a new value. */
+  box-shadow: var(--shadow-frosted-data);
   /* the frame is overflow-clip; a footer's drop shadow is clipped in the comp
      too */
   overflow: hidden;
@@ -146,6 +152,12 @@
 .close {
   --chat-glyph: var(--size-icon-xs);
   --icon-size: var(--size-icon-xs);
+  /* ⚠️ NOT IN FIGMA — asked for directly 12 Sep 2026. `.header`'s
+     `align-items: center` puts the X level with the 58px avatar slot's
+     midpoint; nudged 4px above that so it sits closer to the panel's own top
+     edge instead of the avatar's centre. Only the top offset moves — the
+     shorthand `margin` on `.headerButton` still sets the other three sides. */
+  margin-top: calc((var(--chat-glyph) - var(--size-touch-target)) / 2 - var(--space-xs));
 }
 
 /* ---------------------------------------------------------------------------

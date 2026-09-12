@@ -1994,13 +1994,53 @@ main[tabindex="-1"]:focus-visible {
 }
 
 /* the question bubble: plays its normal entrance, holds, then is pushed up
-   and out. `both` (not `backwards`) because this end state must persist —
-   the bubble stays gone, not just pre-animation. */
+   and out. The push-out fills `forwards` because this end state must persist —
+   the bubble stays gone — but never `both`; see the note on the track. */
+/* ⚠️ NOT IN FIGMA — asked for directly. Welcome's question RISES from below,
+   and waits until the orb has fully arrived (assembly ends 940ms, the halo's
+   fade ends 1180ms) instead of dropping from the orb at 1000ms, which read as
+   arriving together with it. The shared `.bubble-enter` is untouched. */
+@keyframes lux-bubble-rise {
+  from {
+    opacity: 0;
+    transform: translateY(24px) scale(0.96);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+/* ⚠️ NOT IN FIGMA — asked for directly. Welcome's CTA, disclaimer and nav
+   arrive AFTER the question, each fading up on the same curve. Animates the
+   standalone `translate` property, NOT `transform`, because the nav centres
+   itself with `transform: translateX(-50%)` and a transform keyframe would
+   throw it off-centre for the length of the animation. Each caller sets
+   `--rise-delay` inline; an inline custom property cannot lose the cascade. */
+@keyframes lux-rise-in {
+  from {
+    opacity: 0;
+    translate: 0 24px;
+  }
+  to {
+    opacity: 1;
+    translate: 0 0;
+  }
+}
+
+.welcome-rise {
+  animation: lux-rise-in 800ms var(--ease-standard) var(--rise-delay, 0ms) backwards;
+}
+
 .bubble-ask-exit {
-  transform-origin: top center;
+  transform-origin: bottom center;
   animation:
-    lux-bubble-ask 800ms var(--ease-standard) 1000ms backwards,
-    lux-bubble-push-out var(--duration-slower) var(--ease-standard) 3300ms both;
+    lux-bubble-rise 800ms var(--ease-standard) 1200ms backwards,
+    /* ⚠️ `forwards`, NOT `both`. This track is listed second, so it wins —
+       and `both` held its 0% keyframe (opacity 1) through the whole 3300ms
+       delay, painting the question fully visible over the rise's opacity 0 from
+       the first frame. The question was on screen at opening because of this. */
+    lux-bubble-push-out var(--duration-slower) var(--ease-standard) 3300ms forwards;
 }
 
 /* the reply bubble: `backwards` holds the 0% keyframe (opacity 0) for the
@@ -2495,4 +2535,21 @@ textarea,
    ------------------------------------------------------------------------- */
 html[data-entrance-hold] .screen * {
   animation-name: none;
+}
+
+/* ⚠️ AND WELCOME IS INVISIBLE WHILE HELD — added 12 Sep 2026, when the veil
+   stopped being opaque. The logo now draws straight on the living canvas (see
+   LogoEntrance.module.css), so nothing but this keeps Welcome's held — and
+   therefore fully visible — content from showing behind it. Opacity, NOT
+   `visibility`: a screen reader and the first Tab still reach Welcome
+   underneath, as the entrance's accessibility notes require. Every visible
+   element on Welcome restarts from opacity 0 when the hold lifts, so nothing
+   pops as this returns to 1.
+
+   ⚠️ THIS REVERSES THE "SAFE DIRECTION" ABOVE for one case, a hold that is
+   never released: that used to leave Welcome visible and unanimated, and now
+   leaves it hidden. So `LogoEntrance` also releases on a backstop timer
+   (HOLD_BACKSTOP_MS), not only on `animationend`. */
+html[data-entrance-hold] .screen {
+  opacity: 0;
 }

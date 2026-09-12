@@ -58,11 +58,20 @@ export function Welcome() {
           </div>
         </div>
 
-        <div className={`${styles.actions} reveal-hero`}>
-          <Button className={styles.cta} href="/investigation/start">
+        {/* ⚠️ each piece fades up after the question lands (1200 + 800ms),
+            one 150ms beat apart, the nav last — see `.welcome-rise` */}
+        <div className={styles.actions}>
+          <Button
+            className={`${styles.cta} welcome-rise`}
+            style={{ "--rise-delay": "1700ms" } as React.CSSProperties}
+            href="/investigation/start"
+          >
             Create skin profile
           </Button>
-          <p className={`${styles.disclaimer} t-caption`}>
+          <p
+            className={`${styles.disclaimer} t-caption welcome-rise`}
+            style={{ "--rise-delay": "1850ms" } as React.CSSProperties}
+          >
             Lux does not provide medical diagnoses.
           </p>
         </div>
@@ -71,7 +80,11 @@ export function Welcome() {
       </div>
 
       {/* Welcome sits before the flow, so no section is current. */}
-      <BottomNav active="none" />
+      <BottomNav
+        active="none"
+        className="welcome-rise"
+        style={{ "--rise-delay": "2000ms" } as React.CSSProperties}
+      />
     </main>
   );
 }

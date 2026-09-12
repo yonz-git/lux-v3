@@ -65,9 +65,21 @@ const items = [
   { id: "products", label: "Products", Icon: ProductsIcon, href: "/products" },
 ] as const;
 
-export function BottomNav({ active = "none" }: { active?: NavSection }) {
+export function BottomNav({
+  active = "none",
+  className,
+  style,
+}: {
+  active?: NavSection;
+  className?: string;
+  style?: React.CSSProperties;
+}) {
   return (
-    <nav className={styles.nav} aria-label="Sections">
+    <nav
+      className={className ? `${styles.nav} ${className}` : styles.nav}
+      style={style}
+      aria-label="Sections"
+    >
       {items.map(({ id, label, Icon, href }) => {
         const content = (
           <>

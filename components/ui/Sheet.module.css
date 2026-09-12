@@ -154,10 +154,37 @@
     padding: var(--space-5xl);
     border-radius: var(--radius-3xl);
     box-shadow: var(--shadow-sheet-desktop);
+
+    /* ⚠️ NOT IN FIGMA — DESKTOP MODALS TAKE THE FLOW CARD'S LIGHT FROST, NOT
+       SAGE, asked for directly 12 Sep 2026. Mobile keeps `surface/data`
+       unchanged; this is a desktop-only swap so every `Sheet` dialog
+       (`AddProductMethodSheet`, `SelfieSheet`, `CheckBasket`, `CheckIn`'s
+       capture) reads like `QuestionScreen`'s own desktop card rather than a
+       System B readout. Content inside still sets `text/on-data` (#2e2a3f,
+       dark) for its ink — that ink already reads correctly on a light ground,
+       so nothing inside any of the four callers needed to change.
+       ⚠️ A LITERAL, NOT `--color-surface-card-desktop` — asked for directly.
+       Same hue (`blue/50` #edf8fb) at 24% instead of the token's 55%, a
+       lighter/more transparent tray than the flow card. */
+    background: #edf8fb3d;
+    -webkit-backdrop-filter: blur(var(--blur-card-desktop));
+    backdrop-filter: blur(var(--blur-card-desktop));
   }
 
   .grabber {
     display: none;
+  }
+}
+
+@media (min-width: 1024px) and (prefers-reduced-transparency: reduce) {
+  /* the desktop counterpart to the sage fallback below — `surface/data`'s
+     opaque composite would be the wrong colour once the transparent tray is
+     the light frost instead. `bg/surface-frost` is already the opaque token
+     `QuestionScreen`'s own reduced-transparency fallback uses for this card. */
+  .tray {
+    background: var(--color-bg-surface-frost);
+    -webkit-backdrop-filter: none;
+    backdrop-filter: none;
   }
 }
 
