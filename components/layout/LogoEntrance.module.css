@@ -4,13 +4,18 @@
    ⚠️ Nothing here may NAME an animation — a module localizes `@keyframes` names
    and the rule would resolve to nothing while still reporting a duration. */
 
-/* ⚠️ IT PAINTS `.screen`'s OWN GRADIENT, DELIBERATELY. The veil is not a
-   separate brand colour: it is the same `gradient/canvas` the app is drawn on,
-   at the same `background-attachment: fixed`, so the two are the same pixels.
-   The dissolve therefore reveals only the CONTENT of Welcome arriving — the
-   background does not change at all, and there is no cut between "entrance" and
-   "app". Give this its own fill and the hand-off becomes a crossfade between
-   two backgrounds, which is the thing it was built to avoid. */
+/* ⚠️ ON A DEVICE WITH WEBGL THE VEIL'S BACKGROUND IS THE LIVING CANVAS ITSELF.
+   Asked for directly, 12 Sep 2026: the new background has to be there when the
+   logo first appears. While the entrance holds Welcome, `.screen` sits at
+   opacity 0 (the hand-off block in globals.css), so the canvas behind it is all
+   there is; the gradient on `::before` fades out as `data-over-canvas` is set,
+   and the lockup is drawn straight on the canvas.
+
+   ⚠️ THE GRADIENT STAYS AS THE FALLBACK, AND IT IS STILL `.screen`'s OWN — the
+   same `gradient/canvas` at the same `background-attachment: fixed`, so with no
+   WebGL the dissolve still reveals only Welcome's content arriving and there is
+   no cut between two backgrounds. It is on `::before` rather than the element
+   so it can fade on its own while the lockup, a child, does not. */
 .entrance {
   position: fixed;
   inset: 0;
@@ -20,8 +25,31 @@
   /* each half starts a short drift outside its slot and the lockup blooms on
      the way out; neither may widen the document */
   overflow: hidden;
+}
+
+.entrance::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: -1;
   background: var(--gradient-canvas-mobile);
   background-attachment: fixed;
+  transition: opacity var(--duration-slow) var(--ease-standard);
+}
+
+.entrance[data-over-canvas]::before {
+  opacity: 0;
+}
+
+/* ⚠️ THE LOGO WAITS FOR THE CANVAS. Every track is paused until
+   LogoEntrance.tsx removes `data-wait` — the canvas has drawn, or the wait gave
+   up. Paused on a `both` fill, the halves sit on their 0% keyframe at opacity
+   0, so nothing appears early. The `<noscript>` rule in the component is what
+   keeps this from stranding a page that has no JavaScript. Pausing names no
+   animation, so it is safe in a module. */
+.entrance[data-wait],
+.entrance[data-wait] * {
+  animation-play-state: paused;
 }
 
 /* ⚠️ THE STAGE IS THE MASTER'S BOX, AND THE TWO SHARES SUM TO 1. The lockup is
@@ -61,7 +89,7 @@
 
 @media (min-width: 1024px) {
   /* matches `.screen`'s desktop canvas — see the note on `.entrance` */
-  .entrance {
+  .entrance::before {
     background: var(--gradient-canvas-desktop);
   }
 }

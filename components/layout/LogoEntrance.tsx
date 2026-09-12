@@ -27,18 +27,24 @@ import styles from "./LogoEntrance.module.css";
  * outline is still Welcome's, and the entrance is gone from the DOM in under
  * three seconds.
  *
- * ⚠️ IT IS SERVER-RENDERED AND STARTS WITHOUT JAVASCRIPT. The markup is in the
- * first HTML response and the animation is pure CSS, so the logo is already
- * appearing before React hydrates — which matters, because hydration is competing
- * with the font, the shader's WebGL compile and Welcome's own entrance. The
- * script below does three things and none of them start the animation: it holds
- * Welcome's timeline, it releases it, and it takes the node out.
+ * ⚠️ IT IS SERVER-RENDERED, BUT IT WAITS FOR THE CANVAS — AND UNTIL 12 Sep 2026
+ * IT DID NOT. The markup is in the first HTML response and the animation is pure
+ * CSS; it used to start from that HTML, before React hydrated, on the veil's
+ * gradient. Asked for directly: the new background has to be there when the
+ * logo first appears, and the canvas needs JavaScript. So the tracks are paused
+ * behind `data-wait` until `AppCanvas` has drawn, and the veil shows its
+ * gradient with nothing on it until then — a blank beat that is hydration's
+ * length, and far shorter in production than on a cold `next dev` load. The
+ * script below starts the animation, holds Welcome's timeline, releases it,
+ * and takes the node out.
  *
- * ⚠️ EVERY ONE OF THOSE THREE FAILS SAFE. If the script never runs: the veil
- * still fades on `both`, `visibility: hidden` still sticks, a hidden element
- * still takes no pointer, and Welcome — never held — simply plays its entrance
- * behind the veil and is sitting there when it lifts. The entrance is a
- * decoration that cannot strand the app behind it.
+ * ⚠️ EVERY ONE OF THOSE FAILS SAFE. No JavaScript: the `<noscript>` rule
+ * un-pauses the tracks, the veil still fades on `both`, `visibility: hidden`
+ * still sticks, a hidden element still takes no pointer, and Welcome — never
+ * held — plays its entrance behind the veil. No WebGL, or a canvas that has not
+ * drawn: the wait gives up after CANVAS_WAIT_MS and the logo plays on the
+ * gradient, exactly as it did before. The entrance is a decoration that cannot
+ * strand the app behind it.
  *
  * ⚠️ IT PLAYS ON EVERY LOAD OF `/`, AND THAT IS NOT THE "100 TIMES A DAY"
  * ANIMATION IT LOOKS LIKE. Nothing in the app navigates BACK to `/` — Welcome
@@ -56,6 +62,16 @@ import styles from "./LogoEntrance.module.css";
  * a screen reader is reading Welcome underneath from the first frame and is
  * never held here at all.
  */
+/* How long the logo waits for the canvas before playing on the gradient. The
+   canvas effect runs before this one in the same commit (`AppCanvas` precedes
+   the page in app/layout.tsx), so on a working device it has almost always
+   drawn already; this only bounds a canvas that never will. */
+const CANVAS_WAIT_MS = 800;
+
+/* The latest the hold may last before it is released regardless — see the
+   backstop in the effect. */
+const HOLD_BACKSTOP_MS = 6000;
+
 export function LogoEntrance() {
   const ref = useRef<HTMLDivElement>(null);
   const [gone, setGone] = useState(false);
@@ -88,6 +104,7 @@ export function LogoEntrance() {
     if (veil === undefined || veil === "finished") {
       /* nothing to hold for, and nothing to wait on — including the case where
          the stylesheet never arrived and there is no entrance to speak of */
+      delete el.dataset.wait;
       setGone(true);
       return;
     }
@@ -97,6 +114,39 @@ export function LogoEntrance() {
        component only ever mounts on `/`. */
     root.dataset.entranceHold = "";
     if (stateOf("lux-entrance-mark-in") === "finished") release();
+
+    /* ⚠️ START THE LOGO ONCE THE CANVAS HAS DRAWN — see "waits for the canvas"
+       above. The hold is taken FIRST, on purpose: `data-over-canvas` makes the
+       veil transparent, and it may only do that while the hold has Welcome at
+       opacity 0, or Welcome would show through behind the logo. */
+    let waitTimer = 0;
+    let observer: MutationObserver | null = null;
+    const go = () => {
+      if (el.dataset.wait === undefined) return;
+      window.clearTimeout(waitTimer);
+      observer?.disconnect();
+      if (
+        root.dataset.canvasReady !== undefined &&
+        root.dataset.entranceHold !== undefined
+      ) {
+        el.dataset.overCanvas = "";
+      }
+      delete el.dataset.wait;
+    };
+    if (root.dataset.canvasReady !== undefined) {
+      go();
+    } else {
+      observer = new MutationObserver(() => {
+        if (root.dataset.canvasReady !== undefined) go();
+      });
+      observer.observe(root, { attributeFilter: ["data-canvas-ready"] });
+      waitTimer = window.setTimeout(go, CANVAS_WAIT_MS);
+    }
+
+    /* ⚠️ A HOLD THAT IS NEVER RELEASED NOW HIDES WELCOME (globals.css) — it
+       used to leave it merely unanimated — so it has a backstop well past the
+       wait plus the 2520ms timeline. */
+    const backstop = window.setTimeout(release, HOLD_BACKSTOP_MS);
 
     /* ⚠️ THE TWO EVENTS ARE DIFFERENT MOMENTS AND BOTH ARE LOAD-BEARING. The
        assembly tracks end at 2000ms, while the veil is still fully opaque, and
@@ -131,6 +181,8 @@ export function LogoEntrance() {
        on the CTA underneath and navigating somewhere the user never asked to
        go. A pointerdown is consumed here and never becomes that click. */
     const skip = () => {
+      /* a skip during the wait must not sit paused behind it */
+      go();
       el.dataset.skip = "";
     };
 
@@ -139,6 +191,9 @@ export function LogoEntrance() {
     window.addEventListener("keydown", skip);
 
     return () => {
+      window.clearTimeout(waitTimer);
+      window.clearTimeout(backstop);
+      observer?.disconnect();
       el.removeEventListener("animationend", onEnd);
       el.removeEventListener("pointerdown", skip);
       window.removeEventListener("keydown", skip);
@@ -149,7 +204,20 @@ export function LogoEntrance() {
   if (gone) return null;
 
   return (
-    <div ref={ref} className={`${styles.entrance} lux-entrance`} aria-hidden>
+    <div
+      ref={ref}
+      className={`${styles.entrance} lux-entrance`}
+      data-wait=""
+      aria-hidden
+    >
+      {/* without JavaScript nothing would ever remove `data-wait` */}
+      <noscript>
+        <style>
+          {
+            ".lux-entrance[data-wait],.lux-entrance[data-wait] *{animation-play-state:running!important}"
+          }
+        </style>
+      </noscript>
       <div className={`${styles.stage} lux-entrance-stage`}>
         <div className={`${styles.mark} lux-entrance-mark`}>
           <LuxLogoMark />

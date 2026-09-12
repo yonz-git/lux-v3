@@ -39,3 +39,19 @@
 .shader[data-ready] {
   opacity: 1;
 }
+
+/* ⚠️ DURING THE LOGO ENTRANCE THE CANVAS DRAWS WITH NO FADE — asked for
+   directly, 12 Sep 2026: the new background has to be there when the logo first
+   appears, not arrive as the veil lifts. While `data-entrance-hold` is set,
+   Welcome is at opacity 0 and the veil goes transparent (globals.css,
+   LogoEntrance.module.css), so this canvas IS the logo's background; its usual
+   480ms fade-in would put the flat body colour under the logo's first frames.
+
+   ⚠️ IT IS NOT RAISED, AND IT BRIEFLY WAS — lifted to just under
+   `--z-entrance` so it would cover Welcome itself. A screenshot caught the held
+   orb (a `will-change: transform` layer) showing through it while the veil was
+   up, so Welcome is hidden by opacity instead and the canvas stays at -1.
+   `:global` covers only the attribute; the class stays local. */
+:global(html[data-entrance-hold]) .shader {
+  transition: none;
+}
