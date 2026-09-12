@@ -1,28 +1,39 @@
 "use client";
 
+import { usePathname } from "next/navigation";
 import { useEffect, useRef } from "react";
 import styles from "./CanvasShader.module.css";
 
 /**
- * The living canvas — 00 Welcome (`/`) and the CHECK landing (`/check`).
+ * The living canvas — every route, mounted once as `AppCanvas` in
+ * app/layout.tsx.
  *
  * ⚠️ NOT IN FIGMA. Figma paints every screen with `gradient/canvas-mobile` /
- * `-desktop`, a static three-stop linear gradient. This replaces it, on the two
- * routes that opt in, with a WebGL fragment shader that flows the same stops
- * around. It was asked for directly as an experiment; it is a candidate
- * treatment, not an approved one, and it is still owed a decision in Figma.
+ * `-desktop`, a static three-stop linear gradient. This replaces it with a
+ * WebGL fragment shader that moves the same stops around. It was asked for
+ * directly as an experiment; it is a candidate treatment, not an approved one,
+ * and it is still owed a decision in Figma.
  *
- * ⚠️ IT IS OPT-IN PER SCREEN, AND IT MUST STAY THAT WAY UNTIL FIGMA RULES ON
- * IT. It lived under `features/my-skin/` while `/` was its only caller; CHECK
- * asking for the same canvas made it a second section's dependency, which is
- * what moved it here — `components/layout/` is the frame around a screen. Do
- * NOT promote it into `.screen` in `globals.css` to "finish the job": that
- * would put an unapproved treatment on all seventeen routes at once, and the
- * contrast bound below was measured against bare canvas on two of them.
+ * ⚠️ IT WAS OPT-IN PER SCREEN UNTIL 12 Sep 2026, AND THIS COMMENT USED TO FORBID
+ * WHAT HAPPENED NEXT. Welcome and `/check` each rendered their own canvas; it
+ * was then asked for directly on every route. It is mounted once in the root
+ * layout rather than per screen, so it survives navigation instead of
+ * rebuilding its context and fading in again on each one. The contrast bound
+ * below is STRUCTURAL — a floor on the colour — so it carries to every route,
+ * but the measurements quoted were taken on Welcome and `/check`, and the field
+ * can put the floor colour higher up a screen than the linear gradient ever
+ * did. Text on bare canvas lighter than `text/secondary` wants measuring.
  *
- * `HubScreen` renders it behind a `shader` prop; Welcome renders it directly.
- * A caller must also raise its own content above it — see the placement note in
- * CanvasShader.module.css.
+ * Placement: it sits BEHIND `.screen` at z-index -1, and `.screen` goes
+ * transparent only once it has drawn — see CanvasShader.module.css.
+ *
+ * ⚠️ TWO VARIANTS. `flow` (the default) is the original drift; nothing renders
+ * it now, and it is kept so going back is one word in `AppCanvas`. `film` —
+ * asked for on 12 Sep 2026 with monopo.vn as the reference — keeps the same
+ * five tokens and the same floor but trades the drift for that site's
+ * language: larger, slower forms held in the darker part of the ramp, and film
+ * grain. Its own notes sit on `FRAG_FILM`. The reference is a DARK site and
+ * this is not; it cannot be without breaking the floor below.
  *
  * ⚠️ THE RAMP MAY ONLY BE WIDENED UPWARDS, AND THAT IS A CONTRAST CONSTRAINT,
  * NOT A TASTE ONE. Roughly 200 lines of `globals.css` derive colours by sampling
@@ -82,9 +93,10 @@ import styles from "./CanvasShader.module.css";
  * settling; this is ambient and continuous, which the board does not cover, so
  * it is a decided-here value rather than a token.
  *
- * FALLBACK. The canvas paints OVER `.screen`'s existing CSS gradient and never
- * replaces it. No WebGL context, a lost context, or a failed compile means the
- * component renders nothing and the token gradient is simply what you see.
+ * FALLBACK. `.screen` keeps its CSS gradient until the first real draw stamps
+ * `data-canvas-ready` on <html>. No WebGL context, a lost context, or a failed
+ * compile never sets it (or removes it), and the token gradient is simply what
+ * you see.
  * `prefers-reduced-motion` draws one frame and never schedules another.
  */
 
@@ -128,7 +140,8 @@ attribute vec2 a_pos;
 void main() { gl_Position = vec4(a_pos, 0.0, 1.0); }
 `;
 
-const FRAG = `
+/* The uniforms, noise, ramp and dither both variants share. */
+const COMMON = `
 precision highp float;
 
 uniform vec2  u_res;
@@ -199,14 +212,6 @@ float snoise(vec3 v) {
   return 42.0 * dot(m * m, vec4(dot(p0, x0), dot(p1, x1), dot(p2, x2), dot(p3, x3)));
 }
 
-/* ⚠️ ONE DOMINANT OCTAVE PLUS A WHISPER, NOT A FULL FBM. Three octaves at
-   0.5/0.25/0.125 put as much energy in the small detail as in the large forms,
-   and on a palette this narrow that detail cannot read as shading — it reads as
-   PATCHES. The second octave is kept at a quarter of the first purely to stop
-   the field looking like a single smooth blob; anything above ~0.25 brings the
-   blotching straight back. There is deliberately no third. */
-float field(vec3 p) { return snoise(p) * 0.80 + snoise(p * 2.10 + 9.3) * 0.20; }
-
 /* Five stops, blended with overlapping smoothsteps so no seam is visible
    between them. Order is lightest -> darkest.
 
@@ -233,6 +238,16 @@ float hash12(vec2 p) {
   p3 += dot(p3, p3.yzx + 33.33);
   return fract((p3.x + p3.y) * p3.z);
 }
+`;
+
+const FRAG_FLOW = `${COMMON}
+/* ⚠️ ONE DOMINANT OCTAVE PLUS A WHISPER, NOT A FULL FBM. Three octaves at
+   0.5/0.25/0.125 put as much energy in the small detail as in the large forms,
+   and on a palette this narrow that detail cannot read as shading — it reads as
+   PATCHES. The second octave is kept at a quarter of the first purely to stop
+   the field looking like a single smooth blob; anything above ~0.25 brings the
+   blotching straight back. There is deliberately no third. */
+float field(vec3 p) { return snoise(p) * 0.80 + snoise(p * 2.10 + 9.3) * 0.20; }
 
 void main() {
   vec2 uv = gl_FragCoord.xy / u_res;
@@ -270,6 +285,87 @@ void main() {
 }
 `;
 
+/* ⚠️ THE FILM VARIANT — EVERY ROUTE, AND NOT IN FIGMA. monopo.vn's language
+   translated onto LUX's light ground rather than copied off its dark one.
+
+   WHAT CARRIES THE LOOK, since none of it is the colour:
+     · scale — a heavily warped octave at ~0.95, so a form is most of a phone
+       screen;
+     · grain — static, like the flow variant's dither but ~16x louder, because
+       the reference reads as film and a moving grain is not calm.
+
+   ⚠️ IT STARTED WITH A GLASS SPHERE, A LAVENDER ACCENT AND A HARDER SWING TO
+   THE PALE END, AND ALL THREE WERE CUT THE SAME DAY — asked for directly: "tone
+   down the colours, less white, the big circle is not needed" — and then
+   "even less white". So `k` is now held in the DARKER 55% OF THE RAMP
+   (0.45..1.00): the lightest a core can get is roughly `canvas-start` into
+   `canvas-mid`, the two pale stops (`bg/progress-track`, `bg/nav`) barely
+   register, and the noise swing is softened so the forms sit in the canvas's
+   own mid tones. It was 0.30 for an hour and still read as too white. Do not
+   restore the range to "add life" — that is exactly the white that was
+   removed.
+
+   ⚠️ THE FLOOR STILL HOLDS, AND STRUCTURALLY. Every colour is a mix of the five
+   ramp stops, all at or above #acc5cc per channel, EXCEPT the grain, which can
+   dip a few levels under it — so the last line clamps each channel to the floor
+   after the grain is added, and the disclaimer's 4.75:1 bound survives. Holding
+   `k` higher moves the field TOWARD that floor — the bound is still structural,
+   but the disclaimer now sits much nearer 4.75:1 far more of the time.
+
+   ⚠️ THE POINTER WARP IS WELCOME'S ALONE — asked for directly, "subtle and only
+   on welcome". Around the cursor the field is pulled in slightly (a soft bulge)
+   and dragged along by the pointer's recent velocity, both falling off over
+   about a quarter of the short side. It moves WHERE the field is sampled, never
+   what colour comes out, so the floor is untouched. u_pull fades it in on "/"
+   and back out when you leave the route or the window; touch never drives it,
+   and reduced motion never runs the loop that eases it. */
+const FRAG_FILM = `${COMMON}
+uniform vec2  u_pointer; /* shader units: centred, y up, over the short side */
+uniform vec2  u_drag;    /* eased pointer velocity, already scaled by u_pull */
+uniform float u_pull;    /* 0..1 — 0 on every route but Welcome */
+
+void main() {
+  float m = min(u_res.x, u_res.y);
+  vec2 p = (gl_FragCoord.xy - 0.5 * u_res) / m;
+  float vy = gl_FragCoord.y / u_res.y;
+  float t = u_time;
+
+  /* the pointer warp, before the rotation so it stays under the cursor */
+  vec2 dp = p - u_pointer;
+  float fall = exp(-dot(dp, dp) / 0.06);
+  p -= dp * fall * 0.22 * u_pull;
+  p -= u_drag * fall;
+
+  /* ⚠️ ROTATED, FOR ONE REASON. A single simplex octave at this contrast shows
+     the lattice it is built on — the forms came out as soft RECTANGLES square
+     to the screen. Turning the domain ~34deg rounds them off. */
+  p = mat2(0.83, -0.56, 0.56, 0.83) * p;
+  vec2 q = vec2(
+    snoise(vec3(p * 0.70,       t * 0.060)),
+    snoise(vec3(p * 0.70 + 4.1, t * 0.060 + 2.7))
+  );
+  float n = snoise(vec3(p * 0.95 + q * 0.60, t * 0.080 + 3.7)) * 0.85
+          + snoise(vec3(p * 1.90 + q * 0.30 + 9.3, t * 0.080)) * 0.15;
+
+  /* the darker 55% of the ramp only — see "less white" above */
+  float v = clamp((1.0 - vy) * 0.30 + n * 0.60 + 0.40, 0.0, 1.0);
+  /* ⚠️ AN EASE-OUT, SO THE LIGHT CORES SHRINK WITHOUT GETTING ANY DARKER —
+     asked for directly, "make the white parts take less space". The lightest
+     value, v = 0, still maps to 0, but a field sitting halfway (0.5) now lands
+     at 0.75, so only the very peaks of the noise reach the pale end and
+     everything around them falls to the mid tones. NO BACKTICKS in here: this
+     comment is inside a JS template literal and one ends the string. */
+  v = 1.0 - (1.0 - v) * (1.0 - v);
+  float k = 0.45 + 0.55 * v;
+
+  vec3 col = ramp(k);
+  col += (hash12(gl_FragCoord.xy) - 0.5) * (8.0 / 255.0);
+  col = max(col, u_ramp[4]); /* the floor — see the note above */
+
+  gl_FragColor = vec4(col, 1.0);
+}
+`;
+
 function compile(gl: WebGLRenderingContext, type: number, src: string) {
   const sh = gl.createShader(type);
   if (!sh) return null;
@@ -290,8 +386,35 @@ function parseHex(value: string): [number, number, number] | null {
   return [((n >> 16) & 255) / 255, ((n >> 8) & 255) / 255, (n & 255) / 255];
 }
 
-export function CanvasShader() {
+/**
+ * The one canvas the app renders, behind every route.
+ *
+ * ⚠️ WELCOME IS THE ONLY ROUTE THAT ANSWERS THE POINTER. The canvas persists
+ * across navigation, so the route reaches it as a PROP the shader fades in and
+ * out — never as a remount, which would rebuild the WebGL context on every
+ * route change.
+ */
+export function AppCanvas() {
+  const pathname = usePathname();
+  return <CanvasShader variant="film" interactive={pathname === "/"} />;
+}
+
+export function CanvasShader({
+  variant = "flow",
+  interactive = false,
+}: {
+  /** `film` is the app-wide trial — see the variant note at the top */
+  variant?: "flow" | "film";
+  /** fade in the pointer warp — `film` only; see the note on FRAG_FILM */
+  interactive?: boolean;
+}) {
   const ref = useRef<HTMLCanvasElement>(null);
+
+  /* read by the frame loop, so a route change never re-runs the GL effect */
+  const interactiveRef = useRef(interactive);
+  useEffect(() => {
+    interactiveRef.current = interactive;
+  }, [interactive]);
 
   useEffect(() => {
     const canvas = ref.current;
@@ -310,7 +433,11 @@ export function CanvasShader() {
     if (!gl) return;
 
     const vs = compile(gl, gl.VERTEX_SHADER, VERT);
-    const fs = compile(gl, gl.FRAGMENT_SHADER, FRAG);
+    const fs = compile(
+      gl,
+      gl.FRAGMENT_SHADER,
+      variant === "film" ? FRAG_FILM : FRAG_FLOW,
+    );
     if (!vs || !fs) return;
 
     const prog = gl.createProgram();
@@ -348,6 +475,38 @@ export function CanvasShader() {
       ramp.push(...rgb);
     }
     gl.uniform3fv(gl.getUniformLocation(prog, "u_ramp[0]"), new Float32Array(ramp));
+
+    /* the pointer warp — all three locations are null on the flow program */
+    const uPointer = gl.getUniformLocation(prog, "u_pointer");
+    const uDrag = gl.getUniformLocation(prog, "u_drag");
+    const uPull = gl.getUniformLocation(prog, "u_pull");
+    const target = { x: 0, y: 0 };
+    const pos = { x: 0, y: 0 };
+    const drag = { x: 0, y: 0 };
+    let over = false;
+    let pull = 0;
+    const onMove = (event: PointerEvent) => {
+      if (event.pointerType === "touch") return;
+      const w = window.innerWidth;
+      const h = window.innerHeight;
+      const m = Math.min(w, h);
+      target.x = (event.clientX - w / 2) / m;
+      target.y = -(event.clientY - h / 2) / m;
+      /* entering: start AT the cursor rather than sliding in from the centre */
+      if (!over) {
+        pos.x = target.x;
+        pos.y = target.y;
+      }
+      over = true;
+    };
+    /* `relatedTarget` is null only when the pointer leaves the window */
+    const onOut = (event: PointerEvent) => {
+      if (!event.relatedTarget) over = false;
+    };
+    if (uPointer) {
+      window.addEventListener("pointermove", onMove, { passive: true });
+      document.addEventListener("pointerout", onOut);
+    }
 
     let width = 0;
     let height = 0;
@@ -388,6 +547,8 @@ export function CanvasShader() {
       if (!ready) {
         ready = true;
         canvas.dataset.ready = "";
+        /* what lets `.screen` go transparent — see globals.css */
+        document.documentElement.dataset.canvasReady = "";
       }
     };
 
@@ -406,6 +567,25 @@ export function CanvasShader() {
       raf = requestAnimationFrame(loop);
       if (now - last < FRAME_MS) return;
       last = now;
+      /* eased here, not in `draw`, so reduced motion never follows the pointer.
+         Per-frame factors are fine because the loop is capped at FRAME_MS. */
+      if (uPointer) {
+        const px = pos.x;
+        const py = pos.y;
+        pos.x += (target.x - pos.x) * 0.08;
+        pos.y += (target.y - pos.y) * 0.08;
+        drag.x += ((pos.x - px) * 6 - drag.x) * 0.1;
+        drag.y += ((pos.y - py) * 6 - drag.y) * 0.1;
+        const len = Math.hypot(drag.x, drag.y);
+        if (len > 0.12) {
+          drag.x *= 0.12 / len;
+          drag.y *= 0.12 / len;
+        }
+        pull += ((interactiveRef.current && over ? 1 : 0) - pull) * 0.04;
+        gl.uniform2f(uPointer, pos.x, pos.y);
+        gl.uniform2f(uDrag, drag.x * pull, drag.y * pull);
+        gl.uniform1f(uPull, pull);
+      }
       draw((now - start) / 1000);
     };
 
@@ -440,24 +620,28 @@ export function CanvasShader() {
     ro.observe(canvas);
 
     /* ⚠️ A LOST CONTEXT IS THE ONE FAILURE THAT IS WORSE THAN NO SHADER. The
-       canvas is opaque and covers the viewport, so a lost context composites as
-       a sheet of WHITE over the gradient it was meant to enrich — the whole
-       screen goes blank while the DOM underneath is perfectly fine. Dropping
-       `data-ready` fades the canvas back out and the token gradient returns, so
-       the worst case is the Figma design rather than a white page. */
+       canvas is opaque and `.screen` is transparent over it, so a lost context
+       shows as a sheet of WHITE behind every screen while the DOM is perfectly
+       fine. Dropping both flags fades the canvas out and hands `.screen` its
+       token gradient back, so the worst case is the Figma design rather than a
+       white page. */
     const onLost = (event: Event) => {
       event.preventDefault();
       cancelAnimationFrame(raf);
       raf = 0;
       ready = false;
       delete canvas.dataset.ready;
+      delete document.documentElement.dataset.canvasReady;
     };
     canvas.addEventListener("webglcontextlost", onLost);
 
     return () => {
       cancelAnimationFrame(raf);
       motion.removeEventListener("change", sync);
+      window.removeEventListener("pointermove", onMove);
+      document.removeEventListener("pointerout", onOut);
       canvas.removeEventListener("webglcontextlost", onLost);
+      delete document.documentElement.dataset.canvasReady;
       ro.disconnect();
       gl.deleteBuffer(buf);
       gl.deleteProgram(prog);
@@ -473,7 +657,7 @@ export function CanvasShader() {
          browser reclaims the context with the element; this call only ever
          poisons the next mount. */
     };
-  }, []);
+  }, [variant]);
 
   /* biome-ignore lint/a11y/noAriaHiddenOnFocusable: a <canvas> with no
      tabindex is not focusable, so this is the ordinary way to hide decoration.

@@ -1,27 +1,28 @@
-/* 00 — Welcome · the living canvas.
+/* The living canvas — every route, mounted once in app/layout.tsx.
    The reasoning, the palette clamp and the contrast measurement live in the
    doc comment on CanvasShader.tsx. This file is only the placement.
 
-   ⚠️ IT PAINTS OVER `.screen`'s GRADIENT, IT DOES NOT REPLACE IT. `.screen`
-   keeps `background: var(--gradient-canvas-mobile/-desktop)` untouched, so a
-   device with no WebGL, a lost context or a failed compile renders the token
-   gradient and nothing looks broken. That is also why the canvas is opaque.
+   ⚠️ IT SITS BEHIND `.screen`, AND `.screen` STEPS ASIDE ONLY ONCE IT HAS
+   DRAWN. `.screen` keeps `background: var(--gradient-canvas-mobile/-desktop)`
+   until the component stamps `data-canvas-ready` on <html>, which is what turns
+   that background transparent (globals.css). No WebGL, a lost context or a
+   failed compile never sets it, so the token gradient stays and nothing looks
+   broken.
 
    ⚠️ `fixed`, NOT `absolute` — it has to match `.screen`'s
    `background-attachment: fixed`, or the shader would scroll on a screen taller
    than the viewport while the fallback beneath it stayed put.
 
-   ⚠️ EVERY CALLER HAS TO RAISE ITS OWN CONTENT. This is a POSITIONED child at
-   `z-index: 0`, and CSS paints the whole z-index:0 layer above in-flow,
-   non-positioned content — so a screen that just drops the canvas in gets an
-   opaque sheet over its own body. Welcome does it on `.welcome`; `HubScreen`
-   does it on `.shell`, keyed off the `data-shader` attribute so only the
-   screens that opted in take the stacking context. 1 is deliberately far below
-   `--z-nav` (200), which is a sibling outside that context. */
+   ⚠️ `z-index: -1`, NOT 0 — AND THAT IS WHAT FREES EVERY SCREEN FROM RAISING
+   ITS OWN CONTENT. It used to be a positioned child of `.screen` at 0, which
+   paints ABOVE in-flow content, so each caller had to lift its body into a
+   stacking context of its own (`.welcome`, `[data-shader] .shell`). As a direct
+   child of <body> at -1 it paints after the root background and before
+   everything else, on every route, with nothing asked of the screen. */
 .shader {
   position: fixed;
   inset: 0;
-  z-index: 0;
+  z-index: -1;
   display: block;
   width: 100%;
   height: 100%;

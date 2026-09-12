@@ -33,12 +33,11 @@
    detuned from the Figma-literal 24 to match desktop's 13), so those are
    written as literals rather than snapped to the nearest token. */
 
-/* ⚠️ `position: relative; z-index: 1` IS LOAD-BEARING, NOT TIDINESS. The shader
-   canvas is a POSITIONED child of `.screen` at `z-index: 0`, and CSS paints the
-   whole z-index:0 layer ABOVE in-flow, non-positioned content — so with this
-   block left static, the canvas covered the orb, the bubbles, the CTA and the
-   disclaimer, and Welcome rendered as an empty gradient. `BottomNav` was never
-   affected: it already carries `--z-nav` (200). */
+/* `position: relative; z-index: 1` was load-bearing while the shader canvas was
+   a positioned child of `.screen` at `z-index: 0`: it painted ABOVE in-flow
+   content and covered the orb, the bubbles and the CTA. The canvas now lives in
+   app/layout.tsx at -1 and needs nothing from this block. The stacking context
+   stays because app/page.tsx's `LogoEntrance` note is written against it. */
 .welcome {
   position: relative;
   z-index: 1;

@@ -4,6 +4,7 @@ import "./globals.css";
 import { InvestigationProvider } from "@/lib/store/InvestigationProvider";
 import { RouteAnnouncer } from "@/components/layout/RouteAnnouncer";
 import { SnackbarProvider } from "@/components/layout/Snackbar";
+import { AppCanvas } from "@/components/layout/CanvasShader";
 
 /**
  * Figtree is the LUX typeface. Poppins was used early on and must not come back.
@@ -51,6 +52,13 @@ export default function RootLayout({
           the flow — a provider scoped to /investigation would hand it an empty
           list every time. Still IN MEMORY ONLY: a reload starts clean. */}
       <body>
+        {/* ⚠️ NOT IN FIGMA — the living canvas behind EVERY route, asked for
+            directly on 12 Sep 2026. Mounted ONCE, here, rather than per screen:
+            a per-screen canvas re-created its WebGL context and faded in again
+            on every navigation. It sits behind the page at z-index -1 and only
+            shows once it has drawn — see `:root[data-canvas-ready] .screen` in
+            globals.css — so a device without WebGL keeps the token gradient. */}
+        <AppCanvas />
         {/* speaks each client-side navigation and moves focus into the new
             screen — the App Router provides neither. See the component. */}
         <RouteAnnouncer />

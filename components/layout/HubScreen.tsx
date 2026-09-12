@@ -4,7 +4,6 @@ import type { ReactNode } from "react";
 import Link from "next/link";
 import styles from "./HubScreen.module.css";
 import { BottomNav, type NavSection } from "./BottomNav";
-import { CanvasShader } from "./CanvasShader";
 import { ChevronLeftIcon } from "@/components/ui/icons";
 
 /**
@@ -55,7 +54,6 @@ export function HubScreen({
   nav = "products",
   belowHeading,
   center,
-  shader,
   tightTop,
   footer,
   children,
@@ -81,19 +79,9 @@ export function HubScreen({
   /** centre the body between two equal flexible spacers */
   center?: boolean;
   /**
-   * Paint the WebGL canvas over `.screen`'s token gradient — 00 Welcome's
-   * living canvas, on a hub screen.
-   *
-   * ⚠️ NOT IN FIGMA, AND OPT-IN ONE SCREEN AT A TIME. `/check` is the only hub
-   * that passes it. It is a candidate treatment awaiting a Figma decision, so
-   * do not default it to `true` and do not add it to a screen without being
-   * asked — see the doc comment on CanvasShader.tsx.
-   */
-  shader?: boolean;
-  /**
    * Take the screen's top padding one step down the scale, 40 -> 32.
    *
-   * ⚠️ NOT IN FIGMA, AND OPT-IN ONE SCREEN AT A TIME, like `shader`. The
+   * ⚠️ NOT IN FIGMA, AND OPT-IN ONE SCREEN AT A TIME. The
    * screens that take it are listed at their call sites; if the tighter top
    * wins everywhere it belongs on `.screen` outright and this prop goes away.
    * The rule is `.screen[data-tight-top]` in globals.css — it CANNOT live in
@@ -131,13 +119,8 @@ export function HubScreen({
       className="screen"
       data-layout="hub"
       data-center={center || undefined}
-      data-shader={shader || undefined}
       data-tight-top={tightTop || undefined}
     >
-      {/* ⚠️ BEFORE THE SHELL, AND THE SHELL IS RAISED ABOVE IT. The canvas is
-          opaque and covers the viewport; `[data-shader] .shell` in the
-          stylesheet is what keeps the page on top of it. */}
-      {shader && <CanvasShader />}
       <div className={styles.shell} data-reveal>
         {hasHeader && (
           <div className={styles.header}>

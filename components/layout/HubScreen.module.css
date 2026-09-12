@@ -15,23 +15,6 @@
   flex-direction: column;
 }
 
-/* ⚠️ LOAD-BEARING, NOT TIDINESS — the same rule Welcome carries. `CanvasShader`
-   is an OPAQUE positioned child of `.screen` at `z-index: 0`, and CSS paints the
-   whole z-index:0 layer above in-flow, non-positioned content: without this the
-   canvas covers the page it was meant to sit behind.
-
-   ⚠️ SCOPED TO `[data-shader]` ON PURPOSE. `z-index: 1` opens a stacking
-   context, and anything inside the shell that reaches for `--z-overlay` or
-   `--z-sheet` would then be trapped under the nav (200, a sibling OUTSIDE this
-   context). `/check` is the only screen that opts in and it renders no overlay;
-   every other hub screen is untouched. `[data-shader]` is a plain attribute
-   selector, so it is not hashed and matches the `<main>` this module does not
-   own. */
-[data-shader] .shell {
-  position: relative;
-  z-index: 1;
-}
-
 /* Figma `header-row` on `Long-term products list` is 24 tall, not 38 — there is
    no Save & exit button to set the height, only a chevron and a text action. */
 .header {
