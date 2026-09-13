@@ -193,6 +193,16 @@ export function SmoothScroll() {
         glides.set(el, glide);
       }
 
+      /* ⚠️ A REVERSE NOTCH TURNS THE GLIDE ROUND AT ONCE. Notches add to where
+         the glide is headed, so during a fast scroll the target runs a few
+         hundred px ahead of the page — and one reverse notch added to THAT
+         still left it ahead, so the page kept going the old way. A reversal
+         restarts from where the page actually is; same-direction notches
+         still pile up. */
+      const heading = glide.target - glide.current;
+      if (heading !== 0 && Math.sign(heading) !== Math.sign(delta)) {
+        glide.target = glide.current;
+      }
       glide.target = Math.min(Math.max(glide.target + delta, 0), maxScroll(el));
       if (!raf) raf = requestAnimationFrame(tick);
     };

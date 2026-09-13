@@ -1,7 +1,7 @@
 # 003 — SmoothScroll: turn round at once when the wheel reverses
 
-- **Status**: TODO
-- **Commit**: `d7220d6` — plus the uncommitted working tree of 13 Sep 2026. Search by quoted code.
+- **Status**: DONE — 13 Sep 2026, applied without plan 002 (deferred; the dependency was ordering only). Headless Chrome on `/investigation/skin-type` at 440×400: five 100px wheel events 40ms apart, then one reverse. The page moves up on the first frame after the reverse (24ms) and never coasts past it; it settles 100px above where the reverse landed. Before: it kept going 90px the old way and never turned.
+- **Commit**: `c5edd11`. Search by quoted code.
 - **Severity**: MEDIUM
 - **Category**: Interruptibility
 - **Estimated scope**: 1 file (`components/layout/SmoothScroll.tsx`), ~10 lines
