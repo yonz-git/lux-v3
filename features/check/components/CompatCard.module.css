@@ -46,20 +46,17 @@
   padding: var(--space-md); /* 12 */
 
   border: none;
-  border-radius: var(--radius-md); /* 12 */
-  /* ⚠️ NOT IN FIGMA, AND LITERAL HEX ON PURPOSE — these exact values were
-     asked for directly 13 Sep 2026, replacing a token-mixed diagonal the same
-     day. None of the three is a declared token, so this is a knowing exception
-     to non-negotiable 2; raise it in Figma as a surface token rather than
-     "fixing" it onto the nearest one. Opaque, so the reduced-transparency rule
-     at the foot of this file (`.card` alone, lower specificity) leaves it be. */
-  background: linear-gradient(
-    to bottom right,
-    #e2eeef,
-    color-mix(in oklab, #f7feff 30%, #e0f6fb)
-  );
-  -webkit-backdrop-filter: none;
-  backdrop-filter: none;
+  /* ⚠️ SUPERSEDED 13 Sep 2026, asked for directly: the surface and radius of
+     `/check/new`'s product row (`ProductList`'s `.row`) — `surface/frost-light`,
+     the frosted-row shadow, the card blur and radius/lg — so the three product
+     cards in the app (that row, this, `ProductAccordionCard` compact) read as
+     one. It replaces a literal-hex diagonal; the frost-on-frost argument above
+     is traded knowingly, and the shadow is what keeps each card's edge. */
+  border-radius: var(--radius-lg); /* 16 */
+  background: var(--color-surface-frost-light);
+  box-shadow: var(--shadow-frosted-row);
+  -webkit-backdrop-filter: blur(var(--blur-card));
+  backdrop-filter: blur(var(--blur-card));
 }
 
 .card[data-band="risky"] {
@@ -257,7 +254,10 @@
 /* `.recommendation` is not listed: `bg/nav` is already opaque, and swapping it
    for `bg/surface-frost` here would lose the tint for exactly these users */
 @media (prefers-reduced-transparency: reduce) {
-  .card {
+  /* `.card.compact` named too — it is translucent now, and `.card` alone is
+     outranked by it */
+  .card,
+  .card.compact {
     background: var(--color-bg-surface-frost);
     -webkit-backdrop-filter: none;
     backdrop-filter: none;

@@ -60,10 +60,12 @@
   gap: var(--space-md);
   padding: var(--space-md); /* 12 */
 
-  border-radius: var(--radius-md); /* 12 */
-  background: var(--color-bg-surface-frost);
-  -webkit-backdrop-filter: none;
-  backdrop-filter: none;
+  /* ⚠️ SUPERSEDED 13 Sep 2026, asked for directly: the surface and radius of
+     `/check/new`'s product row (`ProductList`'s `.row`), which is also this
+     card's own full-size recipe — so the product cards in PRODUCTS and CHECK
+     read as one. The opaque-fill argument above is traded knowingly; the
+     frosted-row shadow `.card` already carries is what keeps each edge. */
+  border-radius: var(--radius-lg); /* 16 */
 }
 
 .card.compact > :global(.collapse) {
