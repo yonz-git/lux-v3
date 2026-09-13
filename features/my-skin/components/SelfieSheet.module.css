@@ -158,3 +158,41 @@
     backdrop-filter: none;
   }
 }
+
+/* ⚠️ NOT IN FIGMA — THE DESKTOP DIALOG, asked for directly 13 Sep 2026.
+   Two changes, scoped to this sheet through `Sheet`'s `className`:
+
+   1. TALLER, SO `Done` IS ON SCREEN WITHOUT SCROLLING. `Sheet`'s guard stops
+      the tray above the nav (100dvh − nav − 64), and on a shorter browser
+      window the selfie tray (~662 tall) scrolled inside itself with `Done`
+      out of sight. The tray sits at `--z-sheet` over the nav, so it may use
+      the viewport minus 24 each side; the viewfinder gives up height before
+      the tray has to scroll (322 is everything in the tray but the well).
+
+   2. THE MOBILE TRAY'S FILL — `surface/data` + `--blur-card` — instead of the
+      light desktop frost every other `Sheet` dialog takes. Two classes, so it
+      outranks `Sheet`'s single-class desktop rule whatever the bundle order. */
+@media (min-width: 1024px) {
+  .tray.tray {
+    max-height: calc(100dvh - var(--space-2xl) * 2);
+    background: var(--color-surface-data);
+    -webkit-backdrop-filter: blur(var(--blur-card));
+    backdrop-filter: blur(var(--blur-card));
+  }
+
+  .viewfinder {
+    max-height: min(400px, calc(100dvh - var(--space-2xl) * 2 - 322px));
+    min-height: 200px;
+  }
+}
+
+@media (min-width: 1024px) and (prefers-reduced-transparency: reduce) {
+  /* the mobile tray's own fallback: the sage composited over `bg/canvas` */
+  .tray.tray {
+    background:
+      linear-gradient(var(--color-surface-data), var(--color-surface-data)),
+      var(--color-bg-canvas);
+    -webkit-backdrop-filter: blur(7px);
+    backdrop-filter: blur(7px);
+  }
+}

@@ -66,11 +66,14 @@ export function Sheet({
   onClose,
   title,
   children,
+  className,
 }: {
   open: boolean;
   onClose: () => void;
   title: string;
   children: React.ReactNode;
+  /** added to the tray, for a caller that needs to adjust its own dialog */
+  className?: string;
 }) {
   const trayRef = useRef<HTMLDivElement>(null);
   const mounted = useMounted();
@@ -158,7 +161,7 @@ export function Sheet({
       />
       <div
         ref={trayRef}
-        className={styles.tray}
+        className={className ? `${styles.tray} ${className}` : styles.tray}
         data-tray="tray"
         data-state={leaving ? "leaving" : undefined}
         /* ⚠️ `inert` WHILE LEAVING, NOT JUST UNCLICKABLE. The dialog is already

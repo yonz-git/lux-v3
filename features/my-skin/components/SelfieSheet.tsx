@@ -68,7 +68,7 @@ export function SelfieSheet({
   const title = "Take a photo of the affected area.";
 
   return (
-    <Sheet open={open} onClose={onClose} title={title}>
+    <Sheet open={open} onClose={onClose} title={title} className={styles.tray}>
       {/* `Sheet` uses the title for its aria-label only, so the visible
           heading is rendered here — WHITE-on-sage `text/on-data`, as every
           other thing inside the tray is. */}
