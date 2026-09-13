@@ -27,6 +27,7 @@ These plans come from the `improve-animations` audit of 13 Sep 2026. Each one is
 | 017 | [Selection marks fade in and out](017-selection-marks-fade.md) | LOW | Missed opportunity | — | TODO |
 | 018 | [The analysis hands over from its passes](018-analysis-passes-hand-over.md) | MEDIUM | Jarring change + hydration bug | 014 (ordering only) | TODO |
 | 019 | [Three states read at the wrong moment](019-state-read-at-wrong-moment.md) | MEDIUM | Correctness | — | TODO |
+| 020 | [Step 5's list grows in place](020-step5-list-grows-in-place.md) | LOW | Missed opportunity | — | TODO |
 
 ## Recommended order
 
