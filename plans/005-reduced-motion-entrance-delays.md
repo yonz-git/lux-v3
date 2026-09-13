@@ -1,7 +1,13 @@
 # 005 — Reduced motion: stop holding Welcome invisible behind entrance delays
 
-- **Status**: TODO
-- **Commit**: `d7220d6` — plus the uncommitted working tree of 13 Sep 2026. Search by quoted code.
+- **Status**: DONE — 13 Sep 2026. Headless Chrome with `prefers-reduced-motion: reduce` on `/`:
+  - the CTA, disclaimer and nav report `animation-delay: 0s` (their rise delays are unchanged with emulation off: 1.7s, 1.85s, 2s);
+  - the question runs `lux-fade-out 0.2s` and the reply `lux-fade-in 0.2s`, both at 3.3s;
+  - `.beacon::before` rests at `200% 0px` (before: `0% 0%`);
+  - on `/investigation/skin-type`, `[data-reveal] > *` delays are all `0s` (the 40/80ms stagger shows with emulation off).
+
+  Not covered, and left alone: the orb halo's `::after` glow (`.orb-halo::after`, `.orb-halo--siri::after`) still waits its 700ms before appearing. It is decorative, unfocusable and not content.
+- **Commit**: `c5edd11`. Search by quoted code.
 - **Severity**: MEDIUM
 - **Category**: Accessibility
 - **Estimated scope**: 2 files (`app/globals.css`, `components/ui/Button.module.css`), ~45 lines

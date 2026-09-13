@@ -1354,6 +1354,17 @@ main[tabindex="-1"]:focus-visible {
   }
 }
 
+/* the reverse of lux-fade-in — used where reduced motion turns a moving exit
+   into a plain crossfade (see the block after the global collapse) */
+@keyframes lux-fade-out {
+  from {
+    opacity: 1;
+  }
+  to {
+    opacity: 0;
+  }
+}
+
 .reveal {
   animation: lux-fade-in var(--duration-slow) var(--ease-standard) backwards;
 }
@@ -2161,6 +2172,34 @@ main[tabindex="-1"]:focus-visible {
     animation-iteration-count: 1 !important;
     /* biome-ignore lint/complexity/noImportantStyles: as above */
     transition-duration: 0.01ms !important;
+  }
+}
+
+/* ⚠️ THE COLLAPSE ABOVE SHORTENS DURATIONS, NOT DELAYS — and an entrance that
+   fills `backwards` holds its first keyframe, opacity 0, for its whole delay.
+   Under reduced motion Welcome's CTA, disclaimer and nav sat invisible — and
+   reachable by Tab — for 1.7–2.0s, and the question was a blank until 1.2s.
+   Decorative entrances drop their wait here. Welcome's question → reply swap
+   is CONTENT rather than decoration, so it keeps its 3300ms beat and becomes
+   a short crossfade with no movement; both delays stay equal (see
+   `.bubble-swap-in`). Added 13 Sep 2026. */
+@media (prefers-reduced-motion: reduce) {
+  .welcome-rise,
+  .bubble-enter,
+  .shine-on-enter,
+  [data-reveal] > * {
+    /* biome-ignore lint/complexity/noImportantStyles: must beat the stagger rules and module declarations, as the block above does */
+    animation-delay: 0ms !important;
+  }
+
+  .bubble-ask-exit {
+    /* biome-ignore lint/complexity/noImportantStyles: must beat the global duration collapse */
+    animation: lux-fade-out var(--duration-base) var(--ease-standard) 3300ms forwards !important;
+  }
+
+  .bubble-swap-in {
+    /* biome-ignore lint/complexity/noImportantStyles: must beat the global duration collapse */
+    animation: lux-fade-in var(--duration-base) var(--ease-standard) 3300ms backwards !important;
   }
 }
 

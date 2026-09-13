@@ -270,4 +270,9 @@
   );
   background-size: 200% 100%;
   background-repeat: no-repeat;
+  /* rest = the sweep's END frame (`lux-beacon-sweep` in globals.css), so when
+     reduced motion ends the loop the band is parked off the button instead of
+     sitting on its right edge — a 200%-wide image at 200% lies wholly left of
+     the pill */
+  background-position: 200% 0;
 }
