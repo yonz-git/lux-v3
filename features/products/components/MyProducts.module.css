@@ -278,6 +278,13 @@
   gap: var(--space-sm);
 }
 
+/* each card is a `Collapse` row (`as="li"`) so a removed one closes over the
+   list's 8 instead of leaving it behind — declared on the row, see
+   "Dropdowns" in globals.css */
+.stack > :global(.collapse) {
+  --collapse-gap: var(--space-sm);
+}
+
 /* carried over from the deleted pushed view, which is also where the filled hub
    was missing an add affordance entirely */
 /* ⚠️ NOT IN FIGMA — the secondary `Button` at control/md (48), hugging its

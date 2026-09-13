@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import styles from "./MyProducts.module.css";
 import { HubScreen } from "@/components/layout/HubScreen";
 import { Button } from "@/components/ui/Button";
@@ -9,7 +9,7 @@ import { ProductAccordionCard } from "./ProductAccordionCard";
 import { ProductArt } from "./ProductArt";
 import { EmptyBox } from "./ProductList";
 import { AddProductMethodSheet } from "./AddProductMethodSheet";
-import { Collapse } from "@/components/ui/Collapse";
+import { Collapse, COLLAPSE_EXIT_MS } from "@/components/ui/Collapse";
 import { ChevronDownIcon, PlusIcon } from "@/components/ui/icons";
 import { useInvestigation } from "@/lib/store/InvestigationProvider";
 import { useSnackbar } from "@/components/layout/Snackbar";
@@ -349,6 +349,37 @@ function CategoryGroup({
   const panelId = `bucket-${bucket}`;
   const n = products.length;
 
+  /* ⚠️ A REMOVED CARD CLOSES FIRST AND LEAVES THE STORE SECOND — added 13 Sep
+     2026. It used to unmount the moment `Remove` wrote to the store, and every
+     card and group under it jumped up by its height; Undo snapped it back the
+     same way. `leave` closes its `Collapse` and only then calls `onRemove`,
+     which is also when the Undo snackbar appears. */
+  const [leaving, setLeaving] = useState<ReadonlySet<string>>(() => new Set());
+  const pending = useRef(new Set<string>());
+  /* the cards this group has already drawn — one missing from it (put back by
+     Undo, or added while the group is open) grows in with `appear`. `null`
+     until the first render commits, so nothing animates when the screen
+     arrives. */
+  const drawn = useRef<ReadonlySet<string> | null>(null);
+  useEffect(() => {
+    drawn.current = new Set(products.map((p) => p.id));
+  });
+
+  function leave(id: string) {
+    if (pending.current.has(id)) return;
+    pending.current.add(id);
+    setLeaving((prev) => new Set(prev).add(id));
+    window.setTimeout(() => {
+      pending.current.delete(id);
+      onRemove(id);
+      setLeaving((prev) => {
+        const next = new Set(prev);
+        next.delete(id);
+        return next;
+      });
+    }, COLLAPSE_EXIT_MS);
+  }
+
   return (
     <div className={styles.group} data-open={open}>
       <button
@@ -386,13 +417,18 @@ function CategoryGroup({
           ) : (
             <ul className={styles.stack}>
               {products.map((p) => (
-                <li key={p.id}>
+                <Collapse
+                  as="li"
+                  key={p.id}
+                  open={!leaving.has(p.id)}
+                  appear={drawn.current !== null && !drawn.current.has(p.id)}
+                >
                   <ProductAccordionCard
                     product={p}
                     compact
-                    onRemove={() => onRemove(p.id)}
+                    onRemove={() => leave(p.id)}
                   />
-                </li>
+                </Collapse>
               ))}
             </ul>
           )}

@@ -1,7 +1,13 @@
 # 013 — Removed products close smoothly; Undo reopens them
 
-- **Status**: TODO
-- **Commit**: `d7220d6` — plus the uncommitted working tree of 13 Sep 2026. Search by quoted code.
+- **Status**: DONE — 13 Sep 2026. Headless Chrome:
+  - **Removing the first card of a group on `/products`:** the row (`li.collapse`) goes `leaving` and closes. The store write, the Undo snackbar and the group count all land at 212ms, and the next card ends exactly on the removed card's top (0px). The largest single-frame step of the card below is 74px, repeatable across runs.
+  - **Smooth, not snapping:** the two moves with measured totals have the same ~30% steepest-frame share (Undo 21 of 70px, basket 32 of 104px). That is `--ease-standard`'s shape at 60fps, not a snap.
+  - **Undo:** the card comes back `entering` in its original place (0px) and pushes the next card down 70px.
+  - **Arrival:** after reloading `/products` and opening a group, every row reads `rest`, so nothing grows in.
+  - **Basket tray** (`/check/new` at 440, middle of three rows removed): the row closes and the tray's top edge glides 104px.
+  - **Unchanged:** the resting Collapse gaps (16 / 8 / 12, compat card 14). The snackbar still rises as plan 008 made it, now appearing 207ms after `Remove`.
+- **Commit**: `c5edd11`. Search by quoted code.
 - **Severity**: MEDIUM (missed opportunity: additive)
 - **Category**: Missed opportunities / preventing a jarring change
 - **Estimated scope**: 6 files, ~90 lines:

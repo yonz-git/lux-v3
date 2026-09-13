@@ -1,8 +1,10 @@
 "use client";
 
+import { useEffect, useRef, useState } from "react";
 import styles from "./CheckBasket.module.css";
 import { Sheet } from "@/components/ui/Sheet";
 import { Button } from "@/components/ui/Button";
+import { Collapse, COLLAPSE_EXIT_MS } from "@/components/ui/Collapse";
 import { ChevronDownIcon, CloseIcon, PlusIcon } from "@/components/ui/icons";
 import { ProductThumb } from "@/features/products/components/ProductThumb";
 import {
@@ -139,47 +141,79 @@ export function CheckBasketSheet({
   const enough = products.length >= MIN_CHECK_PRODUCTS;
   const full = products.length >= MAX_CHECK_PRODUCTS;
 
+  /* ⚠️ A REMOVED ROW CLOSES BEFORE IT LEAVES THE BASKET — added 13 Sep 2026;
+     it used to vanish and jump the tray's edge. Same two beats as the
+     PRODUCTS hub's cards (MyProducts.tsx `CategoryGroup`). */
+  const [leaving, setLeaving] = useState<ReadonlySet<string>>(() => new Set());
+  const pending = useRef(new Set<string>());
+  const drawn = useRef<ReadonlySet<string> | null>(null);
+  useEffect(() => {
+    drawn.current = new Set(products.map((p) => p.id));
+  });
+
+  function leave(id: string) {
+    if (pending.current.has(id)) return;
+    pending.current.add(id);
+    setLeaving((prev) => new Set(prev).add(id));
+    window.setTimeout(() => {
+      pending.current.delete(id);
+      onRemove(id);
+      setLeaving((prev) => {
+        const next = new Set(prev);
+        next.delete(id);
+        return next;
+      });
+    }, COLLAPSE_EXIT_MS);
+  }
+
   return (
     <Sheet open={open} onClose={onClose} title="Products in this check">
       <h2 className={`${styles.sheetTitle} t-h4`}>Products in this check</h2>
 
       <ul className={styles.basket}>
         {products.map((p, i) => (
-          <li key={p.id} className={styles.basketItem}>
-            {/* ⚠️ THE "and" IS A CONNECTOR, NOT A LIST ITEM. It reads as one
-                sentence — "this AND this AND this" — which is what a
-                compatibility check is asking about. Hidden from assistive tech,
-                where the list semantics already say it. */}
-            {i > 0 && (
-              <span className={`${styles.and} t-label-sm`} aria-hidden="true">
-                and
+          <Collapse
+            as="li"
+            key={p.id}
+            open={!leaving.has(p.id)}
+            appear={drawn.current !== null && !drawn.current.has(p.id)}
+          >
+            <div className={styles.basketItem}>
+              {/* ⚠️ THE "and" IS A CONNECTOR, NOT A LIST ITEM. It reads as one
+                  sentence — "this AND this AND this" — which is what a
+                  compatibility check is asking about. Hidden from assistive tech,
+                  where the list semantics already say it. */}
+              {i > 0 && (
+                <span className={`${styles.and} t-label-sm`} aria-hidden="true">
+                  and
+                </span>
+              )}
+              <span className={styles.item}>
+                {/* ⚠️ THE THUMB IS NOT IN THE COMP — `bottom-sheet` (604:2103)
+                    draws these rows as a label and a close glyph alone. Every
+                    other place a product appears carries its drawn vessel
+                    (`/check/new`'s own result rows, the PRODUCTS tray, both
+                    hubs), so the ONE screen where you review what you picked was
+                    the one screen that dropped the picture — and it is the
+                    screen where two rows are most likely to read alike, since a
+                    basket is two products from the same shelf. Same
+                    `ProductArt`, same hash, so a row keeps the identity it had
+                    in the list you picked it from. */}
+                <ProductThumb product={p} />
+                <span className={`${styles.itemLabel} t-body2`}>
+                  {fullName(p)}
+                </span>
+                <button
+                  type="button"
+                  className={styles.remove}
+                  aria-label={`Remove ${fullName(p)} from this analysis`}
+                  onClick={() => leave(p.id)}
+                >
+                  <CloseIcon className={styles.removeIcon} />
+                </button>
               </span>
-            )}
-            <span className={styles.item}>
-              {/* ⚠️ THE THUMB IS NOT IN THE COMP — `bottom-sheet` (604:2103)
-                  draws these rows as a label and a close glyph alone. Every
-                  other place a product appears carries its drawn vessel
-                  (`/check/new`'s own result rows, the PRODUCTS tray, both
-                  hubs), so the ONE screen where you review what you picked was
-                  the one screen that dropped the picture — and it is the
-                  screen where two rows are most likely to read alike, since a
-                  basket is two products from the same shelf. Same
-                  `ProductArt`, same hash, so a row keeps the identity it had
-                  in the list you picked it from. */}
-              <ProductThumb product={p} />
-              <span className={`${styles.itemLabel} t-body2`}>
-                {fullName(p)}
-              </span>
-              <button
-                type="button"
-                className={styles.remove}
-                aria-label={`Remove ${fullName(p)} from this analysis`}
-                onClick={() => onRemove(p.id)}
-              >
-                <CloseIcon className={styles.removeIcon} />
-              </button>
-            </span>
-          </li>
+            </div>
+          </Collapse>
         ))}
 
         {!full && (

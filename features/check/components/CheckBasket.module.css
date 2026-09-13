@@ -120,6 +120,12 @@
   list-style: none;
 }
 
+/* each row is a `Collapse` (`as="li"`) so a removed one closes over the
+   list's 8 — declared on the row, see "Dropdowns" in globals.css */
+.basket > :global(.collapse) {
+  --collapse-gap: var(--space-sm);
+}
+
 /* the connector and the row share one <li>, so the 8 gap falls either side of
    the "and" exactly as the comp's flat stack does */
 .basketItem {

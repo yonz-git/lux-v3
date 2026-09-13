@@ -616,7 +616,7 @@ needs one that is not here, that is a gap to raise in Figma — see
 | `SearchField` | `value`, `onChange`, `placeholder?`, `label` (the accessible name — there is no visible `<label>`) |
 | `ChatBubble` | `from: "ai" \| "user"`, `align?`, `full?` |
 | `Sheet` | `open`, `onClose`, `title`, `children` |
-| `Collapse` | `open`, `children` — wraps an in-flow panel so it opens down and closes up; see "Entrance reveals" |
+| `Collapse` | `open`, `as?: "div" \| "li"`, `appear?`, `children` — wraps an in-flow panel (or IS a list row) so it opens down and closes up; see "Entrance reveals" |
 | `DataCard` | `as?`, `className?`, `children?` |
 | `CameraCapture` | `captured`, `title`, `helper`, `onCapture` |
 | `Orb` | `size?`, `className?`, `animateIn?`, `thinking?` |
