@@ -616,6 +616,7 @@ function ConfirmView({
               13 Sep 2026; it was the full primary `Button` */}
           <Button
             variant="secondary"
+            size="md"
             icon={<PlusIcon />}
             className={`${styles.trayAction} ${styles.trayActionSmall}`}
             disabled={!draft.duration}

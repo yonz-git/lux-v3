@@ -483,8 +483,8 @@ export function CheckResults() {
               <div className={styles.addAnother}>
                 <Button
                   variant="secondary"
+                  size="md"
                   icon={<PlusIcon />}
-                  className={styles.addAnotherButton}
                   onClick={() => setPicking(true)}
                 >
                   Add another product

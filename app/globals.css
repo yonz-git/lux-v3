@@ -816,6 +816,7 @@ main[tabindex="-1"]:focus-visible {
 .t-caption,
 .t-overline,
 .t-button,
+.t-button-md,
 .t-button-sm,
 .t-metric1,
 .t-metric2,
@@ -913,6 +914,17 @@ main[tabindex="-1"]:focus-visible {
 
 .t-button {
   font-size: 17px;
+  line-height: var(--line-height-xs);
+  font-weight: var(--font-weight-regular);
+}
+/* ⚠️ `Button size="md"`'s label, added 13 Sep 2026 — and it is Figma's own
+   `Button` style, Regular 15/22 (docs/design.md). `.t-button` above went to 17
+   in f3edc75 with no note, and the 48-tall pill kept it, so a pill one control
+   step SHORTER carried the same type and read as the bigger button of the two.
+   Label steps down with height now: 17 / 15 / 14 over 62 / 48 / 36. A literal
+   for the reason 17 is — the size scale has 14 and 16 and nothing between. */
+.t-button-md {
+  font-size: 15px;
   line-height: var(--line-height-xs);
   font-weight: var(--font-weight-regular);
 }
@@ -1031,7 +1043,7 @@ main[tabindex="-1"]:focus-visible {
    than wrong, and they are removed.
 
    ⚠️ `balance` IS FOR HEADINGS ONLY — deliberately NOT `.t-label`,
-   `.t-label-sm`, `.t-button`, `.t-button-sm` or `.t-overline`. Those style
+   `.t-label-sm`, `.t-button`, `.t-button-md`, `.t-button-sm` or `.t-overline`. Those style
    CONTROLS — chips, buttons, section labels — whose widths are measured against
    Figma, and balancing a two-line chip label would move the pill. The browser
    also caps `balance` at a handful of lines, so it is a heading tool by
@@ -1121,9 +1133,18 @@ main[tabindex="-1"]:focus-visible {
    `tokens.css`, which is generated from the Figma variables (non-negotiable 1).
    Raise `width/action` in Figma and this moves.
 
-   Mobile is unaffected: every one of these is full-width on a phone. */
+   ⚠️ MOBILE HAS ITS OWN CEILING AS OF 13 Sep 2026: `--width-action-mobile`,
+   the NAV PILL's 380, asked for directly. A full-width action ran the 392
+   column and overhung the nav under it by 6 each side, so the two pills that
+   close every screen did not share an edge. It is a MAX-WIDTH, never a width:
+   callers keep `width: 100%`, so on a phone narrower than 428 the action fills
+   its column exactly as the nav's own `max-width: 100vw - 48` fills the same
+   span. Bound to the nav's token, so if the nav moves this moves with it.
+   Welcome's 338 and the check-in panel's 340 are already narrower and are
+   deliberately not callers. */
 :root {
   --width-action: 376px;
+  --width-action-mobile: var(--size-nav-width-mobile);
 }
 
 /* ⚠️ NOT IN FIGMA — THE PANEL SCREENS SIT 24 HIGHER THAN EVERY OTHER SCREEN,

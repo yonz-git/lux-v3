@@ -213,7 +213,7 @@
 }
 
 /* ⚠️ NOT IN FIGMA — `Add another product` is the secondary `Button` at
-   control/md (48) with a plus, hugging its label and centred under the rows:
+   `size="md"` (48) with a plus, hugging its label and centred under the rows:
    step 1's `Take a photo` recipe, asked for directly 13 Sep 2026. It was a
    56-tall full-width deep-sage row with a border/glass stroke, then briefly a
    36-tall `SmallButton` that read too small. */
@@ -221,12 +221,6 @@
   display: flex;
   justify-content: center;
   margin-top: var(--space-sm); /* + the list's 8 = 16 under the last row */
-}
-
-/* `button.` beats `Button`'s single-class padding regardless of bundle order */
-button.addAnother {
-  --button-height: var(--size-control-md);
-  padding: 0 var(--space-xl);
 }
 
 .count {
@@ -260,10 +254,20 @@ button.addAnother {
    12 gutter either side of a CTA the rows still span; that is the price of
    having no breakpoint between mobile and 1024 to hang this on, and 12 is
    cheaper than the ~570 of overshoot it replaces. Non-negotiable 12 forbids a
-   440 media query, so the cap is unconditional. */
+   440 media query, so the cap is unconditional.
+
+   ⚠️ 380 BELOW 1024, 376 FROM IT — 13 Sep 2026. Below the breakpoint the cap
+   is `--width-action-mobile`, the nav pill's width, like every other action in
+   the app on a phone; the 376 it used to be is the desktop value. */
 .submit {
   width: 100%;
-  max-width: var(--width-action);
+  max-width: var(--width-action-mobile);
+}
+
+@media (min-width: 1024px) {
+  .submit {
+    max-width: var(--width-action);
+  }
 }
 
 /* sits directly under the disabled CTA, so the reason is next to the control it

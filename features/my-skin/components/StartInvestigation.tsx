@@ -223,6 +223,7 @@ export function StartInvestigation() {
 
       <Button
         variant="secondary"
+        size="md"
         onClick={() => setPhotoOpen(true)}
         icon={<CameraIcon />}
         className={styles.takePhoto}

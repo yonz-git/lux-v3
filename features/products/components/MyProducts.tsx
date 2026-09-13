@@ -249,8 +249,8 @@ export function MyProducts() {
         <div className={styles.addMore}>
           <Button
             variant="secondary"
+            size="md"
             icon={<PlusIcon />}
-            className={styles.addMoreButton}
             onClick={() => setSheetOpen(true)}
           >
             Add more products

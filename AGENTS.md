@@ -551,6 +551,7 @@ table is stale — say so rather than working around it.
 | `t-caption` | 12/16 | — | 400 | captions |
 | `t-overline` | 13/18 + 1.82px tracking | — | 500 | section labels on data cards |
 | `t-button` | 17/22 | — | 400 | `Button` — owns it, don't re-apply |
+| `t-button-md` | 15/22 | — | 400 | `Button size="md"` (48 tall) — same |
 | `t-button-sm` | 14/22 | — | 400 | `SmallButton` — same |
 | `t-metric1` / `-2` | 56/60 · 40/40 | — | 300 | big figures on data cards |
 
@@ -566,7 +567,7 @@ breaks a title wherever its fixed 440 or 1440 canvas breaks it, and the build
 breaks it at the reader's width — so this is a code-side decision applied by
 ROLE, the same way tabular figures are (non-negotiable 19). ⚠️ **The CONTROL
 classes are deliberately excluded** — `t-label`, `t-label-sm`, `t-button`,
-`t-button-sm` and `t-overline` size chips, buttons and section labels whose
+`t-button-md`, `t-button-sm` and `t-overline` size chips, buttons and section labels whose
 widths are measured against Figma, and balancing a two-line chip label moves the
 pill. `SkinProfileSummary`'s `.headlineValue` is the one local `balance` left,
 because it wears `t-button` as a data value rather than as a control. **Do not
@@ -588,7 +589,7 @@ tray bar. The two `bubble` values are `ChatBubble`'s and nothing else's.
 ### Sizes — `--size-*`
 
 Icons `xs` 16 · `sm` 20 · `md` 24 (the default) · `lg` 32 · `xl` 48.
-Controls `sm` 36 · `md` 48 · `lg` 62 (the `Button` height).
+Controls `sm` 36 · `md` 48 (`Button size="md"`) · `lg` 62 (`Button`'s default height).
 
 ### Icons — 13 exist, in `components/ui/icons.tsx`
 
@@ -606,7 +607,7 @@ needs one that is not here, that is a gap to raise in Figma — see
 
 | Component | Props |
 | --- | --- |
-| `Button` | `variant?: "primary" \| "secondary"`, `fullWidth?`, `href?`, `icon?` + button attrs |
+| `Button` | `variant?: "primary" \| "secondary"`, `size?: "lg" \| "md"`, `fullWidth?`, `href?`, `icon?` + button attrs |
 | `SmallButton` | `label`, `arrow?`, `href?`, `className?` + button attrs |
 | `Chip` | `label`, `selected`, `control?: "checkbox" \| "radio"`, `onToggle` |
 | `OptionRow` | `control: "radio" \| "checkbox"`, `label`, `selected`, `onSelect` |

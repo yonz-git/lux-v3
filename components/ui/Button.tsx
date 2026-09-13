@@ -8,8 +8,12 @@ import { trackSpecular } from "./specular";
 /**
  * Button — Figma component set 37:23.
  *
- * The label style is `Button` (Regular 15/22). Buttons in LUX are deliberately
- * Regular weight, never Medium.
+ * The label is Regular at every size — buttons in LUX are never Medium — and
+ * steps down with the height: `size="lg"` (the default) is 62 tall with
+ * `t-button` (17/22), `size="md"` is 48 tall with `t-button-md` (15/22, which is
+ * the `Button` text style as Figma defines it). ⚠️ `md` IS NOT IN FIGMA, added
+ * 13 Sep 2026: six screens hand-built a 48 pill and kept the 17px label, so the
+ * shorter button read as the louder one. See Button.module.css `.md`.
  *
  * Primary and Secondary are implemented. Ghost is defined in Figma but no built
  * screen uses one, and its Hover variant still references `bg/accent-mint`, a
@@ -43,6 +47,7 @@ import { trackSpecular } from "./specular";
 export function Button({
   children,
   variant = "primary",
+  size = "lg",
   fullWidth,
   className,
   href,
@@ -52,6 +57,8 @@ export function Button({
   ...rest
 }: ButtonHTMLAttributes<HTMLButtonElement> & {
   variant?: "primary" | "secondary";
+  /** `md` is 48 tall with a 15px label — see the doc comment above */
+  size?: "lg" | "md";
   fullWidth?: boolean;
   /** render as a link when the action is navigation, so it behaves like one */
   href?: string;
@@ -63,9 +70,10 @@ export function Button({
   const cls = [
     styles.button,
     variant === "secondary" && styles.secondary,
+    size === "md" && styles.md,
     fullWidth && styles.full,
     beacon && `${styles.beacon} button-beacon`,
-    "t-button",
+    size === "md" ? "t-button-md" : "t-button",
     className,
   ]
     .filter(Boolean)

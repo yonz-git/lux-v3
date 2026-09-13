@@ -114,9 +114,11 @@
   }
 }
 
-/* + the 16 gap = the comp's 48 */
+/* + the 16 gap = the comp's 48. Capped at the nav pill's 380 on mobile —
+   see `--width-action-mobile` in globals.css. */
 .cta {
   width: 100%;
+  max-width: var(--width-action-mobile);
   margin-top: var(--space-3xl); /* 32 */
 }
 

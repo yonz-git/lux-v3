@@ -31,6 +31,12 @@
    nothing to lose a specificity race against. */
 .cta {
   width: 100%;
+  /* ⚠️ the nav pill's 380 on a phone, asked for directly 13 Sep 2026 — see
+     `--width-action-mobile`. This copy sits in `HubScreen`'s stretching
+     `.body`, not its footer, so it needs its own cap and `align-self`; the
+     desktop copy is `.ctaDesktop` and is untouched. */
+  max-width: var(--width-action-mobile);
+  align-self: center;
   margin-top: var(--space-2xl); /* 24 */
 }
 
@@ -170,10 +176,12 @@
   color: var(--color-text-secondary);
 }
 
-/* full width of the 392 column on mobile; the comp narrows it to 280 on
-   desktop rather than letting it span the whole 640 block */
+/* full width of the column on mobile up to the nav pill's 380
+   (`--width-action-mobile`); the comp narrows it on desktop rather than
+   letting it span the whole 640 block */
 .emptyCta {
   width: 100%;
+  max-width: var(--width-action-mobile);
   margin-top: var(--space-3xl); /* 32 */
 }
 

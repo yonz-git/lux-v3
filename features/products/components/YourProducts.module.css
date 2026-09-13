@@ -118,15 +118,10 @@
 }
 
 /* ⚠️ NOT IN FIGMA — step 5's `Add product` is the secondary `Button` at
-   control/md (48) with a plus, hugging its label and centred, asked for
-   directly 13 Sep 2026. `.addWrap` keeps its spacing; this only centres. */
+   `size="md"` (48) with a plus, hugging its label and centred, asked for
+   directly 13 Sep 2026. `.addWrap` keeps its spacing; this only centres. The
+   height and padding that used to follow here are `Button`'s own now. */
 .addCentre {
   display: flex;
   justify-content: center;
-}
-
-/* `button.` beats `Button`'s single-class padding regardless of bundle order */
-button.addButton {
-  --button-height: var(--size-control-md);
-  padding: 0 var(--space-xl);
 }

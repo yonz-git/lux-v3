@@ -122,6 +122,13 @@
      the padding is the whole gap, which is the comps' spacing exactly. */
   margin-top: auto;
   padding-top: var(--space-3xl); /* 32 */
+
+  /* ⚠️ NOT IN FIGMA — the nav pill's 380 on mobile, asked for directly
+     13 Sep 2026: the same cap the desktop rule below puts on this box with
+     `--width-action`, so a hub's action lines up with the nav under it rather
+     than overhanging it by 6 either side. See `--width-action-mobile`. */
+  max-width: var(--width-action-mobile);
+  align-self: center;
 }
 
 @media (min-width: 1024px) {

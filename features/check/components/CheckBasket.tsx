@@ -222,8 +222,8 @@ export function CheckBasketSheet({
                 13 Sep 2026; it was a full-width deep-sage row */}
             <Button
               variant="secondary"
+              size="md"
               icon={<PlusIcon />}
-              className={styles.addAnother}
               onClick={onAddAnother}
             >
               Add another product

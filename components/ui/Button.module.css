@@ -237,6 +237,26 @@
 }
 
 /* ---------------------------------------------------------------------------
+   `size="md"` — ⚠️ NOT IN FIGMA, added 13 Sep 2026, asked for directly. The
+   37:23 set has one height. Six callers had built a 48-tall secondary pill by
+   hand — `--button-height` plus a padding from their own module, behind an
+   element selector to out-rank the padding above — and every one of them kept
+   the 62's 17px label. Same type in a shorter pill reads as BIGGER type, so
+   `Take a photo` looked louder than the `Continue` under it.
+
+   The size owns all three now: height, padding and the label (`t-button-md`,
+   15/22, applied in Button.tsx). Declared after `.button` in the same file, so
+   it wins on source order that cannot change — no element selector needed.
+   The height still goes through `--button-height`'s fallback, so a caller can
+   set an off-scale one (`.rerunButton`'s 53) without shadowing anything.
+   Raise a `Size=Medium` variant in Figma; see docs/figma-catchup.md §4.
+   -------------------------------------------------------------------------- */
+.md {
+  min-height: var(--button-height, var(--size-control-md));
+  padding: 0 var(--space-xl);
+}
+
+/* ---------------------------------------------------------------------------
    `beacon` — Welcome's `Create skin profile`, and nothing else. The static
    half of the recipe; the two animations are named in globals.css under
    "Beacon", which is the only place a name may live.

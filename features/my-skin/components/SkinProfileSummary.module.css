@@ -505,6 +505,10 @@
    it. */
 .cta {
   width: 100%;
+  /* the nav pill's 380 on mobile — `--width-action-mobile`. `align-self`
+     because `.actions` stretches here and only centres on desktop. */
+  max-width: var(--width-action-mobile);
+  align-self: center;
 }
 
 .ctaHelp {
@@ -564,6 +568,7 @@
    the whole 640 block — the same pair `ProgressScreen`'s `.emptyCta` uses */
 .emptyCta {
   width: 100%;
+  max-width: var(--width-action-mobile); /* the nav pill's 380 */
   margin-top: var(--space-3xl); /* 32 */
 }
 

@@ -435,9 +435,14 @@
    `fullWidth`. Dropping the prop leaves exactly one rule in charge.
 
    `align-self` because the views are stretch columns: without it a button
-   narrower than the tray sits against the left edge. */
+   narrower than the tray sits against the left edge.
+
+   ⚠️ CAPPED AT THE NAV PILL'S 380 ON MOBILE TOO, 13 Sep 2026 — asked for
+   directly; see `--width-action-mobile` in globals.css. */
 .trayAction {
   width: 100%;
+  max-width: var(--width-action-mobile);
+  align-self: center;
 }
 
 @media (min-width: 1024px) {
@@ -448,13 +453,11 @@
 }
 
 /* ⚠️ NOT IN FIGMA — `Add product` on the duration stage is the secondary
-   `Button` at control/md (48) with a plus, hugging its label and centred at
+   `Button` at `size="md"` (48) with a plus, hugging its label and centred at
    both breakpoints: step 1's `Take a photo` recipe, asked for directly 13 Sep
-   2026. `button.` + two classes outranks both the shared rule above and
-   `Button`'s own single-class padding, whatever the bundle order. */
+   2026. `button.` + two classes outranks the shared rule above whatever the
+   bundle order; the height and padding are `Button`'s own now. */
 button.trayAction.trayActionSmall {
   width: auto;
   align-self: center;
-  --button-height: var(--size-control-md);
-  padding: 0 var(--space-xl);
 }

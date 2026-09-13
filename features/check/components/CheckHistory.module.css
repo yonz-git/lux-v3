@@ -101,6 +101,7 @@
 
 .emptyCta {
   width: 100%;
+  max-width: var(--width-action-mobile); /* the nav pill's 380 */
   margin-top: var(--space-3xl); /* + the 16 gap = 48 */
 }
 

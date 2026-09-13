@@ -403,6 +403,21 @@ frame in both sections.
 
 A one-line desktop bubble is 56 tall, not 54.
 
+### `Button` `37:23` — needs `Size=Medium`, and the mobile action width
+
+Two changes asked for directly on 13 Sep 2026, both code-side only so far:
+
+- **A 48-tall size with a 15/22 label.** The set has one height. Six screens
+  already draw a 48 secondary pill with a plus or a camera (`Take a photo`,
+  `Add product`, `Add more products`, `Add another product` ×2, the tray's
+  `Add product`), and every one kept the 62's label — so the shorter pill read
+  as the louder one. Code: `Button size="md"` + `t-button-md` (15/22, i.e. the
+  `Button` text style as Figma defines it). Raise `Size=Large/Medium` on the
+  set; Large keeps the 17 the code ships (`t-button`), Medium takes `Button`.
+- **Full-width actions stop at the nav's 380 on mobile**, not the 392 column,
+  so the CTA and the nav pill share an edge. Code: `--width-action-mobile`,
+  bound to `size/nav-width-mobile`. Desktop keeps `width/action` (376).
+
 ### Chip — no single-select variant exists
 
 The daily check-in's five answers are a one-word ordinal scale where full-width

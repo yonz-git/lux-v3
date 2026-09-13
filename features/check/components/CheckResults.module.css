@@ -531,7 +531,7 @@
 }
 
 /* ⚠️ NOT IN FIGMA — `Add another product` under the compared products is the
-   secondary `Button` at control/md (48) with a plus, hugging its label and
+   secondary `Button` at `size="md"` (48) with a plus, hugging its label and
    centred: the one add-product recipe, asked for directly 13 Sep 2026. It was
    the full-width `AddProductRow`. */
 .addAnother {
@@ -540,12 +540,6 @@
   /* ⚠️ 16 above and below ON TOP OF `.panel`'s own gap, asked for directly
      13 Sep 2026 — it sat tight against the last card and the box's edge */
   margin-block: var(--space-lg);
-}
-
-/* `button.` beats `Button`'s single-class padding regardless of bundle order */
-button.addAnotherButton {
-  --button-height: var(--size-control-md);
-  padding: 0 var(--space-xl);
 }
 
 /* --- the way back to the history ---------------------------------------------

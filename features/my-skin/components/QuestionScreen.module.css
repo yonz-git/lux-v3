@@ -67,6 +67,15 @@
   display: flex;
   flex-direction: column;
   gap: var(--space-md);
+  /* ⚠️ NOT IN FIGMA — THE NAV PILL'S WIDTH ON MOBILE, asked for directly
+     13 Sep 2026. Continue ran the 392 column and overhung the 380 nav under it
+     by 6 each side; the cap goes on the FOOTER so a stacked secondary above it
+     shares the edge too. `align-self` because `.card` stretches its children
+     and a capped stretch item sits against the left. See `--width-action-mobile`
+     in globals.css. */
+  width: 100%;
+  max-width: var(--width-action-mobile);
+  align-self: center;
 }
 
 @media (min-width: 1024px) {
@@ -102,6 +111,12 @@
     flex: none;
     /* the card's own gap, unless a screen asks for more */
     min-height: var(--continue-gap, var(--space-3xl));
+  }
+
+  /* the mobile cap is lifted: the footer spans the card again, so a stacked
+     secondary keeps the width it had */
+  .footer {
+    max-width: none;
   }
 
   /* Continue is `width/action` x 62, centred — not stretched to the card
