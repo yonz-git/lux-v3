@@ -30,6 +30,7 @@ These plans come from the `improve-animations` audit of 13 Sep 2026. Each one is
 | 020 | [Step 5's list grows in place](020-step5-list-grows-in-place.md) | LOW | Missed opportunity | — | TODO |
 | 021 | [The day record's rows and note editor move](021-day-record-rows-and-note-editor.md) | MEDIUM | Missed opportunity | — | TODO |
 | 022 | [Check results' edit mode opens and closes](022-results-edit-mode-opens-closes.md) | MEDIUM | Interruptibility | — | TODO |
+| 023 | [013's recipe in four more places](023-removal-recipe-follow-ups.md) | LOW | Missed opportunity | 015, 016, 019 | TODO |
 
 ## Recommended order
 
