@@ -1767,7 +1767,8 @@ main[tabindex="-1"]:focus-visible {
      directly — every offset from 50% scaled ~1.7×). Its pseudo-elements inherit the radius so the inner shadow
      follows the shape rather than drawing a circle inside it.
 
-   ease-in-out on both, no overshoot: calm, and LUX does not bounce. */
+   `--ease-breathe` on both (it was the built-in `ease-in-out` until 13 Sep
+   2026), no overshoot: calm, and LUX does not bounce. */
 @keyframes lux-orb-float {
   0%,
   100% {
@@ -1799,11 +1800,11 @@ main[tabindex="-1"]:focus-visible {
   position: relative;
   width: 100%;
   height: 100%;
-  animation: lux-orb-float 9s ease-in-out infinite;
+  animation: lux-orb-float 9s var(--ease-breathe) infinite;
 }
 
 .siri-orb--lux {
-  animation: lux-orb-morph 14s ease-in-out infinite;
+  animation: lux-orb-morph 14s var(--ease-breathe) infinite;
 }
 
 .siri-orb--lux::before,
@@ -2720,7 +2721,7 @@ main[tabindex="-1"]:focus-visible {
       twice the width, and the flow carries the window from the button's
       default (start → end) to its own hover reversal (end → start) and back —
       the same two pictures the button already alternates between on hover,
-      now slowly, unprompted, on a 4s ease-in-out cycle. No new colour.
+      now slowly, unprompted, on a 4s `--ease-breathe` cycle. No new colour.
    2. THE SWEEP. A soft band of the label's white at 25%, twice the width of
       the pill, crossing it once every 10s — the reference's own cadence. It is
       `::before` on the button, which `Button` leaves free (`::after` is its
@@ -2752,7 +2753,7 @@ main[tabindex="-1"]:focus-visible {
 }
 
 .button-beacon {
-  animation: lux-beacon-flow 4000ms ease-in-out infinite;
+  animation: lux-beacon-flow var(--duration-breath-phase) var(--ease-breathe) infinite;
 }
 
 /* ⚠️ THE ONE CALLER ALSO RISES IN. Welcome's CTA carries `.welcome-rise`, and
@@ -2763,11 +2764,11 @@ main[tabindex="-1"]:focus-visible {
 .welcome-rise.button-beacon {
   animation:
     lux-rise-in 800ms var(--ease-standard) var(--rise-delay, 0ms) backwards,
-    lux-beacon-flow 4000ms ease-in-out infinite;
+    lux-beacon-flow var(--duration-breath-phase) var(--ease-breathe) infinite;
 }
 
 .button-beacon::before {
-  animation: lux-beacon-sweep 10s ease-in-out infinite;
+  animation: lux-beacon-sweep 10s var(--ease-breathe) infinite;
 }
 
 /* ============================================================================

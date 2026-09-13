@@ -255,7 +255,7 @@ export function LogoEntrance() {
        assembly tracks end at 2300ms, and that is when the hand-off is aimed and
        Welcome is released so its orb can start growing behind the symbol as
        the symbol sets off. The hand-off's own lifetime (`lux-entrance-done`)
-       ends 900ms after that, once the symbol has faded over the orb's mark,
+       ends 700ms after that, once the symbol has faded over the orb's mark,
        and that is when the node goes; `lux-entrance-veil` is the fail-safe
        that ends it at 3200 if the hand-off was never started. Filtering by
        NAME rather than by a timer is what keeps this file from holding a

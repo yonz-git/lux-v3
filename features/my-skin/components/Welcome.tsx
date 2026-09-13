@@ -82,8 +82,9 @@ export function Welcome() {
           </div>
         </div>
 
-        {/* ⚠️ each piece fades up after the question lands (1200 + 800ms),
-            one 150ms beat apart, the nav last — see `.welcome-rise` */}
+        {/* ⚠️ each piece fades up from 1700ms — while the question's 800ms rise,
+            which starts at 1200ms, is settling — one 150ms beat apart, the nav
+            last — see `.welcome-rise` */}
         <div className={returning ? `${styles.actions} reveal` : styles.actions}>
           {/* ⚠️ `beacon` — the breathing gradient and the light sweep — is
               this button's alone; it is the one control in the app that has

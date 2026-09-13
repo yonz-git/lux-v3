@@ -1,7 +1,10 @@
 # 011 — Bind the ambient loops to the breath tokens; fix two drifted timing comments
 
-- **Status**: TODO
-- **Commit**: `d7220d6` — plus the uncommitted working tree of 13 Sep 2026. Search by quoted code.
+- **Status**: DONE — 13 Sep 2026.
+  - `grep -c "var(--ease-breathe)" app/globals.css` prints 5, and `grep -c "var(--duration-breath-phase)" app/globals.css` prints 2.
+  - In headless Chrome on `/`, once the entrance has released, `lux-beacon-flow` (4s), `lux-beacon-sweep` (10s), `lux-orb-float` (9s) and `lux-orb-morph` (14s) all compute `cubic-bezier(0.37, 0, 0.63, 1)`.
+  - Step 8 was added during execution for two prose comments that still said `ease-in-out`.
+- **Commit**: `c5edd11`. Search by quoted code.
 - **Severity**: LOW
 - **Category**: Cohesion & tokens
 - **Estimated scope**: 3 files (`app/globals.css`, `features/my-skin/components/Welcome.tsx`, `components/layout/LogoEntrance.tsx`), ~10 lines
@@ -73,6 +76,33 @@ Two out-of-sync comments invite a "fix" in the wrong direction. The unused token
    ```
 
 7. In `components/layout/LogoEntrance.tsx`, in the comment block quoted above, change `ends 900ms after that` to `ends 700ms after that`.
+8. **Added during execution, 13 Sep 2026: the two prose comments that still name the old curve.** Step 5's grep turns up two comments in `app/globals.css` that describe these loops as `ease-in-out`. After steps 1–5 that is exactly the drift this plan exists to remove. Replace, verbatim:
+   - In the comment directly above `@keyframes lux-orb-float`, replace the line
+
+     ```css
+        ease-in-out on both, no overshoot: calm, and LUX does not bounce. */
+     ```
+
+     with
+
+     ```css
+        `--ease-breathe` on both (it was the built-in `ease-in-out` until 13 Sep
+        2026), no overshoot: calm, and LUX does not bounce. */
+     ```
+
+   - In the button-beacon comment, under `1. THE GRADIENT BREATHES.`, replace the line
+
+     ```css
+           now slowly, unprompted, on a 4s ease-in-out cycle. No new colour.
+     ```
+
+     with
+
+     ```css
+           now slowly, unprompted, on a 4s `--ease-breathe` cycle. No new colour.
+     ```
+
+   Afterwards, `grep -n "ease-in-out" app/globals.css` should find only the new "it was the built-in `ease-in-out`" line.
 
 ## Boundaries
 
