@@ -25,6 +25,7 @@ These plans come from the `improve-animations` audit of 13 Sep 2026. Each one is
 | 015 | [The add tray's height follows its view](015-tray-height-follows-view.md) | MEDIUM | Missed opportunity | — | TODO |
 | 016 | [Tray views fade in; a closing tray keeps its view](016-tray-views-arrive-and-hold-on-close.md) | MEDIUM | Missed opportunity + exit bug | 015 | TODO |
 | 017 | [Selection marks fade in and out](017-selection-marks-fade.md) | LOW | Missed opportunity | — | TODO |
+| 018 | [The analysis hands over from its passes](018-analysis-passes-hand-over.md) | MEDIUM | Jarring change + hydration bug | 014 (ordering only) | TODO |
 
 ## Recommended order
 
