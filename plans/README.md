@@ -31,6 +31,7 @@ These plans come from the `improve-animations` audit of 13 Sep 2026. Each one is
 | 021 | [The day record's rows and note editor move](021-day-record-rows-and-note-editor.md) | MEDIUM | Missed opportunity | — | TODO |
 | 022 | [Check results' edit mode opens and closes](022-results-edit-mode-opens-closes.md) | MEDIUM | Interruptibility | — | TODO |
 | 023 | [013's recipe in four more places](023-removal-recipe-follow-ups.md) | LOW | Missed opportunity | 015, 016, 019 | TODO |
+| 024 | [Step 1's "Other" button and field swap in place](024-step1-other-swaps-in-place.md) | LOW | Missed opportunity | — | TODO |
 
 ## Recommended order
 
