@@ -364,7 +364,7 @@ treatment — but there is no component to keep them in sync.
 | **Compat accordion** | The second accordion, different surface, different header, plus a band. The band drives pill, score and bar fill through one property so they cannot drift. |
 | **Status pill** | Not `Tag` — Tag is Neutral/Brand only and these carry the feedback colours. |
 | **Skin-profile strip** | The one sage element on a Check screen. Same System B recipe as the data card but an 86-tall strip with 18/20 padding. |
-| **Face-region picker** | The region coordinates **are** the design — "Cheeks (L)" only means the left cheek because of where it sits. Stored as % of the 392×300 card so it scales. |
+| **Face-region picker** | The region coordinates **are** the design — "Cheeks (L)" only means the left cheek because of where it sits. Stored as % of the 392×300 card so it scales. ⚠️ **The face is a CONTOUR DRAWING as of 13 Sep 2026, not the CSS dome** — white level lines cut from a supplied illustration (`features/my-skin/assets/face-contour.webp`, 226×280 at 83,10), over a shading layer masked to the head's outline (`face-silhouette.webp`: lighter centre, deep sage `#284a4d` toward the edge), with a pointer-following shine masked to the lines. The pills moved onto the drawing's own landmarks (see `REGIONS` in `FaceDiagram.tsx`). Figma has no face artwork at all — raise the drawing, its shading and a note on the shine; the old `gradient/face-form` / `face-tier` tokens are deleted. |
 | **`My skin` nav icon** | The nav's fourth glyph. `Bottom-Nav-Bar` (`410:258`) ships three and the DS has no face or skin mark anywhere. Stroke-drawn, unlike its three filled neighbours: a solid disc at 24 is far heavier, and the face only reads with the eyes and mouth left open. |
 | **Product imagery** | No product or bottle icon exists outside the nav, so every thumb and image well drew a camera — which identifies nothing down a list. Nine vessel silhouettes by packaging type, tinted per brand. Raise a real illustration set. |
 | **Check-in photo** | The photos card's entire content is a picture, so a camera glyph says "no photo" on the record of one the user took. Raise real imagery. |
@@ -582,7 +582,7 @@ landings with nothing behind them.
 **Two things on it have no Figma component at all**, and they are the real ask
 of this section:
 
-1. **A read-only face diagram.** Same dome, same seven pills at the same
+1. **A read-only face diagram.** Same contour face, same seven pills at the same
    coordinates, picked ones filled, the rest at 55% and without their lift —
    **and the same chip row under them**, as read-only pills rather than `Chip`
    controls **in their selected state**. In code it is one `readOnly` prop on the existing component; in

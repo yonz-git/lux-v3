@@ -47,16 +47,16 @@
      note on that token says System B's third step belongs in Figma as a real
      `sage/700`; this is a third caller for that ask, not a new value.
 
-     ⚠️ THE DARK CORE IS BEHIND THE FACE, SO WHAT YOU SEE IS A HALO. `.form`'s
-     dome is filled from the OPAQUE sage primitives (`--gradient-face-form`,
-     sage-200 -> sage-400), so it occludes the centre completely. The gradient
-     therefore reads as depth hugging the face's edge and lifting toward the
-     card's corners — which is the intent, and is why the core is carried flat
-     out to 45% rather than peaking at a point nobody can see.
+     ⚠️ THE DARK CORE SHOWS THROUGH THE FACE NOW. It sat behind an opaque dome
+     until 13 Sep 2026 and read only as a halo; the contour head is lines over a
+     translucent shading layer (`.volume`), so the core is the ground the lines
+     are drawn on and the shading's own light sits on top of it. The core is
+     still carried flat out to 45%, which is what keeps white lines legible
+     across the whole face rather than only in its middle.
 
-     ⚠️ THE 42% IS THE DOME'S CENTRE, NOT THE CARD'S, AND IT IS APPROXIMATE ON
+     ⚠️ THE 42% IS THE FACE'S CENTRE, NOT THE CARD'S, AND IT IS APPROXIMATE ON
      PURPOSE. The card is the diagram box (aspect 392/300) plus a chip row that
-     WRAPS, so the dome's centre moves between ~36% of the card's height on
+     WRAPS, so the face's centre moves between ~36% of the card's height on
      mobile (three rows of pills) and ~47% on desktop (one row). 42% splits
      that; a single exact number does not exist while the row can rewrap. Centre
      it on the card's own 50% and the halo goes thin above the face and thick
@@ -118,7 +118,7 @@
   aspect-ratio: 392 / 300;
   /* The 392x300 box used to end ~20% below the lowest pill, because the drawn
      face bottomed out at y=241 and nothing filled the rest; a -9% bottom margin
-     pulled the chip row up into that dead air. The form now runs to y=280 of
+     pulled the chip row up into that dead air. The head now runs to y=290 of
      300, so the box is doing its own job and the pull-up is gone. */
 
   /* ⚠️ A QUERY CONTAINER, ADDED 9 Sep 2026 — NOT IN FIGMA. `.region` sizes
@@ -140,53 +140,110 @@
   gap: 10px;
 }
 
-/* The illustration layer. It spans the whole 392x300 box so that both the base
-   form and the contour tiers can be positioned in the SAME coordinate space the
-   regions use — see TIERS in FaceDiagram.tsx. */
+/* ⚠️ THE ILLUSTRATION — A CONTOUR HEAD, NOT A DOME. NOT IN FIGMA, chosen 13 Sep
+   2026, asked for directly; see FaceDiagram.tsx. Three layers in the head's
+   own footprint, 226x280 at 83,10 of the 392x300 box — the dome's footprint
+   (230x260 at 81,20) near enough that every pill kept its breathing room:
+
+   1. `.volume` — the 3D. Shading masked to the head's OUTLINE
+      (`--face-silhouette`): lighter in the middle, a deep sage toward the edge,
+      so a drawing of lines reads as a form under them. ⚠️ Centred at 42%, the
+      face's middle rather than the box's, because the neck below the chin is
+      meant to fall into the dark.
+   2. `.lines` — the level lines, brightest at the centre and stepping down to
+      60% toward the edge, the same light as `.volume` read on the lines.
+   3. `.glow` + `.shine` — a light that follows the pointer, masked to the
+      LINES (`--face-lines`), so it catches on them rather than lighting the
+      skin between.
+
+   ⚠️ EVERY COLOUR AND ALPHA HERE IS A CHOSEN VALUE, raw rather than a token
+   because `02 Color` has no role for face artwork. `#284a4d` is the halo's
+   core taken one step deeper. Raise the drawing and its shading in Figma. */
 .form {
   position: absolute;
-  inset: 0;
+  left: calc(83 / 392 * 100%);
+  top: calc(10 / 300 * 100%);
+  width: calc(226 / 392 * 100%);
+  height: calc(280 / 300 * 100%);
   pointer-events: none;
 }
 
-.form::before {
-  content: "";
+.volume,
+.lines,
+.glow,
+.shine {
   position: absolute;
-  /* ⚠️ A TERRACED DOME, NOT A 1.25px ELLIPSE — decided here, NOT IN FIGMA.
-     Figma draws the face as a 168x214 ellipse at 112,40 stroked 1.25 in
-     text/primary. Two things were wrong with shipping that literally. It has no
-     room: at 168 wide the left and right arcs run straight THROUGH `Cheeks (L)`
-     and `Cheeks (R)`, and the top arc grazes `Forehead` — a hairline crossing a
-     pill reads as a rendering fault, and it is why the pills could not be
-     translucent. And a 1px outline is the flattest possible object on a card
-     whose whole surface system is about depth.
-     So the form is widened to 230x260 at 81,20 — every pill now sits INSIDE it
-     with clearance, which is what buys the breathing room — and it is filled
-     rather than stroked: one light source at 33%/21% down the sage ramp, a
-     seated drop shadow, and paired inner shadows for the falloff on the shaded
-     side. A filled ground under a pill is also a legitimate place for a pill to
-     sit, which a crossing line never was.
-     THE CONTOUR LIVES ON TOP OF IT (`.tier`): the level lines are what make the
-     curvature legible, but drawn as lines alone they only ever describe a dome
-     without being one, so the two are used together — the dome supplies the
-     light, the terraces supply the elevation. */
-  left: calc(81 / 392 * 100%);
-  top: calc(20 / 300 * 100%);
-  width: calc(230 / 392 * 100%);
-  height: calc(260 / 300 * 100%);
-  border-radius: 50%;
-  background: var(--gradient-face-form);
-  box-shadow: var(--shadow-face-form);
+  inset: 0;
 }
 
-/* One contour level. Each is a step UP the sage ramp toward the light and casts
-   onto the step below it, so the stack reads as elevation rather than as three
-   more ellipses. Geometry comes from TIERS in FaceDiagram.tsx. */
-.tier {
-  position: absolute;
-  border-radius: 50%;
-  background: var(--color-surface-face-tier);
-  box-shadow: var(--shadow-face-tier);
+.volume {
+  background: radial-gradient(
+    ellipse 50% 46% at 50% 42%,
+    rgb(255 255 255 / 0.24) 0%,
+    rgb(255 255 255 / 0.1) 40%,
+    rgb(40 74 77 / 0) 72%,
+    rgb(40 74 77 / 0.36) 100%
+  );
+  -webkit-mask: var(--face-silhouette) center / contain no-repeat;
+  mask: var(--face-silhouette) center / contain no-repeat;
+}
+
+/* the asset's lines were thickened by about half a pixel and lifted when it was
+   cut, so a 1px source line does not antialias to grey at card size — brighter
+   than the prototype's, deliberately not bolder */
+.lines {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  user-select: none;
+  -webkit-mask-image: radial-gradient(
+    ellipse 50% 46% at 50% 42%,
+    #000 45%,
+    rgb(0 0 0 / 0.6) 100%
+  );
+  mask-image: radial-gradient(
+    ellipse 50% 46% at 50% 42%,
+    #000 45%,
+    rgb(0 0 0 / 0.6) 100%
+  );
+}
+
+/* ⚠️ THE GLOW IS A WRAPPER BECAUSE A FILTER RUNS BEFORE A MASK. On `.shine`
+   itself the drop-shadow would be masked away with everything off the lines;
+   on its parent it blooms around the lines the shine has already been cut to.
+   `plus-lighter` adds the light rather than laying white over it.
+   ⚠️ IT FADES, IT DOES NOT SNAP — `duration/slow`, the page-level reveal, so
+   the light arrives and leaves like light. The position is FaceDiagram.tsx's
+   rAF loop writing `--shine-x`/`--shine-y` onto this element. */
+/* ⚠️ ONE SOFT GLOW AT HALF STRENGTH. A full-white 1.5px shadow under a 5px one
+   filled the gaps between neighbouring lines and bloomed into a white patch;
+   the ask was "a little bit of shine", and this keeps it on the lines. */
+.glow {
+  opacity: 0;
+  filter: drop-shadow(0 0 3px rgb(255 255 255 / 0.5));
+  mix-blend-mode: plus-lighter;
+  transition: opacity var(--duration-slow) var(--ease-standard);
+}
+
+/* 0.6, not 1 — the light at full strength read too bright over the lines,
+   asked for directly 13 Sep 2026, in two 20% steps (1 → 0.8 → 0.6). Dimming
+   the whole layer takes the glow down with the shine, so the two keep their
+   proportion. */
+.glow[data-active] {
+  opacity: 0.6;
+}
+
+/* the radius is in `cqw` of `.diagram`, so the light is the same size relative
+   to the face at 440 and at 1440 */
+.shine {
+  background: radial-gradient(
+    circle 14cqw at var(--shine-x, 50%) var(--shine-y, 40%),
+    rgb(255 255 255 / 0.85) 0%,
+    rgb(255 255 255 / 0.45) 30%,
+    transparent 100%
+  );
+  -webkit-mask: var(--face-lines) center / contain no-repeat;
+  mask: var(--face-lines) center / contain no-repeat;
 }
 
 .region {
@@ -275,6 +332,48 @@
   .region:hover {
     border-color: var(--color-border-subtle);
     box-shadow: var(--shadow-sm);
+  }
+}
+
+/* ⚠️ NOT IN FIGMA — A GRADIENT RING ON HOVER, asked for directly 13 Sep 2026
+   ("like the search bar when it's selected"). It is `SearchField`'s focus ring
+   exactly: `gradient/brand` at 30%, `border/focus` (2) wide, a masked ring on
+   `::after` sitting ON the pill's edge rather than outside it. `inset` is the
+   hairline negated because an absolute child is placed against the padding box,
+   and the ring has to cover the pill's own 1px border to read as one edge.
+   ⚠️ UNSELECTED PILLS ONLY — on the indigo fill the ring vanishes, and the
+   selected hover already lifts (see below). `::before` is the selected shade,
+   so the ring takes `::after`. */
+.region::after {
+  content: "";
+  position: absolute;
+  inset: calc(var(--border-width-hairline) * -1);
+  padding: var(--border-width-focus);
+  border-radius: inherit;
+  background: linear-gradient(
+    90deg,
+    var(--color-gradient-brand-start),
+    var(--color-gradient-brand-end)
+  );
+  -webkit-mask:
+    linear-gradient(#000 0 0) content-box,
+    linear-gradient(#000 0 0);
+  -webkit-mask-composite: xor;
+  mask:
+    linear-gradient(#000 0 0) content-box exclude,
+    linear-gradient(#000 0 0);
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity var(--duration-fast) var(--ease-standard);
+}
+
+.region[data-selected="false"]:hover::after {
+  opacity: 0.3;
+}
+
+@media (hover: none) {
+  .region[data-selected="false"]:hover::after {
+    opacity: 0;
   }
 }
 
@@ -401,18 +500,18 @@
    does.
 
    The numbers, in the 392x300 coordinate space every value in this file uses:
-   the dome (`.form::before`) bottoms out at y=280, so the last 20 of the box is
-   empty, and `.card`'s own 12 row gap then sits under THAT. Measured from the
-   dome rather than from the box, the row was ~30 away. Pulling 20 leaves a net
-   -8 against the gap, which lands the pills ~12 under the dome and still ~23
-   clear of the `Chin / jaw` pill above them. Nothing overlaps: the space being
-   closed is empty in every state, because the regions are fixed coordinates
-   rather than content that can grow.
+   ⚠️ THE PULL IS 12 NOW, NOT 20 — the dome bottomed out at y=280 and the
+   contour head runs to y=290 (13 Sep 2026), so 20 would have laid the pills
+   over the neck. 12 cancels `.card`'s own row gap exactly: the row starts at
+   the box's own bottom edge, ~10 under the drawing and still clear of the
+   `Chin / jaw` pill (centre y=266). Nothing overlaps: the space being closed
+   is empty in every state, because the regions are fixed coordinates rather
+   than content that can grow.
 
    ⚠️ SCOPED TO THE READ-ONLY LIST. `.chips` in the interactive mode keeps the
    full gap — see above. */
 .chipList {
-  margin: calc(var(--space-xl) * -1) 0 0; /* -20 */
+  margin: calc(var(--space-md) * -1) 0 0; /* -12 */
   padding: 0;
   list-style: none;
 }

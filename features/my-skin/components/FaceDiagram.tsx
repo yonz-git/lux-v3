@@ -1,7 +1,10 @@
 "use client";
 
+import { useEffect, useRef, type CSSProperties } from "react";
 import styles from "./FaceDiagram.module.css";
 import { Chip } from "@/components/ui/Chip";
+import contour from "../assets/face-contour.webp";
+import silhouette from "../assets/face-silhouette.webp";
 
 /**
  * The face-region picker on 03b — Figma `face-diagram-card` (392x300).
@@ -22,89 +25,140 @@ import { Chip } from "@/components/ui/Chip";
  * and `onToggle` are shared rather than being a second pair of props. The
  * 392x300 ratio in the comment above now belongs to the diagram illustration
  * alone — the card itself grows to fit the chip row under it.
+ *
+ * ⚠️ THE FACE IS A CONTOUR DRAWING, NOT A DOME — NOT IN FIGMA, chosen 13 Sep
+ * 2026 from a three-way prototype (photo / sage / contour), asked for
+ * directly. It replaced a CSS terraced dome (a filled ellipse plus five
+ * nested tiers). The asset is white level lines on transparency, cut from a
+ * supplied illustration at the neck — see `.lines` for its footprint — and a
+ * shine follows the pointer ACROSS THE LINES ONLY (`.shine`, masked by the same
+ * image). Raise both in Figma: the DS still has no face artwork.
  */
-/* `y` is the pill's CENTRE, not its top edge — see the note below. */
-type Region = { id: string; x: number; y: number; w: number };
+/* `x`/`y` are the pill's CENTRE, as fractions of the 392x300 box. */
+type Region = { id: string; x: number; y: number };
 
-/* x/y/w read from Figma, expressed as % of the 392x300 card. `w` is only used
-   to find each pill's horizontal CENTRE (x + w/2) — the pill itself is sized
-   to its label (see .region's transform in FaceDiagram.module.css), not
-   stretched to `w`, or a wider diagram (desktop's 920 card vs mobile's 392)
-   would blow the pill up into mostly whitespace. */
-/* ⚠️ THE y VALUES ARE PILL CENTRES, AND THEY ARE SEATED ON THE DOME — NOT IN
-   FIGMA. Two corrections in one pass, and the second is only visible at 1024+.
+/* ⚠️ SEATED ON THE DRAWING'S OWN LANDMARKS, NOT ON FIGMA'S COORDINATES. The
+   comp's positions were for a 168x214 ellipse, and the dome after it moved them
+   to fractions of a smooth form. A drawn face has a real eye line, nose tip and
+   mouth, and a pill that misses them names the wrong place — so these were read
+   off the head itself at its drawn footprint (226x280 at 83,10): forehead,
+   the eye line, the nose tip with the cheek centres level with it, the lips,
+   the chin. Cheeks sit 81 either side of the nose, which clears the middle row
+   at the diagram's narrowest scaled pill (see `.region`).
 
-   The comp stacks Forehead at 49 and Eye area at 79, and Around mouth at 183
-   and Chin / jaw at 215: a 30-tall pill therefore ENDS exactly where the next
-   one starts (49+30 = 79) or clears it by 2 (183+30 = 213). Drawn as flat
-   fills that reads as tight; drawn as the pill it is now — hairline, radius
-   full, a shadow — two touching pills merge into one lozenge and the edge
-   treatment is what makes the collision visible. So the stacked rows are opened
-   to 40 units of centre-to-centre pitch — a 30-tall pill plus ~8 of air at 440,
-   which is the gap the cheeks row already had to the eye row.
-
-   THEY ARE ALSO SEATED LOWER THAN THE COMP, because the form under them moved
-   and they did not. Figma's face is a 168x214 ellipse spanning y 40..254; `.form`
-   is a 230x260 dome spanning y 20..280 (see FaceDiagram.module.css for why it
-   had to widen). That dropped the chin of the drawing 26 units without moving
-   the pill that names it, so every row read high on the face and `Around mouth`
-   and `Chin / jaw` — the two with the furthest to fall — left an empty crescent
-   at the bottom of the dome. The centres below are the SAME reading order at
-   the fractions of the new form a face actually has: .16 / .31 / .47 / .72 / .88
-   of y 20..280. Every pill still sits inside the outline at its own width — the
-   dome's half-width at the chin row is 73, against a 77-wide pill centred on it.
-
-   ⚠️ AND `y` IS THE CENTRE, NOT THE TOP — which is what made this a DESKTOP
-   complaint rather than an everywhere one. A pill is 30px tall at every
-   breakpoint while the box it sits in scales (368 wide at 440, 456 at 1024+),
-   so a top-anchored pill's CENTRE drifts up the face as the diagram grows: the
-   30px is a shrinking fraction of a growing box. Measured, chin's centre landed
-   3 units higher at 1024 than at 440 for no reason anyone chose. Anchoring the
-   centre makes the geometry scale-invariant, which is the only way one set of
-   percentages can be honest at both sizes. `.region` translates -50% on BOTH
-   axes now; it already did on x for the same reason. */
+   ⚠️ AND `y` IS THE CENTRE, NOT THE TOP. A pill is a fixed-ratio object in a box
+   that scales, so a top-anchored pill's centre drifts up the face as the diagram
+   grows; `.region` translates -50% on both axes so one set of fractions means
+   the same point at 440 and at 1024+. */
 const REGIONS: Region[] = [
-  { id: "Forehead", x: 160 / 392, y: 62 / 300, w: 73 / 392 },
-  { id: "Eye area", x: 162 / 392, y: 102 / 300, w: 68 / 392 },
-  { id: "Cheeks (L)", x: 82 / 392, y: 142 / 300, w: 80 / 392 },
-  { id: "Nose", x: 171 / 392, y: 142 / 300, w: 50 / 392 },
-  { id: "Cheeks (R)", x: 231 / 392, y: 142 / 300, w: 82 / 392 },
-  { id: "Around mouth", x: 146 / 392, y: 208 / 300, w: 101 / 392 },
-  { id: "Chin / jaw", x: 158 / 392, y: 250 / 300, w: 77 / 392 },
-];
-
-/* ⚠️ THE FACE IS A TERRACED DOME — decided here, NOT IN FIGMA. See `.form` in
-   FaceDiagram.module.css for why the comp's 1.25px ellipse could not stay.
-   These are the CONTOUR LEVELS: nested ellipses, each smaller step drifting
-   toward the light at 33%/21% the way the level lines on a real dome do, each
-   casting onto the step below it. The geometry is here rather than in the CSS
-   for the same reason REGIONS is — the shape of this thing IS the design, and
-   the module should not be the place you go to find out what the face looks
-   like. Level 0 is the base form itself (`.form`); these are the three above
-   it. Values are diagram units, i.e. the same 392x300 box the regions use.
-   Every level steps in by ~30 and shares the base form's centre (196, 150),
-   so the stack is CONCENTRIC. The light stays off-centre — the base gradient
-   still lights the dome from 33%/21% — which is what keeps the terraces
-   reading as elevation rather than as a flat target; the geometry does not
-   need to lean for that, and a stack that leans reads as a mistake before it
-   reads as perspective. Each level carries the same translucent wash, so the
-   tint accumulates toward the summit on its own rather than being five
-   hand-picked values that can drift apart. */
-const TIERS = [
-  { w: 198, h: 224, cx: 196, cy: 150 },
-  { w: 168, h: 190, cx: 196, cy: 150 },
-  { w: 138, h: 156, cx: 196, cy: 150 },
-  { w: 108, h: 122, cx: 196, cy: 150 },
-  { w: 78, h: 88, cx: 196, cy: 150 },
+  { id: "Forehead", x: 199 / 392, y: 74 / 300 },
+  { id: "Eye area", x: 199 / 392, y: 139 / 300 },
+  /* 181, not the nose tip's 184: splits the pitch to the eye row and the mouth
+     row evenly, which at a 303-wide diagram is ~5.5px of air either side
+     where 184 left 2.9 under `Cheeks (R)` */
+  { id: "Cheeks (L)", x: 118 / 392, y: 181 / 300 },
+  { id: "Nose", x: 199 / 392, y: 181 / 300 },
+  { id: "Cheeks (R)", x: 278 / 392, y: 181 / 300 },
+  { id: "Around mouth", x: 199 / 392, y: 223 / 300 },
+  { id: "Chin / jaw", x: 199 / 392, y: 266 / 300 },
 ];
 
 /** So "Whole face" can select/clear every region pill in one tap — see StartInvestigation. */
 export const FACE_REGION_IDS = REGIONS.map((r) => r.id);
 
+/* How far the shine closes on the pointer each frame. It trails rather than
+   sticks, so it reads as light gliding over the lines instead of a cursor
+   decoration; ~150ms to settle at 60fps. */
+const SHINE_EASE = 0.2;
+
+/**
+ * The pointer-following shine. Writes two custom properties straight onto the
+ * glow element from a rAF loop, so a pointer move never re-renders the pills.
+ *
+ * ⚠️ NATIVE LISTENERS, AND THE LIGHT COMES ON AT THE FIRST MOVE RATHER THAN ON
+ * AN "ENTER". Keyed on movement, it also lights for a pointer already resting
+ * on the face when the screen mounts and for a touch that starts on it — cases
+ * where there is no enter to wait for. `pointerenter` is still listened to so a
+ * mouse lights it on arrival.
+ * ⚠️ IT SNAPS ON THAT FIRST MOVE. Without that the light starts from wherever
+ * it last settled (or 0,0) and flies across the face to the pointer.
+ * ⚠️ UNDER REDUCED MOTION IT FOLLOWS WITHOUT TRAILING — the glide is the motion;
+ * the light under the pointer is feedback, and stays.
+ */
+function useLineShine() {
+  const ref = useRef<HTMLSpanElement>(null);
+  const diagramRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    const diagram = diagramRef.current;
+    const el = ref.current;
+    if (!diagram || !el) return;
+
+    const target = { x: 0, y: 0 };
+    const pos = { x: 0, y: 0 };
+    let frame = 0;
+    let active = false;
+    const still = window.matchMedia("(prefers-reduced-motion: reduce)");
+
+    const paint = () => {
+      el.style.setProperty("--shine-x", `${pos.x}px`);
+      el.style.setProperty("--shine-y", `${pos.y}px`);
+    };
+
+    const step = () => {
+      pos.x += (target.x - pos.x) * SHINE_EASE;
+      pos.y += (target.y - pos.y) * SHINE_EASE;
+      paint();
+      frame =
+        Math.abs(target.x - pos.x) + Math.abs(target.y - pos.y) > 0.5
+          ? requestAnimationFrame(step)
+          : 0;
+    };
+
+    const onMove = (e: PointerEvent) => {
+      const rect = el.getBoundingClientRect();
+      target.x = e.clientX - rect.left;
+      target.y = e.clientY - rect.top;
+      if (!active || still.matches) {
+        pos.x = target.x;
+        pos.y = target.y;
+        paint();
+        if (!active) {
+          active = true;
+          el.setAttribute("data-active", "");
+        }
+        return;
+      }
+      if (!frame) frame = requestAnimationFrame(step);
+    };
+
+    const onLeave = () => {
+      active = false;
+      el.removeAttribute("data-active");
+      cancelAnimationFrame(frame);
+      frame = 0;
+    };
+
+    diagram.addEventListener("pointerenter", onMove);
+    diagram.addEventListener("pointermove", onMove);
+    diagram.addEventListener("pointerleave", onLeave);
+    diagram.addEventListener("pointercancel", onLeave);
+    return () => {
+      diagram.removeEventListener("pointerenter", onMove);
+      diagram.removeEventListener("pointermove", onMove);
+      diagram.removeEventListener("pointerleave", onLeave);
+      diagram.removeEventListener("pointercancel", onLeave);
+      cancelAnimationFrame(frame);
+    };
+  }, []);
+
+  return { ref, diagramRef };
+}
+
 /**
  * ⚠️ TWO MODES, AND THE PROPS ARE A UNION SO THE WRONG ONE CANNOT COMPILE.
  * `readOnly` is the recap at `/investigation/profile` reading the location
- * answer back: the same dome, the same seven pills at the same coordinates,
+ * answer back: the same face, the same seven pills at the same coordinates,
  * with the picked ones filled and the rest dimmed. It exists rather than a
  * chip list because the coordinates ARE the answer — "Cheeks (L)" only means
  * the left cheek because of where the pill sits, and a comma-separated line
@@ -136,6 +190,9 @@ export const FACE_REGION_IDS = REGIONS.map((r) => r.id);
  * 26 tall with `Label Small`, which is a different pill from the one step 1
  * draws. The region pills beside them are `span`s for the same reason.
  *
+ * ⚠️ THE SHINE RUNS IN BOTH MODES. It is a property of the drawing, not of the
+ * control, and a face that lights under the pointer on step 1 and not on the
+ * recap would be two different objects.
  *
  * ⚠️ AND THE DIAGRAM IS `aria-hidden` — DELIBERATELY, NOT AN OVERSIGHT. In
  * read-only mode it is an illustration of an answer the recap also writes out
@@ -158,6 +215,7 @@ type FaceDiagramProps =
 export function FaceDiagram(props: FaceDiagramProps) {
   const { selected } = props;
   const readOnly = props.readOnly === true;
+  const shine = useLineShine();
 
   return (
     <div className={styles.card}>
@@ -167,27 +225,40 @@ export function FaceDiagram(props: FaceDiagramProps) {
         role={readOnly ? undefined : "group"}
         aria-label={readOnly ? undefined : "Face regions"}
         aria-hidden={readOnly || undefined}
+        ref={shine.diagramRef}
       >
-        {/* the form is decorative — the pills carry the meaning */}
-        <span className={styles.form} aria-hidden="true">
-          {TIERS.map((t, i) => (
-            /* biome-ignore lint/suspicious/noArrayIndexKey: TIERS is a constant
-               list of decorative shapes — fixed length, fixed order, no state,
-               aria-hidden. Position is the only identity they have. */
-            <span key={i}
-              className={styles.tier}
-              style={{
-                left: `${((t.cx - t.w / 2) / 392) * 100}%`,
-                top: `${((t.cy - t.h / 2) / 300) * 100}%`,
-                width: `${(t.w / 392) * 100}%`,
-                height: `${(t.h / 300) * 100}%`,
-              }}
-            />
-          ))}
+        {/* the drawing is decorative — the pills carry the meaning. Both image
+            URLs are handed to CSS as custom properties because they are MASKS
+            there: `.volume` is shaded inside the head's outline, and `.shine`
+            lights only the lines. */}
+        <span
+          className={styles.form}
+          aria-hidden="true"
+          style={
+            {
+              "--face-lines": `url(${contour.src})`,
+              "--face-silhouette": `url(${silhouette.src})`,
+            } as CSSProperties
+          }
+        >
+          <span className={styles.volume} />
+          {/* biome-ignore lint/performance/noImgElement: a fixed decorative
+              asset masked by CSS; next/image's wrapper and srcset buy nothing */}
+          <img
+            className={styles.lines}
+            src={contour.src}
+            width={contour.width}
+            height={contour.height}
+            alt=""
+            draggable={false}
+          />
+          <span ref={shine.ref} className={styles.glow}>
+            <span className={styles.shine} />
+          </span>
         </span>
         {REGIONS.map((r) => {
           const position = {
-            left: `${(r.x + r.w / 2) * 100}%`,
+            left: `${r.x * 100}%`,
             top: `${r.y * 100}%`,
           };
 

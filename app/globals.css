@@ -358,39 +358,11 @@
      wants a sage/500 anyway. */
   --color-border-chip: #6b8b8d;
 
-  /* gradient/face-form + effect/face-form — ⚠️ DECLARED HERE, NOT IN
-     `tokens.css`, and NOT IN FIGMA. The face-diagram illustration (see
-     `.outline` in FaceDiagram.module.css for the why). Declared as semantic
-     names here rather than written into the module because non-negotiable 2
-     forbids a component reaching into the `01 Primitives` block, and this
-     recipe is built from the sage ramp: the card's own colours, so the face
-     reads as that surface lifting rather than as a new one arriving. Raise the
-     illustration in Figma — the DS has no face artwork at all, which is why
-     the comp fell back to a stroked ellipse. */
-  --gradient-face-form: radial-gradient(
-    108% 100% at 33% 21%,
-    var(--color-sage-200) 0%,
-    var(--color-sage-300) 26%,
-    var(--color-sage-400) 62%,
-    var(--color-sage-400) 100%
-  );
-  /* the deep edge is carried by the ink inset rather than by a further ramp
-     step: the sage primitives stop at 400, and lighting the form is what
-     darkens it, not a new colour */
-  --shadow-face-form: 0 16px 34px -14px rgba(46, 36, 71, 0.28),
-    inset -14px -18px 36px rgba(46, 36, 71, 0.2),
-    inset 10px 12px 26px rgba(255, 255, 255, 0.26);
-
-  /* surface/face-tier + effect/face-tier — the contour levels on the face form
-     (see `.tier` in FaceDiagram.module.css). ONE wash, not one value per level:
-     it is translucent, so each level takes the dome's own lighting through it
-     and the tint accumulates toward the summit by itself — five hand-picked
-     fills would flatten the falloff the base gradient draws and could drift
-     apart the moment the ramp moves. The colour is sage-100; the depth is in
-     the shadow, the reading is in the edge. */
-  --color-surface-face-tier: rgba(225, 235, 233, 0.22);
-  --shadow-face-tier: 0 5px 12px -5px rgba(46, 36, 71, 0.2),
-    inset 0 1px 0 rgba(255, 255, 255, 0.3);
+  /* ⚠️ `gradient/face-form`, `effect/face-form`, `surface/face-tier` and
+     `effect/face-tier` WERE DECLARED HERE until 13 Sep 2026 — the CSS dome
+     the face diagram used to be. The face is a contour drawing now and its
+     shading lives with it in FaceDiagram.module.css; the four tokens had no
+     other caller and went with the dome. */
 }
 
 /* ==========================================================================
