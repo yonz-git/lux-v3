@@ -1,8 +1,14 @@
 # Animation plans
 
-These plans come from the `improve-animations` audit of 13 Sep 2026. Each one is self-contained: exact files, the current code quoted verbatim, target values, ordered steps, boundaries, and a feel check. Hand any plan to an executor as-is, or run `improve-animations execute plans/NNN-….md`.
+These plans come from the `improve-animations` audits of 13 Sep 2026. Each one is self-contained: exact files, the current code quoted verbatim, target values, ordered steps, boundaries, and a feel check. Hand any plan to an executor as-is, or run `improve-animations execute plans/NNN-….md`.
 
-⚠️ **The plans are stamped `d7220d6`, but they were written against the uncommitted working tree of 13 Sep 2026.** That tree contains `components/ui/Collapse.tsx`, the `.collapse`/`.drop` rules, `useHeldWhileClosing` and the widened `SmoothScroll.tsx`, none of which are in that commit. Commit (or knowingly keep) that work before executing. Every plan says to STOP rather than improvise if its quoted code isn't found.
+**Batch 1 (001–013)** was written against the uncommitted tree on top of `d7220d6`. It landed on `design-trial` as one commit per plan, `a06e6f7..6276682`.
+
+**Batch 2 (014–025)** answers "did animation reach every part that could?" It was written against `f23b117` on `design-trial`.
+
+- ⚠️ **Another session's work landed right after.** While batch 2 was written, another session had uncommitted edits in `HubScreen.tsx` and `.module.css` (the `gridColumns` prop), `CheckInDetail.tsx` and `.module.css`, `CheckInPhotoArt.tsx`, `progress.ts` and `SkinProfileSummary.module.css`. Those edits landed straight afterwards as `8348ccb`, and plans 014 and 021 quote those files as they stand there.
+- ⚠️ **`globals.css` line numbers read 14 higher on `main`.** `7481990` (on `main`) added 14 lines near the top of `app/globals.css`.
+- Every plan quotes by text and says to STOP if its excerpt isn't found.
 
 ## Plans
 
@@ -36,6 +42,8 @@ These plans come from the `improve-animations` audit of 13 Sep 2026. Each one is
 
 ## Recommended order
 
+### Batch 1 (done)
+
 1. **001**: the biggest felt win (a 4.8s wait on every return to Welcome), isolated to two files.
 2. **002 → 003**: both edit `SmoothScroll`'s `onWheel`. 003 assumes 002's code is in place.
 3. **004**: a one-comparison fix that affects every route.
@@ -48,15 +56,34 @@ These plans come from the `improve-animations` audit of 13 Sep 2026. Each one is
 10. **012**: additive, independent.
 11. **011**: last. It sweeps literals and comments in `globals.css`, `Welcome.tsx` and `LogoEntrance.tsx`, which 001 and 005 also touch. It matches by text, not line number.
 
+### Batch 2
+
+1. **014**: every navigation blinks the header, track and card. Two files.
+2. **017**: tiny, and runs on every radio and checkbox tap.
+3. **019**: three small bugs. 023 builds on its `MyProducts` change.
+4. **015 → 016**: both edit `AddProductMethodSheet`. 016 edits the `viewKey` line 015 adds.
+5. **020**: step 5's list.
+6. **021**: the day record. It builds on the other session's `CheckInDetail` work, which landed as `8348ccb`.
+7. **022**: `/check/results` edit mode.
+8. **018**: the analysis hand-off. After 014, whose shell change it leans on.
+9. **023**: after 015, 016 and 019.
+10. **024**, then **025**: 025 needs 015's hook.
+
 ## Overlaps to watch
 
-- **`app/globals.css`** is edited by 005, 006, 007 and 011. Edits sit in different blocks; always search by the quoted text.
-- **`components/ui/Collapse.tsx`**: 007 then 013.
+- **`app/globals.css`** is edited by 005, 006, 007 and 011. Batch 2 does not touch it.
+- **`components/ui/Collapse.tsx`**: 007 then 013. Batch 2 adds callers (020, 021, 022, 023) but never changes it.
 - **`features/my-skin/components/Welcome.tsx`**: 001 (logic) then 011 (one comment).
 - **`components/layout/LogoEntrance.tsx`**: 001 (logic and doc comment) then 011 (one comment in a different block).
-- **`AGENTS.md`**: 007 (the reveal table row) and 013 (the components table row).
+- **`AGENTS.md`**: 007 (the reveal table row), 013 and 015 (the components table rows).
+- **`features/products/components/AddProductMethodSheet.tsx`**: 015 → 016 → 023 (part D).
+- **`features/products/components/MyProducts.tsx`**: 019 (part C) → 023 (parts A and B).
+- **`lib/useHeightTransition.ts`**: created by 015 for `Sheet`, reused by 025.
+- **`components/layout/HubScreen.tsx`**: edited by 014 only. 018 and 019 rely on its heading and shell behaviour without editing it.
 
 ## Not planned — documented decisions the audit respected
+
+### Batch 1
 
 The code documents these as decisions, so no plan changes them:
 - the 800ms chat-bubble entrance and its enter shine;
@@ -68,3 +95,12 @@ The code documents these as decisions, so no plan changes them:
 - Snackbar's 4s hold and 320ms exit;
 - no scale on press (`.pressable` overlay);
 - a single global reduced-motion rule (plan 005 only fills its delay gap).
+
+### Batch 2
+
+- **Route exit transitions** (View Transitions API, `template.tsx`). A page-architecture decision. `docs/decisions.md` records that the proposed View Transitions and `motion/react` system never shipped and all motion is CSS. 014 removes the blink without it.
+- **The add tray's results while typing.** The dropdown swaps between results and "Searching…" on each keystroke and the tray follows at once. Holding the previous results while a search runs would steady it, but that is a decision about what the dropdown says, not motion. 015 deliberately does not animate it.
+- **Things read or used too often to move:** DateField month paging, counts, scores and charts updating, the focus ring, the nav's selected pill.
+- **Step 5 rows travelling into their groups** (a shared-layout move). 020 fades the new headers in instead.
+- **`SmallButton` disabled fade.** Nothing disables a `SmallButton` (checked 13 Sep 2026: no caller passes `disabled`), so its comment saying so is accurate and there is no state to animate.
+- **Empty lines left when a list's last product goes.** The day record's "No products recorded" and the add tray's empty "Added products" block each pop in one frame after the last row has already closed.
