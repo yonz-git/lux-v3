@@ -209,12 +209,12 @@ export function SkinProfileSummary({ now }: { now: number }) {
     );
   }
 
-  /* ⚠️ THE TIMELINE COUNTS TOWARD THIS BLOCK NOW THAT IT HAS NO BLOCK OF ITS
-     OWN. Step 4 answered on its own — a deep link, or a walk that skipped step
-     1 — would otherwise have nowhere to appear at all. The block then renders
-     as its heading and two meta pairs, which `.blockLabel + .meta` in the
-     stylesheet already spaces correctly. */
-  const hasNoticed = profile.symptoms.length > 0 || Boolean(profile.timeline);
+  /* ⚠️ STEP 4 IS THE WHOLE OF THIS BLOCK NOW — the symptom pills left it on
+     13 Sep 2026, asked for directly, and move onto the face diagram in a
+     follow-up. So it renders only when there is a status or a dated start to
+     show; "No start date given" with no status is a screen reporting on its
+     own gaps, and would draw a heading over nothing. */
+  const hasCurrent = Boolean(profile.timeline?.status || profile.timeline?.day);
   const hasLocation =
     profile.faceRegions.length > 0 ||
     profile.otherLocations.length > 0 ||
@@ -232,7 +232,7 @@ export function SkinProfileSummary({ now }: { now: number }) {
      and nothing else — no heading, no border, no card. A label naming a group
      is what this screen deleted once already ("From your answers"), and it
      would be the same mistake at a smaller scale. */
-  const hasEpisode = hasNoticed || hasLocation;
+  const hasEpisode = hasCurrent || hasLocation;
 
   return (
     <HubScreen
@@ -246,33 +246,33 @@ export function SkinProfileSummary({ now }: { now: number }) {
 
       {hasEpisode && (
         <div className={styles.blocks}>
-          {hasNoticed && (
-            <Block label={COPY.symptomsLabel} id="profile-symptoms">
-              <TagList items={profile.symptoms} />
-              {/* ⚠️ THE AGE OF THE SYMPTOMS, UNDER THE SYMPTOMS — moved off the
-                  sage card 7 Sep 2026, asked for directly. Gated on the day
-                  count rather than on the date, because the line only reads as
-                  a span with both halves: `started` also carries "No start date
-                  given" when step 4 was left blank, and `day` is null for that
-                  and for a date in the future. Neither is worth a line: a recap
-                  that says "Started: no start date given" is a screen reporting
-                  on its own gaps. */}
+          {hasCurrent && (
+            <Block label={COPY.currentLabel} id="profile-current">
+              {/* ⚠️ THE STATUS FIRST, AND WITH NO LABEL OF ITS OWN — asked for
+                  directly 13 Sep 2026. The block's heading already says
+                  "Current state", so "Getting worse" is its value; a second
+                  `Current state` over it would say the same words twice. It
+                  wears `.meta` without a label so the block's existing
+                  `.blockLabel + .meta` / `.meta + .meta` spacing covers it. */}
+              {profile.timeline?.status && (
+                <div className={styles.meta}>
+                  <p className={`${styles.metaValue} t-button`}>
+                    {profile.timeline.status}
+                  </p>
+                </div>
+              )}
+              {/* ⚠️ THE AGE OF THE STATE, UNDER THE STATE — moved off the sage
+                  card 7 Sep 2026, asked for directly. Gated on the day count
+                  rather than on the date, because the line only reads as a span
+                  with both halves: `started` also carries "No start date given"
+                  when step 4 was left blank, and `day` is null for that and for
+                  a date in the future. Neither is worth a line. And it is a
+                  separate pair from the status rather than a `·` segment on it:
+                  "Sep 4 · Day 10" is one fact, "Getting worse" another. */}
               {profile.timeline?.day && (
                 <Meta
                   label={COPY.startedLabel}
                   value={`${profile.timeline.started} · ${profile.timeline.day}`}
-                />
-              )}
-              {/* ⚠️ STEP 4's STATUS, AND IT IS A SEPARATE PAIR RATHER THAN A
-                  THIRD `·` SEGMENT ON THE ONE ABOVE. "Aug 31 · Day 8" is one
-                  fact — a span, both halves of it answering `Started on`.
-                  "Getting worse" is a different fact about a different moment,
-                  and hanging it off the same label reads as something the start
-                  did. */}
-              {profile.timeline?.status && (
-                <Meta
-                  label={COPY.statusLabel}
-                  value={profile.timeline.status}
                 />
               )}
             </Block>
@@ -566,7 +566,12 @@ function Meta({ label, value }: { label: string; value: string }) {
  * That is a fill and a border, not a role: nothing about what this element IS
  * has changed. See `.pill` in the stylesheet for why it is safe on THIS screen
  * and nowhere that mixes tags with chips.
+ *
+ * ⚠️ UNUSED SINCE 13 Sep 2026 — its one caller was the symptom pills in the
+ * episode block, removed on request; they are moving onto the face diagram in
+ * a follow-up, which decides whether this list is reused or deleted.
  */
+// biome-ignore lint/correctness/noUnusedVariables: parked until the symptom pills move onto the face diagram
 function TagList({ items }: { items: string[] }) {
   if (items.length === 0) return null;
 

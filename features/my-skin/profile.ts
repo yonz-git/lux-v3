@@ -256,7 +256,15 @@ export const COPY = {
   skinTypeLabel: "Skin type",
   skinTypeUnknown: "Not answered",
   tendenciesLabel: "Tendencies",
-  symptomsLabel: "What you noticed",
+  /**
+   * The episode block's heading. ⚠️ IT WAS "What you noticed" UNTIL 13 Sep
+   * 2026, over the symptom pills — renamed and the pills removed, asked for
+   * directly; the pills are moving onto the face diagram in a follow-up. The
+   * block now holds step 4 alone: the status as its value, then `Started on`.
+   * The status needs no label of its own under a heading that already says
+   * "Current state", which is why `statusLabel` is gone.
+   */
+  currentLabel: "Current state",
   /* ---- the photo, step 1's optional capture ---- */
   /**
    * ⚠️ IT IS A BLOCK OF ITS OWN NOW, AND IT WAS A LINE OF TEXT TWICE BEFORE
@@ -294,10 +302,10 @@ export const COPY = {
    * The SYMPTOMS block's first meta pair — `Started on` over
    * "Aug 31, 2026 · Day 8".
    *
-   * ⚠️ IT SITS WITH THE SYMPTOMS, NOT WITH THE SKIN TYPE — asked for directly,
-   * 7 Sep 2026. A date on its own is a date; under the pills naming what was
-   * noticed it is the age of THOSE symptoms, which is the only thing the
-   * reading is for.
+   * ⚠️ IT SITS WITH THE EPISODE, NOT WITH THE SKIN TYPE — asked for directly,
+   * 7 Sep 2026. A date on its own is a date; under the current state it is the
+   * age of that state, which is the only thing the reading is for. (It sat
+   * under the symptom pills until 13 Sep 2026, when they left this block.)
    *
    * ⚠️ IT IS A LABEL NOW, NOT THE FIRST WORD OF A SENTENCE — asked for
    * directly, 8 Sep 2026, when both meta lines took the sage card's
@@ -308,18 +316,8 @@ export const COPY = {
    */
   startedLabel: "Started on",
   dayWord: "Day",
-  /* ---- step 4, now two lines inside the symptoms block ---- */
+  /* ---- step 4, the whole of the `Current state` block ---- */
   startedUnknown: "No start date given",
-  /**
-   * ⚠️ IT WAS "Now" UNTIL 8 Sep 2026, AND "Current state" REPLACED IT — asked
-   * for directly. The subject still does not need naming: these two lines sit
-   * INSIDE `What you noticed`, directly under the pills that name the symptoms,
-   * so "Symptoms now" would make the block say "symptoms" three times in four
-   * lines. What the bare "Now" lacked was a NOUN — beside "Started", a lone
-   * adverb reads as another point on the same timeline rather than as the label
-   * of a different fact about a different moment.
-   */
-  statusLabel: "Current state",
   /* ---- the hand-off ---- */
   cta: "Add your products",
   /**
