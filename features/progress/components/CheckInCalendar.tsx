@@ -8,7 +8,7 @@
    by index would mix two schemes for no gain. */
 "use client";
 
-import { useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import Link from "next/link";
 import styles from "./CheckInCalendar.module.css";
 import { DataCard } from "@/components/ui/DataCard";
@@ -26,6 +26,7 @@ import {
   startOfMonth,
   toIso,
 } from "@/lib/date";
+import { useInvestigation } from "@/lib/store/InvestigationProvider";
 
 /**
  * Which month the calendar opens on, given what it has to show.
@@ -140,6 +141,22 @@ export function CheckInCalendar({
   const atLatestMonth = sameDay(view, startOfMonth(today));
 
   const checkedIn = new Set(checkIns.map((c) => c.date));
+  /* ⚠️ THE CHECK-INS THIS CALENDAR HAS ALREADY DRAWN — NOT IN FIGMA, added
+     13 Sep 2026. A day missing from it has just been checked in while the
+     calendar was on screen (the check-in overlay closing back onto
+     /progress), and it lands with motion — see `[data-just-checked]` in the
+     stylesheet. `null` until a render has committed, so nothing animates on
+     arrival or when paging months.
+     ⚠️ AND NOTHING IS REMEMBERED BEFORE THE STORE HAS HYDRATED. Stored
+     check-ins arrive one commit after mount (see the month note above), and
+     this effect runs before the provider's, so a snapshot of the empty first
+     render made every restored day — a check-in made earlier today included
+     — land again on every reload. */
+  const { hydrated } = useInvestigation();
+  const drawn = useRef<ReadonlySet<string> | null>(null);
+  useEffect(() => {
+    if (hydrated) drawn.current = checkedIn;
+  });
   const cells = monthGridSunday(view);
   const weeks = Array.from({ length: cells.length / 7 }, (_, i) =>
     cells.slice(i * 7, i * 7 + 7)
@@ -207,7 +224,10 @@ export function CheckInCalendar({
               {week.map((date, d) => {
                 if (!date) return <td key={d} className={styles.cell} />;
 
-                const isCheckedIn = checkedIn.has(toIso(date));
+                const iso = toIso(date);
+                const isCheckedIn = checkedIn.has(iso);
+                const justChecked =
+                  isCheckedIn && drawn.current !== null && !drawn.current.has(iso);
                 const isToday = sameDay(date, today);
 
                 /* the day's own number is the visible label, so the date and
@@ -229,9 +249,10 @@ export function CheckInCalendar({
                   <td key={d} className={styles.cell}>
                     {isCheckedIn ? (
                       <Link
-                        href={`/progress/check-in/${toIso(date)}`}
+                        href={`/progress/check-in/${iso}`}
                         className={`${styles.day} t-label-sm pressable`}
                         data-checked-in
+                        data-just-checked={justChecked || undefined}
                         data-today={isToday || undefined}
                       >
                         {label}

@@ -2216,6 +2216,17 @@ main[tabindex="-1"]:focus-visible {
     /* biome-ignore lint/complexity/noImportantStyles: must beat the global duration collapse */
     animation: lux-fade-in var(--duration-base) var(--ease-standard) 3300ms backwards !important;
   }
+
+  /* ⚠️ AND A TRANSITION'S DELAY SURVIVES THE COLLAPSE TOO — added after review,
+     13 Sep 2026. Today's calendar disc (CheckInCalendar.module.css) waits out
+     the check-in overlay's exit on a 200ms `transition-delay`; with the overlay
+     already gone under reduced motion, the disc sat empty and small for that
+     long and then snapped. An attribute selector, because a module's class is
+     not reachable from here. */
+  [data-checked-in][data-just-checked] {
+    /* biome-ignore lint/complexity/noImportantStyles: must beat the module's transition shorthand */
+    transition-delay: 0ms !important;
+  }
 }
 
 /* ============================================================================

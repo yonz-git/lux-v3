@@ -183,7 +183,32 @@
   /* the UA underlines an <a>, and a rule under a numeral inside a 32 disc
      reads as a strikethrough on the one mark the card exists to show */
   text-decoration: none;
-  transition: opacity var(--duration-fast) var(--ease-standard);
+  /* the hover fade, plus the landing below: background, numeral and scale
+     wait out the check-in overlay's 200ms exit and then settle over 320ms.
+     Declared here rather than under `[data-just-checked]` so the attribute
+     going away on a later render cannot cancel a landing mid-flight; only a
+     disc with a starting style (below) ever has anything to transition. */
+  transition:
+    opacity var(--duration-fast) var(--ease-standard),
+    background-color var(--duration-slow) var(--ease-standard) var(--duration-base),
+    color var(--duration-slow) var(--ease-standard) var(--duration-base),
+    scale var(--duration-slow) var(--ease-standard) var(--duration-base);
+}
+
+/* ⚠️ TODAY'S DISC LANDS — NOT IN FIGMA, added 13 Sep 2026. Submitting the
+   check-in saved the day and closed the overlay in one handler, so the disc
+   was already filled by the time the overlay had faded: the one change a
+   check-in makes was never seen happening. A day checked in while the
+   calendar is on screen swaps from a <span> to a new <Link>, so it can start
+   empty and slightly small and settle into the disc. Three attribute
+   selectors so the start colour outranks `.day[data-today][data-checked-in]`
+   (a new check-in is almost always today). No overshoot. */
+@starting-style {
+  .day[data-checked-in][data-just-checked] {
+    background-color: transparent;
+    color: var(--color-text-on-data);
+    scale: 0.8;
+  }
 }
 
 .day[data-checked-in]:hover {

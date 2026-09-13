@@ -70,6 +70,14 @@ type Ctx = {
     value: Answers[K] | ((prev: Answers[K]) => Answers[K])
   ) => void;
   reset: () => void;
+  /**
+   * ⚠️ WHETHER STORED RECORDS HAVE BEEN READ YET — exposed 13 Sep 2026. The
+   * first render is always the empty store and the records arrive one commit
+   * later (the hydration effect below), so anything that animates what
+   * CHANGED — `CheckInCalendar`'s landing disc — must not count their arrival
+   * as a change.
+   */
+  hydrated: boolean;
 };
 
 const InvestigationContext = createContext<Ctx | null>(null);
@@ -144,8 +152,8 @@ export function InvestigationProvider({
   const reset = useCallback(() => setAnswers({}), []);
 
   const value = useMemo(
-    () => ({ answers, setAnswer, reset }),
-    [answers, setAnswer, reset]
+    () => ({ answers, hydrated, setAnswer, reset }),
+    [answers, hydrated, setAnswer, reset]
   );
 
   return (
