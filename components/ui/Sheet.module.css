@@ -126,6 +126,20 @@
      first item of a 20-gap content stack. Cancels most of the tray's row-gap
      so what follows sits 12 below it. */
   margin-bottom: calc(var(--space-md) - var(--space-xl));
+  /* ⚠️ IT DRAGS — `Sheet`'s pointer handlers. `touch-action: none` or the
+     browser takes the pull as a scroll and cancels the pointer mid-drag. */
+  position: relative;
+  touch-action: none;
+  cursor: grab;
+}
+
+/* A 5px bar is not a target. The hit area grows to 160 x 21 — 8 above, to the
+   tray's top edge, and 8 below, inside the 12 gap, so it never covers the
+   first line of a view. */
+.grabber::before {
+  content: "";
+  position: absolute;
+  inset: calc(-1 * var(--space-sm)) -60px;
 }
 
 @media (min-width: 1024px) {

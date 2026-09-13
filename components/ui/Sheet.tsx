@@ -1,6 +1,6 @@
 "use client";
 
-import { useRef } from "react";
+import { useEffect, useRef } from "react";
 import { createPortal } from "react-dom";
 import styles from "./Sheet.module.css";
 import { useDialogPresence, useModalDialog, useMounted } from "@/lib/useModalDialog";
@@ -51,6 +51,15 @@ import { useDialogPresence, useModalDialog, useMounted } from "@/lib/useModalDia
  * on the `added` view stays added when the tray closes. Naming the sole exit
  * after an undo it never performed was the misleading half. `Done` describes
  * what it does. Escape and the scrim run the same `onClose`.
+ *
+ * ⚠️ THE GRABBER DRAGS, AS OF 13 Sep 2026 — it was a drawn bar with no
+ * behaviour, which is a promise on a phone: every OS sheet with that bar
+ * closes by pulling it down. Drag it past a quarter of the tray's height, or
+ * flick it, and the tray slides out and runs `onClose`; short of that it
+ * springs back. ⚠️ ONLY THE GRABBER, NOT THE TRAY: the tray scrolls and its
+ * views hold targets (the selfie viewfinder, results lists), so a drag started
+ * there is theirs. The grabber stays `aria-hidden` — it is a pointer shortcut
+ * to `Done`, which remains the one labelled dismissal (WCAG 2.5.1).
  */
 export function Sheet({
   open,
@@ -78,6 +87,59 @@ export function Sheet({
      above is not given `present`: the dialog stops BEING modal the moment the
      user closes it, and only its painting lingers. */
   const { present, leaving } = useDialogPresence(open);
+
+  /* The drag writes the tray's transform inline, frame by frame — state would
+     re-render the whole tray on every pointermove. */
+  const drag = useRef<{ startY: number; lastY: number; lastT: number; v: number } | null>(null);
+
+  /* a tray re-opened before its exit finished is the same node, still carrying
+     the drag's inline transform */
+  useEffect(() => {
+    const tray = trayRef.current;
+    if (open && tray) {
+      tray.style.transform = "";
+      tray.style.transition = "";
+    }
+  }, [open]);
+
+  function onGrabStart(e: React.PointerEvent<HTMLSpanElement>) {
+    if (leaving || e.button !== 0 || !trayRef.current) return;
+    e.currentTarget.setPointerCapture(e.pointerId);
+    drag.current = { startY: e.clientY, lastY: e.clientY, lastT: e.timeStamp, v: 0 };
+    trayRef.current.style.transition = "none";
+  }
+
+  function onGrabMove(e: React.PointerEvent<HTMLSpanElement>) {
+    const d = drag.current;
+    const tray = trayRef.current;
+    if (!d || !tray) return;
+    const dt = e.timeStamp - d.lastT;
+    if (dt > 0) d.v = (e.clientY - d.lastY) / dt;
+    d.lastY = e.clientY;
+    d.lastT = e.timeStamp;
+    /* down only — pulling up past the dock has nowhere to go */
+    tray.style.transform = `translateY(${Math.max(0, e.clientY - d.startY)}px)`;
+  }
+
+  function onGrabEnd(e: React.PointerEvent<HTMLSpanElement>) {
+    const d = drag.current;
+    const tray = trayRef.current;
+    drag.current = null;
+    if (!d || !tray) return;
+    const dy = Math.max(0, e.clientY - d.startY);
+    const dismiss =
+      e.type === "pointerup" && (dy > tray.offsetHeight / 4 || (d.v > 0.5 && dy > 16));
+    tray.style.transition =
+      "transform var(--duration-base) var(--ease-standard), opacity var(--duration-base) var(--ease-standard)";
+    if (dismiss) {
+      /* carry on from where the finger let go, rather than the leaving rule's
+         16px from the dock — the fade comes from `data-state="leaving"` */
+      tray.style.transform = "translateY(100%)";
+      onClose();
+    } else {
+      tray.style.transform = "";
+    }
+  }
 
   if (!present || !mounted) return null;
 
@@ -109,8 +171,16 @@ export function Sheet({
         aria-label={title}
         tabIndex={-1}
       >
-        {/* mobile only — the desktop dialog has no grabber */}
-        <span className={styles.grabber} aria-hidden="true" />
+        {/* mobile only — the desktop dialog has no grabber. Pull it down to
+            close; see the doc comment. */}
+        <span
+          className={styles.grabber}
+          aria-hidden="true"
+          onPointerDown={onGrabStart}
+          onPointerMove={onGrabMove}
+          onPointerUp={onGrabEnd}
+          onPointerCancel={onGrabEnd}
+        />
         {children}
         {/* the tray's one way out, on every view — see the doc comment */}
         <button type="button" className={`${styles.dismiss} t-label`} onClick={onClose}>
