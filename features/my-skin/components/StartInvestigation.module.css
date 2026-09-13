@@ -12,8 +12,12 @@
    the symptom question, it takes the BETWEEN-question gap below, not the
    within-question one. */
 
+/* ⚠️ CENTRED AT EVERY WIDTH, asked for directly 13 Sep 2026 — it was centred
+   on desktop only, which left the mobile title flush left over a centred chip
+   grid. */
 .question {
   color: var(--color-text-primary);
+  text-align: center;
 }
 
 /* ⚠️ NOT IN FIGMA — THE STACK IS TWO-LEVEL NOW, NOT ONE FLAT GAP.
@@ -154,10 +158,6 @@ button.takePhoto {
   .diagram,
   .other {
     margin-top: var(--space-5xl); /* 48 */
-  }
-
-  .question {
-    text-align: center;
   }
 
   .chips {
