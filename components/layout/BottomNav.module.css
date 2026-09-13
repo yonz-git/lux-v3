@@ -82,9 +82,11 @@
 
 .nav::before {
   padding: 1px;
+  /* the lit corner is 48% white — 20% under the 60% it shipped at, asked for
+     directly the same day; the dim bottom-right stays at 20% */
   background: linear-gradient(
     135deg,
-    rgba(255, 255, 255, 0.6),
+    rgba(255, 255, 255, 0.48),
     rgba(255, 255, 255, 0) 40%,
     rgba(255, 255, 255, 0) 60%,
     rgba(255, 255, 255, 0.2)
@@ -126,17 +128,24 @@
   }
 }
 
+/* ⚠️ TEXT-ONLY SINCE 13 Sep 2026, asked for directly — no icon above the
+   label, so an item is one line of `t-nav` (16 Light) in a pill. */
 .item {
   display: flex;
-  flex-direction: column;
   align-items: center;
-  gap: var(--space-2xs);
+  justify-content: center;
 
-  /* the active treatment is opacity only — same colour, same weight.
-     1.0 active, 0.5 inactive, exactly as the component encodes it. */
-  opacity: 0.5;
+  /* ⚠️ NOT IN FIGMA — INACTIVE RESTS AT 0.85, NOT THE COMPONENT'S 0.5, AND THE
+     ACTIVE ITEM IS A PILL AS WELL AS FULL WHITE. At 0.5 the inactive labels
+     were the faintest thing on the bar, because the fade was the only thing
+     saying "you are here". The pill says it now, so the fade can rise. On the
+     `#17292f42` fill, hand-composited over the canvas's bottom stop, inactive
+     is ~2.5:1, full white ~2.9:1 and ~3.5:1 inside the pill — none clears
+     4.5:1 at 16px; see globals.css for the ink that would. */
+  opacity: 0.85;
   /* ⚠️ WHITE, NOT `icon/default`, since the bar went deep teal on 13 Sep
-     2026 — the dark ink measured worse on that fill; see globals.css */
+     2026. ⚠️ On the lighter `#17292f42` fill the dark app ink would measure
+     better (~4.8:1); kept white pending a decision — see globals.css */
   color: var(--color-text-on-data-inverse);
   /* an item can render as <a> once its section exists; links carry an
      underline by default */
@@ -144,24 +153,49 @@
 
   min-width: var(--size-touch-target);
   min-height: var(--size-touch-target);
-  justify-content: center;
-  padding: 0 var(--space-md);
-  border-radius: var(--radius-lg);
+  /* ⚠️ THE PADDING SHRINKS WITH THE VIEWPORT, AND THAT IS WHAT LETS FOUR 16px
+     LABELS FIT. They measure 235 together; the bar's inside is
+     `min(380, 100vw - 48) - 29`. A fixed 12 a side needs 331 and clips below a
+     408 viewport. `(100vw - 320px) / 8` spends exactly the slack there is — 0
+     on a 320 phone (235 in 243), ~7 at 375 (290 in 298) — capped at
+     `space/md` from 416 up. */
+  padding: 0 clamp(0px, calc((100vw - 320px) / 8), var(--space-md));
+  border-radius: var(--radius-full);
 
   /* duration/base to match the button's hover fade, so both controls soften at
      the same pace */
   transition: opacity var(--duration-base) var(--ease-standard);
 }
 
+/* the pill — `state/pressed-overlay`, the one darkening value LUX has, borrowed
+   as a SELECTED well. Darker, not lighter: a light pill lowers white's contrast
+   and this one raises it. Raise a `state/selected` token in Figma. */
 .item[data-active="true"] {
   opacity: 1;
+  background: var(--color-state-pressed-overlay);
+  /* ⚠️ NOT IN FIGMA — THE WELL IS RECESSED, asked for directly 13 Sep 2026: an
+     inner shadow dropping from the top edge in the bar's own hue, and a faint
+     light lip along the bottom inner edge where the light comes back up. The
+     pair is what reads as pressed INTO the glass rather than a flat tint laid
+     on it — the inverse of the bar's own bevel. Static; the focus ring is an
+     outline, so it composes. */
+  box-shadow:
+    inset 0 1px 3px rgba(23, 41, 47, 0.35),
+    inset 0 -1px 0 rgba(255, 255, 255, 0.12);
 }
 
+/* ⚠️ NOT IN FIGMA — THE SELECTED LABEL IS REGULAR (400), THE REST STAY LIGHT
+   (300), asked for directly 13 Sep 2026 for contrast: a heavier stroke puts
+   more white on the teal where it matters most. A state override of `t-nav`'s
+   weight, like the opacity above it — not a second text class. Regular is one
+   of the three loaded weights. It is ~3px wider than Light at 16px; the
+   padding budget on `.item` still fits at 320. */
+.item[data-active="true"] .label {
+  font-weight: var(--font-weight-regular);
+}
+
+/* hover goes to full white — above the 0.85 rest, so hovering never dims */
 .item:hover {
-  opacity: 0.8;
-}
-
-.item[data-active="true"]:hover {
   opacity: 1;
 }
 
@@ -169,7 +203,7 @@
    sticks after a tap */
 @media (hover: none) {
   .item:hover {
-    opacity: 0.5;
+    opacity: 0.85;
   }
 
   .item[data-active="true"]:hover {
@@ -185,67 +219,24 @@
      `color` here loads after it and would paint solid white over the band.
      White on the deep-teal bar — see `.item`. */
   --shine-ink: var(--color-text-on-data-inverse);
-  white-space: nowrap;
-}
-
-/* ⚠️ NOT IN FIGMA — THE ICON TAKES THE SAME SHINE, asked for directly
-   13 Sep 2026. `background-clip: text` cannot reach an inline SVG, so the icon
-   is drawn TWICE (BottomNav.tsx): the ink copy, and over it a copy in the
-   shine lilac revealed through a MASK that is the text recipe's own band —
-   the same 115deg, 300% image, 32/44/50/56/68 stops and 100% → 0% travel, on
-   the same clock. The mask's alpha stands in for the text gradient's colours:
-   1 at the shoulders is the lilac itself, 0.45 at the core is the lilac mixed
-   55% toward the white ink beneath. So the icon and its label sweep together.
-
-   A grid stacks the two copies rather than `position: absolute`, so the ink
-   copy stays in flow and `.pressable`'s press overlay still lands over it. */
-.icon {
-  display: inline-grid;
-}
-
-.icon > * {
-  grid-area: 1 / 1;
-}
-
-.iconShine {
-  display: inline-flex;
-  color: var(--color-effect-shine);
-  -webkit-mask-image: linear-gradient(
-    115deg,
-    transparent 32%,
-    #000 44%,
-    rgba(0, 0, 0, 0.45) 50%,
-    #000 56%,
-    transparent 68%
-  );
-  mask-image: linear-gradient(
-    115deg,
-    transparent 32%,
-    #000 44%,
-    rgba(0, 0, 0, 0.45) 50%,
-    #000 56%,
-    transparent 68%
-  );
-  -webkit-mask-size: 300% 100%;
-  mask-size: 300% 100%;
-  -webkit-mask-repeat: no-repeat;
-  mask-repeat: no-repeat;
-  /* parked off the left at rest, like `.shine-on-hover` */
-  -webkit-mask-position: 100% 0;
-  mask-position: 100% 0;
-  transition: -webkit-mask-position calc(var(--duration-hover) * 1.5) var(--ease-standard),
-    mask-position calc(var(--duration-hover) * 1.5) var(--ease-standard);
-}
-
-.item:hover .iconShine {
-  -webkit-mask-position: 0% 0;
-  mask-position: 0% 0;
-}
-
-/* a touch device has no hover; without this the band sticks after a tap */
-@media (hover: none) {
-  .item:hover .iconShine {
-    -webkit-mask-position: 100% 0;
-    mask-position: 100% 0;
-  }
+  /* ⚠️ IT MAY WRAP — `nowrap` went with the icons. Under a reader's own text
+     spacing (WCAG 1.4.12) the four labels need ~298 before padding, more than
+     a 320 phone's bar holds; breaking a label onto a second line inside the
+     65 bar (two lines of 22 fit) loses nothing, where `nowrap` pushed it out
+     of its pill. At default spacing nothing wraps at any width. */
+  text-align: center;
+  /* ⚠️ NOT IN FIGMA — A DROP SHADOW UNDER EVERY LABEL, asked for directly
+     13 Sep 2026 for contrast on the 26% bar: a soft dark halo in the bar's own
+     hue that separates white strokes from a light backdrop. ⚠️ WIDE, NOT
+     TIGHT — it shipped at a 2px blur and was asked more spread the same day.
+     `drop-shadow()` takes no spread value, so the blur carries it (6px), and
+     the alpha rises 50% → 60% because a wider blur thins the same shadow.
+     ⚠️ IT IS `filter: drop-shadow`, NOT `text-shadow`, AND THAT IS LOAD-BEARING.
+     The shine paints these glyphs with a background clipped to the text over
+     `color: transparent`; a `text-shadow` is drawn as part of the TEXT, after
+     the background, so it lands ON TOP of that fill and greys the letters. A
+     filter shadows the finished pixels, so it sits behind them. Note it does
+     not change a measured contrast ratio — it adds an edge, not a darker
+     ground. */
+  filter: drop-shadow(0 1px 6px rgba(23, 41, 47, 0.6));
 }

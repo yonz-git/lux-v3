@@ -80,14 +80,22 @@ Variable-level bugs. The code already overrides all of them on `:root` in
   colour, so the nav sits on the AI bubble's hue, and `Search Field` (`248:70`)
   binds the same token.
 - ⚠️ **SUPERSEDED FOR THE BAR ONLY, 13 Sep 2026 — action needed.** Asked for
-  directly: `Bottom-Nav-Bar` (`410:258`) fills with `#356472 @69%` (code:
-  `--color-surface-nav-bar`), falls back to `#356472` opaque
-  (`--color-bg-nav-bar`), and its icons and labels go white. Add both as
+  directly: `Bottom-Nav-Bar` (`410:258`) fills with `#17292f @26%` (code:
+  `--color-surface-nav-bar`; it was `#356472 @69%` for a few hours), falls
+  back to `#859ca3` opaque (`--color-bg-nav-bar` — the fill as it composites
+  over the canvas, since `#17292f` opaque would be near black), and its labels
+  go white. Add both as
   variables and repoint the component's fill and ink; leave `surface/frost-nav`
   alone, since `Search Field` and the other frosted pills still bind it. The
-  bar also gains a 1px edge ring lit top-left (white 60% → 0 → 20%
+  bar also gains a 1px edge ring lit top-left (white 48% → 0 → 20%
   bottom-right) and a 5% noise grain; Figma can approximate the ring with a
-  gradient stroke and has no equivalent for the grain.
+  gradient stroke and has no equivalent for the grain. ⚠️ **And it is now
+  TEXT-ONLY and 65 tall**: no icons, labels 16 Light (a new text style) with the active one at Regular
+  and a soft drop shadow (`#17292f` @60%, y 1, blur 6) under every label,
+  inactive items at 85% opacity and the active one in a pill of
+  `state/pressed-overlay` — raise that as a `state/selected` token — recessed
+  by two inner shadows (`#17292f` @35% y 1 blur 3, white @12% y −1). The
+  component's `Size` heights move 75 → 65.
 
 ### `bg/bubble-ai` and `bg/bubble-user` — opaque, holding values directly
 

@@ -2,7 +2,6 @@
 
 import Link from "next/link";
 import styles from "./BottomNav.module.css";
-import { ProgressIcon, CheckIcon, ProductsIcon, MySkinIcon } from "@/components/ui/icons";
 
 /**
  * The bottom navigation, from Figma component set `Bottom-Nav-Bar` (410:258).
@@ -52,17 +51,23 @@ import { ProgressIcon, CheckIcon, ProductsIcon, MySkinIcon } from "@/components/
 
 export type NavSection = "none" | "my-skin" | "progress" | "check" | "products";
 
+/* ⚠️ TEXT-ONLY SINCE 13 Sep 2026 — asked for directly. The four icons were an
+   outline, a dotted ring, a filled glyph and a solid bottle-and-drop: four
+   weights in one row, which read less finished than the words alone. The
+   labels carry the bar now (`t-nav`, 16 Light). The glyphs stay in `icons.tsx`
+   for their other callers; redraw them as ONE set in Figma before bringing
+   icons back. */
 const items = [
-  { id: "my-skin", label: "My skin", Icon: MySkinIcon, href: "/investigation/start" },
-  { id: "progress", label: "Progress", Icon: ProgressIcon, href: "/progress" },
+  { id: "my-skin", label: "My skin", href: "/investigation/start" },
+  { id: "progress", label: "Progress", href: "/progress" },
   /* ⚠️ THE LABEL IS `Analysis`, THE ID IS STILL `check`. The id keys the route
      map, the `NavSection` type and every screen's `nav=` prop; renaming it
      would touch a dozen files to change a word the user never sees. The LABEL
      is the word the user sees, and the word the product means is analysis —
      the app was calling one idea "check", "investigation" and "findings". See
      `docs/decisions.md`, "the naming". */
-  { id: "check", label: "Analysis", Icon: CheckIcon, href: "/check" },
-  { id: "products", label: "Products", Icon: ProductsIcon, href: "/products" },
+  { id: "check", label: "Analysis", href: "/check" },
+  { id: "products", label: "Products", href: "/products" },
 ] as const;
 
 export function BottomNav({
@@ -80,23 +85,13 @@ export function BottomNav({
       style={style}
       aria-label="Sections"
     >
-      {items.map(({ id, label, Icon, href }) => {
-        /* ⚠️ NOT IN FIGMA — the hover shine, 13 Sep 2026. The label takes the
-           buttons' `.shine-text`; the icon is drawn twice, the second copy the
-           masked lilac band (BottomNav.module.css `.iconShine`), because a
-           text clip cannot reach an SVG. Both copies are aria-hidden glyphs. */
+      {items.map(({ id, label, href }) => {
+        /* ⚠️ NOT IN FIGMA — the label is the whole item (`t-nav`, 16 Light),
+           and it takes the buttons' hover shine, `.shine-text`. */
         const content = (
-          <>
-            <span className={styles.icon} aria-hidden="true">
-              <Icon />
-              <span className={styles.iconShine}>
-                <Icon />
-              </span>
-            </span>
-            <span className={`${styles.label} t-label-sm shine-text shine-on-hover`}>
-              {label}
-            </span>
-          </>
+          <span className={`${styles.label} t-nav shine-text shine-on-hover`}>
+            {label}
+          </span>
         );
         const isActive = active === id;
 

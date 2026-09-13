@@ -547,7 +547,8 @@ table is stale — say so rather than working around it.
 | **`t-body3-body2`** | **14/22** | **16/26** | 400 | secondary body |
 | `t-body3` | 14/22 | — | 400 | — |
 | `t-label` | 14/20 | — | 500 | mobile option-row labels, chips |
-| `t-label-sm` | 12/16 | — | 500 | nav labels, tags, meta lines |
+| `t-label-sm` | 12/16 | — | 500 | tags, meta lines |
+| `t-nav` | 16/22 | — | 300 | ⚠️ the nav bar's labels — NOT IN FIGMA |
 | `t-caption` | 12/16 | — | 400 | captions |
 | `t-overline` | 13/18 + 1.82px tracking | — | 500 | section labels on data cards |
 | `t-button` | 17/22 | — | 400 | `Button` — owns it, don't re-apply |
@@ -567,7 +568,7 @@ breaks a title wherever its fixed 440 or 1440 canvas breaks it, and the build
 breaks it at the reader's width — so this is a code-side decision applied by
 ROLE, the same way tabular figures are (non-negotiable 19). ⚠️ **The CONTROL
 classes are deliberately excluded** — `t-label`, `t-label-sm`, `t-button`,
-`t-button-md`, `t-button-sm` and `t-overline` size chips, buttons and section labels whose
+`t-button-md`, `t-button-sm`, `t-nav` and `t-overline` size chips, buttons and section labels whose
 widths are measured against Figma, and balancing a two-line chip label moves the
 pill. `SkinProfileSummary`'s `.headlineValue` is the one local `balance` left,
 because it wears `t-button` as a data value rather than as a control. **Do not
@@ -593,7 +594,9 @@ Controls `sm` 36 · `md` 48 (`Button size="md"`) · `lg` 62 (`Button`'s default 
 
 ### Icons — 13 exist, in `components/ui/icons.tsx`
 
-Nav: `MySkinIcon` `ProgressIcon` `CheckIcon` `ProductsIcon`
+Nav: `MySkinIcon` `ProgressIcon` `CheckIcon` `ProductsIcon` — ⚠️ the nav bar
+itself is text-only since 13 Sep 2026 and draws none of them; they stay for
+their other callers (`PassList`)
 Chevrons: `ChevronLeftIcon` `ChevronRightIcon` `ChevronDownIcon`
 Actions: `PlusIcon` `CloseIcon` `SearchIcon` `CameraIcon` `NoteIcon`
 Feedback: `SuccessCheckIcon`
@@ -775,14 +778,23 @@ type and every `nav=` prop. Do not "fix" the mismatch by renaming the id — see
    `bg/bubble-ai`, so the nav sits on the AI bubble's hue, and `Search Field`
    binds the same token: one frosted-pill surface, two components.
    ⚠️ **THE BAR LEFT THAT TOKEN ON 13 Sep 2026**, asked for directly: it fills
-   with its own `--color-surface-nav-bar` `#356472b0` (deep teal, 69%), falls
-   back to `--color-bg-nav-bar` `#356472` (same hue, opaque), and its icons and
-   labels are WHITE (`text/on-data-inverse`). The search field, snackbar,
+   with its own `--color-surface-nav-bar` `#17292f42` (dark slate teal, 26% —
+   it was `#356472b0` for a few hours), falls back to `--color-bg-nav-bar`
+   `#859ca3` (the fill composited over the canvas's bottom stop and made
+   opaque; at 26% the fill's own hex made opaque would be near black), and its
+   labels are WHITE (`text/on-data-inverse`). ⚠️ **IT IS TEXT-ONLY AND 65 TALL** —
+   no icons, labels in `t-nav` (16 Light; the active one Regular, and every
+   label on a soft `filter: drop-shadow` — not `text-shadow`, which would paint
+   over the shine's clipped fill), inactive items at 0.85 opacity and
+   the active one in a recessed pill of `state/pressed-overlay` with an inner
+   shadow; the height is an
+   override of `--size-nav-height` so every nav reservation follows it. The search field, snackbar,
    segmented toggle and product groups still bind `surface/frost-nav`. Measured
-   by hand-compositing over the canvas, white reads about 4:1 on the bar, so the
-   12px labels are still short of AA. See globals.css. ⚠️ It also carries a
-   lit top-left edge ring and a 5% noise grain, both static `::before`/`::after`
-   at `z-index: -1` so they sit under the icons — see `BottomNav.module.css`.
+   by hand-compositing over the canvas, white reads about 2.9:1 on the bar (the
+   dark app ink would be ~4.8:1), so the 16px labels are short of AA. See
+   globals.css. ⚠️ It also carries a lit top-left edge ring and a 5% noise
+   grain, both static `::before`/`::after` at `z-index: -1` so they sit under
+   the labels — see `BottomNav.module.css`.
 8. **Chat bubbles carry an asymmetric tail corner, and NO border.** Three
    corners at `--radius-bubble` (30), the sender-side corner at
    `--radius-bubble-tail` (1). AI = tail top-left, sits left; user = top-right,
