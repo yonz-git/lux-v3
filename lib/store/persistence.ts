@@ -205,6 +205,10 @@ function isCheckIn(v: unknown): v is CheckIn {
     typeof v.severity === "number" &&
     Number.isFinite(v.severity) &&
     (v.changes === undefined || isStringArray(v.changes)) &&
+    (v.direction === undefined ||
+      v.direction === "better" ||
+      v.direction === "same" ||
+      v.direction === "worse") &&
     optionalString(v.note) &&
     optionalString(v.photo) &&
     // ⚠️ absent is not empty — see the CheckIn.products doc comment

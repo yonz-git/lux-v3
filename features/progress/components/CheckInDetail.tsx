@@ -3,6 +3,7 @@
 import { useEffect, useRef, useState } from "react";
 import styles from "./CheckInDetail.module.css";
 import { HubScreen } from "@/components/layout/HubScreen";
+import { Button } from "@/components/ui/Button";
 import { DataCard } from "@/components/ui/DataCard";
 import { SearchField } from "@/components/ui/SearchField";
 import { TextField } from "@/components/ui/TextField";
@@ -28,6 +29,7 @@ import {
 import {
   SEVERITY_MAX,
   checkInOn,
+  checkInDirection,
   checkInsFor,
   dayNumber,
   editNote,
@@ -135,7 +137,8 @@ export function CheckInDetail({ date, now }: { date: string; now: number }) {
   const { show } = useSnackbar();
   const view = progressView(answers, useToday(now));
   const day = fromIso(date);
-  const entry = day ? checkInOn(checkInsFor(answers, view), date) : null;
+  const records = checkInsFor(answers, view);
+  const entry = day ? checkInOn(records, date) : null;
 
   /* ⚠️ LOCAL, NOT IN THE STORE. `productQuery` and `checkQuery` are in there
      because the tray and `/check/new` both have to survive a screen changing
@@ -302,8 +305,12 @@ export function CheckInDetail({ date, now }: { date: string; now: number }) {
                   half of the answer the check-in exists to collect. */}
               <ul className={styles.tags}>
                 {entry.changes.map((change) => (
-                  <li key={change}>
-                    <Tag>{change}</Tag>
+                  <li
+                    key={change}
+                    className={`${styles.tag} t-label-sm`}
+                    data-direction={checkInDirection(records, entry)}
+                  >
+                    {change}
                   </li>
                 ))}
               </ul>
@@ -606,16 +613,18 @@ export function CheckInDetail({ date, now }: { date: string; now: number }) {
                       you are looking for is often simply not in it yet;
                       revealing the way out only after a search that fails means
                       typing a wrong name to find the right door. */}
-                  <button
-                    type="button"
-                    className={styles.manual}
+                  {/* ⚠️ NOT IN FIGMA — the secondary Button, asked for directly
+                      13 Sep 2026; it was a bordered white-label row reading
+                      "Add a product you don't own yet" */}
+                  <Button
+                    variant="secondary"
+                    size="md"
+                    fullWidth
+                    icon={<PlusIcon />}
                     onClick={() => setAddingManually(true)}
                   >
-                    <PlusIcon className={styles.plus} />
-                    <span className={`${styles.manualLabel} t-label`}>
-                      Add a product you don&rsquo;t own yet
-                    </span>
-                  </button>
+                    Add a new product
+                  </Button>
                 </div>
               </Collapse>
             </div>

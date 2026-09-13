@@ -81,10 +81,13 @@
    on `feedback/warning` inherits that pill's known contrast shortfall
    (non-negotiable 17's "still known-failing" list); it is the same pair, not a
    new one. */
+/* ⚠️ NOT IN FIGMA — `bg/symptom` #d3858a, asked for directly 13 Sep 2026; it
+   was `feedback/warning`. Shared with the recap's pills in
+   SkinProfileSummary.module.css. */
 .symptom {
   padding: 5px 14px;
   border-radius: var(--radius-full);
-  background: var(--color-feedback-warning);
+  background: var(--color-bg-symptom);
   color: var(--color-text-on-brand);
   white-space: nowrap;
 }

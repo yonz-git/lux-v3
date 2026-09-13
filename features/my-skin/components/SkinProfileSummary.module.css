@@ -209,8 +209,10 @@
    contrast shortfall (non-negotiable 17) — the same pair, not a new one. */
 /* ⚠️ `.tags` IN FRONT, because `Tag`'s own `.tag[data-variant]` is (0,2,0)
    too and loads later — the doubled class alone tied and lost the fill. */
+/* ⚠️ `bg/symptom` #d3858a since 13 Sep 2026, asked for directly — shared with
+   PROGRESS's `SkinProfile` `.symptom`. */
 .tags .pill.pill {
-  background: var(--color-feedback-warning);
+  background: var(--color-bg-symptom);
   color: var(--color-text-on-brand);
   border: none;
   padding: 0 14px; /* CompatCard's horizontal 14 */

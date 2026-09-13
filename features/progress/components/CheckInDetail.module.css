@@ -70,6 +70,26 @@
   list-style: none;
 }
 
+/* ⚠️ NOT IN FIGMA — CompatCard's `Risky ingredients` pill, asked for directly
+   13 Sep 2026; these were `Tag`s. 28 tall: 6 + 16 + 6, warning-subtle behind
+   `feedback/warning`. */
+.tag {
+  padding: 6px var(--space-md); /* 6 / 12 */
+  border-radius: var(--radius-full);
+  background: var(--color-feedback-warning-subtle);
+  color: var(--color-feedback-warning);
+  white-space: nowrap;
+}
+
+/* ⚠️ A WORSE DAY TAKES THE PROFILE'S DARK PILL — `bg/symptom` with white ink,
+   asked for directly 13 Sep 2026. Better and about-the-same stay light, so
+   "More itching" under "About the same" is light too: the colour follows
+   turn 1's answer, not the word on the pill. */
+.tag[data-direction="worse"] {
+  background: var(--color-bg-symptom);
+  color: var(--color-text-on-brand);
+}
+
 /* ---- card · severity ----------------------------------------------------- */
 
 .severityValue {
@@ -368,57 +388,6 @@
   width: var(--size-icon-sm); /* 20 */
   height: var(--size-icon-sm);
   color: var(--color-text-on-data-secondary);
-}
-
-/* The basket's `Add another product` recipe: centred, 1px border/glass, and the
-   surface one step deeper than the well it sits in so it reads as an action on
-   the panel rather than another result. LUX has no dashed pattern.
-   ⚠️ Rule 9 — the Figma height minus the border, so the box lands where the
-   design puts it in every state. */
-.manual {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  gap: var(--space-sm); /* 8 */
-  width: 100%;
-  padding: calc(13px - var(--border-width-hairline)) var(--space-md);
-  border: var(--border-width-hairline) solid var(--color-border-glass);
-  border-radius: var(--radius-md);
-  color: var(--color-text-on-data);
-  transition: background-color var(--duration-fast) var(--ease-standard);
-}
-
-/* ⚠️ WHITE, AND IT FAILS AA — asked for directly, 6 Sep 2026, and recorded
-   rather than quietly fixed. Non-negotiable 17 says SURFACE SYSTEM B's text is
-   DARK: `surface/data` composites too light for white at any alpha. Measured on
-   this well — `surface/data-strong` (62%) over `surface/data` (44%) over the
-   canvas gradient — white lands at **2.22:1** at the top of the gradient and
-   **2.42:1** at the bottom, against the **6.23:1 / 5.71:1** the inherited
-   `text/on-data` was getting. `t-label` is 14/500, so AA wants 4.5.
-
-   It is `text/on-brand` (the DS's white) rather than a raw `#fff`, and the
-   GLYPH follows it — asked for straight after the label, and right: a white
-   word beside a dark plus reads as two controls rather than one row. Scoped to
-   THIS button, because `.plus` is also the search results' glyph and those rows
-   keep `text/on-data-secondary`. Joins the known-failing list in
-   docs/decisions.md; a passing version needs either a darker well or the label
-   back on `text/on-data`. */
-.manualLabel {
-  color: var(--color-text-on-brand);
-}
-
-.manual .plus {
-  color: var(--color-text-on-brand);
-}
-
-.manual:hover {
-  background: var(--color-state-hover-overlay);
-}
-
-@media (hover: none) {
-  .manual:hover {
-    background: none;
-  }
 }
 
 @media (min-width: 1024px) {

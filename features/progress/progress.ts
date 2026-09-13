@@ -52,6 +52,12 @@ export type CheckIn = {
   date: IsoDate;
   severity: number;
   changes?: string[];
+  /**
+   * Turn 1's direction, kept so `Check-in detail` can colour the changes by it.
+   * ⚠️ ABSENT ON THE SEED AND ON RECORDS WRITTEN BEFORE 13 Sep 2026 — read it
+   * through `checkInDirection`, which derives it from the severities instead.
+   */
+  direction?: "better" | "same" | "worse";
   note?: string;
   /** the capture is a placeholder, so this records THAT a photo was taken */
   photo?: string;
@@ -817,4 +823,25 @@ export function editProductsUsed(
       stored.products ?? productsUsedOn(a, entry.date).map((p) => p.id);
     return recordCheckIn(list, { ...stored, products: change(ids) });
   };
+}
+
+/**
+ * Which way turn 1 said the skin moved on this record.
+ *
+ * The stored answer when there is one. Otherwise it is derived the way
+ * `demoChanges` derives the seed — this severity against the previous record's,
+ * or against `SEVERITY_MAX / 2` for the first — so the seed and older records
+ * agree with the words already on their pills.
+ */
+export function checkInDirection(
+  list: CheckIn[],
+  entry: CheckIn
+): "better" | "same" | "worse" {
+  if (entry.direction) return entry.direction;
+  const previous = list
+    .filter((c) => c.date < entry.date)
+    .reduce<CheckIn | null>((a, c) => (!a || c.date > a.date ? c : a), null);
+  const base = previous ? previous.severity : SEVERITY_MAX / 2;
+  if (entry.severity === base) return "same";
+  return entry.severity < base ? "better" : "worse";
 }

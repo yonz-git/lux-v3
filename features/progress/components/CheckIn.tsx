@@ -238,6 +238,7 @@ export function CheckInPanel({
            the first answer did rather than compounding on top of itself. */
         severity: severityAfter(previous, choice.delta),
         changes,
+        direction: choice.direction,
         ...(note?.trim() ? { note: note.trim() } : {}),
         ...(photo ? { photo: "captured" } : {}),
       })

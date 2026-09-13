@@ -503,6 +503,15 @@
   --color-text-success-ink: #46664f;
 }
 
+/* ⚠️ NOT IN FIGMA — `bg/symptom`, THE PROFILE SYMPTOM PILL FILL, asked for
+   directly 13 Sep 2026. Those pills wore `feedback/warning` (#c9918e); they now
+   take their own value so the Risky band keeps its own. Callers: PROGRESS's
+   `SkinProfile` `.symptom` and the recap's `SkinProfileSummary` pills, both
+   with `text/on-brand` ink. */
+:root {
+  --color-bg-symptom: #d3858a;
+}
+
 /* ⚠️ NOT IN FIGMA — THE IN-PAGE DESKTOP CARD IS MORE TRANSPARENT, asked for
    directly 12 Sep 2026. Figma's `surface/card-desktop` is `#edf8fb @55%`; the
    build runs the same hue at ~19% (`#edf8fb30`), matched to a value picked live
