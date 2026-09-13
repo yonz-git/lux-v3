@@ -22,6 +22,7 @@ These plans come from the `improve-animations` audit of 13 Sep 2026. Each one is
 | 012 | [Today's check-in lands on the calendar](012-checkin-disc-lands-on-calendar.md) | MEDIUM | Missed opportunity | — | DONE — amended before execution: waits for store hydration |
 | 013 | [Removed products close; Undo reopens](013-product-removal-closes-smoothly.md) | MEDIUM | Missed opportunity | 007 | DONE |
 | 014 | [Page chrome stays still when the page changes](014-page-chrome-stays-still.md) | HIGH | Purpose & frequency | — | TODO |
+| 015 | [The add tray's height follows its view](015-tray-height-follows-view.md) | MEDIUM | Missed opportunity | — | TODO |
 
 ## Recommended order
 
