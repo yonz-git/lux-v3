@@ -1,7 +1,7 @@
 # 006 — Chat bubbles scale in from their tail corner
 
-- **Status**: TODO
-- **Commit**: `d7220d6` — plus the uncommitted working tree of 13 Sep 2026. Search by quoted code.
+- **Status**: DONE — 13 Sep 2026. A left-aligned check-in bubble's left edge holds at one x through its entrance (drift 0px, before 7.22px), with `transform-origin: 0px 0px` (before `120.344px 0px`).
+- **Commit**: `c5edd11`. Search by quoted code.
 - **Severity**: MEDIUM
 - **Category**: Physicality & origin
 - **Estimated scope**: 1 file (`app/globals.css`), ~15 lines

@@ -2030,6 +2030,20 @@ main[tabindex="-1"]:focus-visible {
     var(--bubble-enter-delay, 0ms) backwards;
 }
 
+/* ⚠️ A BUBBLE GROWS FROM ITS TAIL — added 13 Sep 2026. `top center` above is
+   right for a centred bubble and wrong for every other: scaling from 0.94
+   about the middle slid a left-hand AI bubble's tail corner ~11–17px
+   sideways as it landed. The row's `data-align` is where the bubble sits and
+   so which top corner carries the tail (ChatBubble.tsx). Centred rows keep
+   the base rule's `top center`. */
+[data-align="left"] > .bubble-enter {
+  transform-origin: top left;
+}
+
+[data-align="right"] > .bubble-enter {
+  transform-origin: top right;
+}
+
 /* 00 Welcome swaps its opening question for the follow-up line in place,
    rather than stacking both: the question is pushed up and out as the reply
    rises from below into the same spot — one continuous motion, not two

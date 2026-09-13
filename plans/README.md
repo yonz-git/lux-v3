@@ -13,7 +13,7 @@ These plans come from the `improve-animations` audit of 13 Sep 2026. Each one is
 | 003 | [SmoothScroll: reverse immediately](003-smoothscroll-reverse-immediately.md) | MEDIUM | Interruptibility | 002 (ordering only) | DONE |
 | 004 | [CanvasShader: stop dropping frames](004-canvas-frame-pacing.md) | MEDIUM | Performance | — | DONE |
 | 005 | [Reduced motion: no invisible entrance delays](005-reduced-motion-entrance-delays.md) | MEDIUM | Accessibility | — | DONE |
-| 006 | [Chat bubbles scale from their tail](006-chat-bubble-origin-at-tail.md) | MEDIUM | Physicality & origin | — | TODO |
+| 006 | [Chat bubbles scale from their tail](006-chat-bubble-origin-at-tail.md) | MEDIUM | Physicality & origin | — | DONE |
 | 007 | [Finish the Collapse migration](007-finish-collapse-migration.md) | MEDIUM | Interruptibility | — | TODO |
 | 008 | [Snackbar: no blink, rise from the nav](008-snackbar-no-blink-rise-from-nav.md) | MEDIUM | Physicality & origin | — | TODO |
 | 009 | [Button enable fade on `duration/base`](009-button-enable-fade-duration.md) | LOW | Easing & duration | — | TODO |
