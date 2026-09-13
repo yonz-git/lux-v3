@@ -84,7 +84,7 @@
      ⚠️ AND THE OUTER STOP IS OPAQUE, WHICH RETIRED THE SEPARATE RIM LAYER. The
      lift toward the card's corners used to be a second radial
      (`--face-card-rim`, transparent -> `surface/frost-light`) painted UNDER this
-     one, because this one faded to `transparent` and let it through. `#a9cfcf`
+     one, because this one faded to `transparent` and let it through. `#a9c2cf`
      at full alpha carries that brightening itself and simultaneously occludes
      anything beneath it out there, so keeping the rim would have left a layer
      that does nothing at the corners and muddies these stops in the band before
@@ -94,18 +94,21 @@
      the two `surface/data-strong` layers and the backdrop blur still read
      through the middle of the card — this is a wash over that ground, not a
      replacement for it. */
+  /* ⚠️ RETUNED 13 Sep 2026, supplied directly: a deeper core (#2b4243 @62%),
+     a cooler mid (#71959f) and a blue-grey rim (#a9c2cf), so the white contour
+     lines sit on more contrast. And the flat middle layer below became a
+     TOP-DOWN TINT — slate indigo (#52607c @62%) fading into
+     `surface/data-strong` — which cools the card's top edge toward the brand
+     indigo. Raw hex for the reason the note above gives. */
   --face-card-halo: radial-gradient(
     circle at 50% 42%,
-    #577e809e 0%,
-    #6a999b9e 45%,
-    #a9cfcf 100%
+    #2b42439e 0%,
+    #71959f 45%,
+    #a9c2cf 100%
   );
 
   background: var(--face-card-halo),
-    linear-gradient(
-      var(--color-surface-data-strong),
-      var(--color-surface-data-strong)
-    ),
+    linear-gradient(#52607c9e, var(--color-surface-data-strong)),
     var(--color-surface-data-strong);
   box-shadow: var(--shadow-frosted-row);
   -webkit-backdrop-filter: blur(var(--blur-card));
@@ -449,10 +452,7 @@
        -transparency card a different DESIGN rather than the same one without the
        blur */
     background: var(--face-card-halo),
-      linear-gradient(
-        var(--color-surface-data-strong),
-        var(--color-surface-data-strong)
-      ),
+      linear-gradient(#52607c9e, var(--color-surface-data-strong)),
       linear-gradient(
         var(--color-surface-data-strong),
         var(--color-surface-data-strong)
