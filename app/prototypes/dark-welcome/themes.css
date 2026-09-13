@@ -1,0 +1,215 @@
+/* ⚠️ PROTOTYPE — dark directions for 00 Welcome. NOT IN FIGMA.
+
+   ROUND 2, asked for directly: "more indigo like ours palette, a bit more
+   mysterious, not as dark, nice gradient as we have". Round 1 (Figma Night,
+   Deep Teal, Moonlit) was near-black and read as not LUX. All three below are
+   MID-VALUE indigo grounds built from LUX's own figure family —
+   `gradient/brand` #657792 -> #39386f, `bg/brand-soft` #8284c0, `bg/brand`
+   #39386f, the orb mark's #3F326D -> #5C5E9E — with a five-stop sweep the
+   living canvas moves, the way the light canvas does.
+
+   Every rule is scoped to `:root[data-proto-theme="…"]`, which only the harness
+   sets (and removes on unmount). Next keeps a page's global CSS loaded after
+   navigating away, so the scope is what keeps this inert on every other route.
+
+   The overrides sit ON :root, not on a wrapper, for two reasons:
+   - the composites (`--gradient-canvas-mobile`, …) are declared on :root as
+     var() of the leaf colours, so the leaves have to change on the same element
+     for the composites to follow;
+   - the living canvas reads its five ramp tokens from
+     getComputedStyle(document.documentElement).
+
+   ⚠️ THE RAMP IS LIGHTEST FIRST. CanvasShader clamps every pixel to
+   `max(col, ramp[4])`, so `canvas-end-mobile` must be the DARKEST stop.
+
+   ⚠️ A LIGHTER GROUND IS A CONTRAST BUDGET, NOT A FREE CHOICE. The disclaimer
+   is light ink on bare canvas, and the film shader can put its lightest
+   reachable colour (about halfway between ramp[1] and ramp[2]) under it.
+   Measured there: Dusk 4.68:1, Amethyst 4.87:1, Indigo Mist 4.85:1 — which is
+   why none of the three goes lighter than it does. ramp[0] only ever reaches
+   the rare highlight cores.
+
+   ⚠️ THE ORB IS RE-TOKENED LOCALLY, on `.lux-orb`. Its body and wedges bind the
+   canvas tokens, and `SiriOrb` resolves them in an inline style on its own
+   element, so a declaration on the orb's wrapper reaches it and nothing else. */
+
+/* ---------------------------------------------------------------------------
+   1 · DUSK — the primary button's own sweep, slate-blue #657792 into indigo,
+   turned into the sky. Blue-leaning. The figures are pale indigo glass: a
+   periwinkle-white bubble and a pale pill with `bg/brand` ink.
+   ------------------------------------------------------------------------- */
+:root[data-proto-theme="dusk"] {
+  --color-bg-progress-track: #8593bd;
+  --color-bg-nav: #65739f;
+  --color-gradient-canvas-start: #56628f;
+  --color-gradient-canvas-mid: #4a5282;
+  --color-gradient-canvas-end-mobile: #3d4070;
+  --color-gradient-canvas-end-desktop: #414577;
+
+  --color-text-primary: #f1f2fb;
+  --color-text-secondary: #f1f2fb;
+
+  --color-bg-bubble-ai: #e3e6f5;
+  --shadow-chat-bubble: 0 10px 28px rgba(30, 28, 70, 0.28),
+    0 2px 6px rgba(30, 28, 70, 0.12);
+
+  --color-button-bg-default-start: #f2f3fb;
+  --color-button-bg-default-end: #c6cbe8;
+  --color-button-label-default: #39386f;
+  --shadow-button: 0 10px 24px -8px rgba(30, 28, 70, 0.45);
+
+  --color-surface-nav-bar: #1e1c4633;
+  --color-bg-nav-bar: #444a7a;
+  --color-state-pressed-overlay: #ffffff24;
+}
+
+:root[data-proto-theme="dusk"] [data-from="ai"] {
+  --color-text-primary: #2e2a3f;
+}
+
+:root[data-proto-theme="dusk"] .lux-orb {
+  --color-bg-frost-light: #f6f7fd;
+  --color-bg-bubble-ai: #dfe3f4;
+  --color-gradient-canvas-mid: #b7bee0;
+  --color-gradient-canvas-end-mobile: #8593bd;
+  filter: drop-shadow(0 0 36px rgba(198, 203, 232, 0.35));
+}
+
+/* ---------------------------------------------------------------------------
+   2 · AMETHYST — violet-leaning, `bg/brand-soft` #8284c0 down to `bg/brand`
+   #39386f with the orb mark's violet in between. The most mysterious: the
+   figures sink INTO the ground — a deep indigo bubble with white ink, a
+   lavender pill — and the orb turns lavender with a white mark.
+   ------------------------------------------------------------------------- */
+:root[data-proto-theme="amethyst"] {
+  --color-bg-progress-track: #8a82c2;
+  --color-bg-nav: #726aae;
+  --color-gradient-canvas-start: #5e5799;
+  --color-gradient-canvas-mid: #4d4785;
+  --color-gradient-canvas-end-mobile: #3d3870;
+  --color-gradient-canvas-end-desktop: #413c76;
+
+  --color-text-primary: #f3f0fb;
+  --color-text-secondary: #f3f0fb;
+
+  --color-bg-bubble-ai: #2c2857;
+  --shadow-chat-bubble: 0 12px 32px rgba(20, 16, 50, 0.4),
+    inset 0 1px 0 rgba(255, 255, 255, 0.1);
+
+  --color-button-bg-default-start: #d6d1f0;
+  --color-button-bg-default-end: #a59fd6;
+  --color-button-label-default: #2a2757;
+  --shadow-button: 0 0 30px -6px rgba(214, 209, 240, 0.45),
+    0 10px 24px -8px rgba(20, 16, 50, 0.5);
+
+  --color-surface-nav-bar: #1a16402e;
+  --color-bg-nav-bar: #463f7c;
+  --color-state-pressed-overlay: #ffffff24;
+}
+
+:root[data-proto-theme="amethyst"] .lux-orb {
+  --color-bg-frost-light: #d9d4f3;
+  --color-bg-bubble-ai: #aaa3da;
+  --color-gradient-canvas-mid: #6a62a8;
+  --color-gradient-canvas-end-mobile: #3d3870;
+  --color-gradient-brand-start: #f3f0fb;
+  filter: drop-shadow(0 0 40px rgba(170, 163, 218, 0.4));
+}
+
+:root[data-proto-theme="amethyst"] .lux-orb linearGradient stop:first-child {
+  stop-color: #ffffff;
+}
+:root[data-proto-theme="amethyst"] .lux-orb linearGradient stop:last-child {
+  stop-color: #e4def7;
+}
+
+/* ---------------------------------------------------------------------------
+   3 · INDIGO MIST — the two LUX families in one sweep: a sage-blue haze at the
+   top falling into indigo at the bottom, so the light app's canvas reads as
+   the same place after dark. The figures stay LUX's own: the `bg/bubble-ai`
+   mint bubble, the secondary pill, the untouched orb.
+   ------------------------------------------------------------------------- */
+:root[data-proto-theme="mist"] {
+  --color-bg-progress-track: #86a0b2;
+  --color-bg-nav: #617a95;
+  --color-gradient-canvas-start: #586b8f;
+  --color-gradient-canvas-mid: #4a5783;
+  --color-gradient-canvas-end-mobile: #3d3a66;
+  --color-gradient-canvas-end-desktop: #413f6d;
+
+  --color-text-primary: #ffffff;
+  --color-text-secondary: #ffffff;
+
+  --shadow-chat-bubble: 0 10px 28px rgba(28, 30, 60, 0.3),
+    0 0 32px rgba(219, 237, 237, 0.16);
+
+  --color-button-bg-default-start: #deeff3;
+  --color-button-bg-default-end: #b7c6ca;
+  --color-button-label-default: #39386f;
+  --shadow-button: 0 10px 24px -8px rgba(28, 30, 60, 0.45);
+
+  --color-surface-nav-bar: #17292f33;
+  --color-bg-nav-bar: #465676;
+  --color-state-pressed-overlay: #ffffff24;
+}
+
+:root[data-proto-theme="mist"] [data-from="ai"] {
+  --color-text-primary: #2e2a3f;
+}
+
+/* ---------------------------------------------------------------------------
+   4 · INDIGO — asked for directly: "the indigo with dark chat bubble and the
+   nav bar original color". Dusk's ground (the primary button's own sweep),
+   Amethyst's dark bubble with white ink, and the nav bar left on its light-mode
+   tokens — `--color-surface-nav-bar`, `--color-bg-nav-bar` and
+   `--color-state-pressed-overlay` are deliberately NOT overridden here.
+   ------------------------------------------------------------------------- */
+:root[data-proto-theme="indigo"] {
+  /* background supplied directly as a three-stop gradient: 0% #7D96AA,
+     50% #4C6F7F, 100% #2A4051. The two stops above it are the shader's
+     highlight cores only, kept a step lighter than 0% on the same hue. */
+  --color-bg-progress-track: #9db2c2;
+  --color-bg-nav: #8ca4b6;
+  --color-gradient-canvas-start: #7d96aa;
+  --color-gradient-canvas-mid: #4c6f7f;
+  --color-gradient-canvas-end-mobile: #2a4051;
+  --color-gradient-canvas-end-desktop: #2a4051;
+
+  --color-text-primary: #f1f2fb;
+  --color-text-secondary: #f1f2fb;
+
+  --color-bg-bubble-ai: #2c2857;
+  --shadow-chat-bubble: 0 12px 32px rgba(20, 16, 50, 0.4),
+    inset 0 1px 0 rgba(255, 255, 255, 0.1);
+
+  --color-button-bg-default-start: #f2f3fb;
+  --color-button-bg-default-end: #c6cbe8;
+  --color-button-label-default: #39386f;
+  --shadow-button: 0 10px 24px -8px rgba(30, 28, 70, 0.45);
+}
+
+/* the bubble's gradient supplied directly from DevTools. ⚠️ TRANSLUCENT
+   (both stops at 52%), which non-negotiable 8 forbids for a shipped bubble —
+   kept here as asked, for evaluation. Two colours rather than one fill, so it
+   overrides the background outright instead of `--color-bg-bubble-ai`. */
+:root[data-proto-theme="indigo"] .edit-bubble[data-from] {
+  background: linear-gradient(
+    135deg,
+    #486f7885 35%,
+    color-mix(in oklab, #21373c85, var(--color-text-primary) 17%) 100%
+  );
+}
+
+:root[data-proto-theme="indigo"] .lux-orb {
+  --color-bg-frost-light: #f6f7fd;
+  --color-bg-bubble-ai: #dfe3f4;
+  --color-gradient-canvas-mid: #b7bee0;
+  --color-gradient-canvas-end-mobile: #8593bd;
+  filter: drop-shadow(0 0 36px rgba(198, 203, 232, 0.35));
+}
+
+:root[data-proto-theme="mist"] .lux-orb {
+  --color-gradient-canvas-mid: #cedee2;
+  --color-gradient-canvas-end-mobile: #acc5cc;
+  filter: drop-shadow(0 0 36px rgba(219, 237, 237, 0.3));
+}
