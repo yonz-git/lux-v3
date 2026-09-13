@@ -1,7 +1,7 @@
 # 009 — Button: enabling fades on `duration/base`, not the hover clock
 
-- **Status**: TODO
-- **Commit**: `d7220d6` — plus the uncommitted working tree of 13 Sep 2026. Search by quoted code.
+- **Status**: DONE — 13 Sep 2026. `Continue` enabling on `/investigation/start` runs `opacity` over 200ms (before 400ms).
+- **Commit**: `c5edd11`. Search by quoted code.
 - **Severity**: LOW
 - **Category**: Easing & duration
 - **Estimated scope**: 1 file (`components/ui/Button.module.css`), ~12 lines
