@@ -135,6 +135,15 @@ const MAX_PIXELS = 1_600_000;
    so it costs less per second at 60fps than the old one did at 30. */
 const FRAME_MS = 1000 / 60;
 
+/* ⚠️ A FRAME THAT IS EARLY BY ROUNDING STILL COUNTS. rAF timestamps are
+   coarsened (100µs in Chromium, ~1ms in Safari and Firefox), so on a 60Hz
+   display consecutive frames measure 16.6 or 16.7ms — and a strict
+   `now - last < FRAME_MS` skipped every frame that rounded down, drawing one
+   in three a whole frame late: the stutter the 60 above exists to remove.
+   Frames within FRAME_SLACK_MS of the interval draw, and on a faster display
+   the remainder is carried so 120Hz lands on every other frame evenly. */
+const FRAME_SLACK_MS = 1;
+
 const VERT = `
 attribute vec2 a_pos;
 void main() { gl_Position = vec4(a_pos, 0.0, 1.0); }
@@ -571,8 +580,9 @@ export function CanvasShader({
        changes size when the window does. The ResizeObserver below owns it. */
     const loop = (now: number) => {
       raf = requestAnimationFrame(loop);
-      if (now - last < FRAME_MS) return;
-      last = now;
+      const elapsed = now - last;
+      if (elapsed < FRAME_MS - FRAME_SLACK_MS) return;
+      last = elapsed > FRAME_MS ? now - (elapsed % FRAME_MS) : now;
       /* eased here, not in `draw`, so reduced motion never follows the pointer.
          Per-frame factors are fine because the loop is capped at FRAME_MS. */
       if (uPointer) {

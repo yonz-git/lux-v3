@@ -11,7 +11,7 @@ These plans come from the `improve-animations` audit of 13 Sep 2026. Each one is
 | 001 | [Play the logo entrance once per page load](001-logo-entrance-once-per-load.md) | HIGH | Purpose & frequency | — | DONE |
 | 002 | [SmoothScroll: leave trackpads to the browser](002-smoothscroll-leave-trackpads-alone.md) | HIGH | Interruptibility | — | DEFERRED — the classifier can't tell a Mac mouse from a trackpad; see the plan |
 | 003 | [SmoothScroll: reverse immediately](003-smoothscroll-reverse-immediately.md) | MEDIUM | Interruptibility | 002 (ordering only) | DONE |
-| 004 | [CanvasShader: stop dropping frames](004-canvas-frame-pacing.md) | MEDIUM | Performance | — | TODO |
+| 004 | [CanvasShader: stop dropping frames](004-canvas-frame-pacing.md) | MEDIUM | Performance | — | DONE |
 | 005 | [Reduced motion: no invisible entrance delays](005-reduced-motion-entrance-delays.md) | MEDIUM | Accessibility | — | TODO |
 | 006 | [Chat bubbles scale from their tail](006-chat-bubble-origin-at-tail.md) | MEDIUM | Physicality & origin | — | TODO |
 | 007 | [Finish the Collapse migration](007-finish-collapse-migration.md) | MEDIUM | Interruptibility | — | TODO |

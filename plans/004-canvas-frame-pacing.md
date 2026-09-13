@@ -1,7 +1,7 @@
 # 004 — CanvasShader: stop the 60fps limiter from dropping frames
 
-- **Status**: TODO
-- **Commit**: `d7220d6` — plus the uncommitted working tree of 13 Sep 2026. Search by quoted code.
+- **Status**: DONE — 13 Sep 2026. Headless Chrome on `/products` draws 60.1 frames/s against 60.1 rAF/s (before: 36.6 against 49.9).
+- **Commit**: `c5edd11`. Search by quoted code.
 - **Severity**: MEDIUM
 - **Category**: Performance
 - **Estimated scope**: 1 file (`components/layout/CanvasShader.tsx`), ~15 lines
