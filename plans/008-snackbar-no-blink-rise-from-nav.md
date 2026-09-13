@@ -1,7 +1,10 @@
 # 008 — Snackbar: no blink on replacement, and rise from the nav edge
 
-- **Status**: TODO
-- **Commit**: `d7220d6` — plus the uncommitted working tree of 13 Sep 2026 (`Snackbar.tsx` has uncommitted changes, e.g. `regionRef` and `liftTo`). Search by quoted code.
+- **Status**: DONE — 13 Sep 2026. On `/products`:
+  - **Entrance:** the bar enters as CSS transitions (`opacity` 200ms, `translate` 200ms), rising from 8px below.
+  - **Replacement:** a second removal 0.7s later keeps the same bar node at opacity 1 throughout.
+  - **Exit:** it drops 8px while fading, over ~320ms.
+- **Commit**: `c5edd11`. Search by quoted code.
 - **Severity**: MEDIUM
 - **Category**: Physicality & origin / Interruptibility
 - **Estimated scope**: 2 files (`components/layout/Snackbar.tsx`, `components/layout/Snackbar.module.css`), ~30 lines

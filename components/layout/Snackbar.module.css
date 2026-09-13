@@ -85,14 +85,31 @@
    zero. `duration/slow` is board 04b's overlay timing; the component's
    `EXIT_MS` unmounts on the same number.
 
-   The entrance animation is finished long before this ever applies (200ms
-   against a 4s hold), so the two never fight over opacity. */
+   ⚠️ AND IT ENTERS THE SAME WAY IT LEAVES — changed 13 Sep 2026. It used to
+   fade in on `.reveal-quick`, a keyframe, under a React `key` that changed on
+   every `show()`: a second removal inside the hold deleted the bar in one
+   frame and faded a new one up from nothing in the same spot. The bar now
+   stays mounted across replacements (only the message is keyed) and enters
+   with `@starting-style`, rising 8px out of the nav's clearance on
+   `duration/base`; it leaves down the same 8px on `duration/slow`.
+   `translate`, not `transform` — `.region` centres itself with a transform. */
 .bar {
-  transition: opacity var(--duration-slow) var(--ease-standard);
+  transition:
+    opacity var(--duration-base) var(--ease-standard),
+    translate var(--duration-base) var(--ease-standard);
+}
+
+@starting-style {
+  .bar {
+    opacity: 0;
+    translate: 0 8px;
+  }
 }
 
 .bar[data-state="leaving"] {
   opacity: 0;
+  translate: 0 8px;
+  transition-duration: var(--duration-slow);
   /* a bar on its way out must not take a second Undo — the action has already
      run, and the snapshot it would restore is gone */
   pointer-events: none;

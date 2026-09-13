@@ -200,12 +200,14 @@ export function SnackbarProvider({ children }: { children: React.ReactNode }) {
         onBlur={() => setPaused(false)}
       >
         {snack && (
-          <div
-            key={snack.id}
-            className={`${styles.bar} reveal-quick`}
-            data-state={leaving ? "leaving" : undefined}
-          >
-            <span className={`${styles.message} t-body3`}>{snack.message}</span>
+          /* ⚠️ NO `key` ON THE BAR — only on its message. The bar used to be
+             keyed on the snack's id, so a second removal inside the hold
+             deleted it in one frame and faded a new one up from nothing in the
+             same spot. It now stays put and the words change under it. */
+          <div className={styles.bar} data-state={leaving ? "leaving" : undefined}>
+            <span key={snack.id} className={`${styles.message} t-body3 reveal-quick`}>
+              {snack.message}
+            </span>
             <SmallButton
               className={styles.action}
               label={snack.actionLabel}
