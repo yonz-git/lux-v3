@@ -2344,17 +2344,28 @@ main[tabindex="-1"]:focus-visible {
    `transform-origin`). `useDialogPresence` holds the node for the exit, exactly
    as it does for `Sheet`, and `inert` takes it out of reach while it goes.
 
-   ⚠️ `--collapse-gap` IS THE PARENT'S FLEX GAP, DECLARED ON THE PARENT. A gap
-   exists the moment a second child does, so a panel mounting at 0fr still sat
-   one gap under its header: an 8–16px jump before anything animated, and
-   another at the end of the exit. The collapse starts that far up and eases
-   down, so the gap opens with the panel. A parent with no gap sets nothing.
+   ⚠️ `--collapse-gap` IS THE PARENT'S FLEX GAP, DECLARED ON THE COLLAPSE
+   ITSELF — `.parent > :global(.collapse) { --collapse-gap: … }`. A gap exists
+   the moment a second child does, so a panel mounting at 0fr still sat one
+   gap under its header: an 8–16px jump before anything animated, and another
+   at the end of the exit. The collapse starts that far up and eases down, so
+   the gap opens with the panel. ⚠️ NOT ON THE PARENT, AND IT DOES NOT
+   INHERIT (`@property` below): declared on a parent it reached every Collapse
+   nested anywhere under it, and a compat card's body inside the results box
+   started opening 8px high. A parent with no gap sets nothing.
 
    ⚠️ THE CLIP IS ON ONLY WHILE IT MOVES (`[data-state]`). A permanent
    `overflow: hidden` would cut every focus ring and `.tap-target` at the
    panel's edge — `Remove` on a product card is both — so it is on for the
    200ms of travel and off at rest.
    ========================================================================== */
+
+/* declared ON the Collapse, never inherited — see "`--collapse-gap`" above */
+@property --collapse-gap {
+  syntax: "<length>";
+  inherits: false;
+  initial-value: 0px;
+}
 
 .collapse {
   display: grid;
@@ -2386,8 +2397,11 @@ main[tabindex="-1"]:focus-visible {
   min-height: 0;
 }
 
+/* `clip`, not `hidden`: a hidden box is still a scroll container, so
+   focusing a field inside a growing panel scrolled the panel's own
+   content to reveal it. A clip cannot scroll. */
 .collapse[data-state] > * {
-  overflow: hidden;
+  overflow: clip;
 }
 
 .drop {

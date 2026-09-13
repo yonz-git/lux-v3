@@ -1,7 +1,14 @@
 # 007 — Finish the Collapse migration: the in-flow panels that still pop
 
-- **Status**: TODO
-- **Commit**: `d7220d6` — plus the uncommitted working tree of 13 Sep 2026 (`components/ui/Collapse.tsx`, the `.collapse`/`.drop` rules and `useHeldWhileClosing` are all uncommitted). Search by quoted code.
+- **Status**: DONE — 13 Sep 2026. Verified in headless Chrome:
+  - **Resting gaps are unchanged.** The `/check/new` row is 16, the `/products` group 8 and the compact card 12, and each Collapse reads its own `--collapse-gap`. The compat card body inside `/check/results`' box still starts at 14px: its Collapse reads `0px`, so the new `.panel` gap does not leak into it.
+  - **OtherBlock** (`/investigation/conditions`) grows in, focus lands in the field within one frame (15ms), the clip never scrolls, and it closes up.
+  - **Check-in turn 3** grows in. Unticked and re-ticked 110ms later, it turns round on the same element.
+  - **The note field** is focused on open (7ms) and keeps its typed text on screen while it closes.
+  - **A day record's product search** keeps its matched row on screen through the 13 frames of its close, rather than "Nothing in your products matches".
+
+  Observed, not changed: a returning visitor whose saved answers tick "Other" sees that field grow in on page load, because answers hydrate after the first render. It used to fade in.
+- **Commit**: `c5edd11`. Search by quoted code.
 - **Severity**: MEDIUM
 - **Category**: Interruptibility / preventing a jarring change
 - **Estimated scope**: 13 files, ~120 lines:
@@ -11,6 +18,10 @@
   - `features/check/components/CheckResults.tsx` + `.module.css`
   - `features/progress/components/CheckInDetail.tsx`
   - four existing `--collapse-gap` declarations in `ProductList.module.css`, `ProductAccordionCard.module.css`, `MyProducts.module.css`, `ProductDetails.module.css`
+
+## ⚠️ Post-review change, 13 Sep 2026
+
+`Collapse` now sets `inert` and `data-state="leaving"` only while `open` is still false: `const closing = leaving && !open`. `useDialogPresence` clears `leaving` in an effect, one render after `open` turns back on. A panel reopened during its 200ms exit therefore committed with `inert` still on it, and the caller's focus effect ran in that same commit, so the focus went nowhere. OtherBlock's field and the check-in note both came back unfocused. Before the fix, in headless Chrome (open, close, reopen 100ms into the exit): `reopenedTakesFocus: false` for both, with focus on `<body>`. After the fix, `true` for both: focus is in `Type the condition` and `Your note`, and the OtherBlock panel was confirmed to be mid-exit (`data-state="leaving"`) when it reopened. The reopened panel also turns round one frame sooner.
 
 ## Problem
 

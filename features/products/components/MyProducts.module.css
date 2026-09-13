@@ -66,13 +66,16 @@
   display: flex;
   flex-direction: column;
   gap: var(--space-sm);
-  --collapse-gap: var(--space-sm);
 
   border-radius: var(--radius-lg);
   background: var(--color-surface-frost-nav);
   box-shadow: var(--shadow-frosted-row);
   -webkit-backdrop-filter: blur(var(--blur-card));
   backdrop-filter: blur(var(--blur-card));
+}
+
+.group > :global(.collapse) {
+  --collapse-gap: var(--space-sm);
 }
 
 /* 56 tall, padding 16/18, gap 12.

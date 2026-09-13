@@ -44,13 +44,26 @@ export function Collapse({
     return () => clearTimeout(timer);
   }, [present, leaving]);
 
-  if (!present) return null;
+  /* ⚠️ `open`, NOT JUST `present`, DECIDES THE FIRST FRAME — changed 13 Sep
+     2026. `useDialogPresence` sets `present` in an effect, so opening mounted
+     the panel one render late, and a caller that focuses a field inside it
+     from its own effect (OtherBlock, the check-in note) ran before the field
+     existed. */
+  if (!open && !present) return null;
+
+  /* ⚠️ `leaving` COUNTS ONLY WHILE `open` IS STILL FALSE — changed after
+     review, 13 Sep 2026. `useDialogPresence` clears `leaving` in an effect, a
+     render after a reopen, and the caller's own effect focuses the field in
+     that same commit: the panel was still `inert`, the focus went nowhere, and
+     a panel reopened mid-exit came back with nothing focused. It also turns
+     that panel round a frame sooner. */
+  const closing = leaving && !open;
 
   return (
     <div
       className="collapse"
-      data-state={leaving ? "leaving" : settled ? undefined : "entering"}
-      inert={leaving}
+      data-state={closing ? "leaving" : settled ? undefined : "entering"}
+      inert={closing}
     >
       <div>{children}</div>
     </div>

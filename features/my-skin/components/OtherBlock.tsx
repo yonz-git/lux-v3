@@ -4,6 +4,7 @@ import { useEffect, useRef } from "react";
 import styles from "./OtherBlock.module.css";
 import { OptionRow } from "@/components/ui/OptionRow";
 import { TextField } from "@/components/ui/TextField";
+import { Collapse } from "@/components/ui/Collapse";
 
 /**
  * `other-block` — the "Other" checkbox with a free-text field revealed beneath
@@ -49,16 +50,15 @@ export function OtherBlock({
         selected={selected}
         onSelect={onToggle}
       />
-      {selected && (
+      <Collapse open={selected}>
         <TextField
-          className="reveal-quick"
           ref={inputRef}
           value={value}
           placeholder={placeholder}
           aria-label={placeholder}
           onChange={(e) => onChange(e.target.value)}
         />
-      )}
+      </Collapse>
     </div>
   );
 }

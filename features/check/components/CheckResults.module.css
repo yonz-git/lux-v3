@@ -148,6 +148,13 @@
   padding: 0 var(--space-lg) var(--space-lg); /* 16 */
 }
 
+/* the "how long have you used it?" question grows in with `Collapse` — the
+   8 above is declared on it, and only on it: a gap on `.panel` itself would
+   reach every compat card's own Collapse inside the list */
+.panel > :global(.collapse) {
+  --collapse-gap: var(--space-sm);
+}
+
 .stack {
   margin: 0;
   padding: 0;

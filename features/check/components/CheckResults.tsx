@@ -14,7 +14,9 @@ import { OptionRow } from "@/components/ui/OptionRow";
 import { SearchField } from "@/components/ui/SearchField";
 import { Tag } from "@/components/ui/Tag";
 import { CloseIcon, PlusIcon } from "@/components/ui/icons";
+import { Collapse } from "@/components/ui/Collapse";
 import { useInvestigation } from "@/lib/store/InvestigationProvider";
+import { useHeldWhileClosing } from "@/lib/useModalDialog";
 import {
   BAND_LABEL,
   DEMO_CHECKS,
@@ -121,6 +123,9 @@ export function CheckResults() {
   /* the product just added to the check that the user does not own, and the
      answer to the one question that files it — see `addProduct` */
   const [asking, setAsking] = useState<CatalogProduct | null>(null);
+  /* the product the question below is ABOUT — held while its panel closes,
+     because `asking` is already null in the render that starts the exit */
+  const askingShown = useHeldWhileClosing(asking !== null, asking);
   const [askedDuration, setAskedDuration] = useState<Duration | undefined>();
   const noteId = useId();
   const askId = useId();
@@ -396,10 +401,11 @@ export function CheckResults() {
                 "Add another product" between the two made it read as a question
                 about whatever you were going to add next.
                 See `keepUsing` for what it asks and why. */}
-            {asking && (
-              <div className={`${styles.ask} reveal-quick`}>
+            <Collapse open={asking !== null}>
+            {askingShown && (
+              <div className={styles.ask}>
                 <p className={`${styles.askTitle} t-h6`} id={askId}>
-                  How long have you used {fullName(asking)}?
+                  How long have you used {fullName(askingShown)}?
                 </p>
                 <p className={`${styles.askText} t-body3`}>
                   Answering adds it to your products, where the investigation
@@ -443,7 +449,7 @@ export function CheckResults() {
                     className={`${styles.askConfirm} t-label`}
                     disabled={!askedDuration}
                     onClick={() =>
-                      askedDuration && keepUsing(asking, askedDuration)
+                      askedDuration && keepUsing(askingShown, askedDuration)
                     }
                   >
                     {/* the label shines on hover, the way `SmallButton`'s
@@ -460,6 +466,7 @@ export function CheckResults() {
                 </div>
               </div>
             )}
+            </Collapse>
 
             {/* ⚠️ THE SAME ROW `/products` USES, AND THE SAME COMPONENT. It was
                 a local compact one — opaque, 8 radius, the cards' 12 padding —

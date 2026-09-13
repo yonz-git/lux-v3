@@ -6,6 +6,7 @@ import { HubScreen } from "@/components/layout/HubScreen";
 import { DataCard } from "@/components/ui/DataCard";
 import { SearchField } from "@/components/ui/SearchField";
 import { TextField } from "@/components/ui/TextField";
+import { Collapse } from "@/components/ui/Collapse";
 import { Tag } from "@/components/ui/Tag";
 import { CloseIcon, PlusIcon } from "@/components/ui/icons";
 import { AddProductMethodSheet } from "@/features/products/components/AddProductMethodSheet";
@@ -15,6 +16,7 @@ import { CheckInPhotoArt } from "./CheckInPhotoArt";
 import { useInvestigation } from "@/lib/store/InvestigationProvider";
 import { useSnackbar } from "@/components/layout/Snackbar";
 import { useToday } from "@/lib/useToday";
+import { useHeldWhileClosing } from "@/lib/useModalDialog";
 import { ownedProducts } from "@/lib/demo";
 import { formatDay, fromIso } from "@/lib/date";
 import {
@@ -179,6 +181,9 @@ export function CheckInDetail({ date, now }: { date: string; now: number }) {
   const listed = new Set(products.map((p) => p.id));
   const searching = query.trim() !== "";
   const matches = searchProducts(owned, query).filter((p) => !listed.has(p.id));
+  /* what the results panel shows while it closes — emptying the field is
+     what closes it, and that render has already lost the matches */
+  const resultsShown = useHeldWhileClosing(searching, { matches, query });
 
   /** Every edit goes through the module's reducer — see `editProductsUsed` for
    *  why the entry is resolved against the stored list rather than this one. */
@@ -561,11 +566,11 @@ export function CheckInDetail({ date, now }: { date: string; now: number }) {
                   : `${matches.length} ${matches.length === 1 ? "product" : "products"} found`}
               </p>
 
-              {searching && (
-                <div className={`${styles.results} reveal-quick`}>
-                  {matches.length > 0 ? (
+              <Collapse open={searching}>
+                <div className={styles.results}>
+                  {resultsShown.matches.length > 0 ? (
                     <ul className={styles.resultList}>
-                      {matches.map((p) => (
+                      {resultsShown.matches.map((p) => (
                         <li key={p.id}>
                           {/* the whole row is the control, the way the tray's
                               dropdown rows are — a 44 target beside a name you
@@ -591,7 +596,7 @@ export function CheckInDetail({ date, now }: { date: string; now: number }) {
                     </ul>
                   ) : (
                     <p className={`${styles.resultNote} t-body3`}>
-                      Nothing in your products matches &ldquo;{query.trim()}
+                      Nothing in your products matches &ldquo;{resultsShown.query.trim()}
                       &rdquo;.
                     </p>
                   )}
@@ -612,7 +617,7 @@ export function CheckInDetail({ date, now }: { date: string; now: number }) {
                     </span>
                   </button>
                 </div>
-              )}
+              </Collapse>
             </div>
           </DataCard>
 

@@ -43,6 +43,9 @@
   flex-direction: column;
   align-items: stretch;
   gap: var(--space-lg); /* 16 */
+}
+
+.row[data-expandable] > :global(.collapse) {
   --collapse-gap: var(--space-lg);
 }
 

@@ -9,11 +9,13 @@ import { ChatBubble } from "@/components/ui/ChatBubble";
 import { Chip } from "@/components/ui/Chip";
 import { Button } from "@/components/ui/Button";
 import { TextField } from "@/components/ui/TextField";
+import { Collapse } from "@/components/ui/Collapse";
 import { Sheet } from "@/components/ui/Sheet";
 import { CameraCapture } from "@/components/ui/CameraCapture";
 import { CameraIcon, NoteIcon } from "@/components/ui/icons";
 import { useInvestigation } from "@/lib/store/InvestigationProvider";
 import { useToday } from "@/lib/useToday";
+import { useHeldWhileClosing } from "@/lib/useModalDialog";
 import { toggleMulti } from "@/lib/store/answers";
 import { toIso } from "@/lib/date";
 import {
@@ -199,18 +201,24 @@ export function CheckInPanel({
      tapped. Focus now skips that scroll and the body is scrolled SMOOTHLY
      instead, to the same place: `scrollIntoView` honours the global focus
      `scroll-margin` (globals.css) exactly as the focus scroll did. The field
-     itself fades in on `.reveal-quick` — something the user just revealed —
-     so the two arrive together. Reduced motion scrolls instantly, which is
-     what the global duration collapse cannot do for a JS scroll. */
+     grows in with `Collapse`, so the scroll waits the collapse's 200ms
+     (`--duration-base` — keep in step) to aim at the whole field rather than
+     at a zero-height row. Reduced motion scrolls instantly, which is what the
+     global duration collapse cannot do for a JS scroll. */
   const noteRef = useRef<HTMLInputElement>(null);
   const noteOpen = note !== null;
+  /* the text the field shows while it closes — `note` is already null then */
+  const noteShown = useHeldWhileClosing(noteOpen, note ?? "");
   useEffect(() => {
     if (!noteOpen) return;
     const input = noteRef.current;
     if (!input) return;
     input.focus({ preventScroll: true });
     const reduce = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
-    input.scrollIntoView({ behavior: reduce ? "auto" : "smooth", block: "nearest" });
+    const timer = window.setTimeout(() => {
+      input.scrollIntoView({ behavior: reduce ? "auto" : "smooth", block: "nearest" });
+    }, 200);
+    return () => window.clearTimeout(timer);
   }, [noteOpen]);
 
   const pickTrend = (label: string) => {
@@ -337,7 +345,7 @@ export function CheckInPanel({
           )}
 
           {/* ---- turn 3 — optional note and photo --------------------------- */}
-          {askedExtras && (
+          <Collapse open={askedExtras}>
             <div className={styles.turn}>
               <ChatBubble from="ai" size="compact">
                 Would you like to add any notes or take a photo?
@@ -373,16 +381,15 @@ export function CheckInPanel({
                 </button>
               </div>
 
-              {note !== null && (
+              <Collapse open={noteOpen}>
                 <TextField
                   ref={noteRef}
-                  className="reveal-quick"
-                  value={note}
+                  value={noteShown}
                   onChange={(e) => setNote(e.target.value)}
                   placeholder="Anything worth remembering about today"
                   aria-label="Your note"
                 />
-              )}
+              </Collapse>
 
               {photo && (
                 <p className={`${styles.captured} t-caption`} role="status">
@@ -397,7 +404,7 @@ export function CheckInPanel({
                 </p>
               )}
             </div>
-          )}
+          </Collapse>
         </div>
 
         {/* ⚠️ AN OVERLAY, NOT A ROUTE — the capture happens ON this screen. The

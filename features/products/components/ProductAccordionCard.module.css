@@ -18,7 +18,6 @@
   display: flex;
   flex-direction: column;
   gap: var(--space-lg); /* 16 — see above */
-  --collapse-gap: var(--space-lg);
   padding: var(--space-lg) 18px;
 
   border-radius: var(--radius-2xl);
@@ -26,6 +25,10 @@
   box-shadow: var(--shadow-frosted-row);
   -webkit-backdrop-filter: blur(var(--blur-card));
   backdrop-filter: blur(var(--blur-card));
+}
+
+.card > :global(.collapse) {
+  --collapse-gap: var(--space-lg);
 }
 
 /* ⚠️ NOT IN FIGMA — the card as it renders INSIDE a category group's box on
@@ -55,13 +58,16 @@
   /* 12 — the expanded value whether or not it is open, for the reason on
      `.card` above: the collapsed 8 sat between nothing */
   gap: var(--space-md);
-  --collapse-gap: var(--space-md);
   padding: var(--space-md); /* 12 */
 
   border-radius: var(--radius-md); /* 12 */
   background: var(--color-bg-surface-frost);
   -webkit-backdrop-filter: none;
   backdrop-filter: none;
+}
+
+.card.compact > :global(.collapse) {
+  --collapse-gap: var(--space-md);
 }
 
 .header {

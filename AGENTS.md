@@ -679,7 +679,7 @@ one frame; they now take one of two recipes, both transitions entered with
 
 | Hook | Duration | Use |
 | --- | --- | --- |
-| `<Collapse open>` | `base` 200ms both ways | a panel IN FLOW — its space animates, so the rows below slide. The parent declares its flex gap as `--collapse-gap` |
+| `<Collapse open>` | `base` 200ms both ways | a panel IN FLOW — its space animates, so the rows below slide. The parent's flex gap is declared ON the Collapse: `.parent > :global(.collapse) { --collapse-gap: … }` |
 | `.drop` + `data-state="leaving"` | `base` in, `fast` out | a panel FLOATING under its trigger — falls 4px from 0.98 and lifts back. A search dropdown also takes `useHeldWhileClosing`, so it fades out on the results it was showing |
 
 **Do not put `.reveal-quick` back on a panel that closes.** The reasoning is on

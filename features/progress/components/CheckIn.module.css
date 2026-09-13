@@ -27,10 +27,20 @@
   gap: var(--space-xl); /* 20 */
 }
 
+/* turn 3 grows in with `Collapse` — the 20 above is declared on it */
+.chat > :global(.collapse) {
+  --collapse-gap: var(--space-xl);
+}
+
 .turn {
   display: flex;
   flex-direction: column;
   gap: var(--space-md); /* 12 */
+}
+
+/* the note field grows in with `Collapse` — the 12 above is declared on it */
+.turn > :global(.collapse) {
+  --collapse-gap: var(--space-md);
 }
 
 /* ⚠️ A WRAPPING PILL ROW, WHICH IS WHAT THE FRAME DRAWS — five chips over two
