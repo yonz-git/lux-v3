@@ -641,7 +641,7 @@ of this section:
 component; whether the timeline earns a real DS component (PROGRESS and the
 analysis both have spans of time they currently draw differently); and whether
 the label wording is right — *What you noticed*, *Where you noticed it*,
-*Known skin conditions*, *Started on*, *Day n* and *Current state* are all decided
+*Known conditions* (was *Known skin conditions* until 13 Sep 2026), *Started on*, *Day n* and *Current state* are all decided
 here. ⚠️ **They do not name the symptoms, and they were longer.** *Symptoms
 started* / *Symptoms now* were right while step 4 had a block of its own among
 four other answers; sitting under the pills that name the symptoms, the subject

@@ -30,6 +30,8 @@ import type { Answers } from "@/lib/store/answers";
 import { DEMO_PROFILE, ownedProducts, skinProfile } from "@/lib/demo";
 import { type IsoDate, addDays, daysBetween, fromIso, toIso } from "@/lib/date";
 import type { SavedProduct } from "@/features/products/products";
+import { FACE_REGION_IDS } from "@/features/my-skin/components/FaceDiagram";
+import { conditionsList } from "@/features/my-skin/profile";
 
 /**
  * One recorded check-in — `Check-in chat` (555:1268), one per day.
@@ -169,6 +171,13 @@ export type ProgressView = {
   today: Date;
   skinType?: string;
   tendencies?: string[];
+  /**
+   * Step 3's answer, read exactly as the profile recap reads it. ⚠️ NO DEMO
+   * VALUE — `DEMO_PROFILE` carries no conditions, and a demo does not get to
+   * claim a diagnosis on the user's behalf, so the column is simply absent
+   * until step 3 is answered.
+   */
+  conditions: string[];
 };
 
 /**
@@ -186,6 +195,7 @@ export function progressView(a: Answers, today: Date): ProgressView {
     today,
     skinType: profile.skinType,
     tendencies: profile.tendencies,
+    conditions: conditionsList(a),
   };
 }
 
@@ -503,6 +513,29 @@ export function currentLine(
   return view.isDemo
     ? formatCurrent(DEMO_PROFILE.symptoms, DEMO_PROFILE.locations)
     : formatCurrent(a.start ?? [], a.location ?? []);
+}
+
+/**
+ * The profile's locations split for the read-only face diagram under it —
+ * the regions that are pills on the face, and everything else.
+ *
+ * ⚠️ NOT IN FIGMA — the diagram joined `/progress` on 13 Sep 2026, asked for
+ * directly. ⚠️ "Cheeks" IS NOT A REGION ID. The demo's location predates the
+ * diagram's `Cheeks (L)` / `Cheeks (R)`, and read raw it would light nothing;
+ * it expands to both here rather than in `DEMO_PROFILE`, so the profile card's
+ * hidden current-state sentence still reads "Redness, Itching on Cheeks".
+ */
+export function faceLocations(current: CurrentState | null): {
+  faceRegions: string[];
+  otherLocations: string[];
+} {
+  const locations = (current?.locations ?? []).flatMap((l) =>
+    l === "Cheeks" ? ["Cheeks (L)", "Cheeks (R)"] : [l]
+  );
+  return {
+    faceRegions: locations.filter((l) => FACE_REGION_IDS.includes(l)),
+    otherLocations: locations.filter((l) => !FACE_REGION_IDS.includes(l)),
+  };
 }
 
 /* ---------------------------------------------------------------------------

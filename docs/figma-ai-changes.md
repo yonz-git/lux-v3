@@ -150,7 +150,7 @@ These are **prototype-led** flow changes under the rule *prototype leads on flow
 | All of step 4 (Timing) | Two meta lines inside the *What you noticed* block under the symptom pills: **`Started on` over `<date> · Day <n>`**, and **`Current state` over `<status>`** — the card's label-over-value shape. (Wording and the `Now`→`Current state` choice are decided — see below.) |
 | Action | **`Button` primary**, full-width at mobile / `width/action` (376) at desktop. |
 
-**Wording decided** (labels on this screen; do not rename): *What you noticed*, *Where you noticed it*, *Known skin conditions*, *Started on*, `Day <n>`, *Current state*. They do **not** name the symptoms and are **shorter than before** — *Symptoms started* / *Symptoms now* repeated "symptoms" three times with the pills right above; sitting under those pills the subject is already on screen. **`Current state` was bare `Now` until 8 Sep 2026** — beside *Started*, an adverb with no noun read as another timeline point, not a different fact about a different moment.
+**Wording decided** (labels on this screen; do not rename): *What you noticed*, *Where you noticed it*, *Known conditions* (was *Known skin conditions* until 13 Sep 2026, shortened on request), *Started on*, `Day <n>`, *Current state*. They do **not** name the symptoms and are **shorter than before** — *Symptoms started* / *Symptoms now* repeated "symptoms" three times with the pills right above; sitting under those pills the subject is already on screen. **`Current state` was bare `Now` until 8 Sep 2026** — beside *Started*, an adverb with no noun read as another timeline point, not a different fact about a different moment.
 
 **Also needed on the recap — and the real DS asks:**
 

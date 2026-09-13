@@ -1,6 +1,7 @@
 import styles from "./SkinProfile.module.css";
 import { DataCard } from "@/components/ui/DataCard";
 import type { CurrentState } from "../progress";
+import { COPY } from "@/features/my-skin/profile";
 
 /**
  * `card · your skin profile` — Figma 552:1241 (mobile) / 554:1399 (desktop).
@@ -30,6 +31,7 @@ import type { CurrentState } from "../progress";
 export function SkinProfile({
   skinType,
   tendencies,
+  conditions,
   current,
   started,
   className,
@@ -37,6 +39,8 @@ export function SkinProfile({
   skinType?: string;
   /** step 2's tendencies — multi-select, so it can be more than the comp's one */
   tendencies?: string[];
+  /** step 3's answer — a third column when there is one */
+  conditions?: string[];
   /** `Current state` over "Redness, Itching on Cheeks" */
   current?: CurrentState | null;
   /** "Started Aug 2, 2026 · Day 12" */
@@ -44,7 +48,9 @@ export function SkinProfile({
   className?: string;
 }) {
   const tendency = tendencies?.length ? tendencies.join(", ") : undefined;
-  const hasPair = Boolean(skinType || tendency);
+  const known = conditions?.length ? conditions.join(", ") : undefined;
+  const pairCount = [skinType, tendency, known].filter(Boolean).length;
+  const hasPair = pairCount > 0;
   const hasDetails = Boolean(current || started);
 
   return (
@@ -56,11 +62,25 @@ export function SkinProfile({
       </h2>
 
       {hasPair && (
-        <dl className={styles.pairs}>
+        <dl className={styles.pairs} data-count={pairCount}>
           {skinType && <Pair label="Skin type" value={skinType} />}
-          {/* the second pair is right-aligned, which is what puts the two at
-              the ends of the card rather than next to each other */}
-          {tendency && <Pair label="Tendency" value={tendency} align="end" />}
+          {/* the last pair is right-aligned, which is what puts the pairs at
+              the ends of the card rather than next to each other.
+
+              ⚠️ NOT IN FIGMA — with known conditions the card takes a THIRD
+              column, and tendency moves to the middle, asked for directly
+              13 Sep 2026. The label is the recap's own `COPY`, so the two
+              screens cannot name step 3 differently. */}
+          {tendency && (
+            <Pair
+              label="Tendency"
+              value={tendency}
+              align={known ? "center" : "end"}
+            />
+          )}
+          {known && (
+            <Pair label={COPY.conditionsLabel} value={known} align="end" />
+          )}
         </dl>
       )}
 
@@ -80,9 +100,14 @@ export function SkinProfile({
                   THEM, asked for directly 13 Sep 2026. The one sentence
                   "Breakouts on Neck, Cheeks (R), …" wrapped mid-list; the
                   symptoms are a set, so they take CompatCard's band-pill recipe
-                  (26 tall, 5/14, full radius, `Label Small`) and the locations
-                  follow as `on …`. With no symptoms the card falls back to the
-                  plain pair — `Affected areas` has nothing to pill. */}
+                  (26 tall, 5/14, full radius, `Label Small`). With no symptoms
+                  the card falls back to the plain pair — `Affected areas` has
+                  nothing to pill.
+
+                  ⚠️ THE VISIBLE `on …` LOCATIONS LINE IS GONE, cut 13 Sep 2026
+                  when the face diagram card joined `/progress` under this one:
+                  it drew the same answer a second time. The hidden `value`
+                  below still says it in words. */}
               {current.symptoms.length > 0 ? (
                 <div className={styles.pair}>
                   <dt className={`${styles.pairLabel} t-label-sm`}>
@@ -97,11 +122,6 @@ export function SkinProfile({
                         </span>
                       ))}
                     </span>
-                    {current.locations.length > 0 && (
-                      <span className={`${styles.pairValue} t-h6`} aria-hidden="true">
-                        on {current.locations.join(", ")}
-                      </span>
-                    )}
                   </dd>
                 </div>
               ) : (
@@ -123,7 +143,7 @@ function Pair({
 }: {
   label: string;
   value: string;
-  align?: "end";
+  align?: "center" | "end";
 }) {
   return (
     <div className={styles.pair} data-align={align}>

@@ -114,7 +114,7 @@ import type { ProfileRecap } from "@/features/my-skin/profile";
  * them was not: four frosted cards at one interval is four peers, and the
  * screen does not hold four peers. `What you noticed`, `Where you noticed it`
  * and `How long this has been going on` are three readings of ONE episode;
- * `Known skin conditions` was true before it started. So the episode closes to
+ * `Known conditions` was true before it started. So the episode closes to
  * 12 — tighter than the cards' own 20 padding, which is what makes three cards
  * read as one group — and the standing fact sits 24 away from it. The full run
  * is written out at the top of the stylesheet. **No heading was added to say
@@ -489,8 +489,9 @@ function Headline({ profile }: { profile: ProfileRecap }) {
         )}
       </div>
 
-      {/* ⚠️ A THIRD ROW, NOT A THIRD COLUMN. `Known skin conditions` is the
-          longest label on the card and its value can be a typed sentence (step
+      {/* ⚠️ A THIRD ROW, NOT A THIRD COLUMN. `Known conditions` (shortened from
+          "Known skin conditions" 13 Sep 2026) is the longest label on the card
+          and its value can be a typed sentence (step
           3's "Other"), so squeezed into the identity row it would wrap on
           every phone. Full width under it, in the same label-over-value shape
           the two columns use. */}

@@ -7,8 +7,11 @@
    (the leading 24 belongs to HubScreen's grid body, not to the profile.)
 
    DESKTOP — the handoff's 1280 dashboard grid, NOT a page card:
-     col-1  640 fixed   calendar, spanning the full height of the column
-     col-2  616 fill    profile / trend / CTA / caption, a uniform 24 apart
+     col-1  640 fixed   profile / face diagram, one stack
+     col-2  616 fill    trend / record / calendar / CTA / caption, one stack
+   ⚠️ NOT IN FIGMA — the handoff puts the profile at the top of col-2 and the
+   calendar alone in col-1, and has no face diagram here. Rearranged on 13 Sep
+   2026, asked for directly.
    Both gutters are gutter/desktop (24). HubScreen's `grid` layout owns the two
    columns; this file only places the children in them. */
 
@@ -22,6 +25,27 @@
 
 .record {
   margin-top: var(--space-lg); /* 16 — the same interval every card takes */
+}
+
+.faceCard {
+  margin-top: var(--space-lg); /* 16 */
+}
+
+.faceLabel {
+  color: var(--color-text-on-data-muted);
+}
+
+/* the diagram is drawn at 392 and capped there, as on the profile recap —
+   `width: 100%` over its 392/300 box would render it far taller on desktop */
+.face {
+  width: 100%;
+  max-width: 392px;
+  margin-inline: auto;
+}
+
+/* mobile: col-1's wrapper is invisible to layout, like `.checkInColumn` */
+.profileColumn {
+  display: contents;
 }
 
 /* ⚠️ WIDTH IS SET HERE, NOT VIA Button's `fullWidth`. `.full` and `.cta` are
@@ -59,19 +83,24 @@
 }
 
 @media (min-width: 1024px) {
-  /* ⚠️ NOT IN FIGMA — col-1 is one stack: calendar -> 24 -> CTA -> 8 ->
-     caption. As grid rows the CTA landed on row 3, below col-2's trend, which
-     left ~215px between it and the calendar. */
+  /* ⚠️ NOT IN FIGMA — two stacks, each ONE grid item: col-1 is profile -> 24
+     -> face diagram, col-2 is trend -> 24 -> record -> 24 -> calendar -> 24 ->
+     CTA -> 8 -> caption. As grid rows, a tall card in one column opened a gap
+     beside it in the other (the CTA once sat ~215px under the calendar). */
+  .profileColumn {
+    display: flex;
+    flex-direction: column;
+    gap: var(--gutter-desktop); /* 24 */
+    grid-column: 1;
+    grid-row: 1;
+  }
+
   .checkInColumn {
     display: flex;
     flex-direction: column;
     align-items: center;
-    grid-column: 1;
-    grid-row: 1 / span 3;
-  }
-
-  .checkInColumn .calendar {
-    align-self: stretch;
+    grid-column: 2;
+    grid-row: 1;
   }
 
   .ctaDesktop.ctaDesktop {
@@ -93,47 +122,43 @@
   .calendar,
   .trend,
   .record,
+  .faceCard,
   .cta,
   .lastCheckIn {
     margin-top: 0;
   }
 
-  .profile {
-    grid-column: 2;
-    grid-row: 1;
-  }
+  /* ⚠️ THE ACTION STAYS UNDER THE CALENDAR, NOT IN FIGMA. The handoff puts
+     `Check in today` in col-2 under the trend, away from the calendar; here it
+     sits under the calendar of check-ins it adds to, rather than under a chart
+     it does not change. The calendar moved to col-2 on 13 Sep 2026 and took
+     the action with it.
 
-  /* col-1 is the calendar and the action under it. `start` alignment on the
-     grid keeps every card its natural height rather than stretching one to
-     match its neighbour.
-
-     ⚠️ THE ACTION MOVED INTO col-1, AND THAT IS NOT IN FIGMA. The handoff
-     gives col-2 four blocks — profile, trend, CTA, caption — and col-1 the
-     calendar alone, spanning all four rows. That works in the comp because the
-     comp's calendar is 494 tall; this build's is 358, for the reason recorded
-     in AGENTS.md (the comp's empty week rows are 100-tall auto-layout
-     artefacts, and reproducing them would break the 32 every occupied row
-     measures). Measured at 1440, the consequence was a column that ended at
-     y≈680 beside one that ran to y≈1030 — 350px of empty canvas under the
-     calendar, with the screen's own action stranded at the bottom right.
-
-     Moving the CTA and its caption under the calendar balances the two columns
-     (472 against 497) without touching a single component's height, and it
-     reads better than it did: `Check in today` now sits under the calendar of
-     check-ins it adds to, rather than under a chart it does not change. */
+     col-2 reads trend -> record -> calendar -> CTA on desktop while the DOM
+     keeps the calendar first for the phone. */
   .trend {
-    grid-column: 2;
-    grid-row: 2;
+    order: -2;
   }
 
-  /* ⚠️ col-2, UNDER THE TREND — it belongs with the profile and the chart,
-     which are the two other blocks that say what the investigation knows. The
-     CTA column stays the calendar's. It is conditional, so col-2 simply ends a
-     row earlier when there is no record, and the column balance the CTA move
-     was made for (see above) is unaffected either way. */
+  /* ⚠️ col-2, UNDER THE TREND — it belongs with the chart, the other block that
+     says what the investigation knows. It is conditional, so the calendar
+     simply follows the trend when there is no record. */
   .record {
-    grid-column: 2;
-    grid-row: 3;
+    order: -1;
+  }
+
+  /* after the single-class resets above, so the cascade reads in specificity
+     order — two classes, so they outrank `margin-top: 0` either way. The trend
+     leads col-2 visually and takes no margin. */
+  .checkInColumn .calendar,
+  .checkInColumn .trend,
+  .checkInColumn .record {
+    align-self: stretch;
+  }
+
+  .checkInColumn .calendar,
+  .checkInColumn .record {
+    margin-top: var(--gutter-desktop); /* 24 */
   }
 
   /* 376 is the comp's own width for this button. Not a token and not the 280 a

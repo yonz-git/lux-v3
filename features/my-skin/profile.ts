@@ -160,7 +160,7 @@ export function recap(a: Answers, today: Date): ProfileRecap {
  * and echoing the literal token back instead of the user's own sentence is the
  * screen failing to read what it was given.
  */
-function conditionsList(a: Answers): string[] {
+export function conditionsList(a: Answers): string[] {
   const selected = a.conditions ?? [];
   const other = a.conditionsOther?.trim();
   return selected.map((c) => (c === "Other" && other ? other : c));
@@ -287,7 +287,9 @@ export const COPY = {
   /** the visually-hidden line that states the diagram's answer in text — the
    *  face itself is `aria-hidden`, see `FaceDiagram` */
   locationSpoken: (regions: string[]) => `On the face: ${regions.join(", ")}.`,
-  conditionsLabel: "Known skin conditions",
+  /** ⚠️ "Known skin conditions" until 13 Sep 2026 — shortened, asked for
+   *  directly; `/progress`'s profile card carries the same label. */
+  conditionsLabel: "Known conditions",
   /**
    * The SYMPTOMS block's first meta pair — `Started on` over
    * "Aug 31, 2026 · Day 8".

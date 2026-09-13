@@ -23,9 +23,57 @@
   min-width: 0;
 }
 
+.pair[data-align="center"] {
+  align-items: center;
+  text-align: center;
+}
+
 .pair[data-align="end"] {
   align-items: flex-end;
   text-align: right;
+}
+
+/* ⚠️ NOT IN FIGMA — THREE ANSWERS, asked for directly 13 Sep 2026.
+
+   MOBILE: skin type and tendency keep the two-column row at the card's edges,
+   and known conditions takes a full-width row under them — three ~85px columns
+   broke "Acne-prone, Sensitive" across three lines, splitting the word at its
+   hyphen. The same trade `SkinProfileSummary` makes with its conditions row. */
+.pairs[data-count="3"] {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: var(--space-lg); /* 16 */
+}
+
+.pairs[data-count="3"] .pair[data-align="center"] {
+  align-items: flex-end;
+  text-align: right;
+}
+
+.pairs[data-count="3"] .pair[data-align="end"] {
+  grid-column: 1 / -1;
+  align-items: flex-start;
+  text-align: left;
+}
+
+/* DESKTOP: three EQUAL columns, so the middle one sits on the card's true
+   centre rather than wherever `space-between` leaves it between two values of
+   different lengths. */
+@media (min-width: 1024px) {
+  .pairs[data-count="3"] {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+
+  .pairs[data-count="3"] .pair[data-align="center"] {
+    align-items: center;
+    text-align: center;
+  }
+
+  .pairs[data-count="3"] .pair[data-align="end"] {
+    grid-column: auto;
+    align-items: flex-end;
+    text-align: right;
+  }
 }
 
 .pairLabel {

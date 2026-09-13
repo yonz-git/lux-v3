@@ -4,7 +4,10 @@ import { useState } from "react";
 import styles from "./ProgressScreen.module.css";
 import { HubScreen } from "@/components/layout/HubScreen";
 import { Button } from "@/components/ui/Button";
+import { DataCard } from "@/components/ui/DataCard";
 import { Orb } from "@/components/ui/Orb";
+import { FaceDiagram } from "@/features/my-skin/components/FaceDiagram";
+import { COPY } from "@/features/my-skin/profile";
 import { SkinProfile } from "./SkinProfile";
 import { InvestigationRecord } from "./InvestigationRecord";
 import { CheckInCalendar } from "./CheckInCalendar";
@@ -17,6 +20,7 @@ import {
   checkInsFor,
   currentLine,
   dayNumber,
+  faceLocations,
   lastCheckInLabel,
   progressView,
 } from "@/features/progress/progress";
@@ -76,10 +80,11 @@ export function ProgressScreen({ now }: { now: number }) {
      the analysis's "pause and check in" — see `CheckInOverlay`. */
   const [checkingIn, setCheckingIn] = useState(false);
   const view = progressView(answers, useToday(now));
-  const { start, today, skinType, tendencies } = view;
+  const { start, today, skinType, tendencies, conditions } = view;
   const checkIns = checkInsFor(answers, view);
   const current = currentLine(answers, view);
   const lastCheckIn = lastCheckInLabel(checkIns, today);
+  const face = faceLocations(current);
 
   return (
     <HubScreen
@@ -89,19 +94,54 @@ export function ProgressScreen({ now }: { now: number }) {
       layout="grid"
       tightTop
     >
-      <SkinProfile
-        className={styles.profile}
-        skinType={skinType}
-        tendencies={tendencies}
-        current={current}
-        started={`Started ${formatLong(start)} · Day ${dayNumber(start, today)}`}
-      />
+      {/* ⚠️ NOT IN FIGMA — two stacks on desktop, asked for directly 13 Sep
+          2026: col-1 is the profile and the face diagram under it, col-2 the
+          trend, the record and then the calendar with its CTA. Each column is
+          one grid item so neither's heights open gaps in the other. Both
+          wrappers are `display: contents` on mobile, so the DOM order —
+          profile, face, calendar, trend — is still the phone's reading order;
+          col-2's visual order on desktop comes from `order`. Mobile keeps the
+          action after the trend, so each breakpoint renders its own copy and
+          hides the other with `display: none` (out of the a11y tree too). */}
+      <div className={styles.profileColumn}>
+        <SkinProfile
+          className={styles.profile}
+          skinType={skinType}
+          tendencies={tendencies}
+          conditions={conditions}
+          current={current}
+          started={`Started ${formatLong(start)} · Day ${dayNumber(start, today)}`}
+        />
 
-      {/* ⚠️ NOT IN FIGMA — col-1 as one stack on desktop so the CTA sits
-          directly under the calendar instead of on a grid row shared with
-          col-2's taller blocks. Mobile keeps the action after the trend, so
-          each breakpoint renders its own copy and hides the other with
-          `display: none` (out of the a11y tree too). */}
+        {/* step 1's own diagram, read-only — the same one the profile recap
+            draws. `aria-hidden` inside, so the regions are said in words. */}
+        {(face.faceRegions.length > 0 || face.otherLocations.length > 0) && (
+          <DataCard
+            className={styles.faceCard}
+            aria-labelledby="progress-face"
+          >
+            <h2
+              id="progress-face"
+              className={`${styles.faceLabel} t-overline`}
+            >
+              {COPY.locationLabel}
+            </h2>
+            {face.faceRegions.length > 0 && (
+              <p className="visually-hidden">
+                {COPY.locationSpoken(face.faceRegions)}
+              </p>
+            )}
+            <div className={styles.face}>
+              <FaceDiagram
+                readOnly
+                selected={face.faceRegions}
+                otherLocations={face.otherLocations}
+              />
+            </div>
+          </DataCard>
+        )}
+      </div>
+
       <div className={styles.checkInColumn}>
         <CheckInCalendar
           className={styles.calendar}
@@ -118,20 +158,20 @@ export function ProgressScreen({ now }: { now: number }) {
             {lastCheckIn}
           </p>
         )}
+
+        <SymptomTrend className={styles.trend} checkIns={checkIns} />
+
+        {/* § 09 — only when the user actually saved a finding. ⚠️ NOT IN
+            FIGMA, and absent by default: PROGRESS opens populated because it
+            has a seeded check-in series, but a CONCLUSION is not something a
+            demo gets to claim on the user's behalf. */}
+        {answers.savedFinding && (
+          <InvestigationRecord
+            className={styles.record}
+            finding={answers.savedFinding}
+          />
+        )}
       </div>
-
-      <SymptomTrend className={styles.trend} checkIns={checkIns} />
-
-      {/* § 09 — only when the user actually saved a finding. ⚠️ NOT IN FIGMA,
-          and absent by default: PROGRESS opens populated because it has a
-          seeded check-in series, but a CONCLUSION is not something a demo gets
-          to claim on the user's behalf. */}
-      {answers.savedFinding && (
-        <InvestigationRecord
-          className={styles.record}
-          finding={answers.savedFinding}
-        />
-      )}
 
       <Button className={styles.cta} onClick={() => setCheckingIn(true)}>
         Check in today
