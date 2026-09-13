@@ -164,7 +164,7 @@
 }
 
 /* ⚠️ NOT IN FIGMA — the deck of the group's first three products. See
-   `ThumbStack` in MyProducts.tsx for what it draws and why 28 is a literal.
+   `ThumbStack.tsx` for what it draws and why 28 is a literal.
 
    It fades rather than unmounting when the group opens, so the row does not
    reflow under the finger that just tapped it — and it keeps its width either
@@ -179,62 +179,6 @@
 
 .group[data-open="true"] .preview {
   opacity: 0;
-}
-
-/* the same opaque well `ProductThumb` draws at 48 — a translucent one would
-   show the canvas gradient through the "photograph". `border/highlight` is the
-   rim that separates each well from the one behind it: the token the nav
-   already uses for a lit edge, and the only thing making a pile of overlapping
-   wells read as a pile rather than as one smeared shape.
-
-   ⚠️ THE RIM IS A HAIRLINE AND THE DEPTH IS A SHADOW. It was a 2px ring, which
-   at 28 is a fourteenth of the well — a drawn white frame around each picture
-   rather than the edge of one. `border-width-hairline` states the separation
-   and `shadow-sm` does the lifting, which is the job the extra pixel of rim was
-   badly standing in for: the wells overlap, so what says one is IN FRONT of the
-   next is that it casts onto it. Both are one `box-shadow` — the ring is a
-   spread with no blur, so the two compose in one declaration and the drop
-   shadow sits outside the rim. */
-.previewThumb {
-  position: relative;
-  flex: none;
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  overflow: hidden;
-  width: 28px;
-  height: 28px;
-  border-radius: var(--radius-sm);
-  background: var(--color-bg-surface-frost);
-  box-shadow:
-    0 0 0 var(--border-width-hairline) var(--color-border-highlight),
-    var(--shadow-sm);
-}
-
-.previewThumb + .previewThumb {
-  margin-left: -10px;
-}
-
-/* ⚠️ FRONT TO BACK, AND CAPPED AT THREE — paired with `PREVIEW_MAX`. Later
-   siblings paint on top by default, which would put the LAST well over the
-   first and read as a pile receding to the left while the list runs right.
-   These three invert it. A fourth product would render behind the third with
-   no rule of its own; change both or neither. */
-.previewThumb:nth-child(1) {
-  z-index: 3;
-}
-
-.previewThumb:nth-child(2) {
-  z-index: 2;
-}
-
-.previewThumb:nth-child(3) {
-  z-index: 1;
-}
-
-.previewArt {
-  width: 100%;
-  height: 100%;
 }
 
 /* one glyph, two states — `chevron-up` in Figma is a chevron-down at 180°.

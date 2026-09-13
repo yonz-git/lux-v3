@@ -6,6 +6,7 @@ import { Collapse } from "@/components/ui/Collapse";
 import { ChevronDownIcon, CloseIcon } from "@/components/ui/icons";
 import { BAND_LABEL, type CheckAnalysis } from "@/features/check/check";
 import { fullName } from "@/features/products/products";
+import { ProductThumb } from "@/features/products/components/ProductThumb";
 
 /**
  * One `analysis/…` card on `Check results` — Figma 476:2857 (collapsed) and
@@ -91,6 +92,11 @@ export function CompatCard({
             aria-controls={bodyId}
             onClick={() => setOpen((o) => !o)}
           >
+            {/* ⚠️ NOT IN FIGMA — the product drawn in front of its name, asked
+                for directly 13 Sep 2026. `ProductAccordionCard`'s own recipe:
+                the 36 thumb on the compact card, 48 otherwise, at the row's 12
+                gap. */}
+            <ProductThumb product={product} size={compact ? "sm" : "md"} />
             <span className={`${styles.name} t-h6`}>{name}</span>
 
             <span className={styles.score}>

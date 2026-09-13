@@ -201,13 +201,19 @@
    which one paints is then CSS-Module load order — the same silent coin-toss
    that lost the focus ring across the app. `.pill.pill` is (0,2,0) and wins by
    the cascade's own rules instead. */
-.pill.pill {
-  background: var(--color-bg-frost-light-muted);
-  /* rule 9: the pill is sized by `min-height` and box-sizing is border-box, so
-     the 1px sits INSIDE the 26 — but the horizontal padding still has to lose
-     its width or the label moves 1px in on each side */
-  border: var(--border-width-hairline) solid var(--color-border-chip);
-  padding: 0 calc(var(--space-md) - var(--border-width-hairline));
+/* ⚠️ SUPERSEDED 13 Sep 2026, asked for directly: the symptom pills now wear
+   the Risky band's pill — `feedback/warning` with `text/on-brand` ink and no
+   hairline, CompatCard's `.pill` recipe and the same one PROGRESS's
+   `SkinProfile` `.symptom` already uses for these answers. Geometry and type
+   stay `Tag`'s. ⚠️ White on `feedback/warning` inherits that pill's known
+   contrast shortfall (non-negotiable 17) — the same pair, not a new one. */
+/* ⚠️ `.tags` IN FRONT, because `Tag`'s own `.tag[data-variant]` is (0,2,0)
+   too and loads later — the doubled class alone tied and lost the fill. */
+.tags .pill.pill {
+  background: var(--color-feedback-warning);
+  color: var(--color-text-on-brand);
+  border: none;
+  padding: 0 14px; /* CompatCard's horizontal 14 */
 }
 
 /* ---------------------------------------------------------------------------

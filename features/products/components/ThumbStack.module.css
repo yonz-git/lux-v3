@@ -1,0 +1,60 @@
+/* ⚠️ NOT IN FIGMA — a deck of up to three product drawings. See `ThumbStack`
+   for what it draws and why 28 is a literal. */
+.stack {
+  flex: none;
+  display: flex;
+  align-items: center;
+}
+
+/* the same opaque well `ProductThumb` draws at 48 — a translucent one would
+   show the canvas gradient through the "photograph". `border/highlight` is the
+   rim that separates each well from the one behind it: the token the nav
+   already uses for a lit edge, and the only thing making a pile of overlapping
+   wells read as a pile rather than as one smeared shape.
+
+   ⚠️ THE RIM IS A HAIRLINE AND THE DEPTH IS A SHADOW. It was a 2px ring, which
+   at 28 is a fourteenth of the well — a drawn white frame around each picture
+   rather than the edge of one. Both are one `box-shadow` — the ring is a
+   spread with no blur, so the two compose in one declaration and the drop
+   shadow sits outside the rim. */
+.thumb {
+  position: relative;
+  flex: none;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+  width: 28px;
+  height: 28px;
+  border-radius: var(--radius-sm);
+  background: var(--color-bg-surface-frost);
+  box-shadow:
+    0 0 0 var(--border-width-hairline) var(--color-border-highlight),
+    var(--shadow-sm);
+}
+
+.thumb + .thumb {
+  margin-left: -10px;
+}
+
+/* ⚠️ FRONT TO BACK, AND CAPPED AT THREE — paired with `PREVIEW_MAX`. Later
+   siblings paint on top by default, which would put the LAST well over the
+   first and read as a pile receding to the left while the list runs right.
+   These three invert it. A fourth product would render behind the third with
+   no rule of its own; change both or neither. */
+.thumb:nth-child(1) {
+  z-index: 3;
+}
+
+.thumb:nth-child(2) {
+  z-index: 2;
+}
+
+.thumb:nth-child(3) {
+  z-index: 1;
+}
+
+.art {
+  width: 100%;
+  height: 100%;
+}

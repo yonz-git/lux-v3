@@ -1,19 +1,19 @@
 "use client";
 
 import { useId, useState } from "react";
+import Link from "next/link";
 import { useRouter } from "next/navigation";
 import styles from "./CheckResults.module.css";
 import { HubScreen } from "@/components/layout/HubScreen";
 import { ChatBubble } from "@/components/ui/ChatBubble";
 import { SkinProfileStrip } from "./SkinProfileStrip";
 import { CompatCard } from "./CompatCard";
-import { ProductThumb } from "@/features/products/components/ProductThumb";
-import { SummaryCard, IngredientsCard, NextStepsCard } from "./ResultCards";
+import { ProductThumb } from "@/features/products/components/ProductThumb";import { SummaryCard, IngredientsCard, NextStepsCard } from "./ResultCards";
 import { Button } from "@/components/ui/Button";
 import { OptionRow } from "@/components/ui/OptionRow";
 import { SearchField } from "@/components/ui/SearchField";
 import { Tag } from "@/components/ui/Tag";
-import { CloseIcon, PlusIcon } from "@/components/ui/icons";
+import { ChevronRightIcon, CloseIcon, PlusIcon } from "@/components/ui/icons";
 import { Collapse } from "@/components/ui/Collapse";
 import { useInvestigation } from "@/lib/store/InvestigationProvider";
 import { useHeldWhileClosing } from "@/lib/useModalDialog";
@@ -546,6 +546,14 @@ export function CheckResults() {
           happened at a point in time and appears in the history under that
           date; editing the set and running it again is a second check, which is
           why the action says "Re-run analysis" rather than "Save". */}
+
+      {/* ⚠️ NOT IN FIGMA — the history link `/check` ends on, repeated at the
+          foot of a result so the way to the other checks is not only the back
+          chevron. See `.historyLink`. */}
+      <Link href="/check/history" className={`${styles.historyLink} t-body3`}>
+        <span className={styles.historyLabel}>View previous analyses</span>
+        <ChevronRightIcon className={styles.historyArrow} />
+      </Link>
     </HubScreen>
   );
 }

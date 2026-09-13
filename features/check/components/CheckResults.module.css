@@ -547,3 +547,43 @@ button.addAnotherButton {
   --button-height: var(--size-control-md);
   padding: 0 var(--space-xl);
 }
+
+/* --- the way back to the history ---------------------------------------------
+
+   ⚠️ NOT IN FIGMA — asked for directly 13 Sep 2026. The same bare link `/check`
+   ends on (`CheckScreen.module.css` `.link`, chevron and all), repeated rather
+   than shared for the reason `CheckHistory`'s pill gives: a component whose
+   only job is one link's colour. Centred under the last block, 32 below it. */
+.historyLink {
+  align-self: center;
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-xs); /* 4 */
+  margin-top: var(--space-3xl); /* 32 */
+  color: var(--color-text-brand);
+  text-decoration: none;
+  transition: opacity var(--duration-fast) var(--ease-standard);
+}
+
+.historyArrow {
+  width: var(--size-icon-sm); /* 20 */
+  height: var(--size-icon-sm);
+}
+
+.historyLink:hover {
+  opacity: 0.7;
+}
+
+.historyLink:hover .historyLabel {
+  text-decoration: underline;
+}
+
+@media (hover: none) {
+  .historyLink:hover {
+    opacity: 1;
+  }
+
+  .historyLink:hover .historyLabel {
+    text-decoration: none;
+  }
+}
