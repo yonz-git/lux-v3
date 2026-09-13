@@ -81,10 +81,21 @@ export function BottomNav({
       aria-label="Sections"
     >
       {items.map(({ id, label, Icon, href }) => {
+        /* ⚠️ NOT IN FIGMA — the hover shine, 13 Sep 2026. The label takes the
+           buttons' `.shine-text`; the icon is drawn twice, the second copy the
+           masked lilac band (BottomNav.module.css `.iconShine`), because a
+           text clip cannot reach an SVG. Both copies are aria-hidden glyphs. */
         const content = (
           <>
-            <Icon />
-            <span className={`${styles.label} t-label-sm`}>{label}</span>
+            <span className={styles.icon} aria-hidden="true">
+              <Icon />
+              <span className={styles.iconShine}>
+                <Icon />
+              </span>
+            </span>
+            <span className={`${styles.label} t-label-sm shine-text shine-on-hover`}>
+              {label}
+            </span>
           </>
         );
         const isActive = active === id;

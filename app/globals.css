@@ -569,6 +569,21 @@
    and the check-in tiles — one material, one edge.
    ========================================================================== */
 
+/* ⚠️ THE NAV BAR NO LONGER BINDS `surface/frost-nav`, AS OF 13 Sep 2026 —
+   asked for directly: a deep teal `#356472b0` (69%), NOT IN FIGMA. It is the
+   nav's own pair rather than a change to the token above, because that token
+   also fills `SearchField`, `Snackbar`, `SegmentedToggle` and the product
+   groups, and only the bar was asked to move. `bg/nav-bar` is the same hue
+   fully opaque — the reduced-transparency fallback, per non-negotiable 7.
+   The bar's ink goes WHITE with it (`text/on-data-inverse`): measured over the
+   canvas the dark app ink composites to ~3.5:1 on this fill and white to ~4:1,
+   and the inactive items sit at 50% on top of that. Neither clears 4.5:1 for
+   the 12px labels — the same crossover `surface/data-deep` sits on. */
+:root {
+  --color-surface-nav-bar: #356472b0;
+  --color-bg-nav-bar: #356472;
+}
+
 :root {
   --color-surface-frost-nav: #dbeded7a;
 

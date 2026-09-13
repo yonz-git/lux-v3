@@ -79,6 +79,15 @@ Variable-level bugs. The code already overrides all of them on `:root` in
 - Same colour both times; only the alpha differs. It is also `bg/bubble-ai`'s
   colour, so the nav sits on the AI bubble's hue, and `Search Field` (`248:70`)
   binds the same token.
+- ⚠️ **SUPERSEDED FOR THE BAR ONLY, 13 Sep 2026 — action needed.** Asked for
+  directly: `Bottom-Nav-Bar` (`410:258`) fills with `#356472 @69%` (code:
+  `--color-surface-nav-bar`), falls back to `#356472` opaque
+  (`--color-bg-nav-bar`), and its icons and labels go white. Add both as
+  variables and repoint the component's fill and ink; leave `surface/frost-nav`
+  alone, since `Search Field` and the other frosted pills still bind it. The
+  bar also gains a 1px edge ring lit top-left (white 60% → 0 → 20%
+  bottom-right) and a 5% noise grain; Figma can approximate the ring with a
+  gradient stroke and has no equivalent for the grain.
 
 ### `bg/bubble-ai` and `bg/bubble-user` — opaque, holding values directly
 

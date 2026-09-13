@@ -34,7 +34,9 @@
      NOT want `background-origin: border-box` — non-negotiable 10 is about
      background IMAGES. Adding it here would be cargo cult. */
   border: 0.5px solid #ffffff54;
-  background: var(--color-surface-frost-nav);
+  /* ⚠️ NOT `surface/frost-nav` since 13 Sep 2026 — the bar's own deep teal,
+     asked for directly. See `--color-surface-nav-bar` in globals.css. */
+  background: var(--color-surface-nav-bar);
   box-shadow: var(--shadow-nav);
 
   /* ⚠️ `saturate()` IS LOAD-BEARING, NOT DECORATION. A blur averages
@@ -45,6 +47,58 @@
      a liquid-glass library would need (Chromium-only; WebKit bug 245510). */
   -webkit-backdrop-filter: blur(var(--blur-card)) saturate(160%);
   backdrop-filter: blur(var(--blur-card)) saturate(160%);
+}
+
+/* ⚠️ NOT IN FIGMA — THE EDGE OF LIGHT AND THE GRAIN, asked for directly
+   13 Sep 2026 ("edge + grain, keep the teal"). Figma can draw neither.
+
+   `::before` is a 1px ring lit at the top-left and dim at the bottom-right,
+   just inside the uniform 0.5px rim above rather than replacing it: the rim is
+   the hairline all the way round, this is light catching one corner of it —
+   the cue that reads as a curved surface under a light, not an outline. The
+   mask punches out the interior so only the ring paints.
+
+   `::after` is a static fractal-noise tile at 5% in `overlay`: dither, not
+   texture, so the blur over the canvas gradient does not band into steps.
+
+   ⚠️ BOTH SIT AT `z-index: -1`, AND THAT IS WHAT KEEPS THE TYPE CLEAN. `.nav`
+   is fixed with a z-index, so it is already a stacking context; -1 paints the
+   two over the bar's own fill and UNDER the items. Left at `auto`, an
+   absolutely positioned pseudo paints above in-flow content, and the grain
+   would dither every icon and label.
+
+   ⚠️ NEITHER MOVES. The bar is on every screen and touched constantly; a
+   highlight that sweeps or brightens on hover is the animation a
+   hundred-times-a-day control should not have. */
+.nav::before,
+.nav::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  border-radius: inherit;
+  pointer-events: none;
+}
+
+.nav::before {
+  padding: 1px;
+  background: linear-gradient(
+    135deg,
+    rgba(255, 255, 255, 0.6),
+    rgba(255, 255, 255, 0) 40%,
+    rgba(255, 255, 255, 0) 60%,
+    rgba(255, 255, 255, 0.2)
+  );
+  -webkit-mask: linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0);
+  -webkit-mask-composite: xor;
+  mask: linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0);
+  mask-composite: exclude;
+}
+
+.nav::after {
+  opacity: 0.05;
+  mix-blend-mode: overlay;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='120' height='120'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='2'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
 }
 
 @media (min-width: 1024px) {
@@ -60,9 +114,15 @@
    a worse control, not a safer one. */
 @media (prefers-reduced-transparency: reduce) {
   .nav {
-    background: var(--color-bg-nav);
+    background: var(--color-bg-nav-bar);
     -webkit-backdrop-filter: none;
     backdrop-filter: none;
+  }
+
+  /* the grain dithers a blur that is no longer there; the edge ring stays,
+     like the rim and the bevel, because it depends on nothing showing through */
+  .nav::after {
+    display: none;
   }
 }
 
@@ -75,7 +135,9 @@
   /* the active treatment is opacity only — same colour, same weight.
      1.0 active, 0.5 inactive, exactly as the component encodes it. */
   opacity: 0.5;
-  color: var(--color-icon-default);
+  /* ⚠️ WHITE, NOT `icon/default`, since the bar went deep teal on 13 Sep
+     2026 — the dark ink measured worse on that fill; see globals.css */
+  color: var(--color-text-on-data-inverse);
   /* an item can render as <a> once its section exists; links carry an
      underline by default */
   text-decoration: none;
@@ -116,6 +178,74 @@
 }
 
 .label {
-  color: var(--color-text-primary);
+  /* ⚠️ THE INK IS `--shine-ink`, NOT `color` — 13 Sep 2026, asked for
+     directly: the label carries the buttons' hover shine (`.shine-text` +
+     `.shine-on-hover`, globals.css). That recipe paints the glyphs with a
+     gradient whose two ends are this ink and sets `color: transparent`; a
+     `color` here loads after it and would paint solid white over the band.
+     White on the deep-teal bar — see `.item`. */
+  --shine-ink: var(--color-text-on-data-inverse);
   white-space: nowrap;
+}
+
+/* ⚠️ NOT IN FIGMA — THE ICON TAKES THE SAME SHINE, asked for directly
+   13 Sep 2026. `background-clip: text` cannot reach an inline SVG, so the icon
+   is drawn TWICE (BottomNav.tsx): the ink copy, and over it a copy in the
+   shine lilac revealed through a MASK that is the text recipe's own band —
+   the same 115deg, 300% image, 32/44/50/56/68 stops and 100% → 0% travel, on
+   the same clock. The mask's alpha stands in for the text gradient's colours:
+   1 at the shoulders is the lilac itself, 0.45 at the core is the lilac mixed
+   55% toward the white ink beneath. So the icon and its label sweep together.
+
+   A grid stacks the two copies rather than `position: absolute`, so the ink
+   copy stays in flow and `.pressable`'s press overlay still lands over it. */
+.icon {
+  display: inline-grid;
+}
+
+.icon > * {
+  grid-area: 1 / 1;
+}
+
+.iconShine {
+  display: inline-flex;
+  color: var(--color-effect-shine);
+  -webkit-mask-image: linear-gradient(
+    115deg,
+    transparent 32%,
+    #000 44%,
+    rgba(0, 0, 0, 0.45) 50%,
+    #000 56%,
+    transparent 68%
+  );
+  mask-image: linear-gradient(
+    115deg,
+    transparent 32%,
+    #000 44%,
+    rgba(0, 0, 0, 0.45) 50%,
+    #000 56%,
+    transparent 68%
+  );
+  -webkit-mask-size: 300% 100%;
+  mask-size: 300% 100%;
+  -webkit-mask-repeat: no-repeat;
+  mask-repeat: no-repeat;
+  /* parked off the left at rest, like `.shine-on-hover` */
+  -webkit-mask-position: 100% 0;
+  mask-position: 100% 0;
+  transition: -webkit-mask-position calc(var(--duration-hover) * 1.5) var(--ease-standard),
+    mask-position calc(var(--duration-hover) * 1.5) var(--ease-standard);
+}
+
+.item:hover .iconShine {
+  -webkit-mask-position: 0% 0;
+  mask-position: 0% 0;
+}
+
+/* a touch device has no hover; without this the band sticks after a tap */
+@media (hover: none) {
+  .item:hover .iconShine {
+    -webkit-mask-position: 100% 0;
+    mask-position: 100% 0;
+  }
 }

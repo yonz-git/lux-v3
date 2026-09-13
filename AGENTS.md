@@ -774,6 +774,15 @@ type and every `nav=` prop. Do not "fix" the mismatch by renaming the id — see
    — a fallback must not be translucent or a different hue. Same colour as
    `bg/bubble-ai`, so the nav sits on the AI bubble's hue, and `Search Field`
    binds the same token: one frosted-pill surface, two components.
+   ⚠️ **THE BAR LEFT THAT TOKEN ON 13 Sep 2026**, asked for directly: it fills
+   with its own `--color-surface-nav-bar` `#356472b0` (deep teal, 69%), falls
+   back to `--color-bg-nav-bar` `#356472` (same hue, opaque), and its icons and
+   labels are WHITE (`text/on-data-inverse`). The search field, snackbar,
+   segmented toggle and product groups still bind `surface/frost-nav`. Measured
+   by hand-compositing over the canvas, white reads about 4:1 on the bar, so the
+   12px labels are still short of AA. See globals.css. ⚠️ It also carries a
+   lit top-left edge ring and a 5% noise grain, both static `::before`/`::after`
+   at `z-index: -1` so they sit under the icons — see `BottomNav.module.css`.
 8. **Chat bubbles carry an asymmetric tail corner, and NO border.** Three
    corners at `--radius-bubble` (30), the sender-side corner at
    `--radius-bubble-tail` (1). AI = tail top-left, sits left; user = top-right,
