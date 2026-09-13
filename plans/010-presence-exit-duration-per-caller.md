@@ -1,7 +1,7 @@
 # 010 — `useDialogPresence` takes the caller's exit duration
 
-- **Status**: TODO
-- **Commit**: `d7220d6` — plus the uncommitted working tree of 13 Sep 2026 (`.drop` and the three `.drop` callers are uncommitted). Search by quoted code.
+- **Status**: DONE — 13 Sep 2026. On `/check/new`, the search dropdown is removed 133ms after it starts leaving (before: 217ms), as sampled per frame in headless Chrome.
+- **Commit**: `c5edd11`. Search by quoted code.
 - **Severity**: LOW
 - **Category**: Interruptibility
 - **Estimated scope**: 4 files (`lib/useModalDialog.ts`, `components/ui/DateField.tsx`, `features/check/components/CheckBuilder.tsx`, `features/products/components/AddProductMethodSheet.tsx`), ~20 lines

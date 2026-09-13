@@ -160,8 +160,14 @@ export function useModalDialog(
  * ⚠️ `open` REMAINS THE TRUTH FOR EVERY BEHAVIOUR — `useModalDialog` takes the
  * raw prop, so Escape, the focus trap, focus restoration and the scroll lock
  * all end the moment the user asks to close. Only the PAINT outlives it.
+ *
+ * ⚠️ THE EXIT LENGTH IS THE CALLER'S — added 13 Sep 2026. A tray leaves on
+ * `duration/base`, a floating dropdown on `duration/fast`; unmounting a
+ * dropdown on the tray's number left the in-flow add-product panel as blank
+ * space for the difference. Pass the number your CSS exit uses
+ * (`DROP_EXIT_MS` for `.drop`).
  */
-export function useDialogPresence(open: boolean) {
+export function useDialogPresence(open: boolean, exitMs: number = EXIT_MS) {
   const [present, setPresent] = useState(open);
   const [leaving, setLeaving] = useState(false);
 
@@ -180,9 +186,9 @@ export function useDialogPresence(open: boolean) {
     const timer = setTimeout(() => {
       setPresent(false);
       setLeaving(false);
-    }, EXIT_MS);
+    }, exitMs);
     return () => clearTimeout(timer);
-  }, [open, present]);
+  }, [open, present, exitMs]);
 
   return { present, leaving };
 }
@@ -194,6 +200,11 @@ export function useDialogPresence(open: boolean) {
    holding the scroll lock. Same arrangement, same hazard, as `Snackbar`'s
    `EXIT_MS`. */
 const EXIT_MS = 200;
+
+/* ⚠️ KEEP IN STEP WITH `--duration-fast` (120ms) — `.drop[data-state="leaving"]`
+   in globals.css. A floating dropdown leaves faster than a tray, and this is
+   only the moment its node is removed. */
+export const DROP_EXIT_MS = 120;
 
 /**
  * `document` does not exist while the page renders on the server, so a portal

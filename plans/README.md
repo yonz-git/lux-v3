@@ -17,7 +17,7 @@ These plans come from the `improve-animations` audit of 13 Sep 2026. Each one is
 | 007 | [Finish the Collapse migration](007-finish-collapse-migration.md) | MEDIUM | Interruptibility | — | DONE |
 | 008 | [Snackbar: no blink, rise from the nav](008-snackbar-no-blink-rise-from-nav.md) | MEDIUM | Physicality & origin | — | DONE |
 | 009 | [Button enable fade on `duration/base`](009-button-enable-fade-duration.md) | LOW | Easing & duration | — | DONE |
-| 010 | [Presence takes the caller's exit duration](010-presence-exit-duration-per-caller.md) | LOW | Interruptibility | — | TODO |
+| 010 | [Presence takes the caller's exit duration](010-presence-exit-duration-per-caller.md) | LOW | Interruptibility | — | DONE |
 | 011 | [Breath tokens and two timing comments](011-breath-tokens-and-timing-comments.md) | LOW | Cohesion & tokens | after 001, 005 | TODO |
 | 012 | [Today's check-in lands on the calendar](012-checkin-disc-lands-on-calendar.md) | MEDIUM | Missed opportunity | — | TODO |
 | 013 | [Removed products close; Undo reopens](013-product-removal-closes-smoothly.md) | MEDIUM | Missed opportunity | 007 | TODO |

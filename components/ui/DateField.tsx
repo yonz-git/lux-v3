@@ -3,7 +3,7 @@
 import { useEffect, useId, useRef, useState } from "react";
 import styles from "./DateField.module.css";
 import { ChevronDownIcon, ChevronLeftIcon, ChevronRightIcon } from "./icons";
-import { useDialogPresence } from "@/lib/useModalDialog";
+import { DROP_EXIT_MS, useDialogPresence } from "@/lib/useModalDialog";
 import {
   type IsoDate,
   WEEKDAYS,
@@ -63,7 +63,7 @@ export function DateField({
   /* the calendar outlives `open` by its exit — "Dropdowns" in globals.css.
      Focus, Escape and the outside click all key off `open`, so it stops being
      the calendar the moment it is dismissed and only its paint lingers. */
-  const panel = useDialogPresence(open);
+  const panel = useDialogPresence(open, DROP_EXIT_MS);
 
   // close on outside pointer or Escape
   useEffect(() => {

@@ -14,7 +14,7 @@ import { ProductRow } from "./ProductList";
 import { ProductThumb } from "./ProductThumb";
 import { useInvestigation } from "@/lib/store/InvestigationProvider";
 import { useSnackbar } from "@/components/layout/Snackbar";
-import { useDialogPresence, useHeldWhileClosing } from "@/lib/useModalDialog";
+import { DROP_EXIT_MS, useDialogPresence, useHeldWhileClosing } from "@/lib/useModalDialog";
 import { SearchIcon, CameraIcon, ChevronRightIcon, CloseIcon, PlusIcon } from "@/components/ui/icons";
 import {
   BUCKET_LIST_TITLE,
@@ -376,7 +376,7 @@ function SearchView({
   /* the panel outlives `typed` by its exit and paints what it last showed —
      emptying the field is what closes it, and the render that does so has
      already lost the results. "Dropdowns" in globals.css. */
-  const dropdown = useDialogPresence(typed);
+  const dropdown = useDialogPresence(typed, DROP_EXIT_MS);
   const shown = useHeldWhileClosing(typed, { results, loading, query });
 
   return (

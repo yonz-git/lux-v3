@@ -15,7 +15,7 @@ import { Tag } from "@/components/ui/Tag";
 import { CheckBasketBar, CheckBasketSheet } from "./CheckBasket";
 import { AddProductMethodSheet } from "@/features/products/components/AddProductMethodSheet";
 import { useInvestigation } from "@/lib/store/InvestigationProvider";
-import { useDialogPresence, useHeldWhileClosing } from "@/lib/useModalDialog";
+import { DROP_EXIT_MS, useDialogPresence, useHeldWhileClosing } from "@/lib/useModalDialog";
 import { MAX_CHECK_PRODUCTS, matchedActives } from "@/features/check/check";
 import { useCheckSearch } from "@/features/check/useCheckSearch";
 import { ownedProducts, skinProfile } from "@/lib/demo";
@@ -127,7 +127,7 @@ export function CheckBuilder() {
      Clearing the field flips `results` to the page's own list in the same
      render that starts closing the panel, so without the held copy the search
      faded out as "Search results (5)" over products nobody searched for. */
-  const dropdown = useDialogPresence(open);
+  const dropdown = useDialogPresence(open, DROP_EXIT_MS);
   const shown = useHeldWhileClosing(open, { loading, results, resultsLabel });
 
   useEffect(() => {
