@@ -1,10 +1,27 @@
 # 002 — SmoothScroll: leave trackpad scrolling to the browser
 
-- **Status**: TODO
-- **Commit**: `d7220d6` — plus the uncommitted working tree of 13 Sep 2026 (the widened `SmoothScroll.tsx` is not in that commit). Search by quoted code.
+- **Status**: DEFERRED — needs re-planning (13 Sep 2026). Not applied.
+- **Commit**: `c5edd11`. Search by quoted code.
 - **Severity**: HIGH
 - **Category**: Interruptibility (gesture-driven input)
 - **Estimated scope**: 1 file (`components/layout/SmoothScroll.tsx`), ~45 lines
+
+## ⚠️ Deferred during execution: the classifier can't tell a Mac mouse from a trackpad
+
+Step 1's STOP condition is met by the browsers' own source, before any hardware logging:
+
+- **Chrome on macOS.** `components/input/web_input_event_builders_mac.mm` builds a trackpad event with `wheel_ticks_y = delta_y / kScrollbarPixelsPerCocoaTick`, and a discrete mouse event with `delta_y = [event deltaY] * kScrollbarPixelsPerCocoaTick` and `wheel_ticks_y = kCGScrollWheelEventDeltaAxis1` (the integer line count). `kScrollbarPixelsPerCocoaTick` is `40.0` (`ui/events/cocoa/cocoa_event_utils.h`). Blink (`wheel_event.cc`) then exposes `wheelDeltaY = wheel_ticks_y × 120 / dpr` and `deltaY = −delta_y / dpr`.
+  - A trackpad always gives `|wheelDeltaY| = 3·|deltaY|`, as the plan expects.
+  - A mouse notch whose accelerated delta equals its line count gives the same 3× ratio. A slow single notch lands at `deltaY` 40 or less, under `NOTCH_MIN_PX`, and a stream stays "precise" once any of its events is. Most mouse gestures would go native.
+- **Safari.** `PlatformEventFactoryMac.mm` sets a mouse event's `wheelTicks` to the raw delta and then multiplies the delta by `pixelsPerLineStep`, and a trackpad event's `wheelTicks` to `delta / pixelsPerLineStep`. `WheelEvent.cpp` uses `wheelDelta = wheelTicks × TickMultiplier` for both, so the ratio of `wheelDelta` to `delta` is identical for the two devices. The 3× test can never separate them in Safari.
+
+Net effect, as written: on the Mac, in both Chrome and Safari, `SmoothScroll` would stop gliding a mouse wheel as well as a trackpad. That removes the glide asked for on 13 Sep 2026, including inside the `/check/new` basket tray. Plan 003 was applied without this plan; its dependency was ordering only.
+
+**To re-plan:**
+1. Run step 1's logging on the actual Mac: mouse and trackpad, in Chrome and Safari.
+2. Then either build a classifier on what was logged, or decide that trackpads keep the glide.
+
+Neither decision belongs to an executor.
 
 ## Problem
 
