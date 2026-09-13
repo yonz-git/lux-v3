@@ -196,7 +196,8 @@
      profile card beside it. Rows stay at their natural height. */
   .body[data-layout="grid"] {
     display: grid;
-    grid-template-columns: 640px 1fr;
+    /* `--hub-grid-columns` is set inline by the `gridColumns` prop */
+    grid-template-columns: var(--hub-grid-columns, 640px 1fr);
     gap: var(--gutter-desktop); /* 24 */
     align-items: start;
     width: 100%;

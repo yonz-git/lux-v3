@@ -393,12 +393,14 @@
    above a band of empty fill the height of the button. Positioned, the well
    contributes nothing of its own and the row is sized by the FACE — which is
    the block that actually has a drawn size to keep — with the picture then
-   filling whatever that leaves. `slice` crops it, so no ratio is imposed. */
+   filling whatever that leaves. `cover` crops it, so no ratio is imposed. */
 .photoArt {
   position: absolute;
   inset: 0;
   width: 100%;
   height: 100%;
+  object-fit: cover;
+  filter: saturate(0.7);
 }
 
 /* the one control on the screen, so it owes its own gap rather than inheriting

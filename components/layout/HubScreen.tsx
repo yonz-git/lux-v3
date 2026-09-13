@@ -1,6 +1,6 @@
 "use client";
 
-import type { ReactNode } from "react";
+import type { CSSProperties, ReactNode } from "react";
 import Link from "next/link";
 import styles from "./HubScreen.module.css";
 import { BottomNav, type NavSection } from "./BottomNav";
@@ -55,6 +55,7 @@ export function HubScreen({
   belowHeading,
   center,
   tightTop,
+  gridColumns,
   footer,
   children,
 }: {
@@ -89,6 +90,12 @@ export function HubScreen({
    * the selector to nothing.
    */
   tightTop?: boolean;
+  /**
+   * `grid` only: the desktop `grid-template-columns` (default `640px 1fr`).
+   * ⚠️ NOT IN FIGMA — `Check-in detail` passes `440px 1fr 1fr`: a column that
+   * hugs its square photo, and two halves for the cards beside it.
+   */
+  gridColumns?: string;
   /** pinned below the body — `Product added`'s two stacked buttons */
   footer?: ReactNode;
   children?: ReactNode;
@@ -154,7 +161,17 @@ export function HubScreen({
 
         {center && <div className={styles.flex} aria-hidden="true" />}
 
-        <div className={styles.body} data-layout={layout} data-reveal data-reveal-stagger>
+        <div
+          className={styles.body}
+          data-layout={layout}
+          data-reveal
+          data-reveal-stagger
+          style={
+            gridColumns
+              ? ({ "--hub-grid-columns": gridColumns } as CSSProperties)
+              : undefined
+          }
+        >
           {layout === "card" && !center && heading}
           {children}
         </div>

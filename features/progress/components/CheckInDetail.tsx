@@ -21,6 +21,7 @@ import { useHeldWhileClosing } from "@/lib/useModalDialog";
 import { ownedProducts } from "@/lib/demo";
 import { formatDay, fromIso } from "@/lib/date";
 import {
+  BUCKET_LIST_TITLE,
   formatAdded,
   fullName,
   resultMeta,
@@ -276,6 +277,11 @@ export function CheckInDetail({ date, now }: { date: string; now: number }) {
       action={dayTag ? <Tag variant="brand">{dayTag}</Tag> : undefined}
       nav="progress"
       layout="grid"
+      /* ⚠️ NOT IN FIGMA — 440, not the comp's 640: the square 392 photo plus
+         the card's 24 padding each side, so the photo card hugs the photo. The
+         freed width splits in two so symptoms and severity share one row, with
+         products spanning both under them. Asked for 13 Sep 2026. */
+      gridColumns="440px 1fr 1fr"
     >
       {!entry && (
         <DataCard className={styles.card}>
@@ -514,8 +520,18 @@ export function CheckInDetail({ date, now }: { date: string; now: number }) {
                   <li key={p.id} className={styles.product}>
                     <ProductThumb product={p} />
                     <span className={styles.productText}>
-                      <span className={`${styles.productName} t-h6`}>
-                        {fullName(p)}
+                      {/* ⚠️ NOT IN FIGMA — the product's group as a pill after
+                          its name, asked for 13 Sep 2026. It is the user's own
+                          answer to "how long have you used it?", labelled as
+                          the Products hub titles its rows, so the two screens
+                          cannot disagree about what a product is. */}
+                      <span className={styles.productHead}>
+                        <span className={`${styles.productName} t-h6`}>
+                          {fullName(p)}
+                        </span>
+                        <Tag className={styles.productGroup}>
+                          {BUCKET_LIST_TITLE[p.bucket]}
+                        </Tag>
                       </span>
                       {/* ⚠️ NOT THE COMP'S "Moisturizer · Applied Morning &
                           Night" — LUX stores neither a category nor a routine
@@ -619,7 +635,7 @@ export function CheckInDetail({ date, now }: { date: string; now: number }) {
                   <Button
                     variant="secondary"
                     size="md"
-                    fullWidth
+                    className={styles.addNew}
                     icon={<PlusIcon />}
                     onClick={() => setAddingManually(true)}
                   >

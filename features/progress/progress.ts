@@ -355,8 +355,8 @@ const DEMO_NOTE =
 /* ⚠️ THE SAME SENTINEL `CheckIn.photo` IS DOCUMENTED TO HOLD AND THE CHAT
    WRITES (`components/CheckIn.tsx`) — every capture surface in LUX is a
    placeholder, so this records THAT a photo was taken and never an image. The
-   picture itself is drawn by `CheckInPhotoArt` from the DATE, so seven seeded
-   days give seven different captures without seven assets. */
+   picture itself is `CheckInPhotoArt`, which since 13 Sep 2026 shows one
+   sample photograph for every capture. */
 const DEMO_PHOTO = "captured";
 
 function demoExtras(

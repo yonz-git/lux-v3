@@ -197,6 +197,7 @@
 
 .photoGrid {
   display: flex;
+  justify-content: center;
   gap: var(--space-md); /* 12 */
   width: 100%;
 }
@@ -212,7 +213,12 @@
   align-items: center;
   justify-content: center;
   min-width: 0;
-  height: 120px;
+  /* ⚠️ SQUARE, NOT THE COMP'S 120-TALL STRIP — asked for directly on 13 Sep
+     2026, once the well held a photograph: a 592×120 crop showed a thin band
+     of it. Capped at the 392 the recap's photo well uses, so it is not a
+     592-square on desktop. */
+  aspect-ratio: 1 / 1;
+  max-width: 392px;
   overflow: hidden;
   border-radius: var(--radius-lg); /* 16 */
   background: var(--color-surface-data-strong);
@@ -221,8 +227,12 @@
 /* the drawn capture fills the well and is cropped to it, the way a photograph
    would be — see CheckInPhotoArt for why there is a drawing here at all */
 .photoArt {
+  display: block;
   width: 100%;
   height: 100%;
+  /* a photograph fills its well and is cropped, never letterboxed */
+  object-fit: cover;
+  filter: saturate(0.7);
 }
 
 /* ---- card · products used ------------------------------------------------ */
@@ -259,6 +269,23 @@
   gap: var(--space-2xs); /* 2 */
   flex: 1 1 auto;
   min-width: 0;
+}
+
+/* the name and its group pill share the first line, wrapping under a long name */
+.productHead {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--space-xs) var(--space-sm); /* 4 / 8 */
+}
+
+/* ⚠️ NOT IN FIGMA — the group pill wears `bg/brand-soft` at 38% (#8284c061)
+   with `text/primary` ink, one step darker than Tag's own `text/secondary`,
+   asked for 13 Sep 2026. Scoped two classes plus the attribute deep so it
+   outranks `.tag[data-variant="neutral"]` whichever module loads last. */
+.productHead .productGroup[data-variant] {
+  background: color-mix(in srgb, var(--color-bg-brand-soft) 38%, transparent);
+  color: var(--color-text-primary);
 }
 
 .productName {
@@ -330,6 +357,12 @@
   background: var(--color-surface-data-strong);
 }
 
+/* sized like `/products`' `Add more products` — the button hugs its own label
+   and sits centred, rather than stretching across the well */
+.addNew {
+  align-self: center;
+}
+
 .resultList {
   display: flex;
   flex-direction: column;
@@ -355,9 +388,36 @@
   background: var(--color-state-hover-overlay);
 }
 
+/* ⚠️ NOT IN FIGMA — the hovered row's ink goes white, asked for 13 Sep 2026.
+   It eases with the fill rather than snapping, so the name, the meta and the
+   plus change together at `duration/base`. */
+.resultName,
+.resultMeta,
+.plus {
+  transition: color var(--duration-base) var(--ease-standard);
+}
+
+.result:hover .resultName,
+.result:hover .resultMeta,
+.result:hover .plus {
+  color: var(--color-text-on-data-inverse);
+}
+
 @media (hover: none) {
   .result:hover {
     background: none;
+  }
+
+  .result:hover .resultName {
+    color: var(--color-text-on-data);
+  }
+
+  .result:hover .resultMeta {
+    color: var(--color-text-on-data-muted);
+  }
+
+  .result:hover .plus {
+    color: var(--color-text-on-data-secondary);
   }
 }
 
@@ -398,19 +458,37 @@
     margin-top: 0;
   }
 
-  .symptoms,
-  .severity,
-  .products {
+  /* ⚠️ NOT IN FIGMA — symptoms and severity share row 1 as two halves, and
+     products spans both under them (the screen passes `440px 1fr 1fr`). The
+     pair stretches to one height so the row reads as a row. Asked for 13 Sep
+     2026; the comp stacks all three in one column. */
+  .symptoms {
     grid-column: 2;
+    grid-row: 1;
+    align-self: stretch;
   }
 
-  /* ⚠️ SPANNING THREE ROWS — col-2's three cards define them, exactly as
-     `/progress`'s calendar spans the four its own column-2 neighbours define.
-     A record missing one of those three simply leaves the last track empty,
-     which costs nothing: an empty track has no height. */
+  .severity {
+    grid-column: 3;
+    grid-row: 1;
+    align-self: stretch;
+  }
+
+  /* ⚠️ BOTH SIDES STRETCH TO ONE BOTTOM LINE, asked for 13 Sep 2026: products
+     fills row 2, col-1 fills both rows, and the notes card — col-1's last —
+     takes whatever is left, so whichever column is taller the other meets it. */
+  .products {
+    grid-column: 2 / span 2;
+    grid-row: 2;
+    align-self: stretch;
+  }
+
+  /* ⚠️ SPANNING BOTH ROWS — the half-width pair defines row 1 and products
+     row 2. A record missing a card simply leaves its cell empty. */
   .col1 {
     grid-column: 1;
-    grid-row: 1 / span 3;
+    grid-row: 1 / span 2;
+    align-self: stretch;
     gap: var(--gutter-desktop); /* 24 */
   }
 
@@ -422,5 +500,6 @@
 
   .notes {
     order: 2;
+    flex: 1 1 auto;
   }
 }
