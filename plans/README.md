@@ -23,6 +23,7 @@ These plans come from the `improve-animations` audit of 13 Sep 2026. Each one is
 | 013 | [Removed products close; Undo reopens](013-product-removal-closes-smoothly.md) | MEDIUM | Missed opportunity | 007 | DONE |
 | 014 | [Page chrome stays still when the page changes](014-page-chrome-stays-still.md) | HIGH | Purpose & frequency | — | TODO |
 | 015 | [The add tray's height follows its view](015-tray-height-follows-view.md) | MEDIUM | Missed opportunity | — | TODO |
+| 016 | [Tray views fade in; a closing tray keeps its view](016-tray-views-arrive-and-hold-on-close.md) | MEDIUM | Missed opportunity + exit bug | 015 | TODO |
 
 ## Recommended order
 
