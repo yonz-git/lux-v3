@@ -65,14 +65,15 @@ import styles from "./LogoEntrance.module.css";
  * gradient, exactly as it did before. The entrance is a decoration that cannot
  * strand the app behind it.
  *
- * ⚠️ IT PLAYS ON EVERY LOAD OF `/`, AND THAT IS NOT THE "100 TIMES A DAY"
- * ANIMATION IT LOOKS LIKE. Nothing in the app navigates BACK to `/` — Welcome
- * carries `BottomNav active="none"` and no nav item points at it — so the only
- * way to see this is a cold start, which is also the only way to start the
- * investigation, because the store is in memory and a reload begins empty. It
- * is a first-run animation that happens to have no `sessionStorage` behind it,
- * rather than a splash on a screen people pass through. It is skippable anyway;
- * see below.
+ * ⚠️ IT PLAYS ONCE PER PAGE LOAD — and until 13 Sep 2026 it played on every
+ * mount of `/`, on the claim that nothing navigates back here. Two things do:
+ * `Save & exit` on every flow step (`ScreenHeader`'s `saveHref` defaults to
+ * `/`) and Back on step 1 (`prevHref`). Each return replayed the three-second
+ * lockup and held Welcome's CTA until ~4.8s. `played` (module state) survives
+ * client-side navigation and resets on reload, so a cold start still gets
+ * the entrance and an in-app return gets Welcome, settled — see
+ * `entrancePlayed` and the `returning` branch in Welcome.tsx. It is
+ * skippable anyway; see below.
  *
  * ⚠️ ANY TAP AND ANY KEY SKIP IT — THE KEY HALF IS AN ACCESSIBILITY FIX, NOT A
  * CONVENIENCE. The veil covers a fully interactive Welcome, so the first Tab
@@ -94,6 +95,18 @@ const HOLD_BACKSTOP_MS = 6000;
 /* Welcome's orb — the other end of the hand-off. The class is Welcome's to
    put on `<Orb>`; see `.orb-from-entrance` in globals.css. */
 const HANDOFF_TARGET = ".orb-from-entrance";
+
+/* ⚠️ ONCE PER PAGE LOAD. Module state survives client-side navigation and
+   resets on reload — exactly "the first run of this tab". Set when the
+   entrance ENDS, never on mount: React Strict Mode mounts twice in
+   development, and a flag set on the first mount would skip the entrance on
+   the very load it exists for. */
+let played = false;
+
+/** true once this page load has shown (or skipped) the entrance */
+export function entrancePlayed() {
+  return played;
+}
 
 /* the on-screen box round a set of paths — the symbol's three, or the orb
    mark's three. `getBoundingClientRect` on an SVG path is its transformed
@@ -147,11 +160,18 @@ function aim(el: HTMLElement) {
 
 export function LogoEntrance() {
   const ref = useRef<HTMLDivElement>(null);
-  const [gone, setGone] = useState(false);
+  /* an in-app return to `/`: the entrance already ran on this page load, so
+     render nothing — the effect below then finds no node and takes no hold */
+  const [gone, setGone] = useState(played);
 
   useEffect(() => {
     const el = ref.current;
     if (!el) return;
+
+    const finish = () => {
+      played = true;
+      setGone(true);
+    };
 
     const root = document.documentElement;
     const release = () => {
@@ -188,7 +208,7 @@ export function LogoEntrance() {
       /* nothing to hold for, and nothing to wait on — including the case where
          the stylesheet never arrived and there is no entrance to speak of */
       delete el.dataset.wait;
-      setGone(true);
+      finish();
       return;
     }
 
@@ -260,7 +280,7 @@ export function LogoEntrance() {
         event.animationName === "lux-entrance-skip"
       ) {
         release();
-        setGone(true);
+        finish();
       }
     };
 

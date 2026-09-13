@@ -1,10 +1,19 @@
 # 001 — Play the logo entrance once per page load, not on every return to `/`
 
-- **Status**: TODO
-- **Commit**: `d7220d6` — plus the uncommitted working tree of 13 Sep 2026. Line numbers below refer to that working tree; search by the quoted code, not by number alone.
+- **Status**: DONE — 13 Sep 2026. Checked in headless Chrome with a fresh profile:
+  - **Hard load of `/`:** it still renders and holds for the entrance. The first-run composition (question bubble, `orb-from-entrance`, three `.welcome-rise`) survives the entrance ending.
+  - **Back from step 1 and `Save & exit`:** both return to Welcome with no entrance, no hold, no question bubble and no rise. The hero and actions run `lux-fade-in` 0.32s, and the nav stays solid (see the post-review change below). The CTA is visible and hit-testable 300ms after arrival (before: not within 6.5s), and the first Tab lands on it.
+  - **Reload:** the entrance plays again, with no console errors.
+
+  Accepted, not changed: on a return, the orb halo's own 700ms-delayed glow still fades in after the reveal.
+- **Commit**: `c5edd11`. Search by the quoted code, not by line number alone.
 - **Severity**: HIGH
 - **Category**: Purpose & frequency
 - **Estimated scope**: 2 files (`components/layout/LogoEntrance.tsx`, `features/my-skin/components/Welcome.tsx`), ~40 lines
+
+## ⚠️ Post-review change, 13 Sep 2026
+
+Step 7's `BottomNav` branch changed after the final review. On a return the nav now gets **no class**; the step said `reveal`. The nav is chrome: `HubScreen` and `QuestionScreen` render it solid through every route change, so revealing it on Welcome made the one element that never moves blink out and fade back over 320ms. The hero and actions keep `.reveal`. Only the first run stages the nav in with `welcome-rise`. Re-verified in headless Chrome, on Back and on `Save & exit`: the nav runs no animation (`animation-name: none`), the hero and actions still run `lux-fade-in` 0.32s, the CTA is usable at 300ms and takes the first Tab, and a hard load still plays the entrance.
 
 ## Problem
 
@@ -119,7 +128,7 @@ Each return replays the whole thing: a 2300ms lockup, a 700ms hand-off, and Welc
     * skippable anyway; see below.
    ```
 
-5. **`features/my-skin/components/Welcome.tsx`: read the flag.** Add the import after the `BottomNav` import (line 7):
+5. **`features/my-skin/components/Welcome.tsx`: read the flag once per mount.** Add `import { useState } from "react";` directly after the `"use client";` line and its blank line (before `import styles from "./Welcome.module.css";`). Add this import after the `BottomNav` import (line 7):
 
    ```tsx
    import { entrancePlayed } from "@/components/layout/LogoEntrance";
@@ -131,8 +140,11 @@ Each return replays the whole thing: a 2300ms lockup, a 700ms hand-off, and Welc
      /* ⚠️ AN IN-APP RETURN IS NOT A FIRST RUN. `Save & exit` and Back on step 1
         both land here; the entrance and this screen's staged arrival already
         played on this page load, so the settled composition — orb, reply, CTA —
-        fades in on the standard page reveal instead. See `entrancePlayed`. */
-     const returning = entrancePlayed();
+        fades in on the standard page reveal instead. See `entrancePlayed`.
+        Read ONCE PER MOUNT (the `useState` initialiser), not on every render:
+        the flag flips when the first-run entrance ends, and a re-render after
+        that must not swap a first-run Welcome into this composition mid-screen. */
+     const [returning] = useState(entrancePlayed);
    ```
 
 6. **Same file: branch the hero.** Replace `<div className={styles.hero}>` with:
