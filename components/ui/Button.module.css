@@ -1,7 +1,8 @@
 /* Button — Figma component set 37:23. Figma and this file AGREE on the states;
    the swap below was made in BOTH on 22 Aug 2026.
 
-     Default    37:5    gradient/brand -> #637073, label text/on-brand, no stroke
+     Default    37:5    gradient/brand (⚠️ indigo here, still sage in Figma —
+                        see 1 below), label text/on-brand, no stroke
      Hover      37:9    gradient/brand-hover — the SAME two ends, exchanged,
                         at full strength
      Disabled   37:13   the whole control at opacity/disabled (0.4)
@@ -21,10 +22,20 @@
 
    ⚠️ TWO THINGS STILL DIFFER FROM FIGMA, both deliberate:
 
-     1. gradient/brand's START. Figma holds #bbd3d9; globals.css overrides it to
-        #a2b9bf, one step darker, for the white label's contrast. It still fails
-        (2.05:1 at the left edge) and #a2b9bf is a CHOSEN value — see the block
-        on --color-gradient-brand-start in globals.css before touching it.
+     1. gradient/brand, BOTH STOPS — indigo since 8 Sep 2026. Figma holds the
+        sage #bbd3d9 -> #637073; globals.css declares #657792 -> #39386f on
+        :root, and a change has to land in three places: gradient/brand-*, the
+        button/bg-default-* mirrors this file reads, and the two --grad-*
+        @property initial-values, which take no var() and are hand-written.
+        A REASSIGNMENT, not a retune: the sage sat in LUX's ground family (hue
+        213-215, chroma 0.016-0.027) and read as a disabled steel pill; the
+        indigo runs hue 258 -> 282, chroma 0.047 -> 0.092, and its dark end is
+        bg/brand's value too: one indigo for the action and every selected mark.
+        The white label measures 4.56:1 at the left edge and 10.66:1 at the
+        right, AA across the whole sweep. The old note that #a2b9bf is a
+        CHOSEN value not to be improved is retired with the value. See the
+        block above those declarations in globals.css, non-negotiable 5 and
+        docs/figma-catchup.md §2 and §6 before touching either stop.
      2. Secondary's 1px border/default. Figma keeps the stroke as the thing that
         separates Secondary from Primary now that both carry gradients; this file
         draws no border at all. UNRESOLVED — see .secondary below.

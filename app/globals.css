@@ -366,50 +366,64 @@
 }
 
 /* ==========================================================================
-   `gradient/brand`'s START — darkened one step, and NOT to a passing value.
+   `gradient/brand` — INDIGO since 8 Sep 2026, and AA from end to end.
 
-   ⚠️ NOT IN FIGMA, AND IT IS A DESIGN CHANGE RATHER THAN A CONTRAST FIX. The
-   start moved `#bbd3d9` → `#a2b9bf`; the end is untouched at `#637073`. That is
-   a deliberate call about how the button should LOOK, made after the fix that
-   would actually clear AA was built and rejected as too dark (see below), so do
-   not read this value as the accessibility answer or "improve" it toward one
-   without asking.
+   ⚠️ NOT IN FIGMA, AND A REASSIGNMENT RATHER THAN A RETUNE. Figma holds the
+   sage `#bbd3d9` → `#637073`; the build runs `#657792` → `#39386f`. Plotted in
+   OKLCH, LUX draws a sage GROUND (canvas 215, `surface/data` 199.8, `bg/nav`
+   196.8) and an indigo FIGURE (selection, chips, checked days, the orb's
+   mark). The sage button sat in the ground family at hue 213–215 with chroma
+   0.016–0.027 — the colour drained out of it — and read on ten routes as a
+   disabled steel pill. The indigo runs hue 258 → 282 and GAINS chroma as it
+   darkens, 0.047 → 0.092.
 
    WHERE IT LEAVES THE LABEL. `Button` draws `text/on-brand` — white — centred,
-   so the ink sits across the middle of the sweep. Measured at the glyphs rather
-   than at the button edges, on `/`:
+   so the ink sits across the middle of the sweep. Measured:
 
-                       left edge   first glyph   last glyph   right edge
-     #bbd3d9 (before)     1.56         2.16          3.36         5.13
-     #a2b9bf (now)        2.05         2.67          3.73         5.13
+     left edge   first glyph   centre   last glyph   right edge
+       4.56         5.62        6.90       8.59        10.66
 
-   against 4.5:1 for 17px Regular. So it is better and it still fails, on the
-   primary call to action on every screen in the app. Recorded rather than
-   rounded off.
+   against 4.5:1 for 17px Regular — AA across the whole sweep, on the primary
+   call to action on every screen. The sage ran 2.05:1 at the left edge and
+   was the app's widest contrast failure. Every channel darkens from left to
+   right, so the left edge is the floor and nothing between the stops
+   measures lower.
 
-   ⚠️ NO INK COLOUR RESOLVES THIS — the SURFACE has to move, which is why it is
-   a design decision and not a token correction like the two blocks above. White
-   needs the light end darker still; the app ink `#2e2a3f` is fine at the light
-   end and fails at the dark one (2.70:1). Nothing clears 4.5:1 at both ends,
-   because they are ~5:1 apart from each other. The change that works is seating
-   the whole gradient lower on the sage ramp — `#5f7275` → `#3c4b4e` gives
-   4.87:1 and 9.10:1 — and it reads as a solid dark pill rather than a
-   light-to-dark sweep, which is the reason it was not taken. A lighter LABEL
-   treatment that keeps the sweep would have to come from Figma.
+   ⚠️ THIS BLOCK STILL TOLD THE SAGE STORY UNTIL 13 Sep 2026, five days after
+   the values under it had moved: `#a2b9bf` as a start darkened "NOT to a
+   passing value", a chosen value not to be improved. That instruction is
+   retired with the value.
+
+   ⚠️ NO INK COLOUR COULD FIX THE SAGE — the SURFACE had to move, which is why
+   this is a design decision and not a token correction. It was tried DOWN the
+   sage ramp twice: `#5f7275` → `#3c4b4e` passed (5.06:1 and 9.10:1 at its
+   edges) and was rejected as a flat dark slab rather than a sweep, then the
+   start alone went `#bbd3d9` → `#a2b9bf` and still failed. The axis nobody had
+   tried was HUE. The slab rejection STANDS and this does not reopen it: the
+   indigo keeps a 24° hue rotation and nearly doubles its chroma, so it still
+   reads as a sweep.
+
+   ⚠️ ITS DARK END IS `bg/brand`, ON PURPOSE. `bg/brand` moved to `#39386f` the
+   same day (THE INDIGO FAMILY, above), so the primary action and every mark
+   that says "selected" are one indigo. Move this end alone and the button and
+   the checked-in discs on `/progress` are two violets side by side again.
 
    ⚠️ AXE CANNOT SEE ANY OF THIS. `color-contrast` degrades to INCOMPLETE, never
-   to a violation, the moment a background is a gradient — every route in this
-   app reports zero contrast violations with this on screen. Measure it by
-   sampling the gradient at the label's own x-range; do not take a clean axe run
-   as evidence.
+   to a violation, the moment a background is a gradient — a clean run proved
+   nothing while this failed and proves nothing now that it passes. Measure it
+   by sampling the gradient at the label's own x-range.
 
-   ⚠️ IT TAKES TWO VARIABLES PLUS THE `@property` ABOVE, because Figma holds this
-   paint twice. `Button` reads `button/bg-default-*`, which `tokens.css`
-   documents as mirroring `gradient/brand` — the same colours under two names.
-   Both move together, as they do in Figma.
+   ⚠️ IT TAKES FOUR LINES HERE PLUS THE TWO `@property` INITIAL-VALUES AT THE
+   TOP OF THIS FILE. Figma holds this paint twice — `gradient/brand` and
+   `button/bg-default-*`, the same colours under two names — and `Button`
+   reads the second. A registered property takes no `var()`, so its
+   initial-value is a hand-written copy, and a stale one flashes the previous
+   colour for a frame. All six move together.
 
    ⚠️ DECLARED HERE, NOT IN `tokens.css`: that file is generated from the Figma
-   variables, and Figma still says `#bbd3d9`. **Raise it there.**
+   variables, and Figma still holds the sage. **Raise it there** — both stops,
+   the `button/bg-default-*` mirrors and `gradient/brand-hover`; see
+   `docs/figma-catchup.md` §2 and §6.
    ========================================================================== */
 
 :root {
