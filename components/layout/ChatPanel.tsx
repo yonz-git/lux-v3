@@ -98,7 +98,14 @@ export function ChatPanel({
       <div className={styles.header}>
         <div className={styles.headerLeft}>
           <span className={styles.avatar}>
-            <Orb size="50px" />
+            {/* ⚠️ NOT IN FIGMA — WELCOME'S ORB, asked for directly 13 Sep 2026
+                ("use the orb animation we made"): the mark assembles L → U → X
+                as the panel arrives and the rim light travels round it. A
+                THIRD `halo` route, past the two globals.css says it is scoped
+                to — the ask overrides that line; raise it in Figma. The halo's
+                geometry is all ratios, so it lands on a 50px rim as it does on
+                a 129px one. */}
+            <Orb size="50px" animateIn halo />
           </span>
           <p className="t-body1">Hi, I&rsquo;m LUX</p>
         </div>

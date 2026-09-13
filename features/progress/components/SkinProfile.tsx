@@ -76,7 +76,37 @@ export function SkinProfile({
                is full-width under the divider. A <p> cannot live inside a <dl>,
                which is why the meta line sits outside it. */
             <dl className={styles.currentPair}>
-              <Pair label={current.label} value={current.value} />
+              {/* ⚠️ NOT IN FIGMA — SYMPTOMS AS PILLS, PLACES ON THE LINE UNDER
+                  THEM, asked for directly 13 Sep 2026. The one sentence
+                  "Breakouts on Neck, Cheeks (R), …" wrapped mid-list; the
+                  symptoms are a set, so they take CompatCard's band-pill recipe
+                  (26 tall, 5/14, full radius, `Label Small`) and the locations
+                  follow as `on …`. With no symptoms the card falls back to the
+                  plain pair — `Affected areas` has nothing to pill. */}
+              {current.symptoms.length > 0 ? (
+                <div className={styles.pair}>
+                  <dt className={`${styles.pairLabel} t-label-sm`}>
+                    {current.label}
+                  </dt>
+                  <dd className={styles.currentValue}>
+                    <span className="visually-hidden">{current.value}</span>
+                    <span className={styles.symptoms} aria-hidden="true">
+                      {current.symptoms.map((s) => (
+                        <span key={s} className={`${styles.symptom} t-label-sm`}>
+                          {s}
+                        </span>
+                      ))}
+                    </span>
+                    {current.locations.length > 0 && (
+                      <span className={`${styles.pairValue} t-h6`} aria-hidden="true">
+                        on {current.locations.join(", ")}
+                      </span>
+                    )}
+                  </dd>
+                </div>
+              ) : (
+                <Pair label={current.label} value={current.value} />
+              )}
             </dl>
           )}
           {started && <p className={`${styles.started} t-label-sm`}>{started}</p>}

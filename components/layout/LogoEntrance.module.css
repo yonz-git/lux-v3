@@ -22,8 +22,8 @@
   z-index: var(--z-entrance);
   display: grid;
   place-items: center;
-  /* each half starts a short drift outside its slot and the lockup blooms on
-     the way out; neither may widen the document */
+  /* each half starts a short drift outside its slot; it may not widen the
+     document */
   overflow: hidden;
 }
 
@@ -37,8 +37,14 @@
   transition: opacity var(--duration-slow) var(--ease-standard);
 }
 
+/* ⚠️ `animation-name: none`, NOT just opacity 0: the scrim's own fade track
+   (`lux-entrance-scrim`, globals.css) runs on a `both` fill and would otherwise
+   assert opacity 1 over this for the whole lifetime. Cancelled, the declared 0
+   holds and the transition above carries it there. Naming `none` names no
+   animation, so it is safe in a module. */
 .entrance[data-over-canvas]::before {
   opacity: 0;
+  animation-name: none;
 }
 
 /* ⚠️ THE LOGO WAITS FOR THE CANVAS. Every track is paused until
@@ -48,11 +54,16 @@
    keeps this from stranding a page that has no JavaScript. Pausing names no
    animation, so it is safe in a module. */
 .entrance[data-wait],
+.entrance[data-wait]::before,
 .entrance[data-wait] * {
   animation-play-state: paused;
 }
 
-/* ⚠️ THE STAGE IS THE MASTER'S BOX, AND THE TWO SHARES SUM TO 1. The lockup is
+/* ⚠️ THE STAGE NO LONGER ANIMATES — its 1.03 bloom went with the dissolve on
+   12 Sep 2026. An ancestor transform would move the symbol off the point the
+   hand-off is aimed at, and `aim` measures through it.
+
+   ⚠️ THE STAGE IS THE MASTER'S BOX, AND THE TWO SHARES SUM TO 1. The lockup is
    538x173; `LuxLogoMark` is viewBox 0 0 209 173 (the symbol PLUS the master's
    clear space before the L) and `LuxLogoWord` is 209 0 329 173. At 209/538 and
    329/538 of one width, with NO flex gap, they render at one scale and one
@@ -68,23 +79,47 @@
 .mark,
 .word {
   flex: none;
-  /* both halves fade and drift for 1.6s over a gradient fill; the hint keeps
-     each on its own composited surface rather than repainting the veil under
-     them every frame */
-  will-change: transform, opacity;
+  /* both halves fade, drift, settle from 1.06 and sharpen from a blur for 1.6s
+     over a gradient fill; the hint keeps each on its own composited surface
+     rather than repainting the veil under them every frame. `filter` is in the
+     list because a blur is rasterised per frame otherwise. */
+  will-change: transform, opacity, filter;
+  /* each half condenses onto its OWN centre — not onto the seam — so the scale
+     never adds to the drift and the two never touch on the way in */
+  transform-origin: center;
 }
 
 /* ⚠️ NO `z-index` ON THE SYMBOL AND NO SECOND WRAPPER ON THE WORDMARK — BOTH
    BELONGED TO THE PUSH. The symbol used to cross the L and had to paint over
    it; the wordmark made two moves on one transform and needed an element for
    each. The halves now start APART and drift together, so they never overlap
-   and each makes exactly one move. See "The entrance" in globals.css. */
+   and each makes exactly one move. See "The entrance" in globals.css.
+
+   ⚠️ THE SVG INSIDE EACH IS THE SECOND ELEMENT, AND IT IS NOT THAT WRAPPER
+   COMING BACK. The wrapper's track ARRIVES and ends at identity; the svg's
+   track LEAVES — the symbol travels to the orb, the wordmark recedes. Two
+   tracks that both set `transform` cannot share an element (the later one
+   owns the property for its whole life), and the svg was already there. */
 .mark {
   width: 38.8476%; /* 209 / 538 */
 }
 
 .word {
   width: 61.1524%; /* 329 / 538 */
+}
+
+/* the symbol's travel — `transform-origin: 0 0` is what the FLIP maths in
+   LogoEntrance.tsx `aim` assumes: scale about the svg's own corner, then
+   translate the corner. Change one and you change the other. */
+.markSvg {
+  transform-origin: 0 0;
+  will-change: transform, opacity;
+}
+
+/* the wordmark's recede blooms about its own centre, as the lockup used to */
+.wordSvg {
+  transform-origin: center;
+  will-change: transform, opacity, filter;
 }
 
 @media (min-width: 1024px) {

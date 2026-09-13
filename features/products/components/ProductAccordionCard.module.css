@@ -2,13 +2,23 @@
    `Long-term products list` (581:1593 / 583:1924).
 
    Card: radius/2xl, padding 16/18, surface/frost-light + the frosted-row
-   inner shadow. Gap 12 collapsed, 16 expanded. */
+   inner shadow. Gap 12 collapsed, 16 expanded.
+
+   ⚠️ THE GAP IS 16 WHETHER OR NOT THE CARD IS OPEN, AND IT DRAWS THE SAME
+   CARD. Closed, the header is the card's only child, so the comp's collapsed 12
+   sat between nothing — the value only ever rendered once the panel was there.
+   It stopped being harmless on 13 Sep 2026, when the panel started closing
+   with motion: `data-open` flips the moment the header is tapped, the panel is
+   still on screen for its 200ms exit, and a gap keyed to `data-open` dropped
+   16 to 12 in the first frame of it. `--collapse-gap` hands the same 16 to the
+   panel's `Collapse` — see "Dropdowns" in globals.css. */
 
 
 .card {
   display: flex;
   flex-direction: column;
-  gap: var(--space-md); /* 12 collapsed */
+  gap: var(--space-lg); /* 16 — see above */
+  --collapse-gap: var(--space-lg);
   padding: var(--space-lg) 18px;
 
   border-radius: var(--radius-2xl);
@@ -18,13 +28,9 @@
   backdrop-filter: blur(var(--blur-card));
 }
 
-.card[data-open="true"] {
-  gap: var(--space-lg); /* 16 expanded */
-}
-
 /* ⚠️ NOT IN FIGMA — the card as it renders INSIDE a category group's box on
    the PRODUCTS hub. Same anatomy, one step down: padding 12 rather than 16/18,
-   gap 8 rather than 12, the thumb at `size/control-sm` (36) rather than 48 and
+   gap 12 rather than 16, the thumb at `size/control-sm` (36) rather than 48 and
    the name at `Label` rather than `H6`. Nothing is removed and nothing moves —
    it is the same card, smaller, because it is now a box inside a box rather
    than a card on the canvas.
@@ -37,21 +43,25 @@
    `surface/frost-nav` — and the blur goes with it, since the group behind it
    has already blurred what is under both.
 
-   8 is concentric, not a taste: the group's box is 16 and insets these by 8,
-   so 16 − 8 is the radius that keeps the two curves parallel. Change either
-   and change both — see `.panel` in MyProducts.module.css. */
+   ⚠️ 12, NOT THE CONCENTRIC 8 — changed 13 Sep 2026, asked for directly
+   ("increase the border radius for all of these"). The group's box is 16 and
+   insets these by 8, so 16 − 8 was the radius that kept the two curves
+   parallel; on screen, 8 read as a near-square tile against the box's soft
+   corners. 12 trades exact concentricity for a card that belongs to the same
+   rounded family as its box. `EmptyBox`'s compact variant takes the same
+   value — an empty group must open onto the same shape. See `.panel` in
+   MyProducts.module.css and `.empty.emptyCompact` in ProductList.module.css. */
 .card.compact {
-  gap: var(--space-sm); /* 8 collapsed */
+  /* 12 — the expanded value whether or not it is open, for the reason on
+     `.card` above: the collapsed 8 sat between nothing */
+  gap: var(--space-md);
+  --collapse-gap: var(--space-md);
   padding: var(--space-md); /* 12 */
 
-  border-radius: var(--radius-sm);
+  border-radius: var(--radius-md); /* 12 */
   background: var(--color-bg-surface-frost);
   -webkit-backdrop-filter: none;
   backdrop-filter: none;
-}
-
-.card.compact[data-open="true"] {
-  gap: var(--space-md); /* 12 expanded */
 }
 
 .header {

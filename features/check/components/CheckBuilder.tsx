@@ -15,6 +15,7 @@ import { Tag } from "@/components/ui/Tag";
 import { CheckBasketBar, CheckBasketSheet } from "./CheckBasket";
 import { AddProductMethodSheet } from "@/features/products/components/AddProductMethodSheet";
 import { useInvestigation } from "@/lib/store/InvestigationProvider";
+import { useDialogPresence, useHeldWhileClosing } from "@/lib/useModalDialog";
 import { MAX_CHECK_PRODUCTS, matchedActives } from "@/features/check/check";
 import { useCheckSearch } from "@/features/check/useCheckSearch";
 import { ownedProducts, skinProfile } from "@/lib/demo";
@@ -121,6 +122,13 @@ export function CheckBuilder() {
      panel's head, which does not scroll with the rows. */
   const resultsLabel = `Search results (${results.length})`;
   const open = searching && !dismissed;
+  /* ⚠️ THE PANEL OUTLIVES `open` BY ITS EXIT, AND PAINTS WHAT IT LAST SHOWED
+     WHILE IT GOES — "Dropdowns" in globals.css, and `useHeldWhileClosing`.
+     Clearing the field flips `results` to the page's own list in the same
+     render that starts closing the panel, so without the held copy the search
+     faded out as "Search results (5)" over products nobody searched for. */
+  const dropdown = useDialogPresence(open);
+  const shown = useHeldWhileClosing(open, { loading, results, resultsLabel });
 
   useEffect(() => {
     if (!open) return;
@@ -208,6 +216,7 @@ export function CheckBuilder() {
           <SmallButton
             label="Add"
             arrow={false}
+            specular={false}
             className={styles.add}
             disabled={full}
             aria-label={`Add ${fullName(p)} to this analysis`}
@@ -286,11 +295,15 @@ export function CheckBuilder() {
                 : `${results.length} ${results.length === 1 ? "product" : "products"} found`}
           </p>
 
-          {open && (
-            <div className={`${styles.dropdown} reveal-quick`}>
-              {loading ? (
+          {dropdown.present && (
+            <div
+              className={`${styles.dropdown} drop`}
+              data-state={dropdown.leaving ? "leaving" : undefined}
+              inert={dropdown.leaving}
+            >
+              {shown.loading ? (
                 <p className={`${styles.dropdownNote} t-body3`}>Searching…</p>
-              ) : results.length === 0 ? (
+              ) : shown.results.length === 0 ? (
                 /* `Check — no results` (651:2510), a state of the panel rather
                    than a screen — and reached only once the search has actually
                    answered. Without the `loading` gate it flashed up between the
@@ -314,10 +327,10 @@ export function CheckBuilder() {
                 </div>
               ) : (
                 <>
-                  <h2 className={`${styles.dropdownHead} t-label`}>{resultsLabel}</h2>
+                  <h2 className={`${styles.dropdownHead} t-label`}>{shown.resultsLabel}</h2>
                   <div className={styles.scroll}>
                     <ul className={styles.results}>
-                      {results.map((p) => (
+                      {shown.results.map((p) => (
                         <li key={p.id}>
                           {/* deliberately NOT `ProductRow` — that is the frosted
                               CARD recipe, and a card inside a panel is two

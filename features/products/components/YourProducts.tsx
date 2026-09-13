@@ -7,7 +7,9 @@ import { QuestionScreen } from "@/features/my-skin/components/QuestionScreen";
 import { ChatBubble } from "@/components/ui/ChatBubble";
 import { Tag } from "@/components/ui/Tag";
 import { AddProductMethodSheet } from "./AddProductMethodSheet";
-import { ProductRow, AddProductRow } from "./ProductList";
+import { ProductRow } from "./ProductList";
+import { Button } from "@/components/ui/Button";
+import { PlusIcon } from "@/components/ui/icons";
 import { useInvestigation } from "@/lib/store/InvestigationProvider";
 import { BUCKET_WINDOW, fullName, groupProducts, type SavedProduct } from "@/features/products/products";
 import { nextHref } from "@/features/my-skin/flow";
@@ -132,8 +134,21 @@ export function YourProducts() {
           </ul>
         )}
 
-        <div className={`${styles.addWrap} ${filled ? "" : styles.addWrapEmpty}`}>
-          <AddProductRow label="Add product" onClick={() => setSheetOpen(true)} />
+        {/* ⚠️ NOT IN FIGMA — the secondary `Button` at control/md (48) with a
+            plus, hugging its label and centred: the one add-product recipe,
+            asked for directly 13 Sep 2026. It was the full-width
+            `AddProductRow`. */}
+        <div
+          className={`${styles.addWrap} ${styles.addCentre} ${filled ? "" : styles.addWrapEmpty}`}
+        >
+          <Button
+            variant="secondary"
+            icon={<PlusIcon />}
+            className={styles.addButton}
+            onClick={() => setSheetOpen(true)}
+          >
+            Add product
+          </Button>
         </div>
 
         {filled ? (

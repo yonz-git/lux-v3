@@ -51,6 +51,15 @@
   border-radius: var(--radius-bubble);
   box-shadow: var(--shadow-chat-bubble);
   color: var(--color-text-primary);
+  /* the shine's ink — MUST be this surface's text token, see `.shine-text` in
+     globals.css; the wrapper's own `color` is transparent */
+  --shine-ink: var(--color-text-primary);
+}
+
+/* the text wrapper the shine paints on — block, so the gradient spans the
+   bubble's content box and the band crosses every line at once */
+.text {
+  display: block;
 }
 
 /* The compact bubble — `/chat` only, see ChatBubble.tsx.
@@ -67,13 +76,32 @@
   padding: var(--space-md) var(--space-lg); /* 12 / 16 */
 }
 
+/* ⚠️ NOT IN FIGMA — EACH BUBBLE DARKENS TOWARD ITS LOWER RIGHT, asked for
+   directly 13 Sep 2026. The same diagonal the selected pills took that day
+   (`.chip::before`), so the app's light catches everything from the top-left.
+   The fill holds flat for the first 35%, then runs to itself mixed 17% toward
+   `text/primary` (8%, then 10%, before landing here the same day — each asked
+   for, because the lower mixes were too faint to see) — a shade of the SAME
+   hue, not a second colour, and still
+   OPAQUE (a mix of two opaque colours is opaque), so the "never translucent"
+   rule at the foot of this file stands. `--bubble-fill` is the one value each
+   sender sets; the gradient is written once. Text on the dark end still clears
+   AA by a wide margin (`text/primary` is ~7:1 on these fills before the 8%). */
+.bubble[data-from] {
+  background: linear-gradient(
+    135deg,
+    var(--bubble-fill) 35%,
+    color-mix(in oklab, var(--bubble-fill), var(--color-text-primary) 17%) 100%
+  );
+}
+
 .bubble[data-from="ai"] {
-  background: var(--color-bg-bubble-ai);
+  --bubble-fill: var(--color-bg-bubble-ai);
   border-top-left-radius: var(--radius-bubble-tail);
 }
 
 .bubble[data-from="user"] {
-  background: var(--color-bg-bubble-user);
+  --bubble-fill: var(--color-bg-bubble-user);
   border-top-right-radius: var(--radius-bubble-tail);
 }
 

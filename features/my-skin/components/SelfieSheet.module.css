@@ -29,7 +29,16 @@
 
   border-radius: var(--radius-2xl);
   background: var(--color-surface-data);
-  box-shadow: var(--shadow-frosted-data);
+  /* ⚠️ NOT IN FIGMA — AN INNER SHADOW, NOT THE DROP, asked for directly 13 Sep
+     2026. The frame gives this well `surface/frosted-data`, a lift under the
+     box; inside the tray that read as a second card floating over the first.
+     It now takes `surface/frosted-row`, the inset the step's own face diagram
+     card (`FaceDiagram.module.css` `.card`) wears right behind it, so the
+     viewfinder reads as a recess cut into the tray — the same object as the
+     box it was opened from. ⚠️ `CameraCapture`'s viewfinder (the check-in photo
+     and the PRODUCTS scan view) still carries the drop; this is the selfie's
+     own copy of the recipe. */
+  box-shadow: var(--shadow-frosted-row);
   -webkit-backdrop-filter: blur(var(--blur-card));
   backdrop-filter: blur(var(--blur-card));
 }

@@ -59,11 +59,14 @@
 
    The gap is the distance from the row to the first card INSIDE the box, and
    `.panel` pays the other three sides. Two categories are still 12 apart —
-   that gap belongs to `.categories` and is untouched. */
+   that gap belongs to `.categories` and is untouched. `--collapse-gap` hands
+   the same 8 to the panel's `Collapse`, so it opens with the panel — see
+   "Dropdowns" in globals.css. */
 .group {
   display: flex;
   flex-direction: column;
   gap: var(--space-sm);
+  --collapse-gap: var(--space-sm);
 
   border-radius: var(--radius-lg);
   background: var(--color-surface-frost-nav);
@@ -93,7 +96,14 @@
   gap: var(--space-md);
   width: 100%;
   min-height: 56px;
-  padding: 0 18px;
+  /* ⚠️ 14 TOP AND BOTTOM, NOT 0 — changed 13 Sep 2026, asked for directly from
+     a real phone. With no vertical padding the row was 56 only because of
+     `min-height`, so a name that wrapped (`Long-term products` does at 375)
+     grew the row to exactly its 48 of text and left 4 above and below — the
+     name pressed against both edges. 14 is what keeps a ONE-line row on 56:
+     the tallest thing in it is the 28 thumb stack, and 28 + 14 + 14 = 56, so
+     the comp height is untouched and only a wrapped row grows (to 76). */
+  padding: 14px 18px;
   text-align: left;
 
   /* no fill of its own — `.group` above is the surface. The radius stays so
@@ -128,11 +138,12 @@
      is the failure 1.4.12 names. Wrapping loses nothing.
 
      ⚠️ THE ROW STILL STAYS 56 AT EVERY DESIGN WIDTH, which is what the note on
-     `.window` below is actually protecting. Measured: at 440 and 1440 the
-     longest name fits on one line with room to spare, so nothing wraps and the
-     comp height is unchanged. The row grows only at 320 — below the smallest
-     comp — and under a user's own spacing overrides, which is precisely when a
-     fixed height is the thing that must give. */
+     `.window` below is actually protecting. Measured: at 440, 390 and 1440 the
+     longest name fits on one line, so nothing wraps and the comp height is
+     unchanged. ⚠️ IT DOES WRAP AT 375 — a real phone, not only the 320 this
+     note used to name — and under a user's own spacing overrides. The row
+     grows then, and `.category`'s vertical padding is what gives the two lines
+     room inside it. */
 }
 
 /* ⚠️ THE ROW MUST STAY 56. The window sits BESIDE the name on one line, never
@@ -242,8 +253,8 @@
    SIBLING of the row, on the argument that insetting them would push them off
    the 392 / 640 column every other card sits on. They are children of the
    surface now, so this is the container's padding rather than an indent, and
-   the column it belongs to is the group's. 16 − 8 is also what leaves the
-   cards their concentric 8 radius — see `.compact` in
+   the column it belongs to is the group's. 16 − 8 used to set the cards'
+   concentric 8 radius; they are 12 as of 13 Sep 2026 — see `.compact` in
    ProductAccordionCard.module.css. */
 .panel {
   display: flex;
@@ -266,8 +277,21 @@
 
 /* carried over from the deleted pushed view, which is also where the filled hub
    was missing an add affordance entirely */
+/* ⚠️ NOT IN FIGMA — the secondary `Button` at control/md (48), hugging its
+   label, centred at both breakpoints: step 1's `Take a photo` recipe, asked for
+   directly 13 Sep 2026 after `SmallButton` (36) read too small. A flex row so
+   the pill centres whether or not `.body` stretches its children. */
 .addMore {
+  display: flex;
+  justify-content: center;
   margin-top: var(--space-lg); /* 16 */
+}
+
+/* `button.` because `Button`'s own `.button` padding is a single class too —
+   the load-order trap; see `.takePhoto` in StartInvestigation.module.css */
+button.addMoreButton {
+  --button-height: var(--size-control-md);
+  padding: 0 var(--space-xl);
 }
 
 @media (prefers-reduced-transparency: reduce) {

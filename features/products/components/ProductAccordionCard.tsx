@@ -3,6 +3,7 @@
 import { useState } from "react";
 import styles from "./ProductAccordionCard.module.css";
 import { ProductThumb } from "./ProductThumb";
+import { Collapse } from "@/components/ui/Collapse";
 import { ChevronDownIcon } from "@/components/ui/icons";
 import { ProductDetails } from "./ProductDetails";
 import { fullName, type SavedProduct } from "@/features/products/products";
@@ -107,8 +108,8 @@ export function ProductAccordionCard({
         <ChevronDownIcon className={styles.chevron} />
       </button>
 
-      {open && (
-        <div id={panelId} className={`${styles.panel} reveal-quick`}>
+      <Collapse open={open}>
+        <div id={panelId} className={styles.panel}>
           <span className={styles.divider} aria-hidden="true" />
 
           <ProductDetails product={product} />
@@ -123,7 +124,7 @@ export function ProductAccordionCard({
             </button>
           </div>
         </div>
-      )}
+      </Collapse>
     </div>
   );
 }

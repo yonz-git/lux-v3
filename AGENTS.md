@@ -88,7 +88,7 @@ folder path. **Do not add a fifth section**: four folders, four nav items. See
 app/                 routes only — every page.tsx is a thin shell
 components/ui/       the design system: Button, SmallButton, Chip, OptionRow,
                      Tag, TextField, DateField, SearchField, ChatBubble, Sheet,
-                     DataCard, Orb, CameraCapture, icons
+                     Collapse, DataCard, Orb, CameraCapture, icons
 components/layout/   app chrome: BottomNav, HubScreen, ScreenHeader,
                      RouteAnnouncer, Snackbar
 features/my-skin/    flow.ts + safety.ts + analysis.ts, the investigation steps,
@@ -616,6 +616,7 @@ needs one that is not here, that is a gap to raise in Figma — see
 | `SearchField` | `value`, `onChange`, `placeholder?`, `label` (the accessible name — there is no visible `<label>`) |
 | `ChatBubble` | `from: "ai" \| "user"`, `align?`, `full?` |
 | `Sheet` | `open`, `onClose`, `title`, `children` |
+| `Collapse` | `open`, `children` — wraps an in-flow panel so it opens down and closes up; see "Entrance reveals" |
 | `DataCard` | `as?`, `className?`, `children?` |
 | `CameraCapture` | `captured`, `title`, `helper`, `onCapture` |
 | `Orb` | `size?`, `className?`, `animateIn?`, `thinking?` |
@@ -670,6 +671,19 @@ for:
 
 All five run the global `lux-fade-in`. The stagger hits **direct children only**,
 so a ten-row option list arrives as one block rather than ten cascading rows.
+
+⚠️ **A DROPDOWN IS NOT A REVEAL, AS OF 13 Sep 2026 — it opens down AND closes
+back up.** Every disclosure and dropdown panel wore `.reveal-quick` and left in
+one frame; they now take one of two recipes, both transitions entered with
+`@starting-style` and held on screen for their exit by `useDialogPresence`:
+
+| Hook | Duration | Use |
+| --- | --- | --- |
+| `<Collapse open>` | `base` 200ms both ways | a panel IN FLOW — its space animates, so the rows below slide. The parent declares its flex gap as `--collapse-gap` |
+| `.drop` + `data-state="leaving"` | `base` in, `fast` out | a panel FLOATING under its trigger — falls 4px from 0.98 and lifts back. A search dropdown also takes `useHeldWhileClosing`, so it fades out on the results it was showing |
+
+**Do not put `.reveal-quick` back on a panel that closes.** The reasoning is on
+"Dropdowns" in `globals.css`.
 
 ⚠️ **Use these rather than naming an animation in a module** — a module
 localizes the `@keyframes` name and it resolves to nothing (motion section

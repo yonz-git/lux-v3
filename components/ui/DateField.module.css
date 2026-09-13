@@ -57,6 +57,9 @@
   /* opaque on purpose — see the note at the top of this file */
   background: var(--color-bg-surface-frost);
   box-shadow: var(--shadow-lg);
+  /* it hangs from the trigger's LEFT edge, not its middle, so `.drop` settles
+     from that corner — "Dropdowns" in globals.css */
+  transform-origin: top left;
 }
 
 .header {

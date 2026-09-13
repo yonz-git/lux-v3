@@ -14,7 +14,8 @@ import { ProductRow } from "./ProductList";
 import { ProductThumb } from "./ProductThumb";
 import { useInvestigation } from "@/lib/store/InvestigationProvider";
 import { useSnackbar } from "@/components/layout/Snackbar";
-import { SearchIcon, CameraIcon, ChevronRightIcon, CloseIcon } from "@/components/ui/icons";
+import { useDialogPresence, useHeldWhileClosing } from "@/lib/useModalDialog";
+import { SearchIcon, CameraIcon, ChevronRightIcon, CloseIcon, PlusIcon } from "@/components/ui/icons";
 import {
   BUCKET_LIST_TITLE,
   DURATIONS,
@@ -372,6 +373,11 @@ function SearchView({
 }) {
   const { results, loading } = useOpenBeautyFactsSearch(query);
   const typed = query.trim() !== "";
+  /* the panel outlives `typed` by its exit and paints what it last showed —
+     emptying the field is what closes it, and the render that does so has
+     already lost the results. "Dropdowns" in globals.css. */
+  const dropdown = useDialogPresence(typed);
+  const shown = useHeldWhileClosing(typed, { results, loading, query });
 
   return (
     <div className={styles.searchView}>
@@ -389,17 +395,21 @@ function SearchView({
             : `${results.length} ${results.length === 1 ? "product" : "products"} found`}
       </p>
 
-      {typed && (
-        <div className={`${styles.dropdown} reveal-quick`}>
-          {loading ? (
+      {dropdown.present && (
+        <div
+          className={`${styles.dropdown} drop`}
+          data-state={dropdown.leaving ? "leaving" : undefined}
+          inert={dropdown.leaving}
+        >
+          {shown.loading ? (
             <p className={`${styles.dropdownNote} t-body3`}>Searching…</p>
-          ) : results.length === 0 ? (
+          ) : shown.results.length === 0 ? (
             <p className={`${styles.dropdownNote} t-body3`}>
-              No products match “{query.trim()}”
+              No products match “{shown.query.trim()}”
             </p>
           ) : (
             <ul className={styles.results}>
-              {results.map((p) => (
+              {shown.results.map((p) => (
                 <li key={p.id}>
                   {/* deliberately NOT `ProductRow` — that is the frosted CARD
                       recipe, and a card inside a panel is two surfaces doing
@@ -602,8 +612,12 @@ function ConfirmView({
           {/* the tray's own primary action. Disabled until the question is
               answered, for the same reason Continue is on every step: there is
               no group to file the product under until it is. */}
+          {/* ⚠️ NOT IN FIGMA — the small secondary pill, asked for directly
+              13 Sep 2026; it was the full primary `Button` */}
           <Button
-            className={styles.trayAction}
+            variant="secondary"
+            icon={<PlusIcon />}
+            className={`${styles.trayAction} ${styles.trayActionSmall}`}
             disabled={!draft.duration}
             onClick={onAdd}
           >

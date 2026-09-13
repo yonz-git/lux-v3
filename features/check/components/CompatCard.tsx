@@ -2,6 +2,7 @@
 
 import { useId, useState } from "react";
 import styles from "./CompatCard.module.css";
+import { Collapse } from "@/components/ui/Collapse";
 import { ChevronDownIcon, CloseIcon } from "@/components/ui/icons";
 import { BAND_LABEL, type CheckAnalysis } from "@/features/check/check";
 import { fullName } from "@/features/products/products";
@@ -124,13 +125,11 @@ export function CompatCard({
         )}
       </div>
 
-      {/* ⚠️ `reveal-quick` IS A GLOBAL CLASS, not a module one. A rule that NAMES
-          an animation must live in globals.css — a CSS Module scopes the
-          @keyframes name, so `animation: lux-fade-in` written here would resolve
-          to nothing while still reporting a duration. duration/base is the
-          board's value for something revealed by a user action. */}
-      {open && (
-        <div id={bodyId} className={`${styles.body} reveal-quick`}>
+      {/* opens down and closes back up — `Collapse`, and "Dropdowns" in
+          globals.css. The 14 above the bar is the bar's own margin, inside the
+          panel, so this card sets no `--collapse-gap`. */}
+      <Collapse open={open}>
+        <div id={bodyId} className={styles.body}>
           <div
             className={styles.bar}
             role="img"
@@ -161,7 +160,7 @@ export function CompatCard({
             <p className={`${styles.recBody} t-body3`}>{recommendation}</p>
           </div>
         </div>
-      )}
+      </Collapse>
     </div>
   );
 }

@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, type ReactNode } from "react";
+import { useEffect, useRef, useState, type ReactNode } from "react";
 import { useRouter } from "next/navigation";
 import styles from "./CheckIn.module.css";
 import { BottomNav } from "@/components/layout/BottomNav";
@@ -192,6 +192,27 @@ export function CheckInPanel({
   const askedExtras = changes.length > 0;
   const canSubmit = Boolean(choice) && askedExtras;
 
+  /* ⚠️ THE NOTE FIELD SCROLLS IN, IT DOES NOT JUMP — asked for directly 13 Sep
+     2026 ("the chat moves up … now is stiff"). It used to carry `autoFocus`,
+     and focusing a field makes the browser scroll it into view in a single
+     frame, so the whole conversation snapped up the moment the tile was
+     tapped. Focus now skips that scroll and the body is scrolled SMOOTHLY
+     instead, to the same place: `scrollIntoView` honours the global focus
+     `scroll-margin` (globals.css) exactly as the focus scroll did. The field
+     itself fades in on `.reveal-quick` — something the user just revealed —
+     so the two arrive together. Reduced motion scrolls instantly, which is
+     what the global duration collapse cannot do for a JS scroll. */
+  const noteRef = useRef<HTMLInputElement>(null);
+  const noteOpen = note !== null;
+  useEffect(() => {
+    if (!noteOpen) return;
+    const input = noteRef.current;
+    if (!input) return;
+    input.focus({ preventScroll: true });
+    const reduce = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+    input.scrollIntoView({ behavior: reduce ? "auto" : "smooth", block: "nearest" });
+  }, [noteOpen]);
+
   const pickTrend = (label: string) => {
     setTrend(label);
     /* the chips below are about to change vocabulary — see the note above */
@@ -354,7 +375,8 @@ export function CheckInPanel({
 
               {note !== null && (
                 <TextField
-                  autoFocus
+                  ref={noteRef}
+                  className="reveal-quick"
                   value={note}
                   onChange={(e) => setNote(e.target.value)}
                   placeholder="Anything worth remembering about today"

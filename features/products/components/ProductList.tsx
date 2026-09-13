@@ -3,6 +3,7 @@
 import { useId, useState, type ReactNode } from "react";
 import styles from "./ProductList.module.css";
 import { ProductThumb } from "./ProductThumb";
+import { Collapse } from "@/components/ui/Collapse";
 import { ChevronDownIcon, PlusIcon } from "@/components/ui/icons";
 import type { CatalogProduct } from "@/features/products/products";
 
@@ -98,12 +99,12 @@ export function ProductRow({
           {trailing}
         </div>
 
-        {open && (
-          <div id={panelId} className={`${styles.panel} reveal-quick`}>
+        <Collapse open={open}>
+          <div id={panelId} className={styles.panel}>
             <span className={styles.divider} aria-hidden="true" />
             {details}
           </div>
-        )}
+        </Collapse>
       </div>
     );
   }
@@ -150,7 +151,7 @@ export function AddProductRow({
  * ⚠️ `compact` IS THE SAME BOX INSIDE ANOTHER ONE, and it exists for exactly
  * one caller: an empty category group on the PRODUCTS hub, which opens onto
  * this box INSIDE the row's own surface. It matches what the product cards do
- * there — 8 radius, opaque fill, less air — because an empty group and a full
+ * there — 12 radius, opaque fill, less air — because an empty group and a full
  * one have to open onto the same shape or the box looks like a different kind
  * of thing. See `.compact` in ProductAccordionCard.module.css for the
  * reasoning; this is that recipe, not a second one.

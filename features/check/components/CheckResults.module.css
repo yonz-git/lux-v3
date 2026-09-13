@@ -130,14 +130,22 @@
   }
 }
 
-/* the box's contents — 8 in from three sides, with the header's gap above.
-   16 − 8 is also what leaves the cards their concentric 8 radius; see
-   `.card.compact` in CompatCard.module.css. Change either and change both. */
+/* the box's contents — 16 in from three sides, with the header's gap above.
+   ⚠️ IT WAS 8 UNTIL 13 Sep 2026, changed on request ("give side paddings to
+   these boxes"). At 8 the rows ran almost to the box's edges and read as
+   filling it rather than sitting in it, 10px further out than the 18-inset
+   `Compared Products` label above them. The bottom moved with the sides so the
+   last row does not sit closer to the edge than the rows do to the sides.
+   ⚠️ THE CARDS' RADIUS IS NO LONGER CONCENTRIC (16 − 16 would be square). It
+   stayed 8 for a few hours and is 12 as of 13 Sep 2026, asked for directly —
+   PRODUCTS' compact cards' value, so a product row is one shape in both
+   sections. `.pendingRow` below takes it too. See `.card.compact` in
+   CompatCard.module.css. */
 .panel {
   display: flex;
   flex-direction: column;
   gap: var(--space-sm); /* 8 */
-  padding: 0 var(--space-sm) var(--space-sm);
+  padding: 0 var(--space-lg) var(--space-lg); /* 16 */
 }
 
 .stack {
@@ -159,7 +167,8 @@
   min-height: 52px;
   padding: var(--space-sm) var(--space-md);
 
-  border-radius: var(--radius-sm);
+  /* 12 — the compact card's radius, which this row mirrors */
+  border-radius: var(--radius-md);
   background: var(--color-bg-surface-frost);
   box-shadow: var(--shadow-frosted-row);
 }
@@ -409,6 +418,12 @@
   border-radius: var(--radius-full);
   background: linear-gradient(90deg, var(--grad-start) 0%, var(--grad-end) 100%);
   color: var(--color-text-on-brand);
+  /* ⚠️ NOT IN FIGMA — the label shines on hover (globals.css `.shine-text`),
+     asked for directly 13 Sep 2026: "same as add buttons", i.e. `SmallButton`'s
+     gradient reversal plus its label glint, and NOT `Button`'s specular rim.
+     The ink MUST be this label's own token. Kept in step with
+     `SegmentedToggle`, whose recipe this block copies. */
+  --shine-ink: var(--color-text-on-brand);
   transition:
     opacity var(--duration-hover) var(--ease-standard),
     --grad-start var(--duration-hover) var(--ease-standard),
@@ -483,6 +498,8 @@
   border-radius: var(--radius-full);
   background: transparent;
   color: var(--color-text-secondary);
+  /* the hover shine's ink — see `.askConfirm` */
+  --shine-ink: var(--color-text-secondary);
   transition: background-color var(--duration-fast) var(--ease-standard);
 }
 
@@ -504,4 +521,22 @@
     -webkit-backdrop-filter: none;
     backdrop-filter: none;
   }
+}
+
+/* ⚠️ NOT IN FIGMA — `Add another product` under the compared products is the
+   secondary `Button` at control/md (48) with a plus, hugging its label and
+   centred: the one add-product recipe, asked for directly 13 Sep 2026. It was
+   the full-width `AddProductRow`. */
+.addAnother {
+  display: flex;
+  justify-content: center;
+  /* ⚠️ 16 above and below ON TOP OF `.panel`'s own gap, asked for directly
+     13 Sep 2026 — it sat tight against the last card and the box's edge */
+  margin-block: var(--space-lg);
+}
+
+/* `button.` beats `Button`'s single-class padding regardless of bundle order */
+button.addAnotherButton {
+  --button-height: var(--size-control-md);
+  padding: 0 var(--space-xl);
 }

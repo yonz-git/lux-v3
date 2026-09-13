@@ -172,10 +172,18 @@
        as an opaque card instead of glass — a light tint over a blurred-to-
        mush backdrop looks the same as a light tint over nothing. 8px keeps
        enough of the blur to soften text-legibility noise without erasing the
-       shapes of what is actually behind it. */
+       shapes of what is actually behind it.
+       ⚠️ AND BACK UP TO 16px, 13 Sep 2026 — asked for directly on
+       `SelfieSheet`, where 8px let the step's face diagram and chip labels read
+       straight through the tray AND through the viewfinder well inside it. The
+       well's own `--blur-card` cannot help: this `backdrop-filter` makes the
+       tray a backdrop root, so everything nested inside blurs only the tray's
+       own painting and the page behind gets THIS value alone. A literal
+       because the scale jumps from `--blur-md` (10) to `--blur-card` (28), and
+       28 is the wash the note above cut. */
     background: #edf8fb3d;
-    -webkit-backdrop-filter: blur(var(--blur-sm));
-    backdrop-filter: blur(var(--blur-sm));
+    -webkit-backdrop-filter: blur(16px);
+    backdrop-filter: blur(16px);
   }
 
   .grabber {

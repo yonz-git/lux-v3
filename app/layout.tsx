@@ -3,6 +3,7 @@ import { Figtree } from "next/font/google";
 import "./globals.css";
 import { InvestigationProvider } from "@/lib/store/InvestigationProvider";
 import { RouteAnnouncer } from "@/components/layout/RouteAnnouncer";
+import { SmoothScroll } from "@/components/layout/SmoothScroll";
 import { SnackbarProvider } from "@/components/layout/Snackbar";
 import { AppCanvas } from "@/components/layout/CanvasShader";
 
@@ -62,6 +63,9 @@ export default function RootLayout({
         {/* speaks each client-side navigation and moves focus into the new
             screen — the App Router provides neither. See the component. */}
         <RouteAnnouncer />
+        {/* eases the page's WHEEL scroll on every route — touch, keyboard and
+            modals are left to the browser. See the component. */}
+        <SmoothScroll />
         {/* ⚠️ INSIDE THE ANSWER STORE, NOT OUTSIDE IT. Every snackbar this app
             raises offers to put a slice of the store back, so the callers hold
             both hooks and the undo action closes over a `setAnswer`. Mounted

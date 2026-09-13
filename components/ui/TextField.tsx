@@ -16,6 +16,13 @@ import styles from "./TextField.module.css";
  * Recipe (read off `other-input`): surface/frost-light + 1px border/default +
  * radius/lg + the surface/frosted-row inner shadow, 56 tall (58 desktop),
  * padding 0/18 (0/20 desktop), placeholder Body 2 in text/muted.
+ *
+ * ⚠️ NOT IN FIGMA — THE INPUT IS WRAPPED, AND `className` GOES ON THE WRAPPER,
+ * as of 13 Sep 2026. The focus ring is `SearchField`'s gradient ring, asked
+ * for directly ("just like the search bar"), and that ring is a masked
+ * `::after` — which an `<input>` cannot have, being a replaced element. The
+ * only caller `className` is `reveal-quick`, an entrance, which reads the same
+ * on the wrapper. `ref` and every other attribute still reach the input.
  */
 export function TextField({
   className,
@@ -23,11 +30,8 @@ export function TextField({
   ...rest
 }: InputHTMLAttributes<HTMLInputElement> & { ref?: Ref<HTMLInputElement> }) {
   return (
-    <input
-      ref={ref}
-      type="text"
-      className={[styles.field, "t-body2", className].filter(Boolean).join(" ")}
-      {...rest}
-    />
+    <span className={[styles.wrap, className].filter(Boolean).join(" ")}>
+      <input ref={ref} type="text" className={`${styles.field} t-body2`} {...rest} />
+    </span>
   );
 }

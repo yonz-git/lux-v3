@@ -19,6 +19,9 @@
   align-items: center;
   justify-content: center;
   position: relative;
+  /* the selected shade (`::before`, below) paints at z-index -1 — this keeps
+     it above the pill's own fill and under its label */
+  isolation: isolate;
   /* The Chip is 40 tall in Figma (padding 10/16 around a Label 14/20). Both 10
      and 40 are OFF the token scales — the component's padding is unbound in
      Figma and the control scale only has 36/48/62. Written as literals rather
@@ -39,7 +42,36 @@
 
   transition: background-color var(--duration-base) var(--ease-standard),
     border-color var(--duration-base) var(--ease-standard),
-    color var(--duration-base) var(--ease-standard);
+    color var(--duration-base) var(--ease-standard),
+    box-shadow var(--duration-fast) var(--ease-standard);
+}
+
+/* ⚠️ NOT IN FIGMA — A HOVER, asked for directly 13 Sep 2026 ("slight hover
+   effects on all the small pills"). The chip had none, so on desktop a pill
+   gave no sign it was a control until it was clicked. It borrows the face
+   diagram's region pill hover — the same component family on the same screen
+   — at one step softer: the hairline firms to `border/default` and the pill
+   lifts on `--shadow-sm`. No fill change, so hover can never be mistaken for
+   selection. `duration/fast` for the lift, per board 04b's hover row. */
+.chip:hover {
+  border-color: var(--color-border-default);
+  box-shadow: var(--shadow-sm);
+}
+
+/* selected: the indigo keeps its own edge; only the lift answers the pointer */
+.chip[data-selected="true"]:hover {
+  border-color: var(--color-bg-brand);
+}
+
+@media (hover: none) {
+  .chip:hover {
+    border-color: var(--color-border-chip);
+    box-shadow: none;
+  }
+
+  .chip[data-selected="true"]:hover {
+    border-color: var(--color-bg-brand);
+  }
 }
 
 /* The compact pill — the chat panel only, see Chip.tsx.
@@ -64,6 +96,38 @@
      border stays only to hold the geometry */
   border-color: var(--color-bg-brand);
   color: var(--color-text-on-brand);
+}
+
+/* ⚠️ NOT IN FIGMA — THE SELECTED PILL DARKENS TOWARD ITS LOWER RIGHT, asked
+   for directly 13 Sep 2026. A flat indigo pill beside the primary button's
+   indigo sweep read as a sticker; a diagonal shade gives it the same sense of
+   light. Flat `bg/brand` holds the top-left third, then it runs to
+   `bg/brand-hover` (#2c2a5f) — the darker sibling on the SAME hue, so it is a
+   shade and not a second colour. White on it only gets MORE contrast.
+
+   ⚠️ AN OVERLAY THAT FADES, NOT A `background-image` ON THE PILL. The fill
+   transitions on `duration/base`; a gradient image cannot interpolate and
+   would snap on while the colour was still fading in. It is inset by the
+   hairline so it covers the border too — otherwise the flat indigo border
+   would draw a lighter rim around the dark corner. */
+.chip::before {
+  content: "";
+  position: absolute;
+  inset: calc(var(--border-width-hairline) * -1);
+  z-index: -1;
+  border-radius: inherit;
+  background: linear-gradient(
+    135deg,
+    transparent 35%,
+    var(--color-bg-brand-hover) 100%
+  );
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity var(--duration-base) var(--ease-standard);
+}
+
+.chip[data-selected="true"]::before {
+  opacity: 1;
 }
 
 /* The hit area, which is bigger than the pill and always has been vertically:

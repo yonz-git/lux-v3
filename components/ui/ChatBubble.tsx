@@ -1,4 +1,6 @@
-import type { ReactNode } from "react";
+"use client";
+
+import { useLayoutEffect, useRef, type ReactNode } from "react";
 import styles from "./ChatBubble.module.css";
 
 /**
@@ -37,11 +39,25 @@ import styles from "./ChatBubble.module.css";
  * short per line. Verified against Figma across both sections: 02a/02b/03c and
  * all of PRODUCTS carry `Body 1` on desktop, and a one-line desktop bubble is
  * 56 tall (14 + 28 + 14), not 54.
+ *
+ * ⚠️ NOT IN FIGMA — `hug` TRIMS A WRAPPED BUBBLE TO ITS LONGEST LINE, asked for
+ * directly 13 Sep 2026 on the `/check` landing ("the right extra space doesn't
+ * look good"). CSS cannot do this: a box whose text wraps keeps the width it
+ * wrapped AT, so a two-line sentence under a 376 ceiling leaves a band of empty
+ * fill down the right of every line but the longest. `hug` lets the bubble lay
+ * out at its CSS width, measures the widest line box, and pins its width to
+ * that plus its own padding. It re-measures when its row resizes (a breakpoint
+ * changes the type and the padding too) and once webfonts land. The CSS
+ * ceiling still decides where lines BREAK; this only removes the slack after
+ * them. The entrance scales the bubble, so line rects are divided back out by
+ * the bubble's own rendered/layout ratio. Opt-in, because a conversation's
+ * bubbles are left-aligned against a column edge and do not need it.
  */
 export function ChatBubble({
   from,
   align,
   full,
+  hug,
   size = "default",
   entrance = true,
   className,
@@ -52,6 +68,8 @@ export function ChatBubble({
   align?: "left" | "right" | "center";
   /** span the whole content column instead of hugging the text */
   full?: boolean;
+  /** trim a wrapped bubble to its longest line — see the note above */
+  hug?: boolean;
   /**
    * The bubble's type and padding. `compact` is the `/chat` panel's smaller
    * bubble — see the note above, and raise it in Figma before reusing it.
@@ -73,9 +91,46 @@ export function ChatBubble({
   children: ReactNode;
 }) {
   const resolvedAlign = align ?? (from === "ai" ? "left" : "right");
+  const bubbleRef = useRef<HTMLDivElement>(null);
+  const textRef = useRef<HTMLSpanElement>(null);
+
+  useLayoutEffect(() => {
+    if (!hug) return;
+    const bubble = bubbleRef.current;
+    const text = textRef.current;
+    const row = bubble?.parentElement;
+    if (!bubble || !text || !row) return;
+
+    const measure = () => {
+      /* lay out at the CSS width first, so the lines break where they should */
+      bubble.style.removeProperty("width");
+      const range = document.createRange();
+      range.selectNodeContents(text);
+      const rects = [...range.getClientRects()].filter((r) => r.width > 0);
+      if (rects.length === 0 || bubble.offsetWidth === 0) return;
+      const scale = bubble.getBoundingClientRect().width / bubble.offsetWidth || 1;
+      const lineWidth =
+        (Math.max(...rects.map((r) => r.right)) - Math.min(...rects.map((r) => r.left))) / scale;
+      const cs = getComputedStyle(bubble);
+      const inline = parseFloat(cs.paddingLeft) + parseFloat(cs.paddingRight);
+      /* +1 so a subpixel line never re-wraps inside its own trimmed box */
+      bubble.style.width = `${Math.ceil(lineWidth + inline) + 1}px`;
+    };
+
+    measure();
+    const observer = new ResizeObserver(measure);
+    observer.observe(row);
+    document.fonts?.ready.then(measure);
+    return () => {
+      observer.disconnect();
+      bubble.style.removeProperty("width");
+    };
+  }, [hug, children]);
+
   return (
     <div className={styles.row} data-align={resolvedAlign} aria-hidden={ariaHidden}>
       <div
+        ref={bubbleRef}
         className={[
           styles.bubble,
           /* still a `t-*` class either way — rule 3 holds for both sizes */
@@ -89,7 +144,16 @@ export function ChatBubble({
         data-full={full ? "true" : undefined}
         data-size={size === "compact" ? "compact" : undefined}
       >
-        {children}
+        {/* ⚠️ NOT IN FIGMA — the shine. The text is wrapped so a band of light
+            can sweep across it as the bubble lands (`.shine-on-enter`,
+            globals.css) without touching the bubble's own fill: the glint is
+            a gradient clipped to the glyphs, and the bubble's background is
+            already spoken for. It plays for Welcome's bubbles too, keyed to
+            their own landing in globals.css, which is why it is not gated on
+            `entrance`. `--shine-ink` is set on `.bubble` in the module. */}
+        <span ref={textRef} className={`${styles.text} shine-text shine-on-enter`}>
+          {children}
+        </span>
       </div>
     </div>
   );

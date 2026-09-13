@@ -31,9 +31,15 @@ export function SkinProfileStrip({
   tendencies?: string[];
   className?: string;
 }) {
-  const parts = [skinType, ...(tendencies ?? [])].filter(Boolean) as string[];
-  if (parts.length === 0) return null;
+  const hasTendencies = (tendencies?.length ?? 0) > 0;
+  if (!skinType && !hasTendencies) return null;
 
+  /* ⚠️ NOT IN FIGMA — 13 Sep 2026, asked for directly. 601:1957 runs the
+     profile as one line, "Combination · Sensitive · Acne-prone", which leaves
+     the reader to work out where the skin type stops and the tendencies start.
+     It now takes the recap card's shape (`SkinProfileSummary`'s `Headline`):
+     `Skin type` and `Tendencies` as two labelled columns pushed to opposite
+     edges, tendencies joined with commas. Taller than the comp's 86. */
   return (
     <section
       className={[styles.card, className].filter(Boolean).join(" ")}
@@ -42,7 +48,22 @@ export function SkinProfileStrip({
       <h2 id="skin-profile-strip-title" className={`${styles.label} t-overline`}>
         Your skin profile
       </h2>
-      <p className={`${styles.value} t-body2`}>{parts.join(" · ")}</p>
+      <div className={styles.identity}>
+        {skinType && (
+          <div className={styles.col}>
+            <p className={`${styles.pairLabel} t-body3`}>Skin type</p>
+            <p className={`${styles.value} t-body2`}>{skinType}</p>
+          </div>
+        )}
+        {hasTendencies && (
+          <div className={`${styles.col} ${skinType ? styles.end : ""}`}>
+            <p className={`${styles.pairLabel} t-body3`}>Tendencies</p>
+            <p className={`${styles.value} t-body2`}>
+              {tendencies!.join(", ")}
+            </p>
+          </div>
+        )}
+      </div>
     </section>
   );
 }

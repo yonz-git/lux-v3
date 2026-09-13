@@ -183,15 +183,17 @@ export function CheckBasketSheet({
         ))}
 
         {!full && (
-          <li>
-            <button
-              type="button"
+          <li className={styles.addAnotherItem}>
+            {/* ⚠️ NOT IN FIGMA — the small secondary pill, asked for directly
+                13 Sep 2026; it was a full-width deep-sage row */}
+            <Button
+              variant="secondary"
+              icon={<PlusIcon />}
               className={styles.addAnother}
               onClick={onAddAnother}
             >
-              <PlusIcon className={styles.plus} />
-              <span className="t-body2">Add another product</span>
-            </button>
+              Add another product
+            </Button>
           </li>
         )}
       </ul>

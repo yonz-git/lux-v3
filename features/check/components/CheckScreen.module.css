@@ -9,6 +9,29 @@
 
 .profile {
   margin-top: var(--space-xl); /* 20 */
+  /* ⚠️ NOT IN FIGMA — 48 UNDER THE STRIP, asked for directly 13 Sep 2026. The
+     strip is `HubScreen`'s `belowHeading`, and the hero below it is centred in
+     whatever height is left; on a viewport with none left over the two flex
+     spacers collapse to 0 and the orb sat ~12 under the strip, reading as
+     stuck to it rather than as the start of the next block. This is a FLOOR,
+     not a position: with spare height the hero still centres, just in a
+     region that starts 48 lower. 48 is this screen's own block rhythm (see
+     `.hero > svg` below). */
+  margin-bottom: var(--space-5xl); /* 48 */
+}
+
+/* ⚠️ NOT IN FIGMA — THE STRIP TAKES THE CTA's WIDTH ON DESKTOP, asked for
+   directly 13 Sep 2026. 601:1952's desktop twin runs it the full 1280 column,
+   which on this screen made it the one wide object over a centred stack of
+   orb, bubble and a 376 button — a banner above a card rather than part of
+   it. `--width-action` is the button's own token, so the two edges cannot
+   drift; `margin-inline: auto` centres it in either a block or a flex parent.
+   Mobile is untouched: the button is already full-width there, and so is this. */
+@media (min-width: 1024px) {
+  .profile {
+    max-width: var(--width-action);
+    margin-inline: auto;
+  }
 }
 
 .hero {
@@ -79,10 +102,12 @@
     margin-bottom: var(--space-sm); /* + the 16 gap = 24 */
   }
 
-  /* ⚠️ THE CTA's WIDTH, and that is the whole point: left to hug, the bubble
-     settled at ~375 beside the button, which reads as a missed alignment rather
-     than a different measure. Bound to the same token so the orb, the bubble and
-     the CTA share one edge and cannot drift apart. */
+  /* ⚠️ THE CTA's WIDTH IS NOW THE CEILING, NOT THE WIDTH — changed 13 Sep 2026,
+     asked for directly. It was set here so the bubble and the button shared an
+     edge, but a sentence that wraps at 376 leaves empty fill down the right of
+     the bubble, and that read worse than the mismatch. The bubble still LAYS
+     OUT at this width, so its lines break where they did; `hug` (see
+     ChatBubble.tsx) then trims it to the longest line. */
   .intro {
     --bubble-width: var(--width-action);
     --bubble-max: var(--width-action);

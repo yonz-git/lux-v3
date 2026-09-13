@@ -54,8 +54,11 @@
   --chat-panel-radius: 36px;
 
   width: 100%;
-  /* the frame's own width; there is no wider drawing of this screen */
-  max-width: 375px;
+  /* ⚠️ NOT IN FIGMA — THE NAV'S WIDTH, NOT THE FRAME'S 375, asked for directly
+     13 Sep 2026 ("increase the width like the nav bar"). The panel stands
+     directly above the nav, so the two share both edges at both breakpoints:
+     380 here, 598 on desktop below. */
+  max-width: var(--size-nav-width-mobile);
 
   /* ⚠️ THE PANEL STRETCHES ON MOBILE RATHER THAN HOLDING THE FRAME'S 538.
      "Translate, don't transcribe" — 538 is a height on a fixed canvas, and a
@@ -89,8 +92,17 @@
      shadow of its own and the panel sat flush with the canvas gradient behind
      it, hardest to tell apart as the check-in overlay over `/progress`.
      `--shadow-frosted-data` is the existing lift every other System B surface
-     uses (`DataCard`, `CameraCapture`, `SkinProfileStrip`) — not a new value. */
-  box-shadow: var(--shadow-frosted-data);
+     uses (`DataCard`, `CameraCapture`, `SkinProfileStrip`) — not a new value.
+
+     ⚠️ AND ITS EDGE IS A GLOW, NOT A LINE — asked for directly 13 Sep 2026.
+     It carried the nav's glass edge for part of that day (the 0.5px #ffffff54
+     rim and `--shadow-nav`'s bevel), and on a panel this size the rim read as
+     a drawn outline round the whole screen. It now takes the desktop page
+     card's effect style instead, `surface/frosted-card-desktop` — the soft
+     white inner glow along every edge that `HubScreen`'s card (`My Products`)
+     wears, with no stroke at all — layered over the lift above. No new value,
+     and no border, so non-negotiable 10's `background-origin` is moot. */
+  box-shadow: var(--shadow-frosted-card-desktop), var(--shadow-frosted-data);
   /* the frame is overflow-clip; a footer's drop shadow is clipped in the comp
      too */
   overflow: hidden;
@@ -156,8 +168,17 @@
      `align-items: center` puts the X level with the 58px avatar slot's
      midpoint; nudged 4px above that so it sits closer to the panel's own top
      edge instead of the avatar's centre. Only the top offset moves — the
-     shorthand `margin` on `.headerButton` still sets the other three sides. */
-  margin-top: calc((var(--chat-glyph) - var(--size-touch-target)) / 2 - var(--space-xs));
+     shorthand `margin` on `.headerButton` still sets the other three sides.
+     ⚠️ PINNED TO THE HEADER'S TOP INSTEAD, asked for directly 13 Sep 2026
+     ("move up the x button higher"). A centred item only moves HALF of any
+     margin change — the other half re-centres the margin box — so nudging
+     the top margin bought 6px for 12. `flex-start` takes the X out of the
+     centring, and the margin then lands the glyph's top edge 21 below the
+     panel's edge: the same 21 it sits in from the right, so the X reads as
+     set into the corner rather than floating beside the orb. The 44 target
+     overhangs the header by 10 and stays inside the panel's 16 top pad. */
+  align-self: flex-start;
+  margin-top: calc((var(--chat-glyph) - var(--size-touch-target)) / 2 + var(--space-xs));
 }
 
 /* ---------------------------------------------------------------------------
@@ -221,7 +242,10 @@
        ⚠️ THE HEIGHT IS NOT PART OF THIS AND CANNOT BE. The panel already fills
        the column top to bottom — 16 under the screen's top pad, 16 above the
        nav — so "20% larger" only has one dimension left to grow in. */
-    max-width: 450px;
+    /* ⚠️ SUPERSEDED 13 Sep 2026 — the nav's desktop width now, see `.panel`
+       above. The 450 reasoning stands: this only widens a column, never the
+       height. */
+    max-width: var(--size-nav-width-desktop);
 
     /* ⚠️ NOTHING ELSE. THE PANEL STRETCHES ON DESKTOP TOO, AND THE 538 IS GONE —
        asked for directly, and it was also a BUG, not just a preference.

@@ -155,42 +155,17 @@
   gap: var(--space-md); /* 12 */
 }
 
-.noteActions {
-  display: flex;
-  gap: var(--space-sm); /* 8 */
-}
-
-/* The `Add a product you don't own yet` recipe at auto width — 1px
-   border/glass on the card's own ground, so the two actions read as controls on
-   the card rather than as a second surface inside it.
-   ⚠️ Rule 9 — the design height minus the border, so the box lands on 40 in
-   every state. */
-.noteAction {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  padding: calc(11px - var(--border-width-hairline)) var(--space-lg);
-  border: var(--border-width-hairline) solid var(--color-border-glass);
-  border-radius: var(--radius-md);
-  color: var(--color-text-on-data);
-  transition: background-color var(--duration-fast) var(--ease-standard);
-}
-
-.noteAction:hover {
-  background: var(--color-state-hover-overlay);
-}
-
-@media (hover: none) {
-  .noteAction:hover {
-    background: none;
-  }
-}
-
-/* Cancel is the quieter of the two — same box, muted label. The pair is NOT
-   carried by colour alone: Save leads in DOM and reading order and Cancel says
-   what it does. */
-.noteCancel {
-  color: var(--color-text-on-data-secondary);
+/* ⚠️ `Save` / `Cancel` ARE `SegmentedToggle` NOW — asked for directly 13 Sep
+   2026, replacing two outlined `border/glass` buttons. The pill carries its own
+   recipe; the one thing this screen decides is WHERE it sits. The toggle
+   centres itself (`align-self: center`, built for the tray), and under a
+   left-aligned field on a left-aligned card it keeps the editor's left edge
+   instead. Two classes deep so it outranks the toggle's own single-class rule
+   regardless of which module loads first. The pair is still not carried by
+   colour alone: Save leads in DOM and reading order and Cancel says what it
+   does. */
+.noteEditor > .noteToggle {
+  align-self: flex-start;
 }
 
 .noteHint {

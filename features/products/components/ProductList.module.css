@@ -34,11 +34,16 @@
    measures the same 76: the padding is unchanged and the head's own floor is
    the thumb's 48. Open, it becomes a column and grows a panel, exactly as the
    PRODUCTS hub's accordion card does — same 16 between the head, the hairline
-   and the details. */
+   and the details.
+
+   `--collapse-gap` hands that 16 to the panel's `Collapse`, so the gap opens
+   with the panel instead of appearing a frame before it — see "Dropdowns" in
+   globals.css. */
 .row[data-expandable] {
   flex-direction: column;
   align-items: stretch;
   gap: var(--space-lg); /* 16 */
+  --collapse-gap: var(--space-lg);
 }
 
 .head {
@@ -145,13 +150,13 @@
 
 /* ⚠️ NOT IN FIGMA — the box as an empty category group opens it, inside that
    group's own surface on the PRODUCTS hub. Same recipe the compact product
-   card takes there: 8 radius (concentric with the group's 16 less its 8 of
-   padding), opaque rather than frosted-on-frosted, and 20 of air rather than
+   card takes there: 12 radius (8, concentric with the group, until 13 Sep
+   2026), opaque rather than frosted-on-frosted, and 20 of air rather than
    32, because the box is now a panel in a box rather than the whole screen's
    answer. See ProductAccordionCard.module.css. */
 .empty.emptyCompact {
   padding: var(--space-xl) 0; /* 20 */
-  border-radius: var(--radius-sm);
+  border-radius: var(--radius-md); /* 12 */
   background: var(--color-bg-surface-frost);
   -webkit-backdrop-filter: none;
   backdrop-filter: none;

@@ -2,6 +2,7 @@
 
 import { useId, useState, type ReactNode } from "react";
 import styles from "./Disclosure.module.css";
+import { Collapse } from "@/components/ui/Collapse";
 import { ChevronDownIcon } from "@/components/ui/icons";
 
 /**
@@ -24,7 +25,8 @@ import { ChevronDownIcon } from "@/components/ui/icons";
  *
  * ⚠️ THE CONTENT IS NOT MOUNTED WHILE CLOSED. A screen reader must not be able
  * to reach the body of a collapsed section, and the evidence blocks below carry
- * headings — an off-screen heading tree is worse than none.
+ * headings — an off-screen heading tree is worse than none. `Collapse` holds it
+ * for the 200ms it takes to close, `inert`, and then lets it go.
  */
 export function Disclosure({
   label,
@@ -58,11 +60,11 @@ export function Disclosure({
         <ChevronDownIcon className={styles.chevron} />
       </button>
 
-      {open ? (
-        <div id={panelId} className={`${styles.panel} reveal-quick`}>
+      <Collapse open={open}>
+        <div id={panelId} className={styles.panel}>
           {children}
         </div>
-      ) : null}
+      </Collapse>
     </div>
   );
 }

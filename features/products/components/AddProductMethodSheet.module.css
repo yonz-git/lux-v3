@@ -446,3 +446,15 @@
     align-self: center;
   }
 }
+
+/* ⚠️ NOT IN FIGMA — `Add product` on the duration stage is the secondary
+   `Button` at control/md (48) with a plus, hugging its label and centred at
+   both breakpoints: step 1's `Take a photo` recipe, asked for directly 13 Sep
+   2026. `button.` + two classes outranks both the shared rule above and
+   `Button`'s own single-class padding, whatever the bundle order. */
+button.trayAction.trayActionSmall {
+  width: auto;
+  align-self: center;
+  --button-height: var(--size-control-md);
+  padding: 0 var(--space-xl);
+}

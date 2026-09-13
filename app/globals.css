@@ -40,6 +40,15 @@
   initial-value: #39386f;
 }
 
+@property --specular-angle {
+  syntax: "<angle>";
+  /* written on the control, read by the `.specular` span inside it */
+  inherits: true;
+  /* light from the top-left until a pointer says otherwise */
+  initial-value: -45deg;
+}
+
+
 /* ==========================================================================
    SURFACE SYSTEM B TEXT — dark, not white.
 
@@ -225,6 +234,18 @@
      it measures 3.49:1 — under AA for a 12px label, the same open question
      `CompatCard`'s band pills already carry. */
   --color-bg-brand-soft: #8284c0;
+  /* `effect/shine` — the bright lilac every light effect in the build wears:
+     the text shine's band and the specular rim's streaks. ⚠️ NOT IN FIGMA —
+     added 13 Sep 2026, asked for in those words. It is `indigo/200`
+     (#b4aad3) bound here as a semantic token so no component reaches into
+     the primitives (non-negotiable 2). Raise it in Figma as `effect/shine`. */
+  --color-effect-shine: #b4aad3;
+  /* `effect/specular` — the rim's own colour, split from the text shine on
+     13 Sep 2026, asked for directly: the lilac read too purple on the pill's
+     edge. Same lightness (OKLCH L 0.76), hue turned from 296 to 262 — onto the
+     button gradient's own start hue (258) — and chroma cut 20% (0.059 to
+     0.047). A pale steel blue, #a1b2d0. Not in Figma; raise with the above. */
+  --color-effect-specular: #a1b2d0;
 
   /* ==========================================================================
      feedback/error + feedback/warning — THE COMPATIBILITY BANDS, RETUNED
@@ -426,6 +447,14 @@
   /* the mirrors of the two lines above — these are the ones `Button` reads */
   --color-button-bg-default-start: #657792;
   --color-button-bg-default-end: #39386f;
+
+  /* ⚠️ NOT IN FIGMA. The highlight of the light that sweeps the lockup in the
+     entrance (components/ui/LuxLogo.tsx, `LightStops`) — asked for as this
+     value on 12 Sep 2026, replacing `bg/brand-soft`. It is between the ramp's
+     two ends, a touch bluer than `gradient/brand`'s start, so the pass reads as
+     light through the indigo rather than a colour laid over it. Raise it in
+     Figma as a token of the gradient group. */
+  --color-logo-light: #587095;
 }
 
 /* ==========================================================================
@@ -502,6 +531,20 @@
   --color-text-success-ink: #46664f;
 }
 
+/* ⚠️ NOT IN FIGMA — THE IN-PAGE DESKTOP CARD IS MORE TRANSPARENT, asked for
+   directly 12 Sep 2026. Figma's `surface/card-desktop` is `#edf8fb @55%`; the
+   build runs the same hue at ~19% (`#edf8fb30`), matched to a value picked live
+   on `/investigation/products`. It is overridden HERE, as the token, because
+   its only two callers are exactly the cards the request named — `HubScreen`'s
+   `card` layout and `QuestionScreen`'s desktop card — so every hub and every
+   flow step moves together.
+   ⚠️ FLOATING SURFACES ARE DELIBERATELY UNTOUCHED. `Sheet`'s desktop tray takes
+   its own literal (`#edf8fb3d`) and never read this token; do not point it
+   here. Raise the new alpha in Figma; see `docs/figma-catchup.md`. */
+:root {
+  --color-surface-card-desktop: #edf8fb30;
+}
+
 /* ⚠️ THE NAV'S OFFSET FROM THE BOTTOM EDGE, AS ONE TOKEN — asked for at 5,
    against non-negotiable 6's 24 and off the spacing scale (the nearest step is
    `--space-xs`, 4). It was `--space-2xl` written out at six sites: the nav
@@ -543,13 +586,23 @@
    appear together on `/products`, so letting them drift apart would read as a
    bug. If the search field should stay dense, it needs its own token, not a
    local override.
+
+   ⚠️ BOTH BEVEL LINES ARE BLURRED, AS OF 13 Sep 2026 — asked for directly
+   ("smoothen this border light"). They were 0-blur 1px bands, the top one at
+   90% white, which drew a hard wire along the rim that pinched off where the
+   pill curves (an inset shadow offset by 1px thins to nothing along the ends).
+   A 2px blur turns each into a soft falloff, and the top light drops to 60% of
+   `border/highlight` so the glow does not bloom past the hairline rim it
+   sits under. It still reaches every caller: the nav, `Snackbar`, `ChatPanel`
+   and the check-in tiles — one material, one edge.
    ========================================================================== */
 
 :root {
   --color-surface-frost-nav: #dbeded7a;
 
-  --shadow-nav: inset 0 1px 0 var(--color-border-highlight),
-    inset 0 -1px 0 rgba(46, 42, 63, 0.12), 0 2px 6px rgba(28, 27, 36, 0.1),
+  --shadow-nav: inset 0 1px 2px
+      color-mix(in srgb, var(--color-border-highlight) 60%, transparent),
+    inset 0 -1px 2px rgba(46, 42, 63, 0.1), 0 2px 6px rgba(28, 27, 36, 0.1),
     0 12px 28px -10px rgba(28, 27, 36, 0.16);
 }
 
@@ -2173,7 +2226,15 @@ main[tabindex="-1"]:focus-visible {
    leaving is the app getting out of the way of the screen underneath, and at
    320 it reads as reluctant. The tray also leaves the way it came — DOWN the
    same 16px it rose — so the gesture is one movement reversed rather than two
-   unrelated fades. Desktop had no rise and gets none on the way out. */
+   unrelated fades. Desktop had no rise and gets none on the way out.
+
+   ⚠️ DESKTOP HOLDS ITS CENTRING TRANSFORM, IT DOES NOT CLEAR IT — fixed 13 Sep
+   2026, asked for as "fade out". This rule used to say `transform: none`,
+   which reads as "no movement" and is the opposite: the dialog is centred by
+   `translate(-50%, -50%)` in `Sheet.module.css`, and this selector outranks
+   it, so every desktop dialog slid half its own width right and half its
+   height down (320 / 281px on the basket) while it faded. The value below is
+   that module's centring repeated — keep the two in step. */
 [data-tray="scrim"][data-state="leaving"],
 [data-tray="tray"][data-state="leaving"] {
   animation: none;
@@ -2188,8 +2249,112 @@ main[tabindex="-1"]:focus-visible {
 
 @media (min-width: 1024px) {
   [data-tray="tray"][data-state="leaving"] {
-    transform: none;
+    transform: translate(-50%, -50%);
   }
+}
+
+/* ============================================================================
+   Dropdowns open DOWN and close back UP — `components/ui/Collapse.tsx` and
+   `.drop`.
+
+   ⚠️ NOT IN FIGMA — asked for directly 13 Sep 2026 ("we can improve the drop
+   downs and up", on `/check/new`). Every expanding row and every dropdown panel
+   in the app arrived on `.reveal-quick`, a 200ms fade on mount, and left by
+   unmounting in one frame — the arrives-with-motion, vanishes-without-it fault
+   the trays had until their exit landed above. The fade was the smaller half
+   of it: an expanding row shoved everything under it down by the panel's full
+   height in its first frame and pulled it back up in its last, so the list
+   jumped twice and only the panel's opacity moved.
+
+   TWO RECIPES, because there are two kinds of dropdown.
+
+   `.collapse` — a panel IN FLOW, which moves what is under it: the builder's
+   product rows, the accordion cards, the category groups, the ingredient list,
+   the compat cards and the analysis disclosures. It animates the SPACE (its
+   grid row, 0fr to 1fr) so the rows below slide instead of jumping, and fades
+   the panel on the same curve. `duration/base` BOTH ways: the list is morphing
+   in place, not a surface arriving and leaving, and a faster close would drag
+   the rows up more abruptly than they came down.
+
+   `.drop` — a panel FLOATING under its trigger: the builder's search results,
+   the calendar, and the add-product tray's results (in flow, but hung from the
+   pill like a menu and re-sized by every keystroke, so animating its height
+   would fight the results arriving). Nothing under it moves, so only the panel
+   does: it falls the last 4px from its trigger and settles from 0.98, and goes
+   back up the same way on `duration/fast` — the exit is the app getting out of
+   the way, the same asymmetry the trays keep.
+
+   ⚠️ BOTH ARE TRANSITIONS ENTERED WITH `@starting-style` — the mount-time half
+   of a transition, the move `StepProgress`'s fill makes. A panel closed while
+   it is still opening turns round from wherever it had got to. It names no
+   animation, so modules may override a value (the calendar moves its
+   `transform-origin`). `useDialogPresence` holds the node for the exit, exactly
+   as it does for `Sheet`, and `inert` takes it out of reach while it goes.
+
+   ⚠️ `--collapse-gap` IS THE PARENT'S FLEX GAP, DECLARED ON THE PARENT. A gap
+   exists the moment a second child does, so a panel mounting at 0fr still sat
+   one gap under its header: an 8–16px jump before anything animated, and
+   another at the end of the exit. The collapse starts that far up and eases
+   down, so the gap opens with the panel. A parent with no gap sets nothing.
+
+   ⚠️ THE CLIP IS ON ONLY WHILE IT MOVES (`[data-state]`). A permanent
+   `overflow: hidden` would cut every focus ring and `.tap-target` at the
+   panel's edge — `Remove` on a product card is both — so it is on for the
+   200ms of travel and off at rest.
+   ========================================================================== */
+
+.collapse {
+  display: grid;
+  grid-template-rows: 1fr;
+  margin-top: 0;
+  opacity: 1;
+  transition:
+    grid-template-rows var(--duration-base) var(--ease-standard),
+    margin-top var(--duration-base) var(--ease-standard),
+    opacity var(--duration-base) var(--ease-standard);
+}
+
+@starting-style {
+  .collapse[data-state="entering"] {
+    grid-template-rows: 0fr;
+    margin-top: calc(var(--collapse-gap, 0px) * -1);
+    opacity: 0;
+  }
+}
+
+.collapse[data-state="leaving"] {
+  grid-template-rows: 0fr;
+  margin-top: calc(var(--collapse-gap, 0px) * -1);
+  opacity: 0;
+}
+
+/* the single grid item — `min-height: 0` is what lets its row reach 0fr */
+.collapse > * {
+  min-height: 0;
+}
+
+.collapse[data-state] > * {
+  overflow: hidden;
+}
+
+.drop {
+  transform-origin: top;
+  transition:
+    opacity var(--duration-base) var(--ease-standard),
+    transform var(--duration-base) var(--ease-standard);
+}
+
+@starting-style {
+  .drop {
+    opacity: 0;
+    transform: translateY(-4px) scale(0.98);
+  }
+}
+
+.drop[data-state="leaving"] {
+  opacity: 0;
+  transform: translateY(-4px) scale(0.98);
+  transition-duration: var(--duration-fast);
 }
 
 /* ============================================================================
@@ -2275,6 +2440,270 @@ main[tabindex="-1"]:focus-visible {
 }
 
 /* ============================================================================
+   Shine — a band of light sweeping once across a run of text.
+   ⚠️ NOT IN FIGMA — asked for directly, 12 Sep 2026, after reactbits'
+   "Shiny Text" (reactbits.dev/text-animations/shiny-text).
+
+   The reference paints the text with a gradient — ink, a pale band, ink —
+   clipped to the glyphs, and slides that gradient's position so the band
+   crosses the letters. Same mechanism here, two differences from the source:
+
+   1. It runs ONCE, not on a 5s loop. LUX motion is calm; a looping glint on
+      every bubble is a screen that never settles. A bubble shines as it
+      ARRIVES (`.shine-on-enter`) and a button label shines on HOVER
+      (`.shine-on-hover`), and both come to rest as plain ink.
+   2. The band is a TOKEN, not white. On dark ink white reads as the text
+      vanishing; `bg/brand-soft` is the lighter indigo the selection accents
+      already use, so the glint is the brand catching the light. On the primary
+      button's white label there is no lighter colour to sweep, so the band is
+      white mixed with that same soft indigo — a tint passing over the label
+      rather than a highlight, and the only mix in the recipe.
+
+   The wrapper (`.shine-text`) reads two inherited properties from the surface
+   it sits on: `--shine-ink`, which MUST be the surface's own text token,
+   because `color` on the span is transparent and `currentColor` inside the
+   gradient would resolve to that; and `--shine-highlight`, the band. Both
+   ends of the gradient are the ink, so at rest — and for the whole delay
+   before an entrance, since the animation fills `backwards` — the text is
+   exactly the colour it would be without this, and the contrast measured on
+   every surface still holds. The band is 10% of a 300%-wide image, and the
+   two positions (100% / 0%) each park it fully OUTSIDE the box. ⚠️ THREE
+   WIDTHS, NOT THE REFERENCE'S TWO: a 200% image slid past 150% uncovers the
+   box's near edge, and text with no gradient under it is transparent — the
+   first word of every bubble vanished for the length of the sweep. At 300%
+   the image covers the box across the whole travel.
+
+   `.shine-on-hover` is a TRANSITION, not an animation: an animation attached
+   to `:hover` is removed the instant the pointer leaves, and a band cut off
+   mid-word is a snap. A transition sweeps the band back the way it came, the
+   same way the pill's own gradient reversal unwinds on leave, and on the same
+   `duration/hover` clock stretched by half so the band's crossing is legible.
+   `hover: none` restores the rest state so it does not stick after a tap.
+
+   `prefers-reduced-motion` collapses both globally and both END on rest.
+   ========================================================================== */
+
+@keyframes lux-shine {
+  from {
+    background-position: 100% 0;
+  }
+  to {
+    background-position: 0% 0;
+  }
+}
+
+.shine-text {
+  --shine-ink-resolved: var(--shine-ink, var(--color-text-primary));
+  --shine-highlight-resolved: var(--shine-highlight, var(--color-effect-shine));
+  color: transparent;
+  /* ⚠️ A GLOW, NOT A LINE — retuned 13 Sep 2026. The first cut was a 10% band
+     of `bg/brand-soft` and read as a hairline crossing the words. The band is
+     now 36% of the image with a soft shoulder either side of a near-white
+     core, so it reads as light catching the letters. Core is the lilac mixed
+     toward the label white; shoulders are the lilac itself. */
+  background-image: linear-gradient(
+    115deg,
+    var(--shine-ink-resolved) 32%,
+    var(--shine-highlight-resolved) 44%,
+    color-mix(in oklab, var(--shine-highlight-resolved), white 55%) 50%,
+    var(--shine-highlight-resolved) 56%,
+    var(--shine-ink-resolved) 68%
+  );
+  background-size: 300% 100%;
+  background-repeat: no-repeat;
+  /* rest: the band parked off the right edge, after its sweep */
+  background-position: 0% 0;
+  -webkit-background-clip: text;
+  background-clip: text;
+}
+
+/* a bubble's text: the band starts moving THE MOMENT THE BUBBLE DOES. ⚠️ It
+   used to wait 400ms into the 800ms entrance, so a bubble arrived as plain
+   text and glinted afterwards — two events. Asked for directly 13 Sep 2026:
+   the shine is part of the arrival, so it shares the bubble's start. Follows
+   the bubble's own beat through --bubble-enter-delay; a caller with its own
+   entrance sets --shine-delay directly (Welcome, below). */
+.shine-on-enter {
+  animation: lux-shine 1200ms var(--ease-standard)
+    var(--shine-delay, var(--bubble-enter-delay, 0ms)) backwards;
+}
+
+/* a button label: parked off the LEFT at rest so the hover sweep runs in
+   reading direction; leave sweeps it back */
+.shine-on-hover {
+  background-position: 100% 0;
+  transition: background-position calc(var(--duration-hover) * 1.5) var(--ease-standard);
+}
+
+:is(a, button):hover:not(:disabled) > .shine-on-hover {
+  background-position: 0% 0;
+}
+
+@media (hover: none) {
+  :is(a, button):hover:not(:disabled) > .shine-on-hover {
+    background-position: 100% 0;
+  }
+}
+
+/* Welcome's two bubbles bypass `.bubble-enter`, so their shine takes each
+   bubble's own landing: the question rises at 1200ms for 800ms, the reply is
+   pushed in at 3300ms for --duration-slower. Both start WITH the rise — no
+   offset, the same rule `.shine-on-enter` follows. */
+.bubble-ask-exit .shine-on-enter {
+  --shine-delay: 1200ms;
+}
+.bubble-swap-in .shine-on-enter {
+  --shine-delay: 3300ms;
+}
+
+/* ============================================================================
+   Specular edge — a light streak along a button's rim that faces the pointer.
+   ⚠️ NOT IN FIGMA — asked for directly, 12 Sep 2026, after reactbits'
+   "Specular Button" (reactbits.dev/components/specular-button).
+
+   The reference renders its rim on a canvas. This is the same picture in CSS:
+   a real `<span class="specular">` (a pseudo would collide — `Button` owns its
+   `::after`, `.pressable` owns `::before`) filling the control, masked down to
+   a `border-width/hairline` ring, painted with a conic gradient of two streaks
+   180° apart. `--specular-angle` turns the whole gradient so the first streak
+   faces the pointer; `components/ui/specular.ts` writes that angle on every
+   pointer move. It is a registered <angle> (top of this file), so the turn
+   between two moves interpolates on `duration/fast` rather than jumping.
+
+   Each streak plateaus for 10° and fades over 40° either side — the
+   reference's `shineSize` and `shineFade` defaults. ⚠️ THE STREAKS ARE THE
+   BUTTON'S OWN TWO GRADIENT ENDS, 30% BRIGHTER — asked for in those words.
+   Each control sets `--specular-a` / `--specular-b` from its own endpoint
+   tokens mixed 30% toward white in OKLab (`Button.module.css`,
+   `SmallButton.module.css`); the streak facing the pointer wears the START
+   colour and the one opposite wears the END, so the ring reads as the pill's
+   gradient caught on its rim.
+
+   Hidden at rest and faded in with the hover on `duration/hover`, so it
+   arrives with the gradient reversal rather than snapping on. `hover: none`
+   keeps it hidden — a phone has no pointer for it to face.
+   ========================================================================== */
+
+.specular {
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  /* ⚠️ 2px, NOT THE HAIRLINE — retuned 13 Sep 2026. A 1px ring of the
+     pill's own colours 30% brighter could not be seen on either pill: the
+     brightened indigo sat on indigo, the brightened sage on sage. The
+     streaks now wear `effect/specular` (pale steel blue, see :root) with a
+     near-white core, the ring is 2px, and each streak plateaus 20° and fades
+     50° either side. The per-pill `--specular-a/-b` still tint the streak's
+     shoulders, so the two pills' rims are not identical. */
+  padding: calc(var(--border-width-hairline) * 2);
+  pointer-events: none;
+  opacity: 0;
+  background: conic-gradient(
+    from calc(var(--specular-angle) - 60deg),
+    transparent 0deg,
+    var(--specular-a) 30deg,
+    var(--color-effect-specular) 50deg,
+    color-mix(in oklab, var(--color-effect-specular), white 60%) 60deg,
+    var(--color-effect-specular) 70deg,
+    var(--specular-a) 90deg,
+    transparent 120deg,
+    transparent 180deg,
+    var(--specular-b) 210deg,
+    var(--color-effect-specular) 230deg,
+    color-mix(in oklab, var(--color-effect-specular), white 60%) 240deg,
+    var(--color-effect-specular) 250deg,
+    var(--specular-b) 270deg,
+    transparent 300deg,
+    transparent 360deg
+  );
+  /* keep the ring: paint everything, cut the content box out of it */
+  -webkit-mask: linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0);
+  -webkit-mask-composite: xor;
+  mask: linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0);
+  mask-composite: exclude;
+  /* the angle is written on the parent and inherited; transitioning it HERE
+     is what makes the streak turn rather than jump between pointer moves */
+  transition:
+    opacity var(--duration-hover) var(--ease-standard),
+    --specular-angle var(--duration-fast) linear;
+}
+
+:is(a, button):hover:not(:disabled) > .specular {
+  opacity: 1;
+}
+
+@media (hover: none) {
+  :is(a, button):hover:not(:disabled) > .specular {
+    opacity: 0;
+  }
+}
+
+/* ============================================================================
+   Beacon — the one button that has to say "start here": Welcome's
+   `Create skin profile`. ⚠️ NOT IN FIGMA — asked for directly, 12 Sep 2026,
+   after the "Get React Bits Pro" button in reactbits.dev's navbar, WITH THE
+   BUTTON'S OWN COLOURS KEPT.
+
+   Two motions, both on `Button`'s `beacon` prop (`Button.module.css` holds the
+   static half — the widened gradient and the sweep's fill — and this block
+   names the animations, which is the only place a name may live):
+
+   1. THE GRADIENT BREATHES. The reference flows a five-stop palette back and
+      forth. This one has two colours, so the image is start → end → start at
+      twice the width, and the flow carries the window from the button's
+      default (start → end) to its own hover reversal (end → start) and back —
+      the same two pictures the button already alternates between on hover,
+      now slowly, unprompted, on a 4s ease-in-out cycle. No new colour.
+   2. THE SWEEP. A soft band of the label's white at 25%, twice the width of
+      the pill, crossing it once every 10s — the reference's own cadence. It is
+      `::before` on the button, which `Button` leaves free (`::after` is its
+      press overlay). Under the label, over the gradient.
+
+   `prefers-reduced-motion` collapses both to their end frames, which are the
+   default gradient and the band parked off-screen.
+   ========================================================================== */
+
+@keyframes lux-beacon-flow {
+  0% {
+    background-position: 0% 50%;
+  }
+  50% {
+    background-position: 100% 50%;
+  }
+  100% {
+    background-position: 0% 50%;
+  }
+}
+
+@keyframes lux-beacon-sweep {
+  from {
+    background-position: -200% 0;
+  }
+  to {
+    background-position: 200% 0;
+  }
+}
+
+.button-beacon {
+  animation: lux-beacon-flow 4000ms ease-in-out infinite;
+}
+
+/* ⚠️ THE ONE CALLER ALSO RISES IN. Welcome's CTA carries `.welcome-rise`, and
+   two rules setting `animation` on one element do not add up — the later one
+   (this block) silently replaced the entrance. Both tracks are listed here,
+   the rise first so it keeps its delay; a second beacon that enters some
+   other way needs its own line, not a change to `.button-beacon`. */
+.welcome-rise.button-beacon {
+  animation:
+    lux-rise-in 800ms var(--ease-standard) var(--rise-delay, 0ms) backwards,
+    lux-beacon-flow 4000ms ease-in-out infinite;
+}
+
+.button-beacon::before {
+  animation: lux-beacon-sweep 10s ease-in-out infinite;
+}
+
+/* ============================================================================
    Focus not obscured — WCAG 2.4.11 (AA)
 
    The nav is fixed 24px from the bottom and 75 tall. Tabbing to a control near
@@ -2318,7 +2747,12 @@ textarea,
    ⚠️ NOT IN FIGMA. The brand lockup appears over the whole viewport before
    Welcome is handed the screen: the symbol and the wordmark fade in TOGETHER,
    each drifting a short way inwards — the symbol from its left, the wordmark
-   from its right — and settle as the finished lockup. Requested directly.
+   from its right — settling from a hair larger and sharpening from a blur, and
+   hold as the finished lockup. Then, as of 12 Sep 2026, THE SYMBOL STAYS: the
+   wordmark recedes, the symbol travels to where Welcome's orb carries the same
+   mark, and the orb grows from almost nothing behind it and carries it up into
+   place. The two screens are one object handed over, not a cut. Requested
+   directly.
 
    ⚠️ IT WAS A PUSH UNTIL 12 Sep 2026, AND IT WAS REPLACED, NOT RETUNED. The
    wordmark used to fly in from beyond the right edge, hold alone, and be shoved
@@ -2328,6 +2762,12 @@ textarea,
    the wordmark and the orb's expo curve. Do not bring any of it back to
    "restore" the push; see `docs/decisions.md`.
 
+   ⚠️ AND IT WAS A DISSOLVE UNTIL LATER THE SAME DAY. The whole overlay used to
+   fade at 2000 with the lockup blooming to 1.03 inside it, and Welcome's orb
+   assembled from scratch underneath. The bloom is gone with the dissolve — the
+   stage no longer animates at all, because an ancestor transform would move
+   the symbol off the point the hand-off below is aimed at.
+
    ⚠️ IT IS AN OVERLAY ON `/`, NOT A TWENTIETH ROUTE. The route map is nineteen
    routes and every one of them is in a nav section; an entrance is in none, it
    has no title worth announcing, it must not become a back-button destination,
@@ -2336,11 +2776,44 @@ textarea,
    before `<Welcome>` in `app/page.tsx` and removes itself. See LogoEntrance.tsx.
 
    THE TIMELINE — every phase is a keyframe PERCENTAGE, never an
-   `animation-delay`:
+   `animation-delay`. TWO CLOCKS, AND THE SECOND STARTS ON AN EVENT: the
+   ASSEMBLY tracks run 2300 from the un-pause; the HAND-OFF tracks run from the
+   release, which is the assembly's `animationend`, and their times below are
+   R + ms.
 
-     0 ...... 1600   both halves fade in and drift inwards, together
-     1600 ... 2000   held, complete  <- the assembly tracks END here
-     2000 ... 2520   the veil fades and Welcome takes over
+     0 ...... 1600   both halves fade in, drift inwards, settle and sharpen
+     1600 ... 2300   held, complete  <- the assembly tracks END here = R.
+                     LogoEntrance.tsx aims the hand-off, sets `data-handoff`
+                     on the overlay and lifts the hold, in ONE style change
+     R ...... +500   the wordmark recedes (fades, softens, blooms to 1.03)
+     R ...... +600   the scrim fades (the no-WebGL gradient only)
+     R ...... +700   the symbol TRAVELS to the orb's mark, shrinking to its
+                     size; the orb grows from 0.04 at the symbol's position to
+                     1 at its own, on the same curve, over the same 700; the
+                     light on the symbol fades out on the way; and the orb's
+                     own mark — the SAME three paths — Spiral-Assembles into
+                     the spot the symbol is arriving at (Welcome's `animateIn`,
+                     0 / 120 / 240 stagger, done by R+940)
+     R+350 .. +630   the symbol fades out over the assembling mark, still
+                     moving with it  <- at R+700 the overlay hides itself and
+                     the node goes
+
+   ⚠️ THE HAND-OFF RUNS FROM THE RELEASE, NOT FROM A PERCENTAGE OF A 3200
+   TRACK — and it was the latter for about an hour. The orb's tracks can only
+   start at the release, and a CSS animation's clock starts at the FIRST FRAME
+   PAINTED after the style change that creates it. That frame is late by
+   exactly as long as the page takes to paint Welcome for the first time —
+   measured 400ms in `next dev` with the canvas and the orb's blurred layers
+   rasterising at once. A travel already running on the entrance's clock
+   arrived, held, and began to fade while the orb behind it was still at 0.7
+   with its mark hidden. Now every hand-off track is created by the SAME
+   attribute change, in the SAME task, as the release: one style recalc, one
+   first frame, one start time for the symbol, the orb and the orb's mark.
+   However late that frame is, nothing is out of step.
+
+   ⚠️ THE HOLD IS 700, NOT 400 — asked for "300ms longer" on 12 Sep 2026. It is
+   the `69.5652%` stop (1600 / 2300) on the two assembly tracks; move it and
+   the release moves with it, because the release IS the end of that track.
 
    ⚠️ "TOGETHER" IS STRUCTURAL, NOT A COINCIDENCE OF NUMBERS. The two halves run
    separate keyframes only because they drift in opposite directions. Their
@@ -2354,6 +2827,72 @@ textarea,
    symbol's 209 — one distance for both, ~34px at 440 and ~42px at 1440. Much
    more than that starts to read as travel again, which is what was asked away.
 
+   THE SETTLE — added 12 Sep 2026, asked for directly ("something with sizing,
+   smooth and sophisticated"). Each half also arrives a hair LARGER than life
+   and soft — `scale(1.06)` and a 5px blur at 0% — and condenses to its true
+   size and sharpens over the same 1600ms as the drift. It reads as the lockup
+   coming into focus rather than sliding into place. Three things are
+   deliberate about the numbers:
+
+     - LARGER, not smaller. Growing from 0.9 is the stock "pop in"; settling
+       from just above 1 is the same move a lens makes.
+     - 1.06 is MONOTONIC. It passes through 1 exactly once, at the end. There
+       is no overshoot and no spring — "LUX does not bounce".
+     - THE BLUR IS ON THE HALF, NOT THE STAGE, and it ends at 0 rather than
+       `none` so the whole track interpolates. 5px on a lockup that is at most
+       283 wide is enough to soften the letterforms without dissolving the
+       symbol's mark into a smear at 0%, where it is invisible anyway.
+
+   The scale and the blur ride on the SAME keyframe stops as the drift and the
+   fade. Adding them as a separate track with its own timing is how the two
+   halves would drift out of step; see "TOGETHER" above.
+
+   THE HAND-OFF — the symbol becomes the orb's mark. It is a FLIP: at release,
+   LogoEntrance.tsx measures the symbol's three paths on screen and the orb
+   mark's three paths on screen (Welcome is laid out under the hold, merely at
+   opacity 0) and writes four custom properties on the overlay — the translate
+   and the x/y scale that map the one box onto the other — plus two on the orb:
+   the offset from the orb's resting centre back to the symbol's. The keyframes
+   below read them. The JS holds NO duration and NO curve; it holds two
+   rectangles.
+
+     ⚠️ THE TRAVEL IS ON THE SYMBOL'S `<svg>`, NOT ON `.lux-entrance-mark`. The
+     wrapper's own track ends at identity and, on a `both` fill, KEEPS
+     asserting it; a second transform track on the same element would win the
+     property for its whole life and erase the drift. Same reason the
+     wordmark's recede is on ITS `<svg>`. Two elements, two tracks, no fight —
+     and `transform-origin: 0 0` on the travelling svg is what the FLIP maths in
+     LogoEntrance.tsx assumes.
+
+     ⚠️ THE ORB GROWS FROM THE SYMBOL, NOT IN PLACE — that is "from behind the
+     symbol". `lux-orb-grow` starts the orb at 0.04 with its centre on the
+     symbol's, and it and the symbol move on the SAME curve for the SAME 700
+     from the SAME frame (see the clock note above), so the symbol rides on
+     the orb the whole way. The orb's mark is centred in its box to within
+     0.5px, which is the whole of the error.
+
+     ⚠️ THE ORB'S MARK IS THE SAME GEOMETRY, AS OF 13 Sep 2026. Orb.tsx draws
+     `LUX_SYMBOL`'s three paths through one transform onto its grid, so the
+     FLIP's target is the symbol itself at another scale and the landing is
+     exact — measured within 0.3px on every stroke. Until then the orb carried
+     the chat-ball export's copy, whose centre stroke was ~12% flatter; the
+     FLIP mapped the union box and faded across a 2px difference. Asked for
+     directly, with the orb's own entrance back.
+
+     ⚠️ SO THE HAND-OFF IS THE MARK'S OWN SPIRAL ASSEMBLE, UNDER THE SYMBOL.
+     Welcome's orb `animateIn`s again: from the release its three strokes
+     Spiral-Assemble (the Figma timeline — rotate, scale from 0.5, a short
+     travel, 0/120/240 stagger) into exactly the spot the symbol is arriving
+     at, and the symbol fades R+350 → R+630 over them while still moving. It
+     was a step-then-fade (mark hidden until arrival, then shown under a
+     holding symbol) for a day; a mark that assembles cannot be hidden until
+     it is done, and hiding it defeats the entrance that was asked back. The
+     orb is still small for the first third of the grow, so the strokes'
+     early spin happens behind the symbol at a few pixels' size.
+     (⚠️ The paths are in a different ORDER in the two files — the master's
+     first stroke is the orb's second — so compare by position, never by
+     index.)
+
    ⚠️ THE CURVE IS `--ease-standard`, AND THAT CHOICE IS MOST OF THE FIX. The
    push ran on the orb's expo curve, `cubic-bezier(0.16, 1, 0.3, 1)`, which
    LEAVES AT FULL SPEED — that first-frame lurch is most of what "jumping" was.
@@ -2362,19 +2901,21 @@ textarea,
    1600ms is past `duration/slower` on purpose: "slowly, elegantly" was the ask,
    and this plays once per cold start.
 
-   ⚠️ TWO DURATIONS, 2000 AND 2520, AND THE SPLIT IS LOAD-BEARING. The two
-   assembly tracks run 2000 and finish at the exact moment Welcome's own
-   entrance has to be released (see the hand-off block below); the veil and the
-   bloom run 2520 and carry the dissolve. That makes the release a plain
-   `animationend` on `lux-entrance-mark-in` rather than a JS timer holding a
-   copy of a number that lives in this file — the two cannot drift, and the
-   reduced-motion collapse shortens both together.
+   ⚠️ THE RELEASE IS AN `animationend`, NOT A TIMER. The two assembly tracks
+   run 2300 and finish at the exact moment Welcome has to be released and the
+   hand-off begun; LogoEntrance.tsx listens for `lux-entrance-mark-in` ending,
+   and for `lux-entrance-done` ending 700 later to remove the node. It holds no
+   copy of either number — the two cannot drift, and the reduced-motion
+   collapse shortens everything together. `lux-entrance-veil` (3200 from the
+   un-pause, `visibility` only) is the FAIL-SAFE: it hides the overlay if the
+   script that would start the hand-off never runs, and `data-handoff` replaces
+   it the moment the hand-off does.
 
    ⚠️ THE "NO DELAYS" RULE IS THE REDUCED-MOTION CONTRACT, NOT A STYLE CHOICE.
    The global collapse sets `animation-duration: 0.01ms` and leaves
    `animation-delay` alone — correctly, since a delay is not motion. A timeline
-   built from delays would still take 2.5 real seconds for a user who asked for
-   no motion. Built from percentages, the whole thing collapses with the
+   built from delays would still take 3.2 real seconds for a user who asked for
+   no motion (2.3 to the release, 0.7 after). Built from percentages, the whole thing collapses with the
    duration and is over in a frame. Do not "tidy" these into delays.
    ========================================================================== */
 
@@ -2384,54 +2925,157 @@ textarea,
   --z-entrance: 900;
 }
 
+/* THE LIFETIME, twice. The overlay itself no longer fades — the symbol has to
+   stay drawn on it to the end — so these only say when the node is done:
+   `visibility` is visible for the whole run and hidden at exactly 100%, which
+   sticks on the `both` fill and takes the pointer with it. `veil` is the
+   fail-safe from the un-pause (3200, i.e. the whole thing with no script);
+   `done` replaces it from the release (700) and its `animationend` removes
+   the node. Two names because retiming a running animation keeps its start. */
 @keyframes lux-entrance-veil {
-  0%,
-  79.37% {
-    opacity: 1;
+  from {
+    visibility: visible;
   }
-  100% {
-    opacity: 0;
+  to {
     visibility: hidden;
   }
 }
 
-/* the lockup blooms very slightly as it dissolves, so it recedes rather than
-   simply switching off. 1.03 — "LUX does not bounce", and this is the smallest
-   scale that reads at all. */
-@keyframes lux-entrance-bloom {
-  0%,
-  79.37% {
-    transform: scale(1);
+@keyframes lux-entrance-done {
+  from {
+    visibility: visible;
   }
-  100% {
-    transform: scale(1.03);
+  to {
+    visibility: hidden;
   }
 }
 
-/* the symbol: 15% of the lockup to its LEFT, drifting right into place */
+/* THE SCRIM — the gradient on `::before`, the no-WebGL fallback. It fades from
+   the release so Welcome shows through under the travelling symbol. Over the
+   living canvas it is cancelled outright (`data-over-canvas` in the module)
+   and the declared opacity 0 holds. */
+@keyframes lux-entrance-scrim {
+  from {
+    opacity: 1;
+  }
+  to {
+    opacity: 0;
+  }
+}
+
+/* the symbol: 15% of the lockup to its LEFT, drifting right into place — and
+   settling from 1.06 and a 5px blur to its true size, sharp (see "THE SETTLE"
+   above). ⚠️ The transform list is ORDER-SENSITIVE: `translateX() scale()`
+   scales the box first and then moves it by a percentage of the UNSCALED box,
+   so the drift stays the 15% documented above. Swapping them scales the drift
+   too. */
 @keyframes lux-entrance-mark-in {
   0% {
-    transform: translateX(-38.61%);
+    transform: translateX(-38.61%) scale(1.06);
     opacity: 0;
+    filter: blur(5px);
   }
-  80%,
+  69.5652%,
   100% {
-    transform: translateX(0);
+    transform: translateX(0) scale(1);
     opacity: 1;
+    filter: blur(0);
   }
 }
 
-/* the wordmark: the same distance to its RIGHT, drifting left into place */
+/* the wordmark: the same distance to its RIGHT, drifting left into place, with
+   the same settle — identical stops, identical scale, identical blur */
 @keyframes lux-entrance-word-in {
   0% {
-    transform: translateX(24.53%);
+    transform: translateX(24.53%) scale(1.06);
     opacity: 0;
+    filter: blur(5px);
   }
-  80%,
+  69.5652%,
   100% {
-    transform: translateX(0);
+    transform: translateX(0) scale(1);
+    opacity: 1;
+    filter: blur(0);
+  }
+}
+
+/* THE TRAVEL — the symbol's svg goes to the orb's mark over 700 from the
+   release, fading over the mark assembling underneath from 50% to 90% of the
+   way. The four properties are written by LogoEntrance.tsx at release; unset,
+   it stays put and simply fades, which is the no-orb fallback. */
+@keyframes lux-entrance-mark-travel {
+  0% {
+    transform: none;
     opacity: 1;
   }
+  50% {
+    opacity: 1;
+  }
+  90% {
+    opacity: 0;
+  }
+  100% {
+    transform: translate(var(--handoff-x, 0px), var(--handoff-y, 0px))
+      scale(var(--handoff-sx, 1), var(--handoff-sy, 1));
+    opacity: 0;
+  }
+}
+
+/* THE RECEDE — the wordmark's svg leaves the way the lockup used to: a 1.03
+   bloom, a softening, gone in 500. */
+@keyframes lux-entrance-word-out {
+  from {
+    transform: scale(1);
+    opacity: 1;
+    filter: blur(0);
+  }
+  to {
+    transform: scale(1.03);
+    opacity: 0;
+    filter: blur(4px);
+  }
+}
+
+/* THE LIGHT GOES OUT AS THE SYMBOL TRAVELS, so what fades over the orb's mark
+   at the end is the master's own still fill and not a sweep mid-pass. */
+@keyframes lux-entrance-light-out {
+  from {
+    opacity: 1;
+  }
+  to {
+    opacity: 0;
+  }
+}
+
+/* THE LIGHT — the gradient sweep through the lockup (components/ui/LuxLogo.tsx,
+   "THE LIGHT"). Asked for directly, 12 Sep 2026, after reactbits' gradient-text.
+   One period of the gradient is the master's 538 user units, and the rect is
+   two periods wide, so sliding it exactly one period lands on an identical
+   frame: the loop is seamless and the sweep can run for as long as the logo
+   is on screen. ⚠️ 538 IS A USER UNIT, NOT A PIXEL. A CSS transform on an SVG
+   element moves it in the SVG's own coordinate system, which is what lets one
+   keyframe drive both halves at one speed whatever the stage is scaled to.
+
+   ⚠️ `linear`, AND THAT IS THE ONE PLACE THE BOARD'S CURVE IS WRONG. Light
+   passing across a surface has no rest to leave from or settle into; eased,
+   it would visibly slow at every loop and read as a pulse. 2600ms is one pass
+   over the lockup in roughly the time it is whole — the highlight crosses the
+   letters once while they sharpen.
+
+   Reduced motion collapses it to one 0.01ms iteration that ends one period
+   on, i.e. on the frame it started from: a still gradient, no sweep. */
+@keyframes lux-logo-light {
+  from {
+    transform: translateX(0);
+  }
+  to {
+    transform: translateX(-538px);
+  }
+}
+
+.lux-logo-light {
+  animation: lux-logo-light 2600ms linear infinite;
+  will-change: transform;
 }
 
 /* the skip: any tap or any key cuts to the assembled lockup and clears it.
@@ -2461,47 +3105,117 @@ textarea,
    easing a constant gives a constant, so one curve on the shorthand lands on
    exactly the segment that moves. If a track ever needs two curves, write the
    `cubic-bezier()` out LITERALLY in the keyframe; do not reach for `var()`.
+   (⚠️ `var()` in a keyframe VALUE — the travel's four properties — is fine;
+   it is only the timing function that is dropped.)
 
    ⚠️ `both`, AND THE REVEAL BLOCK'S WARNING ABOUT IT DOES NOT APPLY HERE. A
    `forwards` opacity animation leaves a persistent stacking context — a defect
    on a revealed block inside a screen, and exactly what is wanted on an overlay
    that must STAY gone if the script that removes it never runs. It is also what
    makes `visibility: hidden` stick, and a hidden element takes no pointer.
-   Nothing is left in effect over Welcome: the node is removed. */
-.lux-entrance {
-  animation: lux-entrance-veil 2520ms var(--ease-standard) both;
-}
+   Nothing is left in effect over Welcome: the node is removed.
 
-.lux-entrance-stage {
-  animation: lux-entrance-bloom 2520ms var(--ease-standard) both;
+   ⚠️ EVERYTHING UNDER `[data-handoff]` STARTS TOGETHER, ON THE RELEASE — see
+   the clock note in the timeline. The attribute is set by LogoEntrance.tsx in
+   the same task that lifts the hold. It also REPLACES the overlay's fail-safe
+   lifetime with the 700 one, by a different name, because a retimed animation
+   keeps its old start. */
+.lux-entrance {
+  animation: lux-entrance-veil 3200ms linear both;
 }
 
 .lux-entrance-mark {
-  animation: lux-entrance-mark-in 2000ms var(--ease-standard) both;
+  animation: lux-entrance-mark-in 2300ms var(--ease-standard) both;
 }
 
 .lux-entrance-word {
-  animation: lux-entrance-word-in 2000ms var(--ease-standard) both;
+  animation: lux-entrance-word-in 2300ms var(--ease-standard) both;
 }
 
+.lux-entrance[data-handoff] {
+  animation: lux-entrance-done 700ms linear both;
+}
+
+.lux-entrance[data-handoff]::before {
+  animation: lux-entrance-scrim 600ms var(--ease-standard) both;
+}
+
+.lux-entrance[data-handoff] .lux-entrance-mark-travel {
+  animation: lux-entrance-mark-travel 700ms var(--ease-standard) both;
+}
+
+.lux-entrance[data-handoff] .lux-entrance-word-out {
+  animation: lux-entrance-word-out 500ms var(--ease-standard) both;
+}
+
+.lux-entrance[data-handoff] .lux-logo-light-layer {
+  animation: lux-entrance-light-out 700ms var(--ease-standard) both;
+}
+
+/* below the hand-off rule at equal specificity, so a skip during the hand-off
+   still fades the overlay */
 .lux-entrance[data-skip] {
   animation: lux-entrance-skip var(--duration-base) var(--ease-standard) both;
 }
 
-/* the three tracks stop dead on a skip and their elements fall back to the
-   finished lockup — see the `lux-entrance-skip` note above */
-.lux-entrance[data-skip] .lux-entrance-stage,
+/* the two assembly tracks stop dead on a skip and their elements fall back to
+   the finished lockup — see the `lux-entrance-skip` note above. The inner
+   tracks (travel, recede, light) are left running: cancelling a travel
+   mid-flight would snap the symbol back to the lockup for the 200ms fade. */
 .lux-entrance[data-skip] .lux-entrance-mark,
 .lux-entrance[data-skip] .lux-entrance-word {
   animation: none;
 }
 
 /* ----------------------------------------------------------------------------
+   The orb's side of the hand-off — Welcome's
+   `<Orb animateIn halo className="orb-from-entrance">`
+
+   The orb GROWS from 0.04 with its centre on the symbol's (the two offsets are
+   written by LogoEntrance.tsx at release; unset, it grows in place) to 1 at
+   its own resting centre, over the same 700 and curve as the symbol's travel.
+   Its mark Spiral-Assembles meanwhile, from `animateIn` as on every other orb
+   — see "THE HAND-OFF" above.
+
+   ⚠️ THE GROW REPLACES `.reveal-hero`'s FADE BY SPECIFICITY (0-2-0 over
+   0-1-0), on the same element, deliberately: the grow carries its own opacity
+   and a second `animation` on `.lux-orb` would otherwise be the one that won.
+   The mark's own tracks are on the strokes and untouched. Written for the
+   siri renderer's structure; under `ORB_RENDERER = "svg"` the class lands on
+   the svg and the grow still runs.
+
+   ⚠️ `backwards`, NEVER `both` — nothing may be left in effect on the orb, or
+   `.lux-orb-float`'s drift underneath would be fighting a held transform.
+
+   ⚠️ AND THE HOLD CANCELS IT, LIKE EVERYTHING IN `.screen`, so the orb sits
+   at rest while it is measured. A skip during the hold never aims, so the orb
+   grows in place with its mark assembling — Welcome's ordinary entrance.
+   ------------------------------------------------------------------------- */
+@keyframes lux-orb-grow {
+  0% {
+    transform: translate(var(--orb-from-x, 0px), var(--orb-from-y, 0px))
+      scale(0.04);
+    opacity: 0;
+  }
+  15% {
+    opacity: 1;
+  }
+  100% {
+    transform: translate(0, 0) scale(1);
+    opacity: 1;
+  }
+}
+
+.lux-orb.orb-from-entrance {
+  animation: lux-orb-grow 700ms var(--ease-standard) backwards;
+}
+
+/* ----------------------------------------------------------------------------
    The hand-off — why Welcome's own entrance has to be held
 
-   Welcome runs a 3.8s narrative of its own: the orb assembles (940ms), the CTA
-   reveals (200ms), the question arrives (1000ms) and is swapped for the reply
-   (3300ms). All of it starts at first paint. Left alone it would play out UNDER
+   Welcome runs a 3.8s narrative of its own: the orb grows (700ms) and takes
+   its mark from the entrance (900ms), the CTA reveals, the question arrives
+   (1200ms) and is swapped for the reply (3300ms). All of it starts at first paint. Left alone it would play out UNDER
    an opaque entrance and the user would land in the middle of it — orb already
    together, question already asked, only the swap still to come. The beat of
    silence the bubble block describes would be spent behind a logo.
@@ -2524,10 +3238,11 @@ textarea,
    run for the frames between first paint and the effect, and are then cut back
    to their start. Every one of those frames is behind an opaque veil.
 
-   ⚠️ IT IS RELEASED AT 2000, WHEN THE VEIL IS STILL OPAQUE — NOT WHEN THE NODE
-   GOES. Releasing on the veil's own `animationend` would mean Welcome sat fully
-   formed and unanimated under a fading veil for 520ms, then blinked out and
-   restarted as the hold lifted.
+   ⚠️ IT IS RELEASED AT 2300, WHEN THE ASSEMBLY TRACKS END — NOT WHEN THE NODE
+   GOES AT 3200. Welcome's orb has to be growing behind the symbol WHILE the
+   symbol travels, and the symbol only travels after the hold; releasing on the
+   overlay's own `animationend` would mean Welcome sat fully formed and
+   unanimated under the hand-off, then blinked out and restarted.
 
    Specificity: 0-2-1 against the 0-1-0 of `.reveal-hero`, `.bubble-ask-exit`
    and every module rule — it wins the cascade without an `!important`, which
@@ -2540,7 +3255,9 @@ html[data-entrance-hold] .screen * {
 /* ⚠️ AND WELCOME IS INVISIBLE WHILE HELD — added 12 Sep 2026, when the veil
    stopped being opaque. The logo now draws straight on the living canvas (see
    LogoEntrance.module.css), so nothing but this keeps Welcome's held — and
-   therefore fully visible — content from showing behind it. Opacity, NOT
+   therefore fully visible — content from showing behind it. Opacity is also
+   what lets the hand-off MEASURE Welcome's orb while held: an element at
+   opacity 0 is laid out; a hidden one is too, but `display: none` would not be. Opacity, NOT
    `visibility`: a screen reader and the first Tab still reach Welcome
    underneath, as the entrance's accessibility notes require. Every visible
    element on Welcome restarts from opacity 0 when the hold lifts, so nothing

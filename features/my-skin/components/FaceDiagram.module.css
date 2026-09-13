@@ -23,7 +23,10 @@
      rather than two different rulers. */
   container-type: inline-size;
 
-  border-radius: var(--radius-2xl);
+  /* ⚠️ `radius/3xl` (32), NOT the comp's `radius/2xl` (24) — asked for
+     directly 13 Sep 2026, a softer corner on the face card. It is the page
+     card's own radius, so the two nest as one family. NOT IN FIGMA. */
+  border-radius: var(--radius-3xl);
   /* ⚠️ `surface/data-strong` (62%), NOT `surface/data` (44%) — decided here.
      This card carries objects ON it (the face form and seven pills) rather
      than text alone, so it is doing a different job from a PROGRESS or CHECK
@@ -284,13 +287,49 @@
   color: var(--color-text-on-brand);
 }
 
+/* ⚠️ NOT IN FIGMA — THE SAME DIAGONAL SHADE AS `Chip`'s SELECTED PILL, asked
+   for directly 13 Sep 2026 for "all the small selected pills". Same recipe and
+   the same reasoning, recorded on `.chip::before` in `Chip.module.css`: an
+   overlay that fades, so it rides the fill's transition rather than snapping.
+   `isolation` keeps it above the fill and under the label. The border here
+   is already transparent, so it needs no hairline inset. */
+.region {
+  isolation: isolate;
+}
+
+.region::before {
+  content: "";
+  position: absolute;
+  inset: calc(var(--border-width-hairline) * -1);
+  z-index: -1;
+  border-radius: inherit;
+  background: linear-gradient(
+    135deg,
+    transparent 35%,
+    var(--color-bg-brand-hover) 100%
+  );
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity var(--duration-base) var(--ease-standard);
+}
+
+.region[data-selected="true"]::before {
+  opacity: 1;
+}
+
+/* ⚠️ THE SELECTED HOVER LIFTS, IT DOES NOT RECOLOUR — asked for directly 13
+   Sep 2026 ("hover effects like the pills in the chat"). It used to swap the
+   fill to a flat `bg/brand-hover`, which erased the diagonal shade above and
+   made hovering a picked pill look like un-picking it. `Chip` (the check-in's
+   pills, and this card's own Whole face / Neck / Other row) keeps its fill and
+   only lifts; so does this now, one `--shadow-sm` on top of its seat. */
 .region[data-selected="true"]:hover {
-  background: var(--color-bg-brand-hover);
+  box-shadow: var(--shadow-button), var(--shadow-sm);
 }
 
 @media (hover: none) {
   .region[data-selected="true"]:hover {
-    background: var(--color-bg-brand);
+    box-shadow: var(--shadow-button);
   }
 }
 
@@ -408,10 +447,18 @@
   line-height: 1.3;
   border-radius: var(--radius-full);
 
-  background: var(--color-bg-brand);
-  /* the border holds the geometry only — same colour as the fill, the way
-     `Chip[data-selected="true"]` does it */
-  border: var(--border-width-hairline) solid var(--color-bg-brand);
+  /* ⚠️ THE SELECTED CHIP'S DIAGONAL SHADE, 13 Sep 2026 — see `.chip::before`.
+     A plain gradient here rather than the fading overlay, because this pill is
+     read-only and never changes state. The border holds the geometry only, so
+     it is transparent over a `border-box` gradient (non-negotiable 10): a
+     flat indigo border would draw a lighter rim around the dark corner. */
+  background: linear-gradient(
+      135deg,
+      var(--color-bg-brand) 35%,
+      var(--color-bg-brand-hover) 100%
+    )
+    border-box;
+  border: var(--border-width-hairline) solid transparent;
   color: var(--color-text-on-brand);
   white-space: nowrap;
 }

@@ -48,9 +48,38 @@
     color var(--duration-base) var(--ease-standard);
 }
 
+/* ⚠️ THE PILL FOLLOWS THE POINTER — asked for directly 13 Sep 2026 ("when I
+   hover on Search again the Add product hover effect is also on"). The
+   unselected segment used to take a faint overlay while the selected one kept
+   its full gradient, so hovering `Search again` lit BOTH, and the brighter of
+   the two was the one the pointer was not on. Both segments here are actions
+   (the tray's accept / reject), so the gradient now moves to whichever one is
+   under the pointer and the other drops to plain ink until the pointer leaves.
+   `:has()` is what lets the hovered segment reach its sibling.
+
+   The grad endpoints are set on `::before`, where the gradient is painted, for
+   the reason recorded on the reversal below. The label ink swaps with the
+   pill; `--shine-ink` is unregistered, so it changes at once while the pill
+   cross-fades on `duration/base`. */
 @media (hover: hover) {
-  .segment:hover:not(.selected) {
-    background: var(--color-state-hover-overlay);
+  .segment:not(.selected):hover {
+    color: var(--color-text-on-brand);
+    --shine-ink: var(--color-text-on-brand);
+  }
+
+  .segment:not(.selected):hover::before {
+    --grad-start: var(--color-gradient-brand-start);
+    --grad-end: var(--color-gradient-brand-end);
+    opacity: 1;
+  }
+
+  .toggle:has(.segment:not(.selected):hover) .segment.selected {
+    color: var(--color-text-secondary);
+    --shine-ink: var(--color-text-secondary);
+  }
+
+  .toggle:has(.segment:not(.selected):hover) .segment.selected::before {
+    opacity: 0;
   }
 }
 
@@ -78,7 +107,10 @@
     var(--grad-end) 100%
   );
   opacity: 0;
-  transition: opacity var(--duration-base) var(--ease-standard);
+  transition:
+    opacity var(--duration-base) var(--ease-standard),
+    --grad-start var(--duration-hover) var(--ease-standard),
+    --grad-end var(--duration-hover) var(--ease-standard);
 }
 
 /* Selected state — gradient pill visible, white label. */
@@ -91,6 +123,34 @@
 
 .segment.selected::before {
   opacity: 1;
+}
+
+/* ⚠️ NOT IN FIGMA — A HOVER, asked for directly 13 Sep 2026: "same as add
+   buttons", NOT like the main big buttons. So it is `SmallButton`'s hover and
+   nothing more — the selected pill's gradient runs end for end
+   (non-negotiable 5) and the label shines — with no specular rim, which the
+   Add buttons dropped the same day. The unselected segment keeps its overlay
+   and takes the shine too.
+
+   ⚠️ THE REVERSAL IS WRITTEN ON `::before`, WHERE THE GRADIENT IS PAINTED, and
+   the transition lives there too — so it animates whether or not the
+   registered properties inherit from the button.
+
+   `--shine-ink` MUST be each label's own token: `.shine-text` paints the
+   glyphs transparent and draws the ink from this. */
+.segment {
+  --shine-ink: var(--color-text-secondary);
+}
+
+.segment.selected {
+  --shine-ink: var(--color-text-on-brand);
+}
+
+@media (hover: hover) {
+  .segment.selected:hover::before {
+    --grad-start: var(--color-gradient-brand-end);
+    --grad-end: var(--color-gradient-brand-start);
+  }
 }
 
 .label {

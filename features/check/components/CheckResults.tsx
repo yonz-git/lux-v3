@@ -14,7 +14,6 @@ import { OptionRow } from "@/components/ui/OptionRow";
 import { SearchField } from "@/components/ui/SearchField";
 import { Tag } from "@/components/ui/Tag";
 import { CloseIcon, PlusIcon } from "@/components/ui/icons";
-import { AddProductRow } from "@/features/products/components/ProductList";
 import { useInvestigation } from "@/lib/store/InvestigationProvider";
 import {
   BAND_LABEL,
@@ -447,14 +446,16 @@ export function CheckResults() {
                       askedDuration && keepUsing(asking, askedDuration)
                     }
                   >
-                    Add to my products
+                    {/* the label shines on hover, the way `SmallButton`'s
+                        does — a direct child, so `.shine-on-hover` reaches it */}
+                    <span className="shine-text shine-on-hover">Add to my products</span>
                   </button>
                   <button
                     type="button"
                     className={`${styles.decline} t-label tap-target`}
                     onClick={() => setAsking(null)}
                   >
-                    Not now
+                    <span className="shine-text shine-on-hover">Not now</span>
                   </button>
                 </div>
               </div>
@@ -468,10 +469,20 @@ export function CheckResults() {
                 `AddProductRow` here as on the PRODUCTS hub: 52 tall, radius/lg,
                 frost-light, the frosted-row shadow, the label at `Button`. */}
             {editing && !picking && list.length < MAX_CHECK_PRODUCTS && (
-              <AddProductRow
-                label="Add another product"
-                onClick={() => setPicking(true)}
-              />
+              /* ⚠️ NOT IN FIGMA — superseded 13 Sep 2026: every add-product
+                 action is now the secondary `Button` at control/md (48) with a
+                 plus, hugging its label and centred, asked for directly. The
+                 note above records why it was `AddProductRow` before that. */
+              <div className={styles.addAnother}>
+                <Button
+                  variant="secondary"
+                  icon={<PlusIcon />}
+                  className={styles.addAnotherButton}
+                  onClick={() => setPicking(true)}
+                >
+                  Add another product
+                </Button>
+              </div>
             )}
 
             {editing && picking && (

@@ -90,7 +90,10 @@ export function CheckScreen() {
             Third route, same rule as the shader: not without a Figma
             decision. */}
         <Orb animateIn halo />
-        <ChatBubble from="ai" align="center" full className={styles.intro}>
+        {/* ⚠️ `hug`, 13 Sep 2026 — asked for directly: the bubble trims to its
+            longest line instead of keeping the CTA's width with empty fill
+            down its right side. See the note on `hug` in ChatBubble.tsx. */}
+        <ChatBubble from="ai" align="center" full hug className={styles.intro}>
           Check how your products may suit your skin and work together in the
           same routine.
         </ChatBubble>

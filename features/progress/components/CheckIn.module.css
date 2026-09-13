@@ -97,19 +97,78 @@
   background: var(--color-surface-frost-light);
   border: var(--border-width-hairline) solid var(--color-border-subtle);
   border-radius: var(--radius-lg);
-  box-shadow: var(--shadow-frosted-row);
+  /* ⚠️ NOT IN FIGMA — THE NAV'S BEVEL OVER THE ROW'S OWN SHADOW, asked for
+     directly 13 Sep 2026 alongside the same edge on `ChatPanel`. The two
+     tiles sit inside that panel, so they take the same catch of light along
+     the top and the same soft drop, and read as raised glass rather than
+     flat cut-outs. `--shadow-nav` verbatim — no new value. */
+  box-shadow: var(--shadow-nav), var(--shadow-frosted-row);
   -webkit-backdrop-filter: blur(var(--blur-card));
   backdrop-filter: blur(var(--blur-card));
 
-  transition: border-color var(--duration-base) var(--ease-standard);
+  /* the armed ring (`::after`, below) positions against this */
+  position: relative;
+
+  transition: border-color var(--duration-base) var(--ease-standard),
+    box-shadow var(--duration-fast) var(--ease-standard);
 }
 
-/* Armed, not selected — these are TOGGLES, so they take a border change rather
+/* ⚠️ NOT IN FIGMA — A SUBTLE HOVER, asked for directly 13 Sep 2026. The same
+   answer `Chip` gives a pointer, so every control in the check-in responds
+   alike: the hairline firms to `border/default` and the tile lifts on
+   `--shadow-sm`, added on top of its bevel and inset rather than replacing
+   them. No fill change, so hover cannot be mistaken for the armed state. */
+.extra:hover {
+  border-color: var(--color-border-default);
+  box-shadow: var(--shadow-nav), var(--shadow-frosted-row), var(--shadow-sm);
+}
+
+@media (hover: none) {
+  .extra:hover {
+    border-color: var(--color-border-subtle);
+    box-shadow: var(--shadow-nav), var(--shadow-frosted-row);
+  }
+}
+
+/* Armed, not selected — these are TOGGLES, so they take an edge change rather
    than the indigo fill a Chip gets. `bg/brand` here would put a third
    selection treatment on a screen that already has two, and would claim these
-   are part of the answer group above them. */
-.extra[aria-pressed="true"] {
-  border-color: var(--color-button-border-focused);
+   are part of the answer group above them.
+
+   ⚠️ THE EDGE IS `SearchField`'s FOCUS RING, NOT A SOLID INDIGO BORDER — asked
+   for directly 13 Sep 2026 ("same as the search bar"). It was
+   `button/border-focused`, a 1px indigo line that read as a hard outline
+   next to the frosted note field it opens. Now `gradient/brand` at 30%,
+   masked to a `border-width/focus` ring — `SearchField.module.css` and
+   `TextField.module.css` carry the same recipe, so the tile and the field it
+   reveals light up the same way. Inset by the hairline so the ring sits ON
+   the tile's own border rather than 1px inside it; the hairline itself stays
+   `border/subtle` underneath. */
+.extra::after {
+  content: "";
+  position: absolute;
+  inset: calc(var(--border-width-hairline) * -1);
+  padding: var(--border-width-focus);
+  border-radius: inherit;
+  background: linear-gradient(
+    90deg,
+    var(--color-gradient-brand-start),
+    var(--color-gradient-brand-end)
+  );
+  -webkit-mask:
+    linear-gradient(#000 0 0) content-box,
+    linear-gradient(#000 0 0);
+  -webkit-mask-composite: xor;
+  mask:
+    linear-gradient(#000 0 0) content-box exclude,
+    linear-gradient(#000 0 0);
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity var(--duration-fast) var(--ease-standard);
+}
+
+.extra[aria-pressed="true"]::after {
+  opacity: 0.3;
 }
 
 /* rule 9: a frosted surface always gets a solid fallback */
@@ -166,12 +225,19 @@
   margin-bottom: var(--space-md); /* 12 */
 }
 
-/* ⚠️ FULL WIDTH AT BOTH BREAKPOINTS NOW, WHERE IT USED TO CAP AT 280. That cap
-   was `HubScreen`'s footer, and the panel has no such rule — nor should it: the
-   panel is 375 wide on desktop too (there is no desktop frame for it), so a 280
-   button inside a 335 column would be a narrower control in a narrower surface
-   for no reason. It also lands where `/chat` draws its composer, which is full
-   width, and the two screens are meant to read as the same object. */
+/* ⚠️ THE SAME WIDTH AS `Check in today`, asked for directly 13 Sep 2026. The
+   overlay opens FROM that button and closes back onto it, so the control that
+   ends the check-in wears the one that started it: full width on mobile,
+   `width/action` centred on desktop — ProgressScreen's `.cta` rule. It was full
+   width at both breakpoints while the panel was 375 wide; at the nav's 598 that
+   stretched it to 558, a slab wider than anything else on the dashboard. */
 .submit {
   width: 100%;
+}
+
+@media (min-width: 1024px) {
+  .submit {
+    width: var(--width-action); /* 376 */
+    align-self: center;
+  }
 }

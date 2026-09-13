@@ -26,9 +26,48 @@
    around a borderless input in the middle of a rounded field reads as a glitch.
    `.input` sets `outline: none` for exactly this reason, and 2px of offset lifts
    the ring clear of the pill's own edge. */
+.field {
+  position: relative;
+}
+
+/* ⚠️ NOT IN FIGMA — the ring is the primary button's gradient
+   (`gradient/brand`) at 30%, asked for directly on 13 Sep 2026: the solid
+   `border/focus` read too heavy around a frosted pill. An outline cannot take a
+   gradient, so it is a masked ring on `::after`. ⚠️ It sits ON the pill's own
+   edge (inset 0), not 2px outside it: offset, the pill's edge and the ring read
+   as two borders. The outline stays, TRANSPARENT, so forced-colors mode still
+   draws a system ring. ⚠️ At 30% this ring is well under 3:1 against the
+   canvas — it is a softer focus indicator by choice. */
+.field::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  padding: var(--border-width-focus);
+  border-radius: var(--radius-full);
+  background: linear-gradient(
+    90deg,
+    var(--color-gradient-brand-start),
+    var(--color-gradient-brand-end)
+  );
+  -webkit-mask:
+    linear-gradient(#000 0 0) content-box,
+    linear-gradient(#000 0 0);
+  -webkit-mask-composite: xor;
+  mask:
+    linear-gradient(#000 0 0) content-box exclude,
+    linear-gradient(#000 0 0);
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity var(--duration-fast) var(--ease-standard);
+}
+
 .field:focus-within {
-  outline: var(--border-width-focus) solid var(--color-border-focus);
-  outline-offset: 2px;
+  outline: var(--border-width-focus) solid transparent;
+  outline-offset: calc(-1 * var(--border-width-focus));
+}
+
+.field:focus-within::after {
+  opacity: 0.3;
 }
 
 .icon {
@@ -64,8 +103,14 @@
   justify-content: center;
   width: var(--size-touch-target);
   height: var(--size-touch-target);
-  margin: 0 calc((var(--size-icon-md) - var(--size-touch-target)) / 2);
+  margin: 0 calc((var(--size-icon-sm) - var(--size-touch-target)) / 2);
   border-radius: var(--radius-full);
+}
+
+/* the clear glyph steps down to icon/sm (20) so it reads as secondary to the
+   leading search glyph; the 44 touch target is unchanged */
+.clear .icon {
+  --icon-size: var(--size-icon-sm);
 }
 
 @media (prefers-reduced-transparency: reduce) {

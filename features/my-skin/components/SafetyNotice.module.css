@@ -31,19 +31,30 @@
 .live {
   display: grid;
   grid-template-rows: 0fr;
-}
-
-/* ⚠️ THE TRANSITION IS ON THE OPEN STATE, NOT THE BASE RULE, SO ONLY OPENING
-   ANIMATES. On close React removes the child in the same frame, so a
-   transition here would animate an empty box shrinking AFTER its contents had
-   already vanished — a lag, not a reveal. Untick and the space closes at once,
-   which is what "I changed my mind" should look like. */
-.live:has(> .clip) {
-  grid-template-rows: 1fr;
   /* `base` 200ms, the same token `.reveal-quick` runs on, so the box finishes
      opening exactly as the text finishes fading — one gesture, not two. It is
-     also the duration the chip that triggered it uses. */
+     also the duration the chip that triggered it uses.
+     ⚠️ ON THE BASE RULE NOW, SO CLOSING ANIMATES TOO — changed 13 Sep 2026. It
+     used to sit on the open state only, because React removed the card in the
+     same frame and a close transition animated an empty box. The component
+     holds the card mounted until this transition ends now, so the space closes
+     WITH the card in it and the face diagram glides back up rather than
+     jumping. Being a transition rather than a keyframe, re-ticking mid-close
+     reverses from wherever it has got to. */
   transition: grid-template-rows var(--duration-base) var(--ease-standard);
+}
+
+/* ⚠️ `data-open`, NOT `:has(> .clip)` — the card is still in the DOM while it
+   closes, so its presence no longer says whether the block is open. */
+.live[data-open="true"] {
+  grid-template-rows: 1fr;
+}
+
+/* the text leaves on `duration/fast`, ahead of the 200ms close, so the clip
+   edge sweeps up over an already-faded card instead of slicing through a
+   legible sentence — exit quicker than enter */
+.live[data-open="false"] .notice {
+  opacity: 0;
 }
 
 .clip {
@@ -74,6 +85,10 @@
   box-shadow: var(--shadow-frosted-row);
   -webkit-backdrop-filter: blur(var(--blur-card));
   backdrop-filter: blur(var(--blur-card));
+
+  /* the close's fade (above). On the base rule so a re-tick mid-close fades
+     back in rather than snapping; the mount still fades on `.reveal-quick`. */
+  transition: opacity var(--duration-fast) var(--ease-standard);
 }
 
 .label {

@@ -59,6 +59,36 @@
   margin: 0;
 }
 
+/* ⚠️ NOT IN FIGMA — label -> 2 -> symptom pills -> 8 -> `on <locations>`,
+   asked for directly 13 Sep 2026. See the JSX note in SkinProfile.tsx. */
+.currentValue {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: var(--space-sm); /* 8 */
+  margin: 0;
+  padding-top: var(--space-xs); /* 4 — the pills need more air than a text value */
+}
+
+.symptoms {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-sm); /* 8 */
+}
+
+/* CompatCard's `.pill` verbatim — 26 tall (5 + 16 + 5), full radius, the band
+   colour with white ink — using the Risky band's `feedback/warning`. ⚠️ White
+   on `feedback/warning` inherits that pill's known contrast shortfall
+   (non-negotiable 17's "still known-failing" list); it is the same pair, not a
+   new one. */
+.symptom {
+  padding: 5px 14px;
+  border-radius: var(--radius-full);
+  background: var(--color-feedback-warning);
+  color: var(--color-text-on-brand);
+  white-space: nowrap;
+}
+
 .started {
   color: var(--color-text-on-data-muted);
 }

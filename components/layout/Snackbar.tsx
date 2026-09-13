@@ -5,6 +5,7 @@ import {
   useCallback,
   useContext,
   useEffect,
+  useLayoutEffect,
   useMemo,
   useRef,
   useState,
@@ -140,6 +141,36 @@ export function SnackbarProvider({ children }: { children: React.ReactNode }) {
     return () => clearTimeout(timer);
   }, [leaving, paused]);
 
+  /* ⚠️ THE BAR CLIMBS ABOVE AN OPEN SHEET'S `Done`. Its resting place is the
+     nav clearance, which is exactly where a tray's own dismissal sits — so an
+     undo raised from inside the add tray covered the tray's only way out.
+     While a sheet is open the region's `bottom` is measured from that button's
+     top edge instead, 12 above it; with no sheet it falls back to the CSS. */
+  const regionRef = useRef<HTMLDivElement>(null);
+  const [liftTo, setLiftTo] = useState<number | null>(null);
+  useLayoutEffect(() => {
+    if (!snack) return;
+    const measure = () => {
+      const done = document.querySelector<HTMLElement>(
+        '[data-tray="tray"]:not([data-state="leaving"]) > button:last-child',
+      );
+      const region = regionRef.current;
+      if (!done || !region) return setLiftTo(null);
+      const gap = 12; // --space-md
+      const doneTop = done.getBoundingClientRect().top;
+      // read the CSS resting value, not a lift written on a previous pass
+      const inline = region.style.bottom;
+      region.style.bottom = "";
+      const restingBottom = parseFloat(getComputedStyle(region).bottom);
+      region.style.bottom = inline;
+      const needed = window.innerHeight - doneTop + gap;
+      setLiftTo(needed > restingBottom ? needed : null);
+    };
+    measure();
+    window.addEventListener("resize", measure);
+    return () => window.removeEventListener("resize", measure);
+  }, [snack]);
+
   const value = useMemo(() => ({ show }), [show]);
 
   return (
@@ -159,7 +190,9 @@ export function SnackbarProvider({ children }: { children: React.ReactNode }) {
           objects to, and the honest fix is that the interactive thing in here is
           the button, not the box. */}
       <div
+        ref={regionRef}
         className={styles.region}
+        style={liftTo != null ? { bottom: liftTo } : undefined}
         role="status"
         onMouseEnter={() => setPaused(true)}
         onMouseLeave={() => setPaused(false)}

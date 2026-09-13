@@ -97,11 +97,28 @@ export function ProgressScreen({ now }: { now: number }) {
         started={`Started ${formatLong(start)} · Day ${dayNumber(start, today)}`}
       />
 
-      <CheckInCalendar
-        className={styles.calendar}
-        checkIns={checkIns}
-        today={today}
-      />
+      {/* ⚠️ NOT IN FIGMA — col-1 as one stack on desktop so the CTA sits
+          directly under the calendar instead of on a grid row shared with
+          col-2's taller blocks. Mobile keeps the action after the trend, so
+          each breakpoint renders its own copy and hides the other with
+          `display: none` (out of the a11y tree too). */}
+      <div className={styles.checkInColumn}>
+        <CheckInCalendar
+          className={styles.calendar}
+          checkIns={checkIns}
+          today={today}
+        />
+
+        <Button className={styles.ctaDesktop} onClick={() => setCheckingIn(true)}>
+          Check in today
+        </Button>
+
+        {lastCheckIn && (
+          <p className={`${styles.lastCheckInDesktop} t-caption`}>
+            {lastCheckIn}
+          </p>
+        )}
+      </div>
 
       <SymptomTrend className={styles.trend} checkIns={checkIns} />
 

@@ -25,6 +25,54 @@
   color: var(--color-text-muted);
 }
 
+/* ⚠️ NOT IN FIGMA — `SearchField`'s FOCUS RING, asked for directly 13 Sep
+   2026 ("just like the search bar"). The global `border/focus` outline drew
+   a solid 2px indigo frame around a frosted field and read far heavier than
+   the search pill's. This is that pill's recipe verbatim — `gradient/brand`
+   at 30%, masked to a `border-width/focus` ring sitting ON the field's edge —
+   so the two inputs answer focus the same way. It lives on the wrapper
+   because an `<input>` has no `::after`; see TextField.tsx.
+   ⚠️ The outline stays, TRANSPARENT, so forced-colors mode still draws a
+   system ring. ⚠️ At 30% the ring is under 3:1 against the canvas — the same
+   softer indicator `SearchField` already chose, not a new compromise. */
+.wrap {
+  position: relative;
+  display: block;
+  border-radius: var(--radius-lg);
+}
+
+.wrap::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  padding: var(--border-width-focus);
+  border-radius: inherit;
+  background: linear-gradient(
+    90deg,
+    var(--color-gradient-brand-start),
+    var(--color-gradient-brand-end)
+  );
+  -webkit-mask:
+    linear-gradient(#000 0 0) content-box,
+    linear-gradient(#000 0 0);
+  -webkit-mask-composite: xor;
+  mask:
+    linear-gradient(#000 0 0) content-box exclude,
+    linear-gradient(#000 0 0);
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity var(--duration-fast) var(--ease-standard);
+}
+
+.field:focus-visible {
+  outline: var(--border-width-focus) solid transparent;
+  outline-offset: calc(-1 * var(--border-width-focus));
+}
+
+.wrap:focus-within::after {
+  opacity: 0.3;
+}
+
 @media (min-width: 1024px) {
   .field {
     min-height: 58px;

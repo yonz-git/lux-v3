@@ -2948,8 +2948,8 @@ on an otherwise working page. Cancelling drops each element onto its static
 style, which for a reveal is opacity 1. The two failure directions are not
 symmetric and only one of them is survivable.
 
-The hold is released when the ASSEMBLY tracks end (2000ms, veil still fully
-opaque), not when the veil's own track ends (2520ms) — otherwise Welcome sits
+The hold is released when the ASSEMBLY tracks end (2300ms), not when the
+overlay's own lifetime ends (3200ms) — otherwise Welcome sits
 fully formed and unanimated under a fading veil, then blinks out and restarts.
 
 ### ⚠️ SUPERSEDED THE SAME DAY — it was a push, and it read as jumping
@@ -2975,6 +2975,105 @@ same time, fade in with a short left/right drift rather than from the edge, and
 
 **Do not rebuild the push by retuning this.** Sequencing the halves again means
 a contact to couple, and that coupling was the fragile part.
+
+### The halves also SETTLE — from a hair larger, and from a blur (12 Sep 2026)
+
+Asked for later the same day: "a bit more animation" on the two halves,
+"something with sizing, smooth and sophisticated". Each half now arrives at
+`scale(1.06)` under a 5px blur and condenses to its true size, sharp, over the
+same 1600ms as the drift — the lockup comes into **focus** rather than sliding
+into place. The choices a later reader might undo:
+
+- **Larger, not smaller.** Growing from 0.9 is the stock pop-in. Settling from
+  just above 1 is a lens finding focus, and it mirrors the bloom on the way out
+  (1 → 1.03 as the veil lifts): focus in, bloom out.
+- **No overshoot.** 1.06 → 1 passes through 1 once, at the end. "LUX does not
+  bounce" — do not add a spring or a dip below 1.
+- **Same stops as the drift, in the same keyframes.** A separate scale track
+  with its own timing is how the halves drift out of step. The `translateX()
+  scale()` order is load-bearing: the drift is a percentage of the unscaled box.
+- **`will-change` gained `filter`** in `LogoEntrance.module.css`, or the blur
+  is rasterised on the main thread every frame.
+
+### The lockup carries a gradient sweep — reactbits' gradient-text, in SVG (12 Sep 2026)
+
+Asked for directly, with a link to reactbits.dev/text-animations/gradient-text
+and "using our own colours". That component clips a 300%-wide gradient to text
+and slides its `background-position`; the logo is paths, which cannot take
+`background-clip: text`, so `components/ui/LuxLogo.tsx` builds the same thing
+in SVG: a rect two masters wide, filled with a periodic
+indigo → steel → lilac → steel → indigo ramp bound to `bg/brand`,
+`gradient/brand`'s start and `bg/brand-soft`, clipped to the half's own paths
+by `<use>` reference, and slid one master width per loop by
+`.lux-logo-light` in `globals.css`.
+
+- **Master space, so the seam holds.** Both halves' viewBoxes are windows on
+  the master's `0..538`; one rect at `x=0` sliding 538 user units shows one
+  continuous pass in both. Sizing the rect to each half would give two speeds.
+- **Periodic, so the loop has no jump.** One period equals the master width;
+  sliding exactly one period lands on an identical frame.
+- **`linear`, deliberately.** Travelling light has no rest to ease from; eased
+  it pulses at every loop.
+- **The export's fills stay underneath.** The light is a layer over the master
+  ramp, not a replacement for it — cut the layer and the logo is the export.
+- **The highlight is `#587095`**, asked for as that value the same day,
+  replacing `bg/brand-soft`. It is `--color-logo-light` on `:root` in
+  `globals.css` — ⚠️ NOT IN FIGMA; raise it in the gradient group.
+
+### The symbol STAYS and becomes the orb's mark (12–13 Sep 2026)
+
+Asked for directly: "instead of the logos disappearing and the next Welcome
+page appearing, the symbol stays and becomes the logo used in the orb, so the
+pages are connected, and the orb grows from very small to what it is now from
+behind the symbol." And the lockup holds 300ms longer first (the hold is 700,
+was 400).
+
+The overlay no longer dissolves. After the hold the wordmark recedes on its
+own; the symbol travels to where Welcome's orb draws the same mark, shrinking to
+its size; Welcome's orb starts at 0.04 with its centre on the symbol's and grows
+to 1 at its own resting place on the same curve over the same 700ms, so the
+symbol rides on it; the orb's mark Spiral-Assembles meanwhile into exactly the
+spot the symbol is arriving at, and the symbol fades over it on the way.
+
+- **The orb's mark IS the master symbol (13 Sep 2026).** Asked for
+  "pixel-exact": `Orb.tsx` draws `LUX_SYMBOL`'s three paths (exported from
+  `LuxLogo.tsx`) through one transform onto its 129 grid, keeping the
+  chat-ball export's footprint (58 wide, centred on 65,65) and its three ink
+  ramps via `gradientTransform`. Until then the orb carried the export's own
+  copy, whose centre stroke was ~12% flatter, and the FLIP could only fade
+  across a 2px difference. ⚠️ **One geometry, drawn in two places** — do not
+  paste a second copy. ⚠️ **The animated `<g>` sits OUTSIDE the transform**,
+  or the Spiral's 20px travel becomes 7px.
+- **The orb `animateIn`s again**, asked for directly with the above. The
+  hand-off is therefore the mark's own Spiral Assemble under a fading symbol
+  (R+350 → R+630), not a hidden mark stepping in under a holding one — a mark
+  that assembles cannot be hidden until it is done, and hiding it defeats the
+  entrance that was asked back.
+- **It is a FLIP, and the JS holds two rectangles and nothing else.** At
+  release `LogoEntrance` measures the symbol's paths and the orb mark's paths
+  on screen and writes four custom properties on the overlay and two on the
+  orb; the keyframes in `globals.css` read them. Duration and curve stay in
+  CSS with every other number. It measures at RELEASE, not at mount — at mount
+  the symbol is paused on its drifted, 6%-large 0% keyframe.
+- **The orb grows from the symbol's position, not in place** — that is what
+  "from behind the symbol" means once the orb's resting place is above the
+  lockup. Same curve, same 700, and — ⚠️ — the SAME START FRAME.
+- **Every hand-off track starts on the release, not at a percentage of a
+  longer track.** For an hour the symbol's travel ran from 2300 on the
+  entrance's own clock while the orb's tracks could only start at the release;
+  a CSS animation's clock starts at the first frame painted after the style
+  change that creates it, and painting Welcome for the first time (canvas +
+  the orb's blurred layers) put that frame 400ms late in `next dev`. The
+  symbol arrived and began fading over an orb still at 0.7 with no mark. Now
+  `data-handoff` on the overlay creates the entrance's tracks in the same task
+  that lifts the hold: one style recalc, one first frame, one start.
+- **The travel and the recede are on each half's `<svg>`, the arrival on its
+  wrapper.** Two transform tracks cannot share an element; this is not the
+  push's second wrapper coming back — the svg was already there.
+- **The stage's 1.03 bloom is gone.** An ancestor transform would move the
+  target the FLIP was aimed at.
+- **The paths are in a different order in the two files** — the master's
+  first stroke is the orb's second. Compare by position, never by index.
 
 ### `animation-timing-function: var(--token)` inside `@keyframes` is DROPPED
 

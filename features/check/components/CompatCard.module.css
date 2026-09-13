@@ -32,9 +32,11 @@
    frost-light's opaque counterpart and the blur goes with it, since the group
    behind it has already blurred what is under both.
 
-   8 is concentric, not a taste: the box is 16 and insets these by 8, so 16 − 8
-   keeps the two curves parallel. Change either and change both — see `.panel`
-   in CheckResults.module.css.
+   ⚠️ 12, asked for directly 13 Sep 2026 — the same value PRODUCTS' compact
+   cards took the same day, so a product row has one shape in both sections.
+   It was 8, concentric with the box while the box inset these by 8; the inset
+   is 16 now and concentricity no longer applies. See `.panel` in
+   CheckResults.module.css.
 
    ⚠️ AND THE BORDER GOES, WHICH IS WHY THE PADDING STOPS SUBTRACTING IT. The
    full-size card writes `calc(16px - hairline)` under rule 9 so a bordered box
@@ -44,8 +46,18 @@
   padding: var(--space-md); /* 12 */
 
   border: none;
-  border-radius: var(--radius-sm); /* 8 */
-  background: var(--color-bg-surface-frost);
+  border-radius: var(--radius-md); /* 12 */
+  /* ⚠️ NOT IN FIGMA, AND LITERAL HEX ON PURPOSE — these exact values were
+     asked for directly 13 Sep 2026, replacing a token-mixed diagonal the same
+     day. None of the three is a declared token, so this is a knowing exception
+     to non-negotiable 2; raise it in Figma as a surface token rather than
+     "fixing" it onto the nearest one. Opaque, so the reduced-transparency rule
+     at the foot of this file (`.card` alone, lower specificity) leaves it be. */
+  background: linear-gradient(
+    to bottom right,
+    #e2eeef,
+    color-mix(in oklab, #f7feff 30%, #e0f6fb)
+  );
   -webkit-backdrop-filter: none;
   backdrop-filter: none;
 }
@@ -177,15 +189,27 @@
 
 /* ⚠️ A NESTED BLOCK WITH NO BORDER. Every other frosted surface on this screen
    carries a 1px border/subtle; this one is fill + inner shadow only, which is
-   what keeps it reading as part of the card rather than as another card. */
+   what keeps it reading as part of the card rather than as another card.
+
+   ⚠️ NOT IN FIGMA — 16 RADIUS AND `bg/nav`, changed 13 Sep 2026, asked for
+   directly ("more border radius … bg color same as compared products box").
+   It was 12 on `surface/frost-light`, which on the opaque compact card read as
+   a white panel on a white card. The Compared Products box is
+   `surface/frost-nav`; this takes its OPAQUE counterpart `bg/nav` (#dbeded),
+   not the token itself — the card under it is already opaque, and frost-nav's
+   48% over it would barely tint it (the frost-on-frost rule, AGENTS.md). 16 is
+   the box's own radius. Both inks clear AA on #dbeded. */
 .recommendation {
   display: flex;
   flex-direction: column;
   gap: 6px;
   margin-top: 14px;
   padding: 14px var(--space-lg); /* 14 / 16 */
-  border-radius: var(--radius-md); /* 12 */
-  background: var(--color-surface-frost-light);
+  border-radius: var(--radius-lg); /* 16 */
+  /* ⚠️ FLAT AGAIN, 13 Sep 2026 — the diagonal that sat here was meant for the
+     CARD around this block, not the block; asked for directly. It moved to
+     `.card.compact` above. */
+  background: var(--color-bg-nav);
   box-shadow: var(--shadow-frosted-row);
 }
 
@@ -230,9 +254,10 @@
   }
 }
 
+/* `.recommendation` is not listed: `bg/nav` is already opaque, and swapping it
+   for `bg/surface-frost` here would lose the tint for exactly these users */
 @media (prefers-reduced-transparency: reduce) {
-  .card,
-  .recommendation {
+  .card {
     background: var(--color-bg-surface-frost);
     -webkit-backdrop-filter: none;
     backdrop-filter: none;

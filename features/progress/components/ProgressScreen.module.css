@@ -34,13 +34,55 @@
   margin-top: var(--space-2xl); /* 24 */
 }
 
-.lastCheckIn {
+.lastCheckIn,
+.lastCheckInDesktop {
   margin-top: var(--space-sm); /* 8 */
   color: var(--color-text-secondary);
   text-align: center;
 }
 
+/* mobile: the wrapper is invisible to layout and the col-1 copies of the
+   action are hidden */
+.checkInColumn {
+  display: contents;
+}
+
+.ctaDesktop.ctaDesktop, /* doubled: beats Button's own `display` */
+.lastCheckInDesktop {
+  display: none;
+}
+
 @media (min-width: 1024px) {
+  /* ⚠️ NOT IN FIGMA — col-1 is one stack: calendar -> 24 -> CTA -> 8 ->
+     caption. As grid rows the CTA landed on row 3, below col-2's trend, which
+     left ~215px between it and the calendar. */
+  .checkInColumn {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    grid-column: 1;
+    grid-row: 1 / span 3;
+  }
+
+  .checkInColumn .calendar {
+    align-self: stretch;
+  }
+
+  .ctaDesktop.ctaDesktop {
+    display: flex;
+    width: var(--width-action);
+    margin-top: var(--space-2xl); /* 24 */
+  }
+
+  .lastCheckInDesktop {
+    display: block;
+  }
+
+  .cta.cta, /* doubled: beats Button's own `display` */
+  .lastCheckIn {
+    display: none;
+  }
+
   /* the column gap is the grid's; every mobile margin goes */
   .calendar,
   .trend,
@@ -73,11 +115,6 @@
      (472 against 497) without touching a single component's height, and it
      reads better than it did: `Check in today` now sits under the calendar of
      check-ins it adds to, rather than under a chart it does not change. */
-  .calendar {
-    grid-column: 1;
-    grid-row: 1 / span 2;
-  }
-
   .trend {
     grid-column: 2;
     grid-row: 2;
@@ -103,18 +140,7 @@
      That left the screen's one action visibly off-axis from its own caption.
      Centring it lines the two up and puts the primary action on the column's
      axis. Decided here; the comp has not caught up. */
-  .cta {
-    grid-column: 1;
-    grid-row: 3;
-    width: var(--width-action);
-    justify-self: center;
-  }
-
-  .lastCheckIn {
-    grid-column: 1;
-    grid-row: 4;
-    text-align: center;
-  }
+  /* 376 / centring: now carried by `.ctaDesktop` inside `.checkInColumn`. */
 }
 
 /* ---------------------------------------------------------------------------

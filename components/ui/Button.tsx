@@ -1,6 +1,9 @@
+"use client";
+
 import type { ButtonHTMLAttributes, ReactNode } from "react";
 import Link from "next/link";
 import styles from "./Button.module.css";
+import { trackSpecular } from "./specular";
 
 /**
  * Button — Figma component set 37:23.
@@ -25,6 +28,17 @@ import styles from "./Button.module.css";
  * does not have to hand-build the gradient/shadow recipe (non-negotiable #6)
  * just to add a leading glyph. Rendered as a plain sibling of the label, so it
  * picks up the button's own `gap` rather than a bespoke one.
+ *
+ * ⚠️ THREE HOVER-AND-ENTRANCE TREATMENTS ARE PROTOTYPE-ONLY TOO, ADDED 12 Sep
+ * 2026 AND NOT IN FIGMA — all after reactbits references, all recorded in
+ * globals.css beside their rules:
+ *   - the label SHINES on hover (`.shine-on-hover`);
+ *   - the rim carries a SPECULAR streak facing the pointer (`.specular`, the
+ *     `<span>` below; `specular.ts` writes the angle — which is why this file
+ *     is a client component now);
+ *   - `beacon` makes the gradient breathe and sweeps a band of light across
+ *     the pill every 10s. It is for ONE button, Welcome's `Create skin
+ *     profile`, to say "start here"; a second caller is a product decision.
  */
 export function Button({
   children,
@@ -33,6 +47,8 @@ export function Button({
   className,
   href,
   icon,
+  beacon,
+  onPointerMove,
   ...rest
 }: ButtonHTMLAttributes<HTMLButtonElement> & {
   variant?: "primary" | "secondary";
@@ -41,22 +57,37 @@ export function Button({
   href?: string;
   /** optional leading glyph — see the doc comment above */
   icon?: ReactNode;
+  /** the breathing gradient + light sweep — Welcome's CTA only, see above */
+  beacon?: boolean;
 }) {
   const cls = [
     styles.button,
     variant === "secondary" && styles.secondary,
     fullWidth && styles.full,
+    beacon && `${styles.beacon} button-beacon`,
     "t-button",
     className,
   ]
     .filter(Boolean)
     .join(" ");
 
-  /* The label is its own element so it can be transformed independently of the
-     pill — hover scales the label while the button itself holds still.
-     Every Button in the app passes plain text as its only child, so this does
-     not disturb the 8px gap the button reserves for a future icon + label. */
-  const label = <span className={styles.label}>{children}</span>;
+  /* the specular rim turns to face the pointer; a caller's own handler still
+     runs */
+  const handlePointerMove = (e: React.PointerEvent<HTMLButtonElement>) => {
+    trackSpecular(e);
+    onPointerMove?.(e);
+  };
+  const specular = <span className="specular" aria-hidden="true" />;
+
+  /* The label is its own element so hover can treat it independently of the
+     pill: ⚠️ NOT IN FIGMA — as of 12 Sep 2026 the label takes the shine
+     (`.shine-on-hover`, globals.css), a band of light sweeping across the
+     words while the gradient beneath reverses. Every Button in the app passes
+     plain text as its only child, so this does not disturb the 8px gap the
+     button reserves for a future icon + label. */
+  const label = (
+    <span className={`${styles.label} shine-text shine-on-hover`}>{children}</span>
+  );
 
   /* ⚠️ A DISABLED CONTROL MUST NOT STAY A LINK. Links are not disableable —
      `disabled` on an <a> does nothing, so a disabled Button with an href would
@@ -64,7 +95,13 @@ export function Button({
      what SmallButton already does. */
   if (href && !rest.disabled) {
     return (
-      <Link href={href} className={cls} style={rest.style}>
+      <Link
+        href={href}
+        className={cls}
+        style={rest.style}
+        onPointerMove={handlePointerMove as unknown as React.PointerEventHandler<HTMLAnchorElement>}
+      >
+        {specular}
         {icon}
         {label}
       </Link>
@@ -72,7 +109,8 @@ export function Button({
   }
 
   return (
-    <button type="button" className={cls} {...rest}>
+    <button type="button" className={cls} onPointerMove={handlePointerMove} {...rest}>
+      {specular}
       {icon}
       {label}
     </button>

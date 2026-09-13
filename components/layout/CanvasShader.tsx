@@ -389,14 +389,20 @@ function parseHex(value: string): [number, number, number] | null {
 /**
  * The one canvas the app renders, behind every route.
  *
- * ⚠️ WELCOME IS THE ONLY ROUTE THAT ANSWERS THE POINTER. The canvas persists
- * across navigation, so the route reaches it as a PROP the shader fades in and
- * out — never as a remount, which would rebuild the WebGL context on every
- * route change.
+ * ⚠️ ONLY WELCOME AND THE `/check` LANDING ANSWER THE POINTER — the two
+ * screens that float an orb and one bubble on bare canvas with no card. `/check`
+ * was added 13 Sep 2026, asked for directly; its sub-routes stay still. The
+ * canvas persists across navigation, so the route reaches it as a PROP the
+ * shader fades in and out — never as a remount, which would rebuild the WebGL
+ * context on every route change.
  */
+const INTERACTIVE_ROUTES = new Set(["/", "/check"]);
+
 export function AppCanvas() {
   const pathname = usePathname();
-  return <CanvasShader variant="film" interactive={pathname === "/"} />;
+  return (
+    <CanvasShader variant="film" interactive={INTERACTIVE_ROUTES.has(pathname)} />
+  );
 }
 
 export function CanvasShader({

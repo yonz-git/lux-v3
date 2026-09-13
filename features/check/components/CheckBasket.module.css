@@ -206,48 +206,21 @@
   height: var(--size-icon-sm);
 }
 
-/* 56 tall, centred, and the ONE element in the tray with a stroke: 1px
-   border/glass. The comp's dashed "+ Add another product" outline became this —
-   LUX has no dashed pattern. */
-.addAnother {
+/* ⚠️ NOT IN FIGMA — `Add another product` is the secondary `Button` at
+   control/md (48) with a plus, hugging its label and centred under the rows:
+   step 1's `Take a photo` recipe, asked for directly 13 Sep 2026. It was a
+   56-tall full-width deep-sage row with a border/glass stroke, then briefly a
+   36-tall `SmallButton` that read too small. */
+.addAnotherItem {
   display: flex;
-  align-items: center;
   justify-content: center;
-  gap: var(--space-sm); /* 8 */
-  width: 100%;
-  /* rule 12: Figma padding minus the border, so the box lands on 56 */
-  padding: calc(15px - var(--border-width-hairline)) 0;
-  border: var(--border-width-hairline) solid var(--color-border-glass);
-  border-radius: var(--radius-lg);
-  /* the same `surface/data-deep` the rows above take, so the add affordance
-     stays one surface with the list it appends to */
-  background: var(--color-surface-data-deep);
-  box-shadow: var(--shadow-frosted-row);
-  /* the deep sage's paired ink, same exception as `.itemLabel` above */
-  color: var(--color-text-on-data-inverse);
-  transition: opacity var(--duration-fast) var(--ease-standard);
+  margin-top: var(--space-sm); /* + the list's 8 = 16 under the last row */
 }
 
-.addAnother:hover {
-  opacity: 0.85;
-}
-
-@media (hover: none) {
-  .addAnother:hover {
-    opacity: 1;
-  }
-}
-
-/* ⚠️ ICONS ON SAGE ARE `icon/on-data` ON STROKES TOO. Most LUX icons are
-   stroke-drawn, so a fills-only recolour silently does nothing — the handoff
-   calls this out. These icons take `currentColor` on the stroke, so setting
-   colour here is enough. */
-.plus {
-  flex: none;
-  width: var(--size-icon-sm);
-  height: var(--size-icon-sm);
-  /* inherits the row's white so the glyph does not split from its label */
-  color: inherit;
+/* `button.` beats `Button`'s single-class padding regardless of bundle order */
+button.addAnother {
+  --button-height: var(--size-control-md);
+  padding: 0 var(--space-xl);
 }
 
 .count {

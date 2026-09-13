@@ -442,7 +442,15 @@ export function lastCheckInLabel(
  * Now there is one formatter and three callers feed it: step 1's answers, the
  * demo's symptoms/locations, and today's check-in.
  */
-export type CurrentState = { label: string; value: string };
+export type CurrentState = {
+  label: string;
+  /** the whole state as one sentence — the accessible reading of the pair */
+  value: string;
+  /** ⚠️ the parts, so `SkinProfile` can draw symptoms as pills over the
+      locations line (13 Sep 2026) without re-parsing `value` */
+  symptoms: string[];
+  locations: string[];
+};
 
 export function formatCurrent(
   symptoms: readonly string[],
@@ -453,12 +461,14 @@ export function formatCurrent(
   if (s.length === 0 && l.length === 0) return null;
 
   if (s.length === 0)
-    return { label: "Affected areas", value: l.join(", ") };
+    return { label: "Affected areas", value: l.join(", "), symptoms: s, locations: l };
   if (l.length === 0)
-    return { label: "Current state", value: s.join(", ") };
+    return { label: "Current state", value: s.join(", "), symptoms: s, locations: l };
   return {
     label: "Current state",
     value: `${s.join(", ")} on ${l.join(", ")}`,
+    symptoms: s,
+    locations: l,
   };
 }
 

@@ -9,6 +9,7 @@ import { TextField } from "@/components/ui/TextField";
 import { Tag } from "@/components/ui/Tag";
 import { CloseIcon, PlusIcon } from "@/components/ui/icons";
 import { AddProductMethodSheet } from "@/features/products/components/AddProductMethodSheet";
+import SegmentedToggle from "@/features/products/components/SegmentedToggle";
 import { ProductThumb } from "@/features/products/components/ProductThumb";
 import { CheckInPhotoArt } from "./CheckInPhotoArt";
 import { useInvestigation } from "@/lib/store/InvestigationProvider";
@@ -414,27 +415,23 @@ export function CheckInDetail({ date, now }: { date: string; now: number }) {
                         aria-label="Your note"
                       />
 
-                      <div className={styles.noteActions}>
-                        <button
-                          type="button"
-                          className={`${styles.noteAction} t-label`}
-                          onClick={saveNote}
-                        >
-                          Save
-                        </button>
-                        {/* ⚠️ `Cancel` IS HONEST HERE, WHERE `Sheet`'s WAS NOT.
-                            The tray renamed its dismissal `Done` because every
-                            view behind it had already committed; this editor
-                            commits nothing until Save, so there is a real edit
-                            to abandon. */}
-                        <button
-                          type="button"
-                          className={`${styles.noteAction} ${styles.noteCancel} t-label`}
-                          onClick={closeNoteEditor}
-                        >
-                          Cancel
-                        </button>
-                      </div>
+                      {/* ⚠️ NOT IN FIGMA — THE PRODUCTS TRAY's SEGMENTED PILL,
+                          asked for directly 13 Sep 2026: `Save` is the filled
+                          gradient segment and `Cancel` the plain one, where the
+                          pair used to be two outlined glass buttons. `actions`
+                          keeps them two buttons in a group rather than tabs.
+                          ⚠️ `Cancel` IS HONEST HERE, WHERE `Sheet`'s WAS NOT.
+                          The tray renamed its dismissal `Done` because every
+                          view behind it had already committed; this editor
+                          commits nothing until Save, so there is a real edit to
+                          abandon. */}
+                      <SegmentedToggle
+                        actions
+                        label="Note"
+                        className={styles.noteToggle}
+                        options={["Save", "Cancel"]}
+                        onChange={(i) => (i === 0 ? saveNote() : closeNoteEditor())}
+                      />
 
                       <p className={`${styles.noteHint} t-caption`}>
                         Saving an empty note removes it from this day.

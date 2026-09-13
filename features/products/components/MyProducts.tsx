@@ -7,9 +7,10 @@ import { Button } from "@/components/ui/Button";
 import { Orb } from "@/components/ui/Orb";
 import { ProductAccordionCard } from "./ProductAccordionCard";
 import { ProductArt } from "./ProductArt";
-import { AddProductRow, EmptyBox } from "./ProductList";
+import { EmptyBox } from "./ProductList";
 import { AddProductMethodSheet } from "./AddProductMethodSheet";
-import { ChevronDownIcon } from "@/components/ui/icons";
+import { Collapse } from "@/components/ui/Collapse";
+import { ChevronDownIcon, PlusIcon } from "@/components/ui/icons";
 import { useInvestigation } from "@/lib/store/InvestigationProvider";
 import { useSnackbar } from "@/components/layout/Snackbar";
 import { ownedProducts, DEMO_PRODUCTS } from "@/lib/demo";
@@ -237,11 +238,23 @@ export function MyProducts() {
           ))}
         </ul>
 
+        {/* ⚠️ NOT IN FIGMA — THE SMALL SECONDARY PILL, NOT `AddProductRow`,
+            asked for directly 13 Sep 2026. The row is a frosted list row with a
+            plus, and at the foot of a list of frosted accordion rows it read as
+            one more row rather than as the list's action. It was the full
+            secondary `Button` for a few hours the same day, then stepped down
+            to `SmallButton` so it does not compete with `Start analysis` below.
+            As of later the same day it is no longer scoped to this hub: step 5
+            and CHECK's results dropped `AddProductRow` for this same recipe. */}
         <div className={styles.addMore}>
-          <AddProductRow
-            label="Add more products"
+          <Button
+            variant="secondary"
+            icon={<PlusIcon />}
+            className={styles.addMoreButton}
             onClick={() => setSheetOpen(true)}
-          />
+          >
+            Add more products
+          </Button>
         </div>
       </HubScreen>
 
@@ -366,8 +379,8 @@ function CategoryGroup({
         <ChevronDownIcon className={styles.chevron} />
       </button>
 
-      {open && (
-        <div id={panelId} className={`${styles.panel} reveal-quick`}>
+      <Collapse open={open}>
+        <div id={panelId} className={styles.panel}>
           {n === 0 ? (
             <EmptyBox compact>No products in this list yet</EmptyBox>
           ) : (
@@ -384,7 +397,7 @@ function CategoryGroup({
             </ul>
           )}
         </div>
-      )}
+      </Collapse>
     </div>
   );
 }

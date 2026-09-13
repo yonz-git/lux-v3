@@ -25,7 +25,32 @@
 }
 
 .value {
+  margin: 0;
   color: var(--color-text-on-data);
+}
+
+/* Skin type and tendencies as two labelled columns at opposite edges — the
+   geometry of `SkinProfileSummary`'s `.identity`, 2 between label and value.
+   `min-width: 0` lets a long tendency list wrap instead of widening the card. */
+.identity {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: var(--space-lg); /* 16 */
+  margin-top: var(--space-2xs); /* 2 — on top of the card's 6 */
+}
+
+.col {
+  min-width: 0;
+}
+
+.end {
+  text-align: right;
+}
+
+.pairLabel {
+  margin: 0 0 var(--space-2xs); /* 2 */
+  color: var(--color-text-on-data-muted);
 }
 
 @media (prefers-reduced-transparency: reduce) {

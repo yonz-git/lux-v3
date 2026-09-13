@@ -105,6 +105,14 @@ Variable-level bugs. The code already overrides all of them on `:root` in
   four surfaces depend on that one and all of them put white text on it. See
   section 2.
 
+### `surface/card-desktop` — 55% → ~19% in code (12 Sep 2026)
+
+- The in-page desktop card (`HubScreen`'s `card` layout, `QuestionScreen`'s
+  card) was asked lighter and more transparent: `#edf8fb30` on `:root` in
+  `globals.css`, same hue as Figma's `#edf8fb @55%`. **Set the variable's alpha
+  to 19% in Figma.** Floating `Sheet` trays are a separate literal and did not
+  move.
+
 ### `::selection`, `caret-color`, `accent-color` — Figma cannot hold these
 
 ⚠️ **NEW 8 Sep 2026. Nothing to change in Figma; listed so nobody files it as
@@ -1008,3 +1016,34 @@ screen. Rather than invent a 1440 composition the panel keeps the size it was
 drawn at and centres on the gradient — which is a decision to revisit the moment
 a desktop frame exists.
 
+
+## 8. Three light effects the build carries and Figma cannot draw (12 Sep 2026)
+
+All three are asked-for prototype decisions after reactbits.dev references, and
+all three are recorded beside their rules in `globals.css` ("Shine", "Specular
+edge", "Beacon"). Figma has no way to express any of them — they are motion on
+text and on a stroke — so this section exists so the next Figma pass knows they
+are deliberate and not drift.
+
+- **Every chat bubble's text shines once as the bubble lands** — a band of
+  `bg/brand-soft` sweeping through the ink, 1200ms, then plain ink. The gradient
+  is clipped to the glyphs; the bubble's own fill is untouched. `ChatBubble`
+  wraps its children to do it; Welcome's two bubbles take their own delays.
+- **Every `Button` and `SmallButton` label shines on hover**, and their rim
+  carries a 2px **specular streak that turns to face the pointer**. The label
+  wears `effect/shine`, a bright lilac bound on `:root` to `indigo/200`
+  (#b4aad3); the rim wears `effect/specular` (#a1b2d0), the same lightness
+  turned onto the button gradient's own hue with 20% less chroma, because the
+  lilac read too purple on the edge — **two tokens Figma does not have yet;
+  add both.** The first cut (13 Sep 2026)
+  used the pill's own two gradient ends 30% brighter on a hairline and could
+  not be seen on either pill. The ring is hidden at rest and on touch. `components/ui/specular.ts` writes the angle,
+  which made both buttons client components.
+- **Welcome's `Create skin profile` is the one `beacon`**: its gradient breathes
+  between its default and its own hover reversal on a 4s cycle, and a band of
+  the label's white at 25% crosses it every 10s. Colours unchanged. **No second
+  caller** without a product decision — it means "start here".
+
+**Nothing to change in Figma**; a note on the `Button` set and `Spec/Chat
+Bubble` saying the build animates them would stop a later comp from being read
+as a correction.

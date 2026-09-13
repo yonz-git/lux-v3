@@ -205,3 +205,28 @@ export function useMounted() {
   useEffect(() => setMounted(true), []);
   return mounted;
 }
+
+/**
+ * What a closing panel should still be SHOWING — the last value it had while
+ * open.
+ *
+ * ⚠️ `useDialogPresence` HOLDS THE NODE, NOT WHAT IS IN IT. A tray's content
+ * does not change when it closes, so the trays never needed this. A search
+ * dropdown's does: both of the app's search dropdowns close when the query
+ * empties, and the render that starts the exit is the one in which the results
+ * have already gone — so the builder's panel faded out over the page's own
+ * product list, and the add-product tray's over "No products match “”",
+ * instead of over what the user had just been looking at. Added with the
+ * dropdowns' exit, 13 Sep 2026.
+ *
+ * ⚠️ WRITTEN IN AN EFFECT, READ IN RENDER. The write waits for a committed open
+ * render, so a render React throws away never becomes the held value; the read
+ * is what lets the very first closing render show it.
+ */
+export function useHeldWhileClosing<T>(open: boolean, value: T): T {
+  const held = useRef(value);
+  useEffect(() => {
+    if (open) held.current = value;
+  });
+  return open ? value : held.current;
+}

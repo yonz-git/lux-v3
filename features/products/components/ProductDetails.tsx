@@ -2,6 +2,7 @@
 
 import { useId, useState } from "react";
 import styles from "./ProductDetails.module.css";
+import { Collapse } from "@/components/ui/Collapse";
 import { ChevronDownIcon } from "@/components/ui/icons";
 import { formatAdded, type CatalogProduct } from "@/features/products/products";
 
@@ -77,11 +78,11 @@ export function ProductDetails({
             <ChevronDownIcon className={styles.inciChevron} />
           </button>
 
-          {inciOpen && (
-            <p id={inciId} className={`${styles.inciList} t-body3 reveal-quick`}>
+          <Collapse open={inciOpen}>
+            <p id={inciId} className={`${styles.inciList} t-body3`}>
               {product.ingredients}
             </p>
-          )}
+          </Collapse>
         </div>
       )}
     </div>

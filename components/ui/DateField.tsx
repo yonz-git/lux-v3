@@ -3,6 +3,7 @@
 import { useEffect, useId, useRef, useState } from "react";
 import styles from "./DateField.module.css";
 import { ChevronDownIcon, ChevronLeftIcon, ChevronRightIcon } from "./icons";
+import { useDialogPresence } from "@/lib/useModalDialog";
 import {
   type IsoDate,
   WEEKDAYS,
@@ -59,6 +60,10 @@ export function DateField({
   const triggerRef = useRef<HTMLButtonElement>(null);
   const gridRef = useRef<HTMLDivElement>(null);
   const dialogId = useId();
+  /* the calendar outlives `open` by its exit — "Dropdowns" in globals.css.
+     Focus, Escape and the outside click all key off `open`, so it stops being
+     the calendar the moment it is dismissed and only its paint lingers. */
+  const panel = useDialogPresence(open);
 
   // close on outside pointer or Escape
   useEffect(() => {
@@ -158,12 +163,14 @@ export function DateField({
         <ChevronDownIcon className={styles.chevron} />
       </button>
 
-      {open && (
+      {panel.present && (
         <div
           id={dialogId}
           role="dialog"
           aria-label="Choose a date"
-          className={`${styles.panel} reveal-quick`}
+          className={`${styles.panel} drop`}
+          data-state={panel.leaving ? "leaving" : undefined}
+          inert={panel.leaving}
         >
           <div className={styles.header}>
             <button

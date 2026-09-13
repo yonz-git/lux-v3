@@ -73,6 +73,15 @@
   border-radius: var(--radius-full);
 
   color: var(--color-button-label-default);
+  /* the shine (globals.css `.shine-text`) — the ink MUST be this label's own
+     token; the band is the default `effect/shine` lilac, which on a white
+     label reads as a tint passing over it */
+  --shine-ink: var(--color-button-label-default);
+  /* the specular rim's two streaks (globals.css `.specular`): this pill's own
+     gradient ends, 30% brighter — mixed toward white in OKLab so "brighter"
+     is a lightness step and not a wash toward grey */
+  --specular-a: color-mix(in oklab, var(--color-button-bg-default-start), white 30%);
+  --specular-b: color-mix(in oklab, var(--color-button-bg-default-end), white 30%);
   /* the component can render as <a>; links carry an underline by default */
   text-decoration: none;
   background: linear-gradient(90deg, var(--grad-start) 0%, var(--grad-end) 100%);
@@ -93,9 +102,9 @@
     --grad-end var(--button-hover-duration) var(--ease-standard);
 }
 
-/* The label sits in its own element so a future hover treatment can target it
-   without touching the pill — the gradient reversal alone doesn't need this,
-   but keeping the label as its own node costs nothing. */
+/* The label sits in its own element so the hover shine can target it without
+   touching the pill — `inline-block` so the shine's gradient spans the label
+   box and its band crosses the whole word. */
 .label {
   display: inline-block;
 }
@@ -196,6 +205,10 @@
   --grad-start: var(--color-button-bg-secondary-start);
   --grad-end: var(--color-button-bg-secondary-end);
   color: var(--color-text-primary);
+  /* dark ink; the shine band is the default `effect/shine` lilac */
+  --shine-ink: var(--color-text-primary);
+  --specular-a: color-mix(in oklab, var(--color-button-bg-secondary-start), white 30%);
+  --specular-b: color-mix(in oklab, var(--color-button-bg-secondary-end), white 30%);
 }
 
 /* the same reversal Primary gets — the base .button:hover swaps the PRIMARY
@@ -218,4 +231,43 @@
 
 .full {
   width: 100%;
+}
+
+/* ---------------------------------------------------------------------------
+   `beacon` — Welcome's `Create skin profile`, and nothing else. The static
+   half of the recipe; the two animations are named in globals.css under
+   "Beacon", which is the only place a name may live.
+
+   The gradient is start -> end -> start at twice the width, so the flow the
+   keyframes drive carries the pill between its default and its own hover
+   reversal — the button's two existing pictures, no third colour. The sweep
+   on `::before` is the label's white at 25%, a band twice the pill's width
+   that the keyframes carry across it; `Button` leaves `::before` free (the
+   press overlay is `::after`). The overlay sits under the label, which is a
+   later sibling in the same stacking context.
+   -------------------------------------------------------------------------- */
+.beacon {
+  background-image: linear-gradient(
+    90deg,
+    var(--grad-start) 0%,
+    var(--grad-end) 50%,
+    var(--grad-start) 100%
+  );
+  background-size: 200% 100%;
+}
+
+.beacon::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  pointer-events: none;
+  background-image: linear-gradient(
+    90deg,
+    transparent 0%,
+    color-mix(in srgb, var(--color-button-label-default) 25%, transparent) 50%,
+    transparent 100%
+  );
+  background-size: 200% 100%;
+  background-repeat: no-repeat;
 }

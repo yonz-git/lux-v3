@@ -136,8 +136,20 @@
   color: var(--color-text-on-brand);
 }
 
+/* ⚠️ NOT IN FIGMA — THE TODAY RING IS WHITE AT 15%, asked for directly 13 Sep
+   2026. At full white the ring was the brightest mark on the sage card, louder
+   than the indigo discs it exists to sit beside; today is context, the discs
+   are the record. `--today-ring` is shared with the legend key below so the
+   key keeps mirroring the day exactly. ⚠️ At 15% the ring is decorative, not
+   a contrast-bearing edge — "today" is also named in the legend, so the state
+   is not carried by this ring alone. */
+.grid,
+.legend {
+  --today-ring: color-mix(in srgb, var(--color-text-on-data-inverse) 15%, transparent);
+}
+
 .day[data-today] {
-  border: var(--border-width-thin) solid var(--color-text-on-data-inverse); /* 1.5 */
+  border: var(--border-width-thin) solid var(--today-ring); /* 1.5 */
   color: var(--color-text-on-data);
 }
 
@@ -211,7 +223,7 @@
 }
 
 .dot[data-today] {
-  border: var(--border-width-thin) solid var(--color-text-on-data-inverse);
+  border: var(--border-width-thin) solid var(--today-ring);
 }
 
 .legendLabel {

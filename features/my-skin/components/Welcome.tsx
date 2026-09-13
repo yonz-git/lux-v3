@@ -28,7 +28,13 @@ export function Welcome() {
               not. It duplicates the bubble's text, so the bubble itself is
               hidden from assistive tech to avoid announcing it twice. */}
           <h1 className="visually-hidden">How is your skin feeling today?</h1>
-          <Orb size="var(--size-orb-lg)" animateIn halo />
+          {/* ⚠️ THIS ORB TAKES ITS MARK FROM THE ENTRANCE. `orb-from-entrance`
+              (globals.css) grows it from almost nothing behind the entrance's
+              symbol, `animateIn` Spiral-Assembles its mark as it grows, and the
+              symbol — the same geometry to the pixel — fades over the
+              assembling mark on its way in; `LogoEntrance` aims the two by
+              class. */}
+          <Orb size="var(--size-orb-lg)" animateIn halo className="orb-from-entrance" />
           {/* centred rather than left, because Welcome is a hero composition —
               see the note in ChatBubble.module.css */}
           {/* the two bubbles occupy the same grid cell and cross-fade — see
@@ -61,10 +67,14 @@ export function Welcome() {
         {/* ⚠️ each piece fades up after the question lands (1200 + 800ms),
             one 150ms beat apart, the nav last — see `.welcome-rise` */}
         <div className={styles.actions}>
+          {/* ⚠️ `beacon` — the breathing gradient and the light sweep — is
+              this button's alone; it is the one control in the app that has
+              to say "start here". See Button.tsx. */}
           <Button
             className={`${styles.cta} welcome-rise`}
             style={{ "--rise-delay": "1700ms" } as React.CSSProperties}
             href="/investigation/start"
+            beacon
           >
             Create skin profile
           </Button>
