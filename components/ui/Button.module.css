@@ -331,50 +331,39 @@
 }
 
 /* ---------------------------------------------------------------------------
-   `beacon` — Welcome's `Create skin profile`, and nothing else. The static
-   half of the recipe; the two animations are named in globals.css under
-   "Beacon", which is the only place a name may live.
+   `beacon` — Welcome's `Create skin profile`, and nothing else.
 
-   The gradient is start -> end -> start at twice the width, so the flow the
-   keyframes drive carries the pill between its default and its own hover
-   reversal — the button's two existing pictures, no third colour. The sweep
-   on `::before` is the label's white at 15%, a band twice the pill's width
-   that the keyframes carry across it; `Button` leaves `::before` free (the
-   press overlay is `::after`). The overlay sits under the label, which is a
-   later sibling in the same stacking context.
+   ⚠️ A STATIC SHINE, NOT A MOTION — 14 Sep 2026, asked for directly. It
+   breathed its gradient and swept a band of light across the pill every 10s
+   from 12 Sep; both animations and the widened start -> end -> start gradient
+   they needed are gone (see "Beacon" in globals.css). What stays is how the
+   light looked when it crossed: the label's white as a soft gloss over the
+   top half, and a narrow diagonal band parked just left of centre, as if
+   caught mid-pass. The pill keeps the default gradient and its hover reversal.
+
+   On `::before`, which `Button` leaves free (the press overlay is `::after`),
+   under the label — a later sibling in the same stacking context.
+   ⚠️ KEPT FAINT FOR THE LABEL. White on the gradient's light left end is
+   4.56:1, barely AA, and any white added under the words costs it. The gloss
+   is gone by the pill's vertical middle and the band sits over the darker
+   centre, so neither lands on the lightest pixels the label covers.
    -------------------------------------------------------------------------- */
-.beacon {
-  background-image: linear-gradient(
-    90deg,
-    var(--grad-start) 0%,
-    var(--grad-end) 50%,
-    var(--grad-start) 100%
-  );
-  background-size: 200% 100%;
-  /* ⚠️ a unit is required — the unitless `hue-rotate(0.8)` was invalid and the
-     whole declaration was dropped. Note a filter recolours EVERYTHING the pill
-     paints, the label and the sweep included, not just the gradient. */
-  filter: hue-rotate(0.8deg);
-}
-
 .beacon::before {
   content: "";
   position: absolute;
   inset: 0;
   border-radius: inherit;
   pointer-events: none;
-  background-image: linear-gradient(
-    90deg,
-    transparent 0%,
-    /* 15%, down from 25% on 14 Sep 2026, asked for directly — less bright */
-    color-mix(in srgb, var(--color-button-label-default) 15%, transparent) 50%,
-    transparent 100%
-  );
-  background-size: 200% 100%;
-  background-repeat: no-repeat;
-  /* rest = the sweep's END frame (`lux-beacon-sweep` in globals.css), so when
-     reduced motion ends the loop the band is parked off the button instead of
-     sitting on its right edge — a 200%-wide image at 200% lies wholly left of
-     the pill */
-  background-position: 200% 0;
+  background-image:
+    linear-gradient(
+      180deg,
+      color-mix(in srgb, var(--color-button-label-default) 18%, transparent) 0%,
+      transparent 50%
+    ),
+    linear-gradient(
+      105deg,
+      transparent 34%,
+      color-mix(in srgb, var(--color-button-label-default) 14%, transparent) 44%,
+      transparent 54%
+    );
 }

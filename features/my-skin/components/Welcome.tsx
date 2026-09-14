@@ -87,9 +87,9 @@ export function Welcome() {
             which starts at 1200ms, is settling — one 150ms beat apart, the nav
             last — see `.welcome-rise` */}
         <div className={returning ? `${styles.actions} reveal` : styles.actions}>
-          {/* ⚠️ `beacon` — the breathing gradient and the light sweep — is
-              this button's alone; it is the one control in the app that has
-              to say "start here". See Button.tsx. */}
+          {/* ⚠️ `beacon` — a static shine since 14 Sep 2026, when its sweep
+              was removed — is this button's alone; it is the one control in
+              the app that has to say "start here". See Button.tsx. */}
           <Button
             className={returning ? styles.cta : `${styles.cta} welcome-rise`}
             style={returning ? undefined : ({ "--rise-delay": "1700ms" } as React.CSSProperties)}

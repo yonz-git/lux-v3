@@ -1268,10 +1268,12 @@ are deliberate and not drift.
   used the pill's own two gradient ends 30% brighter on a hairline and could
   not be seen on either pill. The ring is hidden at rest and on touch. `components/ui/specular.ts` writes the angle,
   which made both buttons client components.
-- **Welcome's `Create skin profile` is the one `beacon`**: its gradient breathes
-  between its default and its own hover reversal on a 4s cycle, and a band of
-  the label's white at 25% crosses it every 10s. Colours unchanged. **No second
-  caller** without a product decision — it means "start here".
+- **Welcome's `Create skin profile` is the one `beacon`**: a static shine — the
+  label's white at 18% as a gloss fading out by the pill's middle, and a narrow
+  105° band of it at 14% parked just left of centre. Colours unchanged. ⚠️ Until
+  14 Sep 2026 its gradient breathed on a 4s cycle and a band crossed it every
+  10s; the motion was removed, asked for directly. **No second caller** without
+  a product decision — it means "start here".
 
 **Nothing to change in Figma**; a note on the `Button` set and `Spec/Chat
 Bubble` saying the build animates them would stop a later comp from being read

@@ -3090,70 +3090,14 @@ main[tabindex="-1"]:focus-visible {
 }
 
 /* ============================================================================
-   Beacon — the one button that has to say "start here": Welcome's
-   `Create skin profile`. ⚠️ NOT IN FIGMA — asked for directly, 12 Sep 2026,
-   after the "Get React Bits Pro" button in reactbits.dev's navbar, WITH THE
-   BUTTON'S OWN COLOURS KEPT.
-
-   Two motions, both on `Button`'s `beacon` prop (`Button.module.css` holds the
-   static half — the widened gradient and the sweep's fill — and this block
-   names the animations, which is the only place a name may live):
-
-   1. THE GRADIENT BREATHES. The reference flows a five-stop palette back and
-      forth. This one has two colours, so the image is start → end → start at
-      twice the width, and the flow carries the window from the button's
-      default (start → end) to its own hover reversal (end → start) and back —
-      the same two pictures the button already alternates between on hover,
-      now slowly, unprompted, on a 4s `--ease-breathe` cycle. No new colour.
-   2. THE SWEEP. A soft band of the label's white at 15%, twice the width of
-      the pill, crossing it once every 10s — the reference's own cadence. It is
-      `::before` on the button, which `Button` leaves free (`::after` is its
-      press overlay). Under the label, over the gradient.
-
-   `prefers-reduced-motion` collapses both to their end frames, which are the
-   default gradient and the band parked off-screen.
+   Beacon — ⚠️ NO ANIMATION HERE ANY MORE, 14 Sep 2026, asked for directly
+   ("remove the sweep animation effect on create skin profile button, just give
+   a shine appearance"). From 12 Sep it breathed its gradient on a 4s cycle and
+   swept a band of light across the pill every 10s (`lux-beacon-flow`,
+   `lux-beacon-sweep`, and a combined rule so Welcome's `.welcome-rise` entrance
+   survived). All three are deleted; the beacon is a STATIC shine now, and the
+   whole recipe lives on `.beacon` in `Button.module.css`.
    ========================================================================== */
-
-@keyframes lux-beacon-flow {
-  0% {
-    background-position: 0% 50%;
-  }
-  50% {
-    background-position: 100% 50%;
-  }
-  100% {
-    background-position: 0% 50%;
-  }
-}
-
-@keyframes lux-beacon-sweep {
-  from {
-    background-position: -200% 0;
-  }
-  to {
-    background-position: 200% 0;
-  }
-}
-
-.button-beacon {
-  animation: lux-beacon-flow var(--duration-breath-phase) var(--ease-breathe)
-    infinite;
-}
-
-/* ⚠️ THE ONE CALLER ALSO RISES IN. Welcome's CTA carries `.welcome-rise`, and
-   two rules setting `animation` on one element do not add up — the later one
-   (this block) silently replaced the entrance. Both tracks are listed here,
-   the rise first so it keeps its delay; a second beacon that enters some
-   other way needs its own line, not a change to `.button-beacon`. */
-.welcome-rise.button-beacon {
-  animation:
-    lux-rise-in 800ms var(--ease-standard) var(--rise-delay, 0ms) backwards,
-    lux-beacon-flow var(--duration-breath-phase) var(--ease-breathe) infinite;
-}
-
-.button-beacon::before {
-  animation: lux-beacon-sweep 10s var(--ease-breathe) infinite;
-}
 
 /* ============================================================================
    Focus not obscured — WCAG 2.4.11 (AA)

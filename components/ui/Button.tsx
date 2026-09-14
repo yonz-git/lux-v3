@@ -40,9 +40,11 @@ import { trackSpecular } from "./specular";
  *   - the rim carries a SPECULAR streak facing the pointer (`.specular`, the
  *     `<span>` below; `specular.ts` writes the angle — which is why this file
  *     is a client component now);
- *   - `beacon` makes the gradient breathe and sweeps a band of light across
- *     the pill every 10s. It is for ONE button, Welcome's `Create skin
- *     profile`, to say "start here"; a second caller is a product decision.
+ *   - `beacon` gives the pill a static shine — a soft gloss and a parked band
+ *     of light. It is for ONE button, Welcome's `Create skin profile`, to say
+ *     "start here"; a second caller is a product decision. ⚠️ It breathed and
+ *     swept a band across the pill every 10s until 14 Sep 2026; the motion
+ *     was removed, asked for directly.
  */
 export function Button({
   children,
@@ -64,7 +66,7 @@ export function Button({
   href?: string;
   /** optional leading glyph — see the doc comment above */
   icon?: ReactNode;
-  /** the breathing gradient + light sweep — Welcome's CTA only, see above */
+  /** the static shine — Welcome's CTA only, see above */
   beacon?: boolean;
 }) {
   const cls = [
@@ -72,7 +74,7 @@ export function Button({
     variant === "secondary" && styles.secondary,
     size === "md" && styles.md,
     fullWidth && styles.full,
-    beacon && `${styles.beacon} button-beacon`,
+    beacon && styles.beacon,
     size === "md" ? "t-button-md" : "t-button",
     className,
   ]
