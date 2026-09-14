@@ -1,6 +1,6 @@
 "use client";
 
-import { useId, useRef, useState } from "react";
+import { useEffect, useId, useRef, useState } from "react";
 import styles from "./StartInvestigation.module.css";
 import { QuestionScreen } from "./QuestionScreen";
 import { Chip } from "@/components/ui/Chip";
@@ -8,6 +8,7 @@ import { Collapse } from "@/components/ui/Collapse";
 import { TextField } from "@/components/ui/TextField";
 import { FaceDiagram, FACE_REGION_IDS } from "./FaceDiagram";
 import { Button } from "@/components/ui/Button";
+import { SmallButton } from "@/components/ui/SmallButton";
 import SegmentedToggle from "@/features/products/components/SegmentedToggle";
 import {
   PlusIcon,
@@ -130,6 +131,9 @@ import {
 
 const LOCATION_CHIPS = ["Whole face", "Neck", "Other"];
 
+/* how long `Reset all`'s undo stays — the `Snackbar`'s 4s hold */
+const UNDO_MS = 4000;
+
 /* ⚠️ AND ITS COPY ASKS ABOUT A PLACE, AS OF 8 Sep 2026. The field read
    `Other – describe in detail` over the placeholder `Describe what's
    happening` — a symptom question sitting under the face diagram, between the
@@ -209,6 +213,63 @@ export function StartInvestigation() {
     setAnswer("start", (prev) => withAreas(prev, s, []));
     focusChip(s);
   };
+
+  /* ⚠️ `Reset all` — NOT IN FIGMA, asked for directly 14 Sep 2026. Clears
+     every symptom and every place and closes the one being placed. The typed
+     `Other` description is NOT a selection and stays; it has its own ✕. The
+     button disables as it empties.
+     ⚠️ AND IT IS UNDOABLE, asked for directly the same day — a snapshot undo,
+     like `Remove` on a product: `start` and the symptom being placed are
+     captured before the clear and handed back.
+     ⚠️ THE UNDO SITS ON THE BUTTON, NOT IN THE APP'S `Snackbar` — asked for
+     directly: the page must not move. It is absolutely positioned on
+     `Reset all`, so it takes no layout, and focus goes to
+     its `Undo` with `preventScroll` rather than up to the chips, which
+     scrolled the screen. It holds for `UNDO_MS`, the snackbar's own window. */
+  const [undo, setUndo] = useState<{
+    id: number;
+    start: typeof answers.start;
+    placing: Symptom | null;
+  } | null>(null);
+  const undoRef = useRef<HTMLButtonElement>(null);
+  /* the row, not the button: `SmallButton` takes no ref, and `Reset all` is
+     the row's one direct-child button (the undo's sits inside its pill) */
+  const resetRef = useRef<HTMLDivElement>(null);
+  const nothingSelected = placing === null && reported.length === 0;
+
+  const resetAll = () => {
+    setUndo({ id: Date.now(), start: answers.start, placing });
+    setAnswer("start", undefined);
+    setPlacing(null);
+    requestAnimationFrame(() => undoRef.current?.focus({ preventScroll: true }));
+  };
+
+  const undoReset = () => {
+    if (!undo) return;
+    setAnswer("start", undo.start);
+    setPlacing(undo.placing);
+    setUndo(null);
+    requestAnimationFrame(() =>
+      resetRef.current
+        ?.querySelector<HTMLButtonElement>(":scope > button")
+        ?.focus({ preventScroll: true }),
+    );
+  };
+
+  useEffect(() => {
+    if (!undo) return;
+    const t = window.setTimeout(() => {
+      /* the focused control is about to go — keep focus in the card rather
+         than dropping it on the page */
+      if (document.activeElement === undoRef.current) {
+        chipsRef.current
+          ?.querySelector("button")
+          ?.focus({ preventScroll: true });
+      }
+      setUndo(null);
+    }, UNDO_MS);
+    return () => window.clearTimeout(t);
+  }, [undo]);
 
   // "Whole face" is shorthand for every region pill — selecting it fills them
   // all in, clearing it clears them all, rather than being just one more chip.
@@ -347,6 +408,39 @@ export function StartInvestigation() {
              mount on `Save` and draw in then, not unseen under the fade. */
           callouts={placing ? withAreas(answers.start, placing, []) : answers.start}
           calloutsHidden={placing !== null}
+        />
+      </div>
+
+      <div
+        ref={resetRef}
+        className={styles.reset}
+        data-undo={undo ? "" : undefined}
+      >
+        {/* always mounted, so the announcement lands in an existing region */}
+        <p className="visually-hidden" aria-live="polite">
+          {undo ? "Selections cleared" : ""}
+        </p>
+        {undo && (
+          <div key={undo.id} className={styles.undo}>
+            <span className={`${styles.undoMessage} t-label-sm`}>
+              Selections cleared
+            </span>
+            <button
+              ref={undoRef}
+              type="button"
+              className={`${styles.undoAction} t-label pressable`}
+              onClick={undoReset}
+            >
+              Undo
+            </button>
+          </div>
+        )}
+        <SmallButton
+          label="Reset all"
+          arrow={false}
+          className={styles.resetAll}
+          disabled={nothingSelected}
+          onClick={resetAll}
         />
       </div>
 

@@ -119,6 +119,11 @@
   position: relative;
   width: 100%;
   aspect-ratio: 392 / 300;
+  /* ⚠️ ROOM FOR THE NECK, 14 Sep 2026: the drawing now hangs ~41 units below
+     this box and fades out (see `.form`); 30 of them are cleared here so the
+     chip row sits under the faded tail, not over the neck. A margin percentage
+     resolves against WIDTH, which is the 392 this is written in. */
+  margin-bottom: calc(30 / 392 * 100%);
   /* The 392x300 box used to end ~20% below the lowest pill, because the drawn
      face bottomed out at y=241 and nothing filled the rest; a -9% bottom margin
      pulled the chip row up into that dead air. The head now runs to y=290 of
@@ -162,12 +167,27 @@
    ⚠️ EVERY COLOUR AND ALPHA HERE IS A CHOSEN VALUE, raw rather than a token
    because `02 Color` has no role for face artwork. `#284a4d` is the halo's
    core taken one step deeper. Raise the drawing and its shading in Figma. */
+/* ⚠️ THE DRAWING RUNS 980 SOURCE ROWS NOW, NOT 830 — the neck, asked for
+   directly 14 Sep 2026. The asset stopped in a hard cut under the chin. From
+   row 740 down (blended over 20 rows) both images now come straight from the
+   same supplied illustration, registered to the head at 0.1848 scale within
+   half a pixel: the neck's own contour lines to row 979, and the neck's
+   outline for the silhouette. ⚠️ THE SWITCH IS AT 740, NOT AT THE OLD CUT: the
+   old asset had already faded its last ~90 rows toward the cut, lines and
+   silhouette both, so splicing at 830 left a band where the shading died and
+   came back, and a box where the neck lines thinned. The masks below fade the
+   whole neck out. The head keeps its 226x280 footprint at
+   83,10, so every region pill still sits on its landmark; the box is only
+   taller, by 980/830, and hangs ~41 units below `.diagram` — which is why
+   `.diagram` carries a bottom margin. Every percentage of HEIGHT in the
+   layers below is the old value × 830/980, so the shading and the falloff
+   stay where they were on the face. */
 .form {
   position: absolute;
   left: calc(83 / 392 * 100%);
   top: calc(10 / 300 * 100%);
   width: calc(226 / 392 * 100%);
-  height: calc(280 / 300 * 100%);
+  height: calc(280 / 300 * 980 / 830 * 100%);
   pointer-events: none;
 }
 
@@ -190,14 +210,21 @@
 
 .volume {
   background: radial-gradient(
-    ellipse 50% 46% at 50% 42%,
+    ellipse 50% 38.96% at 50% 35.57%,
     rgb(255 255 255 / 0.24) 0%,
     rgb(255 255 255 / 0.1) 40%,
     rgb(40 74 77 / 0) 72%,
     rgb(40 74 77 / 0.36) 100%
   );
-  -webkit-mask: var(--face-silhouette) center / contain no-repeat;
-  mask: var(--face-silhouette) center / contain no-repeat;
+  /* the second layer fades the shading out down the neck — see `.form` */
+  -webkit-mask:
+    var(--face-silhouette) center / contain no-repeat,
+    linear-gradient(#000 80%, transparent 98%);
+  -webkit-mask-composite: source-in;
+  mask:
+    var(--face-silhouette) center / contain no-repeat,
+    linear-gradient(#000 80%, transparent 98%);
+  mask-composite: intersect;
 }
 
 /* the asset's lines were thickened by about half a pixel and lifted when it was
@@ -213,16 +240,15 @@
   object-fit: contain;
   user-select: none;
   filter: var(--face-lines-brighten);
-  -webkit-mask-image: radial-gradient(
-    ellipse 50% 46% at 50% 42%,
-    #000 45%,
-    rgb(0 0 0 / 0.6) 100%
-  );
-  mask-image: radial-gradient(
-    ellipse 50% 46% at 50% 42%,
-    #000 45%,
-    rgb(0 0 0 / 0.6) 100%
-  );
+  /* the second layer fades the lines out down the neck — see `.form` */
+  -webkit-mask-image:
+    radial-gradient(ellipse 50% 38.96% at 50% 35.57%, #000 45%, rgb(0 0 0 / 0.6) 100%),
+    linear-gradient(#000 80%, transparent 98%);
+  -webkit-mask-composite: source-in;
+  mask-image:
+    radial-gradient(ellipse 50% 38.96% at 50% 35.57%, #000 45%, rgb(0 0 0 / 0.6) 100%),
+    linear-gradient(#000 80%, transparent 98%);
+  mask-composite: intersect;
 }
 
 /* ⚠️ THE GLOW IS A WRAPPER BECAUSE A FILTER RUNS BEFORE A MASK. On `.shine`
@@ -259,8 +285,14 @@
     rgb(255 255 255 / 0.45) 30%,
     transparent 100%
   );
-  -webkit-mask: var(--face-lines) center / contain no-repeat;
-  mask: var(--face-lines) center / contain no-repeat;
+  -webkit-mask:
+    var(--face-lines) center / contain no-repeat,
+    linear-gradient(#000 80%, transparent 98%);
+  -webkit-mask-composite: source-in;
+  mask:
+    var(--face-lines) center / contain no-repeat,
+    linear-gradient(#000 80%, transparent 98%);
+  mask-composite: intersect;
 }
 
 /* ---------------------------------------------------------------------------
@@ -358,7 +390,7 @@
       )
       100%
   );
-  box-shadow: inset 0 1px 1px rgb(255 255 255 / 0.28), var(--shadow-sm);
+  box-shadow: inset 0 1px 0 rgb(255 255 255 / 0.28), var(--shadow-sm);
   -webkit-backdrop-filter: blur(var(--blur-sm)) saturate(140%);
   backdrop-filter: blur(var(--blur-sm)) saturate(140%);
   transition: opacity var(--duration-slow) var(--ease-standard)
@@ -538,6 +570,16 @@
   backdrop-filter: blur(calc(var(--blur-sm) / 2)) saturate(170%);
 }
 
+/* ⚠️ THE LOCATION CHIPS ARE A STEP SMALLER THAN `Chip` — 34 tall with 12 a
+   side, not 40 and 16 — asked for directly 14 Sep 2026, so they sit under the
+   face as its own row rather than as full-size answers. The label stays
+   `t-label`. Local rather than `size="compact"`, which is the chat panel's
+   (Chip.tsx); the hit area still reaches 44 through `Chip`'s own `::after`. */
+.chips button[data-selected] {
+  min-height: 34px;
+  padding: 0 calc(var(--space-md) - var(--border-width-hairline));
+}
+
 /* hover swaps the sage tint in the wash slot (`surface/face-pill-tint`) for a
    white wash (`surface/face-pill-wash`, 14%) and deepens the lift — the
    surface leaning into the light. It is the same shadow slot at rest and on
@@ -655,8 +697,46 @@
   --glass-tint: var(--color-surface-face-pill-selected-tint);
   --glass-light: var(--color-effect-face-pill-selected-light);
   --glass-shade: var(--color-effect-face-pill-selected-shade);
-  --glass-lift: var(--shadow-button);
-  border-color: transparent;
+  /* ⚠️ `shadow/sm`, NOT `shadow/button` — the symptom pill's own lift, asked
+     for directly 14 Sep 2026. `shadow/button`'s tight `0 1px 2px` layer read
+     as a dark outline under the pill. */
+  --glass-lift: var(--shadow-sm);
+  /* ⚠️ A LIT TOP EDGE, asked for directly 14 Sep 2026 ("slight border shine
+     like the symptom pills"): `.symptom`'s own 1px inset white, first in the
+     list so it sits over the edge light and shade. Unselected glass keeps
+     none; this is the selected state's. ⚠️ 30% fainter than `.symptom`'s
+     (0.28 × 0.7), asked for directly the same day.
+     ⚠️ AND IT IS THE ONLY EDGE: the glass's inset edge light and bottom-right
+     shade are dropped from the selected pill, asked for directly — the shade
+     (`-deep` at 90%) drew a second, darker rim inside the white one, where the
+     symptom pill beside it has only the light. */
+  /* ⚠️ RETUNED IN DEVTOOLS AND SUPPLIED DIRECTLY, 14 Sep 2026: the edge light
+     down to 5% white (`#ffffff0d`), the fill to the same teal at 89% before
+     its 92% mix (`#50727ee3`, ~82% in all), a 1px backdrop blur, and a faint
+     `#869ea626` hairline where the border was transparent. The hover rules
+     below keep the hairline, so hovering a picked pill does not drop it. */
+  --region-glass: inset 0 1px 0 #ffffff0d;
+  /* ⚠️ AND NO FROST AND NO DARK FOOT, found by switching each layer off in a
+     screenshot: the backdrop blur (with its 170% saturate) darkened a ring
+     round the pill's edge, and the fill's top-to-bottom run into `-deep`
+     read as a darker lower border. The selected pill takes its hue at 92%
+     with no backdrop blur, and the run ends clear instead of deep, so the only
+     edge left is the white light. The diagonal shade (`::before`) stays, as
+     the symptom pill has one. */
+  --glass-end: transparent;
+  /* ⚠️ NO WASH EITHER, AND THE EDGE LIGHT HAS NO BLUR — the dark line round
+     every lit pill, found by screenshot with each layer switched off: only
+     `box-shadow: none` cleared it. An inset shadow is clipped to the PADDING
+     box, so the 15% wash left the 1px border ring untinted, and the light's
+     1px blur brightened a band inside every edge. Either way the ring read as
+     a darker border. The wash goes, and every lit edge in this file and in
+     `StartInvestigation.module.css` is `inset 0 1px 0`: a crisp light along
+     the top only. */
+  --region-glass-wash: 0 0 #6a292900;
+  background-color: color-mix(in srgb, #50727ee3 92%, transparent);
+  -webkit-backdrop-filter: blur(1px);
+  backdrop-filter: blur(1px);
+  border-color: #869ea626;
   color: var(--color-text-on-brand);
   --shine-ink: var(--color-text-on-brand);
 }
@@ -710,15 +790,14 @@
    only lifts; so does this now, one `--shadow-sm` on top of its seat. */
 .region[data-selected="true"]:hover:not(:disabled),
 .chips button[data-selected="true"]:hover:not(:disabled) {
-  border-color: transparent;
-  box-shadow: var(--region-glass-wash), var(--region-glass),
-    var(--shadow-button), var(--shadow-sm);
+  border-color: #869ea626;
+  box-shadow: var(--region-glass-wash), var(--region-glass), var(--shadow-md);
 }
 
 @media (hover: none) {
   .region[data-selected="true"]:hover:not(:disabled),
   .chips button[data-selected="true"]:hover:not(:disabled) {
-    border-color: transparent;
+    border-color: #869ea626;
     box-shadow: var(--region-glass-wash), var(--region-glass), var(--glass-lift);
   }
 }
@@ -884,8 +963,9 @@
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  min-height: clamp(24px, 8.7cqw, 40px);
-  padding: 0 clamp(6px, 3cqw, var(--space-lg)); /* 16 ceiling */
+  /* ceilings follow step 1's smaller location chip, 34 and 12 (14 Sep 2026) */
+  min-height: clamp(24px, 8.7cqw, 34px);
+  padding: 0 clamp(6px, 3cqw, var(--space-md)); /* 12 ceiling */
   font-size: clamp(9px, 3.4cqw, 14px);
   line-height: 1.3;
   border-radius: var(--radius-full);
@@ -903,7 +983,10 @@
       var(--color-face-pill-selected-deep) 100%
     )
     border-box;
-  border: var(--border-width-hairline) solid transparent;
+  /* the selected region pill's hairline and lit top edge, so the recap's pill
+     matches step 1's (retuned 14 Sep 2026) */
+  border: var(--border-width-hairline) solid #869ea626;
+  box-shadow: inset 0 1px 0 #ffffff0d;
   color: var(--color-text-on-brand);
   white-space: nowrap;
 }

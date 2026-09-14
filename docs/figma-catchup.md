@@ -783,6 +783,19 @@ then the pill fades in. The callouts hide while a symptom is being placed. For
 Figma this needs the idle step-1 frame with callouts, plus the pill as a
 variant. The recap's read-only face can take the same layer next.
 
+### The face drawing has a neck (14 Sep 2026)
+
+Asked for directly. The contour head used to stop in a hard cut under the
+chin. The asset now runs 980 source rows, not 830. From row 740 down, the
+contour lines and the silhouette both come from the same supplied
+illustration, lined up with the head within half a pixel. The old asset had
+faded its last rows toward the cut, so it is not used past row 740. Skin texture is removed, and line weight is
+matched to the drawing above. The head's footprint on the card is unchanged
+(226×280 at 83,10), so no region pill moves. The drawing, its shading and the
+hover shine fade out over the neck, from 80% of the box's height to 98%. The
+diagram takes a 30-unit bottom margin, so the chip row sits under the faded
+tail. For Figma this needs the face artwork re-exported with its neck.
+
 ### Step 1's `Other` description is confirmed with ✓ and edited with a pen (14 Sep 2026)
 
 Asked for directly. The open field carries a ✓ before its ✕ (Enter confirms,
