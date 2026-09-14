@@ -31,13 +31,13 @@
 @property --grad-start {
   syntax: "<color>";
   inherits: false;
-  initial-value: #657792;
+  initial-value: #546982;
 }
 
 @property --grad-end {
   syntax: "<color>";
   inherits: false;
-  initial-value: #39386f;
+  initial-value: #313560;
 }
 
 @property --specular-angle {
@@ -47,7 +47,6 @@
   /* light from the top-left until a pointer says otherwise */
   initial-value: -45deg;
 }
-
 
 /* ==========================================================================
    SURFACE SYSTEM B TEXT — dark, not white.
@@ -219,8 +218,14 @@
      `--color-indigo-700` INSTEAD: non-negotiable 2 forbids a component binding
      a primitive, and moving the ramp step would drag anything else aliasing it.
      ========================================================================== */
-  --color-bg-brand: #39386f;
-  --color-bg-brand-hover: #2c2a5f;
+  /* ⚠️ `#39386f` → `#313560` AND `-hover` `#2c2a5f` → `#242750`, 14 Sep 2026,
+     asked for directly ("one indigo"): the button gradient was retuned by hand
+     to end on `#313560`, and `bg/brand` follows it so the action and every
+     selected mark stay one value. Both siblings took the same OKLCH step
+     (L −0.024, C −0.018, H −4°). White: 11.61:1 here, 14.18:1 on hover. The
+     notes above still quote the old values. */
+  --color-bg-brand: #313560;
+  --color-bg-brand-hover: #242750;
 
   /* ⚠️ NOT IN FIGMA, BY EXPLICIT REQUEST — the moderate-likelihood pill on
      `ResultCards`' ingredients card. `02 Color` has no semantic role for it, so
@@ -233,7 +238,9 @@
      frost pill did not and which two different hues would not either. White on
      it measures 3.49:1 — under AA for a 12px label, the same open question
      `CompatCard`'s band pills already carry. */
-  --color-bg-brand-soft: #8284c0;
+  /* `#8284c0` → `#7980af` with `bg/brand`, 14 Sep 2026 (same step). White is
+     3.49 → 3.80:1 — still the known failure, marginally less so. */
+  --color-bg-brand-soft: #7980af;
   /* `effect/shine` — the bright lilac every light effect in the build wears:
      the text shine's band and the specular rim's streaks. ⚠️ NOT IN FIGMA —
      added 13 Sep 2026, asked for in those words. It is `indigo/200`
@@ -427,12 +434,18 @@
    ========================================================================== */
 
 :root {
-  --color-gradient-brand-start: #657792;
-  --color-gradient-brand-end: #39386f;
+  /* ⚠️ RETUNED 14 Sep 2026, by hand: `#657792` → `#546982` and `#39386f` →
+     `#313560`, a step darker. The notes above still quote the old pair. The
+     `@property --grad-*` initial-values moved with it, and so did `bg/brand`
+     (to `#313560`, its siblings by the same step), so the button's dark end and
+     the selection indigo are still one value. White measures 5.65:1 and
+     11.61:1 at the ends. */
+  --color-gradient-brand-start: #546982;
+  --color-gradient-brand-end: #313560;
 
   /* the mirrors of the two lines above — these are the ones `Button` reads */
-  --color-button-bg-default-start: #657792;
-  --color-button-bg-default-end: #39386f;
+  --color-button-bg-default-start: #546982;
+  --color-button-bg-default-end: #313560;
 
   /* ⚠️ NOT IN FIGMA — `gradient/secondary` made TRANSLUCENT, 14 Sep 2026,
      asked for directly: `#deeff3` → `#deeff391` and `#b7c6ca` → `#b9c8cddb`
@@ -638,7 +651,8 @@
 :root {
   --color-surface-frost-nav: #dbeded7a;
 
-  --shadow-nav: inset 0 1px 2px
+  --shadow-nav:
+    inset 0 1px 2px
       color-mix(in srgb, var(--color-border-highlight) 60%, transparent),
     inset 0 -1px 2px rgba(46, 42, 63, 0.1), 0 2px 6px rgba(28, 27, 36, 0.1),
     0 12px 28px -10px rgba(28, 27, 36, 0.16);
@@ -2178,7 +2192,8 @@ main[tabindex="-1"]:focus-visible {
 }
 
 .welcome-rise {
-  animation: lux-rise-in 800ms var(--ease-standard) var(--rise-delay, 0ms) backwards;
+  animation: lux-rise-in 800ms var(--ease-standard) var(--rise-delay, 0ms)
+    backwards;
 }
 
 .bubble-ask-exit {
@@ -2189,7 +2204,8 @@ main[tabindex="-1"]:focus-visible {
        and `both` held its 0% keyframe (opacity 1) through the whole 3300ms
        delay, painting the question fully visible over the rise's opacity 0 from
        the first frame. The question was on screen at opening because of this. */
-    lux-bubble-push-out var(--duration-slower) var(--ease-standard) 3300ms forwards;
+    lux-bubble-push-out var(--duration-slower) var(--ease-standard) 3300ms
+      forwards;
 }
 
 /* the reply bubble: `backwards` holds the 0% keyframe (opacity 0) for the
@@ -2204,7 +2220,8 @@ main[tabindex="-1"]:focus-visible {
    by moving BOTH delays together. */
 .bubble-swap-in {
   transform-origin: top center;
-  animation: lux-bubble-push-in var(--duration-slower) var(--ease-standard) 3300ms backwards;
+  animation: lux-bubble-push-in var(--duration-slower) var(--ease-standard)
+    3300ms backwards;
 }
 
 /* ⚠️ THESE RULES MUST LIVE HERE, NOT IN A CSS MODULE. CSS Modules localize
@@ -2279,12 +2296,14 @@ main[tabindex="-1"]:focus-visible {
 
   .bubble-ask-exit {
     /* biome-ignore lint/complexity/noImportantStyles: must beat the global duration collapse */
-    animation: lux-fade-out var(--duration-base) var(--ease-standard) 3300ms forwards !important;
+    animation: lux-fade-out var(--duration-base) var(--ease-standard) 3300ms
+      forwards !important;
   }
 
   .bubble-swap-in {
     /* biome-ignore lint/complexity/noImportantStyles: must beat the global duration collapse */
-    animation: lux-fade-in var(--duration-base) var(--ease-standard) 3300ms backwards !important;
+    animation: lux-fade-in var(--duration-base) var(--ease-standard) 3300ms
+      backwards !important;
   }
 
   /* ⚠️ AND A TRANSITION'S DELAY SURVIVES THE COLLAPSE TOO — added after review,
@@ -2374,7 +2393,8 @@ main[tabindex="-1"]:focus-visible {
 [data-tray="tray"][data-state="leaving"] {
   animation: none;
   opacity: 0;
-  transition: opacity var(--duration-base) var(--ease-standard),
+  transition:
+    opacity var(--duration-base) var(--ease-standard),
     transform var(--duration-base) var(--ease-standard);
 }
 
@@ -2681,7 +2701,8 @@ main[tabindex="-1"]:focus-visible {
    reading direction; leave sweeps it back */
 .shine-on-hover {
   background-position: 100% 0;
-  transition: background-position calc(var(--duration-hover) * 1.5) var(--ease-standard);
+  transition: background-position calc(var(--duration-hover) * 1.5)
+    var(--ease-standard);
 }
 
 :is(a, button):hover:not(:disabled) > .shine-on-hover {
@@ -2756,23 +2777,37 @@ main[tabindex="-1"]:focus-visible {
     transparent 0deg,
     var(--specular-a) 30deg,
     var(--color-effect-specular) 50deg,
-    color-mix(in oklab, var(--color-effect-specular), white var(--specular-core, 60%)) 60deg,
+    color-mix(
+        in oklab,
+        var(--color-effect-specular),
+        white var(--specular-core, 60%)
+      )
+      60deg,
     var(--color-effect-specular) 70deg,
     var(--specular-a) 90deg,
     transparent 120deg,
     transparent 180deg,
     var(--specular-b) 210deg,
     var(--color-effect-specular) 230deg,
-    color-mix(in oklab, var(--color-effect-specular), white var(--specular-core, 60%)) 240deg,
+    color-mix(
+        in oklab,
+        var(--color-effect-specular),
+        white var(--specular-core, 60%)
+      )
+      240deg,
     var(--color-effect-specular) 250deg,
     var(--specular-b) 270deg,
     transparent 300deg,
     transparent 360deg
   );
   /* keep the ring: paint everything, cut the content box out of it */
-  -webkit-mask: linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0);
+  -webkit-mask:
+    linear-gradient(#000 0 0) content-box,
+    linear-gradient(#000 0 0);
   -webkit-mask-composite: xor;
-  mask: linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0);
+  mask:
+    linear-gradient(#000 0 0) content-box,
+    linear-gradient(#000 0 0);
   mask-composite: exclude;
   /* the angle is written on the parent and inherited; transitioning it HERE
      is what makes the streak turn rather than jump between pointer moves */
@@ -2843,9 +2878,13 @@ main[tabindex="-1"]:focus-visible {
     rgba(255, 255, 255, 0) 60%,
     rgba(255, 255, 255, var(--edge-ring-dim, 0.3))
   );
-  -webkit-mask: linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0);
+  -webkit-mask:
+    linear-gradient(#000 0 0) content-box,
+    linear-gradient(#000 0 0);
   -webkit-mask-composite: xor;
-  mask: linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0);
+  mask:
+    linear-gradient(#000 0 0) content-box,
+    linear-gradient(#000 0 0);
   mask-composite: exclude;
 }
 
@@ -2865,7 +2904,7 @@ main[tabindex="-1"]:focus-visible {
       default (start → end) to its own hover reversal (end → start) and back —
       the same two pictures the button already alternates between on hover,
       now slowly, unprompted, on a 4s `--ease-breathe` cycle. No new colour.
-   2. THE SWEEP. A soft band of the label's white at 25%, twice the width of
+   2. THE SWEEP. A soft band of the label's white at 15%, twice the width of
       the pill, crossing it once every 10s — the reference's own cadence. It is
       `::before` on the button, which `Button` leaves free (`::after` is its
       press overlay). Under the label, over the gradient.
@@ -2896,7 +2935,8 @@ main[tabindex="-1"]:focus-visible {
 }
 
 .button-beacon {
-  animation: lux-beacon-flow var(--duration-breath-phase) var(--ease-breathe) infinite;
+  animation: lux-beacon-flow var(--duration-breath-phase) var(--ease-breathe)
+    infinite;
 }
 
 /* ⚠️ THE ONE CALLER ALSO RISES IN. Welcome's CTA carries `.welcome-rise`, and
@@ -2950,7 +2990,6 @@ textarea,
   white-space: nowrap;
   border: 0;
 }
-
 
 /* ============================================================================
    The entrance — components/layout/LogoEntrance.tsx
