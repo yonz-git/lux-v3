@@ -353,7 +353,26 @@ function useLineShine() {
  * class comes off after the one run: a label painted through the shine's
  * transparent ink would SNAP to white when its pill is then picked, where the
  * plain label fades with the fill.
+ *
+ * ⚠️ HOVER LIGHTS ONE ANSWER'S PAIRS — NOT IN FIGMA, asked for directly 14 Sep
+ * 2026: with several symptoms placed, the leader lines cross and it stops
+ * being clear which pill goes with which place. Hovering a symptom's callout
+ * lights the places it was marked on and its lines to them; hovering a place
+ * lights the symptoms marked there and their lines to that place. What is lit
+ * brightens under a soft glow on `duration/slow`, and the other lines and
+ * symptom pills fade back, so the pairing reads on its own. Nothing is
+ * selected or written: it is a reading aid, and the hidden list after the
+ * diagram already says the same pairs in words. It runs in both modes, since
+ * the recap and PROGRESS draw the same lines, and never while the callouts are
+ * hidden.
+ * ⚠️ STEP 1's IDLE FACE IS DISABLED, and that is exactly when the callouts
+ * show, so its places are hovered as disabled buttons. Pointer events still
+ * reach a disabled button (checked in Chrome 152), which is why these are
+ * `onPointerEnter` / `onPointerLeave`.
  */
+/* what the pointer is on — a symptom's callout pill, or a place */
+type Lit = { symptom: Symptom } | { region: string } | null;
+
 type CalloutProps = {
   /** each symptom's places, drawn as edge pills with leader lines — see
       `layoutCallouts` */
@@ -393,6 +412,32 @@ export function FaceDiagram(props: FaceDiagramProps) {
   const brightenId = useId();
   const callouts = layoutCallouts(props.callouts ?? {});
 
+  /* the pairing under the pointer — see HOVER in the note above. Ignored while
+     the callouts are hidden, and cleared when the pointer leaves the face, so a
+     pill that unmounts under the pointer cannot leave its pairs lit. */
+  const [hover, setHover] = useState<Lit>(null);
+  const active = props.calloutsHidden ? null : hover;
+  const litCallouts =
+    active === null
+      ? []
+      : callouts.filter((c) =>
+          "symptom" in active
+            ? c.symptom === active.symptom
+            : c.regions.some((r) => r.id === active.region),
+        );
+  /* a hovered place no symptom points to lights nothing and fades nothing */
+  const focused = litCallouts.length > 0;
+  const litRegions = new Set<string>(
+    active === null || !focused
+      ? []
+      : "symptom" in active
+        ? litCallouts.flatMap((c) => c.regions.map((r) => r.id))
+        : [active.region],
+  );
+  const lineLit = (c: Callout, r: Region) =>
+    litCallouts.includes(c) && litRegions.has(r.id);
+  const leave = () => setHover(null);
+
   /* the glint in progress — the number it was started for, or null. Set during
      render, the pattern `SafetyNotice` uses, so the shine never starts a frame
      behind the chip that asked for it */
@@ -418,6 +463,7 @@ export function FaceDiagram(props: FaceDiagramProps) {
         aria-label={readOnly ? undefined : "Face regions"}
         aria-hidden={readOnly || undefined}
         ref={shine.diagramRef}
+        onPointerLeave={leave}
       >
         {/* the drawing is decorative — the pills carry the meaning. Both image
             URLs are handed to CSS as custom properties because they are MASKS
@@ -474,6 +520,7 @@ export function FaceDiagram(props: FaceDiagramProps) {
           <div
             className={styles.callouts}
             data-hidden={props.calloutsHidden || undefined}
+            data-focus={focused || undefined}
             aria-hidden="true"
           >
             <svg className={styles.leaders} focusable="false">
@@ -482,6 +529,7 @@ export function FaceDiagram(props: FaceDiagramProps) {
                   <g key={`${c.symptom}-${r.id}`}>
                     <line
                       className={styles.leader}
+                      data-lit={lineLit(c, r) || undefined}
                       x1={pct(r.x)}
                       y1={pct(r.y)}
                       x2={c.side === "left" ? "0%" : "100%"}
@@ -492,6 +540,7 @@ export function FaceDiagram(props: FaceDiagramProps) {
                     {r.id === NECK.id && (
                       <circle
                         className={styles.anchor}
+                        data-lit={lineLit(c, r) || undefined}
                         cx={pct(r.x)}
                         cy={pct(r.y)}
                         r={3}
@@ -506,7 +555,10 @@ export function FaceDiagram(props: FaceDiagramProps) {
                 key={c.symptom}
                 className={`${styles.symptom} t-label-sm`}
                 data-side={c.side}
+                data-lit={litCallouts.includes(c) || undefined}
                 style={{ top: pct(c.y) }}
+                onPointerEnter={() => setHover({ symptom: c.symptom })}
+                onPointerLeave={leave}
               >
                 {c.symptom}
               </span>
@@ -526,8 +578,11 @@ export function FaceDiagram(props: FaceDiagramProps) {
             <span
               key={r.id}
               data-selected={selected.includes(r.id)}
+              data-lit={litRegions.has(r.id) || undefined}
               className={`${styles.region} t-label-sm`}
               style={position}
+              onPointerEnter={() => setHover({ region: r.id })}
+              onPointerLeave={leave}
             >
               {r.id}
             </span>
@@ -538,10 +593,13 @@ export function FaceDiagram(props: FaceDiagramProps) {
               role="checkbox"
               aria-checked={selected.includes(r.id)}
               data-selected={selected.includes(r.id)}
+              data-lit={litRegions.has(r.id) || undefined}
               disabled={disabled}
               className={`${styles.region} t-label-sm`}
               style={position}
               onClick={() => props.onToggle(r.id)}
+              onPointerEnter={() => setHover({ region: r.id })}
+              onPointerLeave={leave}
             >
               {/* the label is its own element so the glint lights the words and
                   not the pill; keyed on the run, so a new glint restarts it */}

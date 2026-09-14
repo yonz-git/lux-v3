@@ -802,6 +802,14 @@ Figma this needs the idle step-1 frame with callouts, plus the pill as a
 variant. The recap's read-only face at `/investigation/profile` draws the same
 layer, and so does PROGRESS's (both 14 Sep 2026).
 
+Hovering a symptom pill lights the places it was marked on and its lines to
+them; hovering a place lights the symptoms marked there and their lines to it
+(asked for directly, 14 Sep 2026, because several symptoms' lines cross). A lit
+line runs `bg/symptom` 35% toward white at 2 wide, a lit pill brightens 14%
+under a soft white glow at 42% (both cut 30% from the first pass), and the other lines and symptom pills fade back until
+the pointer leaves, all on `duration/slow`. It works on all three faces. For
+Figma this needs the hovered state on the callout pill and on the region pill.
+
 ### The face drawing has a neck (14 Sep 2026)
 
 Asked for directly. The contour head used to stop in a hard cut under the
