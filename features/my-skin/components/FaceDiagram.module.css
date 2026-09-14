@@ -263,6 +263,136 @@
   mask: var(--face-lines) center / contain no-repeat;
 }
 
+/* ---------------------------------------------------------------------------
+   THE SYMPTOM CALLOUTS — NOT IN FIGMA, asked for directly 14 Sep 2026; the
+   layout and its reasoning are on `layoutCallouts` in FaceDiagram.tsx.
+
+   ⚠️ THE PILL IS THE SELECTED SYMPTOM CHIP, SCALED — `bg/symptom` with a white
+   label and `Chip`'s diagonal shade deepened toward `text/primary`, the recipe
+   `StartInvestigation.module.css` gives the chip it names. A symptom looks like
+   a symptom wherever it appears; the white label is that pair's recorded 2.8:1
+   shortfall, not a new one. It is sized in `cqw` of `.diagram` like `.region`,
+   one step smaller, so it fits the gutter beside the face (~74px at 440).
+
+   ⚠️ THE LINE IS THE SAME ROSE, so it reads as the pill's and not as one more
+   white level line of the drawing. It DRAWS OUT from the place to the pill —
+   `pathLength="1"` and a dash offset entered with `@starting-style`, a
+   transition, so no `@keyframes` name is localized here — and the pill fades
+   in once the line has arrived.
+   -------------------------------------------------------------------------- */
+.callouts {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  transition: opacity var(--duration-base) var(--ease-standard);
+}
+
+.callouts[data-hidden] {
+  opacity: 0;
+}
+
+.leaders {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  overflow: visible;
+}
+
+.leader {
+  stroke: var(--color-bg-symptom);
+  stroke-width: 1.25;
+  stroke-linecap: round;
+  stroke-dasharray: 1;
+  stroke-dashoffset: 0;
+  transition: stroke-dashoffset var(--duration-slower) var(--ease-standard);
+}
+
+@starting-style {
+  .leader {
+    stroke-dashoffset: 1;
+  }
+}
+
+/* the dot where a `Neck` line meets the drawing — the line's own rose with a
+   white ring, so it reads over the white level lines; it is there before the
+   line draws out of it */
+.anchor {
+  fill: var(--color-bg-symptom);
+  stroke: rgb(255 255 255 / 0.7);
+  stroke-width: 1;
+  transition: opacity var(--duration-base) var(--ease-standard);
+}
+
+@starting-style {
+  .anchor {
+    opacity: 0;
+  }
+}
+
+.symptom {
+  position: absolute;
+  transform: translateY(-50%);
+  display: inline-flex;
+  align-items: center;
+  min-height: clamp(18px, 6cqw, 24px);
+  padding: 0 clamp(4px, 1.8cqw, var(--space-sm));
+  font-size: clamp(8px, 3cqw, 12px);
+  line-height: 1.3;
+  white-space: nowrap;
+  border-radius: var(--radius-full);
+  color: var(--color-text-on-brand);
+  /* ⚠️ FROSTED ROSE, NOT THE OPAQUE CHIP — asked for directly 14 Sep 2026
+     ("lower opacity for the symptom pills and give blur frosted effect"). The
+     same two stops at 62% / 70%, over a backdrop blur, with a lit top edge
+     inside so the translucent fill does not read flat (non-negotiable 11).
+     The label stays white at full strength: only the FILL thins. */
+  background: linear-gradient(
+    135deg,
+    color-mix(in srgb, var(--color-bg-symptom) 62%, transparent) 35%,
+    color-mix(
+        in srgb,
+        color-mix(in srgb, var(--color-bg-symptom) 80%, var(--color-text-primary))
+          70%,
+        transparent
+      )
+      100%
+  );
+  box-shadow: inset 0 1px 1px rgb(255 255 255 / 0.28), var(--shadow-sm);
+  -webkit-backdrop-filter: blur(var(--blur-sm)) saturate(140%);
+  backdrop-filter: blur(var(--blur-sm)) saturate(140%);
+  transition: opacity var(--duration-slow) var(--ease-standard)
+    var(--duration-slow);
+}
+
+/* non-negotiable 11: the opaque chip it was */
+@media (prefers-reduced-transparency: reduce) {
+  .symptom {
+    background: linear-gradient(
+      135deg,
+      var(--color-bg-symptom) 35%,
+      color-mix(in srgb, var(--color-bg-symptom) 80%, var(--color-text-primary))
+        100%
+    );
+    -webkit-backdrop-filter: none;
+    backdrop-filter: none;
+  }
+}
+
+@starting-style {
+  .symptom {
+    opacity: 0;
+  }
+}
+
+.symptom[data-side="left"] {
+  left: 0;
+}
+
+.symptom[data-side="right"] {
+  right: 0;
+}
+
 .region {
   position: absolute;
   /* `left` AND `top` are the region's CENTRE (see FaceDiagram.tsx), not its
@@ -547,14 +677,25 @@
   inset: calc(var(--border-width-hairline) * -1);
   z-index: -1;
   border-radius: inherit;
+  /* ⚠️ the slate teal's own deep end, not `bg/brand-hover`, since the pill
+     left indigo on 14 Sep 2026 — see `face-pill-selected-hue` in globals.css */
   background: linear-gradient(
     135deg,
     transparent 35%,
-    var(--color-bg-brand-hover) 100%
+    var(--color-face-pill-selected-deep) 100%
   );
   opacity: 0;
   pointer-events: none;
   transition: opacity var(--duration-base) var(--ease-standard);
+}
+
+/* the location chips' shade is `Chip`'s own `::before`, which runs to indigo */
+.chips button[data-selected="true"]::before {
+  background: linear-gradient(
+    135deg,
+    transparent 35%,
+    var(--color-face-pill-selected-deep) 100%
+  );
 }
 
 .region[data-selected="true"]::before {
@@ -652,13 +793,13 @@
     background-color: var(--color-bg-frost-light-muted);
   }
 
-  /* the indigo glass sits on the flat indigo it replaced, so the white label
-     keeps `bg/brand`'s 11.61:1 under it */
+  /* the selected glass sits on its own hue made opaque, so the white label
+     reads on the flat colour the glass is tinted from */
   .region[data-selected="true"],
   .region[data-selected="true"]:hover:not(:disabled),
   .chips button[data-selected="true"],
   .chips button[data-selected="true"]:hover:not(:disabled) {
-    background-color: var(--color-bg-brand);
+    background-color: var(--color-face-pill-selected-hue);
   }
 
   .region,
@@ -754,10 +895,12 @@
      read-only and never changes state. The border holds the geometry only, so
      it is transparent over a `border-box` gradient (non-negotiable 10): a
      flat indigo border would draw a lighter rim around the dark corner. */
+  /* the face's selected hue, not `bg/brand` — step 1's pill left indigo on
+     14 Sep 2026, and this is that pill */
   background: linear-gradient(
       135deg,
-      var(--color-bg-brand) 35%,
-      var(--color-bg-brand-hover) 100%
+      var(--color-face-pill-selected-hue) 35%,
+      var(--color-face-pill-selected-deep) 100%
     )
     border-box;
   border: var(--border-width-hairline) solid transparent;

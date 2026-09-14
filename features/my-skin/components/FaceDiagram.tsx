@@ -9,6 +9,7 @@ import {
 } from "react";
 import styles from "./FaceDiagram.module.css";
 import { Chip } from "@/components/ui/Chip";
+import { SYMPTOMS, type Symptom } from "@/features/my-skin/safety";
 import contour from "../assets/face-contour.webp";
 import silhouette from "../assets/face-silhouette.webp";
 
@@ -71,6 +72,132 @@ const REGIONS: Region[] = [
 
 /** So "Whole face" can select/clear every region pill in one tap — see StartInvestigation. */
 export const FACE_REGION_IDS = REGIONS.map((r) => r.id);
+
+/* ---------------------------------------------------------------------------
+   THE SYMPTOM CALLOUTS — NOT IN FIGMA, asked for directly 14 Sep 2026, from a
+   supplied anatomy reference (labels at the edge, a leader line to each point).
+
+   ⚠️ ONE PILL PER SYMPTOM, WITH A LINE TO EACH OF ITS PLACES — not one per
+   place. `start` is symptom → places, so a symptom is the unit the answer is
+   stored in, and it is the bounded one: eight symptoms at most, where a pill
+   per (place, symptom) pair could need 56 and a 300-tall box holds about nine
+   a side.
+
+   ⚠️ THE SEVEN FACE REGIONS AND `Neck` GET A LINE. `Neck` has no pill on the
+   face, so it draws to a point on the drawn neck (`NECK`) instead, marked by a
+   dot because no pill covers that end of its line. It takes the side of the
+   neck its pill is on, so the line never crosses the `Chin / jaw` pill
+   above it. Added 14 Sep 2026, asked for directly. `Whole face` and `Other`
+   have no coordinate to draw to, and their lit chips under the face already say
+   them; a symptom placed only there has no callout. `Whole face` writes every
+   region too, so it fans seven lines — that is what the answer says.
+
+   ⚠️ THE LINE RUNS FROM THE REGION'S CENTRE TO THE BOX'S EDGE, AND BOTH ENDS ARE
+   COVERED — the region pill paints over its start, the symptom pill over its
+   end — so no label is ever measured.
+
+   ⚠️ THE MIDDLE ROW IS THE ONE COLLISION. `Cheeks (L)`, `Nose` and `Cheeks (R)`
+   share a y, so a level line from `Nose` to either edge would run behind a
+   cheek pill and read as ending there. A callout with a line that would cross
+   a middle-row pill steps its pill off that row, turning the line into a
+   diagonal that clears the pill between. */
+export type SymptomPlaces = Partial<Record<Symptom, string[]>>;
+
+type Callout = {
+  symptom: Symptom;
+  side: "left" | "right";
+  /** the pill's centre, as a fraction of the box's height */
+  y: number;
+  regions: Region[];
+};
+
+const MIDDLE_ROW = 181 / 300;
+/* how far a crossing callout steps off the middle row: a line from `Nose` to
+   the edge passes `Cheeks (L)` 41% of the way along, and has to be 17 clear of
+   that pill's centre there */
+const MIDDLE_ROW_STEP = 50 / 300;
+/* one pill plus air — the pill is at most 24px tall (see `.symptom`) */
+const CALLOUT_PITCH = 30 / 300;
+const CALLOUT_TOP = 14 / 300;
+const CALLOUT_BOTTOM = 286 / 300;
+
+/* the neck is not a pill, so its line ends on the drawing: level with the neck
+   below the `Chin / jaw` pill, at the neck's edge on the side its callout
+   is on (the neck spans about 152–264 of the box's width there) */
+const NECK: Region = { id: "Neck", x: 199 / 392, y: 290 / 300 };
+const NECK_X = { left: 156 / 392, right: 242 / 392 };
+
+const mean = (ns: number[]) => ns.reduce((a, b) => a + b, 0) / ns.length;
+
+function layoutCallouts(places: SymptomPlaces): Callout[] {
+  const items = SYMPTOMS.flatMap((symptom) => {
+    const areas = places[symptom] ?? [];
+    const regions = REGIONS.filter((r) => areas.includes(r.id));
+    if (areas.includes(NECK.id)) regions.push(NECK);
+    if (regions.length === 0) return [];
+    return [
+      {
+        symptom,
+        regions,
+        x: mean(regions.map((r) => r.x)),
+        y: mean(regions.map((r) => r.y)),
+      },
+    ];
+  });
+
+  /* a symptom leans to the side its places lean to; the ones down the middle
+     then fill whichever side has fewer, top to bottom */
+  const count = { left: 0, right: 0 };
+  const sided = new Map<Symptom, Callout["side"]>();
+  for (const it of items) {
+    if (Math.abs(it.x - 0.5) < 0.03) continue;
+    const side = it.x < 0.5 ? "left" : "right";
+    sided.set(it.symptom, side);
+    count[side]++;
+  }
+  for (const it of [...items].sort((a, b) => a.y - b.y)) {
+    if (sided.has(it.symptom)) continue;
+    const side = count.left <= count.right ? "left" : "right";
+    sided.set(it.symptom, side);
+    count[side]++;
+  }
+
+  const callouts: Callout[] = items.map((it) => {
+    const side = sided.get(it.symptom)!;
+    const ownCheek = side === "left" ? "Cheeks (L)" : "Cheeks (R)";
+    const crosses = it.regions.some(
+      (r) => r.y === MIDDLE_ROW && r.id !== ownCheek,
+    );
+    let y = it.y;
+    if (crosses && Math.abs(y - MIDDLE_ROW) < MIDDLE_ROW_STEP) {
+      y = y > MIDDLE_ROW ? MIDDLE_ROW + MIDDLE_ROW_STEP : MIDDLE_ROW - MIDDLE_ROW_STEP;
+    }
+    const regions = it.regions.map((r) =>
+      r === NECK ? { ...NECK, x: NECK_X[side] } : r,
+    );
+    return { symptom: it.symptom, side, y, regions };
+  });
+
+  /* push apart down each edge, then back up if the last one ran off the box */
+  for (const side of ["left", "right"] as const) {
+    const column = callouts
+      .filter((c) => c.side === side)
+      .sort((a, b) => a.y - b.y);
+    column.forEach((c, i) => {
+      const floor = i === 0 ? CALLOUT_TOP : column[i - 1].y + CALLOUT_PITCH;
+      c.y = Math.max(c.y, floor);
+    });
+    for (let i = column.length - 1; i >= 0; i--) {
+      const ceiling =
+        i === column.length - 1 ? CALLOUT_BOTTOM : column[i + 1].y - CALLOUT_PITCH;
+      column[i].y = Math.min(column[i].y, ceiling);
+    }
+  }
+
+  return callouts;
+}
+
+const pct = (n: number) => `${n * 100}%`;
 
 /* How far the shine closes on the pointer each frame. It trails rather than
    sticks, so it reads as light gliding over the lines instead of a cursor
@@ -227,18 +354,29 @@ function useLineShine() {
  * transparent ink would SNAP to white when its pill is then picked, where the
  * plain label fades with the fill.
  */
-type FaceDiagramProps =
-  | {
-      readOnly?: false;
-      selected: string[];
-      onToggle: (id: string) => void;
-      locationChips: string[];
-      /** nothing to toggle yet — see the note above */
-      disabled?: boolean;
-      /** a new number shines every region's label once — see the note above */
-      glint?: number;
-    }
-  | { readOnly: true; selected: string[]; otherLocations?: string[] };
+type CalloutProps = {
+  /** each symptom's places, drawn as edge pills with leader lines — see
+      `layoutCallouts` */
+  callouts?: SymptomPlaces;
+  /** fades the callouts without unmounting them, so their lines only draw in
+      when they are new */
+  calloutsHidden?: boolean;
+};
+
+type FaceDiagramProps = CalloutProps &
+  (
+    | {
+        readOnly?: false;
+        selected: string[];
+        onToggle: (id: string) => void;
+        locationChips: string[];
+        /** nothing to toggle yet — see the note above */
+        disabled?: boolean;
+        /** a new number shines every region's label once — see the note above */
+        glint?: number;
+      }
+    | { readOnly: true; selected: string[]; otherLocations?: string[] }
+  );
 
 /* how long a glint keeps its class: `.shine-on-enter` runs 1200ms, and this is
    the fallback for the `animationend` a hidden tab never delivers (AGENTS.md,
@@ -253,6 +391,7 @@ export function FaceDiagram(props: FaceDiagramProps) {
   const shine = useLineShine();
   /* each instance owns its filter, under an id stable across SSR */
   const brightenId = useId();
+  const callouts = layoutCallouts(props.callouts ?? {});
 
   /* the glint in progress — the number it was started for, or null. Set during
      render, the pattern `SafetyNotice` uses, so the shine never starts a frame
@@ -329,6 +468,51 @@ export function FaceDiagram(props: FaceDiagramProps) {
             <span className={styles.shine} />
           </span>
         </span>
+        {/* under the region pills, so each line starts beneath its place.
+            Decorative: the list after the diagram says the same in words. */}
+        {callouts.length > 0 && (
+          <div
+            className={styles.callouts}
+            data-hidden={props.calloutsHidden || undefined}
+            aria-hidden="true"
+          >
+            <svg className={styles.leaders} focusable="false">
+              {callouts.flatMap((c) =>
+                c.regions.map((r) => (
+                  <g key={`${c.symptom}-${r.id}`}>
+                    <line
+                      className={styles.leader}
+                      x1={pct(r.x)}
+                      y1={pct(r.y)}
+                      x2={c.side === "left" ? "0%" : "100%"}
+                      y2={pct(c.y)}
+                      pathLength={1}
+                    />
+                    {/* no pill covers the neck's end of the line */}
+                    {r.id === NECK.id && (
+                      <circle
+                        className={styles.anchor}
+                        cx={pct(r.x)}
+                        cy={pct(r.y)}
+                        r={3}
+                      />
+                    )}
+                  </g>
+                )),
+              )}
+            </svg>
+            {callouts.map((c) => (
+              <span
+                key={c.symptom}
+                className={`${styles.symptom} t-label-sm`}
+                data-side={c.side}
+                style={{ top: pct(c.y) }}
+              >
+                {c.symptom}
+              </span>
+            ))}
+          </div>
+        )}
         {REGIONS.map((r) => {
           const position = {
             left: `${r.x * 100}%`,
@@ -374,6 +558,16 @@ export function FaceDiagram(props: FaceDiagramProps) {
           );
         })}
       </div>
+
+      {callouts.length > 0 && !props.calloutsHidden && (
+        <ul className="visually-hidden" aria-label="Symptoms by place">
+          {callouts.map((c) => (
+            <li key={c.symptom}>
+              {c.symptom}: {c.regions.map((r) => r.id).join(", ")}
+            </li>
+          ))}
+        </ul>
+      )}
 
       {readOnly
         ? props.otherLocations &&

@@ -629,26 +629,54 @@
    raises it. Hover lifts and does not wash, so it holds the same. A denser
    set measured 7.47:1 and read as the flat pill again; flat `bg/brand` is
    11.61:1. All of these were measured on the earlier, lighter indigo; the
-   darker retune only adds contrast under a white label. */
+   darker retune only adds contrast under a white label.
+   ⚠️ AND IT IS NOT INDIGO ANY MORE — a slate teal, `#597f8c`, asked for
+   directly 14 Sep 2026 ("the indigo selected pills color looks so bad"). The
+   brand tokens above are no longer read here: every stop is built from
+   `face-pill-selected-hue` in the same roles — the hue for base and tint, the
+   hue lifted toward white for the top, glow and edge light, and deepened
+   toward the card's dark core for the end, the shade and the diagonal. The
+   rest of the app's selection stays `bg/brand`. ⚠️ The contrast numbers above
+   were measured on indigo and no longer hold: flat `#597f8c` under white is
+   about 4.3:1, short of AA for 12px. Sampled off the rendered glass at 440
+   (Chrome, 2x) after the darker, less shiny pass below, white measures 4.23:1
+   at the lightest top-left of `Forehead`, 4.56–4.61:1 across `Cheeks (L)` and
+   the `Neck` chip, and 5.2–6.3:1 toward the bottom edges. The first pass
+   measured 2.99–5.49:1. Only that top-left corner is still short of AA. */
 :root {
+  /* ⚠️ A LITTLE DARKER AND LESS SHINY, asked for directly the same day: the
+     hue now pulls 15% toward the deep end (`-hue` is what the pill is TINTED
+     from, `#597f8c` as supplied), the base goes 60% → 72%, the top light
+     40% → 22%, the pooled glow 20% → 8% and the edge light 35% → 14%. */
+  --color-face-pill-selected-hue: color-mix(in srgb, #597f8c 85%, #1c2b30);
+  --color-face-pill-selected-light: color-mix(
+    in srgb,
+    var(--color-face-pill-selected-hue) 70%,
+    #ffffff
+  );
+  --color-face-pill-selected-deep: color-mix(
+    in srgb,
+    var(--color-face-pill-selected-hue) 65%,
+    #1c2b30
+  );
   --color-surface-face-pill-selected-base: color-mix(
     in srgb,
-    var(--color-bg-brand) 60%,
+    var(--color-face-pill-selected-hue) 72%,
     transparent
   );
   --color-surface-face-pill-selected: color-mix(
     in srgb,
-    var(--color-gradient-brand-start) 40%,
+    var(--color-face-pill-selected-light) 22%,
     transparent
   );
   --color-surface-face-pill-selected-end: color-mix(
     in srgb,
-    var(--color-bg-brand-hover) 60%,
+    var(--color-face-pill-selected-deep) 60%,
     transparent
   );
   --color-surface-face-pill-selected-glow: color-mix(
     in srgb,
-    var(--color-bg-brand-soft) 20%,
+    var(--color-face-pill-selected-light) 8%,
     transparent
   );
   /* the radial's outer stop — clear, so the lilac pools at the top-left and
@@ -656,17 +684,17 @@
   --color-surface-face-pill-selected-rim: transparent;
   --color-surface-face-pill-selected-tint: color-mix(
     in srgb,
-    var(--color-bg-brand) 15%,
+    var(--color-face-pill-selected-hue) 15%,
     transparent
   );
   --color-effect-face-pill-selected-light: color-mix(
     in srgb,
-    var(--color-bg-brand-soft) 35%,
+    var(--color-face-pill-selected-light) 14%,
     transparent
   );
   --color-effect-face-pill-selected-shade: color-mix(
     in srgb,
-    var(--color-bg-brand-hover) 90%,
+    var(--color-face-pill-selected-deep) 90%,
     transparent
   );
 }

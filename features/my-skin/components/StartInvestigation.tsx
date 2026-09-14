@@ -339,6 +339,14 @@ export function StartInvestigation() {
           locationChips={LOCATION_CHIPS}
           disabled={placing === null}
           glint={glint}
+          /* ⚠️ THE SAVED SYMPTOMS, AS EDGE PILLS WITH LEADER LINES — NOT IN
+             FIGMA, asked for directly 14 Sep 2026; see `layoutCallouts` in
+             FaceDiagram.tsx. Hidden while a symptom is being placed, because
+             the face then shows that symptom's places alone. The symptom being
+             placed is left out rather than hidden with the rest, so its lines
+             mount on `Save` and draw in then, not unseen under the fade. */
+          callouts={placing ? withAreas(answers.start, placing, []) : answers.start}
+          calloutsHidden={placing !== null}
         />
       </div>
 

@@ -765,6 +765,24 @@ with places marked), a disabled Chip (§ 4) and a disabled region pill, and the
 instruction line. Each symptom now carries its own places, which is the data
 the recap's follow-up (symptom pills on the face) will draw.
 
+### Step 1's saved symptoms are drawn on the face as callouts (14 Sep 2026)
+
+Asked for directly, from a supplied anatomy reference. Once a symptom is
+saved, the face shows it as a pill at the card's left or right edge, with a
+thin line to each face region it was placed on. One pill per symptom. It sits
+on the side its places lean to, and the pills down the middle fill whichever
+side has fewer. Pills in one column stay 30 apart, in the 392×300 space. A
+symptom with a place in the middle row that would send its line behind another
+middle-row pill moves 50 off that row, so the line runs diagonally past it.
+`Whole face` fans a line to every region. `Neck` draws to a rose dot on the
+drawn neck, on the side its pill is on. `Other` gets no line. The
+pill is the selected symptom chip (`bg/symptom`, white label, the diagonal
+shade), scaled like the region pills: 18–24 tall, 8–12 type. The line is
+`bg/symptom` at 1.25. The line draws out from the place over `duration/slower`,
+then the pill fades in. The callouts hide while a symptom is being placed. For
+Figma this needs the idle step-1 frame with callouts, plus the pill as a
+variant. The recap's read-only face can take the same layer next.
+
 ### Step 1's `Other` description is confirmed with ✓ and edited with a pen (14 Sep 2026)
 
 Asked for directly. The open field carries a ✓ before its ✕ (Enter confirms,
