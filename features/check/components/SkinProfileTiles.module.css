@@ -89,20 +89,26 @@
      the canvas's mid stop, under AA for the 12px labels across the page.
      ⚠️ THEN SUPPLIED DIRECTLY: the left haze `#769da6`, a greyer pool
      `#98bac2` at 42%, and the fill `#2c6e7a` at 76%. White measures about
-     3.9:1 over the canvas's mid stop. */
+     3.9:1 over the canvas's mid stop.
+     ⚠️ THEN LESS FOG, asked for directly the same day ("a bit too foggy, make
+     it more clear"). The milk was the three pale lights and the inner glow
+     below, not the fill: the left haze went from opaque to 60% (`#769da699`),
+     the grey pool 42% → 25%, the top-right light 30% → 18%, and the inset
+     glow in `box-shadow` 74% → 40%. Fill, corner, rose catch and blur
+     unchanged. Less pale light over the teal also lifts the white ink. */
   background:
     radial-gradient(45% 45% at 100% 100%, #0f4a563d, #0000 70%),
     radial-gradient(60% 55% at 0 0, #d0b4b82e, #a0353500 70%),
-    radial-gradient(110% 90% at 0 35%, #769da6, #0000 60%),
-    radial-gradient(90% 80% at 90% 105%, #98bac26b, #0000 65%),
-    radial-gradient(70% 60% at 80% -10%, #9cc4d04d, #0000 70%),
+    radial-gradient(110% 90% at 0 35%, #769da699, #0000 60%),
+    radial-gradient(90% 80% at 90% 105%, #98bac240, #0000 65%),
+    radial-gradient(70% 60% at 80% -10%, #9cc4d02e, #0000 70%),
     #2c6e7ac2;
   /* ⚠️ A DEEPER DROP, asked for directly 14 Sep 2026 ("add drop shadows to the
      profile box"): the single soft `0 4px 16px` at 10% became two — a tight
      contact shadow under the edge and a wide, lower one that lifts the card
      off the page. The insets are unchanged. */
   box-shadow:
-    inset 0 2px 12px #afc5cbbd,
+    inset 0 2px 12px #afc5cb66, /* 74% until the fog was cut, see above */
     inset 0 2px 6px #547c7a24,
     0 2px 6px #0000001f,
     0 12px 32px -8px #00000038,
