@@ -1,4 +1,5 @@
 import { DURATIONS, type BucketId, type CatalogProduct, type SavedProduct } from "@/features/products/products";
+import { SYMPTOMS } from "@/features/my-skin/safety";
 import type { SavedCheck } from "@/features/check/check";
 import type { CheckIn } from "@/features/progress/progress";
 import type { Answers } from "./answers";
@@ -73,10 +74,13 @@ export type PersistedAnswers = Pick<Answers, PersistedKey>;
  * completed record: they persist above, under `PERSISTED_KEYS`, with no expiry,
  * because `/products` is specified to open populated. The step that collects
  * them is the one flow step whose answer outlives the day.
+ *
+ * ⚠️ `location` IS NOT HERE BECAUSE IT IS NOT AN ANSWER ANY MORE. It folded
+ * into `start` on 14 Sep 2026, when step 1 began keeping each symptom's places
+ * with the symptom; the union it held is derived now (`areasOf`, answers.ts).
  */
 export const FLOW_KEYS = [
   "start",
-  "location",
   "locationOther",
   "selfie",
   "skin-type",
@@ -124,8 +128,13 @@ export const STORAGE_KEY = "lux.records.v2";
  * one holds an envelope — `{ savedAt, answers }` — and answers without a
  * readable `savedAt` are dropped rather than trusted, which is exactly what the
  * old key cannot offer. Bump the name rather than widening the shape.
+ *
+ * ⚠️ AND IT WAS BUMPED, 14 Sep 2026: `v1` to `v2`, when step 1's `start`
+ * became a map and `location` folded into it. A v1 envelope is a shape this
+ * build does not write, so it is deleted unread on mount (`LEGACY_FLOW_V1_KEY`)
+ * rather than parsed by a guard widened to accept both.
  */
-export const FLOW_STORAGE_KEY = "lux.flow.v1";
+export const FLOW_STORAGE_KEY = "lux.flow.v2";
 
 /* ---- shape guards -------------------------------------------------------
    Anything coming off disk was written by an older build, hand-edited, or
@@ -312,11 +321,29 @@ function isTiming(v: unknown): v is NonNullable<Answers["timing"]> {
   );
 }
 
+/**
+ * Step 1's answer: every key a symptom the screen offers, every value a
+ * non-empty list of places. `withAreas` never writes an empty list, so one on
+ * disk means the data is not this build's.
+ */
+function isSymptomAreas(v: unknown): v is NonNullable<Answers["start"]> {
+  return (
+    isObject(v) &&
+    Object.entries(v).every(
+      ([symptom, areas]) =>
+        (SYMPTOMS as readonly string[]).includes(symptom) &&
+        isStringArray(areas) &&
+        areas.length > 0
+    )
+  );
+}
+
 /** Narrow `Answers` to the slice that is allowed to outlive the tab for a day. */
 export function pickFlow(answers: Answers): PersistedFlow {
   const out: PersistedFlow = {};
-  if (answers.start?.length) out.start = answers.start;
-  if (answers.location?.length) out.location = answers.location;
+  if (answers.start && Object.keys(answers.start).length > 0) {
+    out.start = answers.start;
+  }
   if (answers.locationOther) out.locationOther = answers.locationOther;
   if (answers.selfie) out.selfie = answers.selfie;
   if (answers["skin-type"]) out["skin-type"] = answers["skin-type"];
@@ -361,8 +388,7 @@ export function parseFlow(raw: string | null, now: number): PersistedFlow {
   if (!isObject(answers)) return {};
 
   const out: PersistedFlow = {};
-  if (isStringArray(answers.start)) out.start = answers.start;
-  if (isStringArray(answers.location)) out.location = answers.location;
+  if (isSymptomAreas(answers.start)) out.start = answers.start;
   if (isString(answers.locationOther)) out.locationOther = answers.locationOther;
   if (isString(answers.selfie)) out.selfie = answers.selfie;
   if (isString(answers["skin-type"])) out["skin-type"] = answers["skin-type"];

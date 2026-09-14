@@ -7,7 +7,6 @@ import { DataCard } from "@/components/ui/DataCard";
 import { Button } from "@/components/ui/Button";
 import { Orb } from "@/components/ui/Orb";
 import { SmallButton } from "@/components/ui/SmallButton";
-import { Tag } from "@/components/ui/Tag";
 import { FaceDiagram } from "./FaceDiagram";
 import { SelfieSheet } from "./SelfieSheet";
 /* ⚠️ ACROSS SECTIONS, WHICH THE PLACEMENT RULE ALLOWS AND THIS IS THE THIRD
@@ -54,8 +53,8 @@ import type { ProfileRecap } from "@/features/my-skin/profile";
  * ⚠️ NOT IN FIGMA AT ALL. Page `06. Screen Designs` has no recap frame, so
  * every measurement here is decided in the prototype — it is assembled from
  * existing recipes rather than drawn new: the sage `DataCard` that `Analysis`
- * leads with, the frosted card the rest of the flow uses, `Tag`, the face
- * diagram from step 1 and the standard `Button`. Listed in
+ * leads with, the frosted card the rest of the flow uses, the face diagram
+ * from step 1 and the standard `Button`. Listed in
  * `docs/figma-catchup.md`.
  *
  * ⚠️ ONE CARD PER ANSWER, NOT ONE CARD OF ROWS — REBUILT 7 Sep 2026, ASKED FOR
@@ -210,8 +209,8 @@ export function SkinProfileSummary({ now }: { now: number }) {
   }
 
   /* ⚠️ STEP 4 IS THE WHOLE OF THIS BLOCK NOW — the symptom pills left it on
-     13 Sep 2026, asked for directly, and move onto the face diagram in a
-     follow-up. So it renders only when there is a status or a dated start to
+     13 Sep 2026, asked for directly, and are the face diagram's callouts since
+     14 Sep 2026. So it renders only when there is a status or a dated start to
      show; "No start date given" with no status is a screen reporting on its
      own gaps, and would draw a heading over nothing. */
   const hasCurrent = Boolean(profile.timeline?.status || profile.timeline?.day);
@@ -247,11 +246,14 @@ export function SkinProfileSummary({ now }: { now: number }) {
       {hasEpisode && (
         <div className={styles.blocks}>
           {hasCurrent && (
-            <Block label={COPY.currentLabel} id="profile-current">
+            <Block
+              label={COPY.currentLabel(profile.symptoms.length)}
+              id="profile-current"
+            >
               {/* ⚠️ THE STATUS FIRST, AND WITH NO LABEL OF ITS OWN — asked for
-                  directly 13 Sep 2026. The block's heading already says
-                  "Current state", so "Getting worse" is its value; a second
-                  `Current state` over it would say the same words twice. It
+                  directly 13 Sep 2026. The block's heading already names the
+                  state, so "Getting worse" is its value; a second label over
+                  it would say the same words twice. It
                   wears `.meta` without a label so the block's existing
                   `.blockLabel + .meta` / `.meta + .meta` spacing covers it. */}
               {profile.timeline?.status && (
@@ -291,18 +293,16 @@ export function SkinProfileSummary({ now }: { now: number }) {
             >
               {hasLocation && (
                 <Block label={COPY.locationLabel} id="profile-location">
-                  {/* ⚠️ THE DIAGRAM IS `aria-hidden` AND THIS LINE IS WHY. A
-                      pill only means the left cheek because of where it sits,
-                      which is worth nothing read aloud — so the picture is for
-                      the eye and this sentence is the answer in words. Two ways
-                      of saying one thing, never two announcements of it. The
-                      non-face chips need no such line: they are a real list
-                      inside the card and their labels mean what they say. */}
-                  {profile.faceRegions.length > 0 && (
-                    <p className="visually-hidden">
-                      {COPY.locationSpoken(profile.faceRegions)}
-                    </p>
-                  )}
+                  {/* ⚠️ THE DIAGRAM IS `aria-hidden`, AND ITS CALLOUTS SAY THE
+                      ANSWER IN WORDS. A pill only means the left cheek because
+                      of where it sits, which is worth nothing read aloud — so
+                      `FaceDiagram` lists each symptom with its places for a
+                      screen reader, beside the picture. That list replaced a
+                      hidden "On the face: …" line here on 14 Sep 2026, when the
+                      callouts arrived: the regions are those places, and the
+                      two would have said one answer twice. The non-face chips
+                      need no line: they are a real list inside the card and
+                      their labels mean what they say. */}
                   {/* ⚠️ THE CARD RENDERS EVEN WITH NOTHING PICKED ON THE FACE,
                       which happens when the only answer was "Neck" or "Other".
                       Seven dimmed pills and one lit chip under them is the
@@ -326,6 +326,7 @@ export function SkinProfileSummary({ now }: { now: number }) {
                         readOnly
                         selected={profile.faceRegions}
                         otherLocations={profile.otherLocations}
+                        callouts={profile.places}
                       />
                     </div>
                     {/* ⚠️ A `Meta` PAIR, NOT A `Tag` AND NOT A CAPTION. The
@@ -441,8 +442,9 @@ export function SkinProfileSummary({ now }: { now: number }) {
  *
  * ⚠️ THE TWO MULTI-SELECTS IN HERE ARE JOINED STRINGS, NOT PILLS, AND THAT IS
  * NOW TWO OF THEM. The rule on this screen is that a multi-select is a SET and
- * gets `Tag`s — it still holds for the symptoms and the other locations, in the
- * light blocks. The card is the one place that trades the set for a glance, the
+ * gets drawn as one — the symptoms as callouts on the face (they were `Tag`s
+ * until 13 Sep 2026) and the other locations as chips inside the face card.
+ * The card is the one place that trades the set for a glance, the
  * same trade `SkinProfileStrip` makes when it puts the profile on someone
  * else's screen in one line, and the trade is what lets three answers sit in
  * one short card instead of three. The conditions kept their pills right up
@@ -554,34 +556,7 @@ function Meta({ label, value }: { label: string; value: string }) {
   );
 }
 
-/**
- * A multi-select answer, drawn as what it is.
- *
- * ⚠️ `Tag`, NOT `Chip`. A chip is a control with `role="checkbox"`; these are
- * labels the user cannot act on, and the design system's word for that is a
- * tag (`components/ui/Tag.tsx` says so in its first line). The `<ul>` is what
- * tells a screen reader how many there are.
- *
- * ⚠️ IT WEARS THE CHIP'S FILL AND HAIRLINE ALL THE SAME — asked for directly.
- * That is a fill and a border, not a role: nothing about what this element IS
- * has changed. See `.pill` in the stylesheet for why it is safe on THIS screen
- * and nowhere that mixes tags with chips.
- *
- * ⚠️ UNUSED SINCE 13 Sep 2026 — its one caller was the symptom pills in the
- * episode block, removed on request; they are moving onto the face diagram in
- * a follow-up, which decides whether this list is reused or deleted.
- */
-// biome-ignore lint/correctness/noUnusedVariables: parked until the symptom pills move onto the face diagram
-function TagList({ items }: { items: string[] }) {
-  if (items.length === 0) return null;
-
-  return (
-    <ul className={styles.tags}>
-      {items.map((item) => (
-        <li key={item}>
-          <Tag className={styles.pill}>{item}</Tag>
-        </li>
-      ))}
-    </ul>
-  );
-}
+/* ⚠️ `TagList` — the symptoms as a wrapping row of `Tag`s — WAS DELETED ON
+   14 Sep 2026. It had been parked since the pills left the episode block on
+   13 Sep 2026, waiting on the move that decided whether it came back; the
+   symptoms became callouts on the face instead, and nothing else used it. */

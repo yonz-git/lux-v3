@@ -1,0 +1,280 @@
+/* The skin profile as four tiles — NOT IN FIGMA, see SkinProfileTiles.tsx.
+
+   overline + its rule -> 12 -> four tiles, two a row, 6 apart. Height is
+   content. */
+
+.card {
+  /* a stacking context of its own, so the ring and the grain below can sit at
+     `z-index: -1` — over the fill, under the words */
+  position: relative;
+  isolation: isolate;
+  display: flex;
+  flex-direction: column;
+  /* ⚠️ NO GAP, AND 1.4rem (22.4) A SIDE — tuned by hand and supplied 14 Sep
+     2026. It was a 12 gap and the strip's 18 / 20; the overline's own 12
+     under its rule and the tiles' 12 top padding now carry the space
+     between them. ⚠️ 1.4rem is off the spacing scale and scales with the
+     root font size, unlike every `--space-*`; raise it if it stays. */
+  width: 100%;
+  padding: 1.4rem;
+  border-radius: var(--radius-2xl); /* 24 — the strip's */
+
+  /* ⚠️ WHITE INK ON A DEEP TEAL, TUNED BY HAND IN THE BROWSER AND SUPPLIED,
+     14 Sep 2026 — the second pass. The first was a light teal at 51%
+     (`#67adb882`) with `text/primary`; this one is `#005461` at 71% with
+     `text/on-data-inverse`, every other card value unchanged: the sage top
+     glow with a faint teal catch under it, a soft drop, and the frost fully
+     DESATURATED (`saturate(0%)`), so the canvas under it reads as grey light
+     and only the fill carries the colour. The fill has no token; raise it.
+     ⚠️ WHITE ALMOST CLEARS AA ON THE CARD, and its worst case is the LIGHT end
+     of the canvas, not the floor. Hand-composited over the fill at each
+     canvas ramp stop: 5.27:1 on the floor `#acc5cc`, 4.75:1 on `#cedee2`,
+     4.57:1 on `#dce7ea`, 4.48:1 on `#dbeded`, 4.27:1 on the lightest core
+     `#ecf8f9`. The overline and the four labels sit straight on this fill,
+     so they dip under 4.5:1 over the two lightest stops; the answers sit on
+     their pills and measure lower still (see `.tileValue`).
+     ⚠️ THOSE STOPS ARE THE CANVAS BEFORE ITS 10% DARKENING (14 Sep 2026 —
+     the floor is `#9bb1b8` now and the lightest core about `#d4dfe0`). White's
+     worst case is the light end, so every figure here should now read a
+     little HIGHER. Not re-measured.
+     ⚠️ THE RIM IS AN INSET RING, NOT A `border` (the last shadow): it adds no
+     height (non-negotiable 9) and does not snap to a full pixel on a 1x
+     display. It is supplied fully transparent (`#1d1c2000`) and kept as the
+     slot to tune. */
+  color: var(--color-text-on-data-inverse);
+  /* ⚠️ A SOFT SHADOW UNDER EVERY WORD, asked for directly 14 Sep 2026 ("subtle
+     spread and blurred text shadows… use the darker tone of the background,
+     not black"). `text-shadow` has no spread, so it is two layers: a close
+     one that seats the letters and a wide blur that spreads a haze behind
+     them. Both are the card's teal taken dark, `#14434c`, not black, so the
+     shadow reads as depth in the fill rather than as grey dirt. Inherited by
+     the overline, the labels and the answers in their pills. */
+  text-shadow:
+    0 1px 2px rgb(20 67 76 / 0.45),
+    0 0 10px rgb(20 67 76 / 0.35);
+  /* ⚠️ A SOFT MESH OVER THE FILL — asked for directly 14 Sep 2026 from a
+     supplied reference (a frosted blue-grey field with a pale haze on one
+     side and a deeper teal pooling in the opposite corner), at much lower
+     contrast: a pale haze from the left, a brighter teal pool low on the
+     right, and a slight darkening top-right, over the same `#005461b5`
+     (12 / 16 / 14%, then 20 / 28 / 24%, then 24 / 32 / 28%, asked for
+     directly). ⚠️ AND A WARM EDGE, from a second supplied reference (peach
+     light curving into cream and then blue), much quieter than it.
+     ⚠️ THE VALUES BELOW WERE TUNED BY HAND AND SUPPLIED, 14 Sep 2026: a dusty
+     rose catch top-left (`#d0b4b8` at 12%); the left haze is now an OPAQUE
+     mid teal `#567e88` fading out by 60%, not a translucent light — so under
+     the left-hand labels the card reads as that teal rather than the
+     translucent fill; the bottom-right pool at 32%; and the top-right
+     darkening is a blue slate `#376175` at 28%. The card's existing 5% grain
+     (`::after`) does the references' noise. None of it has a token.
+     ⚠️ PLUS A DARKER BOTTOM-RIGHT CORNER, asked for directly the same turn:
+     a small deep teal `#00303c` at 24% tucked into the corner, on top, so
+     the brighter pool reads as sitting just inside it.
+     ⚠️ THEN A STEP BRIGHTER, asked for directly the same day, because
+     `SymptomTrend` on /progress took this exact mesh and the two cards read as
+     one: every teal lifted about 10% — the fill `#005461` → `#0f6270`, the left
+     haze `#567e88` → `#628a94`, the pool `#60a8ba` → `#6fb3c4`, the top-right
+     slate `#376175` → `#43707f`, the corner `#00303c` → `#063a46`. Alphas and
+     the rose catch unchanged. ⚠️ IT COSTS THE WHITE INK: over the canvas's mid
+     stop the fill now measures about 4.1:1 where it was 4.75:1, so the labels
+     sit under AA across more of the page. On /check too — this is the one
+     component.
+     ⚠️ AND BRIGHTER AGAIN, WITH A BRIGHTER MESH, asked for directly the same
+     day ("go brighter and add a bit more brighter gradient"): the fill
+     `#0f6270` → `#1f7282`, the left haze `#628a94` → `#76a0aa`, the corner
+     `#063a46` → `#0f4a56`; the pool brighter and stronger (`#6fb3c4` @32% →
+     `#86c6d5` @42%), the rose catch a little more present (12% → 18%), and
+     the top-right corner turned from a slate darkening into a pale teal light
+     (`#43707f` @28% → `#9cc4d0` @30%). ⚠️ WHITE NOW MEASURES ABOUT 3.6:1 over
+     the canvas's mid stop, under AA for the 12px labels across the page.
+     ⚠️ THEN SUPPLIED DIRECTLY: the left haze `#769da6`, a greyer pool
+     `#98bac2` at 42%, and the fill `#2c6e7a` at 76%. White measures about
+     3.9:1 over the canvas's mid stop. */
+  background:
+    radial-gradient(45% 45% at 100% 100%, #0f4a563d, #0000 70%),
+    radial-gradient(60% 55% at 0 0, #d0b4b82e, #a0353500 70%),
+    radial-gradient(110% 90% at 0 35%, #769da6, #0000 60%),
+    radial-gradient(90% 80% at 90% 105%, #98bac26b, #0000 65%),
+    radial-gradient(70% 60% at 80% -10%, #9cc4d04d, #0000 70%),
+    #2c6e7ac2;
+  /* ⚠️ A DEEPER DROP, asked for directly 14 Sep 2026 ("add drop shadows to the
+     profile box"): the single soft `0 4px 16px` at 10% became two — a tight
+     contact shadow under the edge and a wide, lower one that lifts the card
+     off the page. The insets are unchanged. */
+  box-shadow:
+    inset 0 2px 12px #afc5cbbd,
+    inset 0 2px 6px #547c7a24,
+    0 2px 6px #0000001f,
+    0 12px 32px -8px #00000038,
+    inset 0 0 12px #0003,
+    inset 0 0 0 0.5px #1d1c2000;
+  -webkit-backdrop-filter: blur(var(--blur-card)) saturate(0%);
+  backdrop-filter: blur(var(--blur-card)) saturate(0%);
+}
+
+/* the nav bar's lit edge ring (`::before`, bright at the top-left, dim at the
+   bottom-right) and its 5% grain (`::after`) — static, copied from
+   BottomNav.module.css */
+.card::before,
+.card::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  border-radius: inherit;
+  pointer-events: none;
+}
+
+.card::before {
+  padding: 1px;
+  background: linear-gradient(
+    135deg,
+    rgba(255, 255, 255, 0.42),
+    rgba(255, 255, 255, 0) 40%,
+    rgba(255, 255, 255, 0) 60%,
+    rgba(255, 255, 255, 0.3)
+  );
+  -webkit-mask: linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0);
+  -webkit-mask-composite: xor;
+  mask: linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0);
+  mask-composite: exclude;
+}
+
+.card::after {
+  opacity: 0.05;
+  mix-blend-mode: overlay;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='120' height='120'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='2'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+}
+
+/* the strip's overline, in the card's white — hierarchy by size and tracking,
+   not by a muted tier (the app's muted inks are dark) */
+.overline {
+  margin: 0;
+  /* ⚠️ 16px, NOT `t-overline`'s 13 — asked for directly 14 Sep 2026. The
+     class keeps its weight, tracking and caps; only the size and its line
+     step up, 13 / 18 → 16 / 22. Off the type ramp: no Figma style has an
+     overline at 16, so raise one if it stays. */
+  font-size: 16px;
+  line-height: 22px;
+  /* ⚠️ A GRADIENT WHITE RULE UNDER IT, asked for directly 14 Sep 2026 from a
+     supplied reference: a streak of light with a faint glow around it,
+     ANCHORED LEFT — brightest under the start of the heading and fading to
+     nothing toward the right (it was brightest at the centre, fading both
+     ways, for one turn; moved left, asked for directly). Two layers — a
+     hairline in `effect/rim-highlight` (the white a LUX surface catches) over
+     a 3px band of it at 25% for the glow, fading out the same way.
+     Backgrounds, not a `border`, because a border cannot fade. 12 under the
+     words; the card has no gap, so the 12 above the tiles' text is the
+     tiles' own top padding. */
+  padding-bottom: var(--space-md); /* 12 */
+  background:
+    linear-gradient(90deg, var(--color-effect-rim-highlight), transparent)
+      left bottom 1px / 100% var(--border-width-hairline) no-repeat,
+    linear-gradient(
+        90deg,
+        color-mix(in srgb, var(--color-effect-rim-highlight) 25%, transparent),
+        transparent 80%
+      )
+      left bottom / 100% 3px no-repeat;
+}
+
+/* ⚠️ TWO TILES A ROW AT EVERY WIDTH — asked for directly 14 Sep 2026, when
+   `Symptoms state` made it four. Before that it was three in a row, which
+   gave each tile 72 at 320 (`Acne-prone` broke at its hyphen), and then
+   stacked on mobile, which pushed `Start analysis` below the fold at 440.
+   `minmax(0, 1fr)` keeps a long answer from widening its column; it wraps
+   inside the tile instead. */
+.tiles {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  /* ⚠️ 6, OFF THE SCALE — the scale's 8 less 2, asked for directly 14 Sep
+     2026 */
+  gap: calc(var(--space-sm) - 2px); /* 6 */
+  /* ⚠️ 14 + the tile's 6 top = 20 under the overline's rule — asked for
+     directly 14 Sep 2026 ("more bottom space below border"); it was 6 + 6 = 12.
+     14 is off the scale: the tile's 6 is, and the sum lands on `space/xl`. */
+  margin: calc(var(--space-xl) - var(--space-md) / 2) 0 0; /* 14 */
+}
+
+/* ⚠️ THE TILE IS DRAWN BY NOTHING NOW — spacing and a radius only. It went
+   through four looks on 14 Sep 2026, each tuned by hand or asked for
+   directly: transparent with a backdrop blur, sunken under an inset shadow,
+   flat 7% black, and now no fill at all, since the answers became pills.
+   The 7% black was what lifted the tile text to 4.80:1; with it gone the
+   labels sit on the card's own fill (see `.card`). The blur could never
+   show — the card's own `backdrop-filter` makes it the backdrop root.
+   ⚠️ LABEL OVER ANSWER, LEFT-ALIGNED, AT EVERY WIDTH — the strip's own pair,
+   asked for directly. It was centred for a while, and one line (label left,
+   answer right) on desktop for a turn; both are gone.
+   ⚠️ 8 A SIDE. The left was 8 plus 2, then 8 plus 4, for a turn each, and
+   came back to 8 by hand. */
+.tile {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2xs); /* 2 — the strip's label-to-value */
+  min-width: 0;
+  /* ⚠️ 6 ON TOP, 4 UNDER THE ANSWER — asked for directly 14 Sep 2026, in
+     three turns: a row's pills sat 12 + 6 + 12 = 30 above the next row's
+     labels, then 4 + 6 + 12 = 22, then 4 + 6 + 0 = 10 ("too tight"), now
+     4 + 6 + 6 = 16 — half the 12 back. `.tiles`' margin makes up the rest of
+     the first row's 12 under the overline's rule. */
+  padding: calc(var(--space-md) / 2) var(--space-sm) var(--space-xs); /* 6 / 8 / 4 */
+  border-radius: var(--radius-xl); /* 20 */
+  background: none;
+}
+
+.tileLabel,
+.tileValue {
+  margin: 0;
+}
+
+/* ⚠️ THE ANSWER IS A FILLED FROSTED PILL, TUNED BY HAND AND SUPPLIED 14 Sep
+   2026: a lighter teal `#56848d` at 85% over a 7px blur, a hairline rim in
+   `border/glass` (the System B divider's white) and a faint light catching
+   the top inside, set in `t-body3` like its label. 4 / 14 / 6 padding — a
+   touch heavier at the bottom, for the optical centre — and 0.3rem (4.8)
+   below the label, on top of the tile's 2 gap. `align-self: flex-start`
+   hugs the words; `radius/full` is every LUX pill. No token for the fill,
+   the 7px or the 0.3rem; raise them.
+   ⚠️ IT WAS "NO FILL" FIRST, asked for directly, and it briefly carried a
+   blur with no fill — which, inside the card's backdrop root, sampled the
+   card's teal and read as an unintended darker chip. The fill is chosen now,
+   and the blur under it is part of the look rather than a way to see the
+   canvas: it still only ever sees the card.
+   ⚠️ WHITE ON THE PILL DOES NOT CLEAR AA. Hand-composited, pill over card
+   over each canvas ramp stop: 4.29:1 on the floor `#acc5cc` down to 4.16:1
+   on the lightest core `#ecf8f9`, for 14px text that needs 4.5:1. The fill
+   is lighter than the card it sits on, so it costs the answers contrast;
+   a pill at or below the card's own darkness would restore it. */
+.tileValue {
+  align-self: flex-start;
+  max-width: 100%;
+  margin-top: 0.3rem;
+  padding: 4px 14px 6px;
+  border-radius: var(--radius-full);
+  background: #56848dd9;
+  box-shadow:
+    inset 0 0 0 var(--border-width-hairline) var(--color-border-glass),
+    inset 0 1px 2px #fff3;
+  -webkit-backdrop-filter: blur(7px);
+  backdrop-filter: blur(7px);
+}
+
+/* non-negotiable 11 — the fill made opaque, and the grain goes with the blur it
+   dithered. `#538993` is the supplied `#2c6e7ac2` composited over the
+   canvas's mid stop `#cedee2`: white measures about 3.9:1 on it (it was
+   `#3c7c86` at 4.75:1, then `#468691`, then `#52919e`, as the fill was
+   retuned on 14 Sep 2026). The pills
+   keep their blur here: it only ever sees the card, never the canvas behind
+   it, so it shows nothing through. */
+@media (prefers-reduced-transparency: reduce) {
+  .card {
+    background: #538993;
+    -webkit-backdrop-filter: none;
+    backdrop-filter: none;
+  }
+
+  .card::after {
+    display: none;
+  }
+}

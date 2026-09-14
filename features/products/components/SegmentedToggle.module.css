@@ -20,6 +20,39 @@
   -webkit-backdrop-filter: blur(16px);
   backdrop-filter: blur(16px);
   align-self: center;
+  /* ⚠️ NOT IN FIGMA — the edge light the buttons and the page card carry
+     (globals.css `.edge-light`), on the TRACK, 14 Sep 2026, asked for directly:
+     the card's inward white glow and a 1px top catch here, the lit ring on
+     `::before` below. Values copied at the pale pills' strengths, not shared —
+     `.edge-light` is a span and the track's children are its segments. */
+  position: relative;
+  box-shadow:
+    inset 0 2px 12px rgba(255, 255, 255, 0.25),
+    inset 0 1px 1px rgba(255, 255, 255, 0.35);
+}
+
+/* the ring — a pseudo, and at `z-index: -1`: the backdrop-filter above makes
+   the track a stacking context, so this paints over its fill and UNDER the
+   segments and their indigo pill */
+.toggle::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  border-radius: inherit;
+  padding: 1px;
+  pointer-events: none;
+  background: linear-gradient(
+    135deg,
+    rgba(255, 255, 255, 0.7),
+    rgba(255, 255, 255, 0) 40%,
+    rgba(255, 255, 255, 0) 60%,
+    rgba(255, 255, 255, 0.3)
+  );
+  -webkit-mask: linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0);
+  -webkit-mask-composite: xor;
+  mask: linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0);
+  mask-composite: exclude;
 }
 
 @media (prefers-reduced-transparency: reduce) {
@@ -62,23 +95,25 @@
    pill; `--shine-ink` is unregistered, so it changes at once while the pill
    cross-fades on `duration/base`. */
 @media (hover: hover) {
-  .segment:not(.selected):hover {
+  /* `:not(:disabled)` throughout: a disabled segment never takes the pill */
+  .segment:not(.selected):not(:disabled):hover {
     color: var(--color-text-on-brand);
     --shine-ink: var(--color-text-on-brand);
   }
 
-  .segment:not(.selected):hover::before {
+  .segment:not(.selected):not(:disabled):hover::before {
     --grad-start: var(--color-gradient-brand-start);
     --grad-end: var(--color-gradient-brand-end);
     opacity: 1;
   }
 
-  .toggle:has(.segment:not(.selected):hover) .segment.selected {
+  .toggle:has(.segment:not(.selected):not(:disabled):hover) .segment.selected {
     color: var(--color-text-secondary);
     --shine-ink: var(--color-text-secondary);
   }
 
-  .toggle:has(.segment:not(.selected):hover) .segment.selected::before {
+  .toggle:has(.segment:not(.selected):not(:disabled):hover)
+    .segment.selected::before {
     opacity: 0;
   }
 }
@@ -156,4 +191,61 @@
 .label {
   position: relative;
   z-index: 1;
+}
+
+/* ⚠️ NOT IN FIGMA — the edge light `Button` and `SmallButton` carry
+   (globals.css `.edge-light`), 14 Sep 2026, asked for directly. It belongs to
+   the indigo PILL, not the segment, so it follows `::before`'s opacity: on the
+   selected segment, on an unselected one while it borrows the pill under the
+   pointer, and off the selected one while it has lent it away. Same clock as
+   the pill's fade. */
+.edge {
+  /* the indigo pill's brighter edge — the same four values the primary
+     `Button` sets (Button.module.css) */
+  --edge-glow: 0.4;
+  --edge-catch: 0.55;
+  --edge-ring-lit: 0.54;
+  --edge-ring-dim: 0.45;
+  opacity: 0;
+  transition: opacity var(--duration-base) var(--ease-standard);
+}
+
+.segment.selected > .edge {
+  opacity: 1;
+}
+
+@media (hover: hover) {
+  .segment:not(.selected):not(:disabled):hover > .edge {
+    opacity: 1;
+  }
+
+  .toggle:has(.segment:not(.selected):not(:disabled):hover)
+    .segment.selected
+    > .edge {
+    opacity: 0;
+  }
+}
+
+/* ⚠️ A DISABLED SEGMENT — `actions` only, added 14 Sep 2026 (see
+   SegmentedToggle.tsx). It fades like every disabled LUX control
+   (`opacity/disabled`), and the primary one gives up its indigo pill and its
+   edge light while it cannot be pressed: a lit `Save` that does nothing reads
+   as broken. Three classes deep, so it outranks `.segment.selected::before`
+   and `.segment.selected > .edge`. */
+.segment:disabled {
+  opacity: var(--opacity-disabled);
+  cursor: not-allowed;
+  transition:
+    color var(--duration-base) var(--ease-standard),
+    opacity var(--duration-base) var(--ease-standard);
+}
+
+.segment.selected:disabled {
+  color: var(--color-text-secondary);
+  --shine-ink: var(--color-text-secondary);
+}
+
+.segment.selected:disabled::before,
+.segment.selected:disabled > .edge {
+  opacity: 0;
 }

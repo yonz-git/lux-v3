@@ -85,7 +85,13 @@ export function Button({
     trackSpecular(e);
     onPointerMove?.(e);
   };
-  const specular = <span className="specular" aria-hidden="true" />;
+  const specular = (
+    <>
+      {/* the fixed rim light (globals.css `.edge-light`), under the pointer's */}
+      <span className="edge-light" aria-hidden="true" />
+      <span className="specular" aria-hidden="true" />
+    </>
+  );
 
   /* The label is its own element so hover can treat it independently of the
      pill: ⚠️ NOT IN FIGMA — as of 12 Sep 2026 the label takes the shine

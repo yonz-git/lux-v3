@@ -419,6 +419,13 @@
   --grad-start: var(--color-gradient-brand-start);
   --grad-end: var(--color-gradient-brand-end);
 
+  /* the anchor for its `.edge-light` span (globals.css), added 14 Sep 2026,
+     at the primary `Button`'s brighter strengths since this is indigo too */
+  position: relative;
+  --edge-glow: 0.4;
+  --edge-catch: 0.55;
+  --edge-ring-lit: 0.54;
+  --edge-ring-dim: 0.45;
   flex: none;
   padding: 11px 22px;
   border: none;

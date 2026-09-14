@@ -404,7 +404,7 @@ treatment — but there is no component to keep them in sync.
 | **Compat accordion** | The second accordion, different surface, different header, plus a band. The band drives pill, score and bar fill through one property so they cannot drift. |
 | **Status pill** | Not `Tag` — Tag is Neutral/Brand only and these carry the feedback colours. |
 | **Skin-profile strip** | The one sage element on a Check screen. Same System B recipe as the data card but an 86-tall strip with 18/20 padding. |
-| **Face-region picker** | The region coordinates **are** the design — "Cheeks (L)" only means the left cheek because of where it sits. Stored as % of the 392×300 card so it scales. ⚠️ **The face is a CONTOUR DRAWING as of 13 Sep 2026, not the CSS dome** — white level lines cut from a supplied illustration (`features/my-skin/assets/face-contour.webp`, 226×280 at 83,10), over a shading layer masked to the head's outline (`face-silhouette.webp`: lighter centre, deep sage `#284a4d` toward the edge), with a pointer-following shine masked to the lines. The pills moved onto the drawing's own landmarks (see `REGIONS` in `FaceDiagram.tsx`). Figma has no face artwork at all — raise the drawing, its shading and a note on the shine; the old `gradient/face-form` / `face-tier` tokens are deleted. |
+| **Face-region picker** | The region coordinates **are** the design — "Cheeks (L)" only means the left cheek because of where it sits. Stored as % of the 392×300 card so it scales. ⚠️ **The face is a CONTOUR DRAWING as of 13 Sep 2026, not the CSS dome** — white level lines cut from a supplied illustration (`features/my-skin/assets/face-contour.webp`, 226×280 at 83,10), over a shading layer masked to the head's outline (`face-silhouette.webp`: lighter centre, deep sage `#284a4d` toward the edge), with a pointer-following shine masked to the lines. ⚠️ **The lines are drawn clearer than the asset as of 14 Sep 2026** (asked for directly, twice): an SVG `feComponentTransfer` in `FaceDiagram.tsx` lifts each line pixel's alpha to its square root, because the asset is pure white and only its alpha has room to rise. A curve rather than a multiplier: the thin antialiased strokes are what read as unclear, and a square root lifts those most while leaving solid strokes solid (a 1.2× multiplier was tried first and was too faint to see). The shine is not brightened with them. The pills moved onto the drawing's own landmarks (see `REGIONS` in `FaceDiagram.tsx`). ⚠️ **The unselected region pills are frosted glass as of 14 Sep 2026** (asked for directly — a soft frosted glass button, gentle lighting, blurred background for depth, pill shape kept; then edges as soft shades rather than lines, a thinner fill and less blur. A near-white at 75% was tried first and read as one flat colour, and a version with a white hairline and 1px highlight crescents read as outlined; the final values were then tuned by hand in the browser, twice, and supplied): a pale aqua base `#d3ffff` 40%, a fill from white 30% at the top to indigo-grey `#919ebd` 43% at the bottom, a radial light clear at the top-left and gathering pale sage `#d2d9c7` 28% toward the far edges, and a pale sage tint `#d3e7e8` 27% over all of it, under `blur(4) saturate(170%)` so the lines behind stay visible; no drawn edge — a soft grey shade `#484d4e` 29% blurred inside the bottom-right, plus `shadow/sm`. Hover swaps the tint for a 14% white wash and `shadow/md`. `text/primary` holds 6.33:1 or better. Values under `surface/face-pill` in `globals.css`. The location chips under the face (`Whole face`, `Neck`, `Other`) wear the same glass when unselected (asked for directly), and the same hover as the regions: the white wash, `shadow/md` and the 30% `gradient/brand` ring. Selected, the regions and those chips are the same glass in INDIGO (asked for directly; `surface/face-pill-selected`): a `bg/brand` base at 60%, a fill from `gradient/brand`'s light end at 40% to `bg/brand-hover` 60%, `bg/brand-soft` light pooled at the top-left (20%), a `bg/brand` tint (15%), a `bg/brand-soft` light (35%) and a `bg/brand-hover` shade (90%) inside the edges — toned down from 50/45/80% to be less shiny, asked for directly — `shadow/button`, and the existing diagonal shade. The white label holds 5.67:1 or better. Every other selected `Chip` in the app stays flat indigo. The label stays `text/primary` and the selected pill stays indigo `bg/brand`. They were opaque `bg/frost-light-muted` only because the old dome's dark outline showed through a translucent fill. Raise the glass pill as a variant. Figma has no face artwork at all — raise the drawing, its shading and a note on the shine; the old `gradient/face-form` / `face-tier` tokens are deleted. |
 | **`My skin` nav icon** | The nav's fourth glyph. `Bottom-Nav-Bar` (`410:258`) ships three and the DS has no face or skin mark anywhere. Stroke-drawn, unlike its three filled neighbours: a solid disc at 24 is far heavier, and the face only reads with the eyes and mouth left open. |
 | **Product imagery** | No product or bottle icon exists outside the nav, so every thumb and image well drew a camera — which identifies nothing down a list. Nine vessel silhouettes by packaging type, tinted per brand. Raise a real illustration set. |
 | **Check-in photo** | The photos card's entire content is a picture, so a camera glyph says "no photo" on the record of one the user took. Raise real imagery. |
@@ -415,6 +415,7 @@ treatment — but there is no component to keep them in sync.
 | **Pass list** | `components/ui/PassList` — named steps ticking off with `SuccessCheckIcon` in a fixed-width slot, so the lines do not reflow as ticks land. **Both analysing screens use it now**: the analysis names § 06's six passes, and `Check — analyzing` (`605:2163`) names five. ⚠️ **The comp's 8px `analysis-bar` is no longer drawn** — a bar says only that something is happening, the list says what is being compared. The counts differ on purpose: CHECK has no timeline and no tolerated set, so it must not claim those passes. No frame draws any of this. |
 | **Callout / notice** | The safety notice on `01 — Start investigation` is composed from the frosted-card recipe the frame's own deleted DISCLAIMER card used (`radius/lg`, `surface/frost-light`, hairline `border/subtle`, `t-overline` over body). There is no callout component and no ACCENT of any kind for one — the DS also has no warning glyph — `02 Icons` has 13 and none of them means caution — so the block carries its meaning by position and label alone. Raise a Notice component with a `feedback/warning` accent, and note the notice is CONDITIONAL: no frame draws it. |
 | **Undo snackbar** | No toast, no snackbar, no transient message of any kind — the only trace of the idea is `--z-toast` (500), reserved in the token scale and unused until 8 Sep 2026. Drawn here as the `Bottom-Nav-Bar`'s own frosted pill (same fill, rim, shadow, blur and reduced-transparency fallback), because the file has exactly one recipe for something that floats over a screen. It departs on two content-driven values: **no fixed height** — a product name takes two lines at 380, more under a user's text-spacing overrides — and `radius/2xl` rather than `full`, since `full` on a two-line bar draws 26px lozenge ends that crowd the first and last words. Raise a `Snackbar` with a message slot and one action, sitting `nav-inset-bottom + size/nav-height + space/lg` above the bottom edge (the clearance every screen already reserves), and note on it that the dismiss is 6s, that it pauses while hovered or focused, and that only one is ever on screen. |
+| **Skin-profile tiles** | `features/check/components/SkinProfileTiles.tsx`, under the skin-profile strip on `/check` — asked for directly 14 Sep 2026. No frame draws it. The strip's `Your skin profile` overline, then `Skin type`, `Tendencies`, `Known conditions` and `Symptoms state` under a hairline of `effect/rim-highlight` brightest at the left and fading out toward the right, with a faint 3px glow, as four flat tiles, two a row at every width, label over value left-aligned (7% black, radius 20, no shadow), on a hand-tuned deep teal glass (`#005461` @71%, desaturated frost) with white ink, 4.27–5.27:1 on the card. The column's width at every breakpoint (it was 140% on desktop for a while). ⚠️ It began the same day as a plan card from a supplied reference (star, title, copy) in the strip's exact box, and kept only that card's glass; its height is content now. ⚠️ The values on `/check` are literals (`Dry`, `Acne-prone`, `None`) and disagree with the seeded strip above it — a trial, not a data decision. The material is a light teal glass tuned by hand in the browser and supplied: `#67adb882` under `blur(--blur-card) saturate(0%)`, a sage top glow `#afc5cbbd`, a faint teal catch, a soft drop, plus the nav bar's lit edge ring and grain. ⚠️ **The ink is `text/primary`, not the reference's white** (asked for directly) — white on the nav bar's glass it first wore measured 1.82–2.86:1; the dark ink measures 5.5:1 or better here. Raise the fill as a token. Raise the tile as a component with the card. |
 
 ---
 
@@ -465,6 +466,16 @@ radio rows spent most of a mobile screen, so the code bends the Chip's role to
 `radio` — a pill doing a job the contract gives to a circle. Raise a real
 single-select Chip variant rather than widening the exception. `Timing` has
 wanted the pill look since it was built and still uses radio rows.
+
+### Chip — no disabled state (14 Sep 2026)
+
+`162:74` draws no disabled state, and step 1 now needs one: while one symptom's
+places are marked, every other symptom chip waits. The code takes the Button's
+disabled recipe rather than inventing a pill-specific one — the whole pill at
+`opacity/disabled` (0.4), selected or not — and lets a caller hold a disabled
+pill at full strength (the face card does, for a marked `Neck` or `Other`
+waiting on its next symptom). Raise `State=Disabled` on the set, selected and
+unselected.
 
 ### `Check-in chat` `555:1268` — three problems
 
@@ -613,11 +624,11 @@ assembled from recipes page 06 already holds:
 | Block | Recipe borrowed from |
 | ----- | -------------------- |
 | skin type + tendencies + known conditions | the sage `DataCard` — Surface System B, as `Analysis`'s verdict — a `t-overline` heading over two labelled columns, then a full-width row; values at `t-button` (17), both multi-selects JOINED rather than pilled |
-| symptoms | `Tag` (256:85), `Neutral`, **wearing `Chip`'s default fill and hairline** (see below), in a frosted light block (System A) |
+| symptoms | ⚠️ **the face's callouts, since 14 Sep 2026** — a `bg/symptom` pill per symptom at the face card's edge with a line to each of its places, as step 1 draws them once saved. They were `Tag`s wearing `Chip`'s default fill and hairline (see below) until 13 Sep 2026 |
 | other locations | **inside `face-diagram-card`**, in step 1's own chip row, drawn as step 1's SELECTED `Chip` (40, `Label`, `bg/brand`) |
 | where on the face | `face-diagram-card` from step 1, in a **read-only mode that Figma has no variant for** |
 | the photo | its own block: `Check-in detail`'s photo well (`surface/data-strong`, `radius/lg`) + `CheckInPhotoArt`, with a `SmallButton` opening the existing `SelfieSheet` |
-| all of step 4 | the *Current state* block (was *What you noticed*, with the symptom pills, until 13 Sep 2026) — `<status>` as its value, then `Started on` over `<date> · Day <n>` in the card's label-over-value shape; the pills are off the recap for now, moving onto the face diagram |
+| all of step 4 | the *Symptom state* block, *Symptoms state* with more than one symptom (it was *What you noticed*, with the symptom pills, until 13 Sep 2026, then *Current state* until 14 Sep 2026) — `<status>` as its value, then `Started on` over `<date> · Day <n>` in the card's label-over-value shape |
 | the action | `Button` primary, full width mobile / `width/action` desktop |
 
 ⚠️ **ITS EMPTY STATE IS THE APP'S EMPTY-STATE RECIPE, AS OF 8 Sep 2026 —
@@ -650,26 +661,28 @@ of this section:
    lines of text. The ASK survives the cut: PROGRESS, the analysis and this
    screen all state spans of time and none of the three draw them the same way.
    That is a DS gap whether or not the recap is the screen that needs it.
-3. **A `Tag` variant carrying `Chip`'s ground.** Asked for directly on 7 Sep
-   2026: the recap's pills take `bg/frost-light-muted` and a `border/chip`
-   hairline — `Chip`'s default state — because `Tag`'s own `bg/surface-frost`
-   with no stroke leaves an answer with no edge on a frosted block. Everything
-   else stays `Tag`'s: 26 tall, `Label Small`, `text/secondary`. In code it is a
-   class on this one screen, deliberately fenced (a tag dressed as a chip is
-   only safe where there are no chips, and this screen has no controls at all).
-   In Figma it wants a real third style on 256:85 — `Style=Outlined` or similar
-   — so the borrowing stops being a local override.
+3. ~~**A `Tag` variant carrying `Chip`'s ground.**~~ ⚠️ **No longer needed by
+   the recap, as of 14 Sep 2026.** Its symptoms are callouts on the face now,
+   and nothing else on the screen was a tag, so the class was deleted. It was
+   asked for directly on 7 Sep 2026: the recap's pills took
+   `bg/frost-light-muted` and a `border/chip` hairline, which is `Chip`'s
+   default state, because `Tag`'s own `bg/surface-frost` with no stroke left an
+   answer with no edge on a frosted block. Raise a `Style=Outlined` on 256:85
+   only if another screen wants it.
 
 **What Figma needs to decide:** whether the read-only face is a variant or a new
 component; whether the timeline earns a real DS component (PROGRESS and the
 analysis both have spans of time they currently draw differently); and whether
-the label wording is right — *Current state* (was *What you noticed* until 13 Sep 2026), *Where you noticed it*,
-*Known conditions* (was *Known skin conditions* until 13 Sep 2026), *Started on*, *Day n* and *Current state* are all decided
-here. ⚠️ **They do not name the symptoms, and they were longer.** *Symptoms
-started* / *Symptoms now* were right while step 4 had a block of its own among
-four other answers; sitting under the pills that name the symptoms, the subject
-is already on screen and repeating it made the block say "symptoms" three times
-in four lines. ⚠️ **The last one was a bare *Now* until 8 Sep 2026** — beside
+the label wording is right — *Symptom state* / *Symptoms state* (by how many
+symptoms were reported; was *What you noticed* until 13 Sep 2026 and *Current
+state* until 14 Sep 2026), *Where you noticed it*, *Known conditions* (was
+*Known skin conditions* until 13 Sep 2026), *Started on* and *Day n* are all
+decided here. ⚠️ **The heading names the symptoms again as of 14 Sep 2026,
+asked for directly**, now that no pill above it does. *Symptoms started* /
+*Symptoms now* were right while step 4 had a block of its own among four other
+answers; sitting under the pills that named the symptoms, the subject was
+already on screen and repeating it made the block say "symptoms" three times in
+four lines. ⚠️ ***Current state* was a bare *Now* until 8 Sep 2026** — beside
 *Started*, an adverb with no noun read as another point on the same timeline
 rather than as a different fact about a different moment.
 
@@ -742,6 +755,141 @@ FILLED field, since `/investigation/profile` now reads the answer back under
 `Where you noticed it` as `Other, in your words` over the sentence. The
 description was not in the answer store at all until this date; see
 `docs/decisions.md`, "THE TYPED `Other` HAD NOWHERE TO GO".
+
+⚠️ **As of 14 Sep 2026 the filled field has a third state to draw** — see the
+confirmed description, two entries down.
+
+### Step 1 asks where ONE SYMPTOM AT A TIME (14 Sep 2026)
+
+The symptom chips and the face diagram were two independent multi-selects, so
+step 1 could only say "these symptoms, somewhere in these places". Asked for
+directly, the screen now pairs them:
+
+- A line under the question: *For each symptom, select the affected areas in
+  the face diagram.* (`t-body3-body2`, `text/secondary`, centred, 12 under the
+  title.)
+- A picked symptom chip is `bg/symptom` **#d3858a** with a white label, not
+  indigo — the profile's symptom pill colour (asked for directly; white on it
+  is 2.8:1). An unselected symptom's hover border is the same rose.
+- Picking a symptom lights it and **disables every other symptom chip**; the
+  seven region labels shine once, together (the app's text shine), and the face
+  takes taps for that symptom only.
+- The symptom chips sit under the face card (20 below it), not under the
+  question, asked for directly. The safety notice moves with them. An
+  unselected symptom chip is frosted: `#dbeded57` over an 8px backdrop blur,
+  where `Chip` draws an opaque `bg/frost-light-muted`.
+- Under the chips, 20 below them, sits one `Pattern / Segmented Toggle`
+  (`75:23`, the products tray's `Add product` / `Search again` pill) with
+  three commands: **`Save`** (filled), **`Reset`** and **`Reset all`**. It is
+  drawn at 88% of the tray's size and lifted on `shadow/button`, which the
+  tray's pill does not have. Each command fades to `opacity/disabled` while it
+  has nothing to act on: `Save` and `Reset` until the symptom being placed has
+  a place, and `Reset all` until anything is selected. While nothing is
+  selected, a disabled `Save` keeps its indigo pill, dimmed with the rest of
+  the segment; once `Reset all` can be pressed, a disabled `Save` is plain
+  faded text like `Reset`. A live `Reset all` wears the secondary button's
+  colours (`gradient/secondary`, `text/brand`, the pale edge light), and its
+  gradient runs end for end on hover. `Save` brings the other chips back with the symptom
+  still selected. `Reset` clears the symptom's places and keeps it open.
+  `Reset all` clears everything, and its undo shows over the pill for 4
+  seconds; the undo's `Undo` wears the same secondary colours, as the app's
+  snackbar `Undo` does. Tapping the lit chip deselects it; tapping a done chip reopens it.
+  The toggle needs a three-option variant and a disabled segment in Figma.
+- Between symptoms the face is disabled: marked places keep the selected
+  treatment, and the rest sit at `opacity/disabled` × 1.3 (0.52, asked for
+  directly — at 0.4 the glass pills faded into the face).
+
+For Figma this needs: the merged step-1 frame in its three states (empty, a
+symptom being placed with the other chips disabled and `Save` / `Reset`
+awake in the pill, and idle
+with places marked), a disabled Chip (§ 4) and a disabled region pill, and the
+instruction line. Each symptom now carries its own places, which is the data
+the callouts below draw, on step 1, on the recap and on PROGRESS.
+
+### Step 1's saved symptoms are drawn on the face as callouts (14 Sep 2026)
+
+Asked for directly, from a supplied anatomy reference. Once a symptom is
+saved, the face shows it as a pill at the card's left or right edge, with a
+thin line to each face region it was placed on. One pill per symptom. It sits
+on the side its places lean to, and the pills down the middle fill whichever
+side has fewer. Pills in one column stay 30 apart, in the 392×300 space. A
+symptom with a place in the middle row that would send its line behind another
+middle-row pill moves 50 off that row, so the line runs diagonally past it.
+`Whole face` fans a line to every region. `Neck` draws to a rose dot on the
+drawn neck, on the side its pill is on. `Other` gets no line. The
+pill is the selected symptom chip (`bg/symptom`, white label, the diagonal
+shade), scaled like the region pills: 18–24 tall, 8–12 type. The line is
+`bg/symptom` at 1.25. The line draws out from the place over `duration/slower`,
+then the pill fades in. The callouts hide while a symptom is being placed. For
+Figma this needs the idle step-1 frame with callouts, plus the pill as a
+variant. The recap's read-only face at `/investigation/profile` draws the same
+layer, and so does PROGRESS's (both 14 Sep 2026).
+
+Hovering a symptom pill lights the places it was marked on and its lines to
+them; hovering a place lights the symptoms marked there and their lines to it
+(asked for directly, 14 Sep 2026, because several symptoms' lines cross). A lit
+line runs `bg/symptom` 35% toward white at 2 wide, a lit pill brightens 14%
+under a soft white glow at 42% (both cut 30% from the first pass), and the other lines and symptom pills fade back until
+the pointer leaves, all on `duration/slow`. It works on all three faces. For
+Figma this needs the hovered state on the callout pill and on the region pill.
+
+### The face drawing has a neck (14 Sep 2026)
+
+Asked for directly. The contour head used to stop in a hard cut under the
+chin. The asset now runs 980 source rows, not 830. From row 740 down, the
+contour lines and the silhouette both come from the same supplied
+illustration, lined up with the head within half a pixel. The old asset had
+faded its last rows toward the cut, so it is not used past row 740. Skin texture is removed, and line weight is
+matched to the drawing above. The head's footprint on the card is unchanged
+(226×280 at 83,10), so no region pill moves. The drawing, its shading and the
+hover shine fade out over the neck, from 80% of the box's height to 98%. The
+diagram takes a 30-unit bottom margin, so the chip row sits under the faded
+tail. For Figma this needs the face artwork re-exported with its neck.
+
+### PROGRESS's profile card shows the status and the latest photos, and its face shows callouts (14 Sep 2026)
+
+Asked for directly. Three changes to `Progress — active` (`552:1236` /
+`554:1252`), none of them in the frames:
+
+- **Step 4's status sits under `Symptom state`** (`Symptoms state` with more
+  than one symptom; it read `Current state` until later the same day), as
+  `Ongoing`, `Improving`, `Resolved` or `Getting worse`, in the card's
+  label-over-value shape, with `Started <date> · Day <n>` under it. The rose
+  symptom pills are gone from the card. The demo reads `Ongoing`.
+- **The latest photos sit at the other end of that row.** A `Latest photos`
+  label sits over the three newest check-in photos, each 36 square
+  (`size/control-sm`) at `radius/md` with a white hairline edge, then a 36
+  circle holding a chevron.
+  The circle is the segmented toggle's frosted track, and it takes the indigo
+  pill on hover. The whole row is one button, and it opens a **photo gallery**
+  `Sheet`. The sheet has `Photo gallery` over a count, then every check-in photo
+  newest first: three across on a phone and four in the desktop dialog. Each is
+  a square `radius/lg` well with its date and `Day <n>` under it, and links to
+  that day's `Check-in detail`.
+- **The `Where you noticed it` face draws step 1's callouts.** These are the
+  same symptom pills and leader lines as step 1, described above. The demo
+  draws `Redness` and `Itching`, each with a line to both cheeks.
+
+For Figma this needs both active frames updated with all three, the photo strip
+as a component, and the gallery sheet at both breakpoints.
+
+### Step 1's `Other` description is confirmed with ✓ and edited with a pen (14 Sep 2026)
+
+Asked for directly. The open field carries a ✓ before its ✕ (Enter confirms,
+Escape removes). A confirmed sentence becomes a frosted row, the collapsed
+`Other, describe where` row's own recipe, holding the words, a pen that reopens
+the field, and the ✕. Both rows fill with **`#f4feff1f`**, the
+`surface/frost-light` hue at 12% where the token is 55%, so they read as glass
+beside the glass face (supplied directly, 14 Sep 2026; the token is unchanged).
+All three controls are the field's existing 20px circle,
+and both glyphs already exist in the icon set (`SuccessCheckIcon`, `NoteIcon`).
+The circle's fill is no longer `surface/frost-light` but an opaque **`#c0d5da`**
+(`bg/field-action`, declared in `globals.css`), and on hover its
+`border/subtle` rim darkens to `border/chip` mixed 40% into that fill
+(`#9eb7bb`) while the glyph goes `text/muted` → `text/secondary` — both asked
+for directly. For Figma this needs
+the new fill as a variable, the hover state, the confirmed-row state and the ✓
+added to the open field.
 
 ### Step 1 carries a CONDITIONAL safety notice (`476:2542`, `476:2670`)
 

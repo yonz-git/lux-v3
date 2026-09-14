@@ -1,34 +1,57 @@
 /* Check — start (601:1952) / Check — no profile — desktop (606:2183).
 
-   heading -> 20 -> skin-profile strip -> flex -> hero -> flex -> nav.
+   heading -> 20 -> skin-profile strip -> 16 -> skin-profile tiles -> 48 ->
+   flex -> hero -> flex -> nav.
 
    The hero is the established LUX empty-state block, and its spacing is the
    `My Products — empty` one exactly: a 16 gap throughout, with a named 16-tall
    spacer frame above the title and above the CTA, so those two distances are 48
    and the title/description pair stays tight at 16. */
 
-.profile {
+/* THE STRIP AND THE SKIN-PROFILE TILES UNDER IT, AS ONE BLOCK — `HubScreen`'s
+   `belowHeading`.
+
+   ⚠️ NOT IN FIGMA — THE TILES, asked for directly 14 Sep 2026 (see
+   SkinProfileTiles.tsx). 16 between the two, the gap the strip keeps between
+   its own two columns.
+   ⚠️ THE ROWS ARE NO LONGER EQUAL. The card here first took the strip's exact
+   box through `grid-auto-rows: 1fr`; the tiles need more height than 112, and
+   the strip was asked to stay as it is, so each card now sizes to its own
+   content.
+
+   The margins were the strip's and moved up a level with it: they belong to
+   the block, not to its first card. */
+.belowHeading {
+  display: grid;
+  gap: var(--space-lg); /* 16 */
+  /* a flex item with `margin-inline: auto` (desktop, below) shrinks to its
+     content — the strip used to hold this width itself */
+  width: 100%;
   margin-top: var(--space-xl); /* 20 */
-  /* ⚠️ NOT IN FIGMA — 48 UNDER THE STRIP, asked for directly 13 Sep 2026. The
-     strip is `HubScreen`'s `belowHeading`, and the hero below it is centred in
-     whatever height is left; on a viewport with none left over the two flex
-     spacers collapse to 0 and the orb sat ~12 under the strip, reading as
-     stuck to it rather than as the start of the next block. This is a FLOOR,
-     not a position: with spare height the hero still centres, just in a
-     region that starts 48 lower. 48 is this screen's own block rhythm (see
-     `.hero > svg` below). */
-  margin-bottom: var(--space-5xl); /* 48 */
+  /* ⚠️ NOT IN FIGMA — 48 UNDER THE BLOCK, asked for directly 13 Sep 2026 when
+     the strip was all of it. The block is `HubScreen`'s `belowHeading`, and the
+     hero below it is centred in whatever height is left; on a viewport with
+     none left over the two flex spacers collapse to 0 and the orb sat ~12
+     under the strip, reading as stuck to it rather than as the start of the
+     next block. This is a FLOOR, not a position: with spare height the hero
+     still centres, just in a region that starts 48 lower. 48 is this screen's
+     own block rhythm (see `.hero > svg` below).
+     ⚠️ NOW 24, asked for directly 14 Sep 2026: with the tiles card under the
+     strip the block grew to 222, and at 1440x900 the 48 floor pushed the page
+     to 926 and `Start analysis` under the nav. */
+  margin-bottom: var(--space-2xl); /* 24 */
 }
 
-/* ⚠️ NOT IN FIGMA — THE STRIP TAKES THE CTA's WIDTH ON DESKTOP, asked for
-   directly 13 Sep 2026. 601:1952's desktop twin runs it the full 1280 column,
-   which on this screen made it the one wide object over a centred stack of
-   orb, bubble and a 376 button — a banner above a card rather than part of
-   it. `--width-action` is the button's own token, so the two edges cannot
-   drift; `margin-inline: auto` centres it in either a block or a flex parent.
-   Mobile is untouched: the button is already full-width there, and so is this. */
+/* ⚠️ NOT IN FIGMA — THE BLOCK TAKES THE CTA's WIDTH ON DESKTOP, asked for
+   directly 13 Sep 2026 for the strip; the plan card follows it. 601:1952's
+   desktop twin runs the strip the full 1280 column, which on this screen made
+   it the one wide object over a centred stack of orb, bubble and a 376 button —
+   a banner above a card rather than part of it. `--width-action` is the
+   button's own token, so the two edges cannot drift; `margin-inline: auto`
+   centres it in either a block or a flex parent. Mobile is untouched: the
+   button is already full-width there, and so is this. */
 @media (min-width: 1024px) {
-  .profile {
+  .belowHeading {
     max-width: var(--width-action);
     margin-inline: auto;
   }

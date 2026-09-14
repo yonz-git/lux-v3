@@ -31,13 +31,13 @@
 @property --grad-start {
   syntax: "<color>";
   inherits: false;
-  initial-value: #657792;
+  initial-value: #546982;
 }
 
 @property --grad-end {
   syntax: "<color>";
   inherits: false;
-  initial-value: #39386f;
+  initial-value: #313560;
 }
 
 @property --specular-angle {
@@ -47,7 +47,6 @@
   /* light from the top-left until a pointer says otherwise */
   initial-value: -45deg;
 }
-
 
 /* ==========================================================================
    SURFACE SYSTEM B TEXT — dark, not white.
@@ -219,8 +218,14 @@
      `--color-indigo-700` INSTEAD: non-negotiable 2 forbids a component binding
      a primitive, and moving the ramp step would drag anything else aliasing it.
      ========================================================================== */
-  --color-bg-brand: #39386f;
-  --color-bg-brand-hover: #2c2a5f;
+  /* ⚠️ `#39386f` → `#313560` AND `-hover` `#2c2a5f` → `#242750`, 14 Sep 2026,
+     asked for directly ("one indigo"): the button gradient was retuned by hand
+     to end on `#313560`, and `bg/brand` follows it so the action and every
+     selected mark stay one value. Both siblings took the same OKLCH step
+     (L −0.024, C −0.018, H −4°). White: 11.61:1 here, 14.18:1 on hover. The
+     notes above still quote the old values. */
+  --color-bg-brand: #313560;
+  --color-bg-brand-hover: #242750;
 
   /* ⚠️ NOT IN FIGMA, BY EXPLICIT REQUEST — the moderate-likelihood pill on
      `ResultCards`' ingredients card. `02 Color` has no semantic role for it, so
@@ -233,7 +238,9 @@
      frost pill did not and which two different hues would not either. White on
      it measures 3.49:1 — under AA for a 12px label, the same open question
      `CompatCard`'s band pills already carry. */
-  --color-bg-brand-soft: #8284c0;
+  /* `#8284c0` → `#7980af` with `bg/brand`, 14 Sep 2026 (same step). White is
+     3.49 → 3.80:1 — still the known failure, marginally less so. */
+  --color-bg-brand-soft: #7980af;
   /* `effect/shine` — the bright lilac every light effect in the build wears:
      the text shine's band and the specular rim's streaks. ⚠️ NOT IN FIGMA —
      added 13 Sep 2026, asked for in those words. It is `indigo/200`
@@ -325,9 +332,11 @@
   --color-border-error: #c65953;
 
   /* bg/frost-light-muted — ⚠️ DECLARED HERE, NOT IN `tokens.css`, and NOT IN
-     FIGMA. The face-diagram region pills need an OPAQUE fill (the face outline
-     passes behind them, and a translucent pill shows the ellipse through
-     itself), but `bg/frost-light` (#f4feff) is the brightest light value in the
+     FIGMA. It was the face-diagram region pills' OPAQUE fill (the old dome's
+     outline passed behind them, and a translucent pill showed the ellipse
+     through itself); ⚠️ since 14 Sep 2026 those pills are glass
+     (`surface/face-pill`) and this is only their reduced-transparency
+     fallback. `bg/frost-light` (#f4feff) is the brightest light value in the
      app and on the sage `surface/data` card it reads as a white sticker. This
      is the same near-white one step down — literally the value `bg/nav` and
      `bg/bubble-ai` already carry, i.e. the LUX opaque light mint, written out
@@ -427,12 +436,27 @@
    ========================================================================== */
 
 :root {
-  --color-gradient-brand-start: #657792;
-  --color-gradient-brand-end: #39386f;
+  /* ⚠️ RETUNED 14 Sep 2026, by hand: `#657792` → `#546982` and `#39386f` →
+     `#313560`, a step darker. The notes above still quote the old pair. The
+     `@property --grad-*` initial-values moved with it, and so did `bg/brand`
+     (to `#313560`, its siblings by the same step), so the button's dark end and
+     the selection indigo are still one value. White measures 5.65:1 and
+     11.61:1 at the ends. */
+  --color-gradient-brand-start: #546982;
+  --color-gradient-brand-end: #313560;
 
   /* the mirrors of the two lines above — these are the ones `Button` reads */
-  --color-button-bg-default-start: #657792;
-  --color-button-bg-default-end: #39386f;
+  --color-button-bg-default-start: #546982;
+  --color-button-bg-default-end: #313560;
+
+  /* ⚠️ NOT IN FIGMA — `gradient/secondary` made TRANSLUCENT, 14 Sep 2026,
+     asked for directly: `#deeff3` → `#deeff391` and `#b7c6ca` → `#b9c8cddb`
+     (the end also nudged lighter). Every caller of these two — `Button
+     variant="secondary"` and `SmallButton` — now carries a backdrop blur so the
+     pill reads as frost rather than a thin wash. Opaque fallback below. Figma
+     still holds the opaque pair; raise it there. */
+  --color-button-bg-secondary-start: #deeff391;
+  --color-button-bg-secondary-end: #b9c8cddb;
 
   /* ⚠️ NOT IN FIGMA. The highlight of the light that sweeps the lockup in the
      entrance (components/ui/LuxLogo.tsx, `LightStops`) — asked for as this
@@ -529,9 +553,158 @@
    directly 13 Sep 2026. Those pills wore `feedback/warning` (#c9918e); they now
    take their own value so the Risky band keeps its own. Callers: PROGRESS's
    `SkinProfile` `.symptom` and the recap's `SkinProfileSummary` pills, both
-   with `text/on-brand` ink. */
+   with `text/on-brand` ink — and, since 14 Sep 2026 (asked for directly),
+   step 1's SELECTED symptom chips (`StartInvestigation.module.css`), also
+   white. White on it measures 2.8:1, short of AA; the app ink would be 4.9:1. */
 :root {
   --color-bg-symptom: #d3858a;
+}
+
+/* ⚠️ NOT IN FIGMA — `bg/field-action`, THE FILL OF A TEXT FIELD'S ROUND ✓ / ✎ /
+   ✕ BUTTONS, asked for directly 14 Sep 2026. One caller: step 1's `Other`
+   description (`StartInvestigation`'s `.otherAction`). */
+:root {
+  --color-bg-field-action: #c0d5da;
+}
+
+/* ⚠️ NOT IN FIGMA — `surface/face-pill`, THE FACE DIAGRAM'S REGION PILLS AS
+   LIGHT FROSTED GLASS, asked for directly 14 Sep 2026 ("soft … frosted glass
+   button, gentle lighting, blurred background for depth", then "not lines,
+   just shades", with less fill and less blur), and then TUNED BY HAND in the
+   browser the same day, TWICE — every value below except the top stop, the
+   bottom stop and the hover wash is from the second pass, and the base from
+   later asks. Glass is never one fill, so it is nine: a pale aqua base
+   (#d3ffff 40%; before it, #c9e7e7 at 23% and a faint grey #9da7a7 at 7%), a
+   fill running from
+   white 30% at the top to a cool indigo-grey (#919ebd 43%) at the bottom, a
+   radial light that is CLEAR at the top-left (`glow`, white 0%) and gathers a
+   pale sage toward the far edges (`rim`, #d2d9c7 28%, full from 65% out), a
+   pale sage tint washed over all of it (#d3e7e8 27%), and the edges drawn as
+   SHADES, never lines — the top-left light slot left clear (#4143ad 0%) and a
+   soft grey shade (#484d4e 29%) blurred inside the bottom-right. Hover swaps
+   the tint for a white wash (14%).
+   ⚠️ FOUR VERSIONS CAME FIRST THE SAME DAY. Near-white at 75% read as ONE FLAT
+   COLOUR; a 45% → 22% white fill with a hairline and 1px highlight crescents
+   read as OUTLINED; an all-white 30% → 26% fill with soft edges was the base
+   the hand tuning started from; the first hand-tuned pass (a sage-white base
+   at 33%, white light pooled at the top-left, an indigo edge light and a deep
+   sage shade at 56%) was heavier than this second one.
+   ⚠️ THE LABEL HOLDS WITH ROOM TO SPARE. `text/primary` measures 6.33:1 at the
+   thinnest point of the worst pill (`Chin / jaw`, upper left of the label),
+   6.5:1 at every label's centre and 5.96:1 on hover — composited by hand
+   over the card's halo, the face's shading and no line glow, the darkest
+   case. The edge shade fades out about 4px inside the pill and does not reach
+   the glyphs. These were measured on the 7% grey base; each lighter base
+   that replaced it only adds light under a dark label, so they are floors.
+   ⚠️ THE LOCATION CHIPS UNDER THE FACE WEAR IT TOO (`Whole face`, `Neck`,
+   `Other`, unselected), asked for directly the same day. They sit off the
+   head, on the card's lighter rim, so they measure higher: 7.63:1 at the
+   worst point, 7.84:1 at the label's centre, 7.44:1 on hover.
+   ⚠️ THE RADIAL'S TWO STOPS ARE BOTH TOKENS because the two states run it in
+   opposite directions — see `surface/face-pill-selected-rim` below.
+   Callers: `FaceDiagram.module.css` `.region` and `.chips button`. */
+:root {
+  --color-surface-face-pill-base: #d3ffff66;
+  --color-surface-face-pill: #ffffff4d;
+  --color-surface-face-pill-end: #919ebd6e;
+  --color-surface-face-pill-glow: #ffffff00;
+  --color-surface-face-pill-rim: #d2d9c747;
+  --color-surface-face-pill-tint: #d3e7e845;
+  --color-surface-face-pill-wash: #ffffff24;
+  --color-effect-face-pill-light: #4143ad00;
+  --color-effect-face-pill-shade: #484d4e4a;
+}
+
+/* ⚠️ NOT IN FIGMA — `surface/face-pill-selected`, THE SAME GLASS IN INDIGO for
+   a picked region or location chip on the face card, asked for directly 14 Sep
+   2026 ("using the indigo shades"). It was flat `bg/brand`. Every value is the
+   brand family the app already has, at an alpha — written as `color-mix` of
+   the brand tokens so that retuning the indigo carries the glass with it (it
+   was retuned the same day, #39386f → #313560): a `bg/brand` base (60%), a
+   fill from `gradient/brand`'s light end (40%) at the top to `bg/brand-hover`
+   (60%) at the bottom, `bg/brand-soft` light pooled at the top-left (20%), a
+   `bg/brand` tint over it (15%), and the
+   edges as shades — a `bg/brand-soft` light (35%) inside the top-left and a
+   `bg/brand-hover` shade (90%) inside the bottom-right. Chosen as the
+   lightest of four measured sets that still clears AA with margin.
+   ⚠️ THEN MADE LESS SHINY, asked for directly the same day: the top stop
+   50% → 40%, the pooled light 45% → 20% and the edge light 80% → 35%. Each
+   of those takes light away from under a WHITE label, so the contrast below
+   was measured before them and is a floor.
+   ⚠️ THE WHITE LABEL MEASURES 5.67:1 AT WORST — `Forehead`, top-left of the
+   label, with the card's brightest line glow behind it — 6.79:1 at every
+   label's centre, and 5.70:1 on the chips; the diagonal selected shade only
+   raises it. Hover lifts and does not wash, so it holds the same. A denser
+   set measured 7.47:1 and read as the flat pill again; flat `bg/brand` is
+   11.61:1. All of these were measured on the earlier, lighter indigo; the
+   darker retune only adds contrast under a white label.
+   ⚠️ AND IT IS NOT INDIGO ANY MORE — a slate teal, `#597f8c`, asked for
+   directly 14 Sep 2026 ("the indigo selected pills color looks so bad"). The
+   brand tokens above are no longer read here: every stop is built from
+   `face-pill-selected-hue` in the same roles — the hue for base and tint, the
+   hue lifted toward white for the top, glow and edge light, and deepened
+   toward the card's dark core for the end, the shade and the diagonal. The
+   rest of the app's selection stays `bg/brand`. ⚠️ The contrast numbers above
+   were measured on indigo and no longer hold: flat `#597f8c` under white is
+   about 4.3:1, short of AA for 12px. Sampled off the rendered glass at 440
+   (Chrome, 2x) after the darker, less shiny pass below, white measures 4.23:1
+   at the lightest top-left of `Forehead`, 4.56–4.61:1 across `Cheeks (L)` and
+   the `Neck` chip, and 5.2–6.3:1 toward the bottom edges. The first pass
+   measured 2.99–5.49:1. Only that top-left corner is still short of AA. */
+:root {
+  /* ⚠️ A LITTLE DARKER AND LESS SHINY, asked for directly the same day: the
+     hue now pulls 15% toward the deep end (`-hue` is what the pill is TINTED
+     from, `#597f8c` as supplied), the base goes 60% → 72%, the top light
+     40% → 22%, the pooled glow 20% → 8% and the edge light 35% → 14%. */
+  --color-face-pill-selected-hue: color-mix(in srgb, #597f8c 85%, #1c2b30);
+  --color-face-pill-selected-light: color-mix(
+    in srgb,
+    var(--color-face-pill-selected-hue) 70%,
+    #ffffff
+  );
+  --color-face-pill-selected-deep: color-mix(
+    in srgb,
+    var(--color-face-pill-selected-hue) 65%,
+    #1c2b30
+  );
+  --color-surface-face-pill-selected-base: color-mix(
+    in srgb,
+    var(--color-face-pill-selected-hue) 72%,
+    transparent
+  );
+  --color-surface-face-pill-selected: color-mix(
+    in srgb,
+    var(--color-face-pill-selected-light) 22%,
+    transparent
+  );
+  --color-surface-face-pill-selected-end: color-mix(
+    in srgb,
+    var(--color-face-pill-selected-deep) 60%,
+    transparent
+  );
+  --color-surface-face-pill-selected-glow: color-mix(
+    in srgb,
+    var(--color-face-pill-selected-light) 8%,
+    transparent
+  );
+  /* the radial's outer stop — clear, so the lilac pools at the top-left and
+     fades out, the reverse of the unselected glass's sage rim */
+  --color-surface-face-pill-selected-rim: transparent;
+  --color-surface-face-pill-selected-tint: color-mix(
+    in srgb,
+    var(--color-face-pill-selected-hue) 15%,
+    transparent
+  );
+  --color-effect-face-pill-selected-light: color-mix(
+    in srgb,
+    var(--color-face-pill-selected-light) 14%,
+    transparent
+  );
+  --color-effect-face-pill-selected-shade: color-mix(
+    in srgb,
+    var(--color-face-pill-selected-deep) 90%,
+    transparent
+  );
 }
 
 /* ⚠️ NOT IN FIGMA — THE IN-PAGE DESKTOP CARD IS MORE TRANSPARENT, asked for
@@ -668,10 +841,19 @@
 :root {
   --color-surface-frost-nav: #dbeded7a;
 
-  --shadow-nav: inset 0 1px 2px
+  --shadow-nav:
+    inset 0 1px 2px
       color-mix(in srgb, var(--color-border-highlight) 60%, transparent),
     inset 0 -1px 2px rgba(46, 42, 63, 0.1), 0 2px 6px rgba(28, 27, 36, 0.1),
     0 12px 28px -10px rgba(28, 27, 36, 0.16);
+
+  /* ⚠️ THE BOXES' INNER SHADOW AT HALF STRENGTH, asked for directly 14 Sep
+     2026 ("less opacity to all the inner shadows of the boxes"). tokens.css
+     generates `shadow/frosted-row` as `inset 2px 4px 9px` black at 20%; every
+     frosted row and card, `DataCard` and the face card bind it (43 uses), and
+     the dark top-left edge it drew read heavy. Same geometry, 10%. Raise the
+     new alpha in Figma. */
+  --shadow-frosted-row: inset 2px 4px 9px rgba(0, 0, 0, 0.1);
 }
 
 html,
@@ -1030,10 +1212,13 @@ main[tabindex="-1"]:focus-visible {
    Medium) under an icon; with no icon the word IS the control, so it takes
    body size, and Light keeps four words in a row from reading as four buttons.
    A control class, so it stays out of `text-wrap: balance` with the others. */
+/* ⚠️ REGULAR (400), NOT LIGHT, AS OF 14 Sep 2026 — asked for directly. The
+   note above predates it: every label is Regular now, so weight no longer
+   marks the active item; the recessed pill and full opacity do. */
 .t-nav {
   font-size: var(--font-size-sm);
   line-height: var(--line-height-xs);
-  font-weight: var(--font-weight-light);
+  font-weight: var(--font-weight-regular);
 }
 .t-button-sm {
   font-size: var(--font-size-xs);
@@ -2208,7 +2393,8 @@ main[tabindex="-1"]:focus-visible {
 }
 
 .welcome-rise {
-  animation: lux-rise-in 800ms var(--ease-standard) var(--rise-delay, 0ms) backwards;
+  animation: lux-rise-in 800ms var(--ease-standard) var(--rise-delay, 0ms)
+    backwards;
 }
 
 .bubble-ask-exit {
@@ -2219,7 +2405,8 @@ main[tabindex="-1"]:focus-visible {
        and `both` held its 0% keyframe (opacity 1) through the whole 3300ms
        delay, painting the question fully visible over the rise's opacity 0 from
        the first frame. The question was on screen at opening because of this. */
-    lux-bubble-push-out var(--duration-slower) var(--ease-standard) 3300ms forwards;
+    lux-bubble-push-out var(--duration-slower) var(--ease-standard) 3300ms
+      forwards;
 }
 
 /* the reply bubble: `backwards` holds the 0% keyframe (opacity 0) for the
@@ -2234,7 +2421,8 @@ main[tabindex="-1"]:focus-visible {
    by moving BOTH delays together. */
 .bubble-swap-in {
   transform-origin: top center;
-  animation: lux-bubble-push-in var(--duration-slower) var(--ease-standard) 3300ms backwards;
+  animation: lux-bubble-push-in var(--duration-slower) var(--ease-standard)
+    3300ms backwards;
 }
 
 /* ⚠️ THESE RULES MUST LIVE HERE, NOT IN A CSS MODULE. CSS Modules localize
@@ -2309,12 +2497,14 @@ main[tabindex="-1"]:focus-visible {
 
   .bubble-ask-exit {
     /* biome-ignore lint/complexity/noImportantStyles: must beat the global duration collapse */
-    animation: lux-fade-out var(--duration-base) var(--ease-standard) 3300ms forwards !important;
+    animation: lux-fade-out var(--duration-base) var(--ease-standard) 3300ms
+      forwards !important;
   }
 
   .bubble-swap-in {
     /* biome-ignore lint/complexity/noImportantStyles: must beat the global duration collapse */
-    animation: lux-fade-in var(--duration-base) var(--ease-standard) 3300ms backwards !important;
+    animation: lux-fade-in var(--duration-base) var(--ease-standard) 3300ms
+      backwards !important;
   }
 
   /* ⚠️ AND A TRANSITION'S DELAY SURVIVES THE COLLAPSE TOO — added after review,
@@ -2404,7 +2594,8 @@ main[tabindex="-1"]:focus-visible {
 [data-tray="tray"][data-state="leaving"] {
   animation: none;
   opacity: 0;
-  transition: opacity var(--duration-base) var(--ease-standard),
+  transition:
+    opacity var(--duration-base) var(--ease-standard),
     transform var(--duration-base) var(--ease-standard);
 }
 
@@ -2711,7 +2902,8 @@ main[tabindex="-1"]:focus-visible {
    reading direction; leave sweeps it back */
 .shine-on-hover {
   background-position: 100% 0;
-  transition: background-position calc(var(--duration-hover) * 1.5) var(--ease-standard);
+  transition: background-position calc(var(--duration-hover) * 1.5)
+    var(--ease-standard);
 }
 
 :is(a, button):hover:not(:disabled) > .shine-on-hover {
@@ -2774,7 +2966,11 @@ main[tabindex="-1"]:focus-visible {
      near-white core, the ring is 2px, and each streak plateaus 20° and fades
      50° either side. The per-pill `--specular-a/-b` still tint the streak's
      shoulders, so the two pills' rims are not identical. */
-  padding: calc(var(--border-width-hairline) * 2);
+  /* ⚠️ `--specular-width` and `--specular-core` are OPTIONAL per-control
+     overrides, added 14 Sep 2026 so the primary `Button` could take a louder
+     rim (Button.module.css) without touching the secondary pills. The
+     fallbacks are the values this rule always had: 2px, and a core 60% white. */
+  padding: var(--specular-width, calc(var(--border-width-hairline) * 2));
   pointer-events: none;
   opacity: 0;
   background: conic-gradient(
@@ -2782,23 +2978,37 @@ main[tabindex="-1"]:focus-visible {
     transparent 0deg,
     var(--specular-a) 30deg,
     var(--color-effect-specular) 50deg,
-    color-mix(in oklab, var(--color-effect-specular), white 60%) 60deg,
+    color-mix(
+        in oklab,
+        var(--color-effect-specular),
+        white var(--specular-core, 60%)
+      )
+      60deg,
     var(--color-effect-specular) 70deg,
     var(--specular-a) 90deg,
     transparent 120deg,
     transparent 180deg,
     var(--specular-b) 210deg,
     var(--color-effect-specular) 230deg,
-    color-mix(in oklab, var(--color-effect-specular), white 60%) 240deg,
+    color-mix(
+        in oklab,
+        var(--color-effect-specular),
+        white var(--specular-core, 60%)
+      )
+      240deg,
     var(--color-effect-specular) 250deg,
     var(--specular-b) 270deg,
     transparent 300deg,
     transparent 360deg
   );
   /* keep the ring: paint everything, cut the content box out of it */
-  -webkit-mask: linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0);
+  -webkit-mask:
+    linear-gradient(#000 0 0) content-box,
+    linear-gradient(#000 0 0);
   -webkit-mask-composite: xor;
-  mask: linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0);
+  mask:
+    linear-gradient(#000 0 0) content-box,
+    linear-gradient(#000 0 0);
   mask-composite: exclude;
   /* the angle is written on the parent and inherited; transitioning it HERE
      is what makes the streak turn rather than jump between pointer moves */
@@ -2818,6 +3028,68 @@ main[tabindex="-1"]:focus-visible {
 }
 
 /* ============================================================================
+   Edge light — a fixed catch of light on a button's rim.
+   ⚠️ NOT IN FIGMA — asked for directly, 14 Sep 2026, "like the nav bar": the
+   bottom nav's lit ring (`BottomNav.module.css` `.nav::before`), lifted onto
+   `Button` (every variant, so `Continue` too) and `SmallButton`.
+
+   A 1px ring lit at the top-left (48% white) and dim at the bottom-right (20%),
+   masked so only the ring paints. Unlike `.specular` it does NOT move and is
+   there at rest — it is the light the pill sits under, and `.specular` is the
+   pointer's. A real span for the same reason `.specular` is one: `Button` owns
+   `::after`, `.pressable` and `.beacon` own `::before`.
+
+   ⚠️ THE NAV KEEPS ITS OWN COPY. The values are duplicated, not shared; if one
+   is retuned the other does not follow.
+   ========================================================================== */
+
+/* ⚠️ BRIGHTER AND SOFTER AS OF 14 Sep 2026, asked for directly — "like we have
+   on the boxes". The page card's light edge is not a drawn line: it is
+   `shadow/frosted-card-desktop`'s `inset 0 2px 12px rgba(255,255,255,0.25)`, a
+   white glow falling inward from the top. The span now carries that exact glow
+   plus a 1px top catch, and the ring moved to its `::before` with its streaks
+   raised (top-left 0.48 → 0.7, bottom-right 0.2 → 0.3).
+   ⚠️ THE RING HAS TO BE THE PSEUDO, NOT THE SPAN. A mask clips the element AND
+   everything it paints, so masking the span down to a ring would cut the inner
+   glow away with the interior. */
+.edge-light {
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  pointer-events: none;
+  /* the four strengths are OVERRIDABLE per control — the indigo pills set
+     brighter ones (Button.module.css, SegmentedToggle, CheckResults), because
+     the same white on a dark fill reads quieter than on a pale one. The
+     fallbacks are the pale pills' values. */
+  box-shadow:
+    inset 0 2px 12px rgba(255, 255, 255, var(--edge-glow, 0.25)),
+    inset 0 1px 1px rgba(255, 255, 255, var(--edge-catch, 0.35));
+}
+
+.edge-light::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  padding: 1px;
+  background: linear-gradient(
+    135deg,
+    rgba(255, 255, 255, var(--edge-ring-lit, 0.7)),
+    rgba(255, 255, 255, 0) 40%,
+    rgba(255, 255, 255, 0) 60%,
+    rgba(255, 255, 255, var(--edge-ring-dim, 0.3))
+  );
+  -webkit-mask:
+    linear-gradient(#000 0 0) content-box,
+    linear-gradient(#000 0 0);
+  -webkit-mask-composite: xor;
+  mask:
+    linear-gradient(#000 0 0) content-box,
+    linear-gradient(#000 0 0);
+  mask-composite: exclude;
+}
+
+/* ============================================================================
    Beacon — the one button that has to say "start here": Welcome's
    `Create skin profile`. ⚠️ NOT IN FIGMA — asked for directly, 12 Sep 2026,
    after the "Get React Bits Pro" button in reactbits.dev's navbar, WITH THE
@@ -2833,7 +3105,7 @@ main[tabindex="-1"]:focus-visible {
       default (start → end) to its own hover reversal (end → start) and back —
       the same two pictures the button already alternates between on hover,
       now slowly, unprompted, on a 4s `--ease-breathe` cycle. No new colour.
-   2. THE SWEEP. A soft band of the label's white at 25%, twice the width of
+   2. THE SWEEP. A soft band of the label's white at 15%, twice the width of
       the pill, crossing it once every 10s — the reference's own cadence. It is
       `::before` on the button, which `Button` leaves free (`::after` is its
       press overlay). Under the label, over the gradient.
@@ -2864,7 +3136,8 @@ main[tabindex="-1"]:focus-visible {
 }
 
 .button-beacon {
-  animation: lux-beacon-flow var(--duration-breath-phase) var(--ease-breathe) infinite;
+  animation: lux-beacon-flow var(--duration-breath-phase) var(--ease-breathe)
+    infinite;
 }
 
 /* ⚠️ THE ONE CALLER ALSO RISES IN. Welcome's CTA carries `.welcome-rise`, and
@@ -2918,7 +3191,6 @@ textarea,
   white-space: nowrap;
   border: 0;
 }
-
 
 /* ============================================================================
    The entrance — components/layout/LogoEntrance.tsx
@@ -3448,4 +3720,16 @@ html[data-entrance-hold] .screen * {
    (HOLD_BACKSTOP_MS), not only on `animationend`. */
 html[data-entrance-hold] .screen {
   opacity: 0;
+}
+
+/* the translucent secondary endpoints (see :root above) made opaque again —
+   `tokens.css`'s own pair — for a reader who asked for less transparency */
+@media (prefers-reduced-transparency: reduce) {
+  :root {
+    --color-button-bg-secondary-start: #deeff3;
+    --color-button-bg-secondary-end: #b7c6ca;
+  }
+  .edge-light {
+    display: none;
+  }
 }

@@ -38,7 +38,7 @@
  * `otherLocations`, `conditions` and `timeline` as data and decides how each
  * one is drawn. See `SkinProfileSummary.tsx`.
  */
-import type { Answers } from "@/lib/store/answers";
+import { areasOf, symptomsOf, type Answers } from "@/lib/store/answers";
 import { FACE_REGION_IDS } from "@/features/my-skin/components/FaceDiagram";
 import { daysBetween, formatLong, fromIso } from "@/lib/date";
 
@@ -85,6 +85,17 @@ export type ProfileRecap = {
   /** step 1 — "Whole face", "Neck", "Other": the chips under the diagram */
   otherLocations: string[];
   /**
+   * step 1 — each symptom and the places marked for it, which the diagram draws
+   * as callouts: a pill at its edge per symptom, with a line to each place.
+   *
+   * ⚠️ THE SYMPTOMS' ONLY DRAWING ON THIS SCREEN, since 14 Sep 2026 — asked for
+   * directly. They were pills in the `What you noticed` block until 13 Sep 2026,
+   * removed with the promise that they would move onto the face, and this is
+   * that move. A symptom placed only on `Other` has no coordinate and so no
+   * callout; its place is still the lit `Other` chip.
+   */
+  places: NonNullable<Answers["start"]>;
+  /**
    * step 1 — what the user TYPED under the diagram, or null.
    *
    * ⚠️ IT WAS MISSING FROM THIS RECAP UNTIL 8 Sep 2026, AND NOT BECAUSE THE
@@ -130,14 +141,18 @@ export type ProfileRecap = {
  * gets it.
  */
 export function recap(a: Answers, today: Date): ProfileRecap {
-  const locations = a.location ?? [];
+  /* every place step 1 marked, across its symptoms — the union this screen has
+     always drawn, derived now that each symptom keeps its own places (`start`,
+     see lib/store/answers.ts) */
+  const locations = areasOf(a);
 
   return {
     skinType: a["skin-type"] ?? null,
     tendencies: a.tendencies ?? [],
-    symptoms: a.start ?? [],
+    symptoms: symptomsOf(a),
     faceRegions: locations.filter((l) => FACE_REGION_IDS.includes(l)),
     otherLocations: locations.filter((l) => !FACE_REGION_IDS.includes(l)),
+    places: a.start ?? {},
     locationNote: a.locationOther?.trim() || null,
     /* ⚠️ THE PHOTO IS AN ID, NEVER AN IMAGE. `selfie` holds a per-capture
        string and no pixels — every capture surface in LUX is a placeholder —
@@ -257,14 +272,22 @@ export const COPY = {
   skinTypeUnknown: "Not answered",
   tendenciesLabel: "Tendencies",
   /**
-   * The episode block's heading. ⚠️ IT WAS "What you noticed" UNTIL 13 Sep
-   * 2026, over the symptom pills — renamed and the pills removed, asked for
-   * directly; the pills are moving onto the face diagram in a follow-up. The
-   * block now holds step 4 alone: the status as its value, then `Started on`.
-   * The status needs no label of its own under a heading that already says
-   * "Current state", which is why `statusLabel` is gone.
+   * The episode block's heading — "Symptom state" over one symptom, "Symptoms
+   * state" otherwise. ⚠️ IT WAS "What you noticed" UNTIL 13 Sep 2026, over the
+   * symptom pills — renamed and the pills removed, asked for directly — and
+   * the pills are callouts on the face diagram since 14 Sep 2026. The block
+   * holds step 4 alone: the status as its value, then `Started on`. The status
+   * needs no label of its own under a heading that already names it, which is
+   * why `statusLabel` is gone.
+   *
+   * ⚠️ "Current state" UNTIL 14 Sep 2026 — renamed, asked for directly
+   * ("Symptom(s) state"). It is the symptoms' state, not the investigation's,
+   * which is the rule every label on this screen already follows (see the
+   * copy note above), and the noun follows how many symptoms were reported.
+   * `/progress`'s profile card takes the same label.
    */
-  currentLabel: "Current state",
+  currentLabel: (symptoms: number) =>
+    symptoms === 1 ? "Symptom state" : "Symptoms state",
   /* ---- the photo, step 1's optional capture ---- */
   /**
    * ⚠️ IT IS A BLOCK OF ITS OWN NOW, AND IT WAS A LINE OF TEXT TWICE BEFORE
@@ -292,9 +315,10 @@ export const COPY = {
    * words" was explaining the pair rather than naming it.
    */
   locationOtherLabel: "Other",
-  /** the visually-hidden line that states the diagram's answer in text — the
-   *  face itself is `aria-hidden`, see `FaceDiagram` */
-  locationSpoken: (regions: string[]) => `On the face: ${regions.join(", ")}.`,
+  /* ⚠️ `locationSpoken` — "On the face: …", the diagram's regions in words —
+     WENT ON 14 Sep 2026 with the callouts: `FaceDiagram` lists each symptom
+     with its places for a screen reader now, and those places are the regions,
+     so the two said one answer twice. */
   /** ⚠️ "Known skin conditions" until 13 Sep 2026 — shortened, asked for
    *  directly; `/progress`'s profile card carries the same label. */
   conditionsLabel: "Known conditions",
@@ -316,7 +340,7 @@ export const COPY = {
    */
   startedLabel: "Started on",
   dayWord: "Day",
-  /* ---- step 4, the whole of the `Current state` block ---- */
+  /* ---- step 4, the whole of the symptoms' state block ---- */
   startedUnknown: "No start date given",
   /* ---- the hand-off ---- */
   cta: "Add your products",

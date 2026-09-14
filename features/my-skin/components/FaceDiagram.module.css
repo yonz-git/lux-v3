@@ -27,6 +27,11 @@
      directly 13 Sep 2026, a softer corner on the face card. It is the page
      card's own radius, so the two nest as one family. NOT IN FIGMA. */
   border-radius: var(--radius-3xl);
+  /* the grain (`::after`) paints between this card's fill and its content */
+  position: relative;
+  isolation: isolate;
+  /* ⚠️ HISTORY ONLY BELOW, UNTIL "A MOODY MESH" — the sage base, the single
+     radial halo and its day of retunes were all replaced on 14 Sep 2026. */
   /* ⚠️ `surface/data-strong` (62%), NOT `surface/data` (44%) — decided here.
      This card carries objects ON it (the face form and seven pills) rather
      than text alone, so it is doing a different job from a PROGRESS or CHECK
@@ -100,25 +105,97 @@
      TOP-DOWN TINT — slate indigo (#52607c @62%) fading into
      `surface/data-strong` — which cools the card's top edge toward the brand
      indigo. Raw hex for the reason the note above gives. */
-  --face-card-halo: radial-gradient(
-    circle at 50% 42%,
-    #2b42439e 0%,
-    #71959f 45%,
-    #a9c2cf 100%
-  );
+  /* ⚠️ DARKER AND GREYER, asked for directly 14 Sep 2026: every stop, and the
+     top tint, taken 40% toward its own grey and then 15% darker —
+     #2b4243 → #2b3637, #71959f → #6a7c81, #a9c2cf → #97a3aa,
+     #52607c → #4a5160. Alphas unchanged.
+     ⚠️ THEN BLUER AND 10% DARKER AGAIN the same day ("too grey"): red down
+     6%, blue up 8%, then × 0.9 — #243035, #5a6f7d, #8091a5, tint #3f485d.
+     A slate blue rather than the sage it started as.
+     ⚠️ AND THEN SUPPLIED DIRECTLY, later the same day: a black core at 62%,
+     `#4f6873` mid, and a translucent `#5b8891` at 40% on the rim, so the
+     card's own layers show at the corners again. The background line is
+     unchanged.
+     ⚠️ THEN MORE TRANSPARENT, asked for directly the same day ("too dark"):
+     same colours, lower alphas — the core 62% → 40%, the mid opaque → 70%,
+     the rim 40% → 28%, the top tint 62% → 40%, and the foot below 40% → 30%.
+     More of the card's sage base and the page behind its blur show through. */
 
-  background: var(--face-card-halo),
-    linear-gradient(#52607c9e, var(--color-surface-data-strong)),
-    var(--color-surface-data-strong);
+  /* ⚠️ A MOODY MESH, NOT A HALO — asked for directly 14 Sep 2026, from three
+     supplied "dark moody gradient" references: the one-radial halo "looks
+     tacky". Depth now comes from light and shadow placed like a lit surface,
+     every layer translucent over the backdrop blur, with no flat sage base:
+       1. ice light pooling in from the top-right corner;
+       2. a mint glow rising from the bottom-left;
+       3. a faint blue bloom on the left edge;
+       4. a deep navy shadow behind the face, which keeps its white lines
+          legible;
+       5. a navy wash running darker toward the bottom-right.
+     The grain on `::after` is the nav bar's own noise tile (BottomNav), so the
+     gradients do not band. Raw values: `02 Color` has no role for any of this;
+     raise it as `gradient/face-card`.
+     ⚠️ RETUNED the same day, asked for directly: the top-right light 10% less
+     bright (0.5 → 0.45), and the dark end of the navy wash in the bottom-right
+     corner 10% brighter (#0e1c28 @62% → #26333e @56%).
+     ⚠️ THEN SUPPLIED DIRECTLY, later the same day: every stop below as given —
+     a slate-blue top-right light, a grey-blue bottom-left glow in place of the
+     mint, the left bloom, a violet-black shadow behind the face, and the wash
+     slightly more opaque.
+     ⚠️ AND SUPPLIED DIRECTLY AGAIN, later still: a much quieter mesh. The
+     top-right light and the left bloom are fully transparent now (kept as
+     layers so the stops can be dialled back up), the bottom-left glow ends in
+     a teal, the shadow behind the face is a slate rather than violet-black,
+     and the wash fades out entirely toward the bottom-right. */
+  --face-card-halo: radial-gradient(
+      65% 55% at 88% 6%,
+      #7ca0b400,
+      #c4deec00 72%
+    ),
+    radial-gradient(60% 45% at 8% 100%, #64798838, #6c939259 70%),
+    radial-gradient(45% 40% at 0% 40%, #6ea0c800, #6ea0c800 70%),
+    radial-gradient(70% 60% at 45% 52%, #1c252f9e, #06101a00 78%),
+    linear-gradient(165deg, #34566824 0%, #26333e00 100%);
+
+  /* ⚠️ THE BOTTOM IS DARKENED, asked for directly 14 Sep 2026: the lit
+     `Whole face` / `Neck` / `Other` chips washed out on a pale foot. A navy
+     wash from clear at 58% of the card's height to its foot, over everything
+     else. ⚠️ Then 15% BRIGHTER at the bottom, asked for directly later the same
+     day: this foot 40% → 34%, and the wash's dark end above 56% → 48%.
+     ⚠️ And 10% lower opacity again, asked for directly: the foot 34% → 31%,
+     the wash's dark end 48% → 43%.
+     ⚠️ Then supplied directly: the foot at 9% (`#060e1617`), with the mesh
+     above replaced in the same request. */
+  --face-card-foot: linear-gradient(transparent 58%, #060e1617 100%);
+
+  background: var(--face-card-foot), var(--face-card-halo);
   box-shadow: var(--shadow-frosted-row);
   -webkit-backdrop-filter: blur(var(--blur-card));
   backdrop-filter: blur(var(--blur-card));
+}
+
+/* the grain — the nav bar's noise tile, at `z-index: -1` inside the card's own
+   stacking context: over the mesh, under the face and every pill */
+.card::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  border-radius: inherit;
+  pointer-events: none;
+  opacity: 0.08;
+  mix-blend-mode: overlay;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='120' height='120'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='2'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
 }
 
 .diagram {
   position: relative;
   width: 100%;
   aspect-ratio: 392 / 300;
+  /* ⚠️ ROOM FOR THE NECK, 14 Sep 2026: the drawing now hangs ~41 units below
+     this box and fades out (see `.form`); 30 of them are cleared here so the
+     chip row sits under the faded tail, not over the neck. A margin percentage
+     resolves against WIDTH, which is the 392 this is written in. */
+  margin-bottom: calc(30 / 392 * 100%);
   /* The 392x300 box used to end ~20% below the lowest pill, because the drawn
      face bottomed out at y=241 and nothing filled the rest; a -9% bottom margin
      pulled the chip row up into that dead air. The head now runs to y=290 of
@@ -162,12 +239,27 @@
    ⚠️ EVERY COLOUR AND ALPHA HERE IS A CHOSEN VALUE, raw rather than a token
    because `02 Color` has no role for face artwork. `#284a4d` is the halo's
    core taken one step deeper. Raise the drawing and its shading in Figma. */
+/* ⚠️ THE DRAWING RUNS 980 SOURCE ROWS NOW, NOT 830 — the neck, asked for
+   directly 14 Sep 2026. The asset stopped in a hard cut under the chin. From
+   row 740 down (blended over 20 rows) both images now come straight from the
+   same supplied illustration, registered to the head at 0.1848 scale within
+   half a pixel: the neck's own contour lines to row 979, and the neck's
+   outline for the silhouette. ⚠️ THE SWITCH IS AT 740, NOT AT THE OLD CUT: the
+   old asset had already faded its last ~90 rows toward the cut, lines and
+   silhouette both, so splicing at 830 left a band where the shading died and
+   came back, and a box where the neck lines thinned. The masks below fade the
+   whole neck out. The head keeps its 226x280 footprint at
+   83,10, so every region pill still sits on its landmark; the box is only
+   taller, by 980/830, and hangs ~41 units below `.diagram` — which is why
+   `.diagram` carries a bottom margin. Every percentage of HEIGHT in the
+   layers below is the old value × 830/980, so the shading and the falloff
+   stay where they were on the face. */
 .form {
   position: absolute;
   left: calc(83 / 392 * 100%);
   top: calc(10 / 300 * 100%);
   width: calc(226 / 392 * 100%);
-  height: calc(280 / 300 * 100%);
+  height: calc(280 / 300 * 980 / 830 * 100%);
   pointer-events: none;
 }
 
@@ -179,36 +271,56 @@
   inset: 0;
 }
 
+/* the holder for `.lines`' filter — out of layout but still rendered, since a
+   filter inside a `display: none` SVG resolves to nothing in some engines */
+.filters {
+  position: absolute;
+  width: 0;
+  height: 0;
+  overflow: hidden;
+}
+
 .volume {
   background: radial-gradient(
-    ellipse 50% 46% at 50% 42%,
+    ellipse 50% 38.96% at 50% 35.57%,
     rgb(255 255 255 / 0.24) 0%,
     rgb(255 255 255 / 0.1) 40%,
     rgb(40 74 77 / 0) 72%,
     rgb(40 74 77 / 0.36) 100%
   );
-  -webkit-mask: var(--face-silhouette) center / contain no-repeat;
-  mask: var(--face-silhouette) center / contain no-repeat;
+  /* the second layer fades the shading out down the neck — see `.form` */
+  -webkit-mask:
+    var(--face-silhouette) center / contain no-repeat,
+    linear-gradient(#000 80%, transparent 98%);
+  -webkit-mask-composite: source-in;
+  mask:
+    var(--face-silhouette) center / contain no-repeat,
+    linear-gradient(#000 80%, transparent 98%);
+  mask-composite: intersect;
 }
 
 /* the asset's lines were thickened by about half a pixel and lifted when it was
    cut, so a 1px source line does not antialias to grey at card size — brighter
-   than the prototype's, deliberately not bolder */
+   than the prototype's, deliberately not bolder.
+   ⚠️ AND CLEARER AGAIN, asked for directly 14 Sep 2026 (twice): the filter is
+   an SVG one in FaceDiagram.tsx lifting each line pixel's alpha to its square
+   root (the reason and the numbers are there). A filter runs before the mask,
+   so the falloff below still applies to the lifted lines. */
 .lines {
   width: 100%;
   height: 100%;
   object-fit: contain;
   user-select: none;
-  -webkit-mask-image: radial-gradient(
-    ellipse 50% 46% at 50% 42%,
-    #000 45%,
-    rgb(0 0 0 / 0.6) 100%
-  );
-  mask-image: radial-gradient(
-    ellipse 50% 46% at 50% 42%,
-    #000 45%,
-    rgb(0 0 0 / 0.6) 100%
-  );
+  filter: var(--face-lines-brighten);
+  /* the second layer fades the lines out down the neck — see `.form` */
+  -webkit-mask-image:
+    radial-gradient(ellipse 50% 38.96% at 50% 35.57%, #000 45%, rgb(0 0 0 / 0.6) 100%),
+    linear-gradient(#000 80%, transparent 98%);
+  -webkit-mask-composite: source-in;
+  mask-image:
+    radial-gradient(ellipse 50% 38.96% at 50% 35.57%, #000 45%, rgb(0 0 0 / 0.6) 100%),
+    linear-gradient(#000 80%, transparent 98%);
+  mask-composite: intersect;
 }
 
 /* ⚠️ THE GLOW IS A WRAPPER BECAUSE A FILTER RUNS BEFORE A MASK. On `.shine`
@@ -245,8 +357,211 @@
     rgb(255 255 255 / 0.45) 30%,
     transparent 100%
   );
-  -webkit-mask: var(--face-lines) center / contain no-repeat;
-  mask: var(--face-lines) center / contain no-repeat;
+  -webkit-mask:
+    var(--face-lines) center / contain no-repeat,
+    linear-gradient(#000 80%, transparent 98%);
+  -webkit-mask-composite: source-in;
+  mask:
+    var(--face-lines) center / contain no-repeat,
+    linear-gradient(#000 80%, transparent 98%);
+  mask-composite: intersect;
+}
+
+/* ---------------------------------------------------------------------------
+   THE SYMPTOM CALLOUTS — NOT IN FIGMA, asked for directly 14 Sep 2026; the
+   layout and its reasoning are on `layoutCallouts` in FaceDiagram.tsx.
+
+   ⚠️ THE PILL IS THE SELECTED SYMPTOM CHIP, SCALED — `bg/symptom` with a white
+   label and `Chip`'s diagonal shade deepened toward `text/primary`, the recipe
+   `StartInvestigation.module.css` gives the chip it names. A symptom looks like
+   a symptom wherever it appears; the white label is that pair's recorded 2.8:1
+   shortfall, not a new one. It is sized in `cqw` of `.diagram` like `.region`,
+   one step smaller, so it fits the gutter beside the face (~74px at 440).
+
+   ⚠️ THE LINE IS THE SAME ROSE, so it reads as the pill's and not as one more
+   white level line of the drawing. It DRAWS OUT from the place to the pill —
+   `pathLength="1"` and a dash offset entered with `@starting-style`, a
+   transition, so no `@keyframes` name is localized here — and the pill fades
+   in once the line has arrived.
+   -------------------------------------------------------------------------- */
+.callouts {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  transition: opacity var(--duration-base) var(--ease-standard);
+}
+
+.callouts[data-hidden] {
+  opacity: 0;
+}
+
+.leaders {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  overflow: visible;
+}
+
+.leader {
+  stroke: var(--color-bg-symptom);
+  stroke-width: 1.25;
+  stroke-linecap: round;
+  stroke-dasharray: 1;
+  stroke-dashoffset: 0;
+  /* the draw-out, then the hover's light (see HOVER below) on its own clock */
+  transition: stroke-dashoffset var(--duration-slower) var(--ease-standard),
+    stroke var(--duration-slow) var(--ease-standard),
+    stroke-width var(--duration-slow) var(--ease-standard),
+    opacity var(--duration-slow) var(--ease-standard);
+}
+
+@starting-style {
+  .leader {
+    stroke-dashoffset: 1;
+  }
+}
+
+/* the dot where a `Neck` line meets the drawing — the line's own rose with a
+   white ring, so it reads over the white level lines; it is there before the
+   line draws out of it */
+.anchor {
+  fill: var(--color-bg-symptom);
+  stroke: rgb(255 255 255 / 0.7);
+  stroke-width: 1;
+  transition: opacity var(--duration-base) var(--ease-standard),
+    fill var(--duration-slow) var(--ease-standard);
+}
+
+@starting-style {
+  .anchor {
+    opacity: 0;
+  }
+}
+
+.symptom {
+  position: absolute;
+  transform: translateY(-50%);
+  display: inline-flex;
+  align-items: center;
+  min-height: clamp(18px, 6cqw, 24px);
+  padding: 0 clamp(4px, 1.8cqw, var(--space-sm));
+  font-size: clamp(8px, 3cqw, 12px);
+  line-height: 1.3;
+  white-space: nowrap;
+  border-radius: var(--radius-full);
+  color: var(--color-text-on-brand);
+  /* ⚠️ FROSTED ROSE, NOT THE OPAQUE CHIP — asked for directly 14 Sep 2026
+     ("lower opacity for the symptom pills and give blur frosted effect"). The
+     same two stops at 62% / 70%, over a backdrop blur, with a lit top edge
+     inside so the translucent fill does not read flat (non-negotiable 11).
+     The label stays white at full strength: only the FILL thins. */
+  background: linear-gradient(
+    135deg,
+    color-mix(in srgb, var(--color-bg-symptom) 62%, transparent) 35%,
+    color-mix(
+        in srgb,
+        color-mix(in srgb, var(--color-bg-symptom) 80%, var(--color-text-primary))
+          70%,
+        transparent
+      )
+      100%
+  );
+  box-shadow: inset 0 1px 0 rgb(255 255 255 / 0.28), var(--shadow-sm);
+  -webkit-backdrop-filter: blur(var(--blur-sm)) saturate(140%);
+  backdrop-filter: blur(var(--blur-sm)) saturate(140%);
+  /* the entrance waits for the line; the hover's light and fade (see HOVER
+     below) do not, so they ride `filter` on their own undelayed clock */
+  transition: opacity var(--duration-slow) var(--ease-standard)
+      var(--duration-slow),
+    filter var(--duration-slow) var(--ease-standard);
+  /* the one part of the callout layer that takes the pointer — see HOVER */
+  pointer-events: auto;
+}
+
+/* non-negotiable 11: the opaque chip it was */
+@media (prefers-reduced-transparency: reduce) {
+  .symptom {
+    background: linear-gradient(
+      135deg,
+      var(--color-bg-symptom) 35%,
+      color-mix(in srgb, var(--color-bg-symptom) 80%, var(--color-text-primary))
+        100%
+    );
+    -webkit-backdrop-filter: none;
+    backdrop-filter: none;
+  }
+}
+
+@starting-style {
+  .symptom {
+    opacity: 0;
+  }
+}
+
+.symptom[data-side="left"] {
+  left: 0;
+}
+
+.symptom[data-side="right"] {
+  right: 0;
+}
+
+/* ---------------------------------------------------------------------------
+   HOVER LIGHTS ONE ANSWER'S PAIRS — NOT IN FIGMA, asked for directly 14 Sep
+   2026; the reasoning is on the component in FaceDiagram.tsx. A hovered
+   symptom lights its places and its lines to them; a hovered place lights the
+   symptoms marked there and their lines to it.
+
+   ⚠️ LIT IS LIGHTER, NOT A NEW COLOUR. A lit line runs `bg/symptom` mixed
+   35% toward white and thickens 1.25 → 2; a lit pill brightens 14% under a
+   soft white glow at 42%. ⚠️ THE LIGHT WAS 30% STRONGER for its first hour
+   (50% white, 20% brighter, a 60% glow) and was cut, asked for directly the
+   same day; the fades and the width did not change. While anything is lit, the other lines fade to 25% and the
+   other symptom pills to 45%, because one highlighted line among a dozen
+   full-strength ones is still a dozen lines. Region pills that are not lit
+   keep their state: they are answers, and only the lines were confusing.
+
+   ⚠️ ONE FILTER LIST FOR BOTH STATES OF A SYMPTOM PILL — brightness, opacity,
+   drop-shadow, in that order, lit and faded alike. Filter lists interpolate
+   function by function, so a pill going straight from faded to lit (the
+   pointer crossing to its neighbour) would otherwise snap. The fade is
+   `filter: opacity()` and not `opacity` because `.symptom`'s own opacity
+   waits `duration/slow` for its entrance.
+   ⚠️ ALL ON `duration/slow`, the clock `.glow` uses, so the light arrives and
+   leaves like light.
+   -------------------------------------------------------------------------- */
+.callouts[data-hidden] .symptom {
+  pointer-events: none;
+}
+
+/* ⚠️ 15% SOFTER AGAIN, asked for directly later on 14 Sep 2026: the line's
+   white share 35% → 30%, the pills' lift 14% → 12%, their glow 42% → 36%. The
+   fades are unchanged. */
+.leader[data-lit] {
+  stroke: color-mix(in srgb, var(--color-bg-symptom) 70%, white);
+  stroke-width: 2;
+}
+
+.anchor[data-lit] {
+  fill: color-mix(in srgb, var(--color-bg-symptom) 70%, white);
+}
+
+.callouts[data-focus] .leader:not([data-lit]),
+.callouts[data-focus] .anchor:not([data-lit]) {
+  opacity: 0.25;
+}
+
+.symptom[data-lit] {
+  filter: brightness(1.12) opacity(1) drop-shadow(0 0 6px rgb(255 255 255 / 0.36));
+}
+
+.callouts[data-focus] .symptom:not([data-lit]) {
+  filter: brightness(1) opacity(0.45) drop-shadow(0 0 0 rgb(255 255 255 / 0));
+}
+
+.region[data-lit] {
+  filter: brightness(1.12) drop-shadow(0 0 6px rgb(255 255 255 / 0.36));
 }
 
 .region {
@@ -291,50 +606,140 @@
   font-size: clamp(8px, 3.6cqw, 12px);
   line-height: 1.3;
 
-  /* ⚠️ OPAQUE AND BRIGHT, WITH THE EDGE CARRIED BY A HAIRLINE — decided here,
-     NOT IN FIGMA.
-     The pill has been through both ends of this. Figma draws it as a flat fill
-     with no stroke; that shipped as OPAQUE bg/frost-light, which on the sage
-     `surface/data` card read as seven white stickers pasted over the face. The
-     obvious fix — surface/frost-light at 55%, the same value the location chips
-     under it use — is wrong here for a reason the chips do not have: THE FACE
-     OUTLINE PASSES BEHIND THESE PILLS. A 1.25px text/primary ellipse showing
-     through a translucent fill reads as a rendering artefact, not as depth, and
-     it crosses `Forehead`, both `Cheeks` and `Chin / jaw`.
-     So the fill stays opaque: bg/frost-light-muted (see globals.css), which is
-     the same near-white one step down from bg/frost-light — bright enough to
-     separate cleanly from the sage, short of the glare that made the original
-     read as a sticker. Everything that made the old version read as a sticker is
-     handled by the parts Figma left off instead: radius/full rather than
-     radius/lg (16 on a 30-tall pill is an almost-pill, and the near-miss is
-     what looked cheap next to the fully-round chips below), a 1px border/subtle
-     hairline — the frosted-ROW edge, i.e. Surface System A, because the pill is
-     now a light opaque object rather than glass — and shadow/sm to seat it on
-     the sage instead of floating on it. */
-  border-radius: var(--radius-full);
-  border: var(--border-width-hairline) solid var(--color-border-subtle);
-  background: var(--color-bg-frost-light-muted);
-  box-shadow: var(--shadow-sm);
+  /* ⚠️ LIGHT FROSTED GLASS, NOT AN OPAQUE PILL — asked for directly 14 Sep
+     2026 (a soft frosted glass button, gentle lighting, blurred background for
+     depth, the pill shape kept), NOT IN FIGMA.
+     Figma draws a flat fill with no stroke. Until 14 Sep it shipped OPAQUE —
+     `bg/frost-light-muted` with a `border/subtle` hairline — and deliberately:
+     the face was a CSS dome whose 1.25px `text/primary` outline passed behind
+     four of these pills, and a dark line seen through a translucent fill read
+     as a rendering artefact. The dome went on 13 Sep 2026. What passes behind
+     the pills now is white contour lines on a dark ground, and white lines
+     blurred under frost is what glass looks like, so that reason no longer
+     holds. `radius/full` (not Figma's `radius/lg`, an almost-pill) and
+     `shadow/sm` to seat it on the face both stay.
+     ⚠️ GLASS IS NEVER ONE FILL, AND ITS EDGE IS NEVER A LINE. A near-white at
+     75% read as a flat pale pill; the version after it drew its edge as a
+     white hairline and two 1px crescents, which read as outlines rather than
+     as glass (asked for directly: "not lines, just shades"). What varies now,
+     every value in globals.css under `surface/face-pill`:
+       1. FROST — `blur(--blur-sm / 2)` (4px) `saturate(170%)` over a THIN
+          fill, so the white lines behind stay readable as lines, only
+          softened: the face is still there under the glass.
+       2. A FILL WITH A LIGHT IN IT — a pale aqua base, white at the top
+          cooling to an indigo-grey at the bottom, a radial light, and a pale
+          sage tint washed over the lot (the wash slot, below). The radial runs
+          `--glass-glow` → `--glass-rim`: unselected it is CLEAR at the top-left
+          and gathers a pale sage toward the far edges; selected it is the
+          reverse, lilac pooled at the top-left and clear at the edges.
+          ⚠️ These were TUNED BY HAND in the browser and supplied directly,
+          twice on 14 Sep 2026; globals.css carries them and the label contrast.
+       3. EDGES AS SHADES — no border (the hairline stays, transparent, so the
+          box keeps its size) and no drawn highlight: a soft shade blurred
+          inside the bottom-right, and a light inside the top-left that is
+          clear unselected and lilac selected. Offset, blurred, negatively spread inset shadows follow
+          the radius and fade out before they reach the label. A gradient
+          border would need a pseudo-element, and both are taken (`::before`
+          the selected shade, `::after` the hover ring).
+       4. DEPTH — `shadow/sm` seats it on the face.
+     ⚠️ THE HOVER IS A WASH IN THE SHADOW LIST (`--region-glass-wash`), not a
+     new fill: gradients do not transition, a box-shadow does, and a wash
+     brightens every layer under it evenly.
+     ⚠️ THE LABEL STAYS `text/primary`. White on light glass is unreadable, and
+     the reference's white glyph is a large one; the measured contrast is in
+     globals.css. ⚠️ Earlier references' warm orange was not taken: LUX has no
+     warm colour role. */
   color: var(--color-text-primary);
   white-space: nowrap;
 
+  /* `filter` is the hover's light, on the callouts' clock — see HOVER */
   transition: background-color var(--duration-base) var(--ease-standard),
     border-color var(--duration-base) var(--ease-standard),
     box-shadow var(--duration-base) var(--ease-standard),
-    color var(--duration-base) var(--ease-standard);
+    color var(--duration-base) var(--ease-standard),
+    opacity var(--duration-base) var(--ease-standard),
+    filter var(--duration-slow) var(--ease-standard);
+
+  /* the glint's ink (`.shine-text`, globals.css) — it MUST be the label's own
+     colour, or the label changes colour for the length of the shine */
+  --shine-ink: var(--color-text-primary);
 }
 
-/* the pill is already the brightest fill on the card, so hover cannot lighten
-   it — it deepens the shadow and the hairline instead */
-.region:hover {
-  border-color: var(--color-border-default);
-  box-shadow: var(--shadow-md);
+/* THE GLASS ITSELF — the material described on `.region`, as its own rule so
+   the location chips under the face can wear it too.
+   ⚠️ `Whole face`, `Neck` AND `Other` TAKE IT AS WELL, asked for directly 14
+   Sep 2026. They are the same answer as the regions, given in the same tap,
+   and a row of pale `Chip` stickers under a face of glass pills read as a
+   different control. BOTH STATES: unselected here, indigo glass on
+   `[data-selected="true"]` below. They are `Chip`s, so the selector is
+   `.chips button[data-selected]` (0,2,1), which outranks `Chip`'s own fills
+   and hairlines (`.chip` 0,1,0 and `.chip[data-selected="true"]` 0,2,0); the
+   hover rules below outrank `Chip`'s hovers (up to 0,4,0) and restate the
+   transparent border so none of them draws a line back on. `Chip`'s disabled
+   fade, its hit area and its diagonal selected shade are untouched, and the
+   recap's read-only chips are `span`s this does not match.
+   ⚠️ THE COLOURS AND THE LIFT ARE STATE VARIABLES (`--glass-*`), so one recipe
+   draws both states and the selected rule only swaps values. */
+.region,
+.chips button[data-selected] {
+  --glass-base: var(--color-surface-face-pill-base);
+  --glass-top: var(--color-surface-face-pill);
+  --glass-end: var(--color-surface-face-pill-end);
+  --glass-glow: var(--color-surface-face-pill-glow);
+  --glass-rim: var(--color-surface-face-pill-rim);
+  --glass-tint: var(--color-surface-face-pill-tint);
+  --glass-light: var(--color-effect-face-pill-light);
+  --glass-shade: var(--color-effect-face-pill-shade);
+  --glass-lift: var(--shadow-sm);
+  --region-glass-wash: inset 0 0 0 100px var(--glass-tint);
+  --region-glass: inset 3px 4px 8px -4px var(--glass-light),
+    inset -3px -4px 8px -4px var(--glass-shade);
+  border-radius: var(--radius-full);
+  border: var(--border-width-hairline) solid transparent;
+  background-color: var(--glass-base);
+  /* non-negotiable 10: the gradients are sized to the BORDER box, or the
+     transparent hairline shows a 1px repeat of their far edge */
+  background-origin: border-box;
+  background-image: radial-gradient(
+      90% 140% at 22% 0%,
+      var(--glass-glow),
+      var(--glass-rim) 65%
+    ),
+    linear-gradient(180deg, var(--glass-top), var(--glass-end));
+  box-shadow: var(--region-glass-wash), var(--region-glass), var(--glass-lift);
+  -webkit-backdrop-filter: blur(calc(var(--blur-sm) / 2)) saturate(170%);
+  backdrop-filter: blur(calc(var(--blur-sm) / 2)) saturate(170%);
+}
+
+/* ⚠️ THE LOCATION CHIPS ARE A STEP SMALLER THAN `Chip` — 34 tall with 12 a
+   side, not 40 and 16 — asked for directly 14 Sep 2026, so they sit under the
+   face as its own row rather than as full-size answers. The label stays
+   `t-label`. Local rather than `size="compact"`, which is the chat panel's
+   (Chip.tsx); the hit area still reaches 44 through `Chip`'s own `::after`. */
+.chips button[data-selected] {
+  min-height: 34px;
+  padding: 0 calc(var(--space-md) - var(--border-width-hairline));
+}
+
+/* hover swaps the sage tint in the wash slot (`surface/face-pill-tint`) for a
+   white wash (`surface/face-pill-wash`, 14%) and deepens the lift — the
+   surface leaning into the light. It is the same shadow slot at rest and on
+   hover, so the list transitions rather than snapping. ⚠️ UNSELECTED ONLY:
+   this selector outranks `[data-selected="true"]`, so written against the bare
+   class it would turn a picked indigo pill to frost under the pointer. */
+.region[data-selected="false"]:hover:not(:disabled),
+.chips button[data-selected="false"]:hover:not(:disabled) {
+  --region-glass-wash: inset 0 0 0 100px var(--color-surface-face-pill-wash);
+  border-color: transparent;
+  box-shadow: var(--region-glass-wash), var(--region-glass), var(--shadow-md);
 }
 
 @media (hover: none) {
-  .region:hover {
-    border-color: var(--color-border-subtle);
-    box-shadow: var(--shadow-sm);
+  .region[data-selected="false"]:hover:not(:disabled),
+  .chips button[data-selected="false"]:hover:not(:disabled) {
+    --region-glass-wash: inset 0 0 0 100px var(--glass-tint);
+    border-color: transparent;
+    box-shadow: var(--region-glass-wash), var(--region-glass), var(--glass-lift);
   }
 }
 
@@ -370,23 +775,114 @@
   transition: opacity var(--duration-fast) var(--ease-standard);
 }
 
-.region[data-selected="false"]:hover::after {
+.region[data-selected="false"]:hover:not(:disabled)::after {
   opacity: 0.3;
 }
 
 @media (hover: none) {
-  .region[data-selected="false"]:hover::after {
+  .region[data-selected="false"]:hover:not(:disabled)::after {
     opacity: 0;
   }
 }
 
-.region[data-selected="true"] {
-  background: var(--color-bg-brand);
-  /* the light hairline would read as a rim around the indigo fill, so the
-     selected pill drops its edge and keeps only the lift */
-  border-color: transparent;
-  box-shadow: var(--shadow-button);
+/* ⚠️ THE LOCATION CHIPS TAKE THE SAME RING, asked for directly 14 Sep 2026, so
+   `Whole face`, `Neck` and `Other` hover exactly like the regions above them
+   rather than only brightening. Same recipe, but on `::before`: a `Chip`'s
+   `::after` is its hit area and must stay invisible, and its `::before` — the
+   selected shade — sits unused at opacity 0 while the chip is unselected.
+   Written on `[data-selected="false"]` (0,2,2 over `Chip`'s `.chip::before`
+   0,1,1), so a picked chip gets its diagonal shade back untouched. */
+.chips button[data-selected="false"]::before {
+  padding: var(--border-width-focus);
+  background: linear-gradient(
+    90deg,
+    var(--color-gradient-brand-start),
+    var(--color-gradient-brand-end)
+  );
+  -webkit-mask:
+    linear-gradient(#000 0 0) content-box,
+    linear-gradient(#000 0 0);
+  -webkit-mask-composite: xor;
+  mask:
+    linear-gradient(#000 0 0) content-box exclude,
+    linear-gradient(#000 0 0);
+  transition: opacity var(--duration-fast) var(--ease-standard);
+}
+
+.chips button[data-selected="false"]:hover:not(:disabled)::before {
+  opacity: 0.3;
+}
+
+@media (hover: none) {
+  .chips button[data-selected="false"]:hover:not(:disabled)::before {
+    opacity: 0;
+  }
+}
+
+/* ⚠️ THE SELECTED PILL IS INDIGO GLASS, asked for directly 14 Sep 2026 ("the
+   indigo selected face location pills using the indigo shades"). It was flat
+   `bg/brand`. Same recipe as the unselected glass with every colour swapped
+   for the brand family — `surface/face-pill-selected` in globals.css carries
+   the values and the white label's contrast — and `shadow/button` for its
+   lift. The regions AND the location chips under the face; every other
+   selected `Chip` in the app stays flat indigo. The diagonal shade
+   (`::before`, below) still darkens the lower right, and the border stays
+   transparent so no rim is drawn round it. */
+.region[data-selected="true"],
+.chips button[data-selected="true"] {
+  --glass-base: var(--color-surface-face-pill-selected-base);
+  --glass-top: var(--color-surface-face-pill-selected);
+  --glass-end: var(--color-surface-face-pill-selected-end);
+  --glass-glow: var(--color-surface-face-pill-selected-glow);
+  --glass-rim: var(--color-surface-face-pill-selected-rim);
+  --glass-tint: var(--color-surface-face-pill-selected-tint);
+  --glass-light: var(--color-effect-face-pill-selected-light);
+  --glass-shade: var(--color-effect-face-pill-selected-shade);
+  /* ⚠️ `shadow/sm`, NOT `shadow/button` — the symptom pill's own lift, asked
+     for directly 14 Sep 2026. `shadow/button`'s tight `0 1px 2px` layer read
+     as a dark outline under the pill. */
+  --glass-lift: var(--shadow-sm);
+  /* ⚠️ A LIT TOP EDGE, asked for directly 14 Sep 2026 ("slight border shine
+     like the symptom pills"): `.symptom`'s own 1px inset white, first in the
+     list so it sits over the edge light and shade. Unselected glass keeps
+     none; this is the selected state's. ⚠️ 30% fainter than `.symptom`'s
+     (0.28 × 0.7), asked for directly the same day.
+     ⚠️ AND IT IS THE ONLY EDGE: the glass's inset edge light and bottom-right
+     shade are dropped from the selected pill, asked for directly — the shade
+     (`-deep` at 90%) drew a second, darker rim inside the white one, where the
+     symptom pill beside it has only the light. */
+  /* ⚠️ RETUNED IN DEVTOOLS AND SUPPLIED DIRECTLY, 14 Sep 2026: the edge light
+     down to 5% white (`#ffffff0d`), the fill to a flat `#37707dd9` (a
+     brighter, bluer teal at 85%; it was `#50727ee3` mixed to ~82% for an
+     hour the same day), a 1px backdrop blur, and a faint
+     `#869ea626` hairline where the border was transparent. The hover rules
+     below keep the hairline, so hovering a picked pill does not drop it. */
+  --region-glass: inset 0 1px 0 #ffffff0d;
+  /* ⚠️ AND NO FROST AND NO DARK FOOT, found by switching each layer off in a
+     screenshot: the backdrop blur (with its 170% saturate) darkened a ring
+     round the pill's edge, and the fill's top-to-bottom run into `-deep`
+     read as a darker lower border. The selected pill takes its hue at 92%
+     with no backdrop blur, and the run ends clear instead of deep, so the only
+     edge left is the white light. The diagonal shade (`::before`) stays, as
+     the symptom pill has one. */
+  --glass-end: transparent;
+  /* ⚠️ NO WASH EITHER, AND THE EDGE LIGHT HAS NO BLUR — the dark line round
+     every lit pill, found by screenshot with each layer switched off: only
+     `box-shadow: none` cleared it. An inset shadow is clipped to the PADDING
+     box, so the 15% wash left the 1px border ring untinted, and the light's
+     1px blur brightened a band inside every edge. Either way the ring read as
+     a darker border. The wash goes, and every lit edge in this file and in
+     `StartInvestigation.module.css` is `inset 0 1px 0`: a crisp light along
+     the top only. */
+  --region-glass-wash: 0 0 #6a292900;
+  /* ⚠️ `#4f93a2d9`, supplied directly 14 Sep 2026 — a lighter teal at the
+     same 85%, for the moody card behind it (was `#37707dd9`) */
+  background-color: #4f93a2d9;
+  -webkit-backdrop-filter: blur(1px);
+  backdrop-filter: blur(1px);
+  border-color: #869ea626;
   color: var(--color-text-on-brand);
+  --shine-ink: var(--color-text-on-brand);
 }
 
 /* ⚠️ NOT IN FIGMA — THE SAME DIAGONAL SHADE AS `Chip`'s SELECTED PILL, asked
@@ -405,14 +901,30 @@
   inset: calc(var(--border-width-hairline) * -1);
   z-index: -1;
   border-radius: inherit;
+  /* ⚠️ the slate teal's own deep end, not `bg/brand-hover`, since the pill
+     left indigo on 14 Sep 2026 — see `face-pill-selected-hue` in globals.css */
+  /* ⚠️ THE CORNER SHADE AT 20%, asked for directly later on 14 Sep 2026 ("tone
+     up the… right corner shadow to 20%", "I mean brighter, it's too dark"):
+     the shade's dark end is `selected-deep` at 20% strength, so the lower
+     right of a picked pill only just dims. (It was mixed 20% toward black for
+     one turn, the opposite of what was meant.) */
   background: linear-gradient(
     135deg,
     transparent 35%,
-    var(--color-bg-brand-hover) 100%
+    color-mix(in srgb, var(--color-face-pill-selected-deep) 20%, transparent) 100%
   );
   opacity: 0;
   pointer-events: none;
   transition: opacity var(--duration-base) var(--ease-standard);
+}
+
+/* the location chips' shade is `Chip`'s own `::before`, which runs to indigo */
+.chips button[data-selected="true"]::before {
+  background: linear-gradient(
+    135deg,
+    transparent 35%,
+    color-mix(in srgb, var(--color-face-pill-selected-deep) 20%, transparent) 100%
+  );
 }
 
 .region[data-selected="true"]::before {
@@ -425,14 +937,48 @@
    made hovering a picked pill look like un-picking it. `Chip` (the check-in's
    pills, and this card's own Whole face / Neck / Other row) keeps its fill and
    only lifts; so does this now, one `--shadow-sm` on top of its seat. */
-.region[data-selected="true"]:hover {
-  box-shadow: var(--shadow-button), var(--shadow-sm);
+.region[data-selected="true"]:hover:not(:disabled),
+.chips button[data-selected="true"]:hover:not(:disabled) {
+  border-color: #869ea626;
+  box-shadow: var(--region-glass-wash), var(--region-glass), var(--shadow-md);
 }
 
 @media (hover: none) {
-  .region[data-selected="true"]:hover {
-    box-shadow: var(--shadow-button);
+  .region[data-selected="true"]:hover:not(:disabled),
+  .chips button[data-selected="true"]:hover:not(:disabled) {
+    border-color: #869ea626;
+    box-shadow: var(--region-glass-wash), var(--region-glass), var(--glass-lift);
   }
+}
+
+/* ⚠️ THE WAITING FACE — `disabled`, NOT IN FIGMA, added 14 Sep 2026; see
+   FaceDiagram.tsx. A region nobody has marked fades like every disabled control
+   in the app, `opacity/disabled` on the state clock; a MARKED one keeps its full
+   treatment, because it is part of the answer rather than a control waiting for
+   one. The chips under the face follow the same rule through
+   `--chip-disabled-opacity` (Chip.module.css). A waiting pill drops its whole
+   `box-shadow`, so the glass's lit top edge goes with the lift. */
+.region:disabled {
+  cursor: not-allowed;
+}
+
+/* ⚠️ THE WAITING PILLS SIT 30% ABOVE `opacity/disabled` — 0.52, not 0.4 —
+   asked for directly 14 Sep 2026: on the glass they had faded almost into the
+   face. Still plainly fainter than a pill that can be tapped, and written as a
+   multiple of the token so it moves with it. The chips under the face take the
+   same value below. */
+.region:disabled[data-selected="false"] {
+  opacity: calc(var(--opacity-disabled) * 1.3);
+  box-shadow: none;
+}
+
+.chips button[data-selected="true"]:disabled {
+  --chip-disabled-opacity: 1;
+}
+
+/* the unmarked chips wait at the regions' 0.52 rather than `Chip`'s 0.4 */
+.chips button[data-selected="false"]:disabled {
+  --chip-disabled-opacity: calc(var(--opacity-disabled) * 1.3);
 }
 
 @media (min-width: 1024px) {
@@ -445,24 +991,42 @@
   /* frost-light at full strength rather than bg/surface-frost, which is a
      different colour */
   .card {
-    /* surface/data-strong composited over the canvas — the same move `Sheet`
-       and `DataCard` make, since the DS has no opaque counterpart for it */
-    /* the radial rides along — it is a layer of the card's own paint, not a
-       transparency effect, so dropping it here would make the reduced
-       -transparency card a different DESIGN rather than the same one without the
-       blur */
-    background: var(--face-card-halo),
-      linear-gradient(#52607c9e, var(--color-surface-data-strong)),
-      linear-gradient(
-        var(--color-surface-data-strong),
-        var(--color-surface-data-strong)
-      ),
-      var(--color-bg-canvas);
+    /* the mesh rides along — it is the card's own paint, not a transparency
+       effect — over an opaque slate navy standing in for what the blur let
+       through, so the card is the same design with nothing showing behind */
+    background: var(--face-card-foot), var(--face-card-halo),
+      linear-gradient(165deg, #3d5866, #16252f);
     -webkit-backdrop-filter: none;
     backdrop-filter: none;
   }
 
-  /* the regions are opaque (see .region), so only the card needs a fallback */
+  /* the regions are glass since 14 Sep 2026 (see .region). Their opaque
+     fallback puts the fill they had before, `bg/frost-light-muted`, UNDER the
+     glass's own white layers, which are still drawn — so the fill, the pooled
+     light, the soft edge light and shade, and the lift all stay, and only what
+     showed through goes. Written on `[data-selected="false"]` so a picked pill
+     keeps its indigo, and after the hover rule so it wins that too. */
+  .region[data-selected="false"],
+  .region[data-selected="false"]:hover:not(:disabled),
+  .chips button[data-selected="false"],
+  .chips button[data-selected="false"]:hover:not(:disabled) {
+    background-color: var(--color-bg-frost-light-muted);
+  }
+
+  /* the selected glass sits on its own hue made opaque, so the white label
+     reads on the flat colour the glass is tinted from */
+  .region[data-selected="true"],
+  .region[data-selected="true"]:hover:not(:disabled),
+  .chips button[data-selected="true"],
+  .chips button[data-selected="true"]:hover:not(:disabled) {
+    background-color: var(--color-face-pill-selected-hue);
+  }
+
+  .region,
+  .chips button[data-selected] {
+    -webkit-backdrop-filter: none;
+    backdrop-filter: none;
+  }
 }
 
 /* ---------------------------------------------------------------------------
@@ -480,10 +1044,18 @@
    that nothing can click; the hover rules above are written against the class,
    not against `button`, so without this a mouse would still deepen the
    hairline on a pill that does nothing.
+   ⚠️ EXCEPT A PICKED PILL, SINCE 14 Sep 2026: hovering one lights the
+   symptoms placed there (see HOVER above), so it takes the pointer again. The
+   unselected wash and ring are written on `[data-selected="false"]`, so the
+   only other hover it picks up is the selected pill's lift.
    -------------------------------------------------------------------------- */
 
 .diagram[data-readonly="true"] .region {
   pointer-events: none;
+}
+
+.diagram[data-readonly="true"] .region[data-selected="true"] {
+  pointer-events: auto;
 }
 
 .diagram[data-readonly="true"] .region[data-selected="false"] {
@@ -540,8 +1112,9 @@
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  min-height: clamp(24px, 8.7cqw, 40px);
-  padding: 0 clamp(6px, 3cqw, var(--space-lg)); /* 16 ceiling */
+  /* ceilings follow step 1's smaller location chip, 34 and 12 (14 Sep 2026) */
+  min-height: clamp(24px, 8.7cqw, 34px);
+  padding: 0 clamp(6px, 3cqw, var(--space-md)); /* 12 ceiling */
   font-size: clamp(9px, 3.4cqw, 14px);
   line-height: 1.3;
   border-radius: var(--radius-full);
@@ -551,13 +1124,26 @@
      read-only and never changes state. The border holds the geometry only, so
      it is transparent over a `border-box` gradient (non-negotiable 10): a
      flat indigo border would draw a lighter rim around the dark corner. */
+  /* the face's selected hue, not `bg/brand` — step 1's pill left indigo on
+     14 Sep 2026, and this is that pill */
+  /* the corner shade at 20%, matching `.region::before` (14 Sep 2026) — mixed
+     into the hue rather than into transparent, because this pill has no fill
+     of its own under the gradient */
   background: linear-gradient(
       135deg,
-      var(--color-bg-brand) 35%,
-      var(--color-bg-brand-hover) 100%
+      var(--color-face-pill-selected-hue) 35%,
+      color-mix(
+          in srgb,
+          var(--color-face-pill-selected-deep) 20%,
+          var(--color-face-pill-selected-hue)
+        )
+        100%
     )
     border-box;
-  border: var(--border-width-hairline) solid transparent;
+  /* the selected region pill's hairline and lit top edge, so the recap's pill
+     matches step 1's (retuned 14 Sep 2026) */
+  border: var(--border-width-hairline) solid #869ea626;
+  box-shadow: inset 0 1px 0 #ffffff0d;
   color: var(--color-text-on-brand);
   white-space: nowrap;
 }

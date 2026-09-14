@@ -13,16 +13,18 @@ import { InvestigationRecord } from "./InvestigationRecord";
 import { CheckInCalendar } from "./CheckInCalendar";
 import { SymptomTrend } from "./SymptomTrend";
 import { CheckInOverlay } from "./CheckInOverlay";
+import { LatestPhotos, PhotoGallery } from "./PhotoGallery";
 import { useInvestigation } from "@/lib/store/InvestigationProvider";
 import { useToday } from "@/lib/useToday";
 import { formatLong } from "@/lib/date";
 import {
   checkInsFor,
-  currentLine,
   dayNumber,
   faceLocations,
   lastCheckInLabel,
+  photoDiary,
   progressView,
+  symptomPlaces,
 } from "@/features/progress/progress";
 
 /**
@@ -62,6 +64,11 @@ import {
  * the app could reach it and where it would have lit the tab that owns the
  * product compatibility check; `components/CheckIn.tsx` has the full argument.
  *
+ * ⚠️ THE PHOTO GALLERY OPENS OVER THIS SCREEN, AND IT IS NOT A ROUTE — 14 Sep
+ * 2026, NOT IN FIGMA. The profile card's latest photos open every check-in
+ * photo in a `Sheet`, and each photo there links to its day's record. See
+ * `PhotoGallery.tsx`.
+ *
  * ⚠️ THE SERIES IS THE USER'S OWN, PLUS THE SEED ONLY WHILE THIS IS THE DEMO.
  * It used to be seeded unconditionally, which was defensible only while nothing
  * could write a check-in. Something can now, so a real investigation plots
@@ -79,12 +86,14 @@ export function ProgressScreen({ now }: { now: number }) {
      the numbers it just changed. The route still exists for deep links and for
      the analysis's "pause and check in" — see `CheckInOverlay`. */
   const [checkingIn, setCheckingIn] = useState(false);
+  const [galleryOpen, setGalleryOpen] = useState(false);
   const view = progressView(answers, useToday(now));
-  const { start, today, skinType, tendencies, conditions } = view;
+  const { start, today, skinType, tendencies, conditions, status } = view;
   const checkIns = checkInsFor(answers, view);
-  const current = currentLine(answers, view);
   const lastCheckIn = lastCheckInLabel(checkIns, today);
-  const face = faceLocations(current);
+  const places = symptomPlaces(answers, view);
+  const face = faceLocations(places);
+  const photos = photoDiary(checkIns);
 
   return (
     <HubScreen
@@ -109,37 +118,49 @@ export function ProgressScreen({ now }: { now: number }) {
           skinType={skinType}
           tendencies={tendencies}
           conditions={conditions}
-          current={current}
+          status={status}
+          symptomCount={Object.keys(places).length}
           started={`Started ${formatLong(start)} · Day ${dayNumber(start, today)}`}
+          photos={
+            photos.length > 0 ? (
+              <LatestPhotos
+                photos={photos}
+                onOpen={() => setGalleryOpen(true)}
+              />
+            ) : undefined
+          }
         />
 
         {/* step 1's own diagram, read-only — the same one the profile recap
-            draws. `aria-hidden` inside, so the regions are said in words. */}
-        {(face.faceRegions.length > 0 || face.otherLocations.length > 0) && (
-          <DataCard
-            className={styles.faceCard}
-            aria-labelledby="progress-face"
-          >
-            <h2
-              id="progress-face"
-              className={`${styles.faceLabel} t-overline`}
-            >
-              {COPY.locationLabel}
-            </h2>
-            {face.faceRegions.length > 0 && (
-              <p className="visually-hidden">
-                {COPY.locationSpoken(face.faceRegions)}
-              </p>
-            )}
-            <div className={styles.face}>
-              <FaceDiagram
-                readOnly
-                selected={face.faceRegions}
-                otherLocations={face.otherLocations}
-              />
-            </div>
-          </DataCard>
-        )}
+            draws, and `aria-hidden` inside.
+            ⚠️ ALWAYS RENDERED, since 14 Sep 2026 — it used to render only
+            when step 1 had a place, and that made it VANISH: the screen first
+            paints the demo, whose face has places, and a moment later the
+            user's own answers arrive. With step 4 answered and step 1 empty,
+            the card unmounted under the reader ("it disappears when I scroll
+            down"). An unlit face is the honest reading of "no place marked
+            yet", the same rule the recap's location card follows. */}
+        <DataCard className={styles.faceCard} aria-labelledby="progress-face">
+          <h2 id="progress-face" className={`${styles.faceLabel} t-overline`}>
+            {COPY.locationLabel}
+          </h2>
+          {/* ⚠️ NOT IN FIGMA — THE CALLOUTS, 14 Sep 2026, asked for directly
+              ("the face diagram should work like we fixed"): each symptom a
+              pill at the face's edge with a line to each of its places, as
+              step 1 draws them once saved. They took over from the symptom
+              pills on the profile card above. ⚠️ The visually hidden sentence
+              that named the regions went with them — `FaceDiagram` lists
+              every symptom with its places for a screen reader, and those
+              places are the regions, so both said one answer twice. */}
+          <div className={styles.face}>
+            <FaceDiagram
+              readOnly
+              selected={face.faceRegions}
+              otherLocations={face.otherLocations}
+              callouts={places}
+            />
+          </div>
+        </DataCard>
       </div>
 
       <div className={styles.checkInColumn}>
@@ -185,6 +206,13 @@ export function ProgressScreen({ now }: { now: number }) {
         open={checkingIn}
         now={now}
         onClose={() => setCheckingIn(false)}
+      />
+
+      <PhotoGallery
+        open={galleryOpen}
+        onClose={() => setGalleryOpen(false)}
+        photos={photos}
+        start={start}
       />
     </HubScreen>
   );

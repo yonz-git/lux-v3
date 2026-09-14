@@ -37,7 +37,18 @@
   /* ⚠️ NOT `surface/frost-nav` since 13 Sep 2026 — the bar's own deep teal,
      asked for directly. See `--color-surface-nav-bar` in globals.css. */
   background: var(--color-surface-nav-bar);
-  box-shadow: var(--shadow-nav);
+  /* ⚠️ NOT IN FIGMA — the buttons' edge glow (globals.css `.edge-light`), added
+     14 Sep 2026, asked for directly: the page card's inward white glow from the
+     top plus a 1px top catch, laid over the nav's own dark inner shadow. Values
+     copied, not shared — `.edge-light` is a span and the bar has no spare child. */
+  /* ⚠️ AND `shadow/nav` IS WRITTEN OUT, NOT READ, as of the same day: its drop
+     shadow was asked "a bit more" — 0 2px 12px @8% → 0 4px 16px @14%. The
+     inner dark shadow is the token's own, unchanged. */
+  box-shadow:
+    inset 0 2px 12px rgba(255, 255, 255, 0.25),
+    inset 0 1px 1px rgba(255, 255, 255, 0.35),
+    0 4px 16px rgba(0, 0, 0, 0.14),
+    inset 0 0 12px rgba(0, 0, 0, 0.2);
 
   /* ⚠️ `saturate()` IS LOAD-BEARING, NOT DECORATION. A blur averages
      neighbouring pixels, which drags the sampled backdrop toward grey — the
@@ -82,14 +93,17 @@
 
 .nav::before {
   padding: 1px;
-  /* the lit corner is 48% white — 20% under the 60% it shipped at, asked for
-     directly the same day; the dim bottom-right stays at 20% */
+  /* ⚠️ 70% / 30% AS OF 14 Sep 2026, asked for directly — "the same edge light"
+     the buttons carry (globals.css `.edge-light::before`). It was 48% / 20% the
+     day before, itself dialled down from a 60% lit corner; this deliberately
+     brightens past both. ⚠️ Then the lit stop came down 40%, 0.7 → 0.42, the
+     same day — asked for directly, it drew a bright line down the bar's left end. */
   background: linear-gradient(
     135deg,
-    rgba(255, 255, 255, 0.48),
+    rgba(255, 255, 255, 0.42),
     rgba(255, 255, 255, 0) 40%,
     rgba(255, 255, 255, 0) 60%,
-    rgba(255, 255, 255, 0.2)
+    rgba(255, 255, 255, 0.3)
   );
   -webkit-mask: linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0);
   -webkit-mask-composite: xor;
@@ -184,15 +198,11 @@
     inset 0 -1px 0 rgba(255, 255, 255, 0.12);
 }
 
-/* ⚠️ NOT IN FIGMA — THE SELECTED LABEL IS REGULAR (400), THE REST STAY LIGHT
-   (300), asked for directly 13 Sep 2026 for contrast: a heavier stroke puts
-   more white on the teal where it matters most. A state override of `t-nav`'s
-   weight, like the opacity above it — not a second text class. Regular is one
-   of the three loaded weights. It is ~3px wider than Light at 16px; the
-   padding budget on `.item` still fits at 320. */
-.item[data-active="true"] .label {
-  font-weight: var(--font-weight-regular);
-}
+/* ⚠️ THERE IS NO ACTIVE-WEIGHT OVERRIDE ANY MORE. From 13 Sep 2026 the selected
+   label was Regular (400) and the rest Light (300); on 14 Sep 2026 every label
+   went Regular — asked for directly, set on `t-nav` itself in globals.css — so
+   the rule had nothing left to change and was removed. The pill and the full
+   opacity mark the active item. */
 
 /* hover goes to full white — above the 0.85 rest, so hovering never dims */
 .item:hover {

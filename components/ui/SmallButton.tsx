@@ -70,6 +70,8 @@ export function SmallButton({
       )}
       {/* ⚠️ NOT IN FIGMA — the label shines on hover (`.shine-on-hover`,
           globals.css), the same glint `Button` has; the arrow does not */}
+      {/* the fixed rim light — globals.css `.edge-light`, shared with `Button` */}
+      <span className="edge-light" aria-hidden="true" />
       <span className="t-button-sm shine-text shine-on-hover">{label}</span>
       {arrow && (
         <span className="t-button-sm" aria-hidden="true">

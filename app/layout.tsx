@@ -37,7 +37,9 @@ export const metadata: Metadata = {
 export const viewport: Viewport = {
   width: "device-width",
   initialScale: 1,
-  themeColor: "#cedee2",
+  /* `gradient/canvas-mid` as the app draws it — 10% darker than Figma's
+     #cedee2 since 14 Sep 2026 (see the canvas override in globals.css) */
+  themeColor: "#b9c8cb",
 };
 
 export default function RootLayout({

@@ -1547,6 +1547,7 @@ risk. All are on the missing-from-the-DS list.
 | Accordion          | `features/products/components/ProductAccordionCard.tsx`, `ProductList.tsx`'s `details` row | No accordion component. Composed from the frosted card recipe. It was `BucketProductsList` on the deleted `/products/[bucket]` route; the cards moved into the hub rows unchanged. `ProductRow` learned the same move for `/check/new` rather than a second disclosure treatment appearing; both open onto `ProductDetails`.                                                                                                                                                                                                                                                                                                                    |
 | Search dropdown    | `features/products/components/AddProductMethodSheet.module.css` `.dropdown`        | `Search Field` (248:70) has no results popup, and the comps drew results as free-standing `ProductRow` cards on a routed screen. One frosted panel tucked 8 under the pill and inset 8 either side, capped at 296 with its own scroll. ⚠️ IN FLOW, NOT ABSOLUTE — the mobile tray is docked to the bottom edge and hugs its content, so an overlaid panel would open off the bottom of the viewport. |
 | `My skin` nav icon | `MySkinIcon` in `components/ui/icons.tsx`               | The nav's fourth glyph. `Bottom-Nav-Bar` (410:258) ships three icons and the DS has no face or skin mark anywhere else — `FaceDiagram` is a picker, not an icon. ⚠️ STROKE-drawn, unlike its three filled neighbours: a solid disc at 24 is a far heavier mark than Progress/Check/Products draw, and the face only reads at that size with the eyes and mouth left open. currentColor throughout, so the active/inactive opacity treatment is untouched. Replace it in the DS first, not here. |
+| Skin-profile tiles | `features/check/components/SkinProfileTiles.tsx`        | ⚠️ **NOT IN FIGMA** — asked for directly 14 Sep 2026, under the untouched skin-profile strip on `/check`: the overline, then skin type, tendencies, known conditions and symptoms state as four flat tiles (label over value, left-aligned), two a row at every width, under a white hairline brightest at the left and fading out toward the right. It replaced a same-day plan card (star, "Monthly", plan copy), and its glass has been tuned by hand twice: now a deep teal `#005461` @71% with white ink, 4.27–5.27:1 on the card (the overline dips under AA only over the canvas's two lightest stops) and 4.80:1 or better in a tile. The column's width at every breakpoint — it was 140% on desktop for a while. The tiles' backdrop blur came off — the card's own `backdrop-filter` made it invisible anyway. ⚠️ The `/check` values are literals and contradict the seeded strip; wire them to `skinProfile()` if the trial stays. |
 | Product imagery    | `features/products/components/ProductArt.tsx`                          | ⚠️ **THE CAMERA GLYPH IS GONE — DECIDED HERE, NOT IN FIGMA.** No product or bottle icon exists outside the bottom nav, so every thumb (`ProductThumb`, 48) and image well (`ProductCard`, 352x140) drew a camera. That reads as "no photo yet" once and as nothing at all down a list — `/check/new`, the PRODUCTS hub and the add tray all show the same mark on every row, so the thumbnail identifies nothing. `ProductArt` draws the vessel instead: **nine** silhouettes (tub, pump, tube, dropper, bottle, airless, spray, sachet, tin) by packaging type, tinted per brand, so same brand → same tint and same type → same shape. ⚠️ **IT WAS FIVE FORMS AND ONE FALLBACK TINT, WHICH WAS ENOUGH ONLY WHILE THE CATALOGUE WAS THE SEARCH.** Both searches are live now, so the list is whatever the database holds — masks, mists, sticks, ointments — and every one of them fell through `formFor`'s default to the same pump on a `sage` body. A column of identical pumps is the camera glyph with an extra step. Three axes of variety, all keyed on a stable FNV-1a `hash` (never `Math.random()` or an index — a thumbnail that changes identity between two screens is worse than one that repeats): unnamed brands hash into a 7-tint `RING`, unrecognised names hash across all nine `FORMS`, and `labelVariant` picks one of three label treatments off the product id so two products of the same form AND brand still differ. Brand strings are diacritic-folded before hashing, because OBF files the same house as both "Avene" and "Avène". ⚠️ **AND IT IS THE ONLY PICTURE — THE API'S PHOTOS ARE NOT READ.** Open Beauty Facts carries `image_front_url` and it used to win over the drawing. Its images are crowdsourced with no quality gate, so a result list mixed usable front-of-package shots with stubs, angled boxes and rows that fell back to a drawing anyway — two kinds of picture in one column, which is worse at telling rows apart than either alone. `features/products/openBeautyFacts.ts` no longer requests the image fields, `CatalogProduct` has no `imageUrl`, and `useProductPhoto` is deleted; `artFor` serves live results via `formFor`/`paletteFor`. **The API still supplies every WORD** — name, brand, size and the INCI list. The pigments are LOCAL LITERALS drawn from the LUX family and must not become tokens — `02 Color` has no "bottle glass" role, and binding a lid to `bg/brand` would move the artwork every time the brand colour did. **Raise a real illustration set in Figma.** |
 | Check-in photo     | `features/progress/components/CheckInPhotoArt.tsx`                     | ⚠️ **NOT IN FIGMA.** `Check-in detail` draws its photo wells as a camera glyph, the same hole `ProductThumb` had and the same failure: the PHOTOS card's entire content is the picture, so a camera icon there says "no photo" on the record of one the user took. Drawn instead — a soft crop of skin with the flushed patch the investigation is about, `slice`-cropped to fill the well the way a photograph would be, grained with `feTurbulence` because three overlapping gradients in a picture frame read as a loading state. **No feature is drawn and it is not anyone's face.** Tone and blush position are keyed on the DAY with the same FNV-1a hash `ProductArt` uses, never `Math.random()`. Pigments are LOCAL LITERALS — `02 Color` has no skin-tone role and should not grow one for a placeholder. Every capture surface in LUX is a placeholder; this is the record of one. **Raise real imagery in Figma.** |
 | Opaque sage        | `components/ui/Sheet.module.css`                                   | `surface/data-strong` is 62% and has no solid counterpart the way `bg/nav` is `surface/frost-nav`'s. The `prefers-reduced-transparency` tray composites the same sage over `bg/canvas`. ⚠️ **Worse since 8 Sep 2026:** `surface/data-deep` `#4f838f @85%` is the new third step and four surfaces put WHITE on it, so its contrast is a composite that moves with whatever is behind it (3.42–3.77:1). An opaque counterpart would make the ratio a property of the token rather than of the scroll position. |
@@ -1614,7 +1615,10 @@ row — `start`, `location`, `locationOther`, `selfie`, `skin-type`,
 `tendencies`, `conditions`, `conditionsOther`, `timing` — is now written, under
 its own key, with a **24-hour sliding window**. (⚠️ `locationOther` joined the
 list on 8 Sep 2026 — step 1's typed "Other" description, which until then was
-not in the store at all; see "THE TYPED `Other` HAD NOWHERE TO GO" below.) Every other row still never touches disk at any age.
+not in the store at all; see "THE TYPED `Other` HAD NOWHERE TO GO" below.
+⚠️ `location` LEFT it on 14 Sep 2026, when step 1's `start` became a map of each
+symptom to its places and the union became derived — see "A TYPED LOCATION NOW
+COUNTS AS ONE", superseded, below.) Every other row still never touches disk at any age.
 
 **Why that is not the reverted build coming back.** This section already argues
 that the old bug was persisting *one bucket that mixed two kinds of state*. The
@@ -1629,7 +1633,7 @@ sharpens rather than reverses: **state that has outlived its owner is the bug.**
 | | records | flow answers | everything else |
 | --- | --- | --- | --- |
 | Lives | forever | 24 hours, sliding | the tab |
-| Key | `lux.records.v2` | `lux.flow.v1` | — |
+| Key | `lux.records.v2` | `lux.flow.v2` (v1 until 14 Sep 2026) | — |
 | List | `PERSISTED_KEYS` | `FLOW_KEYS` | by construction |
 
 **Five things that are load-bearing, beyond the three below.**
@@ -1733,6 +1737,14 @@ so it lives and expires exactly as the answers around it do (24 hours,
 sliding), and the old key is deleted unread on mount next to
 `lux.investigation.v1` — a typed sentence left in a visitor's browser with
 nothing to read it is the same dead data that sweep exists for.
+
+⚠️ **SUPERSEDED 14 Sep 2026 — READ THIS PARAGRAPH AND THE NEXT AS HISTORY.**
+Step 1 now asks for places one symptom at a time and stores each symptom with
+its places (`start`, a map; `location` is gone), so its `isComplete` is "a
+symptom exists" and a typed description no longer unlocks Continue on its own:
+a place with no pill is that symptom's `Other` chip. The field is still
+independent of the chip, and an `Other` place with no words is still complete.
+See `flow.ts` and `StartInvestigation.tsx`.
 
 ⚠️ **AND A TYPED LOCATION NOW COUNTS AS ONE.** `isComplete` for step 1 asked
 for a symptom and a location CHIP, which was right while the field asked what
@@ -2398,7 +2410,7 @@ screen, and read by nothing that draws a conclusion:
 
 | Input the brief needs | Where it already is | Written by |
 | --- | --- | --- |
-| Symptoms and their locations | `start`, `location` | step 1 |
+| Symptoms and their locations | `start` (each symptom with its places since 14 Sep 2026; `location` until then) | step 1 |
 | Skin type and tendencies | `tendencies` | step 2 |
 | Known conditions | `conditions`, `conditionsOther` | step 3 |
 | **When the reaction started** | `timing` | step 4 |

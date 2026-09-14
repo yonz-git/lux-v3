@@ -4,7 +4,7 @@
    here is transcribed; it is assembled from recipes that already exist, which is
    the rule for a screen shape the design system has not drawn yet. The sage
    card is `DataCard` untouched, the light blocks are the frosted-card recipe
-   every light card in the flow uses, the pills are `Tag`, the face is step 1's
+   every light card in the flow uses, the face is step 1's
    own diagram in its read-only mode, and the button is `Button`. The only
    decisions this file makes are the gaps between those blocks. Nothing on the
    screen is drawn new any more: the two-node timeline rail was the one such
@@ -158,64 +158,6 @@
 .blockLabel {
   margin: 0 0 var(--space-md); /* 12 */
   color: var(--color-text-muted);
-}
-
-/* ---------------------------------------------------------------------------
-   THE PILLS — a multi-select answer, drawn as a set
-
-   `Tag` owns the pill itself (26 tall, radius/full, its own fill and label
-   style). The list only has to be a list: no bullets, no indent, and the 10
-   gap the Chip grid uses in Figma — off the spacing scale there too, which is
-   why it is a literal here.
-   -------------------------------------------------------------------------- */
-
-.tags {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 10px;
-  margin: 0;
-  padding: 0;
-  list-style: none;
-}
-
-/* ⚠️ THE PILL WEARS THE CHIP'S FILL AND HAIRLINE — asked for directly, 7 Sep
-   2026. `Tag`'s neutral fill is `bg/surface-frost` with no stroke, which on
-   these frosted blocks left the answers with no edge of their own; step 1's
-   unselected `Chip` already solves exactly that problem on exactly that ground,
-   so the recap borrows its two values rather than inventing a third pill.
-   `bg/frost-light-muted` + a `border/chip` hairline, and nothing else: the
-   26-tall geometry, the `Label Small` type and the `text/secondary` ink are
-   still `Tag`'s.
-
-   ⚠️ A READ-ONLY LABEL NOW LOOKS LIKE A CONTROL, WHICH IS ONLY SAFE BECAUSE OF
-   WHERE IT IS. The `Tag` / `Chip` split is a contract — a chip is a
-   `role="checkbox"`, a tag is a label — and dressing one as the other would
-   normally be the way to break it. This screen has NO controls on it at all
-   (the face diagram is read-only too, and the one button is a `Button`), so
-   there is nothing here for a pill to be mistaken for. **Do not lift this class
-   onto a screen that mixes tags with chips.** The real fix is a `Tag` variant
-   in Figma carrying this fill; see `docs/figma-catchup.md`.
-
-   ⚠️ THE CLASS IS DOUBLED ON PURPOSE, AND IT IS NON-NEGOTIABLE 13's TRAP. As a
-   single `.pill` it ties with `Tag.module.css`'s own `.tag` at (0,1,0), and
-   which one paints is then CSS-Module load order — the same silent coin-toss
-   that lost the focus ring across the app. `.pill.pill` is (0,2,0) and wins by
-   the cascade's own rules instead. */
-/* ⚠️ SUPERSEDED 13 Sep 2026, asked for directly: the symptom pills now wear
-   the Risky band's pill — `feedback/warning` with `text/on-brand` ink and no
-   hairline, CompatCard's `.pill` recipe and the same one PROGRESS's
-   `SkinProfile` `.symptom` already uses for these answers. Geometry and type
-   stay `Tag`'s. ⚠️ White on `feedback/warning` inherits that pill's known
-   contrast shortfall (non-negotiable 17) — the same pair, not a new one. */
-/* ⚠️ `.tags` IN FRONT, because `Tag`'s own `.tag[data-variant]` is (0,2,0)
-   too and loads later — the doubled class alone tied and lost the fill. */
-/* ⚠️ `bg/symptom` #d3858a since 13 Sep 2026, asked for directly — shared with
-   PROGRESS's `SkinProfile` `.symptom`. */
-.tags .pill.pill {
-  background: var(--color-bg-symptom);
-  color: var(--color-text-on-brand);
-  border: none;
-  padding: 0 14px; /* CompatCard's horizontal 14 */
 }
 
 /* ---------------------------------------------------------------------------
@@ -453,7 +395,7 @@
 }
 
 /* the two pairs are still a pair — when it started, and where it has got to —
-   so they sit closer to each other than either does to the pills above them.
+   so they sit closer to each other than either does to the label above them.
    ⚠️ 8, NOT THE 4 THE RUNNING LINES USED: each pair is now two lines deep with
    2 inside it, and 4 between them left the four lines reading as one column. */
 .meta + .meta {
@@ -472,15 +414,17 @@
 
 /* ⚠️ THE PAIR IS SHARED WITH THE LOCATION BLOCK AS OF 8 Sep 2026 and needed
    nothing of its own to go there: 12 under the face is the same interval it
-   takes under the pills, because both are "the block's own label gap", and the
+   takes under the label, because both are "the block's own label gap", and the
    ink is this surface's either way. What it is NOT is a caption — a caption
    describes the picture above it, and this describes the answer the picture
    could not draw. */
 
-/* ⚠️ ADJACENCY, NOT A FIXED TOP MARGIN. `TagList` renders NOTHING when step 4's
-   dates are the only thing this block holds, and a margin on the pair itself
-   then stacked on the label's own 12 and opened 24 under a heading with one
-   line beneath it. */
+/* ⚠️ ADJACENCY, NOT A FIXED TOP MARGIN. The label already carries its own 12,
+   so a pair straight under it takes none; a margin on the pair itself stacked
+   on that 12 and opened 24 under a heading with one line beneath it. It was
+   written for when `TagList` could render nothing between the two; the list
+   was deleted on 14 Sep 2026, and step 4's pairs now sit under the label every
+   time. */
 .blockLabel + .meta {
   margin-top: 0;
 }

@@ -30,7 +30,10 @@ import type { Answers } from "@/lib/store/answers";
 import { DEMO_PROFILE, ownedProducts, skinProfile } from "@/lib/demo";
 import { type IsoDate, addDays, daysBetween, fromIso, toIso } from "@/lib/date";
 import type { SavedProduct } from "@/features/products/products";
-import { FACE_REGION_IDS } from "@/features/my-skin/components/FaceDiagram";
+import {
+  FACE_REGION_IDS,
+  type SymptomPlaces,
+} from "@/features/my-skin/components/FaceDiagram";
 import { conditionsList } from "@/features/my-skin/profile";
 
 /**
@@ -178,6 +181,14 @@ export type ProgressView = {
    * until step 3 is answered.
    */
   conditions: string[];
+  /**
+   * Step 4's status — under the profile card's `Symptoms state`, since 14 Sep
+   * 2026.
+   * ⚠️ THE DEMO HAS ONE (`DEMO_PROFILE.status`), unlike the conditions above:
+   * it says where the seeded episode has got to, which is the demo's own story
+   * rather than a claim about anyone's skin.
+   */
+  status?: string;
 };
 
 /**
@@ -196,6 +207,7 @@ export function progressView(a: Answers, today: Date): ProgressView {
     skinType: profile.skinType,
     tendencies: profile.tendencies,
     conditions: conditionsList(a),
+    status: answered ? a.timing?.status : DEMO_PROFILE.status,
   };
 }
 
@@ -435,107 +447,66 @@ export function lastCheckInLabel(
   return `Last check-in: ${ago} days ago`;
 }
 
-/**
- * The profile card's current-state readout — symptoms placed on locations,
- * as a LABEL over a VALUE rather than one prefixed sentence.
- *
- * ⚠️ IT WAS `Current: Redness, Itching on Cheeks` ON ONE `t-body3` LINE UNTIL
- * 8 Sep 2026, AND THAT WAS THE ODD ONE OUT ON THIS CARD. Everything above it —
- * skin type, tendency — is a muted label over a value a size up, and the
- * card's only other fact wore its label inline as a colon prefix instead. It is
- * a pair now, drawn exactly like the two above it, so the answer reads as an
- * answer and not as a caption.
- *
- * Both halves are still optional, so a deep link straight to /progress renders
- * whichever half exists instead of a stranded label or a bare " on " — and the
- * LABEL moves with them: locations alone are `Affected areas`, because "Whole
- * face, Forehead" is not a state.
- *
- * ⚠️ A PURE FORMATTER, SPLIT OUT OF `currentSymptoms`. It used to read the
- * answer store directly, which meant the demo had to carry the finished STRING
- * ("Current: Redness, Itching on Cheeks") beside the data it was made of — and
- * the daily check-in, which reports a fresh location each day, had no way in.
- * Now there is one formatter and three callers feed it: step 1's answers, the
- * demo's symptoms/locations, and today's check-in.
- */
-export type CurrentState = {
-  label: string;
-  /** the whole state as one sentence — the accessible reading of the pair */
-  value: string;
-  /** ⚠️ the parts, so `SkinProfile` can draw symptoms as pills over the
-      locations line (13 Sep 2026) without re-parsing `value` */
-  symptoms: string[];
-  locations: string[];
-};
-
-export function formatCurrent(
-  symptoms: readonly string[],
-  locations: readonly string[]
-): CurrentState | null {
-  const s = symptoms.filter(Boolean);
-  const l = locations.filter(Boolean);
-  if (s.length === 0 && l.length === 0) return null;
-
-  if (s.length === 0)
-    return { label: "Affected areas", value: l.join(", "), symptoms: s, locations: l };
-  if (l.length === 0)
-    return { label: "Current state", value: s.join(", "), symptoms: s, locations: l };
-  return {
-    label: "Current state",
-    value: `${s.join(", ")} on ${l.join(", ")}`,
-    symptoms: s,
-    locations: l,
-  };
-}
-
-/** Step 1's symptoms on step 1's locations. */
-export function currentSymptoms(a: Answers): CurrentState | null {
-  return formatCurrent(a.start ?? [], a.location ?? []);
-}
-
 /** The newest recorded check-in, or null. The list is kept oldest-first. */
 export function latestCheckIn(list: CheckIn[]): CheckIn | null {
   return list.length > 0 ? list[list.length - 1] : null;
 }
 
 /**
- * The profile card's current-state pair — the demo's symptoms and locations,
- * or the user's own once they have answered step 1.
+ * Each symptom and the places marked for it — what the face card on
+ * `/progress` draws as callouts: a pill at the face's edge per symptom, with a
+ * line to each of its places.
  *
- * ⚠️ IT LIVES HERE RATHER THAN ON `ProgressView` because the demo half is now
- * assembled from data like every other half. `ProgressView.current` used to
- * carry the finished string straight out of `DEMO_PROFILE`; see the note there.
+ * ⚠️ NOT IN FIGMA — 14 Sep 2026, asked for directly. It replaced the profile
+ * card's current-state readout, which drew the same answer as rose symptom
+ * pills (13 Sep 2026) and before that as one sentence, "Redness, Itching on
+ * Cheeks"; the card's `Symptoms state` is step 4's status now. A real
+ * investigation passes step 1's own map straight through — each symptom has
+ * kept its own places since the same day (`start` in lib/store/answers.ts).
+ *
+ * ⚠️ THE DEMO PREDATES THE MAP. `DEMO_PROFILE` states two symptoms on
+ * "Cheeks", which reads as every symptom on every place, so that is what it
+ * draws. And "Cheeks" IS NOT A REGION ID: it predates the diagram's
+ * `Cheeks (L)` / `Cheeks (R)` and, read raw, would light nothing — so it
+ * expands to both here rather than in `DEMO_PROFILE`.
  */
-export function currentLine(
-  a: Answers,
-  view: ProgressView
-): CurrentState | null {
-  return view.isDemo
-    ? formatCurrent(DEMO_PROFILE.symptoms, DEMO_PROFILE.locations)
-    : formatCurrent(a.start ?? [], a.location ?? []);
+export function symptomPlaces(a: Answers, view: ProgressView): SymptomPlaces {
+  if (!view.isDemo) return a.start ?? {};
+
+  const places = DEMO_PROFILE.locations.flatMap((l) =>
+    l === "Cheeks" ? ["Cheeks (L)", "Cheeks (R)"] : [l]
+  );
+  return Object.fromEntries(
+    DEMO_PROFILE.symptoms.map((s) => [s, places])
+  ) as SymptomPlaces;
 }
 
 /**
- * The profile's locations split for the read-only face diagram under it —
- * the regions that are pills on the face, and everything else.
- *
- * ⚠️ NOT IN FIGMA — the diagram joined `/progress` on 13 Sep 2026, asked for
- * directly. ⚠️ "Cheeks" IS NOT A REGION ID. The demo's location predates the
- * diagram's `Cheeks (L)` / `Cheeks (R)`, and read raw it would light nothing;
- * it expands to both here rather than in `DEMO_PROFILE`, so the profile card's
- * hidden current-state sentence still reads "Redness, Itching on Cheeks".
+ * Every place across the symptoms, split for the face card — the regions that
+ * are pills on the face, and the rest (`Whole face`, `Neck`, `Other`), which
+ * are chips under it.
  */
-export function faceLocations(current: CurrentState | null): {
+export function faceLocations(places: SymptomPlaces): {
   faceRegions: string[];
   otherLocations: string[];
 } {
-  const locations = (current?.locations ?? []).flatMap((l) =>
-    l === "Cheeks" ? ["Cheeks (L)", "Cheeks (R)"] : [l]
-  );
+  const locations = [
+    ...new Set(Object.values(places).flatMap((p) => p ?? [])),
+  ];
   return {
     faceRegions: locations.filter((l) => FACE_REGION_IDS.includes(l)),
     otherLocations: locations.filter((l) => !FACE_REGION_IDS.includes(l)),
   };
+}
+
+/**
+ * The check-ins that carry a photo, NEWEST first — the profile card's latest
+ * photos and the gallery they open (`PhotoGallery`). ⚠️ NOT IN FIGMA, 14 Sep
+ * 2026. Every check-in list here is oldest-first; a gallery leads with the
+ * most recent capture.
+ */
+export function photoDiary(checkIns: CheckIn[]): CheckIn[] {
+  return checkIns.filter((c) => c.photo).reverse();
 }
 
 /* ---------------------------------------------------------------------------

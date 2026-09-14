@@ -32,6 +32,10 @@
      border in a non-disabled state — see the note in Button.module.css */
   background-origin: border-box;
   box-shadow: var(--shadow-button);
+  /* ⚠️ NOT IN FIGMA — the secondary endpoints are translucent as of
+     14 Sep 2026 (globals.css :root); the blur is what makes that frost */
+  -webkit-backdrop-filter: blur(var(--blur-card)) saturate(160%);
+  backdrop-filter: blur(var(--blur-card)) saturate(160%);
   text-decoration: none;
   white-space: nowrap;
 
@@ -76,4 +80,11 @@
   display: inline-flex;
   flex: none;
   --icon-size: var(--size-icon-sm);
+}
+
+@media (prefers-reduced-transparency: reduce) {
+  .button {
+    -webkit-backdrop-filter: none;
+    backdrop-filter: none;
+  }
 }

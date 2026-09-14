@@ -91,11 +91,23 @@
   /* the specular rim's two streaks (globals.css `.specular`): this pill's own
      gradient ends, 30% brighter — mixed toward white in OKLab so "brighter"
      is a lightness step and not a wash toward grey */
-  --specular-a: color-mix(in oklab, var(--color-button-bg-default-start), white 30%);
-  --specular-b: color-mix(in oklab, var(--color-button-bg-default-end), white 30%);
+  --specular-a: color-mix(
+    in oklab,
+    var(--color-button-bg-default-start),
+    white 30%
+  );
+  --specular-b: color-mix(
+    in oklab,
+    var(--color-button-bg-default-end),
+    white 30%
+  );
   /* the component can render as <a>; links carry an underline by default */
   text-decoration: none;
-  background: linear-gradient(90deg, var(--grad-start) 0%, var(--grad-end) 100%);
+  background: linear-gradient(
+    90deg,
+    var(--grad-start) 0%,
+    var(--grad-end) 100%
+  );
   box-shadow: var(--shadow-button);
   opacity: 1;
 
@@ -109,11 +121,43 @@
      `--button-hover-duration` (`duration/hover`, 400ms — non-negotiable 5).
      The endpoints go through registered properties because CSS cannot
      interpolate background-image; registered <color> properties do. */
-  transition: opacity var(--duration-base) var(--ease-standard),
+  transition:
+    opacity var(--duration-base) var(--ease-standard),
     color var(--button-hover-duration) var(--ease-standard),
     border-color var(--button-hover-duration) var(--ease-standard),
     --grad-start var(--button-hover-duration) var(--ease-standard),
     --grad-end var(--button-hover-duration) var(--ease-standard);
+}
+
+/* ⚠️ NOT IN FIGMA — THE PRIMARY'S HOVER RIM IS LOUDER, 14 Sep 2026, asked for
+   directly: "more visible". On indigo the default 2px steel-blue streak with a
+   60%-white core sat too close to the fill. Primary only — `.secondary` is not
+   matched, so the pale pills keep the quieter rim they already read with.
+   Three moves, all through `.specular`'s own variables (globals.css):
+     width     2px → 3px
+     core      60% → 90% white, so the streak's centre is near-white
+     shoulders the pill's gradient ends 30% → 65% toward white */
+.button:not(.secondary) {
+  --specular-width: 3px;
+  --specular-core: 90%;
+  --specular-a: color-mix(
+    in oklab,
+    var(--color-button-bg-default-start),
+    white 65%
+  );
+  --specular-b: color-mix(
+    in oklab,
+    var(--color-button-bg-default-end),
+    white 65%
+  );
+  /* and a brighter FIXED edge light (globals.css `.edge-light`), 14 Sep 2026,
+     asked for directly: glow 0.25 → 0.4, top catch 0.35 → 0.55, ring
+     0.7 → 0.9 lit and 0.3 → 0.45 dim. ⚠️ The lit stop then came down 40%,
+     0.9 → 0.54, the same day — it drew a bright line down the pill's left end. */
+  --edge-glow: 0.4;
+  --edge-catch: 0.55;
+  --edge-ring-lit: 0.54;
+  --edge-ring-dim: 0.45;
 }
 
 /* The label sits in its own element so the hover shine can target it without
@@ -221,8 +265,27 @@
   color: var(--color-text-primary);
   /* dark ink; the shine band is the default `effect/shine` lilac */
   --shine-ink: var(--color-text-primary);
-  --specular-a: color-mix(in oklab, var(--color-button-bg-secondary-start), white 30%);
-  --specular-b: color-mix(in oklab, var(--color-button-bg-secondary-end), white 30%);
+  --specular-a: color-mix(
+    in oklab,
+    var(--color-button-bg-secondary-start),
+    white 30%
+  );
+  --specular-b: color-mix(
+    in oklab,
+    var(--color-button-bg-secondary-end),
+    white 30%
+  );
+  /* ⚠️ NOT IN FIGMA — the secondary endpoints are translucent as of
+     14 Sep 2026 (globals.css :root); the blur is what makes that frost */
+  -webkit-backdrop-filter: blur(var(--blur-card)) saturate(160%);
+  backdrop-filter: blur(var(--blur-card)) saturate(160%);
+}
+
+@media (prefers-reduced-transparency: reduce) {
+  .secondary {
+    -webkit-backdrop-filter: none;
+    backdrop-filter: none;
+  }
 }
 
 /* the same reversal Primary gets — the base .button:hover swaps the PRIMARY
@@ -275,7 +338,7 @@
    The gradient is start -> end -> start at twice the width, so the flow the
    keyframes drive carries the pill between its default and its own hover
    reversal — the button's two existing pictures, no third colour. The sweep
-   on `::before` is the label's white at 25%, a band twice the pill's width
+   on `::before` is the label's white at 15%, a band twice the pill's width
    that the keyframes carry across it; `Button` leaves `::before` free (the
    press overlay is `::after`). The overlay sits under the label, which is a
    later sibling in the same stacking context.
@@ -288,6 +351,10 @@
     var(--grad-start) 100%
   );
   background-size: 200% 100%;
+  /* ⚠️ a unit is required — the unitless `hue-rotate(0.8)` was invalid and the
+     whole declaration was dropped. Note a filter recolours EVERYTHING the pill
+     paints, the label and the sweep included, not just the gradient. */
+  filter: hue-rotate(0.8deg);
 }
 
 .beacon::before {
@@ -299,7 +366,8 @@
   background-image: linear-gradient(
     90deg,
     transparent 0%,
-    color-mix(in srgb, var(--color-button-label-default) 25%, transparent) 50%,
+    /* 15%, down from 25% on 14 Sep 2026, asked for directly — less bright */
+    color-mix(in srgb, var(--color-button-label-default) 15%, transparent) 50%,
     transparent 100%
   );
   background-size: 200% 100%;
