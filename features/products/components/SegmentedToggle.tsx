@@ -62,6 +62,9 @@ export default function SegmentedToggle({
           {/* ⚠️ NOT IN FIGMA — the label shines on hover (globals.css
               `.shine-on-hover`), the same glint `SmallButton` has; a direct
               child of the button, which that rule requires */}
+          {/* the fixed rim light (globals.css `.edge-light`) — shown only where
+              the indigo pill is, see SegmentedToggle.module.css */}
+          <span className={`${s.edge} edge-light`} aria-hidden="true" />
           <span className={`${s.label} shine-text shine-on-hover`}>{option}</span>
         </button>
       ))}

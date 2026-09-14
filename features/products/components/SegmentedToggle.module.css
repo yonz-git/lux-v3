@@ -157,3 +157,34 @@
   position: relative;
   z-index: 1;
 }
+
+/* ⚠️ NOT IN FIGMA — the edge light `Button` and `SmallButton` carry
+   (globals.css `.edge-light`), 14 Sep 2026, asked for directly. It belongs to
+   the indigo PILL, not the segment, so it follows `::before`'s opacity: on the
+   selected segment, on an unselected one while it borrows the pill under the
+   pointer, and off the selected one while it has lent it away. Same clock as
+   the pill's fade. */
+.edge {
+  /* the indigo pill's brighter edge — the same four values the primary
+     `Button` sets (Button.module.css) */
+  --edge-glow: 0.4;
+  --edge-catch: 0.55;
+  --edge-ring-lit: 0.54;
+  --edge-ring-dim: 0.45;
+  opacity: 0;
+  transition: opacity var(--duration-base) var(--ease-standard);
+}
+
+.segment.selected > .edge {
+  opacity: 1;
+}
+
+@media (hover: hover) {
+  .segment:not(.selected):hover > .edge {
+    opacity: 1;
+  }
+
+  .toggle:has(.segment:not(.selected):hover) .segment.selected > .edge {
+    opacity: 0;
+  }
+}

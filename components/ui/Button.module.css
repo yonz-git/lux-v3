@@ -116,6 +116,29 @@
     --grad-end var(--button-hover-duration) var(--ease-standard);
 }
 
+/* ⚠️ NOT IN FIGMA — THE PRIMARY'S HOVER RIM IS LOUDER, 14 Sep 2026, asked for
+   directly: "more visible". On indigo the default 2px steel-blue streak with a
+   60%-white core sat too close to the fill. Primary only — `.secondary` is not
+   matched, so the pale pills keep the quieter rim they already read with.
+   Three moves, all through `.specular`'s own variables (globals.css):
+     width     2px → 3px
+     core      60% → 90% white, so the streak's centre is near-white
+     shoulders the pill's gradient ends 30% → 65% toward white */
+.button:not(.secondary) {
+  --specular-width: 3px;
+  --specular-core: 90%;
+  --specular-a: color-mix(in oklab, var(--color-button-bg-default-start), white 65%);
+  --specular-b: color-mix(in oklab, var(--color-button-bg-default-end), white 65%);
+  /* and a brighter FIXED edge light (globals.css `.edge-light`), 14 Sep 2026,
+     asked for directly: glow 0.25 → 0.4, top catch 0.35 → 0.55, ring
+     0.7 → 0.9 lit and 0.3 → 0.45 dim. ⚠️ The lit stop then came down 40%,
+     0.9 → 0.54, the same day — it drew a bright line down the pill's left end. */
+  --edge-glow: 0.4;
+  --edge-catch: 0.55;
+  --edge-ring-lit: 0.54;
+  --edge-ring-dim: 0.45;
+}
+
 /* The label sits in its own element so the hover shine can target it without
    touching the pill — `inline-block` so the shine's gradient spans the label
    box and its band crosses the whole word. */
@@ -223,6 +246,17 @@
   --shine-ink: var(--color-text-primary);
   --specular-a: color-mix(in oklab, var(--color-button-bg-secondary-start), white 30%);
   --specular-b: color-mix(in oklab, var(--color-button-bg-secondary-end), white 30%);
+  /* ⚠️ NOT IN FIGMA — the secondary endpoints are translucent as of
+     14 Sep 2026 (globals.css :root); the blur is what makes that frost */
+  -webkit-backdrop-filter: blur(var(--blur-card)) saturate(160%);
+  backdrop-filter: blur(var(--blur-card)) saturate(160%);
+}
+
+@media (prefers-reduced-transparency: reduce) {
+  .secondary {
+    -webkit-backdrop-filter: none;
+    backdrop-filter: none;
+  }
 }
 
 /* the same reversal Primary gets — the base .button:hover swaps the PRIMARY

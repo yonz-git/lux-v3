@@ -454,6 +454,8 @@ export function CheckResults() {
                   >
                     {/* the label shines on hover, the way `SmallButton`'s
                         does — a direct child, so `.shine-on-hover` reaches it */}
+                    {/* the fixed rim light, globals.css `.edge-light` */}
+                    <span className="edge-light" aria-hidden="true" />
                     <span className="shine-text shine-on-hover">Add to my products</span>
                   </button>
                   <button

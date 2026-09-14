@@ -148,6 +148,13 @@ button.takePhoto {
      carrying bigger type than Continue. Height, padding and a 15px label are
      `Button`'s `md` size as of 13 Sep 2026; this rule only places it. */
   align-self: center;
+  /* ⚠️ NOT IN FIGMA — a LIGHTER `shadow/button`, 14 Sep 2026, asked for
+     directly. Same two layers and geometry, alphas cut 0.22 → 0.1 and
+     0.1 → 0.05: the frosted pill read as sitting in a dark pool. This button
+     only; every other `Button` keeps the token. */
+  box-shadow:
+    0 4px 12px -2px rgba(46, 36, 71, 0.1),
+    0 1px 2px rgba(46, 36, 71, 0.05);
 }
 
 @media (min-width: 1024px) {
