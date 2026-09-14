@@ -807,6 +807,14 @@
       color-mix(in srgb, var(--color-border-highlight) 60%, transparent),
     inset 0 -1px 2px rgba(46, 42, 63, 0.1), 0 2px 6px rgba(28, 27, 36, 0.1),
     0 12px 28px -10px rgba(28, 27, 36, 0.16);
+
+  /* ⚠️ THE BOXES' INNER SHADOW AT HALF STRENGTH, asked for directly 14 Sep
+     2026 ("less opacity to all the inner shadows of the boxes"). tokens.css
+     generates `shadow/frosted-row` as `inset 2px 4px 9px` black at 20%; every
+     frosted row and card, `DataCard` and the face card bind it (43 uses), and
+     the dark top-left edge it drew read heavy. Same geometry, 10%. Raise the
+     new alpha in Figma. */
+  --shadow-frosted-row: inset 2px 4px 9px rgba(0, 0, 0, 0.1);
 }
 
 html,

@@ -132,36 +132,35 @@ export function ProgressScreen({ now }: { now: number }) {
         />
 
         {/* step 1's own diagram, read-only — the same one the profile recap
-            draws, and `aria-hidden` inside. */}
-        {(face.faceRegions.length > 0 || face.otherLocations.length > 0) && (
-          <DataCard
-            className={styles.faceCard}
-            aria-labelledby="progress-face"
-          >
-            <h2
-              id="progress-face"
-              className={`${styles.faceLabel} t-overline`}
-            >
-              {COPY.locationLabel}
-            </h2>
-            {/* ⚠️ NOT IN FIGMA — THE CALLOUTS, 14 Sep 2026, asked for directly
-                ("the face diagram should work like we fixed"): each symptom a
-                pill at the face's edge with a line to each of its places, as
-                step 1 draws them once saved. They took over from the symptom
-                pills on the profile card above. ⚠️ The visually hidden sentence
-                that named the regions went with them — `FaceDiagram` lists
-                every symptom with its places for a screen reader, and those
-                places are the regions, so both said one answer twice. */}
-            <div className={styles.face}>
-              <FaceDiagram
-                readOnly
-                selected={face.faceRegions}
-                otherLocations={face.otherLocations}
-                callouts={places}
-              />
-            </div>
-          </DataCard>
-        )}
+            draws, and `aria-hidden` inside.
+            ⚠️ ALWAYS RENDERED, since 14 Sep 2026 — it used to render only
+            when step 1 had a place, and that made it VANISH: the screen first
+            paints the demo, whose face has places, and a moment later the
+            user's own answers arrive. With step 4 answered and step 1 empty,
+            the card unmounted under the reader ("it disappears when I scroll
+            down"). An unlit face is the honest reading of "no place marked
+            yet", the same rule the recap's location card follows. */}
+        <DataCard className={styles.faceCard} aria-labelledby="progress-face">
+          <h2 id="progress-face" className={`${styles.faceLabel} t-overline`}>
+            {COPY.locationLabel}
+          </h2>
+          {/* ⚠️ NOT IN FIGMA — THE CALLOUTS, 14 Sep 2026, asked for directly
+              ("the face diagram should work like we fixed"): each symptom a
+              pill at the face's edge with a line to each of its places, as
+              step 1 draws them once saved. They took over from the symptom
+              pills on the profile card above. ⚠️ The visually hidden sentence
+              that named the regions went with them — `FaceDiagram` lists
+              every symptom with its places for a screen reader, and those
+              places are the regions, so both said one answer twice. */}
+          <div className={styles.face}>
+            <FaceDiagram
+              readOnly
+              selected={face.faceRegions}
+              otherLocations={face.otherLocations}
+              callouts={places}
+            />
+          </div>
+        </DataCard>
       </div>
 
       <div className={styles.checkInColumn}>

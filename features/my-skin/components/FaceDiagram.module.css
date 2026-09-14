@@ -27,6 +27,11 @@
      directly 13 Sep 2026, a softer corner on the face card. It is the page
      card's own radius, so the two nest as one family. NOT IN FIGMA. */
   border-radius: var(--radius-3xl);
+  /* the grain (`::after`) paints between this card's fill and its content */
+  position: relative;
+  isolation: isolate;
+  /* ⚠️ HISTORY ONLY BELOW, UNTIL "A MOODY MESH" — the sage base, the single
+     radial halo and its day of retunes were all replaced on 14 Sep 2026. */
   /* ⚠️ `surface/data-strong` (62%), NOT `surface/data` (44%) — decided here.
      This card carries objects ON it (the face form and seven pills) rather
      than text alone, so it is doing a different job from a PROGRESS or CHECK
@@ -100,19 +105,86 @@
      TOP-DOWN TINT — slate indigo (#52607c @62%) fading into
      `surface/data-strong` — which cools the card's top edge toward the brand
      indigo. Raw hex for the reason the note above gives. */
-  --face-card-halo: radial-gradient(
-    circle at 50% 42%,
-    #2b42439e 0%,
-    #71959f 45%,
-    #a9c2cf 100%
-  );
+  /* ⚠️ DARKER AND GREYER, asked for directly 14 Sep 2026: every stop, and the
+     top tint, taken 40% toward its own grey and then 15% darker —
+     #2b4243 → #2b3637, #71959f → #6a7c81, #a9c2cf → #97a3aa,
+     #52607c → #4a5160. Alphas unchanged.
+     ⚠️ THEN BLUER AND 10% DARKER AGAIN the same day ("too grey"): red down
+     6%, blue up 8%, then × 0.9 — #243035, #5a6f7d, #8091a5, tint #3f485d.
+     A slate blue rather than the sage it started as.
+     ⚠️ AND THEN SUPPLIED DIRECTLY, later the same day: a black core at 62%,
+     `#4f6873` mid, and a translucent `#5b8891` at 40% on the rim, so the
+     card's own layers show at the corners again. The background line is
+     unchanged.
+     ⚠️ THEN MORE TRANSPARENT, asked for directly the same day ("too dark"):
+     same colours, lower alphas — the core 62% → 40%, the mid opaque → 70%,
+     the rim 40% → 28%, the top tint 62% → 40%, and the foot below 40% → 30%.
+     More of the card's sage base and the page behind its blur show through. */
 
-  background: var(--face-card-halo),
-    linear-gradient(#52607c9e, var(--color-surface-data-strong)),
-    var(--color-surface-data-strong);
+  /* ⚠️ A MOODY MESH, NOT A HALO — asked for directly 14 Sep 2026, from three
+     supplied "dark moody gradient" references: the one-radial halo "looks
+     tacky". Depth now comes from light and shadow placed like a lit surface,
+     every layer translucent over the backdrop blur, with no flat sage base:
+       1. ice light pooling in from the top-right corner;
+       2. a mint glow rising from the bottom-left;
+       3. a faint blue bloom on the left edge;
+       4. a deep navy shadow behind the face, which keeps its white lines
+          legible;
+       5. a navy wash running darker toward the bottom-right.
+     The grain on `::after` is the nav bar's own noise tile (BottomNav), so the
+     gradients do not band. Raw values: `02 Color` has no role for any of this;
+     raise it as `gradient/face-card`.
+     ⚠️ RETUNED the same day, asked for directly: the top-right light 10% less
+     bright (0.5 → 0.45), and the dark end of the navy wash in the bottom-right
+     corner 10% brighter (#0e1c28 @62% → #26333e @56%).
+     ⚠️ THEN SUPPLIED DIRECTLY, later the same day: every stop below as given —
+     a slate-blue top-right light, a grey-blue bottom-left glow in place of the
+     mint, the left bloom, a violet-black shadow behind the face, and the wash
+     slightly more opaque.
+     ⚠️ AND SUPPLIED DIRECTLY AGAIN, later still: a much quieter mesh. The
+     top-right light and the left bloom are fully transparent now (kept as
+     layers so the stops can be dialled back up), the bottom-left glow ends in
+     a teal, the shadow behind the face is a slate rather than violet-black,
+     and the wash fades out entirely toward the bottom-right. */
+  --face-card-halo: radial-gradient(
+      65% 55% at 88% 6%,
+      #7ca0b400,
+      #c4deec00 72%
+    ),
+    radial-gradient(60% 45% at 8% 100%, #64798838, #6c939259 70%),
+    radial-gradient(45% 40% at 0% 40%, #6ea0c800, #6ea0c800 70%),
+    radial-gradient(70% 60% at 45% 52%, #1c252f9e, #06101a00 78%),
+    linear-gradient(165deg, #34566824 0%, #26333e00 100%);
+
+  /* ⚠️ THE BOTTOM IS DARKENED, asked for directly 14 Sep 2026: the lit
+     `Whole face` / `Neck` / `Other` chips washed out on a pale foot. A navy
+     wash from clear at 58% of the card's height to its foot, over everything
+     else. ⚠️ Then 15% BRIGHTER at the bottom, asked for directly later the same
+     day: this foot 40% → 34%, and the wash's dark end above 56% → 48%.
+     ⚠️ And 10% lower opacity again, asked for directly: the foot 34% → 31%,
+     the wash's dark end 48% → 43%.
+     ⚠️ Then supplied directly: the foot at 9% (`#060e1617`), with the mesh
+     above replaced in the same request. */
+  --face-card-foot: linear-gradient(transparent 58%, #060e1617 100%);
+
+  background: var(--face-card-foot), var(--face-card-halo);
   box-shadow: var(--shadow-frosted-row);
   -webkit-backdrop-filter: blur(var(--blur-card));
   backdrop-filter: blur(var(--blur-card));
+}
+
+/* the grain — the nav bar's noise tile, at `z-index: -1` inside the card's own
+   stacking context: over the mesh, under the face and every pill */
+.card::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  border-radius: inherit;
+  pointer-events: none;
+  opacity: 0.08;
+  mix-blend-mode: overlay;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='120' height='120'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='2'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
 }
 
 .diagram {
@@ -463,13 +535,16 @@
   pointer-events: none;
 }
 
+/* ⚠️ 15% SOFTER AGAIN, asked for directly later on 14 Sep 2026: the line's
+   white share 35% → 30%, the pills' lift 14% → 12%, their glow 42% → 36%. The
+   fades are unchanged. */
 .leader[data-lit] {
-  stroke: color-mix(in srgb, var(--color-bg-symptom) 65%, white);
+  stroke: color-mix(in srgb, var(--color-bg-symptom) 70%, white);
   stroke-width: 2;
 }
 
 .anchor[data-lit] {
-  fill: color-mix(in srgb, var(--color-bg-symptom) 65%, white);
+  fill: color-mix(in srgb, var(--color-bg-symptom) 70%, white);
 }
 
 .callouts[data-focus] .leader:not([data-lit]),
@@ -478,7 +553,7 @@
 }
 
 .symptom[data-lit] {
-  filter: brightness(1.14) opacity(1) drop-shadow(0 0 6px rgb(255 255 255 / 0.42));
+  filter: brightness(1.12) opacity(1) drop-shadow(0 0 6px rgb(255 255 255 / 0.36));
 }
 
 .callouts[data-focus] .symptom:not([data-lit]) {
@@ -486,7 +561,7 @@
 }
 
 .region[data-lit] {
-  filter: brightness(1.14) drop-shadow(0 0 6px rgb(255 255 255 / 0.42));
+  filter: brightness(1.12) drop-shadow(0 0 6px rgb(255 255 255 / 0.36));
 }
 
 .region {
@@ -800,7 +875,9 @@
      `StartInvestigation.module.css` is `inset 0 1px 0`: a crisp light along
      the top only. */
   --region-glass-wash: 0 0 #6a292900;
-  background-color: #37707dd9;
+  /* ⚠️ `#4f93a2d9`, supplied directly 14 Sep 2026 — a lighter teal at the
+     same 85%, for the moody card behind it (was `#37707dd9`) */
+  background-color: #4f93a2d9;
   -webkit-backdrop-filter: blur(1px);
   backdrop-filter: blur(1px);
   border-color: #869ea626;
@@ -826,10 +903,15 @@
   border-radius: inherit;
   /* ⚠️ the slate teal's own deep end, not `bg/brand-hover`, since the pill
      left indigo on 14 Sep 2026 — see `face-pill-selected-hue` in globals.css */
+  /* ⚠️ THE CORNER SHADE AT 20%, asked for directly later on 14 Sep 2026 ("tone
+     up the… right corner shadow to 20%", "I mean brighter, it's too dark"):
+     the shade's dark end is `selected-deep` at 20% strength, so the lower
+     right of a picked pill only just dims. (It was mixed 20% toward black for
+     one turn, the opposite of what was meant.) */
   background: linear-gradient(
     135deg,
     transparent 35%,
-    var(--color-face-pill-selected-deep) 100%
+    color-mix(in srgb, var(--color-face-pill-selected-deep) 20%, transparent) 100%
   );
   opacity: 0;
   pointer-events: none;
@@ -841,7 +923,7 @@
   background: linear-gradient(
     135deg,
     transparent 35%,
-    var(--color-face-pill-selected-deep) 100%
+    color-mix(in srgb, var(--color-face-pill-selected-deep) 20%, transparent) 100%
   );
 }
 
@@ -909,19 +991,11 @@
   /* frost-light at full strength rather than bg/surface-frost, which is a
      different colour */
   .card {
-    /* surface/data-strong composited over the canvas — the same move `Sheet`
-       and `DataCard` make, since the DS has no opaque counterpart for it */
-    /* the radial rides along — it is a layer of the card's own paint, not a
-       transparency effect, so dropping it here would make the reduced
-       -transparency card a different DESIGN rather than the same one without the
-       blur */
-    background: var(--face-card-halo),
-      linear-gradient(#52607c9e, var(--color-surface-data-strong)),
-      linear-gradient(
-        var(--color-surface-data-strong),
-        var(--color-surface-data-strong)
-      ),
-      var(--color-bg-canvas);
+    /* the mesh rides along — it is the card's own paint, not a transparency
+       effect — over an opaque slate navy standing in for what the blur let
+       through, so the card is the same design with nothing showing behind */
+    background: var(--face-card-foot), var(--face-card-halo),
+      linear-gradient(165deg, #3d5866, #16252f);
     -webkit-backdrop-filter: none;
     backdrop-filter: none;
   }
@@ -1052,10 +1126,18 @@
      flat indigo border would draw a lighter rim around the dark corner. */
   /* the face's selected hue, not `bg/brand` — step 1's pill left indigo on
      14 Sep 2026, and this is that pill */
+  /* the corner shade at 20%, matching `.region::before` (14 Sep 2026) — mixed
+     into the hue rather than into transparent, because this pill has no fill
+     of its own under the gradient */
   background: linear-gradient(
       135deg,
       var(--color-face-pill-selected-hue) 35%,
-      var(--color-face-pill-selected-deep) 100%
+      color-mix(
+          in srgb,
+          var(--color-face-pill-selected-deep) 20%,
+          var(--color-face-pill-selected-hue)
+        )
+        100%
     )
     border-box;
   /* the selected region pill's hairline and lit top edge, so the recap's pill

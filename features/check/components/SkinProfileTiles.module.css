@@ -38,6 +38,16 @@
      display. It is supplied fully transparent (`#1d1c2000`) and kept as the
      slot to tune. */
   color: var(--color-text-on-data-inverse);
+  /* ⚠️ A SOFT SHADOW UNDER EVERY WORD, asked for directly 14 Sep 2026 ("subtle
+     spread and blurred text shadows… use the darker tone of the background,
+     not black"). `text-shadow` has no spread, so it is two layers: a close
+     one that seats the letters and a wide blur that spreads a haze behind
+     them. Both are the card's teal taken dark, `#14434c`, not black, so the
+     shadow reads as depth in the fill rather than as grey dirt. Inherited by
+     the overline, the labels and the answers in their pills. */
+  text-shadow:
+    0 1px 2px rgb(20 67 76 / 0.45),
+    0 0 10px rgb(20 67 76 / 0.35);
   /* ⚠️ A SOFT MESH OVER THE FILL — asked for directly 14 Sep 2026 from a
      supplied reference (a frosted blue-grey field with a pale haze on one
      side and a deeper teal pooling in the opposite corner), at much lower
@@ -55,18 +65,43 @@
      (`::after`) does the references' noise. None of it has a token.
      ⚠️ PLUS A DARKER BOTTOM-RIGHT CORNER, asked for directly the same turn:
      a small deep teal `#00303c` at 24% tucked into the corner, on top, so
-     the brighter pool reads as sitting just inside it. */
+     the brighter pool reads as sitting just inside it.
+     ⚠️ THEN A STEP BRIGHTER, asked for directly the same day, because
+     `SymptomTrend` on /progress took this exact mesh and the two cards read as
+     one: every teal lifted about 10% — the fill `#005461` → `#0f6270`, the left
+     haze `#567e88` → `#628a94`, the pool `#60a8ba` → `#6fb3c4`, the top-right
+     slate `#376175` → `#43707f`, the corner `#00303c` → `#063a46`. Alphas and
+     the rose catch unchanged. ⚠️ IT COSTS THE WHITE INK: over the canvas's mid
+     stop the fill now measures about 4.1:1 where it was 4.75:1, so the labels
+     sit under AA across more of the page. On /check too — this is the one
+     component.
+     ⚠️ AND BRIGHTER AGAIN, WITH A BRIGHTER MESH, asked for directly the same
+     day ("go brighter and add a bit more brighter gradient"): the fill
+     `#0f6270` → `#1f7282`, the left haze `#628a94` → `#76a0aa`, the corner
+     `#063a46` → `#0f4a56`; the pool brighter and stronger (`#6fb3c4` @32% →
+     `#86c6d5` @42%), the rose catch a little more present (12% → 18%), and
+     the top-right corner turned from a slate darkening into a pale teal light
+     (`#43707f` @28% → `#9cc4d0` @30%). ⚠️ WHITE NOW MEASURES ABOUT 3.6:1 over
+     the canvas's mid stop, under AA for the 12px labels across the page.
+     ⚠️ THEN SUPPLIED DIRECTLY: the left haze `#769da6`, a greyer pool
+     `#98bac2` at 42%, and the fill `#2c6e7a` at 76%. White measures about
+     3.9:1 over the canvas's mid stop. */
   background:
-    radial-gradient(45% 45% at 100% 100%, #00303c3d, #0000 70%),
-    radial-gradient(60% 55% at 0 0, #d0b4b81f, #a0353500 70%),
-    radial-gradient(110% 90% at 0 35%, #567e88, #0000 60%),
-    radial-gradient(90% 80% at 90% 105%, #60a8ba52, #0000 65%),
-    radial-gradient(70% 60% at 80% -10%, #37617547, #0000 70%),
-    #005461b5;
+    radial-gradient(45% 45% at 100% 100%, #0f4a563d, #0000 70%),
+    radial-gradient(60% 55% at 0 0, #d0b4b82e, #a0353500 70%),
+    radial-gradient(110% 90% at 0 35%, #769da6, #0000 60%),
+    radial-gradient(90% 80% at 90% 105%, #98bac26b, #0000 65%),
+    radial-gradient(70% 60% at 80% -10%, #9cc4d04d, #0000 70%),
+    #2c6e7ac2;
+  /* ⚠️ A DEEPER DROP, asked for directly 14 Sep 2026 ("add drop shadows to the
+     profile box"): the single soft `0 4px 16px` at 10% became two — a tight
+     contact shadow under the edge and a wide, lower one that lifts the card
+     off the page. The insets are unchanged. */
   box-shadow:
     inset 0 2px 12px #afc5cbbd,
     inset 0 2px 6px #547c7a24,
-    0 4px 16px #0000001a,
+    0 2px 6px #0000001f,
+    0 12px 32px -8px #00000038,
     inset 0 0 12px #0003,
     inset 0 0 0 0.5px #1d1c2000;
   -webkit-backdrop-filter: blur(var(--blur-card)) saturate(0%);
@@ -111,6 +146,12 @@
    not by a muted tier (the app's muted inks are dark) */
 .overline {
   margin: 0;
+  /* ⚠️ 16px, NOT `t-overline`'s 13 — asked for directly 14 Sep 2026. The
+     class keeps its weight, tracking and caps; only the size and its line
+     step up, 13 / 18 → 16 / 22. Off the type ramp: no Figma style has an
+     overline at 16, so raise one if it stays. */
+  font-size: 16px;
+  line-height: 22px;
   /* ⚠️ A GRADIENT WHITE RULE UNDER IT, asked for directly 14 Sep 2026 from a
      supplied reference: a streak of light with a faint glow around it,
      ANCHORED LEFT — brightest under the start of the heading and fading to
@@ -145,8 +186,10 @@
   /* ⚠️ 6, OFF THE SCALE — the scale's 8 less 2, asked for directly 14 Sep
      2026 */
   gap: calc(var(--space-sm) - 2px); /* 6 */
-  /* 6 + the tile's 6 top = 12 under the overline's rule — see `.tile` */
-  margin: calc(var(--space-md) / 2) 0 0;
+  /* ⚠️ 14 + the tile's 6 top = 20 under the overline's rule — asked for
+     directly 14 Sep 2026 ("more bottom space below border"); it was 6 + 6 = 12.
+     14 is off the scale: the tile's 6 is, and the sum lands on `space/xl`. */
+  margin: calc(var(--space-xl) - var(--space-md) / 2) 0 0; /* 14 */
 }
 
 /* ⚠️ THE TILE IS DRAWN BY NOTHING NOW — spacing and a radius only. It went
@@ -214,13 +257,15 @@
 }
 
 /* non-negotiable 11 — the fill made opaque, and the grain goes with the blur it
-   dithered. `#3c7c86` is `#005461b5` composited over the canvas's mid stop
-   `#cedee2`: white measures 4.75:1 on it, the middle of the translucent
-   card's range. The pills keep their blur here: it only ever sees the card,
-   never the canvas behind it, so it shows nothing through. */
+   dithered. `#538993` is the supplied `#2c6e7ac2` composited over the
+   canvas's mid stop `#cedee2`: white measures about 3.9:1 on it (it was
+   `#3c7c86` at 4.75:1, then `#468691`, then `#52919e`, as the fill was
+   retuned on 14 Sep 2026). The pills
+   keep their blur here: it only ever sees the card, never the canvas behind
+   it, so it shows nothing through. */
 @media (prefers-reduced-transparency: reduce) {
   .card {
-    background: #3c7c86;
+    background: #538993;
     -webkit-backdrop-filter: none;
     backdrop-filter: none;
   }

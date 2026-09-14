@@ -49,7 +49,14 @@
    secondary and muted tiers down in alpha would take the smallest text
    furthest down. */
 .card {
-  --color-surface-data: var(--color-surface-data-deep);
+  /* ⚠️ `#4a6f78`, supplied directly 14 Sep 2026 — an opaque slate teal in place
+     of the deep tier (`surface/data-deep`, #4f838f @85%), this card only. It
+     was `#799fa6` for a moment, where the white ink measured ~2.9:1; on this
+     value it measures ~5.5:1, which clears AA. */
+  --color-surface-data: #4a6f78;
+  /* the grain (`::after`) paints between the fill and the chart */
+  position: relative;
+  isolation: isolate;
   --color-text-on-data: var(--color-text-on-data-inverse);
   --color-text-on-data-secondary: var(--color-text-on-data-inverse);
   --color-text-on-data-muted: var(--color-text-on-data-inverse);
@@ -58,6 +65,67 @@
      a scale rather than as three magic numbers */
   --trend-grid: rgba(255, 255, 255, 0.18);
   --trend-baseline: rgba(255, 255, 255, 0.34);
+}
+
+/* ⚠️ THE FACE CARD'S MOODY MESH, IN ITS TONES — asked for directly 14 Sep 2026
+   ("make it gradient kind of like the face diag bg", "same tones"). The five
+   layers are copied from `--face-card-halo` in FaceDiagram.module.css as they
+   stood that day: a slate-blue light from the top-right, a grey-blue glow at
+   the bottom-left, a faint bloom on the left edge, a violet-black pool in the
+   middle, a navy wash. They move independently of it from here.
+   ⚠️ THEN SUPPLIED DIRECTLY, later the same day: the middle pool much fainter
+   (`#0f061a87` → `#2e28351c`) and the base `#4a6f78` at 50% rather than opaque,
+   so the card is see-through over `DataCard`'s blur like the face card. Its
+   12px white ticks now take their contrast from the page behind too; on the
+   opaque base they measured ~5.5:1. The reduced-transparency rule below puts
+   the opaque base back.
+   ⚠️ AND REPLACED OUTRIGHT, supplied directly later still: its own mesh, no
+   longer the face card's — a deep teal shade in the bottom-right corner, a
+   faint rose light in the top-left, a slate teal pooled down the left, a pale
+   teal glow rising at the bottom-right, a slate light above the top-right,
+   all over `#005461` at 71%.
+   ⚠️ `background` IS RESTATED HERE, WHICH THE NOTE AT THE TOP OF THIS FILE
+   WARNS AGAINST — `.card.card` (0,2,0) is what makes it safe: it outranks
+   `DataCard`'s `.card` (0,1,0), including its reduced-transparency rule,
+   whatever order the modules load in.
+   ⚠️ 5% DARKER, asked for directly the same day: a black layer at 5% on top
+   of the supplied mesh (and of its reduced-transparency twin), so every stop
+   underneath stays as it was given. */
+.card.card {
+  background: linear-gradient(#0000000d, #0000000d),
+    radial-gradient(45% 45% at 100% 100%, #00303c3d, #0000 70%),
+    radial-gradient(60% 55% at 0 0, #d0b4b81f, #a0353500 70%),
+    radial-gradient(110% 90% at 0 35%, #567e88, #0000 60%),
+    radial-gradient(90% 80% at 90% 105%, #60a8ba52, #0000 65%),
+    radial-gradient(70% 60% at 80% -10%, #37617547, #0000 70%),
+    #005461b5;
+}
+
+/* non-negotiable 11: the same mesh over its base made opaque, nothing behind */
+@media (prefers-reduced-transparency: reduce) {
+  .card.card {
+    background: linear-gradient(#0000000d, #0000000d),
+      radial-gradient(45% 45% at 100% 100%, #00303c3d, #0000 70%),
+      radial-gradient(60% 55% at 0 0, #d0b4b81f, #a0353500 70%),
+      radial-gradient(110% 90% at 0 35%, #567e88, #0000 60%),
+      radial-gradient(90% 80% at 90% 105%, #60a8ba52, #0000 65%),
+      radial-gradient(70% 60% at 80% -10%, #37617547, #0000 70%),
+      #005461;
+  }
+}
+
+/* the face card's grain too — the nav bar's noise tile, over the mesh and
+   under the chart */
+.card.card::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  border-radius: inherit;
+  pointer-events: none;
+  opacity: 0.08;
+  mix-blend-mode: overlay;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='120' height='120'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='2'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
 }
 
 .title {
