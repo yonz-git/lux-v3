@@ -35,7 +35,12 @@
      and `border-box` + `min-height` means the row still measures 56 (58 on
      desktop) with the stroke inside it, as rule 8b requires. */
   border: var(--border-width-thin) solid transparent;
-  background: var(--color-surface-frost-light);
+  /* ⚠️ `#edf8fb0f`, supplied directly 14 Sep 2026 for every option row in the
+     app — a pale aqua at 6%, far thinner than `surface/frost-light`, so the
+     row is mostly its blur, shadow and edge (it was `#f4feff12` for a turn).
+     NOT IN FIGMA and no token; raise one if it stays. The
+     reduced-transparency fallback below keeps its opaque frost. */
+  background: #edf8fb0f;
 
   box-shadow: var(--shadow-frosted-row);
   -webkit-backdrop-filter: blur(var(--blur-card));

@@ -26,7 +26,10 @@
   text-align: left;
 
   border-radius: var(--radius-lg);
-  background: var(--color-surface-frost-light);
+  /* ⚠️ `#f4feff3b`, supplied directly 14 Sep 2026 — `surface/frost-light`'s
+     own near-white at 23% rather than 55%. NOT IN FIGMA and no token; raise
+     one if it stays. */
+  background: #f4feff3b;
   box-shadow: var(--shadow-frosted-row);
   -webkit-backdrop-filter: blur(var(--blur-card));
   backdrop-filter: blur(var(--blur-card));

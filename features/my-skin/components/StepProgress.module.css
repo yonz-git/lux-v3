@@ -11,7 +11,10 @@
   width: 100%;
   height: var(--size-progress-track);
   border-radius: var(--radius-full);
-  background: var(--color-bg-progress-track);
+  /* ⚠️ THE TRACK AT 80%, asked for directly 14 Sep 2026 ("tone down the white
+     part"). On the background colour rather than `opacity`, which would fade
+     the indigo fill inside it too. */
+  background: color-mix(in srgb, var(--color-bg-progress-track) 80%, transparent);
   overflow: hidden;
 }
 
