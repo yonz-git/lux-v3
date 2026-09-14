@@ -9,9 +9,12 @@
   isolation: isolate;
   display: flex;
   flex-direction: column;
-  gap: var(--space-md); /* 12 */
+  /* ⚠️ NO GAP, AND 1.4rem (22.4) A SIDE — tuned by hand and supplied 14 Sep
+     2026. It was a 12 gap and the strip's 18 / 20; the overline's own 12
+     under its rule and the tiles' 12 top padding now carry the space
+     between them. */
   width: 100%;
-  padding: 18px var(--space-xl); /* the strip's 18 / 20 */
+  padding: 1.4rem;
   border-radius: var(--radius-2xl); /* 24 — the strip's */
 
   /* ⚠️ WHITE INK ON A DEEP TEAL, TUNED BY HAND IN THE BROWSER AND SUPPLIED,
@@ -137,14 +140,15 @@
   gap: var(--space-2xs); /* 2 — the strip's label-to-value */
   min-width: 0;
   padding: var(--space-md) var(--space-sm); /* 12 / 8 */
-  padding-left: calc(var(--space-sm) + 4px); /* 12 */
+  /* ⚠️ 8 ON THE LEFT AGAIN — the +4 came off, supplied 14 Sep 2026 */
+  padding-left: var(--space-sm); /* 8 */
   border-radius: var(--radius-xl); /* 20 */
   /* ⚠️ NO FILL NOW — `#00000000`, asked for directly 14 Sep 2026, when the
      answers became pills. It was 7% black, and that was what lifted the tile
      text to 4.80:1; with it gone every label and pill sits on the card's own
      fill, 4.27–5.27:1 (see `.card`). The tile is now spacing and a radius
      only, drawn by nothing. */
-  background: #00000000;
+  background: none;
 }
 
 .tileLabel,
@@ -162,16 +166,24 @@
    the card's own `backdrop-filter` makes the card the backdrop root, so the
    pill's blur sampled the card's translucent teal and laid it down a second
    time, and every pill read as a DARKER teal chip — the fill it was asked
-   not to have. The frost is the rim and the top light. */
+   not to have. The frost is the rim and the top light.
+   ⚠️ SUPERSEDED BY HAND, 14 Sep 2026: the pill has a fill again — a lighter
+   teal `#56848d` at 85% — with a 7px blur under it, 4 / 14 / 6 padding (a
+   px heavier at the bottom, for the optical centre) and 0.3rem (4.8) off the
+   label. That fill is the chosen look now, not the bug above. No token;
+   raise it. */
 .tileValue {
   align-self: flex-start;
   max-width: 100%;
-  padding: var(--space-xs) var(--space-md); /* 4 / 12 */
+  margin-top: 0.3rem;
+  padding: 4px 14px 6px;
   border-radius: var(--radius-full);
-  background: transparent;
+  background: #56848dd9;
   box-shadow:
     inset 0 0 0 var(--border-width-hairline) var(--color-border-glass),
-    inset 0 1px 2px rgba(255, 255, 255, 0.2);
+    inset 0 1px 2px #fff3;
+  -webkit-backdrop-filter: blur(7px);
+  backdrop-filter: blur(7px);
 }
 
 /* non-negotiable 11 — the fill made opaque, and the grain goes with the blur it

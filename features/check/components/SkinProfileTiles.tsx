@@ -79,7 +79,7 @@ export function SkinProfileTiles({
         {tiles.map(({ label, value }) => (
           <div key={label} className={styles.tile}>
             <dt className={`${styles.tileLabel} t-body3`}>{label}</dt>
-            <dd className={`${styles.tileValue} t-body2`}>{value}</dd>
+            <dd className={`${styles.tileValue} t-body3`}>{value}</dd>
           </div>
         ))}
       </dl>
