@@ -1129,17 +1129,21 @@
   /* the corner shade at 20%, matching `.region::before` (14 Sep 2026) — mixed
      into the hue rather than into transparent, because this pill has no fill
      of its own under the gradient */
+  /* ⚠️ THE REGION PILLS' OWN `#4f93a2d9` UNDER THE SHADE, 14 Sep 2026 — asked
+     for directly ("these 3 buttons are dark"). The fill was the older opaque
+     `selected-hue`, which the region pills above left for `#4f93a2d9` the same
+     day, so `Whole face` / `Neck` / `Other` read darker than the places they
+     sit under on every read-only face (the recap and PROGRESS). */
   background: linear-gradient(
       135deg,
-      var(--color-face-pill-selected-hue) 35%,
-      color-mix(
-          in srgb,
-          var(--color-face-pill-selected-deep) 20%,
-          var(--color-face-pill-selected-hue)
-        )
+      transparent 35%,
+      color-mix(in srgb, var(--color-face-pill-selected-deep) 20%, transparent)
         100%
     )
-    border-box;
+    border-box,
+    #4f93a2d9;
+  -webkit-backdrop-filter: blur(1px);
+  backdrop-filter: blur(1px);
   /* the selected region pill's hairline and lit top edge, so the recap's pill
      matches step 1's (retuned 14 Sep 2026) */
   border: var(--border-width-hairline) solid #869ea626;
