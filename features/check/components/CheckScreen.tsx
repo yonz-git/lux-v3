@@ -6,11 +6,7 @@ import { HubScreen } from "@/components/layout/HubScreen";
 import { Button } from "@/components/ui/Button";
 import { Orb } from "@/components/ui/Orb";
 import { ChatBubble } from "@/components/ui/ChatBubble";
-import { SkinProfileStrip } from "./SkinProfileStrip";
-import { SkinProfileTiles } from "./SkinProfileTiles";
 import { ChevronRightIcon } from "@/components/ui/icons";
-import { useInvestigation } from "@/lib/store/InvestigationProvider";
-import { skinProfile } from "@/lib/demo";
 
 /**
  * CHECK — the Check tab landing, at `/check`: `Check — start` (601:1952, and
@@ -38,9 +34,6 @@ import { skinProfile } from "@/lib/demo";
  * one meaning — the product compatibility check. See `components/CheckIn.tsx`.
  */
 export function CheckScreen() {
-  const { answers } = useInvestigation();
-  const { skinType, tendencies } = skinProfile(answers);
-
   return (
     <HubScreen
       title="Analysis"
@@ -64,24 +57,14 @@ export function CheckScreen() {
          Nothing on this screen sits on bare canvas below `text/secondary`, so
          the floor is the whole proof. The tiles card's `text/primary` on its
          own teal glass is measured in SkinProfileTiles.module.css: 5.5:1 or
-         better. */
-      belowHeading={
-        /* one block, so the strip and the tiles share an edge and a width —
-           see `.belowHeading` in the module */
-        <div className={styles.belowHeading}>
-          <SkinProfileStrip skinType={skinType} tendencies={tendencies} />
-          {/* ⚠️ NOT IN FIGMA — asked for directly 14 Sep 2026, and the values
-              are the supplied LITERALS, not the answers: they disagree with
-              the seeded strip above while the two are compared. See
-              SkinProfileTiles.tsx. */}
-          <SkinProfileTiles
-            skinType="Dry"
-            tendencies="Acne-prone"
-            conditions="None"
-            symptomsState="Ongoing"
-          />
-        </div>
-      }
+         better.
+
+         ⚠️ NOTHING SITS UNDER THE HEADING ANY MORE, asked for directly 14 Sep
+         2026: the skin-profile strip and the skin-profile tiles both left this
+         screen, and so did the warm glass metric cards briefly mounted under
+         them. The strip still leads `/check/new` and `/check/results`, the
+         tiles still sit on `/progress`, and the cards are kept unmounted as
+         GlassMetricCard.tsx. The strip and tiles figures above are history. */
     >
       <div className={`${styles.hero} ${styles.heroChat}`}>
         {/* ⚠️ THE INTRO IS A BUBBLE, NOT A HEADING + PARAGRAPH — NOT IN FIGMA.
