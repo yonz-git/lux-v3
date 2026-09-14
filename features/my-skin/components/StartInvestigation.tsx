@@ -4,11 +4,9 @@ import { useEffect, useId, useRef, useState } from "react";
 import styles from "./StartInvestigation.module.css";
 import { QuestionScreen } from "./QuestionScreen";
 import { Chip } from "@/components/ui/Chip";
-import { Collapse } from "@/components/ui/Collapse";
 import { TextField } from "@/components/ui/TextField";
 import { FaceDiagram, FACE_REGION_IDS } from "./FaceDiagram";
 import { Button } from "@/components/ui/Button";
-import { SmallButton } from "@/components/ui/SmallButton";
 import SegmentedToggle from "@/features/products/components/SegmentedToggle";
 import {
   PlusIcon,
@@ -78,8 +76,8 @@ import {
  *             marked so far, and the rest wait at `opacity/disabled`
  *   placing   the picked chip is lit and EVERY OTHER CHIP IS DISABLED; every
  *             region label shines once, together, and the face takes taps for
- *             this symptom alone; a `Save` / `Reset` pill opens under the
- *             chips at the first place marked
+ *             this symptom alone; `Save` and `Reset` wake in the pill under
+ *             the face card at the first place marked
  *   Save      back to idle, with the symptom still selected
  *   Reset     the symptom's places cleared, the symptom still being placed
  *
@@ -192,9 +190,13 @@ export function StartInvestigation() {
     setGlint((n) => n + 1);
   };
 
+  /* ⚠️ `preventScroll`: `Save` and `Reset` sit under the face card now, a
+     screen below the chips, and a plain `focus()` scrolled the page up to them */
   const focusChip = (s: Symptom) =>
     requestAnimationFrame(() =>
-      chipsRef.current?.querySelectorAll("button")[SYMPTOMS.indexOf(s)]?.focus(),
+      chipsRef.current
+        ?.querySelectorAll("button")
+        [SYMPTOMS.indexOf(s)]?.focus({ preventScroll: true }),
     );
 
   const finishSymptom = () => {
@@ -232,10 +234,13 @@ export function StartInvestigation() {
     placing: Symptom | null;
   } | null>(null);
   const undoRef = useRef<HTMLButtonElement>(null);
-  /* the row, not the button: `SmallButton` takes no ref, and `Reset all` is
-     the row's one direct-child button (the undo's sits inside its pill) */
+  /* the row, not the button: `SegmentedToggle` takes no ref, and `Reset all`
+     is its third button */
   const resetRef = useRef<HTMLDivElement>(null);
   const nothingSelected = placing === null && reported.length === 0;
+  /* `Save` and `Reset` act on the symptom being placed, and only once it has
+     a place — the moment the old pill used to open */
+  const placeMarked = placing !== null && placingAreas.length > 0;
 
   const resetAll = () => {
     setUndo({ id: Date.now(), start: answers.start, placing });
@@ -251,8 +256,8 @@ export function StartInvestigation() {
     setUndo(null);
     requestAnimationFrame(() =>
       resetRef.current
-        ?.querySelector<HTMLButtonElement>(":scope > button")
-        ?.focus({ preventScroll: true }),
+        ?.querySelectorAll<HTMLButtonElement>('[role="group"] button')
+        [2]?.focus({ preventScroll: true }),
     );
   };
 
@@ -348,6 +353,29 @@ export function StartInvestigation() {
         For each symptom, select the affected areas in the face diagram.
       </p>
 
+      <div className={styles.diagram}>
+        <FaceDiagram
+          selected={placing ? placingAreas : areasOf(answers)}
+          onToggle={toggleArea}
+          locationChips={LOCATION_CHIPS}
+          disabled={placing === null}
+          glint={glint}
+          /* ⚠️ THE SAVED SYMPTOMS, AS EDGE PILLS WITH LEADER LINES — NOT IN
+             FIGMA, asked for directly 14 Sep 2026; see `layoutCallouts` in
+             FaceDiagram.tsx. Hidden while a symptom is being placed, because
+             the face then shows that symptom's places alone. The symptom being
+             placed is left out rather than hidden with the rest, so its lines
+             mount on `Save` and draw in then, not unseen under the fade. */
+          callouts={placing ? withAreas(answers.start, placing, []) : answers.start}
+          calloutsHidden={placing !== null}
+        />
+      </div>
+
+      {/* ⚠️ THE SYMPTOM CHIPS SIT UNDER THE FACE, NOT UNDER THE QUESTION —
+          asked for directly 14 Sep 2026: the face card leads, and the chips
+          sit right above the `Save` / `Reset` / `Reset all` pill that acts on
+          them. `SafetyNotice` moves with them, because it reveals under the
+          chip grid (safety.ts). NOT IN FIGMA. */}
       <div
         ref={chipsRef}
         className={styles.chips}
@@ -366,50 +394,7 @@ export function StartInvestigation() {
         ))}
       </div>
 
-      {/* the wrapper is always mounted: the page's reveal runs on `.content`'s
-          DIRECT children as they mount, so a `Collapse` sitting there would
-          replay it, staggered, every time `Save` opened */}
-      <div>
-        <Collapse open={placing !== null && placingAreas.length > 0}>
-          <div className={styles.done}>
-            {/* ⚠️ NOT IN FIGMA — THE PRODUCTS TRAY'S SEGMENTED PILL, asked for
-                directly 14 Sep 2026: `Save` is the filled segment and `Reset`
-                the plain one, where a lone secondary `Done` button stood.
-                `actions` keeps them two buttons in a group, not tabs.
-                ⚠️ `Save` was `Done` for an hour and was renamed, asked for
-                directly. The places are already stored as they are tapped
-                (see the note at the top); the label names the step the
-                reader is finishing, and what it does is unchanged. */}
-            <SegmentedToggle
-              actions
-              label="Places for this symptom"
-              className={styles.doneToggle}
-              options={["Save", "Reset"]}
-              onChange={(i) => (i === 0 ? finishSymptom() : resetSymptom())}
-            />
-          </div>
-        </Collapse>
-      </div>
-
       <SafetyNotice show={showSafetyNotice} />
-
-      <div className={styles.diagram}>
-        <FaceDiagram
-          selected={placing ? placingAreas : areasOf(answers)}
-          onToggle={toggleArea}
-          locationChips={LOCATION_CHIPS}
-          disabled={placing === null}
-          glint={glint}
-          /* ⚠️ THE SAVED SYMPTOMS, AS EDGE PILLS WITH LEADER LINES — NOT IN
-             FIGMA, asked for directly 14 Sep 2026; see `layoutCallouts` in
-             FaceDiagram.tsx. Hidden while a symptom is being placed, because
-             the face then shows that symptom's places alone. The symptom being
-             placed is left out rather than hidden with the rest, so its lines
-             mount on `Save` and draw in then, not unseen under the fade. */
-          callouts={placing ? withAreas(answers.start, placing, []) : answers.start}
-          calloutsHidden={placing !== null}
-        />
-      </div>
 
       <div
         ref={resetRef}
@@ -435,12 +420,27 @@ export function StartInvestigation() {
             </button>
           </div>
         )}
-        <SmallButton
-          label="Reset all"
-          arrow={false}
-          className={styles.resetAll}
-          disabled={nothingSelected}
-          onClick={resetAll}
+        {/* ⚠️ NOT IN FIGMA — ONE PILL, THREE COMMANDS, asked for directly 14
+            Sep 2026: `Save` / `Reset` used to open in their own segmented
+            pill under the chips, with `Reset all` a separate button down
+            here. They share the products tray's `SegmentedToggle` now, under
+            the face card: `Save` is the filled segment, and each command
+            fades while it has nothing to act on (`Save` and `Reset` until the
+            symptom being placed has a place, `Reset all` until anything is
+            selected). `actions` keeps them buttons in a group, not tabs.
+            ⚠️ `Save` was `Done` for an hour and was renamed, asked for
+            directly. The places are already stored as they are tapped (see
+            the note at the top); the label names the step the reader is
+            finishing, and what it does is unchanged. */}
+        <SegmentedToggle
+          actions
+          label="Symptom places"
+          className={styles.placesToggle}
+          options={["Save", "Reset", "Reset all"]}
+          disabled={[!placeMarked, !placeMarked, nothingSelected]}
+          onChange={(i) =>
+            i === 0 ? finishSymptom() : i === 1 ? resetSymptom() : resetAll()
+          }
         />
       </div>
 

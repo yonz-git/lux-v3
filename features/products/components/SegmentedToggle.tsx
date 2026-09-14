@@ -19,6 +19,15 @@
  * look is identical, including the hover that moves the pill to the pointer.
  * ⚠️ The PRODUCTS tray's `Add product` / `Search again` is also two actions
  * and still renders as tabs — move it onto `actions` rather than copying this.
+ *
+ * ⚠️ MORE THAN TWO OPTIONS, AND DISABLED SEGMENTS — `actions` ONLY, added 14
+ * Sep 2026 for step 1's `Save` / `Reset` / `Reset all`, asked for directly as
+ * "one button with three options". A tab list of three would need its own
+ * arrow-key roving; a group of commands does not, so `options` widened only
+ * for the case that is still just buttons. `disabled` marks a command with
+ * nothing to act on yet: the segment fades to `opacity/disabled`, drops out of
+ * the pointer-following pill, and the primary one gives up its indigo while it
+ * cannot be pressed.
  */
 
 "use client";
@@ -26,13 +35,16 @@
 import s from "./SegmentedToggle.module.css";
 
 export interface SegmentedToggleProps {
-  options: [string, string];
+  /** two views, or with `actions` two or more commands — see the notes above */
+  options: readonly string[];
   selectedIndex?: number;
   onChange?: (index: number) => void;
   /** two commands rather than two views — see the note above */
   actions?: boolean;
   /** the group's accessible name, when `actions` is set */
   label?: string;
+  /** per option, `actions` only: a command with nothing to act on yet */
+  disabled?: readonly boolean[];
   className?: string;
 }
 
@@ -42,6 +54,7 @@ export default function SegmentedToggle({
   onChange,
   actions,
   label,
+  disabled,
   className,
 }: SegmentedToggleProps) {
   return (
@@ -57,6 +70,7 @@ export default function SegmentedToggle({
           role={actions ? undefined : "tab"}
           aria-selected={actions ? undefined : selectedIndex === i}
           className={`${s.segment} ${selectedIndex === i ? s.selected : ""}`}
+          disabled={actions ? disabled?.[i] : undefined}
           onClick={() => onChange?.(i)}
         >
           {/* ⚠️ NOT IN FIGMA — the label shines on hover (globals.css

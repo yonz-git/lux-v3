@@ -748,19 +748,29 @@ directly, the screen now pairs them:
 - Picking a symptom lights it and **disables every other symptom chip**; the
   seven region labels shine once, together (the app's text shine), and the face
   takes taps for that symptom only.
-- From the first place marked, a `Pattern / Segmented Toggle` (`75:23`, the
-  products tray's `Add product` / `Search again` pill) reading **`Save`**
-  (filled) and **`Reset`** (plain) opens 6 under the chips, drawn at 88% of the tray's size (158×47) and lifted on `shadow/button`, which the tray's pill does not have. `Save` brings the
-  other chips back with the symptom still selected; `Reset` clears the
-  symptom's places and keeps it open, and the pill closes with them. Tapping
-  the lit chip deselects it; tapping a done chip reopens it.
+- The symptom chips sit under the face card (20 below it), not under the
+  question, asked for directly. The safety notice moves with them. An
+  unselected symptom chip is frosted: `#dbeded57` over an 8px backdrop blur,
+  where `Chip` draws an opaque `bg/frost-light-muted`.
+- Under the chips, 20 below them, sits one `Pattern / Segmented Toggle`
+  (`75:23`, the products tray's `Add product` / `Search again` pill) with
+  three commands: **`Save`** (filled), **`Reset`** and **`Reset all`**. It is
+  drawn at 88% of the tray's size and lifted on `shadow/button`, which the
+  tray's pill does not have. Each command fades to `opacity/disabled` while it
+  has nothing to act on: `Save` and `Reset` until the symptom being placed has
+  a place, and `Reset all` until anything is selected. A disabled `Save`
+  keeps its indigo pill, dimmed with the rest of the segment. `Save` brings the other chips back with the symptom
+  still selected. `Reset` clears the symptom's places and keeps it open.
+  `Reset all` clears everything, and its undo shows over the pill for 4
+  seconds. Tapping the lit chip deselects it; tapping a done chip reopens it.
+  The toggle needs a three-option variant and a disabled segment in Figma.
 - Between symptoms the face is disabled: marked places keep the selected
   treatment, and the rest sit at `opacity/disabled` × 1.3 (0.52, asked for
   directly — at 0.4 the glass pills faded into the face).
 
 For Figma this needs: the merged step-1 frame in its three states (empty, a
-symptom being placed with the other chips disabled and the `Save` / `Reset`
-pill shown, and idle
+symptom being placed with the other chips disabled and `Save` / `Reset`
+awake in the pill, and idle
 with places marked), a disabled Chip (§ 4) and a disabled region pill, and the
 instruction line. Each symptom now carries its own places, which is the data
 the recap's follow-up (symptom pills on the face) will draw.

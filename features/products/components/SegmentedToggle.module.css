@@ -95,23 +95,25 @@
    pill; `--shine-ink` is unregistered, so it changes at once while the pill
    cross-fades on `duration/base`. */
 @media (hover: hover) {
-  .segment:not(.selected):hover {
+  /* `:not(:disabled)` throughout: a disabled segment never takes the pill */
+  .segment:not(.selected):not(:disabled):hover {
     color: var(--color-text-on-brand);
     --shine-ink: var(--color-text-on-brand);
   }
 
-  .segment:not(.selected):hover::before {
+  .segment:not(.selected):not(:disabled):hover::before {
     --grad-start: var(--color-gradient-brand-start);
     --grad-end: var(--color-gradient-brand-end);
     opacity: 1;
   }
 
-  .toggle:has(.segment:not(.selected):hover) .segment.selected {
+  .toggle:has(.segment:not(.selected):not(:disabled):hover) .segment.selected {
     color: var(--color-text-secondary);
     --shine-ink: var(--color-text-secondary);
   }
 
-  .toggle:has(.segment:not(.selected):hover) .segment.selected::before {
+  .toggle:has(.segment:not(.selected):not(:disabled):hover)
+    .segment.selected::before {
     opacity: 0;
   }
 }
@@ -213,11 +215,37 @@
 }
 
 @media (hover: hover) {
-  .segment:not(.selected):hover > .edge {
+  .segment:not(.selected):not(:disabled):hover > .edge {
     opacity: 1;
   }
 
-  .toggle:has(.segment:not(.selected):hover) .segment.selected > .edge {
+  .toggle:has(.segment:not(.selected):not(:disabled):hover)
+    .segment.selected
+    > .edge {
     opacity: 0;
   }
+}
+
+/* ⚠️ A DISABLED SEGMENT — `actions` only, added 14 Sep 2026 (see
+   SegmentedToggle.tsx). It fades like every disabled LUX control
+   (`opacity/disabled`), and the primary one gives up its indigo pill and its
+   edge light while it cannot be pressed: a lit `Save` that does nothing reads
+   as broken. Three classes deep, so it outranks `.segment.selected::before`
+   and `.segment.selected > .edge`. */
+.segment:disabled {
+  opacity: var(--opacity-disabled);
+  cursor: not-allowed;
+  transition:
+    color var(--duration-base) var(--ease-standard),
+    opacity var(--duration-base) var(--ease-standard);
+}
+
+.segment.selected:disabled {
+  color: var(--color-text-secondary);
+  --shine-ink: var(--color-text-secondary);
+}
+
+.segment.selected:disabled::before,
+.segment.selected:disabled > .edge {
+  opacity: 0;
 }

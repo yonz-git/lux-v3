@@ -711,8 +711,9 @@
      (`-deep` at 90%) drew a second, darker rim inside the white one, where the
      symptom pill beside it has only the light. */
   /* ⚠️ RETUNED IN DEVTOOLS AND SUPPLIED DIRECTLY, 14 Sep 2026: the edge light
-     down to 5% white (`#ffffff0d`), the fill to the same teal at 89% before
-     its 92% mix (`#50727ee3`, ~82% in all), a 1px backdrop blur, and a faint
+     down to 5% white (`#ffffff0d`), the fill to a flat `#37707dd9` (a
+     brighter, bluer teal at 85%; it was `#50727ee3` mixed to ~82% for an
+     hour the same day), a 1px backdrop blur, and a faint
      `#869ea626` hairline where the border was transparent. The hover rules
      below keep the hairline, so hovering a picked pill does not drop it. */
   --region-glass: inset 0 1px 0 #ffffff0d;
@@ -733,7 +734,7 @@
      `StartInvestigation.module.css` is `inset 0 1px 0`: a crisp light along
      the top only. */
   --region-glass-wash: 0 0 #6a292900;
-  background-color: color-mix(in srgb, #50727ee3 92%, transparent);
+  background-color: #37707dd9;
   -webkit-backdrop-filter: blur(1px);
   backdrop-filter: blur(1px);
   border-color: #869ea626;

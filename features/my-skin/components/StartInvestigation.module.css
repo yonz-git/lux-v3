@@ -1,7 +1,10 @@
 /* 01 + 03b combined — Start investigation and Location. Figma mobile
    476:2542+476:2802 / desktop 476:2670+476:2934. The content column is a 16px
-   stack: question, chip grid, safety notice, face diagram, location chip grid,
-   other-row, take-a-photo button.
+   stack: question, instruction, face diagram, chip grid, safety notice, the
+   Save / Reset / Reset all pill, other-row, take-a-photo button.
+   ⚠️ THE CHIP GRID SITS UNDER THE FACE DIAGRAM, asked for directly 14 Sep
+   2026 — it was under the question. The face card now opens the question at
+   the within-question 20, and the chips follow it at 20.
    ⚠️ THE DISCLAIMER CARD THAT OPENED THIS STACK IS GONE — cut in `f3edc75`
    while 01 and 03b were merged. Its recipe was not lost: `SafetyNotice` reuses
    it for the conditional notice under the chip grid, which is why the rule for
@@ -37,7 +40,7 @@
    inter-block height is unchanged at 132, so the card does not move; mobile
    loses 40 of the 92px by which the screen overflowed its own 957 canvas. */
 .chips {
-  margin-top: var(--space-xl); /* 20 — same question as the title above it */
+  margin-top: var(--space-xl); /* 20 — the same question as the face card above it */
   display: flex;
   flex-wrap: wrap;
   justify-content: center;
@@ -92,6 +95,26 @@
   box-shadow: inset 0 1px 4px #ffffff61, var(--shadow-sm);
 }
 
+/* ⚠️ AN UNSELECTED SYMPTOM IS FROSTED, asked for directly 14 Sep 2026: the
+   nav's `#dbeded` at 34% (`#dbeded57`) over a `blur/sm` backdrop blur, where
+   `Chip` draws an opaque `bg/frost-light-muted`. NOT IN FIGMA. (0,2,1) over
+   `.chip` (0,1,0); the hairline and the hover rose stay `Chip`'s and this
+   file's. The reduced-transparency fallback below is the opaque fill it
+   replaced. */
+.chips button[data-selected="false"] {
+  background: #dbeded57;
+  -webkit-backdrop-filter: blur(var(--blur-sm));
+  backdrop-filter: blur(var(--blur-sm));
+}
+
+@media (prefers-reduced-transparency: reduce) {
+  .chips button[data-selected="false"] {
+    background: var(--color-bg-frost-light-muted);
+    -webkit-backdrop-filter: none;
+    backdrop-filter: none;
+  }
+}
+
 /* ⚠️ AN UNSELECTED SYMPTOM'S HOVER BORDER IS THE SAME ROSE, asked for directly
    14 Sep 2026 — it was `Chip`'s `border/default` grey. The hairline previews
    the colour the chip turns when picked; the lift (`shadow/sm`) stays
@@ -113,65 +136,25 @@
 /* ⚠️ NOT IN FIGMA — THE INSTRUCTION UNDER THE QUESTION, asked for directly
    14 Sep 2026. It says how the screen works now that places are marked one
    symptom at a time (StartInvestigation.tsx). 12 under the title, the
-   title-to-body step every empty state already takes; the chips keep their 20
-   below it, so title, instruction and chips still read as one question. */
+   title-to-body step every empty state already takes; the face card keeps 20
+   below it, so title, instruction, face and chips still read as one question. */
 .instruction {
   margin: var(--space-md) 0 0;
   color: var(--color-text-secondary);
   text-align: center;
 }
 
-/* ⚠️ NOT IN FIGMA — the `Save` / `Reset` pill (`SegmentedToggle`), which
-   closes or clears the symptom being placed, added 14 Sep 2026. The pill is
-   centred by this row; its own `align-self: center` is the tray's and does
-   nothing across a row. The 6 lives INSIDE the Collapse as padding — it was
-   the WITHIN-question 20, then 16, as the pill was asked up twice the same
-   day; the second ask was 20px more, which would have laid the pill 4px over
-   the last row of symptom chips, so it stopped at 4 clear of them, and was
-   then asked 2px back down. It is off the spacing scale for that reason, and
-   written from two steps of it — so it opens with the pill: outside it, 6px
-   of empty
-   space would appear in one frame and the pill grow beneath it — the move
-   `SafetyNotice`'s `.clip` makes for the same reason. (`--collapse-gap` is for
-   a flex gap, and this stack is spaced by margins.) */
-.done {
-  display: flex;
-  justify-content: center;
-  /* 6, between `space/xs` and `space/sm` — see the note above */
-  padding-top: calc(var(--space-sm) - var(--space-2xs));
-}
 
-/* ⚠️ THE PILL IS DRAWN AT 88% OF THE TRAY'S SIZE, asked for directly 14 Sep
-   2026 — "20% smaller" (0.8), then "10% bigger" than that (0.88): 158x47
-   where `SegmentedToggle` is 180x53. `zoom` rather than new sizes because it
-   scales the label WITH its padding, its radius and its gap in one proportion
-   — the scaled label (16 → 14.1) is on no step of the type ramp, and
-   redrawing it at the nearest one would change the pill's shape rather than
-   its size. `zoom`, not `transform`, so
-   the layout box shrinks too and nothing below keeps the old 53px of space.
-   Only this caller: the tray and the check-in record keep the full pill. */
-.done > .doneToggle {
-  zoom: 0.88;
-  /* ⚠️ NOT IN FIGMA — A DROP SHADOW, asked for directly 14 Sep 2026, which
-     the tray's pill does not have. `shadow/button`, the lift every LUX button
-     already sits on, so the pill reads as a control floating over the card
-     rather than a new kind of shadow. `zoom` scales its offsets with the pill.
-     ⚠️ THE TRACK'S OWN EDGE LIGHT IS RESTATED BEFORE IT. `SegmentedToggle`'s
-     `.toggle` draws its inward glow and top catch as a `box-shadow` (added on
-     main the same day), so a bare `shadow/button` here replaced them — or lost
-     to them, depending on which module loaded last. Two classes deep so it
-     wins either way; keep the two insets in step with `.toggle`. */
-  box-shadow:
-    inset 0 2px 12px rgba(255, 255, 255, 0.25),
-    inset 0 1px 1px rgba(255, 255, 255, 0.35),
-    var(--shadow-button);
-}
-
-/* A new question starts at the face diagram, and the two "tell us more"
-   controls close the screen — both are group boundaries. */
-.diagram,
+/* The two "tell us more" controls close the screen — a group boundary.
+   ⚠️ THE FACE DIAGRAM IS NOT ONE ANY MORE: with the chips moved under it (14
+   Sep 2026), it opens the question straight after the instruction, at the
+   within-question 20, where it used to start the second question at 40. */
 .other {
   margin-top: var(--space-4xl); /* 40 */
+}
+
+.diagram {
+  margin-top: var(--space-xl); /* 20 */
 }
 
 /* .other is the spacing wrapper for THREE states now — the collapsed button,
@@ -320,35 +303,93 @@
    padding against `Button.module.css`'s own single class. Neither lives here
    any more (`size="md"` owns both), so nothing below competes with `Button`;
    the selector is kept only so this rule and its desktop twin stay in step. */
-/* ⚠️ NOT IN FIGMA — `Reset all` under the face card, asked for directly 14 Sep
-   2026. `md` (12) under the card, so it reads as the card's own control rather
-   than the next question; centred like `takePhoto`. The element selector
-   outranks `SmallButton`'s own single class, as `takePhoto`'s does. */
+/* ⚠️ NOT IN FIGMA — THE `Save` / `Reset` / `Reset all` PILL under the face
+   card, asked for directly 14 Sep 2026 (see StartInvestigation.tsx). `md` (12)
+   under the card, so it reads as the card's own control rather than the next
+   question; the row centres it, since the pill's own `align-self: center` is
+   the tray's and does nothing across a row. */
 .reset {
   position: relative;
-  z-index: 1; /* the undo floats over the gap above, see AGENTS.md motion */
+  z-index: 1; /* the undo floats over the pill, see AGENTS.md motion */
   display: flex;
   justify-content: center;
-  margin-top: var(--space-md);
+  /* 20 under the chips (or the safety notice), the within-question step */
+  margin-top: var(--space-xl);
 }
 
-/* ⚠️ A STEP LARGER THAN `SmallButton`'s 36 / 8·16 — 40 tall with 20 a side,
-   asked for directly 14 Sep 2026 ("slightly" bigger). The label stays
-   `t-button-sm`, which `SmallButton` owns. */
-button.resetAll {
-  min-height: 40px;
-  padding: var(--space-sm) var(--space-xl);
+/* ⚠️ THE PILL IS DRAWN AT 88% OF THE TRAY'S SIZE, asked for directly 14 Sep
+   2026 — "20% smaller" (0.8), then "10% bigger" than that (0.88), when it was
+   the two-option pill under the chips. `zoom` rather than new sizes because it
+   scales the label WITH its padding, its radius and its gap in one proportion
+   — the scaled label (16 → 14.1) is on no step of the type ramp. `zoom`, not
+   `transform`, so the layout box shrinks too. Only this caller: the tray and
+   the check-in record keep the full pill.
+   ⚠️ NOT IN FIGMA — A DROP SHADOW the tray's pill does not have:
+   `shadow/button`, with the track's own inward glow and top catch restated
+   before it, since `.toggle` draws those as a `box-shadow` too. Two classes
+   deep so it wins whichever module loads last; keep the insets in step with
+   `.toggle`. */
+/* ⚠️ RETUNED IN DEVTOOLS AND SUPPLIED DIRECTLY, 14 Sep 2026 — this caller
+   only; the tray and the check-in record keep `.toggle` as it is:
+     - no track fill (`#dbeded00`, the nav hue at 0), no backdrop blur and no
+       1px `border/glass` rim, so the pill sits on the page itself;
+     - the two insets are no longer white light: a grey `#64666942` glow
+       inward and a sage `#839ca530` shade under the top edge, so the track
+       reads as pressed into the page rather than lit on it.
+   The border is removed, not made transparent, as in DevTools, so the track
+   is 2px narrower and shorter than `.toggle`. */
+.reset > .placesToggle {
+  zoom: 0.88;
+  background: #dbeded00;
+  border: none;
+  -webkit-backdrop-filter: none;
+  backdrop-filter: none;
+  box-shadow:
+    inset 0 2px 12px #64666942,
+    inset 0 5px 8px #839ca530,
+    var(--shadow-button);
 }
 
-/* ⚠️ THE UNDO SITS ON THE BUTTON ITSELF — NOT IN FIGMA, asked for directly 14
+/* ⚠️ AN INACTIVE `Save` KEEPS ITS INDIGO BUTTON, DIMMED — asked for directly
+   14 Sep 2026, to a supplied crop ("to this color i meant"). `SegmentedToggle`
+   drops a disabled primary segment's indigo pill and edge light entirely,
+   which left `Save` as loose faded text where the button sits. Here the pill,
+   its edge light and its white label all stay, and the segment's own
+   `opacity/disabled` (0.4) dims the whole button over the track — which is
+   the slate colour in the crop. `Reset` and `Reset all` are untouched.
+   ⚠️ IT WAS A FROSTED, THEN A NAV-FROST, THEN A PALE PILL FOR AN HOUR THE
+   SAME DAY; the crop settled it on the indigo.
+   ⚠️ THE GRADIENT ENDS ARE PINNED ON `::before`: `--grad-start` / `--grad-end`
+   are registered with `inherits: false` (globals.css), and
+   `.segment.selected:hover::before` would otherwise run a pill nobody can
+   press end for end under the pointer. (0,4,2) over
+   `.segment.selected:disabled::before` (0,3,1) and that hover (0,3,1); the edge
+   rule (0,5,1) over `.segment.selected:disabled > .edge` (0,4,0). */
+.reset > .placesToggle button:first-child:disabled {
+  color: var(--color-text-on-brand);
+  --shine-ink: var(--color-text-on-brand);
+}
+
+.reset > .placesToggle button:first-child:disabled::before {
+  opacity: 1;
+  --grad-start: var(--color-gradient-brand-start);
+  --grad-end: var(--color-gradient-brand-end);
+}
+
+.reset > .placesToggle button:first-child:disabled > :global(.edge-light) {
+  opacity: 1;
+}
+
+/* ⚠️ THE UNDO SITS ON THE PILL ITSELF — NOT IN FIGMA, asked for directly 14
    Sep 2026 ("just over reset all, don't make the page move"). Absolutely
-   positioned and centred on `Reset all`, so it takes no layout; floated in the
-   12 above, it covered the location chips. `Reset all` is disabled for as long
-   as the undo shows (nothing is selected), so it steps out from under the pill
-   rather than showing through its frost. The frosted-nav pill recipe the app's
-   `Snackbar` uses (`surface/frost-nav`, the half-pixel white rim, `shadow/nav`),
-   smaller, and it rises 4px as it fades in on `duration/base`. */
-.reset[data-undo] > :global(button) {
+   positioned and centred on the `Save` / `Reset` / `Reset all` pill, so it
+   takes no layout; floated in the 12 above, it covered the location chips.
+   Every command in the pill is disabled while the undo shows (nothing is
+   selected), so the pill steps out from under it rather than showing through
+   its frost. The frosted-nav pill recipe the app's `Snackbar` uses
+   (`surface/frost-nav`, the half-pixel white rim, `shadow/nav`), smaller, and
+   it rises 4px as it fades in on `duration/base`. */
+.reset[data-undo] > .placesToggle {
   visibility: hidden;
 }
 
@@ -440,10 +481,9 @@ button.takePhoto {
 
 @media (min-width: 1024px) {
   /* Figma 476:2670 — the desktop card is gap 48 with its children CENTRED.
-     48 is the BETWEEN-question gap here; .chips keeps the 20 it inherits from
-     the mobile rule, because the title and its chips are one group at every
-     width. */
-  .diagram,
+     48 is the BETWEEN-question gap here; .diagram and .chips keep the 20 they
+     inherit from the mobile rules, because the title, the face and its chips
+     are one group at every width. */
   .other {
     margin-top: var(--space-5xl); /* 48 */
   }
