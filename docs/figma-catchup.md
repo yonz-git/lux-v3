@@ -760,11 +760,16 @@ directly, the screen now pairs them:
   drawn at 88% of the tray's size and lifted on `shadow/button`, which the
   tray's pill does not have. Each command fades to `opacity/disabled` while it
   has nothing to act on: `Save` and `Reset` until the symptom being placed has
-  a place, and `Reset all` until anything is selected. A disabled `Save`
-  keeps its indigo pill, dimmed with the rest of the segment. `Save` brings the other chips back with the symptom
+  a place, and `Reset all` until anything is selected. While nothing is
+  selected, a disabled `Save` keeps its indigo pill, dimmed with the rest of
+  the segment; once `Reset all` can be pressed, a disabled `Save` is plain
+  faded text like `Reset`. A live `Reset all` wears the secondary button's
+  colours (`gradient/secondary`, `text/brand`, the pale edge light), and its
+  gradient runs end for end on hover. `Save` brings the other chips back with the symptom
   still selected. `Reset` clears the symptom's places and keeps it open.
   `Reset all` clears everything, and its undo shows over the pill for 4
-  seconds. Tapping the lit chip deselects it; tapping a done chip reopens it.
+  seconds; the undo's `Undo` wears the same secondary colours, as the app's
+  snackbar `Undo` does. Tapping the lit chip deselects it; tapping a done chip reopens it.
   The toggle needs a three-option variant and a disabled segment in Figma.
 - Between symptoms the face is disabled: marked places keep the selected
   treatment, and the rest sit at `opacity/disabled` × 1.3 (0.52, asked for
@@ -841,7 +846,10 @@ as a component, and the gallery sheet at both breakpoints.
 Asked for directly. The open field carries a ✓ before its ✕ (Enter confirms,
 Escape removes). A confirmed sentence becomes a frosted row, the collapsed
 `Other, describe where` row's own recipe, holding the words, a pen that reopens
-the field, and the ✕. All three controls are the field's existing 20px circle,
+the field, and the ✕. Both rows fill with **`#f4feff1f`**, the
+`surface/frost-light` hue at 12% where the token is 55%, so they read as glass
+beside the glass face (supplied directly, 14 Sep 2026; the token is unchanged).
+All three controls are the field's existing 20px circle,
 and both glyphs already exist in the icon set (`SuccessCheckIcon`, `NoteIcon`).
 The circle's fill is no longer `surface/frost-light` but an opaque **`#c0d5da`**
 (`bg/field-action`, declared in `globals.css`), and on hover its

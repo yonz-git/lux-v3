@@ -177,7 +177,10 @@
   text-align: left;
 
   border-radius: var(--radius-lg);
-  background: var(--color-surface-frost-light);
+  /* ⚠️ NOT IN FIGMA — `#f4feff1f`, supplied directly 14 Sep 2026: the
+     `surface/frost-light` hue at 12% where the token is 55%, so the row reads
+     as glass beside the glass face. This row only; the token is unchanged. */
+  background: #f4feff1f;
   box-shadow: var(--shadow-frosted-row);
   -webkit-backdrop-filter: blur(var(--blur-card));
   backdrop-filter: blur(var(--blur-card));
@@ -350,33 +353,91 @@
     var(--shadow-button);
 }
 
-/* ⚠️ AN INACTIVE `Save` KEEPS ITS INDIGO BUTTON, DIMMED — asked for directly
-   14 Sep 2026, to a supplied crop ("to this color i meant"). `SegmentedToggle`
-   drops a disabled primary segment's indigo pill and edge light entirely,
-   which left `Save` as loose faded text where the button sits. Here the pill,
-   its edge light and its white label all stay, and the segment's own
-   `opacity/disabled` (0.4) dims the whole button over the track — which is
-   the slate colour in the crop. `Reset` and `Reset all` are untouched.
+/* ⚠️ A LIVE `Reset all` WEARS THE SECONDARY BUTTON'S COLOURS — NOT IN FIGMA,
+   asked for directly 14 Sep 2026 ("reset all button should have bg, use
+   secondary colors"). It was plain `text/secondary` ink on the track. It now
+   draws `SmallButton`'s secondary pill on the segment's own `::before`: the
+   `button/bg-secondary` gradient, `text/brand` ink, and the edge light at the
+   pale pills' strengths (`.edge` sets the indigo ones). No drop shadow and no
+   blur of its own, because the indigo `Save` pill beside it has neither. With
+   `Save` live as well, the track shows both: indigo for the symptom being
+   finished, secondary for the command that clears everything.
+   ⚠️ IT KEEPS ITS OWN PILL UNDER THE POINTER. The toggle moves its indigo pill
+   onto whichever segment is hovered; here the secondary gradient runs end for
+   end instead (non-negotiable 5), as `SmallButton`'s does. The hovered rules
+   sit one class above the toggle's (0,4,0) and (0,4,1). */
+.reset > .placesToggle button:last-child:not(:disabled) {
+  color: var(--color-text-brand);
+  --shine-ink: var(--color-text-brand);
+}
+
+.reset > .placesToggle button:last-child:not(:disabled)::before {
+  opacity: 1;
+  --grad-start: var(--color-button-bg-secondary-start);
+  --grad-end: var(--color-button-bg-secondary-end);
+}
+
+.reset > .placesToggle button:last-child:not(:disabled) > :global(.edge-light) {
+  opacity: 1;
+  --edge-glow: 0.25;
+  --edge-catch: 0.35;
+  --edge-ring-lit: 0.7;
+  --edge-ring-dim: 0.3;
+}
+
+@media (hover: hover) {
+  .reset > .placesToggle button:last-child:not(:disabled):hover {
+    color: var(--color-text-brand);
+    --shine-ink: var(--color-text-brand);
+  }
+
+  .reset > .placesToggle button:last-child:not(:disabled):hover::before {
+    --grad-start: var(--color-button-bg-secondary-end);
+    --grad-end: var(--color-button-bg-secondary-start);
+  }
+}
+
+/* ⚠️ AN INACTIVE `Save` KEEPS ITS INDIGO BUTTON, DIMMED — BUT ONLY WHILE
+   `Reset all` IS INACTIVE TOO, which is to say while nothing is selected.
+   Asked for directly 14 Sep 2026, to a supplied crop ("to this color i
+   meant"): `SegmentedToggle` drops a disabled primary segment's indigo pill
+   and edge light entirely, which left `Save` as loose faded text where the
+   button sits. Here the pill, its edge light and its white label all stay, and
+   the segment's own `opacity/disabled` (0.4) dims the whole button over the
+   track — the slate colour in the crop.
+   ⚠️ ONCE `Reset all` CAN BE PRESSED, A DISABLED `Save` IS PLAIN FADED TEXT
+   LIKE `Reset` — asked for directly later the same day, to a second crop: a
+   dimmed indigo beside the one live command pointed at the wrong button. The
+   `:has()` is that condition; without these three rules the toggle's own
+   disabled recipe applies.
    ⚠️ IT WAS A FROSTED, THEN A NAV-FROST, THEN A PALE PILL FOR AN HOUR THE
    SAME DAY; the crop settled it on the indigo.
    ⚠️ THE GRADIENT ENDS ARE PINNED ON `::before`: `--grad-start` / `--grad-end`
    are registered with `inherits: false` (globals.css), and
    `.segment.selected:hover::before` would otherwise run a pill nobody can
-   press end for end under the pointer. (0,4,2) over
-   `.segment.selected:disabled::before` (0,3,1) and that hover (0,3,1); the edge
-   rule (0,5,1) over `.segment.selected:disabled > .edge` (0,4,0). */
-.reset > .placesToggle button:first-child:disabled {
+   press end for end under the pointer. The `:has()` only adds specificity, so
+   these still outrank `.segment.selected:disabled::before` (0,3,1), that
+   hover (0,3,1) and `.segment.selected:disabled > .edge` (0,4,0).
+   ⚠️ BELOW THE `Reset all` RULES ON PURPOSE: the two sets never match the
+   same button, but written first these tripped biome's descending-specificity
+   check. */
+.reset > .placesToggle:has(> button:last-child:disabled) button:first-child:disabled {
   color: var(--color-text-on-brand);
   --shine-ink: var(--color-text-on-brand);
 }
 
-.reset > .placesToggle button:first-child:disabled::before {
+.reset
+  > .placesToggle:has(> button:last-child:disabled)
+  button:first-child:disabled::before {
   opacity: 1;
   --grad-start: var(--color-gradient-brand-start);
   --grad-end: var(--color-gradient-brand-end);
 }
 
-.reset > .placesToggle button:first-child:disabled > :global(.edge-light) {
+.reset
+  > .placesToggle:has(> button:last-child:disabled)
+  button:first-child:disabled
+  > :global(.edge-light) {
   opacity: 1;
 }
 
@@ -425,33 +486,53 @@
   color: var(--color-text-secondary);
 }
 
+/* ⚠️ `Undo` WEARS THE SECONDARY BUTTON'S COLOURS — asked for directly 14 Sep
+   2026. It was a flat `bg/brand` indigo with `text/on-brand` ink. It now takes
+   `SmallButton`'s secondary recipe: the `button/bg-secondary` gradient, the
+   frost blur its translucent ends need, `shadow/button`, `text/brand` ink, and
+   the gradient run end for end on hover (non-negotiable 5). That is what the
+   app's `Snackbar` `Undo`, a `SmallButton`, already wears on the same frosted
+   pill. The 32 height and the `t-label` type stay this pill's. */
 .undoAction {
+  --grad-start: var(--color-button-bg-secondary-start);
+  --grad-end: var(--color-button-bg-secondary-end);
   position: relative;
   min-height: 32px;
   padding: 0 var(--space-md);
   border: 0;
   border-radius: var(--radius-full);
-  background: var(--color-bg-brand);
-  color: var(--color-text-on-brand);
+  background: linear-gradient(90deg, var(--grad-start) 0%, var(--grad-end) 100%);
+  box-shadow: var(--shadow-button);
+  -webkit-backdrop-filter: blur(var(--blur-card)) saturate(160%);
+  backdrop-filter: blur(var(--blur-card)) saturate(160%);
+  color: var(--color-text-brand);
   cursor: pointer;
-  transition: background-color var(--duration-fast) var(--ease-standard);
+  transition: --grad-start var(--duration-hover) var(--ease-standard),
+    --grad-end var(--duration-hover) var(--ease-standard);
 }
 
 .undoAction:hover {
-  background: var(--color-bg-brand-hover);
+  --grad-start: var(--color-button-bg-secondary-end);
+  --grad-end: var(--color-button-bg-secondary-start);
 }
 
 @media (hover: none) {
   .undoAction:hover {
-    background: var(--color-bg-brand);
+    --grad-start: var(--color-button-bg-secondary-start);
+    --grad-end: var(--color-button-bg-secondary-end);
   }
 }
 
+/* the secondary ends turn opaque here (globals.css), so the blur goes too */
 @media (prefers-reduced-transparency: reduce) {
-  .undo {
-    background: var(--color-bg-nav);
+  .undo,
+  .undoAction {
     -webkit-backdrop-filter: none;
     backdrop-filter: none;
+  }
+
+  .undo {
+    background: var(--color-bg-nav);
   }
 }
 
