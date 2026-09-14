@@ -33,6 +33,10 @@
      `#ecf8f9`. The overline and the four labels sit straight on this fill,
      so they dip under 4.5:1 over the two lightest stops; the answers sit on
      their pills and measure lower still (see `.tileValue`).
+     ⚠️ THOSE STOPS ARE THE CANVAS BEFORE ITS 10% DARKENING (14 Sep 2026 —
+     the floor is `#9bb1b8` now and the lightest core about `#d4dfe0`). White's
+     worst case is the light end, so every figure here should now read a
+     little HIGHER. Not re-measured.
      ⚠️ THE RIM IS AN INSET RING, NOT A `border` (the last shadow): it adds no
      height (non-negotiable 9) and does not snap to a full pixel on a 1x
      display. It is supplied fully transparent (`#1d1c2000`) and kept as the

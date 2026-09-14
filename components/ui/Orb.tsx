@@ -101,8 +101,10 @@ const MARK_STROKES = [
    sphere each slot paints:
    - c3, the BODY (the large radial + one wedge): `bg/bubble-ai` #dbeded, the
      light blue
-   - c1, the two LARGE wedges: `gradient/canvas` mobile end #acc5cc at 45% — a
-     deeper grey-blue that gives the sphere form without shading it
+   - c1, the two LARGE wedges: `gradient/canvas` mobile end #9bb1b8 at 45% — a
+     deeper grey-blue that gives the sphere form without shading it. ⚠️ It was
+     #acc5cc until the canvas was darkened 10% on 14 Sep 2026; the wedges read
+     the token, so they moved with it (globals.css, the canvas override)
    - c2, the two SMALL wedges: `gradient/brand` start #657792 at 30% — the
      button's indigo as a faint tint (22% until asked for "a tiny bit more")
    ⚠️ THE DARK TWO ARE TRANSLUCENT ON PURPOSE. At full strength they covered
@@ -110,7 +112,7 @@ const MARK_STROKES = [
    itself is `.siri-orb--lux` in globals.css.
    ⚠️ `contrast` and `saturation` are pinned to 1 below. The component's own
    contrast(1.8) saturate(1.2) would push every token off its value — #657792
-   toward a saturated blue, #acc5cc toward white. */
+   toward a saturated blue, #9bb1b8 toward white. */
 const LUX_ORB_COLORS = {
   c1: "color-mix(in srgb, var(--color-gradient-canvas-end-mobile) 45%, transparent)",
   c2: "color-mix(in srgb, var(--color-gradient-brand-start) 30%, transparent)",

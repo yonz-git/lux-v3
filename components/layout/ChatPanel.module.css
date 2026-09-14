@@ -23,8 +23,13 @@
 .panel {
   /* ⚠️ NOT IN FIGMA — THE PANEL IS NOW DARKER THAN THE CANVAS IT SITS ON,
      asked for directly. The frame's own fill was #dbebed -> #d1e1e5 -> #c3cdd9,
-     which read LIGHTER than `gradient/canvas-mobile` (#dce7ea -> #cedee2 ->
-     #acc5cc) at both ends; the panel now reads darker at both ends instead. The
+     which read LIGHTER than `gradient/canvas-mobile` (Figma's #dce7ea ->
+     #cedee2 -> #acc5cc) at both ends; the panel now reads darker at both ends
+     instead. ⚠️ THE MARGIN NARROWED ON 14 Sep 2026, when the canvas was
+     darkened 10% (#c6d0d3 -> #b9c8cb -> #9bb1b8): by relative luminance the
+     panel is still darker at the top (0.585 against 0.618) and the bottom
+     (0.345 against 0.419), but now a touch LIGHTER than the canvas mid-stop
+     (0.588 against 0.559). Not retuned — this is the panel's own value. The
      geometry is untouched — same 116.756deg, same three stops at 36.39 / 53.77 /
      105.01 — so only the colours moved, and the panel still separates from the
      canvas by contrast, just in the other direction.

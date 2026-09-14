@@ -489,13 +489,21 @@
    ⚠️ THE THREE SURFACES ARE NOT EQUALLY LIGHT, AND THE DARKEST ONE SETS THE
    VALUE. A frosted row inside the desktop page card stacks two translucent
    fills over the canvas and composites lightest; a row sitting DIRECTLY on the
-   canvas gets only one, and the canvas itself runs to `#acc5cc` at the bottom
+   canvas gets only one, and the canvas itself runs to `#9bb1b8` (`#acc5cc`
+   before 14 Sep 2026, which is what the table was measured on) at the bottom
    of the mobile gradient. Worst case per surface, across the full gradient
    range:
 
      ProductList row, over the page card   #9a9aa5 2.41–2.57   #63636f 5.13–5.47
      MyProducts category row               #9a9aa5 2.20–2.29   #63636f 4.68–4.87
      DateField trigger, on the canvas      #9a9aa5 2.13–2.48   #63636f 4.54–5.27
+
+   ⚠️ THE LAST TWO ROWS FAIL SINCE THE CANVAS WAS DARKENED 10% (14 Sep 2026).
+   The DateField trigger is 4.18–4.81, short of AA at the bottom of the
+   gradient. The MyProducts category row is 3.61–4.28, short everywhere — and
+   re-measured at today's `surface/frost-nav` alpha it was already 4.00–4.79
+   before the darkening, so the row above is stale too. Deferred with the
+   darkening; see the canvas override on `:root` below. Not retuned here.
 
    An earlier pass put this at `#6a6a76` on a single estimated row colour. That
    value is 4.62–4.93 on the first surface and only **4.09–4.39** on the other
@@ -765,6 +773,35 @@
    and the check-in tiles — one material, one edge.
    ========================================================================== */
 
+/* ⚠️ THE CANVAS GRADIENT IS 10% DARKER THAN FIGMA'S, AS OF 14 Sep 2026 — asked
+   for directly, NOT IN FIGMA: "darken the bg colors 10%". Each stop is its
+   generated value x0.9 per sRGB channel. Overridden here, not in tokens.css
+   (non-negotiable 1), and as HEX LITERALS rather than `color-mix()`, because
+   CanvasShader.tsx parses these as `#rrggbb` and stays off on anything else.
+   Moving them moves `.screen`'s fallback, the logo veil, `body`, the shader's
+   three canvas stops and its floor clamp together — and `Orb`'s two large
+   wedges, which mix `canvas-end-mobile`. The shader's other two stops borrow
+   `bg/nav` and `bg/progress-track`, which fill other components, so those two
+   are darkened inside the shader and not here.
+
+   ⚠️ IT BREAKS AA ON BARE CANVAS, AND THAT WAS DEFERRED, NOT MISSED. On the
+   new floor: `text/secondary` 4.75 -> 3.84:1 (Welcome's disclaimer, `/check`'s
+   subtitle), `text/on-data-muted` on CHECK's 14px strip labels 4.79 -> 4.22:1,
+   `text/muted` in a DateField trigger at the bottom 4.54 -> 4.18:1, and
+   `text/muted` in a MyProducts category row 4.00–4.79 -> 3.61–4.28:1. The
+   floor reasoning lives on CanvasShader.tsx. `bg/nav-bar` below moved with it.
+
+   ⚠️ EVERY OTHER HAND-COMPOSITED FIGURE IN THIS FILE THAT SAMPLES THE CANVAS
+   PREDATES THIS AND READS LOWER NOW — the `Remove` action's red, the
+   `text/muted` table, the ring table. They were not re-measured; treat them as
+   upper bounds, and re-measure before closing any of them. */
+:root {
+  --color-gradient-canvas-start: #c6d0d3; /* Figma #dce7ea */
+  --color-gradient-canvas-mid: #b9c8cb; /* Figma #cedee2 */
+  --color-gradient-canvas-end-mobile: #9bb1b8; /* Figma #acc5cc */
+  --color-gradient-canvas-end-desktop: #a6bcc2; /* Figma #b9d1d7 */
+}
+
 /* ⚠️ THE NAV BAR NO LONGER BINDS `surface/frost-nav`, AS OF 13 Sep 2026 —
    asked for directly, NOT IN FIGMA. It is the nav's own pair rather than a
    change to the token above, because that token also fills `SearchField`,
@@ -779,13 +816,15 @@
    Non-negotiable 7 wants the reduced-transparency fallback to be the same
    colour, opaque — at 88% or 69% the fill's own hex is exactly that. At 26% it
    is not: `#17292f` opaque is near black, a different-looking control.
-   `#859ca3` is the fill over `#acc5cc`, the canvas's bottom stop, where the
-   bar sits.
+   `#798e95` is the fill over `#9bb1b8`, the canvas's bottom stop, where the
+   bar sits. ⚠️ It was `#859ca3` over `#acc5cc` until the canvas was darkened
+   10% on 14 Sep 2026 — see the canvas override above; the two move together.
 
    ⚠️ THE LABELS ARE WHITE (`text/on-data-inverse`) AND DO NOT CLEAR AA ON THIS
-   FILL. Hand-composited over `#acc5cc`: white ~2.9:1, the inactive 0.85 ~2.5:1,
-   the active pill ~3.5:1. The dark app ink would measure ~4.8:1 here — white
-   was chosen for the 69% teal and that reason no longer holds. Kept white
+   FILL. Hand-composited over `#9bb1b8`: white ~3.4:1 (it was ~2.9:1 over the
+   lighter canvas; the inactive 0.85 and the active pill were ~2.5 and ~3.5 then
+   and have not been re-measured). The dark app ink would measure ~4.0:1 here —
+   white was chosen for the 69% teal and that reason no longer holds. Kept white
    pending a decision. */
 /* ⚠️ THE BAR IS 65 TALL, NOT FIGMA's 75 — 13 Sep 2026, asked for directly
    when it went text-only (labels, no icons). An override of the generated
@@ -795,7 +834,7 @@
    the nav alone would leave 10px of dead reservation under every screen. */
 :root {
   --color-surface-nav-bar: #17292f42;
-  --color-bg-nav-bar: #859ca3;
+  --color-bg-nav-bar: #798e95;
   --size-nav-height: 65px;
 }
 

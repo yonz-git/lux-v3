@@ -23,8 +23,9 @@ export function Welcome() {
       {/* ⚠️ NO CANVAS HERE ANY MORE. The living canvas behind this screen is
           the app-wide `AppCanvas` in app/layout.tsx; Welcome is the one route
           where it answers the pointer. Read the palette/contrast note in
-          CanvasShader.tsx before retuning it: the ramp's dark end is frozen at
-          `#acc5cc` so the disclaimer cannot fall below 4.75:1. */}
+          CanvasShader.tsx before retuning it: the ramp's dark end is a floor,
+          `#9bb1b8`, so the disclaimer cannot fall below 3.84:1 — short of AA
+          since the canvas was darkened 10% on 14 Sep 2026 (it was 4.75:1). */}
       <div className={styles.welcome}>
         {/* the two spacers split the free space in the ratio Figma places above
             and below the group, so it sits low without fixed offsets */}

@@ -34,6 +34,11 @@
   z-index: -1;
   background: var(--gradient-canvas-mobile);
   background-attachment: fixed;
+  /* ⚠️ x1.07, THE CANVAS'S OWN LOGO LIFT — 14 Sep 2026. The shader brightens
+     while the entrance holds (`u_lift` in CanvasShader.tsx), and this veil is
+     what shows before it draws, so it takes the same factor or the logo would
+     open dark and jump lighter. */
+  filter: brightness(1.07);
   transition: opacity var(--duration-slow) var(--ease-standard);
 }
 
