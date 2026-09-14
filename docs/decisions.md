@@ -1614,7 +1614,10 @@ row — `start`, `location`, `locationOther`, `selfie`, `skin-type`,
 `tendencies`, `conditions`, `conditionsOther`, `timing` — is now written, under
 its own key, with a **24-hour sliding window**. (⚠️ `locationOther` joined the
 list on 8 Sep 2026 — step 1's typed "Other" description, which until then was
-not in the store at all; see "THE TYPED `Other` HAD NOWHERE TO GO" below.) Every other row still never touches disk at any age.
+not in the store at all; see "THE TYPED `Other` HAD NOWHERE TO GO" below.
+⚠️ `location` LEFT it on 14 Sep 2026, when step 1's `start` became a map of each
+symptom to its places and the union became derived — see "A TYPED LOCATION NOW
+COUNTS AS ONE", superseded, below.) Every other row still never touches disk at any age.
 
 **Why that is not the reverted build coming back.** This section already argues
 that the old bug was persisting *one bucket that mixed two kinds of state*. The
@@ -1629,7 +1632,7 @@ sharpens rather than reverses: **state that has outlived its owner is the bug.**
 | | records | flow answers | everything else |
 | --- | --- | --- | --- |
 | Lives | forever | 24 hours, sliding | the tab |
-| Key | `lux.records.v2` | `lux.flow.v1` | — |
+| Key | `lux.records.v2` | `lux.flow.v2` (v1 until 14 Sep 2026) | — |
 | List | `PERSISTED_KEYS` | `FLOW_KEYS` | by construction |
 
 **Five things that are load-bearing, beyond the three below.**
@@ -1733,6 +1736,14 @@ so it lives and expires exactly as the answers around it do (24 hours,
 sliding), and the old key is deleted unread on mount next to
 `lux.investigation.v1` — a typed sentence left in a visitor's browser with
 nothing to read it is the same dead data that sweep exists for.
+
+⚠️ **SUPERSEDED 14 Sep 2026 — READ THIS PARAGRAPH AND THE NEXT AS HISTORY.**
+Step 1 now asks for places one symptom at a time and stores each symptom with
+its places (`start`, a map; `location` is gone), so its `isComplete` is "a
+symptom exists" and a typed description no longer unlocks Continue on its own:
+a place with no pill is that symptom's `Other` chip. The field is still
+independent of the chip, and an `Other` place with no words is still complete.
+See `flow.ts` and `StartInvestigation.tsx`.
 
 ⚠️ **AND A TYPED LOCATION NOW COUNTS AS ONE.** `isComplete` for step 1 asked
 for a symptom and a location CHIP, which was right while the field asked what
@@ -2398,7 +2409,7 @@ screen, and read by nothing that draws a conclusion:
 
 | Input the brief needs | Where it already is | Written by |
 | --- | --- | --- |
-| Symptoms and their locations | `start`, `location` | step 1 |
+| Symptoms and their locations | `start` (each symptom with its places since 14 Sep 2026; `location` until then) | step 1 |
 | Skin type and tendencies | `tendencies` | step 2 |
 | Known conditions | `conditions`, `conditionsOther` | step 3 |
 | **When the reaction started** | `timing` | step 4 |

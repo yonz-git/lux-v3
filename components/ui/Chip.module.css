@@ -12,7 +12,11 @@
    this screen — the symptoms and the location chips inside `FaceDiagram`, which
    are the same component — read as one family instead of two brightnesses.
    Opaque, so there is no reduced-transparency fallback to keep. Raise
-   frost-light-muted in Figma as a real role; see the note on the token. */
+   frost-light-muted in Figma as a real role; see the note on the token.
+   ⚠️ THE FACE CARD'S LOCATION CHIPS NO LONGER WEAR THIS FILL, as of 14 Sep
+   2026: unselected, they are glass like the region pills around them. That
+   override lives in `FaceDiagram.module.css`, not here — every other Chip in
+   the app, the symptom row above the face included, keeps this recipe. */
 
 .chip {
   display: inline-flex;
@@ -43,35 +47,48 @@
   transition: background-color var(--duration-base) var(--ease-standard),
     border-color var(--duration-base) var(--ease-standard),
     color var(--duration-base) var(--ease-standard),
+    opacity var(--duration-base) var(--ease-standard),
     box-shadow var(--duration-fast) var(--ease-standard);
 }
 
 /* ⚠️ NOT IN FIGMA — A HOVER, asked for directly 13 Sep 2026 ("slight hover
    effects on all the small pills"). The chip had none, so on desktop a pill
-   gave no sign it was a control until it was clicked. It borrows the face
-   diagram's region pill hover — the same component family on the same screen
-   — at one step softer: the hairline firms to `border/default` and the pill
-   lifts on `--shadow-sm`. No fill change, so hover can never be mistaken for
+   gave no sign it was a control until it was clicked. It borrowed the face
+   diagram's region pill hover as it was then — the same component family on
+   the same screen — at one step softer: the hairline firms to `border/default`
+   and the pill lifts on `--shadow-sm`. (The region pills are glass since
+   14 Sep 2026 and brighten on hover instead; this hover did not follow.) No fill change, so hover can never be mistaken for
    selection. `duration/fast` for the lift, per board 04b's hover row. */
-.chip:hover {
+.chip:hover:not(:disabled) {
   border-color: var(--color-border-default);
   box-shadow: var(--shadow-sm);
 }
 
 /* selected: the indigo keeps its own edge; only the lift answers the pointer */
-.chip[data-selected="true"]:hover {
+.chip[data-selected="true"]:hover:not(:disabled) {
   border-color: var(--color-bg-brand);
 }
 
 @media (hover: none) {
-  .chip:hover {
+  .chip:hover:not(:disabled) {
     border-color: var(--color-border-chip);
     box-shadow: none;
   }
 
-  .chip[data-selected="true"]:hover {
+  .chip[data-selected="true"]:hover:not(:disabled) {
     border-color: var(--color-bg-brand);
   }
+}
+
+/* ⚠️ NOT IN FIGMA — DISABLED, added 14 Sep 2026 (see Chip.tsx). The Button's
+   recipe: the whole pill fades to `opacity/disabled`, so a selected pill fades
+   WITH its indigo rather than turning into a paler one, and the fade rides the
+   state clock (`duration/base`) like every selection. A caller whose disabled
+   pill has to stay at full strength sets `--chip-disabled-opacity` — the face
+   card does, for a marked place waiting on its next symptom. */
+.chip:disabled {
+  opacity: var(--chip-disabled-opacity, var(--opacity-disabled));
+  cursor: not-allowed;
 }
 
 /* The compact pill — the chat panel only, see Chip.tsx.

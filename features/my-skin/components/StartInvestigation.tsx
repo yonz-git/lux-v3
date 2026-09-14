@@ -1,18 +1,35 @@
 "use client";
 
-import { useRef, useState } from "react";
+import { useId, useRef, useState } from "react";
 import styles from "./StartInvestigation.module.css";
 import { QuestionScreen } from "./QuestionScreen";
 import { Chip } from "@/components/ui/Chip";
+import { Collapse } from "@/components/ui/Collapse";
 import { TextField } from "@/components/ui/TextField";
 import { FaceDiagram, FACE_REGION_IDS } from "./FaceDiagram";
 import { Button } from "@/components/ui/Button";
-import { PlusIcon, CloseIcon, CameraIcon } from "@/components/ui/icons";
+import SegmentedToggle from "@/features/products/components/SegmentedToggle";
+import {
+  PlusIcon,
+  CloseIcon,
+  CameraIcon,
+  NoteIcon,
+  SuccessCheckIcon,
+} from "@/components/ui/icons";
 import { SelfieSheet } from "./SelfieSheet";
 import { SafetyNotice } from "./SafetyNotice";
 import { useInvestigation } from "@/lib/store/InvestigationProvider";
-import { toggleMulti } from "@/lib/store/answers";
-import { SYMPTOMS, needsProfessionalNotice } from "@/features/my-skin/safety";
+import {
+  areasOf,
+  symptomsOf,
+  toggleMulti,
+  withAreas,
+} from "@/lib/store/answers";
+import {
+  SYMPTOMS,
+  needsProfessionalNotice,
+  type Symptom,
+} from "@/features/my-skin/safety";
 
 /**
  * 01 + 03b combined — Start investigation and Location on one screen. Step 1/5.
@@ -49,9 +66,51 @@ import { SYMPTOMS, needsProfessionalNotice } from "@/features/my-skin/safety";
  * triage it is not qualified to perform. `features/my-skin/safety.ts` owns the
  * rule, the trigger set and the copy, and carries the full reasoning.
  *
+ * ⚠️ THE PLACES ARE ASKED ONE SYMPTOM AT A TIME — NOT IN FIGMA, asked for
+ * directly 14 Sep 2026. The chips and the face used to be two independent
+ * multi-selects, so the answer could only say "these symptoms, somewhere in
+ * these places": the pairing was never collected, so nothing could show it. A
+ * symptom and its places are one answer now (`start`, a map — see
+ * `lib/store/answers.ts`), and the screen collects them together:
+ *
+ *   idle      every symptom chip is available; the face shows every place
+ *             marked so far, and the rest wait at `opacity/disabled`
+ *   placing   the picked chip is lit and EVERY OTHER CHIP IS DISABLED; every
+ *             region label shines once, together, and the face takes taps for
+ *             this symptom alone; a `Save` / `Reset` pill opens under the
+ *             chips at the first place marked
+ *   Save      back to idle, with the symptom still selected
+ *   Reset     the symptom's places cleared, the symptom still being placed
+ *
+ * ⚠️ PLACES ARE WRITTEN AS THEY ARE TAPPED, NOT ON `Save`. `Save` only closes
+ * the symptom, so nothing marked is lost to a Continue, a Back or a reload
+ * taken mid-symptom, and `isComplete` stays a rule about the ANSWER rather than
+ * about this screen's local state. The first place tapped creates the entry and
+ * removing the last one deletes it (`withAreas`), so a stored symptom always
+ * has somewhere to be. The recap and PROGRESS still read the union
+ * (`areasOf`) until they are redrawn to use the pairing.
+ *
+ * ⚠️ TWO TAPS THE REQUEST DID NOT SPECIFY, DECIDED HERE: tapping the chip being
+ * placed DESELECTS it and its places, which is what tapping a lit chip always
+ * meant; tapping a chip that is already done REOPENS it, so its places can be
+ * changed without starting it again. `Reset` was asked for and its meaning was
+ * decided here: it clears the places and KEEPS the symptom open, as though its
+ * chip had just been picked with nothing marked — the lit chip already removes the symptom, so a
+ * second control doing the same would say nothing new. `Whole face`, `Neck`
+ * and `Other` are places of a symptom like any region. The typed description under the card stays ONE
+ * sentence for the screen.
+ *
+ * ⚠️ THE TYPED DESCRIPTION IS CONFIRMED, THEN SHOWN — NOT IN FIGMA, asked for
+ * directly 14 Sep 2026. The field carries ✓ before its ✕ (Enter is ✓, Escape is
+ * ✕), and a confirmed sentence becomes a frosted row with a pen that reopens
+ * the field and a ✕ that still removes it. ✓ on an empty field is ✕: there is
+ * nothing to keep. Whether the field is open is local state that starts
+ * closed, so a description restored from the store arrives as the confirmed
+ * row rather than as an open field.
+ *
  * NOTHING starts selected. The Figma frames show options already chosen
  * because a comp has to show a filled-in state; the prototype starts empty and
- * Continue stays disabled until a symptom AND a location are both picked.
+ * Continue stays disabled until a symptom has at least one place marked.
  *
  * ⚠️ `gapBeforeContinue` IS 48, NOT THE COMP'S 104. Figma 476:2670 draws an
  * extra spacer above Continue, but 957 and 900 are fixed canvases and that
@@ -93,54 +152,122 @@ const LOCATION_CHIPS = ["Whole face", "Neck", "Other"];
    silently missing — the user tapped `Other`, said where, and the recap showed
    `Other` and nothing else. It is step 1's answer like every other, so it sits
    with them and expires with them (`FLOW_KEYS`, 24 hours). It still gates
-   nothing: `isComplete` for this step asks for a symptom and a location. */
+   nothing: `isComplete` asks for a symptom with a place, and a place given only
+   in words is that symptom's `Other` chip plus this sentence. */
 
 export function StartInvestigation() {
   const { answers, setAnswer } = useInvestigation();
-  const selected = answers.start ?? [];
-  const location = answers.location ?? [];
-  const showSafetyNotice = needsProfessionalNotice(selected);
+  const reported = symptomsOf(answers);
+  const instructionId = useId();
+
+  /* the symptom whose places are being marked, or null between symptoms —
+     this screen's state, never an answer (see the note at the top) */
+  const [placing, setPlacing] = useState<Symptom | null>(null);
+  /* a new number each time a symptom opens, to shine the face's labels once */
+  const [glint, setGlint] = useState(0);
+  const chipsRef = useRef<HTMLDivElement>(null);
+
+  const placingAreas = placing ? (answers.start?.[placing] ?? []) : [];
+
+  /* ⚠️ THE NOTICE FIRES ON THE TAP, NOT ON THE FIRST PLACE. A symptom is only
+     stored once it has somewhere to be, but `Swelling` picked and not yet
+     placed is already something the reader has told us. */
+  const showSafetyNotice = needsProfessionalNotice(
+    placing ? [...reported, placing] : reported,
+  );
+
+  const tapSymptom = (s: Symptom) => {
+    if (placing === s) {
+      // the lit chip, tapped again: deselect it, places and all
+      setAnswer("start", (prev) => withAreas(prev, s, []));
+      setPlacing(null);
+      return;
+    }
+    // a new symptom, or one already done — either way, place it
+    setPlacing(s);
+    setGlint((n) => n + 1);
+  };
+
+  const focusChip = (s: Symptom) =>
+    requestAnimationFrame(() =>
+      chipsRef.current?.querySelectorAll("button")[SYMPTOMS.indexOf(s)]?.focus(),
+    );
+
+  const finishSymptom = () => {
+    const s = placing;
+    setPlacing(null);
+    /* `Save` closes under the pointer, so hand focus back to the chip it
+       finished rather than dropping it on the page */
+    if (s) focusChip(s);
+  };
+
+  /* clears the places and keeps the symptom open. The pill closes with the
+     last place, under the pointer, so focus goes to the still-lit chip. */
+  const resetSymptom = () => {
+    const s = placing;
+    if (!s) return;
+    setAnswer("start", (prev) => withAreas(prev, s, []));
+    focusChip(s);
+  };
+
   // "Whole face" is shorthand for every region pill — selecting it fills them
   // all in, clearing it clears them all, rather than being just one more chip.
-  const toggleLocation = (id: string) =>
-    setAnswer("location", (prev) => {
-      const current = prev ?? [];
-      if (id === "Whole face") {
-        const turningOn = !current.includes("Whole face");
-        return turningOn
-          ? [...new Set([...current, "Whole face", ...FACE_REGION_IDS])]
-          : current.filter(
-              (v) => v !== "Whole face" && !FACE_REGION_IDS.includes(v),
-            );
-      }
-      return toggleMulti(current, id);
+  // Like every place, it belongs to the symptom being placed.
+  const toggleArea = (id: string) => {
+    const s = placing;
+    if (!s) return;
+    setAnswer("start", (prev) => {
+      const current = prev?.[s] ?? [];
+      const next =
+        id !== "Whole face"
+          ? toggleMulti(current, id)
+          : current.includes("Whole face")
+            ? current.filter(
+                (v) => v !== "Whole face" && !FACE_REGION_IDS.includes(v),
+              )
+            : [...new Set([...current, "Whole face", ...FACE_REGION_IDS])];
+      return withAreas(prev, s, next);
     });
+  };
 
   const [photoOpen, setPhotoOpen] = useState(false);
-  const [otherOpen, setOtherOpen] = useState(false);
+  /* whether the description is being typed — local, and closed to begin with,
+     so a description restored from the store arrives confirmed */
+  const [otherEditing, setOtherEditing] = useState(false);
   const otherText = answers.locationOther ?? "";
   const inputRef = useRef<HTMLInputElement>(null);
+  const penRef = useRef<HTMLButtonElement>(null);
+  const otherButtonRef = useRef<HTMLButtonElement>(null);
 
-  /* ⚠️ THE FIELD IS OPEN IF IT WAS OPENED **OR** IF THERE IS AN ANSWER IN IT,
-     and the second half is what replaces the old hydrate-on-mount effect. The
-     store fills in from localStorage in an effect of its own (never in a
-     `useState` initialiser — that is the hydration mismatch), so a description
-     from an earlier visit arrives one render after this one. Deriving the
-     revealed state from the answer means it appears the moment it exists,
-     rather than needing a second piece of state kept in step with it. */
-  const otherRevealed = otherOpen || otherText.length > 0;
+  const otherState = otherEditing
+    ? "editing"
+    : otherText.trim()
+      ? "confirmed"
+      : "closed";
 
   const openOther = () => {
-    setOtherOpen(true);
+    setOtherEditing(true);
     requestAnimationFrame(() => inputRef.current?.focus());
   };
 
-  // the X button and Esc both mean "never mind" — collapse back to the button
-  // and drop whatever was typed, rather than leaving a half-written answer
-  // saved behind a closed field.
+  // ✕ and Esc both mean "never mind" — collapse back to the button and drop
+  // whatever was typed, rather than leaving a half-written answer saved behind
+  // a closed field.
   const closeOther = () => {
-    setOtherOpen(false);
+    setOtherEditing(false);
     setAnswer("locationOther", undefined);
+    requestAnimationFrame(() => otherButtonRef.current?.focus());
+  };
+
+  // ✓ and Enter keep the sentence and show it. An empty field has nothing to
+  // keep, so confirming it is closing it.
+  const confirmOther = () => {
+    if (!otherText.trim()) {
+      closeOther();
+      return;
+    }
+    setOtherEditing(false);
+    requestAnimationFrame(() => penRef.current?.focus());
   };
 
   return (
@@ -156,35 +283,67 @@ export function StartInvestigation() {
         What is currently happening to your skin?
       </h2>
 
+      <p id={instructionId} className={`${styles.instruction} t-body3-body2`}>
+        For each symptom, select the affected areas in the face diagram.
+      </p>
+
       <div
+        ref={chipsRef}
         className={styles.chips}
         role="group"
         aria-label="What is currently happening to your skin?"
+        aria-describedby={instructionId}
       >
         {SYMPTOMS.map((s) => (
           <Chip
             key={s}
             label={s}
-            selected={selected.includes(s)}
-            onToggle={() =>
-              setAnswer("start", (prev) => toggleMulti(prev ?? [], s))
-            }
+            selected={placing === s || reported.includes(s)}
+            disabled={placing !== null && placing !== s}
+            onToggle={() => tapSymptom(s)}
           />
         ))}
+      </div>
+
+      {/* the wrapper is always mounted: the page's reveal runs on `.content`'s
+          DIRECT children as they mount, so a `Collapse` sitting there would
+          replay it, staggered, every time `Save` opened */}
+      <div>
+        <Collapse open={placing !== null && placingAreas.length > 0}>
+          <div className={styles.done}>
+            {/* ⚠️ NOT IN FIGMA — THE PRODUCTS TRAY'S SEGMENTED PILL, asked for
+                directly 14 Sep 2026: `Save` is the filled segment and `Reset`
+                the plain one, where a lone secondary `Done` button stood.
+                `actions` keeps them two buttons in a group, not tabs.
+                ⚠️ `Save` was `Done` for an hour and was renamed, asked for
+                directly. The places are already stored as they are tapped
+                (see the note at the top); the label names the step the
+                reader is finishing, and what it does is unchanged. */}
+            <SegmentedToggle
+              actions
+              label="Places for this symptom"
+              className={styles.doneToggle}
+              options={["Save", "Reset"]}
+              onChange={(i) => (i === 0 ? finishSymptom() : resetSymptom())}
+            />
+          </div>
+        </Collapse>
       </div>
 
       <SafetyNotice show={showSafetyNotice} />
 
       <div className={styles.diagram}>
         <FaceDiagram
-          selected={location}
-          onToggle={toggleLocation}
+          selected={placing ? placingAreas : areasOf(answers)}
+          onToggle={toggleArea}
           locationChips={LOCATION_CHIPS}
+          disabled={placing === null}
+          glint={glint}
         />
       </div>
 
       <div className={styles.other}>
-        {otherRevealed ? (
+        {otherState === "editing" ? (
           <div className={styles.otherFieldWrap}>
             <TextField
               className="reveal-quick"
@@ -192,23 +351,58 @@ export function StartInvestigation() {
               value={otherText}
               placeholder="Describe where you noticed it"
               aria-label="Other, describe where you noticed it"
-              style={{ paddingRight: 52 }}
+              style={{ paddingRight: 80 }}
               onChange={(e) => setAnswer("locationOther", e.target.value)}
               onKeyDown={(e) => {
+                if (e.key === "Enter") confirmOther();
                 if (e.key === "Escape") closeOther();
               }}
             />
-            <button
-              type="button"
-              className={styles.otherClear}
-              aria-label="Remove description"
-              onClick={closeOther}
-            >
-              <CloseIcon className={styles.otherClearIcon} />
-            </button>
+            <div className={styles.otherActions}>
+              <button
+                type="button"
+                className={styles.otherAction}
+                aria-label="Confirm description"
+                onClick={confirmOther}
+              >
+                <SuccessCheckIcon className={styles.otherCheckIcon} />
+              </button>
+              <button
+                type="button"
+                className={styles.otherAction}
+                aria-label="Remove description"
+                onClick={closeOther}
+              >
+                <CloseIcon className={styles.otherActionIcon} />
+              </button>
+            </div>
+          </div>
+        ) : otherState === "confirmed" ? (
+          <div className={styles.otherConfirmed}>
+            <p className={`${styles.otherConfirmedText} t-body2`}>{otherText}</p>
+            <div className={styles.otherActions}>
+              <button
+                ref={penRef}
+                type="button"
+                className={styles.otherAction}
+                aria-label="Edit description"
+                onClick={openOther}
+              >
+                <NoteIcon className={styles.otherActionIcon} />
+              </button>
+              <button
+                type="button"
+                className={styles.otherAction}
+                aria-label="Remove description"
+                onClick={closeOther}
+              >
+                <CloseIcon className={styles.otherActionIcon} />
+              </button>
+            </div>
           </div>
         ) : (
           <button
+            ref={otherButtonRef}
             type="button"
             className={styles.otherButton}
             onClick={openOther}

@@ -252,7 +252,9 @@ episodes; everything about the episode is drawn as itself in the blocks below.
 because a date under a skin type is a date and a date under the state is the
 age of that state. ⚠️ **That block was `What you noticed` until 13 Sep 2026**,
 with the symptom pills in it; it was renamed and the pills removed, asked for
-directly, and the pills are moving onto the face diagram in a follow-up. ⚠️ **The joined tendencies are the ONE exception
+directly, and the pills are moving onto the face diagram in a follow-up — whose
+data step 1 has collected since 14 Sep 2026, when each symptom began keeping its
+own places (see the step 1 paragraph below). ⚠️ **The joined tendencies are the ONE exception
 to the set rule below**, the same trade `SkinProfileStrip` makes.
 
 A multi-select is a SET, so the symptoms and the other locations are `Tag`s and
@@ -269,8 +271,9 @@ Figma instead. The location answer is
 **step 1's own face diagram in a read-only mode** — the coordinates ARE that
 answer, and "Cheeks (L), Chin / jaw" is the coordinates thrown away. ⚠️ **The
 non-face chips ("Neck", "Whole face", "Other") are `Tag`s INSIDE that card**,
-in the row step 1's own chips already use, wearing the region pill's fill and
-hairline rather than the light blocks' — they are the same answer as
+in the row step 1's own chips already use, drawn as step 1's chips rather than
+as the light blocks' tags (see the selected-`Chip` note below; the region pills
+beside them are glass since 14 Sep 2026) — they are the same answer as
 "Cheeks (L)", given in the same tap, and the only reason they have no
 coordinate is that the neck is not on the face. ⚠️ **The card renders even with
 nothing picked on the face**, which is what "Neck" alone looks like: seven
@@ -297,11 +300,27 @@ of block), stacked at 440 (~352). No media query; the flex bases
 percentage-positioned pills, whose labels are a fixed 14, start covering each
 other (7/6px of drawn overlap at 300–392, 11/10 at 280). ⚠️ **The field and the `Other` chip are still
 independent** — either can exist without the other, and the location block
-renders for either. ⚠️ **A typed description now UNLOCKS Continue on its own**,
-since the field asks `Describe where you noticed it`: `isComplete` for step 1
-takes a location chip OR a non-empty `locationOther`. It never blocks — a ticked
-`Other` with an empty field is still fine here, unlike step 3's `otherIsFilled`,
-because this field is collapsed behind a button.
+renders for either. ⚠️ **A typed description UNLOCKED Continue on its own from
+8 Sep 2026, and no longer does as of 14 Sep 2026** — see the next paragraph. A
+ticked `Other` with an empty field is still a complete answer here, unlike step
+3's `otherIsFilled`, because this field is collapsed behind a button.
+
+⚠️ **STEP 1 ASKS FOR THE PLACES ONE SYMPTOM AT A TIME, AS OF 14 Sep 2026 —
+asked for directly, NOT IN FIGMA.** Picking a symptom disables every other
+symptom chip, shines the face's region labels once, and lets the face take taps
+for that symptom alone; a `Save` / `Reset` pill — the products tray's
+`SegmentedToggle` — opens under the chips from the first place marked. `Save`
+closes the symptom (the places are already stored); `Reset` clears its places and keeps it open. Between symptoms the face shows every place marked and waits,
+disabled. ⚠️ **`start` IS A MAP NOW, `Partial<Record<Symptom, string[]>>`, AND
+`location` IS GONE.** `symptomsOf` is the list, `areasOf` is the union every
+older reader wanted, and `withAreas` is the only writer and never stores an
+empty list — so `isComplete` for step 1 is "a symptom exists", a typed
+description no longer unlocks Continue by itself (a place with no pill is that
+symptom's `Other` chip), and the flow key is `lux.flow.v2`. The recap and
+PROGRESS still draw the union; the pairing is there for the follow-up that moves
+the symptom pills onto the face. ⚠️ **The typed description is confirmed with ✓
+(or Enter) and reopened with a pen**, and one restored from the store arrives
+confirmed. `StartInvestigation.tsx` carries the reasoning.
 
 ⚠️ **THE SELFIE IS A BLOCK WITH THE PICTURE IN IT, AND IT WAS A LINE OF TEXT
 TWICE FIRST.** `Photo added` sat under the symptom pills, then on the face card;
@@ -501,7 +520,8 @@ bug with none of the value.
 the whole of both lists, `PersistedAnswers` and `PersistedFlow` are derived from
 them, and each split is a **type** so a new key has to be placed deliberately.
 ⚠️ **TWO STORAGE KEYS, BECAUSE THERE ARE TWO LIFETIMES** — `lux.records.v2` and
-`lux.flow.v1`, the second holding an envelope (`{ savedAt, answers }`) so an
+`lux.flow.v2` (v1 until 14 Sep 2026, deleted unread on mount since step 1's
+`start` became a map), the second holding an envelope (`{ savedAt, answers }`) so an
 unstamped payload can be refused rather than trusted. The window is **sliding**:
 every write re-stamps it, so 24 hours means a day of not touching the
 investigation. Expiry is enforced **on read**, not by a timer. Hydration happens

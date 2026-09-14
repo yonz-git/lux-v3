@@ -45,6 +45,112 @@
   gap: 10px;
 }
 
+/* ⚠️ NOT IN FIGMA — A PICKED SYMPTOM IS `bg/symptom` (#d3858a), NOT INDIGO,
+   asked for directly 14 Sep 2026: the colour the profile's symptom pills
+   already wear on PROGRESS and the recap, so a symptom looks like a symptom
+   wherever it appears. White label, as those pills have. The indigo stays for
+   what is selected on the face. `Chip`'s diagonal shade (`::before`) runs to
+   the same rose deepened 20% toward `text/primary` rather than to indigo.
+   ⚠️ WHITE ON IT IS THE PROFILE PILLS' KNOWN SHORTFALL, 2.8:1 — the same pair,
+   not a new one (see `bg/symptom` in globals.css); the app ink would be 4.9:1.
+   Written against `.chips button[data-selected="true"]` (0,2,1) to outrank
+   `Chip`'s `.chip[data-selected="true"]` (0,2,0), and on the hover rules so
+   `Chip`'s indigo hover border does not come back. Only this screen's symptom
+   row: every other selected `Chip` stays indigo. */
+.chips button[data-selected="true"] {
+  background: var(--color-bg-symptom);
+  border-color: var(--color-bg-symptom);
+  color: var(--color-text-on-brand);
+}
+
+.chips button[data-selected="true"]::before {
+  background: linear-gradient(
+    135deg,
+    transparent 35%,
+    color-mix(in srgb, var(--color-bg-symptom) 80%, var(--color-text-primary))
+      100%
+  );
+}
+
+.chips button[data-selected="true"]:hover:not(:disabled) {
+  border-color: var(--color-bg-symptom);
+}
+
+/* ⚠️ AN UNSELECTED SYMPTOM'S HOVER BORDER IS THE SAME ROSE, asked for directly
+   14 Sep 2026 — it was `Chip`'s `border/default` grey. The hairline previews
+   the colour the chip turns when picked; the lift (`shadow/sm`) stays
+   `Chip`'s. (0,4,1) over `.chip:hover:not(:disabled)` (0,3,0). */
+.chips button[data-selected="false"]:hover:not(:disabled) {
+  border-color: var(--color-bg-symptom);
+}
+
+@media (hover: none) {
+  .chips button[data-selected="true"]:hover:not(:disabled) {
+    border-color: var(--color-bg-symptom);
+  }
+
+  .chips button[data-selected="false"]:hover:not(:disabled) {
+    border-color: var(--color-border-chip);
+  }
+}
+
+/* ⚠️ NOT IN FIGMA — THE INSTRUCTION UNDER THE QUESTION, asked for directly
+   14 Sep 2026. It says how the screen works now that places are marked one
+   symptom at a time (StartInvestigation.tsx). 12 under the title, the
+   title-to-body step every empty state already takes; the chips keep their 20
+   below it, so title, instruction and chips still read as one question. */
+.instruction {
+  margin: var(--space-md) 0 0;
+  color: var(--color-text-secondary);
+  text-align: center;
+}
+
+/* ⚠️ NOT IN FIGMA — the `Save` / `Reset` pill (`SegmentedToggle`), which
+   closes or clears the symptom being placed, added 14 Sep 2026. The pill is
+   centred by this row; its own `align-self: center` is the tray's and does
+   nothing across a row. The 6 lives INSIDE the Collapse as padding — it was
+   the WITHIN-question 20, then 16, as the pill was asked up twice the same
+   day; the second ask was 20px more, which would have laid the pill 4px over
+   the last row of symptom chips, so it stopped at 4 clear of them, and was
+   then asked 2px back down. It is off the spacing scale for that reason, and
+   written from two steps of it — so it opens with the pill: outside it, 6px
+   of empty
+   space would appear in one frame and the pill grow beneath it — the move
+   `SafetyNotice`'s `.clip` makes for the same reason. (`--collapse-gap` is for
+   a flex gap, and this stack is spaced by margins.) */
+.done {
+  display: flex;
+  justify-content: center;
+  /* 6, between `space/xs` and `space/sm` — see the note above */
+  padding-top: calc(var(--space-sm) - var(--space-2xs));
+}
+
+/* ⚠️ THE PILL IS DRAWN AT 88% OF THE TRAY'S SIZE, asked for directly 14 Sep
+   2026 — "20% smaller" (0.8), then "10% bigger" than that (0.88): 158x47
+   where `SegmentedToggle` is 180x53. `zoom` rather than new sizes because it
+   scales the label WITH its padding, its radius and its gap in one proportion
+   — the scaled label (16 → 14.1) is on no step of the type ramp, and
+   redrawing it at the nearest one would change the pill's shape rather than
+   its size. `zoom`, not `transform`, so
+   the layout box shrinks too and nothing below keeps the old 53px of space.
+   Only this caller: the tray and the check-in record keep the full pill. */
+.done > .doneToggle {
+  zoom: 0.88;
+  /* ⚠️ NOT IN FIGMA — A DROP SHADOW, asked for directly 14 Sep 2026, which
+     the tray's pill does not have. `shadow/button`, the lift every LUX button
+     already sits on, so the pill reads as a control floating over the card
+     rather than a new kind of shadow. `zoom` scales its offsets with the pill.
+     ⚠️ THE TRACK'S OWN EDGE LIGHT IS RESTATED BEFORE IT. `SegmentedToggle`'s
+     `.toggle` draws its inward glow and top catch as a `box-shadow` (added on
+     main the same day), so a bare `shadow/button` here replaced them — or lost
+     to them, depending on which module loaded last. Two classes deep so it
+     wins either way; keep the two insets in step with `.toggle`. */
+  box-shadow:
+    inset 0 2px 12px rgba(255, 255, 255, 0.25),
+    inset 0 1px 1px rgba(255, 255, 255, 0.35),
+    var(--shadow-button);
+}
+
 /* A new question starts at the face diagram, and the two "tell us more"
    controls close the screen — both are group boundaries. */
 .diagram,
@@ -52,11 +158,17 @@
   margin-top: var(--space-4xl); /* 40 */
 }
 
-/* .other is now just the spacing wrapper — it holds either the collapsed
-   button or the revealed TextField, so the margin-top rule above stays on one
-   selector regardless of which is showing. */
+/* .other is the spacing wrapper for THREE states now — the collapsed button,
+   the open field and the confirmed sentence (StartInvestigation.tsx) — so the
+   margin-top rule above stays on one selector whichever is showing. */
 
-.otherButton {
+/* ⚠️ THE CONFIRMED SENTENCE WEARS THE BUTTON'S ROW — NOT IN FIGMA, added
+   14 Sep 2026. It takes the field's place once ✓ is pressed, and it is not a
+   field any more: no border, no caret, just the frosted row the collapsed
+   button already draws, holding the words and the two controls that reopen or
+   remove them. */
+.otherButton,
+.otherConfirmed {
   display: flex;
   align-items: center;
   gap: var(--space-sm);
@@ -73,18 +185,54 @@
   color: var(--color-text-primary);
 }
 
+/* a sentence can run to two lines, so the row takes the vertical padding the
+   one-line button does not need, and its controls sit 10 from the edge, where
+   they sit inside the field */
+.otherConfirmed {
+  padding: var(--space-md) 10px var(--space-md) 18px;
+}
+
+.otherConfirmedText {
+  flex: 1;
+  min-width: 0;
+  margin: 0;
+  color: var(--color-text-primary);
+}
+
 .otherFieldWrap {
   position: relative;
 }
 
-/* No design-system component for a clear button on a free-text field — this is
-   composed from the same frosted-circle language as a Chip, sized down. */
-.otherClear {
+/* ✓ then ✕ in the field, ✎ then ✕ on the confirmed row */
+.otherActions {
+  display: flex;
+  flex: none;
+  gap: var(--space-sm);
+}
+
+/* in the field the pair lies over the input, anchored where the lone ✕ sat and
+   growing leftwards from it — the input's 80 right padding keeps the text out
+   from under both */
+.otherFieldWrap .otherActions {
   position: absolute;
   top: 50%;
   right: 10px;
   transform: translateY(-50%);
+}
+
+/* No design-system component for a clear button on a free-text field — this is
+   composed from the same frosted-circle language as a Chip, sized down.
+   ⚠️ ✓ AND ✎ WEAR IT TOO, added 14 Sep 2026: three controls that differ only
+   in their glyph. The 8 between two of them keeps their 24px target circles
+   apart, which is WCAG 2.5.8's spacing exception for a 20px target.
+   ⚠️ NOT IN FIGMA — THE FILL IS `bg/field-action` `#c0d5da`, asked for directly
+   14 Sep 2026, where it was `surface/frost-light`: a frost circle on the
+   field's own frost barely separated from it. Opaque, so it needs no
+   reduced-transparency fallback; the `text/muted` glyph measures 3.9:1 on it,
+   clear of the 3:1 a control's graphic needs. */
+.otherAction {
   display: inline-flex;
+  flex: none;
   align-items: center;
   justify-content: center;
   width: 20px;
@@ -92,18 +240,32 @@
 
   border: var(--border-width-hairline) solid var(--color-border-subtle);
   border-radius: var(--radius-full);
-  background: var(--color-surface-frost-light);
+  background: var(--color-bg-field-action);
   color: var(--color-text-muted);
 
-  transition: color var(--duration-fast) var(--ease-standard);
+  transition:
+    color var(--duration-fast) var(--ease-standard),
+    border-color var(--duration-fast) var(--ease-standard);
 }
 
-.otherClear:hover {
-  color: var(--color-text-primary);
+/* hover darkens the rim and the glyph, subtly — asked for directly 14 Sep 2026.
+   ⚠️ NOT `border/default`: the resting `border/subtle` rim is LIGHTER than the
+   fill, and `border/default` (#cbcdd4) lands on the fill's own lightness, so
+   the rim dissolves rather than darkens. The chip rim mixed 40% into the fill
+   (#9eb7bb) stays on the fill's hue and reads a shade deeper. The glyph takes
+   one step, `text/muted` → `text/secondary`. */
+.otherAction:hover {
+  border-color: color-mix(
+    in srgb,
+    var(--color-border-chip) 40%,
+    var(--color-bg-field-action)
+  );
+  color: var(--color-text-secondary);
 }
 
 @media (hover: none) {
-  .otherClear:hover {
+  .otherAction:hover {
+    border-color: var(--color-border-subtle);
     color: var(--color-text-muted);
   }
 }
@@ -113,9 +275,18 @@
    `icons.tsx` set width/height inline and a plain class was silently ignored —
    but the size is a `:where()` default in `globals.css` now, which any class
    outranks. */
-.otherClearIcon {
+.otherActionIcon {
   width: calc(24px * 20 / 36);
   height: calc(24px * 20 / 36);
+}
+
+/* `SuccessCheckIcon` is drawn in a 28 box with its tick high and left of
+   centre, so at the ✕'s size it reads small and off-centre: one step up, and
+   nudged back to the middle (the 1.5 and 2 units it sits off, at 16/28) */
+.otherCheckIcon {
+  width: 16px;
+  height: 16px;
+  transform: translate(0.86px, 1.14px);
 }
 
 .otherLabel {
@@ -201,7 +372,8 @@ button.takePhoto {
 }
 
 @media (prefers-reduced-transparency: reduce) {
-  .otherButton {
+  .otherButton,
+  .otherConfirmed {
     background: var(--color-bg-surface-frost);
     -webkit-backdrop-filter: none;
     backdrop-filter: none;

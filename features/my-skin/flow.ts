@@ -15,7 +15,7 @@
  * AND `Save & exit` — those two together mean "resumable step". Hub screens
  * reached from the bottom nav (Check, Products, Progress) get neither.
  */
-import type { Answers } from "@/lib/store/answers";
+import { symptomsOf, type Answers } from "@/lib/store/answers";
 
 export const TOTAL_STEPS = 5;
 
@@ -92,21 +92,27 @@ export const STEPS: Step[] = [
   // track and its `Save & exit` — it is a flow step that the nav happens to
   // point at, not a hub, and the "no back chevron on a hub landing" rule does
   // not reach it. See `components/BottomNav.tsx`.
-  // ⚠️ A TYPED LOCATION IS A LOCATION, AS OF 8 Sep 2026. The free-text field
-  // under the diagram asks `Describe where you noticed it` now (it used to ask
-  // what was happening — see `StartInvestigation.tsx`), so an answer typed into
-  // it and nothing tapped on the face is a complete answer to the question the
-  // screen puts. Gating on the chips alone left someone who had said where, in
-  // words, looking at a dead Continue with nothing on screen saying why.
+  // ⚠️ A SYMPTOM WITH A PLACE IS THE WHOLE ANSWER, AS OF 14 Sep 2026. Step 1
+  // asks for the places one symptom at a time and stores them together
+  // (`start`, a map — see `lib/store/answers.ts`), and no symptom is ever
+  // stored without a place. So "at least one symptom" is the rule, and the
+  // second half it used to spell out — a place tapped, or one typed — holds by
+  // construction whenever the first does.
   //
-  // ⚠️ IT IS NOT STEP 3's `otherIsFilled` RULE IN REVERSE, AND MUST NOT BECOME
-  // IT. There, a ticked "Other" REQUIRES its text, because the row and its
-  // field are one unit and the field is always visible. Here the `Other` chip
-  // and the field are independent controls and the field is collapsed behind a
-  // button, so requiring the text would dead-end a user with no visible reason
-  // — the fix would have to be opening the field from the chip, which is a
-  // different decision. This only ever UNLOCKS.
-  { id: "start",      step: 1, href: "/investigation/start",      title: "Create skin profile", figma: { mobile: "476:2542", desktop: "476:2670" }, isComplete: (a) => (a.start?.length ?? 0) > 0 && ((a.location?.length ?? 0) > 0 || Boolean(a.locationOther?.trim())), next: "/investigation/skin-type" },
+  // ⚠️ A TYPED DESCRIPTION NO LONGER UNLOCKS CONTINUE ON ITS OWN, which
+  // reverses the 8 Sep note that stood here ("a typed location is a
+  // location"). That was right while the places were one answer for the whole
+  // screen. A place belongs to a symptom now, and a place with no pill is that
+  // symptom's `Other` chip: the chip carries the answer and the sentence under
+  // the diagram describes it. The instruction under the question says to mark
+  // places per symptom, and `Other` is one of them.
+  //
+  // ⚠️ IT IS STILL NOT STEP 3's `otherIsFilled` RULE, AND MUST NOT BECOME IT.
+  // There, a ticked "Other" REQUIRES its text, because the row and its field
+  // are one unit and the field is always visible. Here the `Other` chip and the
+  // field are independent controls and the field is collapsed behind a button,
+  // so an `Other` place with no words is still a complete answer.
+  { id: "start",      step: 1, href: "/investigation/start",      title: "Create skin profile", figma: { mobile: "476:2542", desktop: "476:2670" }, isComplete: (a) => symptomsOf(a).length > 0, next: "/investigation/skin-type" },
   // Skin type (02a, 484:722/489:902) and Skin tendencies (02b, 485:755/489:960)
   // combined onto one screen — see components/SkinType.tsx. Continue needs
   // both answers, which used to gate two separate steps.

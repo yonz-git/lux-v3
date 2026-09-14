@@ -42,6 +42,13 @@ import styles from "./Chip.module.css";
  * small chip; this is a decided-here size, like the radio variant above it, and
  * the DEFAULT is untouched so every chip outside the panel is still 40/14.
  *
+ * ⚠️ `disabled` IS NOT IN FIGMA EITHER — 162:74 draws no disabled state. Added
+ * 14 Sep 2026 for step 1, where every symptom but the one being placed waits
+ * while its places are marked. It is the Button's disabled recipe rather than a
+ * new one (non-negotiable 5): the whole pill at `opacity/disabled`, selected or
+ * not, on a real `disabled` attribute so the pill leaves the tab order. Raise it
+ * in Figma alongside the size and radio variants above.
+ *
  * Chips suit short labels (symptoms). For long ones such as "Perioral
  * dermatitis" use a Checkbox row instead.
  */
@@ -50,6 +57,7 @@ export function Chip({
   selected,
   control = "checkbox",
   size = "default",
+  disabled = false,
   onToggle,
 }: {
   label: string;
@@ -64,6 +72,8 @@ export function Chip({
    * note above, and raise it in Figma before reusing it.
    */
   size?: "default" | "compact";
+  /** unavailable for now — see the note above */
+  disabled?: boolean;
   onToggle: () => void;
 }) {
   return (
@@ -73,6 +83,7 @@ export function Chip({
       aria-checked={selected}
       data-selected={selected}
       data-size={size === "compact" ? "compact" : undefined}
+      disabled={disabled}
       /* still a `t-*` class either way — rule 3 holds for both sizes */
       className={`${styles.chip} ${size === "compact" ? "t-label-sm" : "t-label"}`}
       onClick={onToggle}

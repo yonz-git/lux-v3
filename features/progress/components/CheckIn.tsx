@@ -16,7 +16,7 @@ import { CameraIcon, NoteIcon } from "@/components/ui/icons";
 import { useInvestigation } from "@/lib/store/InvestigationProvider";
 import { useToday } from "@/lib/useToday";
 import { useHeldWhileClosing } from "@/lib/useModalDialog";
-import { toggleMulti } from "@/lib/store/answers";
+import { symptomsOf, toggleMulti } from "@/lib/store/answers";
 import { toIso } from "@/lib/date";
 import {
   SKIN_TREND_CHOICES,
@@ -322,7 +322,7 @@ export function CheckInPanel({
                 aria-label="Any specific changes you've noticed?"
                 data-reveal
               >
-                {changeOptions(choice.direction, answers.start ?? []).map(
+                {changeOptions(choice.direction, symptomsOf(answers)).map(
                   (label) => (
                     <Chip
                       key={label}

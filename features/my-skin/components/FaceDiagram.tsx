@@ -1,6 +1,12 @@
 "use client";
 
-import { useEffect, useRef, type CSSProperties } from "react";
+import {
+  useEffect,
+  useId,
+  useRef,
+  useState,
+  type CSSProperties,
+} from "react";
 import styles from "./FaceDiagram.module.css";
 import { Chip } from "@/components/ui/Chip";
 import contour from "../assets/face-contour.webp";
@@ -202,6 +208,24 @@ function useLineShine() {
  * the diagram, its labels mean what they say without a position, and it is a
  * `<ul>` so the count is announced. The interactive mode keeps its
  * `role="group"` and every pill's `role="checkbox"`.
+ *
+ * ⚠️ A THIRD STATE, `disabled` — NOT IN FIGMA, added 14 Sep 2026. Step 1 asks
+ * for places one symptom at a time now (see `StartInvestigation.tsx`), so
+ * between symptoms a region has nothing to be the place OF. The face stays
+ * drawn and every place already marked keeps its full selected treatment; the
+ * regions nobody marked fade to `opacity/disabled`, as real disabled buttons.
+ * ⚠️ **IT IS NOT `readOnly`**, whose stylesheet note says in capitals that it
+ * must not look disabled: that face is a finished answer, and this one is a
+ * control waiting for a symptom.
+ *
+ * ⚠️ `glint` SHINES EVERY REGION'S LABEL ONCE, TOGETHER — asked for directly
+ * 14 Sep 2026 ("face locations shine once altogether"), for the moment a
+ * symptom is picked and the face becomes the next thing to answer. It is the
+ * app's own shine (`.shine-text` + `.shine-on-enter`, `globals.css`) on all
+ * seven labels at once, not a new effect. A new number replays it, and the
+ * class comes off after the one run: a label painted through the shine's
+ * transparent ink would SNAP to white when its pill is then picked, where the
+ * plain label fades with the fill.
  */
 type FaceDiagramProps =
   | {
@@ -209,13 +233,42 @@ type FaceDiagramProps =
       selected: string[];
       onToggle: (id: string) => void;
       locationChips: string[];
+      /** nothing to toggle yet — see the note above */
+      disabled?: boolean;
+      /** a new number shines every region's label once — see the note above */
+      glint?: number;
     }
   | { readOnly: true; selected: string[]; otherLocations?: string[] };
+
+/* how long a glint keeps its class: `.shine-on-enter` runs 1200ms, and this is
+   the fallback for the `animationend` a hidden tab never delivers (AGENTS.md,
+   motion), the same guard `SafetyNotice` keeps for its close */
+const GLINT_MS = 1400;
 
 export function FaceDiagram(props: FaceDiagramProps) {
   const { selected } = props;
   const readOnly = props.readOnly === true;
+  const disabled = props.readOnly !== true && props.disabled === true;
+  const glint = props.readOnly !== true ? (props.glint ?? 0) : 0;
   const shine = useLineShine();
+  /* each instance owns its filter, under an id stable across SSR */
+  const brightenId = useId();
+
+  /* the glint in progress — the number it was started for, or null. Set during
+     render, the pattern `SafetyNotice` uses, so the shine never starts a frame
+     behind the chip that asked for it */
+  const [glintRun, setGlintRun] = useState<number | null>(null);
+  const [seenGlint, setSeenGlint] = useState(glint);
+  if (glint !== seenGlint) {
+    setSeenGlint(glint);
+    setGlintRun(glint > 0 ? glint : null);
+  }
+
+  useEffect(() => {
+    if (glintRun === null) return;
+    const t = window.setTimeout(() => setGlintRun(null), GLINT_MS);
+    return () => window.clearTimeout(t);
+  }, [glintRun]);
 
   return (
     <div className={styles.card}>
@@ -238,9 +291,29 @@ export function FaceDiagram(props: FaceDiagramProps) {
             {
               "--face-lines": `url(${contour.src})`,
               "--face-silhouette": `url(${silhouette.src})`,
+              "--face-lines-brighten": `url("#${brightenId}")`,
             } as CSSProperties
           }
         >
+          {/* ⚠️ THE LINES ARE LIFTED, asked for directly 14 Sep 2026, twice —
+              NOT IN FIGMA. The asset is pure white on transparency, so
+              `brightness()` has no colour left to raise; what reads as the
+              line's clarity is its ALPHA, and only an SVG filter can change
+              that. ⚠️ A CURVE, NOT A MULTIPLIER: half the line pixels are thin
+              antialiased strokes under 40% alpha, and ×1.2 (tried first, mean
+              0.414 → 0.494) left them as faint as before. Each alpha goes to
+              its square root instead — mean 0.414 → 0.622, strokes under 40%
+              from 48% of the lines to 9%, and the 0.2% already opaque stay
+              exactly that, so no line thickens or clips. Only `.lines` takes
+              it: `.shine` masks by the same image and keeps the strength it
+              was dimmed to. */}
+          <svg className={styles.filters} aria-hidden="true" focusable="false">
+            <filter id={brightenId}>
+              <feComponentTransfer>
+                <feFuncA type="gamma" amplitude="1" exponent="0.5" />
+              </feComponentTransfer>
+            </filter>
+          </svg>
           <span className={styles.volume} />
           {/* biome-ignore lint/performance/noImgElement: a fixed decorative
               asset masked by CSS; next/image's wrapper and srcset buy nothing */}
@@ -281,11 +354,22 @@ export function FaceDiagram(props: FaceDiagramProps) {
               role="checkbox"
               aria-checked={selected.includes(r.id)}
               data-selected={selected.includes(r.id)}
+              disabled={disabled}
               className={`${styles.region} t-label-sm`}
               style={position}
               onClick={() => props.onToggle(r.id)}
             >
-              {r.id}
+              {/* the label is its own element so the glint lights the words and
+                  not the pill; keyed on the run, so a new glint restarts it */}
+              <span
+                key={glintRun === null ? "rest" : `glint-${glintRun}`}
+                className={
+                  glintRun === null ? undefined : "shine-text shine-on-enter"
+                }
+                onAnimationEnd={() => setGlintRun(null)}
+              >
+                {r.id}
+              </span>
             </button>
           );
         })}
@@ -316,6 +400,7 @@ export function FaceDiagram(props: FaceDiagramProps) {
                 key={c}
                 label={c}
                 selected={selected.includes(c)}
+                disabled={disabled}
                 onToggle={() => props.onToggle(c)}
               />
             ))}

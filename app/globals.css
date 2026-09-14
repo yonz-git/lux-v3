@@ -332,9 +332,11 @@
   --color-border-error: #c65953;
 
   /* bg/frost-light-muted — ⚠️ DECLARED HERE, NOT IN `tokens.css`, and NOT IN
-     FIGMA. The face-diagram region pills need an OPAQUE fill (the face outline
-     passes behind them, and a translucent pill shows the ellipse through
-     itself), but `bg/frost-light` (#f4feff) is the brightest light value in the
+     FIGMA. It was the face-diagram region pills' OPAQUE fill (the old dome's
+     outline passed behind them, and a translucent pill showed the ellipse
+     through itself); ⚠️ since 14 Sep 2026 those pills are glass
+     (`surface/face-pill`) and this is only their reduced-transparency
+     fallback. `bg/frost-light` (#f4feff) is the brightest light value in the
      app and on the sage `surface/data` card it reads as a white sticker. This
      is the same near-white one step down — literally the value `bg/nav` and
      `bg/bubble-ai` already carry, i.e. the LUX opaque light mint, written out
@@ -543,9 +545,130 @@
    directly 13 Sep 2026. Those pills wore `feedback/warning` (#c9918e); they now
    take their own value so the Risky band keeps its own. Callers: PROGRESS's
    `SkinProfile` `.symptom` and the recap's `SkinProfileSummary` pills, both
-   with `text/on-brand` ink. */
+   with `text/on-brand` ink — and, since 14 Sep 2026 (asked for directly),
+   step 1's SELECTED symptom chips (`StartInvestigation.module.css`), also
+   white. White on it measures 2.8:1, short of AA; the app ink would be 4.9:1. */
 :root {
   --color-bg-symptom: #d3858a;
+}
+
+/* ⚠️ NOT IN FIGMA — `bg/field-action`, THE FILL OF A TEXT FIELD'S ROUND ✓ / ✎ /
+   ✕ BUTTONS, asked for directly 14 Sep 2026. One caller: step 1's `Other`
+   description (`StartInvestigation`'s `.otherAction`). */
+:root {
+  --color-bg-field-action: #c0d5da;
+}
+
+/* ⚠️ NOT IN FIGMA — `surface/face-pill`, THE FACE DIAGRAM'S REGION PILLS AS
+   LIGHT FROSTED GLASS, asked for directly 14 Sep 2026 ("soft … frosted glass
+   button, gentle lighting, blurred background for depth", then "not lines,
+   just shades", with less fill and less blur), and then TUNED BY HAND in the
+   browser the same day, TWICE — every value below except the top stop, the
+   bottom stop and the hover wash is from the second pass, and the base from
+   later asks. Glass is never one fill, so it is nine: a pale aqua base
+   (#d3ffff 40%; before it, #c9e7e7 at 23% and a faint grey #9da7a7 at 7%), a
+   fill running from
+   white 30% at the top to a cool indigo-grey (#919ebd 43%) at the bottom, a
+   radial light that is CLEAR at the top-left (`glow`, white 0%) and gathers a
+   pale sage toward the far edges (`rim`, #d2d9c7 28%, full from 65% out), a
+   pale sage tint washed over all of it (#d3e7e8 27%), and the edges drawn as
+   SHADES, never lines — the top-left light slot left clear (#4143ad 0%) and a
+   soft grey shade (#484d4e 29%) blurred inside the bottom-right. Hover swaps
+   the tint for a white wash (14%).
+   ⚠️ FOUR VERSIONS CAME FIRST THE SAME DAY. Near-white at 75% read as ONE FLAT
+   COLOUR; a 45% → 22% white fill with a hairline and 1px highlight crescents
+   read as OUTLINED; an all-white 30% → 26% fill with soft edges was the base
+   the hand tuning started from; the first hand-tuned pass (a sage-white base
+   at 33%, white light pooled at the top-left, an indigo edge light and a deep
+   sage shade at 56%) was heavier than this second one.
+   ⚠️ THE LABEL HOLDS WITH ROOM TO SPARE. `text/primary` measures 6.33:1 at the
+   thinnest point of the worst pill (`Chin / jaw`, upper left of the label),
+   6.5:1 at every label's centre and 5.96:1 on hover — composited by hand
+   over the card's halo, the face's shading and no line glow, the darkest
+   case. The edge shade fades out about 4px inside the pill and does not reach
+   the glyphs. These were measured on the 7% grey base; each lighter base
+   that replaced it only adds light under a dark label, so they are floors.
+   ⚠️ THE LOCATION CHIPS UNDER THE FACE WEAR IT TOO (`Whole face`, `Neck`,
+   `Other`, unselected), asked for directly the same day. They sit off the
+   head, on the card's lighter rim, so they measure higher: 7.63:1 at the
+   worst point, 7.84:1 at the label's centre, 7.44:1 on hover.
+   ⚠️ THE RADIAL'S TWO STOPS ARE BOTH TOKENS because the two states run it in
+   opposite directions — see `surface/face-pill-selected-rim` below.
+   Callers: `FaceDiagram.module.css` `.region` and `.chips button`. */
+:root {
+  --color-surface-face-pill-base: #d3ffff66;
+  --color-surface-face-pill: #ffffff4d;
+  --color-surface-face-pill-end: #919ebd6e;
+  --color-surface-face-pill-glow: #ffffff00;
+  --color-surface-face-pill-rim: #d2d9c747;
+  --color-surface-face-pill-tint: #d3e7e845;
+  --color-surface-face-pill-wash: #ffffff24;
+  --color-effect-face-pill-light: #4143ad00;
+  --color-effect-face-pill-shade: #484d4e4a;
+}
+
+/* ⚠️ NOT IN FIGMA — `surface/face-pill-selected`, THE SAME GLASS IN INDIGO for
+   a picked region or location chip on the face card, asked for directly 14 Sep
+   2026 ("using the indigo shades"). It was flat `bg/brand`. Every value is the
+   brand family the app already has, at an alpha — written as `color-mix` of
+   the brand tokens so that retuning the indigo carries the glass with it (it
+   was retuned the same day, #39386f → #313560): a `bg/brand` base (60%), a
+   fill from `gradient/brand`'s light end (40%) at the top to `bg/brand-hover`
+   (60%) at the bottom, `bg/brand-soft` light pooled at the top-left (20%), a
+   `bg/brand` tint over it (15%), and the
+   edges as shades — a `bg/brand-soft` light (35%) inside the top-left and a
+   `bg/brand-hover` shade (90%) inside the bottom-right. Chosen as the
+   lightest of four measured sets that still clears AA with margin.
+   ⚠️ THEN MADE LESS SHINY, asked for directly the same day: the top stop
+   50% → 40%, the pooled light 45% → 20% and the edge light 80% → 35%. Each
+   of those takes light away from under a WHITE label, so the contrast below
+   was measured before them and is a floor.
+   ⚠️ THE WHITE LABEL MEASURES 5.67:1 AT WORST — `Forehead`, top-left of the
+   label, with the card's brightest line glow behind it — 6.79:1 at every
+   label's centre, and 5.70:1 on the chips; the diagonal selected shade only
+   raises it. Hover lifts and does not wash, so it holds the same. A denser
+   set measured 7.47:1 and read as the flat pill again; flat `bg/brand` is
+   11.61:1. All of these were measured on the earlier, lighter indigo; the
+   darker retune only adds contrast under a white label. */
+:root {
+  --color-surface-face-pill-selected-base: color-mix(
+    in srgb,
+    var(--color-bg-brand) 60%,
+    transparent
+  );
+  --color-surface-face-pill-selected: color-mix(
+    in srgb,
+    var(--color-gradient-brand-start) 40%,
+    transparent
+  );
+  --color-surface-face-pill-selected-end: color-mix(
+    in srgb,
+    var(--color-bg-brand-hover) 60%,
+    transparent
+  );
+  --color-surface-face-pill-selected-glow: color-mix(
+    in srgb,
+    var(--color-bg-brand-soft) 20%,
+    transparent
+  );
+  /* the radial's outer stop — clear, so the lilac pools at the top-left and
+     fades out, the reverse of the unselected glass's sage rim */
+  --color-surface-face-pill-selected-rim: transparent;
+  --color-surface-face-pill-selected-tint: color-mix(
+    in srgb,
+    var(--color-bg-brand) 15%,
+    transparent
+  );
+  --color-effect-face-pill-selected-light: color-mix(
+    in srgb,
+    var(--color-bg-brand-soft) 35%,
+    transparent
+  );
+  --color-effect-face-pill-selected-shade: color-mix(
+    in srgb,
+    var(--color-bg-brand-hover) 90%,
+    transparent
+  );
 }
 
 /* ⚠️ NOT IN FIGMA — THE IN-PAGE DESKTOP CARD IS MORE TRANSPARENT, asked for

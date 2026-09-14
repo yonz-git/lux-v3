@@ -9,7 +9,11 @@ import {
   useState,
 } from "react";
 import type { Answers } from "./answers";
-import { LEGACY_STORAGE_KEY, LEGACY_START_OTHER_KEY } from "./answers";
+import {
+  LEGACY_FLOW_V1_KEY,
+  LEGACY_STORAGE_KEY,
+  LEGACY_START_OTHER_KEY,
+} from "./answers";
 import { readFlow, readPersisted, writeFlow, writePersisted } from "./persistence";
 
 /**
@@ -106,6 +110,9 @@ export function InvestigationProvider({
       // step 1's own free-text key, orphaned when the description became
       // `locationOther` — never read, so it can only sit there
       window.localStorage.removeItem(LEGACY_START_OTHER_KEY);
+      // the flow answers' first envelope, retired when step 1's `start` became
+      // a map: this build reads `lux.flow.v2`, and nothing reads v1 to expire it
+      window.localStorage.removeItem(LEGACY_FLOW_V1_KEY);
     } catch {
       // storage unavailable (private mode) — nothing to clean up
     }

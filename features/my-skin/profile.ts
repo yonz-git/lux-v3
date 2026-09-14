@@ -38,7 +38,7 @@
  * `otherLocations`, `conditions` and `timeline` as data and decides how each
  * one is drawn. See `SkinProfileSummary.tsx`.
  */
-import type { Answers } from "@/lib/store/answers";
+import { areasOf, symptomsOf, type Answers } from "@/lib/store/answers";
 import { FACE_REGION_IDS } from "@/features/my-skin/components/FaceDiagram";
 import { daysBetween, formatLong, fromIso } from "@/lib/date";
 
@@ -130,12 +130,15 @@ export type ProfileRecap = {
  * gets it.
  */
 export function recap(a: Answers, today: Date): ProfileRecap {
-  const locations = a.location ?? [];
+  /* every place step 1 marked, across its symptoms — the union this screen has
+     always drawn, derived now that each symptom keeps its own places (`start`,
+     see lib/store/answers.ts) */
+  const locations = areasOf(a);
 
   return {
     skinType: a["skin-type"] ?? null,
     tendencies: a.tendencies ?? [],
-    symptoms: a.start ?? [],
+    symptoms: symptomsOf(a),
     faceRegions: locations.filter((l) => FACE_REGION_IDS.includes(l)),
     otherLocations: locations.filter((l) => !FACE_REGION_IDS.includes(l)),
     locationNote: a.locationOther?.trim() || null,

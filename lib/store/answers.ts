@@ -1,4 +1,5 @@
 import type { StepId } from "@/features/my-skin/flow";
+import type { Symptom } from "@/features/my-skin/safety";
 import type { CatalogProduct, ProductDraft, SavedProduct } from "@/features/products/products";
 import type { SavedCheck } from "@/features/check/check";
 import type { CheckIn } from "@/features/progress/progress";
@@ -12,15 +13,35 @@ import type { CheckIn } from "@/features/progress/progress";
  * ⚠️ `tendencies` is the one exception: it lives under the `skin-type` step
  * (both questions are asked on that one screen — see SkinType.tsx) but keeps
  * its own answer key since it is a separate multi-select answer.
+ *
+ * ⚠️ AND `start` IS THE ONE MAP — see its own note.
  */
 export type Answers = Partial<{
-  start: string[];
+  /**
+   * Step 1 — each symptom reported, and the places marked for it.
+   *
+   * ⚠️ A MAP, NOT TWO LISTS, AS OF 14 Sep 2026. Step 1 stored its symptoms here
+   * and its places in `location`, two unrelated sets, so "redness on the
+   * forehead, dryness on the chin" could only ever come back as every symptom
+   * on every place. The screen now asks for the places ONE SYMPTOM AT A TIME
+   * (`StartInvestigation.tsx`), and the answer keeps the pairing. `location` is
+   * GONE rather than kept in step with this: the union every older reader
+   * wanted is `areasOf`, derived, so the two cannot disagree.
+   *
+   * ⚠️ NO SYMPTOM IS STORED WITH AN EMPTY LIST. `withAreas` is the only writer:
+   * the first place creates a symptom's entry and removing the last deletes
+   * it, so "is this symptom reported" and "does it have somewhere to be" are
+   * one question, and `isComplete` asks it once.
+   *
+   * Keys keep the order the symptoms were reported in. Values are the region
+   * ids plus `Whole face`, `Neck` and `Other`, exactly as `location` held them.
+   */
+  start: Partial<Record<Symptom, string[]>>;
   "skin-type": string;
   tendencies: string[];
   conditions: string[];
   /** free text for the "Other" option on 02c — required once Other is ticked */
   conditionsOther: string;
-  location: string[];
   /**
    * Step 1's free-text "Other" description — what the user typed under the face
    * diagram when the place has no pill on it.
@@ -29,8 +50,9 @@ export type Answers = Partial<{
    * STORE, and that is why the recap showed no sign of it: a value nothing else
    * can read is a value the rest of the app has to pretend was never given.
    * It is an answer to step 1 like any other, so it sits with them — the same
-   * shape `conditionsOther` has for step 3's typed condition. It still does not
-   * gate Continue; a location chip does that.
+   * shape `conditionsOther` has for step 3's typed condition. It does not gate
+   * Continue: a symptom with a place does, and a place given only in words is
+   * that symptom's `Other` chip plus this sentence.
    */
   locationOther: string;
   selfie: string;
@@ -187,6 +209,37 @@ export function toggleMulti(current: string[], option: string): string[] {
     : [...withoutExclusives, option];
 }
 
+/** Step 1's symptoms, in the order they were reported. */
+export function symptomsOf(a: Answers): Symptom[] {
+  return Object.keys(a.start ?? {}) as Symptom[];
+}
+
+/**
+ * Every place step 1 marked, across all its symptoms, earliest first — what
+ * `location` used to hold, derived now so it can never disagree with `start`.
+ */
+export function areasOf(a: Answers): string[] {
+  return [
+    ...new Set(Object.values(a.start ?? {}).flatMap((areas) => areas ?? [])),
+  ];
+}
+
+/**
+ * Step 1's answer with one symptom's places replaced — the ONLY way `start` is
+ * written, so the rule that no symptom is stored without a place lives in one
+ * spot: an empty list removes the symptom rather than storing it.
+ */
+export function withAreas(
+  start: Answers["start"],
+  symptom: Symptom,
+  areas: string[],
+): NonNullable<Answers["start"]> {
+  if (areas.length > 0) return { ...start, [symptom]: areas };
+  return Object.fromEntries(
+    Object.entries(start ?? {}).filter(([s]) => s !== symptom),
+  );
+}
+
 /**
  * ⚠️ A KEY THAT IS ONLY EVER DELETED, NEVER READ.
  *
@@ -215,5 +268,18 @@ export const LEGACY_STORAGE_KEY = "lux.investigation.v1";
  * do it. Deleted on mount alongside it.
  */
 export const LEGACY_START_OTHER_KEY = "lux-start-other-description";
+
+/**
+ * ⚠️ THE THIRD KEY THAT IS ONLY EVER DELETED — the flow answers' first
+ * envelope, retired 14 Sep 2026.
+ *
+ * `lux.flow.v1` holds step 1 in its old shape: `start` as a list of symptoms
+ * beside a separate `location` list. `start` is a map now, and the persistence
+ * rule is to bump the key rather than widen the guard (`FLOW_STORAGE_KEY`), so
+ * this build writes `lux.flow.v2` and never reads v1. Nothing reading v1 means
+ * nothing ever notices it has expired, so its answers would sit in a visitor's
+ * browser indefinitely. Deleted on mount alongside the two above.
+ */
+export const LEGACY_FLOW_V1_KEY = "lux.flow.v1";
 
 export type AnswerKey = keyof Answers & StepId;

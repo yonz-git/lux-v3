@@ -26,7 +26,7 @@
  * Every entry point is named `demo*` so nothing mistakes them for a data layer.
  * Delete them the moment CHECK writes real check-ins.
  */
-import type { Answers } from "@/lib/store/answers";
+import { areasOf, symptomsOf, type Answers } from "@/lib/store/answers";
 import { DEMO_PROFILE, ownedProducts, skinProfile } from "@/lib/demo";
 import { type IsoDate, addDays, daysBetween, fromIso, toIso } from "@/lib/date";
 import type { SavedProduct } from "@/features/products/products";
@@ -490,7 +490,7 @@ export function formatCurrent(
 
 /** Step 1's symptoms on step 1's locations. */
 export function currentSymptoms(a: Answers): CurrentState | null {
-  return formatCurrent(a.start ?? [], a.location ?? []);
+  return formatCurrent(symptomsOf(a), areasOf(a));
 }
 
 /** The newest recorded check-in, or null. The list is kept oldest-first. */
@@ -512,7 +512,7 @@ export function currentLine(
 ): CurrentState | null {
   return view.isDemo
     ? formatCurrent(DEMO_PROFILE.symptoms, DEMO_PROFILE.locations)
-    : formatCurrent(a.start ?? [], a.location ?? []);
+    : formatCurrent(symptomsOf(a), areasOf(a));
 }
 
 /**
