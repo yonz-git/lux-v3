@@ -1,0 +1,300 @@
+/* The glass metric card — NOT IN FIGMA, see GlassMetricCard.tsx.
+
+   BIG    badge ····· arrow -> 20 -> label -> 24 -> value ····· dot track
+   SMALL  badge 12 label (two lines) -> 20 -> value ····· bars
+
+   Two columns 12 apart; the big card spans both, the small card takes one. */
+
+.grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: var(--space-md); /* 12 */
+}
+
+/* ---------------------------------------------------------------------------
+   The warm glass — shared by both sizes
+
+   ⚠️ WARM ORANGE INTO SOFT PEACH, WITH WHITE INK. A deep burnt orange where
+   the words sit, lifting to peach where only decoration does: behind the big
+   card's white arrow disc, and behind the small card's badge. A wide amber
+   pool deepens the opposite corner so the surface reads as lit glass rather
+   than a flat slab; the edge ring, the warm inner glow and the 5% grain are
+   the tiles card's recipe (SkinProfileTiles.module.css), recoloured.
+
+   ⚠️ WHITE IS CLOSE TO AA, NOT CLEAR OF IT EVERYWHERE. Computed, each linear
+   stop composited over the canvas's floor / mid / lightest stops
+   (`#acc5cc` / `#cedee2` / `#ecf8f9`): the 0% stop 5.18 / 5.06 / 4.95:1, the
+   45% stop 4.43 / 4.33 / 4.24:1, the 78% stop 2.86 / 2.78 / 2.71:1. The label
+   starts on the first and ends near the second, so its tail is under 4.5:1
+   for 18px regular text; the figures are large text (56 / 40) and clear 3:1.
+   The white dots over the peach side sit near 3:1. Deepening the 45% stop is
+   what would fix the label — it is the peach the ask named that costs it.
+
+   Shadows are warm brown, never black, so the lift reads as depth under a
+   warm surface rather than as grey dirt.
+   -------------------------------------------------------------------------- */
+
+.card {
+  /* a stacking context, so the ring and the grain sit over the fill and under
+     the words */
+  position: relative;
+  isolation: isolate;
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+  /* ⚠️ 32, NOT THE TILES CARD's 24 above — the reference's corners are rounder
+     than any LUX card's, and this is the ask's look rather than System B's */
+  border-radius: var(--radius-3xl); /* 32 */
+  color: var(--color-text-on-data-inverse);
+  text-shadow:
+    0 1px 2px rgb(107 48 20 / 0.35),
+    0 0 12px rgb(107 48 20 / 0.25);
+  box-shadow:
+    inset 0 2px 14px #ffe3cc4d,
+    inset 0 0 12px #5a28101f,
+    0 2px 6px #6b30141f,
+    0 14px 34px -10px #8a3f1a52;
+  -webkit-backdrop-filter: blur(var(--blur-card)) saturate(140%);
+  backdrop-filter: blur(var(--blur-card)) saturate(140%);
+}
+
+.card[data-size="lg"] {
+  grid-column: 1 / -1;
+  padding: var(--space-2xl); /* 24 */
+  background:
+    radial-gradient(70% 85% at 108% -12%, #f7d2b3d9, #f7d2b300 68%),
+    radial-gradient(75% 85% at -8% 110%, #8a4323a6, #8a432300 68%),
+    linear-gradient(120deg, #a2532ef0 0%, #b05e38f0 45%, #d08457eb 78%, #eaae86e6 100%);
+}
+
+.card[data-size="sm"] {
+  padding: var(--space-lg); /* 16 */
+  background:
+    radial-gradient(55% 55% at -6% -8%, #f7d2b3cc, #f7d2b300 70%),
+    radial-gradient(80% 70% at 105% 110%, #8a432399, #8a432300 70%),
+    linear-gradient(200deg, #a2532ef0 0%, #b05e38f0 50%, #c27550eb 100%);
+}
+
+/* the lit edge ring (bright top-left, dim bottom-right) and the grain */
+.card::before,
+.card::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  border-radius: inherit;
+  pointer-events: none;
+}
+
+.card::before {
+  padding: 1px;
+  background: linear-gradient(
+    135deg,
+    rgba(255, 240, 228, 0.55),
+    rgba(255, 240, 228, 0) 40%,
+    rgba(255, 240, 228, 0) 60%,
+    rgba(255, 240, 228, 0.3)
+  );
+  -webkit-mask: linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0);
+  -webkit-mask-composite: xor;
+  mask: linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0);
+  mask-composite: exclude;
+}
+
+.card::after {
+  opacity: 0.05;
+  mix-blend-mode: overlay;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='120' height='120'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='2'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+}
+
+/* ---------------------------------------------------------------------------
+   Contents
+   -------------------------------------------------------------------------- */
+
+.top {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+}
+
+.head {
+  display: flex;
+  align-items: center;
+  gap: var(--space-md); /* 12 */
+}
+
+/* the outlined disc the glyph sits in — a hairline of `border/glass` drawn as
+   an inset ring, so it adds no size (non-negotiable 9) */
+.badge {
+  display: grid;
+  place-items: center;
+  flex: none;
+  width: var(--size-control-md); /* 48 */
+  height: var(--size-control-md);
+  border-radius: var(--radius-full);
+  background: rgb(255 255 255 / 0.08);
+  box-shadow: inset 0 0 0 var(--border-width-hairline) var(--color-border-glass);
+}
+
+.badge[data-size="sm"] {
+  width: var(--size-control-sm); /* 36 */
+  height: var(--size-control-sm);
+}
+
+.badge > svg {
+  width: var(--size-icon-sm); /* 20 */
+  height: var(--size-icon-sm);
+}
+
+.badge[data-size="sm"] > svg {
+  width: var(--size-icon-xs); /* 16 */
+  height: var(--size-icon-xs);
+}
+
+/* the white disc with the ↗ — the one control on either card */
+.open {
+  position: relative;
+  display: grid;
+  place-items: center;
+  flex: none;
+  width: var(--size-control-md); /* 48 */
+  height: var(--size-control-md);
+  border-radius: var(--radius-full);
+  background: var(--color-bg-surface);
+  color: var(--color-text-primary);
+  text-shadow: none;
+  box-shadow: 0 4px 14px rgb(107 48 20 / 0.22);
+  transition: background-color var(--duration-fast) var(--ease-standard);
+}
+
+.open:hover {
+  background: var(--color-bg-frost-light);
+}
+
+@media (hover: none) {
+  .open:hover {
+    background: var(--color-bg-surface);
+  }
+}
+
+.openIcon {
+  width: var(--size-icon-sm); /* 20 */
+  height: var(--size-icon-sm);
+}
+
+.label,
+.labelSm,
+.value {
+  margin: 0;
+}
+
+.label {
+  margin-top: var(--space-xl); /* 20 */
+}
+
+.bottom {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-lg); /* 16 */
+  margin-top: var(--space-2xl); /* 24 */
+}
+
+.card[data-size="sm"] .bottom {
+  align-items: flex-end;
+  gap: var(--space-sm); /* 8 */
+  margin-top: var(--space-xl); /* 20 */
+}
+
+.value {
+  display: flex;
+  align-items: baseline;
+  gap: var(--space-2xs); /* 2 */
+}
+
+.unit {
+  opacity: 0.85;
+}
+
+/* ---- the big card's dot track: a glass hairline with the dots strung on it */
+
+.track {
+  display: flex;
+  align-items: center;
+  gap: var(--space-md); /* 12 */
+  background: linear-gradient(var(--color-border-glass), var(--color-border-glass))
+    center / 100% var(--border-width-hairline) no-repeat;
+}
+
+.dot {
+  flex: none;
+  border-radius: var(--radius-full);
+  background: var(--color-text-on-data-inverse);
+}
+
+.dot[data-size="sm"] {
+  width: var(--space-sm); /* 8 */
+  height: var(--space-sm);
+}
+
+.dot[data-size="md"] {
+  width: var(--size-icon-sm); /* 20 */
+  height: var(--size-icon-sm);
+  background: rgb(255 255 255 / 0.4);
+  box-shadow: inset 0 0 0 var(--border-width-hairline) var(--color-border-glass);
+}
+
+/* ⚠️ A CHECK HOLDS UP TO EIGHT PRODUCTS (`MAX_CHECK_PRODUCTS`). Eight mid dots
+   at 12 apart run ~250 beside a `100%` in a 279 row at 375 and would overflow,
+   so past six the track closes up and its mid dots step down. */
+.track[data-dense] {
+  gap: var(--space-xs); /* 4 */
+}
+
+.track[data-dense] .dot[data-size="md"] {
+  width: var(--space-md); /* 12 */
+  height: var(--space-md);
+}
+
+.dot[data-size="lg"] {
+  width: var(--size-icon-lg); /* 32 */
+  height: var(--size-icon-lg);
+  box-shadow: 0 4px 12px rgb(107 48 20 / 0.25);
+}
+
+/* ---- the small card's bars, each as tall as its analysis's lowest score */
+
+.bars {
+  display: flex;
+  align-items: flex-end;
+  gap: var(--space-xs); /* 4 */
+  height: var(--size-icon-lg); /* 32 */
+  padding-bottom: var(--space-xs); /* 4 — sits them on the figure's baseline */
+}
+
+.bar {
+  /* ⚠️ 3, OFF THE SCALE — the scale's 2 vanishes at 1x and its 4 turns the
+     reference's hairline bars into blocks */
+  width: 3px;
+  height: max(3px, calc(var(--bar) * 100%));
+  border-radius: var(--radius-full);
+  background: var(--color-text-on-data-inverse);
+}
+
+/* non-negotiable 11 — the fill made opaque: the label's end stop composited
+   over the canvas's mid stop */
+@media (prefers-reduced-transparency: reduce) {
+  .card[data-size="lg"],
+  .card[data-size="sm"] {
+    background: #a9593a;
+  }
+
+  .card {
+    -webkit-backdrop-filter: none;
+    backdrop-filter: none;
+  }
+
+  .card::after {
+    display: none;
+  }
+}
