@@ -40,19 +40,30 @@ export const DEMO_PROFILE = {
    */
   tendencies: ["Sensitive", "Acne-prone"],
   /**
-   * The two halves of the profile card's `Current:` line, as DATA.
+   * What was noticed and where, as DATA — the comp's "Redness, Itching on
+   * Cheeks".
    *
    * ⚠️ IT USED TO BE THE FINISHED STRING — `current: "Current: Redness, Itching
-   * on Cheeks"` — transcribed from the comp beside a doc comment saying it was
-   * "step 1's symptoms placed on step 1's locations". It was not; nothing
-   * assembled it, so the demo carried a sentence while every other path
-   * assembled one, and the two could drift. The daily check-in is what forced
-   * the issue: it reports a fresh location each day, and there is no way to put
-   * a new location into a baked sentence. `formatCurrent` in lib/progress.ts is
-   * the single assembler now and this is one of its three inputs.
+   * on Cheeks"` — transcribed from the comp, and nothing assembled it, so the
+   * demo carried a sentence while every other path assembled one. It is the
+   * parts now, and ⚠️ SINCE 14 Sep 2026 NO SCREEN WRITES THEM AS A LINE:
+   * `/progress` draws them on its face card as callouts (`symptomPlaces` in
+   * features/progress/progress.ts), and its profile card's `Current state` is
+   * `status` below. The seeded check-ins still read `symptoms` for their
+   * "Less redness" changes.
    */
   symptoms: ["Redness", "Itching"],
   locations: ["Cheeks"],
+  /**
+   * Step 4's status for the demo — what `/progress`'s profile card writes under
+   * `Current state`.
+   *
+   * ⚠️ NOT THE COMP'S, which drew the symptoms there. Added 14 Sep 2026 when the
+   * card took the status instead, asked for directly ("current state would be
+   * ongoing"). It is one of step 4's own four answers, so the demo says nothing
+   * the flow could not.
+   */
+  status: "Ongoing",
 } as const;
 
 export type SkinProfile = {

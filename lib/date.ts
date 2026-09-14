@@ -53,6 +53,14 @@ export function formatLong(d: Date): string {
 }
 
 /**
+ * "Sep 12" — no year, for a label under its own picture in a set that spans a
+ * few weeks. PROGRESS's photo gallery captions its tiles with it.
+ */
+export function formatShort(d: Date): string {
+  return d.toLocaleDateString("en-US", { month: "short", day: "numeric" });
+}
+
+/**
  * "August 5, 2026" — the full month, for a screen whose whole subject is one
  * day. `formatLong` abbreviates ("Aug 5, 2026") because it is a detail on a
  * line of other facts; a page TITLE has the room to say the month.

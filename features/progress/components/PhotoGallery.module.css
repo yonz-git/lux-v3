@@ -1,0 +1,234 @@
+/* The latest photos on `/progress`'s profile card, and the gallery sheet they
+   open — see PhotoGallery.tsx. ⚠️ NOT IN FIGMA, 14 Sep 2026.
+
+   ⚠️ THE INK IS DARK EVERYWHERE HERE. The strip sits on `surface/data`, and the
+   sheet is `surface/data` on a phone and the light desktop frost above 1024;
+   all three take `text/on-data*` (non-negotiable 17). */
+
+/* ---- the strip, on the profile card --------------------------------------- */
+
+/* The right-hand end of the card's details row: a label over one row of 36s.
+   Label, 4 and a 36 come to 56, beside the state's label, value and meta at
+   62, so the two ends of the row finish within a few pixels of each other. */
+.latest {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: var(--space-xs); /* 4 */
+  /* at the right edge whether the row fits or wraps */
+  margin-inline-start: auto;
+}
+
+.label {
+  margin: 0;
+  color: var(--color-text-on-data-muted);
+}
+
+.strip {
+  display: flex;
+  align-items: center;
+  gap: var(--space-xs); /* 4 */
+  padding: 0;
+  border-radius: var(--radius-md);
+  cursor: pointer;
+}
+
+/* ⚠️ `pressable`'s overlay (globals.css) is a `::before` at `z-index: auto`,
+   which paints UNDER the positioned photos and circle, so a tap darkened only
+   the gaps between them. Lifted over them here, and over a gallery tile's well
+   for the same reason. */
+.strip::before,
+.tile::before {
+  z-index: 1;
+}
+
+/* ⚠️ `size/control-sm` (36), NOT 40. At 40 the strip was 176 wide, and beside
+   the demo's `Started Aug 30, 2026 · Day 16` that is 2px more than the 440 card
+   holds, so the photos dropped to a line of their own. At 36, three photos,
+   their gaps and the circle come to 160, leaving the state ~14 of slack. On a
+   narrower phone the row still wraps, and it wraps whole. */
+.thumb {
+  position: relative;
+  flex: none;
+  width: var(--size-control-sm);
+  height: var(--size-control-sm);
+  overflow: hidden;
+  border-radius: var(--radius-md); /* 12 */
+  background: var(--color-surface-data-strong);
+}
+
+/* a glass edge over the photograph — an inset shadow on the box itself would
+   paint UNDER the image, so it rides on a pseudo above it */
+.thumb::after,
+.well::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  box-shadow:
+    inset 0 0 0 var(--border-width-hairline) rgb(255 255 255 / 0.28),
+    inset 0 1px 0 rgb(255 255 255 / 0.4);
+  pointer-events: none;
+}
+
+/* cropped to fill, never letterboxed, and at the saturation every photo well in
+   the app takes (`CheckInDetail`, the recap) */
+.art {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  filter: saturate(0.7);
+  transition: filter var(--duration-base) var(--ease-standard);
+}
+
+/* The circle that says the row is a control: the segmented toggle's frosted
+   track — `surface/frost-nav`, a `border/glass` hairline, its two inner lights
+   and a 16 blur — at the photos' size. */
+.more {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  flex: none;
+  width: var(--size-control-sm);
+  height: var(--size-control-sm);
+  margin-inline-start: var(--space-xs); /* + the strip's 4: 8 after the photos */
+  border-radius: var(--radius-full);
+  border: var(--border-width-hairline) solid var(--color-border-glass);
+  background: var(--color-surface-frost-nav);
+  box-shadow:
+    inset 0 2px 12px rgb(255 255 255 / 0.25),
+    inset 0 1px 1px rgb(255 255 255 / 0.35);
+  -webkit-backdrop-filter: blur(16px);
+  backdrop-filter: blur(16px);
+  color: var(--color-text-on-data);
+  transition: color var(--duration-base) var(--ease-standard);
+}
+
+/* The indigo pill a segmented-toggle segment takes under the pointer, faded in
+   on hover. `z-index: -1` inside the circle's own stacking context (the
+   backdrop filter makes one): over its fill, under the chevron. */
+.more::before {
+  content: "";
+  position: absolute;
+  inset: calc(-1 * var(--border-width-hairline));
+  z-index: -1;
+  border-radius: inherit;
+  background: linear-gradient(
+    90deg,
+    var(--color-gradient-brand-start),
+    var(--color-gradient-brand-end)
+  );
+  opacity: 0;
+  transition: opacity var(--duration-base) var(--ease-standard);
+}
+
+.moreIcon {
+  --icon-size: var(--size-icon-sm); /* 20 */
+}
+
+@media (hover: hover) {
+  .strip:hover .art,
+  .tile:hover .art {
+    filter: saturate(0.9);
+  }
+
+  .strip:hover .more {
+    color: var(--color-text-on-brand);
+  }
+
+  .strip:hover .more::before {
+    opacity: 1;
+  }
+}
+
+@media (prefers-reduced-transparency: reduce) {
+  .more {
+    background: var(--color-bg-nav);
+    -webkit-backdrop-filter: none;
+    backdrop-filter: none;
+  }
+}
+
+/* ---- the gallery, in `Sheet` ---------------------------------------------- */
+
+/* The tray is a centred column with a 20 gap; the heading and its count are
+   one unit inside it. */
+.head {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--space-xs); /* 4 */
+  text-align: center;
+}
+
+.heading {
+  margin: 0;
+  color: var(--color-text-on-data);
+}
+
+.intro {
+  margin: 0;
+  color: var(--color-text-on-data-secondary);
+}
+
+/* three across on a phone (~128 a tile at 440), four in the 544 of the desktop
+   dialog */
+.grid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: var(--space-lg) var(--space-sm); /* 16 / 8 */
+  width: 100%;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.tile {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-xs); /* 4 */
+  border-radius: var(--radius-lg);
+  color: inherit;
+  text-decoration: none;
+}
+
+/* the check-in record's photo well, square, at `radius/lg` */
+.well {
+  position: relative;
+  display: block;
+  aspect-ratio: 1 / 1;
+  overflow: hidden;
+  border-radius: var(--radius-lg); /* 16 */
+  background: var(--color-surface-data-strong);
+}
+
+/* out of flow, so the picture can never size the well — the recap's `.photoArt`
+   note has the mechanism */
+.well > .art {
+  position: absolute;
+  inset: 0;
+}
+
+.caption {
+  display: flex;
+  flex-direction: column;
+  padding-inline: var(--space-2xs); /* 2 — off the well's curve */
+}
+
+.date {
+  color: var(--color-text-on-data);
+}
+
+.day {
+  color: var(--color-text-on-data-muted);
+}
+
+@media (min-width: 1024px) {
+  .grid {
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+    gap: var(--space-xl) var(--space-md); /* 20 / 12 */
+  }
+}

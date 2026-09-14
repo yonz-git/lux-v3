@@ -1,6 +1,6 @@
+import type { ReactNode } from "react";
 import styles from "./SkinProfile.module.css";
 import { DataCard } from "@/components/ui/DataCard";
-import type { CurrentState } from "../progress";
 import { COPY } from "@/features/my-skin/profile";
 
 /**
@@ -12,28 +12,40 @@ import { COPY } from "@/features/my-skin/profile";
  *
  * ⚠️ IT ECHOES, IT DOES NOT HARDCODE. The comp reads "Combination / Sensitive /
  * Current: Redness, Itching on Cheeks" because a comp has to show a filled-in
- * state; every one of those is an answer the user gave on steps 1 and 2. Each
- * is optional, because /progress is reachable from the nav on a deep link with
- * an empty store — a missing answer drops its row rather than rendering an
- * empty one.
+ * state; every one of those is an answer the user gave. Each is optional,
+ * because /progress is reachable from the nav on a deep link with an empty
+ * store — a missing answer drops its row rather than rendering an empty one.
  *
- * ⚠️ EVERY ANSWER ON THIS CARD IS A LABEL OVER A VALUE, AS OF 8 Sep 2026 — the
- * current state was the exception and it looked like one. It ran as a single
- * `t-body3` line, `Current: Redness on Whole face, …`, wearing its label inline
- * as a colon prefix while the two pairs above it put a muted `t-label-sm` label
- * over a `t-h6` value. It now takes that same shape: `Current state` over the
- * symptoms and places, at the size `Not sure` and `Sensitive` are drawn at.
- * The label comes from `formatCurrent`, not from here, because locations
- * without symptoms are `Affected areas` instead. ⚠️ The `Started …` meta stays
- * a `t-label-sm` line under the value and is NOT a third pair — it is the age
- * of the state above it, not another answer.
+ * ⚠️ EVERY ANSWER ON THIS CARD IS A LABEL OVER A VALUE, AS OF 8 Sep 2026. The
+ * current state used to run as one `t-body3` line, `Current: Redness on Whole
+ * face, …`, wearing its label inline while the pairs above it put a muted
+ * `t-label-sm` label over a `t-h6` value. ⚠️ The `Started …` meta is a
+ * `t-label-sm` line under the state and NOT another pair — it is the age of the
+ * state above it, not another answer.
+ *
+ * ⚠️ `Current state` IS STEP 4's STATUS, AND THE SYMPTOM PILLS ARE GONE — 14 Sep
+ * 2026, asked for directly ("current state would be ongoing, remove the
+ * breakout pill"). NOT IN FIGMA. From 13 Sep 2026 the pair held step 1's
+ * symptoms as rose pills, first over a locations line and then alone once the
+ * face card joined the screen. Both halves of that answer are on the face card
+ * now, as callouts — each symptom a pill at the edge with a line to each of its
+ * places — so this card says where the episode has got to instead: `Ongoing`,
+ * `Improving`, … under the profile recap's own `Current state` label, which is
+ * what the recap's block of that name holds too. The demo's value is
+ * `DEMO_PROFILE.status`.
+ *
+ * ⚠️ THE LATEST PHOTOS SIT BESIDE IT — NOT IN FIGMA, 14 Sep 2026, asked for
+ * directly. They arrive as a slot (`photos`) rather than as data, because the
+ * strip opens a gallery sheet that belongs to the screen, not to the card. The
+ * row pushes the two to the card's edges, the way the pairs above it sit.
  */
 export function SkinProfile({
   skinType,
   tendencies,
   conditions,
-  current,
+  status,
   started,
+  photos,
   className,
 }: {
   skinType?: string;
@@ -41,17 +53,20 @@ export function SkinProfile({
   tendencies?: string[];
   /** step 3's answer — a third column when there is one */
   conditions?: string[];
-  /** `Current state` over "Redness, Itching on Cheeks" */
-  current?: CurrentState | null;
+  /** step 4's status — `Current state` over "Ongoing" */
+  status?: string | null;
   /** "Started Aug 2, 2026 · Day 12" */
   started?: string | null;
+  /** drawn beside the current state — `LatestPhotos` on `/progress` */
+  photos?: ReactNode;
   className?: string;
 }) {
   const tendency = tendencies?.length ? tendencies.join(", ") : undefined;
   const known = conditions?.length ? conditions.join(", ") : undefined;
   const pairCount = [skinType, tendency, known].filter(Boolean).length;
   const hasPair = pairCount > 0;
-  const hasDetails = Boolean(current || started);
+  const hasState = Boolean(status || started);
+  const hasDetails = hasState || Boolean(photos);
 
   return (
     <DataCard className={className} aria-labelledby="skin-profile-title">
@@ -90,46 +105,23 @@ export function SkinProfile({
 
       {hasDetails && (
         <div className={styles.details}>
-          {current && (
-            /* Its own <dl> rather than a row in the one above: that list is a
-               flex ROW pushing its two pairs to the card's edges, and this pair
-               is full-width under the divider. A <p> cannot live inside a <dl>,
-               which is why the meta line sits outside it. */
-            <dl className={styles.currentPair}>
-              {/* ⚠️ NOT IN FIGMA — SYMPTOMS AS PILLS, PLACES ON THE LINE UNDER
-                  THEM, asked for directly 13 Sep 2026. The one sentence
-                  "Breakouts on Neck, Cheeks (R), …" wrapped mid-list; the
-                  symptoms are a set, so they take CompatCard's band-pill recipe
-                  (26 tall, 5/14, full radius, `Label Small`). With no symptoms
-                  the card falls back to the plain pair — `Affected areas` has
-                  nothing to pill.
-
-                  ⚠️ THE VISIBLE `on …` LOCATIONS LINE IS GONE, cut 13 Sep 2026
-                  when the face diagram card joined `/progress` under this one:
-                  it drew the same answer a second time. The hidden `value`
-                  below still says it in words. */}
-              {current.symptoms.length > 0 ? (
-                <div className={styles.pair}>
-                  <dt className={`${styles.pairLabel} t-label-sm`}>
-                    {current.label}
-                  </dt>
-                  <dd className={styles.currentValue}>
-                    <span className="visually-hidden">{current.value}</span>
-                    <span className={styles.symptoms} aria-hidden="true">
-                      {current.symptoms.map((s) => (
-                        <span key={s} className={`${styles.symptom} t-label-sm`}>
-                          {s}
-                        </span>
-                      ))}
-                    </span>
-                  </dd>
-                </div>
-              ) : (
-                <Pair label={current.label} value={current.value} />
+          {hasState && (
+            <div className={styles.state}>
+              {status && (
+                /* its own <dl> rather than a row in the one above: that list
+                   spreads its pairs across the card, and this one shares its
+                   row with the photos. A <p> cannot live inside a <dl>, which
+                   is why the meta line sits outside it. */
+                <dl className={styles.currentPair}>
+                  <Pair label={COPY.currentLabel} value={status} />
+                </dl>
               )}
-            </dl>
+              {started && (
+                <p className={`${styles.started} t-label-sm`}>{started}</p>
+              )}
+            </div>
           )}
-          {started && <p className={`${styles.started} t-label-sm`}>{started}</p>}
+          {photos}
         </div>
       )}
     </DataCard>

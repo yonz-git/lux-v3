@@ -173,10 +173,13 @@ and a hub LANDING has no back chevron either (nothing to go back to). A pushed
 view keeps the back chevron and still has no track. Nothing outside
 `/investigation/*` is a flow step — CHECK and PROGRESS have no `StepId`.
 
-**Two overlays are not routes:** the selfie capture off step 1 and the products
-add tray. Both are `Sheet` overlays, deliberately. See `docs/decisions.md`.
+**Three overlays are not routes:** the selfie capture off step 1, the products
+add tray and PROGRESS's photo gallery. All three are `Sheet` overlays,
+deliberately. See `docs/decisions.md`. The gallery arrived 14 Sep 2026: it opens
+from the profile card's latest photos, and each of its tiles links to a check-in
+record, which is a route (`features/progress/components/PhotoGallery.tsx`).
 
-⚠️ **AND A THIRD OVERLAY IS ALSO A ROUTE — THE DAILY CHECK-IN, FROM 6 Sep 2026.**
+⚠️ **AND ONE MORE OVERLAY IS ALSO A ROUTE — THE DAILY CHECK-IN, FROM 6 Sep 2026.**
 `Check in today` on `/progress` no longer navigates: it opens the same
 conversation as a modal `ChatPanel` over the dashboard
 (`features/progress/components/CheckInOverlay.tsx`), and submitting it closes

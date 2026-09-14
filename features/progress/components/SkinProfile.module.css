@@ -94,50 +94,31 @@
   background: var(--color-border-glass);
 }
 
+/* ⚠️ A ROW SINCE 14 Sep 2026 — NOT IN FIGMA, asked for directly: the current
+   state at the left edge and the latest photos at the right, the way the pairs
+   above spread across the card. `flex-start` lines the two labels up. `wrap`
+   drops the photos under the state on a phone too narrow for both, and 12 is
+   then the gap between the two lines. */
+.details {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: var(--space-md) var(--space-lg); /* 12 / 16 */
+}
+
 /* ⚠️ 4, NOT the pair's own 2. The label sits 2 off its value; the `Started …`
    meta sits 4 off it, so the bond that reads tightest is the one that is
    actually a pair. */
-.details {
+.state {
   display: flex;
   flex-direction: column;
   gap: var(--space-xs); /* 4 */
+  min-width: 0;
 }
 
 .currentPair {
   margin: 0;
-}
-
-/* ⚠️ NOT IN FIGMA — label -> 2 -> symptom pills -> 8 -> `on <locations>`,
-   asked for directly 13 Sep 2026. See the JSX note in SkinProfile.tsx. */
-.currentValue {
-  display: flex;
-  flex-direction: column;
-  align-items: flex-start;
-  gap: var(--space-sm); /* 8 */
-  margin: 0;
-  padding-top: var(--space-xs); /* 4 — the pills need more air than a text value */
-}
-
-.symptoms {
-  display: flex;
-  flex-wrap: wrap;
-  gap: var(--space-sm); /* 8 */
-}
-
-/* CompatCard's `.pill` verbatim — 26 tall (5 + 16 + 5), full radius, the band
-   colour with white ink — using the Risky band's `feedback/warning`. ⚠️ White
-   on `feedback/warning` inherits that pill's known contrast shortfall
-   (non-negotiable 17's "still known-failing" list); it is the same pair, not a
-   new one. */
-/* ⚠️ NOT IN FIGMA — `bg/symptom` #d3858a, asked for directly 13 Sep 2026; it
-   was `feedback/warning`. Shared with the recap's pills in
-   SkinProfileSummary.module.css. */
-.symptom {
-  padding: 5px 14px;
-  border-radius: var(--radius-full);
-  background: var(--color-bg-symptom);
-  color: var(--color-text-on-brand);
-  white-space: nowrap;
 }
 
 .started {

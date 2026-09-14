@@ -203,14 +203,15 @@
    the cascade's own rules instead. */
 /* ⚠️ SUPERSEDED 13 Sep 2026, asked for directly: the symptom pills now wear
    the Risky band's pill — `feedback/warning` with `text/on-brand` ink and no
-   hairline, CompatCard's `.pill` recipe and the same one PROGRESS's
-   `SkinProfile` `.symptom` already uses for these answers. Geometry and type
+   hairline, CompatCard's `.pill` recipe, which PROGRESS's `SkinProfile` also
+   drew these answers in until 14 Sep 2026. Geometry and type
    stay `Tag`'s. ⚠️ White on `feedback/warning` inherits that pill's known
    contrast shortfall (non-negotiable 17) — the same pair, not a new one. */
 /* ⚠️ `.tags` IN FRONT, because `Tag`'s own `.tag[data-variant]` is (0,2,0)
    too and loads later — the doubled class alone tied and lost the fill. */
-/* ⚠️ `bg/symptom` #d3858a since 13 Sep 2026, asked for directly — shared with
-   PROGRESS's `SkinProfile` `.symptom`. */
+/* ⚠️ `bg/symptom` #d3858a since 13 Sep 2026, asked for directly. PROGRESS's
+   `SkinProfile` wore it too, until its pills moved onto the face as callouts
+   on 14 Sep 2026. */
 .tags .pill.pill {
   background: var(--color-bg-symptom);
   color: var(--color-text-on-brand);

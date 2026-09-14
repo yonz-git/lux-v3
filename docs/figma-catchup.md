@@ -806,6 +806,32 @@ hover shine fade out over the neck, from 80% of the box's height to 98%. The
 diagram takes a 30-unit bottom margin, so the chip row sits under the faded
 tail. For Figma this needs the face artwork re-exported with its neck.
 
+### PROGRESS's profile card shows the status and the latest photos, and its face shows callouts (14 Sep 2026)
+
+Asked for directly. Three changes to `Progress — active` (`552:1236` /
+`554:1252`), none of them in the frames:
+
+- **`Current state` is step 4's status** (`Ongoing`, `Improving`, `Resolved` or
+  `Getting worse`), in the card's label-over-value shape, with
+  `Started <date> · Day <n>` under it. The rose symptom pills are gone from the
+  card. The demo reads `Ongoing`.
+- **The latest photos sit at the other end of that row.** A `Latest photos`
+  label sits over the three newest check-in photos, each 36 square
+  (`size/control-sm`) at `radius/md` with a white hairline edge, then a 36
+  circle holding a chevron.
+  The circle is the segmented toggle's frosted track, and it takes the indigo
+  pill on hover. The whole row is one button, and it opens a **photo gallery**
+  `Sheet`. The sheet has `Photo gallery` over a count, then every check-in photo
+  newest first: three across on a phone and four in the desktop dialog. Each is
+  a square `radius/lg` well with its date and `Day <n>` under it, and links to
+  that day's `Check-in detail`.
+- **The `Where you noticed it` face draws step 1's callouts.** These are the
+  same symptom pills and leader lines as step 1, described above. The demo
+  draws `Redness` and `Itching`, each with a line to both cheeks.
+
+For Figma this needs both active frames updated with all three, the photo strip
+as a component, and the gallery sheet at both breakpoints.
+
 ### Step 1's `Other` description is confirmed with ✓ and edited with a pen (14 Sep 2026)
 
 Asked for directly. The open field carries a ✓ before its ✕ (Enter confirms,
