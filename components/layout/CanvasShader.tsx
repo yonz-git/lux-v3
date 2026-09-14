@@ -627,7 +627,8 @@ export function CanvasShader({
 
     /* ⚠️ NO `resize()` IN HERE. Reading `clientWidth` forces a layout flush, so
        sizing per frame meant 30 forced reflows a second for a canvas that only
-       changes size when the window does. The ResizeObserver below owns it. */
+       changes size when the window does. The ResizeObserver below owns it, and
+       redraws in the same frame it resizes. */
     const loop = (now: number) => {
       raf = requestAnimationFrame(loop);
       const elapsed = now - last;
@@ -686,10 +687,18 @@ export function CanvasShader({
        during the animation never reached the buffer and the canvas kept
        rendering at its mount size. It also fires once on observe, which is the
        safety net for mounting before the stylesheet has given the canvas a
-       size. */
+       size.
+
+       ⚠️ IT DRAWS EVERY TIME, NOT ONLY WHEN THE LOOP IS STOPPED — that guard was
+       the mobile black flicker (14 Sep 2026). Assigning `canvas.width/height`
+       clears the buffer, and with `alpha: false` a cleared buffer is OPAQUE
+       BLACK. Observers are delivered after the frame's rAF and before its
+       paint, so the loop had already drawn into the old buffer and the frame
+       painted black; a throttle-skipped frame made it two. Drawing here fills
+       the new buffer before it is ever shown. */
     const ro = new ResizeObserver(() => {
       if (!resize()) return;
-      if (raf === 0) draw(motion.matches ? 0 : (performance.now() - start) / 1000);
+      draw(motion.matches ? 0 : (performance.now() - start) / 1000);
     });
     ro.observe(canvas);
 
