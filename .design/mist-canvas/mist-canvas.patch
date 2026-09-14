@@ -1,0 +1,678 @@
+SHELVED — the `mist` canvas background (14 Sep 2026)
+
+A dark steel-teal / indigo / mauve variant of the living canvas, built off a
+Calmora reference and then set aside ("i dont think we can use this"). None of
+it is in the app. This file is the whole change as a git patch against
+b08bec0; everything above the first `diff --git` line is ignored by git.
+
+To look at it again:
+
+    git apply .design/mist-canvas/mist-canvas.patch
+
+(`git apply --check` first; the further main has moved, the likelier it needs
+a 3-way apply: `git apply -3 ...`.)
+
+What it did:
+- a new `mist` variant in components/layout/CanvasShader.tsx, rendered on
+  every route: twisted simplex folds, lighting from screen-space derivatives,
+  pointer parallax on three layers, soft `#41818475` dashes
+- light under the logo, easing dark once `data-entrance-hold` leaves <html>
+  (hence the note added in LogoEntrance.tsx)
+- nine `--color-canvas-mist-*` tokens on :root in app/globals.css
+- figma-catchup § 9 and comment updates in Welcome.tsx and CheckScreen.tsx
+
+Why it was not used, as measured:
+- text on bare canvas fails contrast once dark: Welcome disclaimer 1.29:1,
+  /check h1 2.07:1 and subtitle 1.28:1; an ink swap alone cannot fix it (the
+  canvas spans ~97-178 of 255)
+- the light-to-dark fade was never watched live (the preview pane was hidden)
+
+diff --git a/app/globals.css b/app/globals.css
+index 3347565..4ef7532 100644
+--- a/app/globals.css
++++ b/app/globals.css
+@@ -358,6 +358,48 @@
+      wants a sage/500 anyway. */
+   --color-border-chip: #6b8b8d;
+ 
++  /* canvas/mist-* — ⚠️ DECLARED HERE, NOT IN `tokens.css`, and NOT IN FIGMA.
++     The palette of `CanvasShader`'s `mist` variant, asked for 14 Sep 2026 off a
++     Calmora reference: its steel teal-grey ground, the dusty mauve at its left
++     edge and a peach bloom — "no yellow, and the peach subtle". The shader
++     reads them at runtime; nothing else does.
++
++     ⚠️ THE FIVE LIGHT STOPS SIT AT OR ABOVE THE FLOOR #acc5cc IN EACH CHANNEL,
++     AND THAT USED TO BE THE WHOLE CONSTRAINT: a mix of colours above the floor
++     stays above it, which bounded the disclaimer at 4.75:1. It bounds nothing
++     now. The dark set further down goes well below the floor and, since "let
++     the bottom go dark too" (14 Sep 2026), nothing keeps it off the disclaimer
++     — see docs/figma-catchup.md § 9. The light stops are still what the
++     canvas shows under the logo.
++
++     ⚠️ THE LINES ARE NOT PEACH ANY MORE. They were peach through four values
++     on 14 Sep 2026 (#ecd3cc, #f1cfcc, #e4d3cf, #ddd0cc, fainter each time),
++     and then "the peach tone doesn't work, use #41818475 instead" — a teal at
++     46% alpha. It is the ONE eight-digit token here, and the shader reads its
++     alpha as the lines' strength: change the opacity in the token, not in the
++     shader. */
++  --color-canvas-mist-1: #e0e9ec; /* highlight */
++  --color-canvas-mist-2: #cddbe0; /* steel blue-grey */
++  --color-canvas-mist-3: #c0d2d8; /* teal-slate */
++  --color-canvas-mist-mauve: #d6c6cc;
++  --color-canvas-mist-line: #41818475;
++  /* ⚠️ THE DARK SET — every stop below the floor, and the palette the canvas
++     settles into once the logo has gone (DUSK, in CanvasShader.tsx). Until
++     "tone up the colour, it's too monotone now" it was ONE token, -shade,
++     taken darker three times (#7f99a1, #647e87, #56707a) until the whole
++     screen was a single slate. It is four now:
++       -teal        the shallow half of the shade
++       -indigo      the deepest half; it leans toward the brand indigo
++                    without reaching it
++       -glow        cyan light on the faces turned toward the light
++       -mauve-deep  the left-edge wash, once it is dark
++     Nothing clamps to any of them and nothing keeps them off text; see
++     docs/figma-catchup.md § 9. */
++  --color-canvas-mist-teal: #3e6570;
++  --color-canvas-mist-indigo: #4f5878;
++  --color-canvas-mist-glow: #8ec3cb;
++  --color-canvas-mist-mauve-deep: #85728d;
++
+   /* ⚠️ `gradient/face-form`, `effect/face-form`, `surface/face-tier` and
+      `effect/face-tier` WERE DECLARED HERE until 13 Sep 2026 — the CSS dome
+      the face diagram used to be. The face is a contour drawing now and its
+diff --git a/components/layout/CanvasShader.tsx b/components/layout/CanvasShader.tsx
+index 1c0ee7e..15b8605 100644
+--- a/components/layout/CanvasShader.tsx
++++ b/components/layout/CanvasShader.tsx
+@@ -35,6 +35,15 @@ import styles from "./CanvasShader.module.css";
+  * grain. Its own notes sit on `FRAG_FILM`. The reference is a DARK site and
+  * this is not; it cannot be without breaking the floor below.
+  *
++ * ⚠️ AND A THIRD, `mist`, IS WHAT `AppCanvas` RENDERS SINCE 14 Sep 2026 —
++ * a lit, twisting fold surface in a Calmora-reference tone (steel teal-grey, a
++ * dusty mauve edge, teal-to-indigo shades with cyan light, soft teal lines, no
++ * yellow), moving with monopo.vn's twist at this file's own tempo. `film` is
++ * kept as the one-word way back, and is also what renders where `mist`'s
++ * derivatives extension is missing. Its palette is `canvas/mist-*` on `:root`
++ * in globals.css — five light stops for the ground under the logo and a dark
++ * set of four below the floor; its notes sit on `FRAG_MIST`.
++ *
+  * ⚠️ THE RAMP MAY ONLY BE WIDENED UPWARDS, AND THAT IS A CONTRAST CONSTRAINT,
+  * NOT A TASTE ONE. Roughly 200 lines of `globals.css` derive colours by sampling
+  * this gradient at an element's own position, and the darkest value any of them
+@@ -61,6 +70,16 @@ import styles from "./CanvasShader.module.css";
+  * that guarantee away, which is the whole reason it is written as a floor
+  * rather than a stop.
+  *
++ * ⚠️ 14 Sep 2026: THE VARIANT `AppCanvas` RENDERS NO LONGER KEEPS THIS FLOOR,
++ * AND THAT WAS ASKED FOR, IN STEPS: "give some darkness like the image",
++ * "darker shades", "go darker and stay darker", and finally "let the bottom go
++ * dark too". Once the logo has gone, `mist` settles into a dark set of tokens
++ * (`canvas/mist-teal`, `-indigo`, `-glow`, `-mauve-deep`) with NO clamp and NO
++ * protected band, so everything in the three paragraphs above — "only
++ * upwards", "nothing goes below it", "cannot drop below 4.75:1" — is true of
++ * `flow` and `film` and FALSE of what ships. The Welcome disclaimer fails AA
++ * under it; that is logged, with the rest, in docs/figma-catchup.md § 9.
++ *
+  * and they are read from the CSS custom properties at runtime, so retuning the
+  * tokens retunes the shader. Do not hardcode a colour here, and do not widen
+  * the ramp without re-measuring the disclaimer.
+@@ -158,7 +177,21 @@ uniform float u_time;
+ uniform vec3  u_ramp[5];
+ 
+ /* Ashima / Gustavson simplex noise, 3D. Time is the third axis so the field
+-   evolves in place instead of scrolling past, which would read as movement. */
++   evolves in place instead of scrolling past, which would read as movement.
++
++   ⚠️ THE KERNEL RADIUS IS A MACRO BECAUSE MIST NEEDS A DIFFERENT ONE. This
++   implementation's 0.6 reaches past the simplex it belongs to, so a corner's
++   contribution cuts off when the lattice changes cell: a jump of about a
++   thousandth, invisible as colour, and a hard seam the moment anything takes
++   a DERIVATIVE of it. Flow and film only ever show the value, and keep 0.6
++   and 42 exactly. Mist lights its surface from the slope, where those seams
++   drew straight stippled lines across the folds, so it defines 0.5 — the
++   radius that falls to zero at the cell edge — and rescales by
++   42 x (0.6 / 0.5)^4, about 87, to keep the same range. */
++#ifndef SNOISE_R2
++#define SNOISE_R2 0.6
++#define SNOISE_K 42.0
++#endif
+ vec3 mod289(vec3 x) { return x - floor(x * (1.0 / 289.0)) * 289.0; }
+ vec4 mod289(vec4 x) { return x - floor(x * (1.0 / 289.0)) * 289.0; }
+ vec4 permute(vec4 x) { return mod289(((x * 34.0) + 1.0) * x); }
+@@ -216,9 +249,9 @@ float snoise(vec3 v) {
+   vec4 norm = taylorInvSqrt(vec4(dot(p0, p0), dot(p1, p1), dot(p2, p2), dot(p3, p3)));
+   p0 *= norm.x; p1 *= norm.y; p2 *= norm.z; p3 *= norm.w;
+ 
+-  vec4 m = max(0.6 - vec4(dot(x0, x0), dot(x1, x1), dot(x2, x2), dot(x3, x3)), 0.0);
++  vec4 m = max(SNOISE_R2 - vec4(dot(x0, x0), dot(x1, x1), dot(x2, x2), dot(x3, x3)), 0.0);
+   m = m * m;
+-  return 42.0 * dot(m * m, vec4(dot(p0, x0), dot(p1, x1), dot(p2, x2), dot(p3, x3)));
++  return SNOISE_K * dot(m * m, vec4(dot(p0, x0), dot(p1, x1), dot(p2, x2), dot(p3, x3)));
+ }
+ 
+ /* Five stops, blended with overlapping smoothsteps so no seam is visible
+@@ -375,6 +408,261 @@ void main() {
+ }
+ `;
+ 
++/* ⚠️ THE MIST VARIANT — EVERY ROUTE SINCE 14 Sep 2026, AND NOT IN FIGMA.
++   Asked for off a Calmora reference ("this tone, but no yellow, and the peach
++   subtle"), then reshaped the same day after monopo.vn: "more dynamic, but
++   keep our tempo — more 3D feel and darker shades".
++
++   ⚠️ THE DYNAMISM IS STRUCTURAL, NOT SPEED. Every time coefficient below is
++   one `film` and the first mist already ran at. What changed is what the
++   clock moves:
++     · THE TWIST — the warp noise is read as an ANGLE and turns the domain
++       locally. A rotation displaces in proportion to distance from its pivot,
++       so a small, calm change in the angle swings a far form a long way. That
++       is monopo's trick, translated rather than lifted;
++     · FOLDS — a rounded ridge profile across the twisted frame, bent by the
++       field, so the surface is ridged like satin rather than blotched;
++     · ADVECTION — the domain slides slowly along one diagonal, so the field
++       flows past instead of only boiling in place. It moves where the noise
++       is SAMPLED, never the coordinate the twist rotates — see the note at
++       the twist for what that cost when it did.
++
++   ⚠️ THE 3D IS LIGHT ON A HEIGHT FIELD. Folds, field and shades sum to a
++   height; its slope comes from SCREEN-SPACE DERIVATIVES, which cost no extra
++   noise, and it is lit by a wrapped Lambert (faces turned away sink toward
++   the shade) and a broad, soft sheen, pale under the logo and cyan after it. On the
++   interactive routes the light leans toward the pointer and the three layers
++   — ground, shades, lines — shift at three parallaxes (0.12 / 0.35 / 0.55),
++   which is most of the depth. The derivatives need a WebGL1 extension; where
++   it is missing the component renders `film` — see `kind` in the effect.
++
++   ⚠️ DUSK — LIGHT UNDER THE LOGO, DARK FOR GOOD AFTER IT. Asked for directly:
++   "don't use so much of the dark tone when the main logo appears; when it
++   disappears go darker, and stay darker". u_dusk is 0 while html carries
++   data-entrance-hold (LogoEntrance sets it for the lockup and every exit —
++   hand-off, skip, veil end, backstop — removes it) and 1 otherwise, eased in
++   the frame loop over about two and a half seconds, so the darkness arrives
++   as the symbol settles into the orb. It scales the darkening, the ground and
++   the colour of the dark set. The canvas persists across navigation, so it stays dark; a reload of
++   the landing is the one thing that starts it light again.
++
++   ⚠️ FIVE SIMPLEX EVALUATIONS PER PIXEL — warp 2, field 1, shades 1, dashes
++   1 — where the first mist spent nine. The field and the shades each had a
++   second octave until "give more blur": at twice the frequency they were
++   most of the fine detail on screen. The mauve's breathing borrows the shade
++   field, the dashes borrow the field's bend, and the shade's two tones and
++   the fold mask borrow the warp, instead of paying for their own. Count again
++   before adding one.
++
++   ⚠️ AND IT IS NOT QUITE FILM'S NOISE. Lighting from the slope drew straight
++   stippled seams across the folds wherever the simplex lattice changed cell,
++   because the shared kernel is not continuous there (a 113-level jump between
++   neighbouring pixels, measured at 1440). Mist compiles the same function with
++   the continuous radius instead — see SNOISE_R2 in COMMON — and nothing may
++   take a derivative of noise that still uses 0.6.
++
++   LINES — short, soft dashes on thin diagonal lines, in canvas/mist-line at
++   that token's own alpha. They were PEACH all day on 14 Sep 2026 — soft
++   glows, tight glows, long lines, then fainter and fainter dashes ("less
++   vibrant, less long, more subtle", "still too much peach") — until "the
++   peach tone doesn't work, use #41818475 instead". A second noise sampled
++   ALONG each line is what cuts it into dashes; the strength is the token's
++   alpha, so retune the token, not the shader.
++
++   ⚠️ NO RIM, NO SPHERE. The glass spheres in both references are composition,
++   not motion or tone, and `film`'s notes record the big circle being cut once
++   already.
++
++   ⚠️ COLOUR — THE DARK IS FOUR TONES, NOT ONE SLATE. After three rounds of
++   darkening the screen read as a single grey-teal ("tone up the colour, it's
++   too monotone now"), so the shade splits by depth and by the warp into teal
++   (shallow) and indigo (deepest), the faces turned to the light take a cyan
++   glow, and the left-edge mauve deepens and tints OVER the dark instead of
++   sitting under it. All four are canvas/mist-* tokens in globals.css.
++
++   ⚠️ NOTHING IS PROTECTED ANY MORE — asked for directly, 14 Sep 2026: "let
++   the bottom go dark too". A screen-space gate used to keep every darkening
++   term out of the bottom quarter, with a clamp to #acc5cc inside it, so the
++   Welcome disclaimer held a structural 4.75:1; on a dark screen that band
++   read as a hard pale horizon. Both are gone, there is no clamp at all, and
++   the disclaimer fails AA with the rest of the text on bare canvas — see
++   docs/figma-catchup.md § 9 before bringing any of it back.
++   NO BACKTICKS inside the shader string: it is a JS template literal. */
++const FRAG_MIST = `#extension GL_OES_standard_derivatives : enable
++#define SNOISE_R2 0.5
++#define SNOISE_K 87.0
++${COMMON}
++uniform vec2  u_pointer;
++uniform vec2  u_drag;
++uniform float u_pull;
++uniform vec3  u_mauve;
++uniform vec4  u_line; /* rgb, and the token's own alpha as the strength */
++uniform vec3  u_teal;
++uniform vec3  u_indigo;
++uniform vec3  u_glow;
++uniform vec3  u_mauveDeep;
++uniform float u_dusk; /* 0 while the logo holds, 1 after it — see DUSK */
++
++mat2 rot(float a) {
++  float c = cos(a);
++  float s = sin(a);
++  return mat2(c, -s, s, c);
++}
++
++void main() {
++  float m = min(u_res.x, u_res.y);
++  vec2 p = (gl_FragCoord.xy - 0.5 * u_res) / m;
++  vec2 uv = gl_FragCoord.xy / u_res;
++  /* offset, so the t = 0 frame (the only one reduced motion ever draws) does
++     not put the centre pixel on a lattice vertex of all three noise inputs at
++     once — measured as a lone 54-level speck under the orb */
++  float t = u_time + 17.0;
++
++  vec2 dp = p - u_pointer;
++  float fall = exp(-dot(dp, dp) / 0.06);
++  p -= dp * fall * 0.22 * u_pull;
++  p -= u_drag * fall;
++
++  /* three depths — ground, shades and lines move by three different amounts
++     under the pointer */
++  vec2 pg = p - u_pointer * 0.12 * u_pull;
++  vec2 ps = p - u_pointer * 0.35 * u_pull - u_drag * 2.5;
++  vec2 pl = p - u_pointer * 0.55 * u_pull;
++
++  /* one diagonal for the advection and for the lines */
++  vec2 dir = vec2(0.80, 0.60);
++
++  /* the twist — the warp read as an angle, turning the domain locally; the
++     34deg base turn is what keeps the simplex lattice from showing.
++     ⚠️ THE ADVECTION GOES WHERE THE NOISE IS SAMPLED, NEVER INTO THE
++     COORDINATE THE TWIST ROTATES. A rotation displaces in proportion to its
++     lever arm and the advection offset grows without bound, so with it inside
++     g0 the pivot drifted a quarter of a short side further away every ten
++     seconds and the twist wound the folds tighter the longer a page stayed
++     open — more than four short sides of lever arm after two and a half
++     minutes, which is where "some parts have too many ripples" and a run of
++     hard 79-level pixel steps both came from. The pivot is the screen centre
++     now, whatever the time. */
++  vec2 adv = dir * t * 0.025;
++  vec2 g0 = mat2(0.83, -0.56, 0.56, 0.83) * pg;
++  vec2 q = vec2(
++    snoise(vec3((g0 - adv) * 0.70,       t * 0.060)),
++    snoise(vec3((g0 - adv) * 0.70 + 4.1, t * 0.060 + 2.7))
++  );
++  vec2 g1 = rot(q.x * 0.7) * g0;
++  /* ONE octave: the second, at twice the frequency, was most of the fine
++     detail on screen and went with "give more blur" */
++  float n = snoise(vec3((g1 - adv) * 0.95 + q * 0.60, t * 0.080 + 3.7));
++
++  /* folds — a soft ridge profile across the twisted frame, bent by the field
++     so the ridges curve rather than rule across. Four passes on 14 Sep 2026
++     took the ripples down: the bend 2.2 to 1.3 (it closed the ridges into
++     rings); the frequency 3.6 to 2.2 and the twist 1.2 to 0.7 (they wound
++     them into ovals); the smoothstep that sharpened each crest ("the lines
++     are too defined"); then "some parts have too many ripples" — the ridges
++     bunched wherever the bend squeezed them, so the frequency went to 1.5,
++     the bend to 0.8, and a slow MASK lets folds through in some regions and
++     leaves the rest a plain swell.
++     ⚠️ That last pass was cut BEFORE the real cause was found: the advection
++     inside the twist's lever arm (see the note at the twist), which wound the
++     folds tighter the longer a page stayed open. The cuts stayed because they
++     also soften; do not read them as the fix. */
++  float f = 0.5 + 0.5 * sin(g1.y * 1.5 + n * 0.8 - t * 0.10);
++  float folds = smoothstep(-0.30, 0.40, q.y);
++
++  /* the shades — large forms on their own parallax, turned by the same twist
++     at a lower gain; one octave, for the same reason as the field */
++  vec2 s0 = rot(q.x * 0.5) * ps;
++  float sh = snoise(vec3(s0 * 0.55 + 21.0, t * 0.045));
++  float shade = smoothstep(-0.45, 0.50, sh);
++
++  /* light the height field. The slope is a screen-space derivative scaled by
++     m, so it is per short side rather than per pixel and the relief is the
++     same at 440 and 1440. Computed on the smooth field, before the grain. */
++  /* ⚠️ THE "BLUR" IS HERE, NOT IN A FILTER — asked for twice ("add blur, the
++     lines are too defined", then "give more blur"). A real blur is four to
++     nine times the noise per pixel; softening what is drawn costs nothing.
++     Bump 0.20 to 0.10, the specular power 24 to 8 and then a broad sheen, the
++     second octaves dropped, and the folds' share of the height cut and masked
++     so the broad field carries the relief. The lit response is a smoothstep,
++     so the gentler slopes still read as depth. */
++  float h = f * folds * 0.35 + n * 0.45 + sh * 0.20;
++  vec2 grad = vec2(dFdx(h), dFdy(h)) * m;
++  vec3 nrm = normalize(vec3(-grad * 0.10, 1.0));
++  vec3 L = normalize(vec3(-0.50 + u_pointer.x * 0.80 * u_pull,
++                           0.60 + u_pointer.y * 0.80 * u_pull,
++                           0.70));
++  float lam = 0.5 + 0.5 * dot(nrm, L);
++  float lit = smoothstep(0.62, 0.98, lam);
++  float spec = pow(max(dot(nrm, normalize(L + vec3(0.0, 0.0, 1.0))), 0.0), 6.0);
++
++  /* the ground — the light steel ramp, faces turned away sinking toward its
++     dark end. It is what the logo sits on; after the logo the dark set covers
++     most of it. It starts HALFWAY down the ramp under the logo and 70% down
++     after it (see DUSK): from 0.35 the first cut of this surface measured a
++     mean of 172-197 of 255 and read pale. */
++  float v = clamp(0.55 * (1.0 - lit) + 0.45 * (0.5 + 0.5 * n), 0.0, 1.0);
++  float base = mix(0.50, 0.70, u_dusk);
++  vec3 col = ramp(base + (1.0 - base) * v);
++
++  /* the shade — deepened on the faces turned away and in the valleys, with a
++     baseline over everything once the logo has gone ("too much whiteness").
++     TWO TONES: teal where it is shallow, indigo where it is deepest, the split
++     pushed around by the warp so depth is not the only thing deciding it. */
++  float away = 1.0 - lit;
++  float dark = clamp(0.20 * u_dusk + shade * 0.80 + away * shade * 0.40 + away * 0.35, 0.0, 1.0);
++  float tone = clamp(smoothstep(0.30, 0.95, dark) * 0.75 + (0.5 + 0.5 * q.y) * 0.45 - 0.15, 0.0, 1.0);
++  /* the shade's weight is 0.20 under the logo, not 0.35. The tone-up pass
++     (the narrower lit response, the deeper tones) had taken the logo's ground
++     from a mean of 190-198 of 255 to 174-192, the opposite of "don't use so
++     much of the dark tone when the logo appears"; 0.20 reads 186-196 in the
++     same frames. After the logo the weight is 0.95 either way, so nothing
++     after dusk moved, and the disclaimer before dusk went 3.33 to 3.98:1. */
++  col = mix(col, mix(u_teal, u_indigo, tone), dark * mix(0.20, 0.95, u_dusk));
++
++  /* cyan on the faces turned to the light once it is dark — the other half
++     of the colour, and most of the tonal range */
++  col = mix(col, u_glow, smoothstep(0.55, 1.0, lit) * 0.35 * u_dusk);
++
++  /* mauve from the left edge, its reach breathing with the shade field. It
++     tints OVER the dark now; laid under it, the shade covered it entirely. */
++  float mauve = 1.0 - smoothstep(0.0, 0.62 + sh * 0.10, uv.x);
++  col = mix(col, mix(u_mauve, u_mauveDeep, u_dusk), mauve * mix(0.35, 0.45, u_dusk));
++
++  /* the sheen — broad and soft, only where a slope turns to the light; pale
++     under the logo and cyan after it */
++  float sheen = smoothstep(0.55, 1.0, spec);
++  col = mix(col, mix(u_ramp[0], u_glow, u_dusk), sheen * 0.18);
++
++  /* the lines — short, soft dashes in canvas/mist-line, composited at that
++     token's own alpha ("use #41818475 instead of the peach"). The power sets
++     each line's width and softness: 40 read as a drawn line, 20 as a soft
++     one, and 8 is a blur; the second noise runs ALONG the line, and that is
++     what cuts it short. */
++  float d = dot(pl, dir) + n * 0.18 - t * 0.025;
++  float lines = pow(0.5 + 0.5 * sin(d * 9.0), 8.0);
++  float along = dot(pl, vec2(-dir.y, dir.x));
++  float dash = smoothstep(0.35, 0.75, snoise(vec3(along * 2.5, d * 0.4, t * 0.040)));
++  col = mix(col, u_line.rgb, lines * dash * u_line.a);
++
++  /* no clamp and no protected band — see the header */
++  col += (hash12(gl_FragCoord.xy) - 0.5) * (5.0 / 255.0);
++
++  gl_FragColor = vec4(col, 1.0);
++}
++`;
++
++/* The mist ramp, lightest to darkest — the LIGHT ground, which is what shows
++   under the logo. It ends on the same floor token the other variants do, but
++   under mist nothing clamps to it: the dark set goes far below. */
++const MIST_RAMP_TOKENS = [
++  "--color-canvas-mist-1", /* #e0e9ec */
++  "--color-canvas-mist-2", /* #cddbe0 */
++  "--color-canvas-mist-3", /* #c0d2d8 */
++  "--color-gradient-canvas-end-desktop", /* #b9d1d7 */
++  "--color-gradient-canvas-end-mobile", /* #acc5cc — the floor */
++] as const;
++
+ function compile(gl: WebGLRenderingContext, type: number, src: string) {
+   const sh = gl.createShader(type);
+   if (!sh) return null;
+@@ -387,12 +675,15 @@ function compile(gl: WebGLRenderingContext, type: number, src: string) {
+   return sh;
+ }
+ 
+-/** `#rrggbb` -> three 0..1 floats. Returns null for anything else. */
+-function parseHex(value: string): [number, number, number] | null {
+-  const m = /^#?([0-9a-f]{6})$/i.exec(value.trim());
++/** `#rrggbb` or `#rrggbbaa` -> four 0..1 floats, alpha 1 when it is absent.
++    Returns null for anything else. `canvas/mist-line` is the one token that
++    carries an alpha, and the shader uses it as that layer's strength. */
++function parseHex(value: string): [number, number, number, number] | null {
++  const m = /^#?([0-9a-f]{6})([0-9a-f]{2})?$/i.exec(value.trim());
+   if (!m) return null;
+   const n = parseInt(m[1], 16);
+-  return [((n >> 16) & 255) / 255, ((n >> 8) & 255) / 255, (n & 255) / 255];
++  const a = m[2] ? parseInt(m[2], 16) / 255 : 1;
++  return [((n >> 16) & 255) / 255, ((n >> 8) & 255) / 255, (n & 255) / 255, a];
+ }
+ 
+ /**
+@@ -410,7 +701,7 @@ const INTERACTIVE_ROUTES = new Set(["/", "/check"]);
+ export function AppCanvas() {
+   const pathname = usePathname();
+   return (
+-    <CanvasShader variant="film" interactive={INTERACTIVE_ROUTES.has(pathname)} />
++    <CanvasShader variant="mist" interactive={INTERACTIVE_ROUTES.has(pathname)} />
+   );
+ }
+ 
+@@ -418,9 +709,9 @@ export function CanvasShader({
+   variant = "flow",
+   interactive = false,
+ }: {
+-  /** `film` is the app-wide trial — see the variant note at the top */
+-  variant?: "flow" | "film";
+-  /** fade in the pointer warp — `film` only; see the note on FRAG_FILM */
++  /** `mist` is the app-wide trial — see the variant note at the top */
++  variant?: "flow" | "film" | "mist";
++  /** fade in the pointer warp — `film` and `mist`; see the note on FRAG_FILM */
+   interactive?: boolean;
+ }) {
+   const ref = useRef<HTMLCanvasElement>(null);
+@@ -447,11 +738,20 @@ export function CanvasShader({
+       canvas.getContext("experimental-webgl")) as WebGLRenderingContext | null;
+     if (!gl) return;
+ 
++    /* ⚠️ `mist` LIGHTS ITS SURFACE WITH dFdx/dFdy, A WebGL1 EXTENSION THAT
++       HAS TO BE ENABLED HERE, BEFORE THE COMPILE — the directive at the top of
++       the shader only asks for it. Where it is missing that shader would fail
++       to compile and leave the CSS gradient, so `film` renders instead. */
++    const kind =
++      variant === "mist" && !gl.getExtension("OES_standard_derivatives")
++        ? "film"
++        : variant;
++
+     const vs = compile(gl, gl.VERTEX_SHADER, VERT);
+     const fs = compile(
+       gl,
+       gl.FRAGMENT_SHADER,
+-      variant === "film" ? FRAG_FILM : FRAG_FLOW,
++      kind === "mist" ? FRAG_MIST : kind === "film" ? FRAG_FILM : FRAG_FLOW,
+     );
+     if (!vs || !fs) return;
+ 
+@@ -484,17 +784,45 @@ export function CanvasShader({
+     /* read the palette from the tokens, once — see the palette note above */
+     const cs = getComputedStyle(document.documentElement);
+     const ramp: number[] = [];
+-    for (const token of RAMP_TOKENS) {
++    for (const token of kind === "mist" ? MIST_RAMP_TOKENS : RAMP_TOKENS) {
+       const rgb = parseHex(cs.getPropertyValue(token));
+       if (!rgb) return; /* a token moved or became non-hex: stay out of the way */
+-      ramp.push(...rgb);
++      ramp.push(rgb[0], rgb[1], rgb[2]);
+     }
+     gl.uniform3fv(gl.getUniformLocation(prog, "u_ramp[0]"), new Float32Array(ramp));
+ 
++    /* the mist accents — every location is null on the other programs */
++    for (const [uniform, token] of [
++      ["u_mauve", "--color-canvas-mist-mauve"],
++      ["u_line", "--color-canvas-mist-line"],
++      ["u_teal", "--color-canvas-mist-teal"],
++      ["u_indigo", "--color-canvas-mist-indigo"],
++      ["u_glow", "--color-canvas-mist-glow"],
++      ["u_mauveDeep", "--color-canvas-mist-mauve-deep"],
++    ] as const) {
++      const at = gl.getUniformLocation(prog, uniform);
++      if (!at) continue;
++      const rgba = parseHex(cs.getPropertyValue(token));
++      if (!rgba) return;
++      /* u_line is the one vec4 — its alpha is the lines' strength */
++      if (uniform === "u_line") gl.uniform4fv(at, new Float32Array(rgba));
++      else gl.uniform3fv(at, new Float32Array(rgba.slice(0, 3)));
++    }
++
+     /* the pointer warp — all three locations are null on the flow program */
+     const uPointer = gl.getUniformLocation(prog, "u_pointer");
+     const uDrag = gl.getUniformLocation(prog, "u_drag");
+     const uPull = gl.getUniformLocation(prog, "u_pull");
++
++    /* DUSK — see FRAG_MIST. Null on the other programs. It starts at 0 so the
++       mount frame is the light one: the canvas effect runs before
++       LogoEntrance's in the same commit, so the hold is not set yet when that
++       frame draws, but it is by the first frame of the loop — which SNAPS to
++       the target instead of easing, or every cold load of a route with no
++       logo would brighten and then darken. */
++    const uDusk = gl.getUniformLocation(prog, "u_dusk");
++    let dusk = 0;
++    let duskSettled = false;
+     const target = { x: 0, y: 0 };
+     const pos = { x: 0, y: 0 };
+     const drag = { x: 0, y: 0 };
+@@ -558,6 +886,8 @@ export function CanvasShader({
+     const draw = (seconds: number) => {
+       if (width === 0) return;
+       gl.uniform1f(uTime, seconds);
++      /* here rather than in the loop, so the resize path draws with it too */
++      if (uDusk) gl.uniform1f(uDusk, dusk);
+       gl.drawArrays(gl.TRIANGLES, 0, 3);
+       if (!ready) {
+         ready = true;
+@@ -602,6 +932,13 @@ export function CanvasShader({
+         gl.uniform2f(uDrag, drag.x * pull, drag.y * pull);
+         gl.uniform1f(uPull, pull);
+       }
++      if (uDusk) {
++        const target =
++          document.documentElement.dataset.entranceHold !== undefined ? 0 : 1;
++        /* 0.02 a frame at the 60fps cap: ~95% of the way in 2.5s */
++        dusk = duskSettled ? dusk + (target - dusk) * 0.02 : target;
++        duskSettled = true;
++      }
+       draw((now - start) / 1000);
+     };
+ 
+@@ -612,6 +949,9 @@ export function CanvasShader({
+       cancelAnimationFrame(raf);
+       raf = 0;
+       if (motion.matches) {
++        /* no loop, so no dusk easing: the entrance is collapsed to nothing
++           under reduced motion anyway, and dark is the resting state */
++        dusk = 1;
+         if (resize()) draw(0);
+         return;
+       }
+diff --git a/components/layout/LogoEntrance.tsx b/components/layout/LogoEntrance.tsx
+index e03f77c..3b7bd37 100644
+--- a/components/layout/LogoEntrance.tsx
++++ b/components/layout/LogoEntrance.tsx
+@@ -174,6 +174,12 @@ export function LogoEntrance() {
+     };
+ 
+     const root = document.documentElement;
++    /* ⚠️ 14 Sep 2026: THE CANVAS READS THIS HOLD TOO. CanvasShader's `mist`
++       variant stays light while it is set and eases dark once it comes off
++       (DUSK, on FRAG_MIST), so every exit below — hand-off, skip, veil end,
++       backstop — is also the moment the background darkens. Renaming or
++       moving the attribute breaks that silently: the logo would simply play
++       over the dark background. */
+     const release = () => {
+       delete root.dataset.entranceHold;
+     };
+diff --git a/docs/figma-catchup.md b/docs/figma-catchup.md
+index 14e3400..d104ef0 100644
+--- a/docs/figma-catchup.md
++++ b/docs/figma-catchup.md
+@@ -1079,3 +1079,56 @@ are deliberate and not drift.
+ **Nothing to change in Figma**; a note on the `Button` set and `Spec/Chat
+ Bubble` saying the build animates them would stop a later comp from being read
+ as a correction.
++
++## 9. The canvas's `mist` palette (14 Sep 2026)
++
++`CanvasShader`'s `mist` variant — now what every route renders — reads nine
++tokens declared on `:root` in `globals.css` that Figma does not have. It was
++asked for off a Calmora reference and reshaped through a day of direction on
++14 Sep 2026 ("no yellow", "give some darkness", "go darker and stay darker",
++"let the bottom go dark too", "tone up the colour, it's too monotone now",
++"use #41818475 instead of the peach"):
++
++| Token | Value | Role |
++| ----- | ----- | ---- |
++| `canvas/mist-1` · `-2` · `-3` | `#e0e9ec` · `#cddbe0` · `#c0d2d8` | the light ground, shown under the logo |
++| `canvas/mist-mauve` | `#d6c6cc` | the left-edge wash under the logo |
++| `canvas/mist-line` | `#41818475` | the soft diagonal dashes — ⚠️ the one token with an alpha, which the shader uses as their strength |
++| `canvas/mist-teal` | `#3e6570` | the shallow half of the shade |
++| `canvas/mist-indigo` | `#4f5878` | the deepest half of the shade |
++| `canvas/mist-glow` | `#8ec3cb` | cyan light on the faces turned to the light, and the sheen |
++| `canvas/mist-mauve-deep` | `#85728d` | the left-edge wash once it is dark |
++
++The ramp also reuses `gradient/canvas-end-desktop` and `-end-mobile`. The dark
++set lies far below the old `#acc5cc` floor, and **nothing clamps to it or keeps
++it off text**. **Add these as a canvas group if the treatment is approved**;
++the static `gradient/canvas-*` fallback is unchanged.
++
++⚠️ **KNOWN-FAILING UNDER `mist`, AND AWAITING A DECISION.** Measured on 14 Sep
++2026, after "let the bottom go dark too", by reading the canvas back and
++sweeping 300s of animation with the pointer in three places:
++
++| Text | Ink | Where | Worst |
++| ---- | --- | ----- | ----- |
++| Welcome disclaimer, after the logo | `text/secondary` | `/`, mobile (518) and 1440 | **1.29:1** |
++| Welcome disclaimer, before dusk falls | `text/secondary` | `/`, mobile (518) | **3.98:1** |
++| Hub subtitle ("Product compatibility") | `text/secondary` 14px | `/check`, mobile (518) | **1.28:1** |
++| Page `<h1>` ("Analysis") | `text/primary` 20px | `/check`, mobile (518) | **2.07:1** |
++
++The disclaimer passes through 3.36, 2.66 and 2.15:1 a quarter, half and three
++quarters of the way to dark, so not even the logo's light ground carries it to
++AA. "Mobile" is the preview pane's own phone-layout width, 518; nothing here
++was taken at the 440 frame width.
++
++The same inks sit on the same canvas everywhere else — the hub subtitles on
++`/check/no-profile`, `/progress`, `/progress/empty` and `/products`, and the
++empty-state and intro body on `/progress/empty`, `/check/no-profile`,
++`/investigation/profile` and `/investigation/analysis` — and fail the same way.
++The per-route figures taken earlier, at the first and much lighter shade, are
++superseded and were removed rather than left to read as current.
++
++⚠️ **AN INK SWAP ALONE WILL NOT CLOSE IT.** The canvas now spans roughly 97 to
++178 of 255 in brightness: dark ink fails on the shade, and white — estimated
++from the lightest pixel measured — would fail on the cyan light at about 2:1.
++Closing it needs text off bare canvas (a surface behind it), a narrower canvas
++range, or both.
+diff --git a/features/check/components/CheckScreen.tsx b/features/check/components/CheckScreen.tsx
+index ff7fb50..c31317d 100644
+--- a/features/check/components/CheckScreen.tsx
++++ b/features/check/components/CheckScreen.tsx
+@@ -61,7 +61,15 @@ export function CheckScreen() {
+          6.59:1, and the strip's translucent `surface/data` composites to
+          #97b8bd, giving `text/on-data` 6.52:1 and `-secondary` 4.79:1. All AA.
+          Nothing on this screen sits on bare canvas below `text/secondary`, so
+-         the floor is the whole proof. */
++         the floor is the whole proof.
++
++         ⚠️ THAT PROOF IS VOID UNDER `mist` (14 Sep 2026): once the logo has
++         gone the canvas is dark to every edge, and on this route its shades
++         follow the pointer. Re-measured in the mobile layout (518 wide) over
++         a 300s sweep with the cursor in three places, after "let the bottom
++         go dark too": the subtitle in `text/secondary` reaches 1.28:1 and the
++         h1 2.07:1, both failing AA. Logged, with why an ink swap alone will
++         not close it, in docs/figma-catchup.md § 9. */
+       belowHeading={
+         <SkinProfileStrip
+           className={styles.profile}
+diff --git a/features/my-skin/components/Welcome.tsx b/features/my-skin/components/Welcome.tsx
+index aa54f51..a7e71c1 100644
+--- a/features/my-skin/components/Welcome.tsx
++++ b/features/my-skin/components/Welcome.tsx
+@@ -23,8 +23,11 @@ export function Welcome() {
+       {/* ⚠️ NO CANVAS HERE ANY MORE. The living canvas behind this screen is
+           the app-wide `AppCanvas` in app/layout.tsx; Welcome is the one route
+           where it answers the pointer. Read the palette/contrast note in
+-          CanvasShader.tsx before retuning it: the ramp's dark end is frozen at
+-          `#acc5cc` so the disclaimer cannot fall below 4.75:1. */}
++          CanvasShader.tsx before retuning it. ⚠️ Under the `mist` variant
++          (14 Sep 2026) nothing is frozen at `#acc5cc` any more: once the logo
++          has gone the canvas goes dark to the bottom edge ("let the bottom go
++          dark too"), and the disclaimer below FAILS AA on it — logged in
++          docs/figma-catchup.md § 9, awaiting the ink decision. */}
+       <div className={styles.welcome}>
+         {/* the two spacers split the free space in the ratio Figma places above
+             and below the group, so it sits low without fixed offsets */}

@@ -48,16 +48,20 @@ export function CheckScreen() {
          it used to opt in here with a `shader` prop, which is gone.
 
          ⚠️ MEASURED, BECAUSE AXE CANNOT SEE A CANVAS. The ramp's dark end is
-         frozen at #acc5cc (see CanvasShader.tsx), so that floor IS this
-         screen's worst case whatever the field does. Against it: the h1 and
-         the bubble copy in `text/primary` 7.64:1, the subtitle in
-         `text/secondary` 4.75:1, `View previous analyses` in `text/brand`
-         6.59:1, and the strip's translucent `surface/data` composites to
-         #97b8bd, giving `text/on-data` 6.52:1 and `-secondary` 4.79:1. All AA.
-         Nothing on this screen sits on bare canvas below `text/secondary`, so
-         the floor is the whole proof. The tiles card's `text/primary` on its
-         own teal glass is measured in SkinProfileTiles.module.css: 5.5:1 or
-         better.
+         the #9bb1b8 floor (see CanvasShader.tsx) — #acc5cc until the canvas
+         was darkened 10% on 14 Sep 2026 — so that floor IS this screen's worst
+         case whatever the field does. Against it: the h1 in `text/primary`
+         6.17:1 (was 7.64), `View previous analyses` in `text/brand` 5.32:1
+         (6.59), and the strip's translucent `surface/data` composites to
+         #8eadb1, giving its values in `text/on-data` 5.75:1 (6.52). The bubble
+         is opaque and does not move.
+
+         ⚠️ TWO NOW FAIL AA, DEFERRED WITH THE DARKENING: the subtitle in
+         `text/secondary` 3.84:1 (was 4.75) and the strip's 14px labels in
+         `text/on-data-muted` 4.22:1 (4.79). Nothing on this screen sits on
+         bare canvas below `text/secondary`, so the floor is the whole proof.
+         The tiles card's `text/primary` on its own teal glass is measured in
+         SkinProfileTiles.module.css: 5.5:1 or better.
 
          ⚠️ NOTHING SITS UNDER THE HEADING ANY MORE, asked for directly 14 Sep
          2026: the skin-profile strip and the skin-profile tiles both left this

@@ -803,7 +803,7 @@ type and every `nav=` prop. Do not "fix" the mismatch by renaming the id — see
    ⚠️ **THE BAR LEFT THAT TOKEN ON 13 Sep 2026**, asked for directly: it fills
    with its own `--color-surface-nav-bar` `#17292f42` (dark slate teal, 26% —
    it was `#356472b0` for a few hours), falls back to `--color-bg-nav-bar`
-   `#859ca3` (the fill composited over the canvas's bottom stop and made
+   `#798e95` (the fill composited over the canvas's bottom stop and made
    opaque; at 26% the fill's own hex made opaque would be near black), and its
    labels are WHITE (`text/on-data-inverse`). ⚠️ **IT IS TEXT-ONLY AND 65 TALL** —
    no icons, labels in `t-nav` (16 Light; the active one Regular, and every
