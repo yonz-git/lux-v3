@@ -176,8 +176,10 @@ view keeps the back chevron and still has no track. Nothing outside
 **Three overlays are not routes:** the selfie capture off step 1, the products
 add tray and PROGRESS's photo gallery. All three are `Sheet` overlays,
 deliberately. See `docs/decisions.md`. The gallery arrived 14 Sep 2026: it opens
-from the profile card's latest photos, and each of its tiles links to a check-in
-record, which is a route (`features/progress/components/PhotoGallery.tsx`).
+from the `Progress gallery` card's photos (the card that replaced PROGRESS's
+`Your skin profile` card the same day), and each of its tiles links to a
+check-in record, which is a route
+(`features/progress/components/PhotoGallery.tsx`).
 
 ⚠️ **AND ONE MORE OVERLAY IS ALSO A ROUTE — THE DAILY CHECK-IN, FROM 6 Sep 2026.**
 `Check in today` on `/progress` no longer navigates: it opens the same
