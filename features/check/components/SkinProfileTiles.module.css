@@ -121,7 +121,8 @@
   /* ⚠️ 6, OFF THE SCALE — the scale's 8 less 2, asked for directly 14 Sep
      2026 */
   gap: calc(var(--space-sm) - 2px); /* 6 */
-  margin: 0;
+  /* 6 + the tile's 6 top = 12 under the overline's rule — see `.tile` */
+  margin: calc(var(--space-md) / 2) 0 0;
 }
 
 /* ⚠️ THE TILE IS DRAWN BY NOTHING NOW — spacing and a radius only. It went
@@ -141,8 +142,12 @@
   flex-direction: column;
   gap: var(--space-2xs); /* 2 — the strip's label-to-value */
   min-width: 0;
-  padding: var(--space-md) var(--space-sm); /* 12 / 8 */
-  padding-left: var(--space-sm); /* 8 */
+  /* ⚠️ 6 ON TOP, 4 UNDER THE ANSWER — asked for directly 14 Sep 2026, in
+     three turns: a row's pills sat 12 + 6 + 12 = 30 above the next row's
+     labels, then 4 + 6 + 12 = 22, then 4 + 6 + 0 = 10 ("too tight"), now
+     4 + 6 + 6 = 16 — half the 12 back. `.tiles`' margin makes up the rest of
+     the first row's 12 under the overline's rule. */
+  padding: calc(var(--space-md) / 2) var(--space-sm) var(--space-xs); /* 6 / 8 / 4 */
   border-radius: var(--radius-xl); /* 20 */
   background: none;
 }
