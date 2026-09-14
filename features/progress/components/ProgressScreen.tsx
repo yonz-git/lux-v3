@@ -109,12 +109,13 @@ export function ProgressScreen({ now }: { now: number }) {
           2026: col-1 is the profile tiles, the face diagram and the gallery,
           col-2 the trend, the record and then the calendar with its CTA. Each
           column is one grid item so neither's heights open gaps in the other.
-          Both wrappers are `display: contents` on mobile, so the DOM order —
-          tiles, face, gallery, calendar, trend — is still the phone's reading
-          order; col-2's visual order on desktop comes from `order`. Mobile
-          keeps the action after the trend, so each breakpoint renders its own
-          copy and hides the other with `display: none` (out of the a11y tree
-          too). */}
+          Both wrappers are `display: contents` on mobile, so the DOM order IS
+          the phone's reading order — tiles, face, trend, record, gallery,
+          calendar, action (asked for directly 14 Sep 2026). The gallery and
+          the action sit in different places at the two breakpoints, so each
+          renders one copy per breakpoint and hides the other with
+          `display: none` (out of the a11y tree too). No `order` anywhere: the
+          visual order matches the DOM at both widths. */}
       <div className={styles.profileColumn}>
         {/* ⚠️ NOT IN FIGMA — CHECK's tiles card, asked for directly 14 Sep
             2026. Unlike on `/check` it reads this screen's own answers. It is
@@ -166,14 +167,35 @@ export function ProgressScreen({ now }: { now: number }) {
           </div>
         </DataCard>
 
+        {/* desktop's copy: col-1, under the face */}
         <ProgressGallery
-          className={styles.gallery}
+          className={styles.galleryDesktop}
           photos={photos}
           onOpen={() => setGalleryOpen(true)}
         />
       </div>
 
       <div className={styles.checkInColumn}>
+        <SymptomTrend className={styles.trend} checkIns={checkIns} />
+
+        {/* § 09 — only when the user actually saved a finding. ⚠️ NOT IN
+            FIGMA, and absent by default: PROGRESS opens populated because it
+            has a seeded check-in series, but a CONCLUSION is not something a
+            demo gets to claim on the user's behalf. */}
+        {answers.savedFinding && (
+          <InvestigationRecord
+            className={styles.record}
+            finding={answers.savedFinding}
+          />
+        )}
+
+        {/* mobile's copy: under the trend, above the calendar */}
+        <ProgressGallery
+          className={styles.galleryMobile}
+          photos={photos}
+          onOpen={() => setGalleryOpen(true)}
+        />
+
         <CheckInCalendar
           className={styles.calendar}
           checkIns={checkIns}
@@ -188,19 +210,6 @@ export function ProgressScreen({ now }: { now: number }) {
           <p className={`${styles.lastCheckInDesktop} t-caption`}>
             {lastCheckIn}
           </p>
-        )}
-
-        <SymptomTrend className={styles.trend} checkIns={checkIns} />
-
-        {/* § 09 — only when the user actually saved a finding. ⚠️ NOT IN
-            FIGMA, and absent by default: PROGRESS opens populated because it
-            has a seeded check-in series, but a CONCLUSION is not something a
-            demo gets to claim on the user's behalf. */}
-        {answers.savedFinding && (
-          <InvestigationRecord
-            className={styles.record}
-            finding={answers.savedFinding}
-          />
         )}
       </div>
 

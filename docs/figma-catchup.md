@@ -888,8 +888,10 @@ became is a `surface/data` card holding only the photos:
   `Progress gallery`;
 - with no photos, `No photos yet. Add one when you check in.` in `Body 3`.
 
-The face card moved above it. Column 1 reads tiles → face → gallery at both
-breakpoints. `Started <date> · Day <n>`, which was on the deleted card, sits
+The face card moved above it. On desktop column 1 reads tiles → face →
+gallery. On a phone the screen reads tiles → face → trend → (record →) gallery
+→ calendar → `Check in today` (asked for directly the same day), so the
+gallery sits in a different place at each breakpoint. `Started <date> · Day <n>`, which was on the deleted card, sits
 under the tiles card's `Symptoms state` pill instead (asked for directly the
 same day), in `Label Small` white, 4 under the pill, breaking only at the `·`.
 
