@@ -37,14 +37,22 @@ import styles from "./SkinProfileTiles.module.css";
  * currently disagree about the demo skin type. Wire them to `skinProfile()`
  * (and step 3's conditions) before this outlives the trial.
  *
+ * ⚠️ THE STATE TILE CARRIES ITS START DATE — asked for directly 14 Sep 2026,
+ * after `/progress`'s profile card (which held `Started <date> · Day <n>`)
+ * became the gallery. It is a line under the pill, not a fifth tile, because
+ * a date is only the age of something when it sits under the something — the
+ * recap's rule. Optional: `/progress` passes it. The date and the day are
+ * each kept whole, so a narrow tile breaks at the `·` and never inside a date.
+ *
  * A `dl`: each tile is one term and its value, grouped in a `div` so a tile is
- * one box.
+ * one box. The start date is a second `dd` under the same term.
  */
 export function SkinProfileTiles({
   skinType,
   tendencies,
   conditions,
   symptomsState,
+  symptomsStarted,
   className,
 }: {
   skinType: string;
@@ -52,6 +60,8 @@ export function SkinProfileTiles({
   conditions: string;
   /** where the current episode stands — step 4's status */
   symptomsState: string;
+  /** when the episode started — `{ date: "Aug 31, 2026", day: 15 }` */
+  symptomsStarted?: { date: string; day: number };
   className?: string;
 }) {
   const titleId = useId();
@@ -59,7 +69,7 @@ export function SkinProfileTiles({
     { label: "Skin type", value: skinType },
     { label: "Tendencies", value: tendencies },
     { label: "Known conditions", value: conditions },
-    { label: "Symptoms state", value: symptomsState },
+    { label: "Symptoms state", value: symptomsState, started: symptomsStarted },
   ];
 
   return (
@@ -71,10 +81,17 @@ export function SkinProfileTiles({
         Your skin profile
       </h2>
       <dl className={styles.tiles}>
-        {tiles.map(({ label, value }) => (
+        {tiles.map(({ label, value, started }) => (
           <div key={label} className={styles.tile}>
             <dt className={`${styles.tileLabel} t-body3`}>{label}</dt>
             <dd className={`${styles.tileValue} t-body3`}>{value}</dd>
+            {started && (
+              <dd className={`${styles.tileMeta} t-label-sm`}>
+                <span className={styles.nowrap}>Started {started.date}</span>
+                {" · "}
+                <span className={styles.nowrap}>Day {started.day}</span>
+              </dd>
+            )}
           </div>
         ))}
       </dl>

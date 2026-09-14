@@ -889,8 +889,9 @@ became is a `surface/data` card holding only the photos:
 - with no photos, `No photos yet. Add one when you check in.` in `Body 3`.
 
 The face card moved above it. Column 1 reads tiles → face → gallery at both
-breakpoints. `Started <date> · Day <n>` was on the deleted card and is not on
-the screen any more.
+breakpoints. `Started <date> · Day <n>`, which was on the deleted card, sits
+under the tiles card's `Symptoms state` pill instead (asked for directly the
+same day), in `Label Small` white, 4 under the pill, breaking only at the `·`.
 
 The face card's heading, `Where you noticed it`, is now `Symptoms and
 location` — here and on the profile recap, which share the label — because

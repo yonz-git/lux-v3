@@ -16,8 +16,10 @@ import { CheckInOverlay } from "./CheckInOverlay";
 import { PhotoGallery, ProgressGallery } from "./PhotoGallery";
 import { useInvestigation } from "@/lib/store/InvestigationProvider";
 import { useToday } from "@/lib/useToday";
+import { formatLong } from "@/lib/date";
 import {
   checkInsFor,
+  dayNumber,
   faceLocations,
   lastCheckInLabel,
   photoDiary,
@@ -117,12 +119,17 @@ export function ProgressScreen({ now }: { now: number }) {
         {/* ⚠️ NOT IN FIGMA — CHECK's tiles card, asked for directly 14 Sep
             2026. Unlike on `/check` it reads this screen's own answers. It is
             the screen's ONLY skin profile now: the sage `Your skin profile`
-            card under it became `Progress gallery` the same day. */}
+            card under it became `Progress gallery` the same day, and its
+            `Started <date> · Day <n>` moved under the state tile. */}
         <SkinProfileTiles
           skinType={skinType ?? "Not set"}
           tendencies={tendencies?.length ? tendencies.join(", ") : "None"}
           conditions={conditions?.length ? conditions.join(", ") : "None"}
           symptomsState={status ?? "Not set"}
+          symptomsStarted={{
+            date: formatLong(start),
+            day: dayNumber(start, today),
+          }}
         />
 
         {/* ⚠️ ABOVE THE GALLERY, asked for directly 14 Sep 2026 — it sat

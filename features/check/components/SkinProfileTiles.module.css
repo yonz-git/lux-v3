@@ -260,6 +260,19 @@
   backdrop-filter: blur(7px);
 }
 
+/* `Started <date> · Day <n>` under the state's pill — see SkinProfileTiles.tsx.
+   In the card's white like the labels, not a dimmer tier: the labels already
+   sit under AA on this fill, and a muted white would only go further under.
+   6 under the pill (the tile's 2 gap + 4). */
+.tileMeta {
+  margin: var(--space-xs) 0 0; /* 4 */
+}
+
+/* each half kept whole, so the line breaks at the `·` */
+.nowrap {
+  white-space: nowrap;
+}
+
 /* non-negotiable 11 — the fill made opaque, and the grain goes with the blur it
    dithered. `#538993` is the supplied `#2c6e7ac2` composited over the
    canvas's mid stop `#cedee2`: white measures about 3.9:1 on it (it was
