@@ -1014,10 +1014,13 @@ main[tabindex="-1"]:focus-visible {
    Medium) under an icon; with no icon the word IS the control, so it takes
    body size, and Light keeps four words in a row from reading as four buttons.
    A control class, so it stays out of `text-wrap: balance` with the others. */
+/* ⚠️ REGULAR (400), NOT LIGHT, AS OF 14 Sep 2026 — asked for directly. The
+   note above predates it: every label is Regular now, so weight no longer
+   marks the active item; the recessed pill and full opacity do. */
 .t-nav {
   font-size: var(--font-size-sm);
   line-height: var(--line-height-xs);
-  font-weight: var(--font-weight-light);
+  font-weight: var(--font-weight-regular);
 }
 .t-button-sm {
   font-size: var(--font-size-xs);

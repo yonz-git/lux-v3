@@ -198,15 +198,11 @@
     inset 0 -1px 0 rgba(255, 255, 255, 0.12);
 }
 
-/* ⚠️ NOT IN FIGMA — THE SELECTED LABEL IS REGULAR (400), THE REST STAY LIGHT
-   (300), asked for directly 13 Sep 2026 for contrast: a heavier stroke puts
-   more white on the teal where it matters most. A state override of `t-nav`'s
-   weight, like the opacity above it — not a second text class. Regular is one
-   of the three loaded weights. It is ~3px wider than Light at 16px; the
-   padding budget on `.item` still fits at 320. */
-.item[data-active="true"] .label {
-  font-weight: var(--font-weight-regular);
-}
+/* ⚠️ THERE IS NO ACTIVE-WEIGHT OVERRIDE ANY MORE. From 13 Sep 2026 the selected
+   label was Regular (400) and the rest Light (300); on 14 Sep 2026 every label
+   went Regular — asked for directly, set on `t-nav` itself in globals.css — so
+   the rule had nothing left to change and was removed. The pill and the full
+   opacity mark the active item. */
 
 /* hover goes to full white — above the 0.85 rest, so hovering never dims */
 .item:hover {
