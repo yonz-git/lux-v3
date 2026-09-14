@@ -139,12 +139,39 @@
   padding: var(--space-md) var(--space-sm); /* 12 / 8 */
   padding-left: calc(var(--space-sm) + 4px); /* 12 */
   border-radius: var(--radius-xl); /* 20 */
-  background: #00000012;
+  /* ⚠️ NO FILL NOW — `#00000000`, asked for directly 14 Sep 2026, when the
+     answers became pills. It was 7% black, and that was what lifted the tile
+     text to 4.80:1; with it gone every label and pill sits on the card's own
+     fill, 4.27–5.27:1 (see `.card`). The tile is now spacing and a radius
+     only, drawn by nothing. */
+  background: #00000000;
 }
 
 .tileLabel,
 .tileValue {
   margin: 0;
+}
+
+/* ⚠️ THE ANSWER IS A PILL — asked for directly 14 Sep 2026: no fill, frosted.
+   With no fill, the pill's shape is carried by its edge alone, so the edge is
+   the frost: a hairline rim in `border/glass` (the System B divider's white)
+   and a faint light catching the top inside, both inset shadows so the pill
+   takes no extra box. `align-self: flex-start` hugs the words rather than
+   stretching the tile's width; `radius/full` is every LUX pill.
+   ⚠️ NO BACKDROP BLUR — IT PAINTED A FILL. It shipped with one for a turn:
+   the card's own `backdrop-filter` makes the card the backdrop root, so the
+   pill's blur sampled the card's translucent teal and laid it down a second
+   time, and every pill read as a DARKER teal chip — the fill it was asked
+   not to have. The frost is the rim and the top light. */
+.tileValue {
+  align-self: flex-start;
+  max-width: 100%;
+  padding: var(--space-xs) var(--space-md); /* 4 / 12 */
+  border-radius: var(--radius-full);
+  background: transparent;
+  box-shadow:
+    inset 0 0 0 var(--border-width-hairline) var(--color-border-glass),
+    inset 0 1px 2px rgba(255, 255, 255, 0.2);
 }
 
 /* non-negotiable 11 — the fill made opaque, and the grain goes with the blur it
