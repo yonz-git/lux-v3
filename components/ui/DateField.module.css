@@ -5,9 +5,10 @@
    Body 2, chevron-down on the right.
 
    The panel is NOT in the design system — there is no calendar component yet.
-   It is composed from tokens: an OPAQUE surface (a floating panel over content
-   must not be see-through — the same lesson as the nav at 17%), radius/2xl and
-   shadow/lg for elevation. */
+   It is composed from tokens: radius/2xl and shadow/lg for elevation, over a
+   DENSE FROSTED surface since 14 Sep 2026 — it was opaque until then (a
+   floating panel over content must not be see-through, the lesson of the nav
+   at 17%), and the frost keeps that lesson by staying at 72%; see `.panel`. */
 
 .root {
   position: relative;
@@ -57,9 +58,20 @@
   padding: var(--space-xl);
 
   border-radius: var(--radius-2xl);
-  /* opaque on purpose — see the note at the top of this file */
-  background: var(--color-bg-surface-frost);
-  box-shadow: var(--shadow-lg);
+  /* ⚠️ FROSTED, NOT OPAQUE — asked for directly 14 Sep 2026 ("make the date
+     picker calendar frosty"). The opaque panel was the nav-at-17% lesson; this
+     keeps that lesson by staying DENSE — `surface/frost-light`'s near-white at
+     72%, not 55% — over the card blur plus 140% saturate, so the rows behind
+     read as colour and never as shapes under the dates. A lit top edge inside
+     (non-negotiable 11) keeps the thin fill from reading flat. The opaque fill
+     is the reduced-transparency fallback below. NOT IN FIGMA.
+     ⚠️ RETUNED IN DEVTOOLS AND SUPPLIED, the same day: a sage `#98b4b6` at 72%
+     rather than the near-white, a brighter 60% top light, and a 120px blur
+     with no saturate. */
+  background: #98b4b6b8;
+  box-shadow: inset 0 1px 0 #fff9, var(--shadow-lg);
+  -webkit-backdrop-filter: blur(120px);
+  backdrop-filter: blur(120px);
   /* it hangs from the trigger's LEFT edge, not its middle, so `.drop` settles
      from that corner — "Dropdowns" in globals.css */
   transform-origin: top left;
@@ -181,7 +193,8 @@
 }
 
 @media (prefers-reduced-transparency: reduce) {
-  .trigger {
+  .trigger,
+  .panel {
     background: var(--color-bg-surface-frost);
     -webkit-backdrop-filter: none;
     backdrop-filter: none;

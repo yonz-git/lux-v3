@@ -101,8 +101,32 @@
     padding: var(--space-5xl); /* 48 */
 
     border-radius: var(--radius-3xl);
-    background: var(--color-surface-card-desktop);
+    /* ⚠️ `#edf8fb0f`, supplied directly 14 Sep 2026 — the option rows' own 6%
+       pale aqua, in place of `surface/card-desktop`. NOT IN FIGMA and no
+       token; raise one if it stays. */
+    background: #edf8fb0f;
     box-shadow: var(--shadow-frosted-card-desktop);
+    /* ⚠️ THE FROST IS ON `::before`, NOT ON THE CARD — 14 Sep 2026. An element
+       with `backdrop-filter` is a BACKDROP ROOT: every backdrop filter inside
+       it can only see the card's own contents, never the page behind. That is
+       why the date picker's frosted panel rendered the option rows and labels
+       under it razor-sharp — measured on `/investigation/timing` at 1440: the
+       card was the panel's only backdrop-root ancestor, and switching its blur
+       off made the panel's blur work at once. A pseudo-element is a SIBLING of
+       the content, not an ancestor, so the card keeps its frost and stops
+       swallowing its children's. `isolation` keeps the `z-index: -1` layer
+       above the card's fill; it does not make a backdrop root. */
+    position: relative;
+    isolation: isolate;
+  }
+
+  .card::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    z-index: -1;
+    border-radius: inherit;
+    pointer-events: none;
     -webkit-backdrop-filter: blur(var(--blur-card-desktop));
     backdrop-filter: blur(var(--blur-card-desktop));
   }
@@ -130,6 +154,9 @@
 @media (min-width: 1024px) and (prefers-reduced-transparency: reduce) {
   .card {
     background: var(--color-bg-surface-frost);
+  }
+
+  .card::before {
     -webkit-backdrop-filter: none;
     backdrop-filter: none;
   }
