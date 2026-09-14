@@ -112,7 +112,8 @@ import type { ProfileRecap } from "@/features/my-skin/profile";
  * ON 7 Sep 2026. One card per answer was right and identical spacing between
  * them was not: four frosted cards at one interval is four peers, and the
  * screen does not hold four peers. `What you noticed`, `Where you noticed it`
- * and `How long this has been going on` are three readings of ONE episode;
+ * (`Symptoms and location` since 14 Sep 2026) and `How long this has been
+ * going on` are three readings of ONE episode;
  * `Known conditions` was true before it started. So the episode closes to
  * 12 — tighter than the cards' own 20 padding, which is what makes three cards
  * read as one group — and the standing fact sits 24 away from it. The full run

@@ -8,18 +8,16 @@ import { DataCard } from "@/components/ui/DataCard";
 import { Orb } from "@/components/ui/Orb";
 import { FaceDiagram } from "@/features/my-skin/components/FaceDiagram";
 import { COPY } from "@/features/my-skin/profile";
-import { SkinProfile } from "./SkinProfile";
+import { SkinProfileTiles } from "@/features/check/components/SkinProfileTiles";
 import { InvestigationRecord } from "./InvestigationRecord";
 import { CheckInCalendar } from "./CheckInCalendar";
 import { SymptomTrend } from "./SymptomTrend";
 import { CheckInOverlay } from "./CheckInOverlay";
-import { LatestPhotos, PhotoGallery } from "./PhotoGallery";
+import { PhotoGallery, ProgressGallery } from "./PhotoGallery";
 import { useInvestigation } from "@/lib/store/InvestigationProvider";
 import { useToday } from "@/lib/useToday";
-import { formatLong } from "@/lib/date";
 import {
   checkInsFor,
-  dayNumber,
   faceLocations,
   lastCheckInLabel,
   photoDiary,
@@ -65,8 +63,10 @@ import {
  * product compatibility check; `components/CheckIn.tsx` has the full argument.
  *
  * ⚠️ THE PHOTO GALLERY OPENS OVER THIS SCREEN, AND IT IS NOT A ROUTE — 14 Sep
- * 2026, NOT IN FIGMA. The profile card's latest photos open every check-in
- * photo in a `Sheet`, and each photo there links to its day's record. See
+ * 2026, NOT IN FIGMA. The `Progress gallery` card's photos open every check-in
+ * photo in a `Sheet`, and each photo there links to its day's record. That
+ * card replaced the `Your skin profile` card the same day, once CHECK's tiles
+ * card above it said every answer the profile card held. See
  * `PhotoGallery.tsx`.
  *
  * ⚠️ THE SERIES IS THE USER'S OWN, PLUS THE SEED ONLY WHILE THIS IS THE DEMO.
@@ -104,34 +104,31 @@ export function ProgressScreen({ now }: { now: number }) {
       tightTop
     >
       {/* ⚠️ NOT IN FIGMA — two stacks on desktop, asked for directly 13 Sep
-          2026: col-1 is the profile and the face diagram under it, col-2 the
-          trend, the record and then the calendar with its CTA. Each column is
-          one grid item so neither's heights open gaps in the other. Both
-          wrappers are `display: contents` on mobile, so the DOM order —
-          profile, face, calendar, trend — is still the phone's reading order;
-          col-2's visual order on desktop comes from `order`. Mobile keeps the
-          action after the trend, so each breakpoint renders its own copy and
-          hides the other with `display: none` (out of the a11y tree too). */}
+          2026: col-1 is the profile tiles, the face diagram and the gallery,
+          col-2 the trend, the record and then the calendar with its CTA. Each
+          column is one grid item so neither's heights open gaps in the other.
+          Both wrappers are `display: contents` on mobile, so the DOM order —
+          tiles, face, gallery, calendar, trend — is still the phone's reading
+          order; col-2's visual order on desktop comes from `order`. Mobile
+          keeps the action after the trend, so each breakpoint renders its own
+          copy and hides the other with `display: none` (out of the a11y tree
+          too). */}
       <div className={styles.profileColumn}>
-        <SkinProfile
-          className={styles.profile}
-          skinType={skinType}
-          tendencies={tendencies}
-          conditions={conditions}
-          status={status}
-          symptomCount={Object.keys(places).length}
-          started={`Started ${formatLong(start)} · Day ${dayNumber(start, today)}`}
-          photos={
-            photos.length > 0 ? (
-              <LatestPhotos
-                photos={photos}
-                onOpen={() => setGalleryOpen(true)}
-              />
-            ) : undefined
-          }
+        {/* ⚠️ NOT IN FIGMA — CHECK's tiles card, asked for directly 14 Sep
+            2026. Unlike on `/check` it reads this screen's own answers. It is
+            the screen's ONLY skin profile now: the sage `Your skin profile`
+            card under it became `Progress gallery` the same day. */}
+        <SkinProfileTiles
+          skinType={skinType ?? "Not set"}
+          tendencies={tendencies?.length ? tendencies.join(", ") : "None"}
+          conditions={conditions?.length ? conditions.join(", ") : "None"}
+          symptomsState={status ?? "Not set"}
         />
 
-        {/* step 1's own diagram, read-only — the same one the profile recap
+        {/* ⚠️ ABOVE THE GALLERY, asked for directly 14 Sep 2026 — it sat
+            under the profile card, which is the gallery now.
+
+            step 1's own diagram, read-only — the same one the profile recap
             draws, and `aria-hidden` inside.
             ⚠️ ALWAYS RENDERED, since 14 Sep 2026 — it used to render only
             when step 1 had a place, and that made it VANISH: the screen first
@@ -161,6 +158,12 @@ export function ProgressScreen({ now }: { now: number }) {
             />
           </div>
         </DataCard>
+
+        <ProgressGallery
+          className={styles.gallery}
+          photos={photos}
+          onOpen={() => setGalleryOpen(true)}
+        />
       </div>
 
       <div className={styles.checkInColumn}>

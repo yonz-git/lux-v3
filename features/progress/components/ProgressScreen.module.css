@@ -2,16 +2,17 @@
 
    MOBILE — one column, and the gaps are NOT uniform, which is why they are
    written per block rather than as a gap on the body:
-     heading -> 24 -> profile -> 16 -> calendar -> 16 -> trend
-             -> 24 -> Check in today -> 8 -> last-check-in
-   (the leading 24 belongs to HubScreen's grid body, not to the profile.)
+     heading -> 24 -> tiles -> 16 -> face -> 16 -> gallery -> 16 -> calendar
+             -> 16 -> trend -> 24 -> Check in today -> 8 -> last-check-in
+   (the leading 24 belongs to HubScreen's grid body, not to the tiles.)
 
    DESKTOP — the handoff's 1280 dashboard grid, NOT a page card:
-     col-1  640 fixed   profile / face diagram, one stack
+     col-1  640 fixed   tiles / face diagram / gallery, one stack
      col-2  616 fill    trend / record / calendar / CTA / caption, one stack
    ⚠️ NOT IN FIGMA — the handoff puts the profile at the top of col-2 and the
    calendar alone in col-1, and has no face diagram here. Rearranged on 13 Sep
-   2026, asked for directly.
+   2026, asked for directly; on 14 Sep the profile card became the gallery and
+   went under the face.
    Both gutters are gutter/desktop (24). HubScreen's `grid` layout owns the two
    columns; this file only places the children in them. */
 
@@ -27,7 +28,9 @@
   margin-top: var(--space-lg); /* 16 — the same interval every card takes */
 }
 
-.faceCard {
+/* the face 16 under CHECK's tiles card, the gallery 16 under the face */
+.faceCard,
+.gallery {
   margin-top: var(--space-lg); /* 16 */
 }
 
@@ -83,9 +86,9 @@
 }
 
 @media (min-width: 1024px) {
-  /* ⚠️ NOT IN FIGMA — two stacks, each ONE grid item: col-1 is profile -> 24
-     -> face diagram, col-2 is trend -> 24 -> record -> 24 -> calendar -> 24 ->
-     CTA -> 8 -> caption. As grid rows, a tall card in one column opened a gap
+  /* ⚠️ NOT IN FIGMA — two stacks, each ONE grid item: col-1 is tiles -> 24
+     -> face diagram -> 24 -> gallery, col-2 is trend -> 24 -> record -> 24 ->
+     calendar -> 24 -> CTA -> 8 -> caption. As grid rows, a tall card in one column opened a gap
      beside it in the other (the CTA once sat ~215px under the calendar). */
   .profileColumn {
     display: flex;
@@ -123,6 +126,7 @@
   .trend,
   .record,
   .faceCard,
+  .gallery,
   .cta,
   .lastCheckIn {
     margin-top: 0;

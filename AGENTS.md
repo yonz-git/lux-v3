@@ -176,8 +176,10 @@ view keeps the back chevron and still has no track. Nothing outside
 **Three overlays are not routes:** the selfie capture off step 1, the products
 add tray and PROGRESS's photo gallery. All three are `Sheet` overlays,
 deliberately. See `docs/decisions.md`. The gallery arrived 14 Sep 2026: it opens
-from the profile card's latest photos, and each of its tiles links to a check-in
-record, which is a route (`features/progress/components/PhotoGallery.tsx`).
+from the `Progress gallery` card's photos (the card that replaced PROGRESS's
+`Your skin profile` card the same day), and each of its tiles links to a
+check-in record, which is a route
+(`features/progress/components/PhotoGallery.tsx`).
 
 ⚠️ **AND ONE MORE OVERLAY IS ALSO A ROUTE — THE DAILY CHECK-IN, FROM 6 Sep 2026.**
 `Check in today` on `/progress` no longer navigates: it opens the same
@@ -353,7 +355,7 @@ heading a block gets when nobody has decided what the block is.
 
 ⚠️ **THE SPACING BETWEEN THOSE BLOCKS IS THE GROUPING — IT WAS A UNIFORM 16
 UNTIL 7 Sep 2026 AND THAT SAID THE WRONG THING.** Four identical cards at one
-interval is four peers. The symptoms' state and `Where you noticed it` are readings
+interval is four peers. The symptoms' state and `Symptoms and location` (`Where you noticed it` until 14 Sep 2026) are readings
 of ONE episode; `Known conditions` was true before it started. The episode closes to **12** — tighter
 than the cards' own 20 padding, which is what makes three cards read as one
 group — the standing fact sits **24** from it, the sage statement **32** above,

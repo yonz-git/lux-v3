@@ -299,7 +299,15 @@ export const COPY = {
   /** the figure's accessible name — the well holds a drawing, not a face */
   photoCaption: "The photo you added",
   photoUpdate: "Update photo",
-  locationLabel: "Where you noticed it",
+  /**
+   * The face card's heading, on this screen and on `/progress`.
+   *
+   * ⚠️ "Where you noticed it" UNTIL 14 Sep 2026 — renamed, asked for directly.
+   * Since the same day the face carries each symptom as a callout pill with a
+   * line to its places, so the card holds WHAT as well as WHERE, and a heading
+   * naming only the places undersold it.
+   */
+  locationLabel: "Symptoms and location",
   /**
    * The label over step 1's typed description.
    *

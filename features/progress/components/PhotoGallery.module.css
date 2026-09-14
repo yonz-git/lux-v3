@@ -1,35 +1,40 @@
-/* The latest photos on `/progress`'s profile card, and the gallery sheet they
-   open — see PhotoGallery.tsx. ⚠️ NOT IN FIGMA, 14 Sep 2026.
+/* `Progress gallery` on `/progress`, and the gallery sheet it opens — see
+   PhotoGallery.tsx. ⚠️ NOT IN FIGMA, 14 Sep 2026.
 
-   ⚠️ THE INK IS DARK EVERYWHERE HERE. The strip sits on `surface/data`, and the
+   ⚠️ THE INK IS DARK EVERYWHERE HERE. The card is `surface/data`, and the
    sheet is `surface/data` on a phone and the light desktop frost above 1024;
    all three take `text/on-data*` (non-negotiable 17). */
 
-/* ---- the strip, on the profile card --------------------------------------- */
+/* ---- the card ------------------------------------------------------------- */
 
-/* The right-hand end of the card's details row: a label over one row of 36s.
-   Label, 4 and a 36 come to 56, beside the state's label, value and meta at
-   62, so the two ends of the row finish within a few pixels of each other. */
-.latest {
+/* Overline -> 16 (DataCard's own gap) -> one row of photos. The count sits at
+   the other end of the overline's line, on its baseline. */
+.cardHead {
   display: flex;
-  flex-direction: column;
-  align-items: flex-end;
-  gap: var(--space-xs); /* 4 */
-  /* at the right edge whether the row fits or wraps */
-  margin-inline-start: auto;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: var(--space-lg); /* 16 */
 }
 
-.label {
+.overline,
+.count {
   margin: 0;
   color: var(--color-text-on-data-muted);
 }
 
+.empty {
+  margin: 0;
+  color: var(--color-text-on-data-secondary);
+}
+
+/* the whole row, so the photos share the card's width */
 .strip {
   display: flex;
   align-items: center;
-  gap: var(--space-xs); /* 4 */
+  gap: var(--space-sm); /* 8 */
+  width: 100%;
   padding: 0;
-  border-radius: var(--radius-md);
+  border-radius: var(--radius-lg);
   cursor: pointer;
 }
 
@@ -42,18 +47,18 @@
   z-index: 1;
 }
 
-/* ⚠️ `size/control-sm` (36), NOT 40. At 40 the strip was 176 wide, and beside
-   the demo's `Started Aug 30, 2026 · Day 16` that is 2px more than the 440 card
-   holds, so the photos dropped to a line of their own. At 36, three photos,
-   their gaps and the circle come to 160, leaving the state ~14 of slack. On a
-   narrower phone the row still wraps, and it wraps whole. */
+/* ⚠️ SQUARES THAT SHARE THE ROW, NOT A FIXED SIZE. They were 36s
+   (`size/control-sm`) while the strip squeezed in beside the profile card's
+   `Started …` line; with the card to themselves, four photos split whatever
+   the circle leaves — about 67 each at 440 and 130 on desktop — at the gallery
+   well's `radius/lg`. */
 .thumb {
   position: relative;
-  flex: none;
-  width: var(--size-control-sm);
-  height: var(--size-control-sm);
+  flex: 1 1 0;
+  min-width: 0;
+  aspect-ratio: 1 / 1;
   overflow: hidden;
-  border-radius: var(--radius-md); /* 12 */
+  border-radius: var(--radius-lg); /* 16 */
   background: var(--color-surface-data-strong);
 }
 
@@ -84,16 +89,16 @@
 
 /* The circle that says the row is a control: the segmented toggle's frosted
    track — `surface/frost-nav`, a `border/glass` hairline, its two inner lights
-   and a 16 blur — at the photos' size. */
+   and a 16 blur — at `size/control-md`. */
 .more {
   position: relative;
   display: inline-flex;
   align-items: center;
   justify-content: center;
   flex: none;
-  width: var(--size-control-sm);
-  height: var(--size-control-sm);
-  margin-inline-start: var(--space-xs); /* + the strip's 4: 8 after the photos */
+  width: var(--size-control-md);
+  height: var(--size-control-md);
+  margin-inline-start: var(--space-xs); /* + the strip's 8: 12 after the photos */
   border-radius: var(--radius-full);
   border: var(--border-width-hairline) solid var(--color-border-glass);
   background: var(--color-surface-frost-nav);
@@ -207,6 +212,7 @@
 
 /* out of flow, so the picture can never size the well — the recap's `.photoArt`
    note has the mechanism */
+.thumb > .art,
 .well > .art {
   position: absolute;
   inset: 0;
