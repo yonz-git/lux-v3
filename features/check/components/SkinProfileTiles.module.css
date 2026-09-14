@@ -1,6 +1,7 @@
-/* The skin profile as three tiles — NOT IN FIGMA, see SkinProfileTiles.tsx.
+/* The skin profile as four tiles — NOT IN FIGMA, see SkinProfileTiles.tsx.
 
-   overline -> 12 -> three tiles in a row, 8 apart. Height is content. */
+   overline + its rule -> 12 -> four tiles, two a row, 6 apart. Height is
+   content. */
 
 .card {
   /* a stacking context of its own, so the ring and the grain below can sit at
@@ -12,7 +13,8 @@
   /* ⚠️ NO GAP, AND 1.4rem (22.4) A SIDE — tuned by hand and supplied 14 Sep
      2026. It was a 12 gap and the strip's 18 / 20; the overline's own 12
      under its rule and the tiles' 12 top padding now carry the space
-     between them. */
+     between them. ⚠️ 1.4rem is off the spacing scale and scales with the
+     root font size, unlike every `--space-*`; raise it if it stays. */
   width: 100%;
   padding: 1.4rem;
   border-radius: var(--radius-2xl); /* 24 — the strip's */
@@ -24,13 +26,13 @@
      glow with a faint teal catch under it, a soft drop, and the frost fully
      DESATURATED (`saturate(0%)`), so the canvas under it reads as grey light
      and only the fill carries the colour. The fill has no token; raise it.
-     ⚠️ WHITE ALMOST CLEARS AA ON THE CARD ITSELF, and its worst case is the
-     LIGHT end of the canvas, not the floor. Hand-composited over the fill at
-     each canvas ramp stop: 5.27:1 on the floor `#acc5cc`, 4.75:1 on
-     `#cedee2`, 4.57:1 on `#dce7ea`, 4.48:1 on `#dbeded`, 4.27:1 on the
-     lightest core `#ecf8f9`. Only the overline sits straight on this fill,
-     so only it can dip under 4.5:1; the tile text sits on the tiles' extra 7%
-     black and measures 4.80:1 at worst.
+     ⚠️ WHITE ALMOST CLEARS AA ON THE CARD, and its worst case is the LIGHT end
+     of the canvas, not the floor. Hand-composited over the fill at each
+     canvas ramp stop: 5.27:1 on the floor `#acc5cc`, 4.75:1 on `#cedee2`,
+     4.57:1 on `#dce7ea`, 4.48:1 on `#dbeded`, 4.27:1 on the lightest core
+     `#ecf8f9`. The overline and the four labels sit straight on this fill,
+     so they dip under 4.5:1 over the two lightest stops; the answers sit on
+     their pills and measure lower still (see `.tileValue`).
      ⚠️ THE RIM IS AN INSET RING, NOT A `border` (the last shadow): it adds no
      height (non-negotiable 9) and does not snap to a full pixel on a 1x
      display. It is supplied fully transparent (`#1d1c2000`) and kept as the
@@ -92,8 +94,9 @@
      ways, for one turn; moved left, asked for directly). Two layers — a
      hairline in `effect/rim-highlight` (the white a LUX surface catches) over
      a 3px band of it at 25% for the glow, fading out the same way.
-     Backgrounds, not a `border`, because a border cannot fade; 12 under the
-     words, then the card's 12 gap to the tiles. */
+     Backgrounds, not a `border`, because a border cannot fade. 12 under the
+     words; the card has no gap, so the 12 above the tiles' text is the
+     tiles' own top padding. */
   padding-bottom: var(--space-md); /* 12 */
   background:
     linear-gradient(90deg, var(--color-effect-rim-highlight), transparent)
@@ -109,9 +112,9 @@
 /* ⚠️ TWO TILES A ROW AT EVERY WIDTH — asked for directly 14 Sep 2026, when
    `Symptoms state` made it four. Before that it was three in a row, which
    gave each tile 72 at 320 (`Acne-prone` broke at its hyphen), and then
-   stacked on mobile, which pushed `Start analysis` below the fold at 440. Two
-   a row is 172 a tile at 440, 112 at 320 and 239 at 1440. `minmax(0, 1fr)`
-   keeps a long value from widening its column; it wraps inside the tile. */
+   stacked on mobile, which pushed `Start analysis` below the fold at 440.
+   `minmax(0, 1fr)` keeps a long answer from widening its column; it wraps
+   inside the tile instead. */
 .tiles {
   display: grid;
   grid-template-columns: repeat(2, minmax(0, 1fr));
@@ -121,33 +124,26 @@
   margin: 0;
 }
 
-/* ⚠️ A FLAT TILE, 7% BLACK (`#00000012`), radius 20 — tuned by hand and
-   supplied 14 Sep 2026. It was transparent with a backdrop blur, then sunken
-   under an inset 1 2 6 @12% shadow; the blur came off in the tuning (the
-   card's own `backdrop-filter` made it invisible anyway) and the shadow came
-   off after, asked for directly. The darker fill is what gives the white text
-   its margin (see `.card`).
-   ⚠️ LABEL OVER VALUE, LEFT-ALIGNED, AT EVERY WIDTH — the strip's own pair,
-   asked for directly ("display in this way again"). It was centred for a
-   while, and one line (label left, value right) on desktop for a turn, to
-   shorten the card; both are gone.
-   ⚠️ 8 A SIDE, NOT 12: at 320 a tile is 112 wide. ⚠️ AND 12 ON THE LEFT —
-   the 8 plus 4, asked for directly (8 plus 2 for a turn first), so the words
-   sit further in from the tile's rounded edge. */
+/* ⚠️ THE TILE IS DRAWN BY NOTHING NOW — spacing and a radius only. It went
+   through four looks on 14 Sep 2026, each tuned by hand or asked for
+   directly: transparent with a backdrop blur, sunken under an inset shadow,
+   flat 7% black, and now no fill at all, since the answers became pills.
+   The 7% black was what lifted the tile text to 4.80:1; with it gone the
+   labels sit on the card's own fill (see `.card`). The blur could never
+   show — the card's own `backdrop-filter` makes it the backdrop root.
+   ⚠️ LABEL OVER ANSWER, LEFT-ALIGNED, AT EVERY WIDTH — the strip's own pair,
+   asked for directly. It was centred for a while, and one line (label left,
+   answer right) on desktop for a turn; both are gone.
+   ⚠️ 8 A SIDE. The left was 8 plus 2, then 8 plus 4, for a turn each, and
+   came back to 8 by hand. */
 .tile {
   display: flex;
   flex-direction: column;
   gap: var(--space-2xs); /* 2 — the strip's label-to-value */
   min-width: 0;
   padding: var(--space-md) var(--space-sm); /* 12 / 8 */
-  /* ⚠️ 8 ON THE LEFT AGAIN — the +4 came off, supplied 14 Sep 2026 */
   padding-left: var(--space-sm); /* 8 */
   border-radius: var(--radius-xl); /* 20 */
-  /* ⚠️ NO FILL NOW — `#00000000`, asked for directly 14 Sep 2026, when the
-     answers became pills. It was 7% black, and that was what lifted the tile
-     text to 4.80:1; with it gone every label and pill sits on the card's own
-     fill, 4.27–5.27:1 (see `.card`). The tile is now spacing and a radius
-     only, drawn by nothing. */
   background: none;
 }
 
@@ -156,22 +152,24 @@
   margin: 0;
 }
 
-/* ⚠️ THE ANSWER IS A PILL — asked for directly 14 Sep 2026: no fill, frosted.
-   With no fill, the pill's shape is carried by its edge alone, so the edge is
-   the frost: a hairline rim in `border/glass` (the System B divider's white)
-   and a faint light catching the top inside, both inset shadows so the pill
-   takes no extra box. `align-self: flex-start` hugs the words rather than
-   stretching the tile's width; `radius/full` is every LUX pill.
-   ⚠️ NO BACKDROP BLUR — IT PAINTED A FILL. It shipped with one for a turn:
-   the card's own `backdrop-filter` makes the card the backdrop root, so the
-   pill's blur sampled the card's translucent teal and laid it down a second
-   time, and every pill read as a DARKER teal chip — the fill it was asked
-   not to have. The frost is the rim and the top light.
-   ⚠️ SUPERSEDED BY HAND, 14 Sep 2026: the pill has a fill again — a lighter
-   teal `#56848d` at 85% — with a 7px blur under it, 4 / 14 / 6 padding (a
-   px heavier at the bottom, for the optical centre) and 0.3rem (4.8) off the
-   label. That fill is the chosen look now, not the bug above. No token;
-   raise it. */
+/* ⚠️ THE ANSWER IS A FILLED FROSTED PILL, TUNED BY HAND AND SUPPLIED 14 Sep
+   2026: a lighter teal `#56848d` at 85% over a 7px blur, a hairline rim in
+   `border/glass` (the System B divider's white) and a faint light catching
+   the top inside, set in `t-body3` like its label. 4 / 14 / 6 padding — a
+   touch heavier at the bottom, for the optical centre — and 0.3rem (4.8)
+   below the label, on top of the tile's 2 gap. `align-self: flex-start`
+   hugs the words; `radius/full` is every LUX pill. No token for the fill,
+   the 7px or the 0.3rem; raise them.
+   ⚠️ IT WAS "NO FILL" FIRST, asked for directly, and it briefly carried a
+   blur with no fill — which, inside the card's backdrop root, sampled the
+   card's teal and read as an unintended darker chip. The fill is chosen now,
+   and the blur under it is part of the look rather than a way to see the
+   canvas: it still only ever sees the card.
+   ⚠️ WHITE ON THE PILL DOES NOT CLEAR AA. Hand-composited, pill over card
+   over each canvas ramp stop: 4.29:1 on the floor `#acc5cc` down to 4.16:1
+   on the lightest core `#ecf8f9`, for 14px text that needs 4.5:1. The fill
+   is lighter than the card it sits on, so it costs the answers contrast;
+   a pill at or below the card's own darkness would restore it. */
 .tileValue {
   align-self: flex-start;
   max-width: 100%;
@@ -189,7 +187,8 @@
 /* non-negotiable 11 — the fill made opaque, and the grain goes with the blur it
    dithered. `#3c7c86` is `#005461b5` composited over the canvas's mid stop
    `#cedee2`: white measures 4.75:1 on it, the middle of the translucent
-   card's range. */
+   card's range. The pills keep their blur here: it only ever sees the card,
+   never the canvas behind it, so it shows nothing through. */
 @media (prefers-reduced-transparency: reduce) {
   .card {
     background: #3c7c86;

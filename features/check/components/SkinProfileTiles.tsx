@@ -2,39 +2,34 @@ import { useId } from "react";
 import styles from "./SkinProfileTiles.module.css";
 
 /**
- * ⚠️ NOT IN FIGMA — the skin profile as three tiles, under the skin-profile
+ * ⚠️ NOT IN FIGMA — the skin profile as four tiles, under the skin-profile
  * strip on `/check`, asked for directly 14 Sep 2026. No frame draws it.
  *
  * ⚠️ IT WAS `PlanCard` FOR ONE DAY AND KEPT ONLY ITS GLASS. The same slot held
  * a card built from a supplied reference — a four-point star, "Monthly" and a
  * line of plan copy — in the strip's exact box. Its contents were replaced,
  * asked for directly: the strip's own `Your skin profile` overline at the
- * top-left, then `Skin type`, `Tendencies` and `Known conditions` each in a box
- * of its own, the three in one row. The strip above is deliberately untouched
- * ("leave the profile box for now"), so the two are a side-by-side trial of one
- * readout, not a pair.
+ * top-left, then `Skin type`, `Tendencies` and `Known conditions` — and, added
+ * later the same day, `Symptoms state` — each in a tile of its own. The strip
+ * above is deliberately untouched ("leave the profile box for now"), so the
+ * two are a side-by-side trial of one readout, not a pair.
  *
  * ⚠️ THE HEIGHT IS ITS CONTENT NOW, NOT THE STRIP'S. The equal-rows rule that
- * held the plan card at 112 is gone from `CheckScreen.module.css`: three boxed
- * pairs under an overline do not fit 112, "add more height if needed" was the
- * ask, and equal rows would have grown the untouched strip along with it.
+ * held the plan card at 112 is gone from `CheckScreen.module.css`: boxed pairs
+ * under an overline do not fit 112, "add more height if needed" was the ask,
+ * and equal rows would have grown the untouched strip along with it.
  *
- * ⚠️ DEEP TEAL GLASS, WHITE INK, SUNKEN TILES — all tuned by hand in the
- * browser and supplied, 14 Sep 2026. The card is `#005461` at 71% under the
- * plan card's glows, desaturated frost, lit edge ring and grain, with white
- * text (4.27–5.27:1 on the card, 4.80:1 or better inside a tile; the numbers
- * are in the module). It takes the column's width, the strip's edges, at every
- * breakpoint — it was 140% of the column on desktop for a while, centred over
- * the strip, and came back to 100%, asked for directly. Each tile is 7% black with a light inner shadow, radius 20, its label
- * and value centred. ⚠️ FOUR TILES, TWO A ROW AT EVERY WIDTH — `Symptoms
- * state` was added the same day, asked for directly, with the grid. Three in a
- * row was too narrow on mobile (72 a tile at 320), and stacking them pushed
- * `Start analysis` below the fold at 440. ⚠️ Each tile is the strip's pair —
- * label over value, left-aligned — at every width, with no inner shadow; the
- * centred text, the desktop one-line form and the shadow all came off, asked
- * for directly. The tiles' backdrop blur came off in the tuning — it
- * could never show, since the card's own `backdrop-filter` makes it the
- * backdrop root.
+ * ⚠️ DEEP TEAL GLASS, WHITE INK, ANSWERS AS PILLS — all tuned by hand in the
+ * browser or asked for directly, 14 Sep 2026; every value and its history is
+ * in the module. The card is `#005461` at 71% under the plan card's glows,
+ * desaturated frost, lit edge ring and grain, 1.4rem a side, the column's
+ * width at every breakpoint (it was 140% on desktop for a while). A left-lit
+ * white rule fades out under the overline. Four tiles, two a row at every
+ * width, 6 apart; each tile is only spacing now — label over answer,
+ * left-aligned — and each answer is a filled frosted teal pill.
+ * ⚠️ WHITE DOES NOT CLEAR AA EVERYWHERE: 4.27–5.27:1 for the overline and
+ * labels on the card, and 4.16–4.29:1 for the answers on their lighter
+ * pills, against 4.5:1. The measurements are in the module.
  *
  * ⚠️ THE VALUES ARE THE CALLER'S, AND ON `/check` THEY ARE LITERALS — `Dry`,
  * `Acne-prone`, `None`, as supplied. That breaks the "screens echo answers"
