@@ -82,7 +82,7 @@ Variable-level bugs. The code already overrides all of them on `:root` in
 - ⚠️ **SUPERSEDED FOR THE BAR ONLY, 13 Sep 2026 — action needed.** Asked for
   directly: `Bottom-Nav-Bar` (`410:258`) fills with `#17292f @26%` (code:
   `--color-surface-nav-bar`; it was `#356472 @69%` for a few hours), falls
-  back to `#859ca3` opaque (`--color-bg-nav-bar` — the fill as it composites
+  back to `#798e95` opaque (`--color-bg-nav-bar` — the fill as it composites
   over the canvas, since `#17292f` opaque would be near black), and its labels
   go white. Add both as
   variables and repoint the component's fill and ink; leave `surface/frost-nav`
@@ -315,6 +315,29 @@ without asking** — the same standing instruction `gradient/brand` used to carr
 Raise it in Figma as a real `sage/700` surface role, with the ink pairing
 recorded beside it: deep sage takes white, `surface/data` takes the app ink, and
 neither ink is portable to the other surface.
+
+### `gradient/canvas-*` — 10% darker in code (14 Sep 2026), and short of AA on bare canvas
+
+- Asked for directly. Code overrides all four stops on `:root` in `globals.css`
+  at x0.9 per sRGB channel: start `#dce7ea` → `#c6d0d3`, mid `#cedee2` →
+  `#b9c8cb`, end-mobile `#acc5cc` → `#9bb1b8`, end-desktop `#b9d1d7` →
+  `#a6bcc2`. Figma still holds the originals.
+- The living canvas's two borrowed stops (`bg/nav`, `bg/progress-track`) are
+  darkened inside the shader only — the tokens themselves did not move.
+- The living canvas (`film`, in `CanvasShader.tsx`) is the MAIN BACKGROUND as
+  of 14 Sep 2026, asked for directly — no longer a trial. It is brighter by
+  x1.07 while the logo entrance holds and lightens up to 20% under the pointer
+  on `/` and `/check`. Figma needs a decision on how to represent a moving
+  background; every screen frame still paints the static gradient.
+- `bg/nav-bar`, the nav's reduced-transparency fallback, moved with it:
+  `#859ca3` → `#798e95`.
+- **Decide before absorbing.** Three passes became failures on the new floor:
+  `text/secondary` on bare canvas 4.75 → 3.84:1 (Welcome's disclaimer,
+  `/check`'s subtitle), `text/on-data-muted` on CHECK's 14px strip labels
+  4.79 → 4.22:1, and `text/muted` in a DateField trigger 4.54 → 4.18:1. A
+  fourth was already short at the bottom and is now short everywhere:
+  `text/muted` in a MyProducts category row, 4.00–4.79 → 3.61–4.28:1.
+  Contrast was deferred when the darkening was asked for.
 
 ### Compatibility band pills — `Check results` `476:2841`
 
