@@ -23,16 +23,18 @@ import { COPY } from "@/features/my-skin/profile";
  * `t-label-sm` line under the state and NOT another pair — it is the age of the
  * state above it, not another answer.
  *
- * ⚠️ `Current state` IS STEP 4's STATUS, AND THE SYMPTOM PILLS ARE GONE — 14 Sep
- * 2026, asked for directly ("current state would be ongoing, remove the
+ * ⚠️ THE SYMPTOMS' STATE IS STEP 4's STATUS, AND THE SYMPTOM PILLS ARE GONE —
+ * 14 Sep 2026, asked for directly ("current state would be ongoing, remove the
  * breakout pill"). NOT IN FIGMA. From 13 Sep 2026 the pair held step 1's
  * symptoms as rose pills, first over a locations line and then alone once the
  * face card joined the screen. Both halves of that answer are on the face card
  * now, as callouts — each symptom a pill at the edge with a line to each of its
  * places — so this card says where the episode has got to instead: `Ongoing`,
- * `Improving`, … under the profile recap's own `Current state` label, which is
- * what the recap's block of that name holds too. The demo's value is
- * `DEMO_PROFILE.status`.
+ * `Improving`, … The label is the profile recap's own `COPY.currentLabel`, the
+ * heading of its block that holds the same answer: `Symptom state` over one
+ * symptom and `Symptoms state` otherwise (renamed from `Current state` the same
+ * day, asked for directly), which is why the card is told how many symptoms
+ * there are. The demo's value is `DEMO_PROFILE.status`.
  *
  * ⚠️ THE LATEST PHOTOS SIT BESIDE IT — NOT IN FIGMA, 14 Sep 2026, asked for
  * directly. They arrive as a slot (`photos`) rather than as data, because the
@@ -44,6 +46,7 @@ export function SkinProfile({
   tendencies,
   conditions,
   status,
+  symptomCount = 0,
   started,
   photos,
   className,
@@ -53,11 +56,13 @@ export function SkinProfile({
   tendencies?: string[];
   /** step 3's answer — a third column when there is one */
   conditions?: string[];
-  /** step 4's status — `Current state` over "Ongoing" */
+  /** step 4's status — `Symptoms state` over "Ongoing" */
   status?: string | null;
+  /** how many symptoms step 1 reported, which picks the label's noun */
+  symptomCount?: number;
   /** "Started Aug 2, 2026 · Day 12" */
   started?: string | null;
-  /** drawn beside the current state — `LatestPhotos` on `/progress` */
+  /** drawn beside the symptoms' state — `LatestPhotos` on `/progress` */
   photos?: ReactNode;
   className?: string;
 }) {
@@ -113,7 +118,7 @@ export function SkinProfile({
                    row with the photos. A <p> cannot live inside a <dl>, which
                    is why the meta line sits outside it. */
                 <dl className={styles.currentPair}>
-                  <Pair label={COPY.currentLabel} value={status} />
+                  <Pair label={COPY.currentLabel(symptomCount)} value={status} />
                 </dl>
               )}
               {started && (

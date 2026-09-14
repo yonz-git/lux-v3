@@ -48,7 +48,7 @@ export const DEMO_PROFILE = {
    * demo carried a sentence while every other path assembled one. It is the
    * parts now, and ⚠️ SINCE 14 Sep 2026 NO SCREEN WRITES THEM AS A LINE:
    * `/progress` draws them on its face card as callouts (`symptomPlaces` in
-   * features/progress/progress.ts), and its profile card's `Current state` is
+   * features/progress/progress.ts), and its profile card's `Symptoms state` is
    * `status` below. The seeded check-ins still read `symptoms` for their
    * "Less redness" changes.
    */
@@ -56,7 +56,7 @@ export const DEMO_PROFILE = {
   locations: ["Cheeks"],
   /**
    * Step 4's status for the demo — what `/progress`'s profile card writes under
-   * `Current state`.
+   * `Symptoms state`.
    *
    * ⚠️ NOT THE COMP'S, which drew the symptoms there. Added 14 Sep 2026 when the
    * card took the status instead, asked for directly ("current state would be

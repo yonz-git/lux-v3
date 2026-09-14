@@ -251,26 +251,24 @@ h1 names the page, the overline names what is in the card. The gap under it is
 `DataCard`'s own 16, not the comp's looser one; the card's internal rhythm is
 the component's recipe. The card holds what is true BETWEEN
 episodes; everything about the episode is drawn as itself in the blocks below.
-⚠️ **The start date lives in the `Current state` block**, under the status,
+⚠️ **The start date lives in the symptoms' state block**, under the status,
 because a date under a skin type is a date and a date under the state is the
 age of that state. ⚠️ **That block was `What you noticed` until 13 Sep 2026**,
-with the symptom pills in it; it was renamed and the pills removed, asked for
-directly, and the pills are moving onto the face diagram in a follow-up — whose
-data step 1 has collected since 14 Sep 2026, when each symptom began keeping its
-own places (see the step 1 paragraph below). ⚠️ **The joined tendencies are the ONE exception
-to the set rule below**, the same trade `SkinProfileStrip` makes.
+with the symptom pills in it; it was renamed `Current state` and the pills
+removed, asked for directly. ⚠️ **On 14 Sep 2026 the pills landed on the face
+diagram as callouts** — a pill per symptom at the face's edge with a line to
+each of its places, the pairing step 1 has kept since that day — **and the
+block became `Symptom state` / `Symptoms state`**, the noun following how many
+symptoms were reported (`COPY.currentLabel`), both asked for directly.
+⚠️ **The joined tendencies are the ONE exception to the set rule below**, the
+same trade `SkinProfileStrip` makes.
 
-A multi-select is a SET, so the symptoms and the other locations are `Tag`s and
-never a sentence with commas in it — the card above is the exception, not these. ⚠️ **Those tags wear `Chip`'s default fill and
-hairline** — `bg/frost-light-muted` + `border/chip`, asked for directly, because
-`Tag`'s own strokeless `bg/surface-frost` leaves an answer with no edge on a
-frosted block. Geometry, type and ink stay `Tag`'s. ⚠️ **It is fenced to this
-screen**: a read-only label dressed as a control is only safe where nothing
-beside it is one. The recap now has exactly one control — `Update photo`, a
-`SmallButton` with the secondary gradient and 36 height — which is a different
-object from a 26-tall pill, but the fence matters more than it did. **Do not
-lift the class onto a screen that mixes tags with chips** — raise the variant in
-Figma instead. The location answer is
+A multi-select is a SET, never a sentence with commas in it — the card above is
+the exception. ⚠️ **No `Tag`s are left on the recap as of 14 Sep 2026**: the
+symptoms are the face's callouts and the other locations are chips inside the
+face card (below), so the tag list and its chip-dressed `.pill` class were
+deleted. The recap has exactly one control — `Update photo`, a `SmallButton`
+with the secondary gradient and 36 height. The location answer is
 **step 1's own face diagram in a read-only mode** — the coordinates ARE that
 answer, and "Cheeks (L), Chin / jaw" is the coordinates thrown away. ⚠️ **The
 non-face chips ("Neck", "Whole face", "Other") are `Tag`s INSIDE that card**,
@@ -320,8 +318,8 @@ older reader wanted, and `withAreas` is the only writer and never stores an
 empty list — so `isComplete` for step 1 is "a symptom exists", a typed
 description no longer unlocks Continue by itself (a place with no pill is that
 symptom's `Other` chip), and the flow key is `lux.flow.v2`. The recap and
-PROGRESS still draw the union; the pairing is there for the follow-up that moves
-the symptom pills onto the face. ⚠️ **The typed description is confirmed with ✓
+PROGRESS draw that pairing as callouts on their read-only faces (14 Sep 2026),
+over the union lit as the face's pills. ⚠️ **The typed description is confirmed with ✓
 (or Enter) and reopened with a pen**, and one restored from the store arrives
 confirmed. `StartInvestigation.tsx` carries the reasoning.
 
@@ -340,7 +338,7 @@ only feedback available in a prototype whose viewfinder cannot show what a
 camera sees. ⚠️ **Step 4 has no block at all** — it was a
 two-node timeline rail, and for an hour it was also the sage card's lower half;
 both were cut on 7 Sep 2026, asked for directly. All of it is now the
-`Current state` block — the status as the block's own value (no second label
+symptoms' state block — the status as the block's own value (no second label
 repeating the heading), then `Started on` over `<date> · Day <n>`. A date is
 only the AGE of something when it sits under the something. ⚠️ **They were running lines of
 `t-body3` until 8 Sep 2026** and now take the sage card's label-over-value shape
@@ -355,7 +353,7 @@ heading a block gets when nobody has decided what the block is.
 
 ⚠️ **THE SPACING BETWEEN THOSE BLOCKS IS THE GROUPING — IT WAS A UNIFORM 16
 UNTIL 7 Sep 2026 AND THAT SAID THE WRONG THING.** Four identical cards at one
-interval is four peers. `Current state` and `Where you noticed it` are readings
+interval is four peers. The symptoms' state and `Where you noticed it` are readings
 of ONE episode; `Known conditions` was true before it started. The episode closes to **12** — tighter
 than the cards' own 20 padding, which is what makes three cards read as one
 group — the standing fact sits **24** from it, the sage statement **32** above,

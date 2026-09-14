@@ -600,11 +600,11 @@ assembled from recipes page 06 already holds:
 | Block | Recipe borrowed from |
 | ----- | -------------------- |
 | skin type + tendencies + known conditions | the sage `DataCard` — Surface System B, as `Analysis`'s verdict — a `t-overline` heading over two labelled columns, then a full-width row; values at `t-button` (17), both multi-selects JOINED rather than pilled |
-| symptoms | `Tag` (256:85), `Neutral`, **wearing `Chip`'s default fill and hairline** (see below), in a frosted light block (System A) |
+| symptoms | ⚠️ **the face's callouts, since 14 Sep 2026** — a `bg/symptom` pill per symptom at the face card's edge with a line to each of its places, as step 1 draws them once saved. They were `Tag`s wearing `Chip`'s default fill and hairline (see below) until 13 Sep 2026 |
 | other locations | **inside `face-diagram-card`**, in step 1's own chip row, drawn as step 1's SELECTED `Chip` (40, `Label`, `bg/brand`) |
 | where on the face | `face-diagram-card` from step 1, in a **read-only mode that Figma has no variant for** |
 | the photo | its own block: `Check-in detail`'s photo well (`surface/data-strong`, `radius/lg`) + `CheckInPhotoArt`, with a `SmallButton` opening the existing `SelfieSheet` |
-| all of step 4 | the *Current state* block (was *What you noticed*, with the symptom pills, until 13 Sep 2026) — `<status>` as its value, then `Started on` over `<date> · Day <n>` in the card's label-over-value shape; the pills are off the recap for now, moving onto the face diagram |
+| all of step 4 | the *Symptom state* block, *Symptoms state* with more than one symptom (it was *What you noticed*, with the symptom pills, until 13 Sep 2026, then *Current state* until 14 Sep 2026) — `<status>` as its value, then `Started on` over `<date> · Day <n>` in the card's label-over-value shape |
 | the action | `Button` primary, full width mobile / `width/action` desktop |
 
 ⚠️ **ITS EMPTY STATE IS THE APP'S EMPTY-STATE RECIPE, AS OF 8 Sep 2026 —
@@ -637,26 +637,28 @@ of this section:
    lines of text. The ASK survives the cut: PROGRESS, the analysis and this
    screen all state spans of time and none of the three draw them the same way.
    That is a DS gap whether or not the recap is the screen that needs it.
-3. **A `Tag` variant carrying `Chip`'s ground.** Asked for directly on 7 Sep
-   2026: the recap's pills take `bg/frost-light-muted` and a `border/chip`
-   hairline — `Chip`'s default state — because `Tag`'s own `bg/surface-frost`
-   with no stroke leaves an answer with no edge on a frosted block. Everything
-   else stays `Tag`'s: 26 tall, `Label Small`, `text/secondary`. In code it is a
-   class on this one screen, deliberately fenced (a tag dressed as a chip is
-   only safe where there are no chips, and this screen has no controls at all).
-   In Figma it wants a real third style on 256:85 — `Style=Outlined` or similar
-   — so the borrowing stops being a local override.
+3. ~~**A `Tag` variant carrying `Chip`'s ground.**~~ ⚠️ **No longer needed by
+   the recap, as of 14 Sep 2026.** Its symptoms are callouts on the face now,
+   and nothing else on the screen was a tag, so the class was deleted. It was
+   asked for directly on 7 Sep 2026: the recap's pills took
+   `bg/frost-light-muted` and a `border/chip` hairline, which is `Chip`'s
+   default state, because `Tag`'s own `bg/surface-frost` with no stroke left an
+   answer with no edge on a frosted block. Raise a `Style=Outlined` on 256:85
+   only if another screen wants it.
 
 **What Figma needs to decide:** whether the read-only face is a variant or a new
 component; whether the timeline earns a real DS component (PROGRESS and the
 analysis both have spans of time they currently draw differently); and whether
-the label wording is right — *Current state* (was *What you noticed* until 13 Sep 2026), *Where you noticed it*,
-*Known conditions* (was *Known skin conditions* until 13 Sep 2026), *Started on*, *Day n* and *Current state* are all decided
-here. ⚠️ **They do not name the symptoms, and they were longer.** *Symptoms
-started* / *Symptoms now* were right while step 4 had a block of its own among
-four other answers; sitting under the pills that name the symptoms, the subject
-is already on screen and repeating it made the block say "symptoms" three times
-in four lines. ⚠️ **The last one was a bare *Now* until 8 Sep 2026** — beside
+the label wording is right — *Symptom state* / *Symptoms state* (by how many
+symptoms were reported; was *What you noticed* until 13 Sep 2026 and *Current
+state* until 14 Sep 2026), *Where you noticed it*, *Known conditions* (was
+*Known skin conditions* until 13 Sep 2026), *Started on* and *Day n* are all
+decided here. ⚠️ **The heading names the symptoms again as of 14 Sep 2026,
+asked for directly**, now that no pill above it does. *Symptoms started* /
+*Symptoms now* were right while step 4 had a block of its own among four other
+answers; sitting under the pills that named the symptoms, the subject was
+already on screen and repeating it made the block say "symptoms" three times in
+four lines. ⚠️ ***Current state* was a bare *Now* until 8 Sep 2026** — beside
 *Started*, an adverb with no noun read as another point on the same timeline
 rather than as a different fact about a different moment.
 
@@ -773,7 +775,7 @@ symptom being placed with the other chips disabled and `Save` / `Reset`
 awake in the pill, and idle
 with places marked), a disabled Chip (§ 4) and a disabled region pill, and the
 instruction line. Each symptom now carries its own places, which is the data
-the recap's follow-up (symptom pills on the face) will draw.
+the callouts below draw, on step 1, on the recap and on PROGRESS.
 
 ### Step 1's saved symptoms are drawn on the face as callouts (14 Sep 2026)
 
@@ -791,7 +793,8 @@ shade), scaled like the region pills: 18–24 tall, 8–12 type. The line is
 `bg/symptom` at 1.25. The line draws out from the place over `duration/slower`,
 then the pill fades in. The callouts hide while a symptom is being placed. For
 Figma this needs the idle step-1 frame with callouts, plus the pill as a
-variant. The recap's read-only face can take the same layer next.
+variant. The recap's read-only face at `/investigation/profile` draws the same
+layer, and so does PROGRESS's (both 14 Sep 2026).
 
 ### The face drawing has a neck (14 Sep 2026)
 
@@ -811,10 +814,11 @@ tail. For Figma this needs the face artwork re-exported with its neck.
 Asked for directly. Three changes to `Progress — active` (`552:1236` /
 `554:1252`), none of them in the frames:
 
-- **`Current state` is step 4's status** (`Ongoing`, `Improving`, `Resolved` or
-  `Getting worse`), in the card's label-over-value shape, with
-  `Started <date> · Day <n>` under it. The rose symptom pills are gone from the
-  card. The demo reads `Ongoing`.
+- **Step 4's status sits under `Symptom state`** (`Symptoms state` with more
+  than one symptom; it read `Current state` until later the same day), as
+  `Ongoing`, `Improving`, `Resolved` or `Getting worse`, in the card's
+  label-over-value shape, with `Started <date> · Day <n>` under it. The rose
+  symptom pills are gone from the card. The demo reads `Ongoing`.
 - **The latest photos sit at the other end of that row.** A `Latest photos`
   label sits over the three newest check-in photos, each 36 square
   (`size/control-sm`) at `radius/md` with a white hairline edge, then a 36

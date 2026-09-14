@@ -182,7 +182,8 @@ export type ProgressView = {
    */
   conditions: string[];
   /**
-   * Step 4's status — the profile card's `Current state`, since 14 Sep 2026.
+   * Step 4's status — under the profile card's `Symptoms state`, since 14 Sep
+   * 2026.
    * ⚠️ THE DEMO HAS ONE (`DEMO_PROFILE.status`), unlike the conditions above:
    * it says where the seeded episode has got to, which is the demo's own story
    * rather than a claim about anyone's skin.
@@ -459,7 +460,7 @@ export function latestCheckIn(list: CheckIn[]): CheckIn | null {
  * ⚠️ NOT IN FIGMA — 14 Sep 2026, asked for directly. It replaced the profile
  * card's current-state readout, which drew the same answer as rose symptom
  * pills (13 Sep 2026) and before that as one sentence, "Redness, Itching on
- * Cheeks"; the card's `Current state` is step 4's status now. A real
+ * Cheeks"; the card's `Symptoms state` is step 4's status now. A real
  * investigation passes step 1's own map straight through — each symptom has
  * kept its own places since the same day (`start` in lib/store/answers.ts).
  *

@@ -119,6 +119,7 @@ export function ProgressScreen({ now }: { now: number }) {
           tendencies={tendencies}
           conditions={conditions}
           status={status}
+          symptomCount={Object.keys(places).length}
           started={`Started ${formatLong(start)} · Day ${dayNumber(start, today)}`}
           photos={
             photos.length > 0 ? (
