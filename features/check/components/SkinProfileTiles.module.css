@@ -38,7 +38,31 @@
      display. It is supplied fully transparent (`#1d1c2000`) and kept as the
      slot to tune. */
   color: var(--color-text-on-data-inverse);
-  background: #005461b5;
+  /* ⚠️ A SOFT MESH OVER THE FILL — asked for directly 14 Sep 2026 from a
+     supplied reference (a frosted blue-grey field with a pale haze on one
+     side and a deeper teal pooling in the opposite corner), at much lower
+     contrast: a pale haze from the left, a brighter teal pool low on the
+     right, and a slight darkening top-right, over the same `#005461b5`
+     (12 / 16 / 14%, then 20 / 28 / 24%, then 24 / 32 / 28%, asked for
+     directly). ⚠️ AND A WARM EDGE, from a second supplied reference (peach
+     light curving into cream and then blue), much quieter than it.
+     ⚠️ THE VALUES BELOW WERE TUNED BY HAND AND SUPPLIED, 14 Sep 2026: a dusty
+     rose catch top-left (`#d0b4b8` at 12%); the left haze is now an OPAQUE
+     mid teal `#567e88` fading out by 60%, not a translucent light — so under
+     the left-hand labels the card reads as that teal rather than the
+     translucent fill; the bottom-right pool at 32%; and the top-right
+     darkening is a blue slate `#376175` at 28%. The card's existing 5% grain
+     (`::after`) does the references' noise. None of it has a token.
+     ⚠️ PLUS A DARKER BOTTOM-RIGHT CORNER, asked for directly the same turn:
+     a small deep teal `#00303c` at 24% tucked into the corner, on top, so
+     the brighter pool reads as sitting just inside it. */
+  background:
+    radial-gradient(45% 45% at 100% 100%, #00303c3d, #0000 70%),
+    radial-gradient(60% 55% at 0 0, #d0b4b81f, #a0353500 70%),
+    radial-gradient(110% 90% at 0 35%, #567e88, #0000 60%),
+    radial-gradient(90% 80% at 90% 105%, #60a8ba52, #0000 65%),
+    radial-gradient(70% 60% at 80% -10%, #37617547, #0000 70%),
+    #005461b5;
   box-shadow:
     inset 0 2px 12px #afc5cbbd,
     inset 0 2px 6px #547c7a24,
