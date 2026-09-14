@@ -7,6 +7,7 @@ import { Button } from "@/components/ui/Button";
 import { Orb } from "@/components/ui/Orb";
 import { ChatBubble } from "@/components/ui/ChatBubble";
 import { SkinProfileStrip } from "./SkinProfileStrip";
+import { SkinProfileTiles } from "./SkinProfileTiles";
 import { ChevronRightIcon } from "@/components/ui/icons";
 import { useInvestigation } from "@/lib/store/InvestigationProvider";
 import { skinProfile } from "@/lib/demo";
@@ -61,13 +62,25 @@ export function CheckScreen() {
          6.59:1, and the strip's translucent `surface/data` composites to
          #97b8bd, giving `text/on-data` 6.52:1 and `-secondary` 4.79:1. All AA.
          Nothing on this screen sits on bare canvas below `text/secondary`, so
-         the floor is the whole proof. */
+         the floor is the whole proof. The tiles card's `text/primary` on its
+         own teal glass is measured in SkinProfileTiles.module.css: 5.5:1 or
+         better. */
       belowHeading={
-        <SkinProfileStrip
-          className={styles.profile}
-          skinType={skinType}
-          tendencies={tendencies}
-        />
+        /* one block, so the strip and the tiles share an edge and a width —
+           see `.belowHeading` in the module */
+        <div className={styles.belowHeading}>
+          <SkinProfileStrip skinType={skinType} tendencies={tendencies} />
+          {/* ⚠️ NOT IN FIGMA — asked for directly 14 Sep 2026, and the values
+              are the supplied LITERALS, not the answers: they disagree with
+              the seeded strip above while the two are compared. See
+              SkinProfileTiles.tsx. */}
+          <SkinProfileTiles
+            skinType="Dry"
+            tendencies="Acne-prone"
+            conditions="None"
+            symptomsState="Ongoing"
+          />
+        </div>
       }
     >
       <div className={`${styles.hero} ${styles.heroChat}`}>

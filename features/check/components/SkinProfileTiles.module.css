@@ -1,0 +1,164 @@
+/* The skin profile as three tiles — NOT IN FIGMA, see SkinProfileTiles.tsx.
+
+   overline -> 12 -> three tiles in a row, 8 apart. Height is content. */
+
+.card {
+  /* a stacking context of its own, so the ring and the grain below can sit at
+     `z-index: -1` — over the fill, under the words */
+  position: relative;
+  isolation: isolate;
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-md); /* 12 */
+  width: 100%;
+  padding: 18px var(--space-xl); /* the strip's 18 / 20 */
+  border-radius: var(--radius-2xl); /* 24 — the strip's */
+
+  /* ⚠️ WHITE INK ON A DEEP TEAL, TUNED BY HAND IN THE BROWSER AND SUPPLIED,
+     14 Sep 2026 — the second pass. The first was a light teal at 51%
+     (`#67adb882`) with `text/primary`; this one is `#005461` at 71% with
+     `text/on-data-inverse`, every other card value unchanged: the sage top
+     glow with a faint teal catch under it, a soft drop, and the frost fully
+     DESATURATED (`saturate(0%)`), so the canvas under it reads as grey light
+     and only the fill carries the colour. The fill has no token; raise it.
+     ⚠️ WHITE ALMOST CLEARS AA ON THE CARD ITSELF, and its worst case is the
+     LIGHT end of the canvas, not the floor. Hand-composited over the fill at
+     each canvas ramp stop: 5.27:1 on the floor `#acc5cc`, 4.75:1 on
+     `#cedee2`, 4.57:1 on `#dce7ea`, 4.48:1 on `#dbeded`, 4.27:1 on the
+     lightest core `#ecf8f9`. Only the overline sits straight on this fill,
+     so only it can dip under 4.5:1; the tile text sits on the tiles' extra 7%
+     black and measures 4.80:1 at worst.
+     ⚠️ THE RIM IS AN INSET RING, NOT A `border` (the last shadow): it adds no
+     height (non-negotiable 9) and does not snap to a full pixel on a 1x
+     display. It is supplied fully transparent (`#1d1c2000`) and kept as the
+     slot to tune. */
+  color: var(--color-text-on-data-inverse);
+  background: #005461b5;
+  box-shadow:
+    inset 0 2px 12px #afc5cbbd,
+    inset 0 2px 6px #547c7a24,
+    0 4px 16px #0000001a,
+    inset 0 0 12px #0003,
+    inset 0 0 0 0.5px #1d1c2000;
+  -webkit-backdrop-filter: blur(var(--blur-card)) saturate(0%);
+  backdrop-filter: blur(var(--blur-card)) saturate(0%);
+}
+
+/* the nav bar's lit edge ring (`::before`, bright at the top-left, dim at the
+   bottom-right) and its 5% grain (`::after`) — static, copied from
+   BottomNav.module.css */
+.card::before,
+.card::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  border-radius: inherit;
+  pointer-events: none;
+}
+
+.card::before {
+  padding: 1px;
+  background: linear-gradient(
+    135deg,
+    rgba(255, 255, 255, 0.42),
+    rgba(255, 255, 255, 0) 40%,
+    rgba(255, 255, 255, 0) 60%,
+    rgba(255, 255, 255, 0.3)
+  );
+  -webkit-mask: linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0);
+  -webkit-mask-composite: xor;
+  mask: linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0);
+  mask-composite: exclude;
+}
+
+.card::after {
+  opacity: 0.05;
+  mix-blend-mode: overlay;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='120' height='120'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='2'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+}
+
+/* the strip's overline, in the card's white — hierarchy by size and tracking,
+   not by a muted tier (the app's muted inks are dark) */
+.overline {
+  margin: 0;
+  /* ⚠️ A GRADIENT WHITE RULE UNDER IT, asked for directly 14 Sep 2026 from a
+     supplied reference: a streak of light with a faint glow around it,
+     ANCHORED LEFT — brightest under the start of the heading and fading to
+     nothing toward the right (it was brightest at the centre, fading both
+     ways, for one turn; moved left, asked for directly). Two layers — a
+     hairline in `effect/rim-highlight` (the white a LUX surface catches) over
+     a 3px band of it at 25% for the glow, fading out the same way.
+     Backgrounds, not a `border`, because a border cannot fade; 12 under the
+     words, then the card's 12 gap to the tiles. */
+  padding-bottom: var(--space-md); /* 12 */
+  background:
+    linear-gradient(90deg, var(--color-effect-rim-highlight), transparent)
+      left bottom 1px / 100% var(--border-width-hairline) no-repeat,
+    linear-gradient(
+        90deg,
+        color-mix(in srgb, var(--color-effect-rim-highlight) 25%, transparent),
+        transparent 80%
+      )
+      left bottom / 100% 3px no-repeat;
+}
+
+/* ⚠️ TWO TILES A ROW AT EVERY WIDTH — asked for directly 14 Sep 2026, when
+   `Symptoms state` made it four. Before that it was three in a row, which
+   gave each tile 72 at 320 (`Acne-prone` broke at its hyphen), and then
+   stacked on mobile, which pushed `Start analysis` below the fold at 440. Two
+   a row is 172 a tile at 440, 112 at 320 and 239 at 1440. `minmax(0, 1fr)`
+   keeps a long value from widening its column; it wraps inside the tile. */
+.tiles {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  /* ⚠️ 6, OFF THE SCALE — the scale's 8 less 2, asked for directly 14 Sep
+     2026 */
+  gap: calc(var(--space-sm) - 2px); /* 6 */
+  margin: 0;
+}
+
+/* ⚠️ A FLAT TILE, 7% BLACK (`#00000012`), radius 20 — tuned by hand and
+   supplied 14 Sep 2026. It was transparent with a backdrop blur, then sunken
+   under an inset 1 2 6 @12% shadow; the blur came off in the tuning (the
+   card's own `backdrop-filter` made it invisible anyway) and the shadow came
+   off after, asked for directly. The darker fill is what gives the white text
+   its margin (see `.card`).
+   ⚠️ LABEL OVER VALUE, LEFT-ALIGNED, AT EVERY WIDTH — the strip's own pair,
+   asked for directly ("display in this way again"). It was centred for a
+   while, and one line (label left, value right) on desktop for a turn, to
+   shorten the card; both are gone.
+   ⚠️ 8 A SIDE, NOT 12: at 320 a tile is 112 wide. ⚠️ AND 12 ON THE LEFT —
+   the 8 plus 4, asked for directly (8 plus 2 for a turn first), so the words
+   sit further in from the tile's rounded edge. */
+.tile {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2xs); /* 2 — the strip's label-to-value */
+  min-width: 0;
+  padding: var(--space-md) var(--space-sm); /* 12 / 8 */
+  padding-left: calc(var(--space-sm) + 4px); /* 12 */
+  border-radius: var(--radius-xl); /* 20 */
+  background: #00000012;
+}
+
+.tileLabel,
+.tileValue {
+  margin: 0;
+}
+
+/* non-negotiable 11 — the fill made opaque, and the grain goes with the blur it
+   dithered. `#3c7c86` is `#005461b5` composited over the canvas's mid stop
+   `#cedee2`: white measures 4.75:1 on it, the middle of the translucent
+   card's range. */
+@media (prefers-reduced-transparency: reduce) {
+  .card {
+    background: #3c7c86;
+    -webkit-backdrop-filter: none;
+    backdrop-filter: none;
+  }
+
+  .card::after {
+    display: none;
+  }
+}
