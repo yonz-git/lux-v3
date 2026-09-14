@@ -869,6 +869,10 @@ The face card moved above it. Column 1 reads tiles → face → gallery at both
 breakpoints. `Started <date> · Day <n>` was on the deleted card and is not on
 the screen any more.
 
+The face card's heading, `Where you noticed it`, is now `Symptoms and
+location` — here and on the profile recap, which share the label — because
+the face carries the symptom callouts as well as the places.
+
 ### Step 1's `Other` description is confirmed with ✓ and edited with a pen (14 Sep 2026)
 
 Asked for directly. The open field carries a ✓ before its ✕ (Enter confirms,
