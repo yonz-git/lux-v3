@@ -41,8 +41,8 @@ import styles from "./CanvasShader.module.css";
  * assumes is `--color-gradient-canvas-end-mobile` (#acc5cc). The disclaimer on
  * this screen is `text/secondary` (#4b4b57) sitting on BARE canvas, and it
  * measures 4.75:1 on that floor — a pass with 0.25 to spare. Taking the shader
- * one step darker, to `gradient/brand-start` (#a2b9bf), drops the same text to
- * 4.19:1 and fails AA.
+ * one step darker, to #a2b9bf (`gradient/brand`'s sage start until the button
+ * went indigo on 8 Sep 2026), drops the same text to 4.19:1 and fails AA.
  *
  * So the DARK end is frozen at #acc5cc and contrast is bought at the LIGHT end,
  * where a lighter background can only ever help dark text. All five are LUX
