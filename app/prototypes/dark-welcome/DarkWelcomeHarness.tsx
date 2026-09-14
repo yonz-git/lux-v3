@@ -72,7 +72,7 @@ export function WelcomeStage() {
         </div>
 
         <div className={`${styles.actions} reveal`}>
-          <Button className={`${styles.cta} edit-button`} href="/investigation/start" beacon>
+          <Button className={`${styles.cta} edit-button`} href="/investigation/start">
             Create skin profile
           </Button>
           <p className={`${styles.disclaimer} t-caption edit-disclaimer`}>

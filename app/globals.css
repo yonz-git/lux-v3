@@ -3037,7 +3037,7 @@ main[tabindex="-1"]:focus-visible {
    masked so only the ring paints. Unlike `.specular` it does NOT move and is
    there at rest — it is the light the pill sits under, and `.specular` is the
    pointer's. A real span for the same reason `.specular` is one: `Button` owns
-   `::after`, `.pressable` and `.beacon` own `::before`.
+   `::after`, `.pressable` owns `::before`.
 
    ⚠️ THE NAV KEEPS ITS OWN COPY. The values are duplicated, not shared; if one
    is retuned the other does not follow.
@@ -3088,16 +3088,6 @@ main[tabindex="-1"]:focus-visible {
     linear-gradient(#000 0 0);
   mask-composite: exclude;
 }
-
-/* ============================================================================
-   Beacon — ⚠️ NO ANIMATION HERE ANY MORE, 14 Sep 2026, asked for directly
-   ("remove the sweep animation effect on create skin profile button, just give
-   a shine appearance"). From 12 Sep it breathed its gradient on a 4s cycle and
-   swept a band of light across the pill every 10s (`lux-beacon-flow`,
-   `lux-beacon-sweep`, and a combined rule so Welcome's `.welcome-rise` entrance
-   survived). All three are deleted; the beacon is a STATIC shine now, and the
-   whole recipe lives on `.beacon` in `Button.module.css`.
-   ========================================================================== */
 
 /* ============================================================================
    Focus not obscured — WCAG 2.4.11 (AA)

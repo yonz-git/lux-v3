@@ -39,12 +39,11 @@ import { trackSpecular } from "./specular";
  *   - the label SHINES on hover (`.shine-on-hover`);
  *   - the rim carries a SPECULAR streak facing the pointer (`.specular`, the
  *     `<span>` below; `specular.ts` writes the angle — which is why this file
- *     is a client component now);
- *   - `beacon` gives the pill a static shine — a soft gloss and a parked band
- *     of light. It is for ONE button, Welcome's `Create skin profile`, to say
- *     "start here"; a second caller is a product decision. ⚠️ It breathed and
- *     swept a band across the pill every 10s until 14 Sep 2026; the motion
- *     was removed, asked for directly.
+ *     is a client component now).
+ *   ⚠️ A fourth, `beacon`, gave Welcome's `Create skin profile` a breathing
+ *   gradient and light sweep (12 Sep), then a static white shine; it was
+ *   removed 14 Sep 2026, asked for directly, to put the pill back on the
+ *   primary gradient every other primary button wears.
  */
 export function Button({
   children,
@@ -54,7 +53,6 @@ export function Button({
   className,
   href,
   icon,
-  beacon,
   onPointerMove,
   ...rest
 }: ButtonHTMLAttributes<HTMLButtonElement> & {
@@ -66,15 +64,12 @@ export function Button({
   href?: string;
   /** optional leading glyph — see the doc comment above */
   icon?: ReactNode;
-  /** the static shine — Welcome's CTA only, see above */
-  beacon?: boolean;
 }) {
   const cls = [
     styles.button,
     variant === "secondary" && styles.secondary,
     size === "md" && styles.md,
     fullWidth && styles.full,
-    beacon && styles.beacon,
     size === "md" ? "t-button-md" : "t-button",
     className,
   ]
