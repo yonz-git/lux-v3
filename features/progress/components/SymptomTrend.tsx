@@ -193,7 +193,7 @@ export function SymptomTrend({
         </>
       )}
 
-      {summary && <p className={`${styles.summary} t-body3`}>{summary}</p>}
+      {summary && <p className={`${styles.summary} t-body2`}>{summary}</p>}
     </DataCard>
   );
 }

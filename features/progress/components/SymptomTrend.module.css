@@ -130,6 +130,8 @@
 
 .title {
   color: var(--color-text-on-data);
+  /* ⚠️ REGULAR, NOT `t-h5`'s MEDIUM — asked for directly 14 Sep 2026 */
+  font-weight: var(--font-weight-regular);
 }
 
 .chart {

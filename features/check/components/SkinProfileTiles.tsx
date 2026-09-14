@@ -19,17 +19,19 @@ import styles from "./SkinProfileTiles.module.css";
  * under an overline do not fit 112, "add more height if needed" was the ask,
  * and equal rows would have grown the untouched strip along with it.
  *
- * ⚠️ DEEP TEAL GLASS, WHITE INK, ANSWERS AS PILLS — all tuned by hand in the
+ * ⚠️ BARE CARD, DARK INK, ANSWERS AS PILLS — all tuned by hand in the
  * browser or asked for directly, 14 Sep 2026; every value and its history is
- * in the module. The card is `#005461` at 71% under the plan card's glows,
- * desaturated frost, lit edge ring and grain, 1.4rem a side, the column's
- * width at every breakpoint (it was 140% on desktop for a while). A left-lit
- * white rule fades out under the overline. Four tiles, two a row at every
- * width, 6 apart; each tile is only spacing now — label over answer,
- * left-aligned — and each answer is a filled frosted teal pill.
- * ⚠️ WHITE DOES NOT CLEAR AA EVERYWHERE: 4.27–5.27:1 for the overline and
- * labels on the card, and 4.16–4.29:1 for the answers on their lighter
- * pills, against 4.5:1. The measurements are in the module.
+ * in the module. It was deep teal glass with white ink until later that day;
+ * the fill and the frost were switched off in DevTools and the ink went to the
+ * global `text/primary`. What is left is the card's shadows, lit edge ring and
+ * grain, 1.4rem a side, at the column's width at every breakpoint. An 18px
+ * overline sits over a left-anchored rule in its own ink. Four tiles, two a
+ * row at every width, 6 apart; each tile is only spacing — label over answer,
+ * left-aligned — and each answer is a filled frosted teal pill in WHITE, the
+ * one place the card's dark ink does not reach.
+ * ⚠️ WHITE ON THE TEAL PILLS IS STILL UNDER AA — 4.13:1 on `#56848d`,
+ * against 4.5:1 (the dark ink was 3.3:1). The labels and overline sit on the
+ * canvas and clear it.
  *
  * ⚠️ THE VALUES ARE THE CALLER'S, AND ON `/check` THEY ARE LITERALS — `Dry`,
  * `Acne-prone`, `None`, as supplied. That breaks the "screens echo answers"

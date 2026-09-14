@@ -95,6 +95,7 @@ export function ProgressScreen({ now }: { now: number }) {
   const lastCheckIn = lastCheckInLabel(checkIns, today);
   const places = symptomPlaces(answers, view);
   const face = faceLocations(places);
+  const otherNote = view.isDemo ? null : answers.locationOther?.trim() || null;
   const photos = photoDiary(checkIns);
 
   return (
@@ -165,11 +166,28 @@ export function ProgressScreen({ now }: { now: number }) {
               callouts={places}
             />
           </div>
+          {/* ⚠️ THE TYPED `Other`, UNDER THE FACE — asked for directly 14 Sep
+              2026 ("other when typed in is not showing under"). The recap has
+              drawn it since 8 Sep as a label-over-value pair; this card never
+              read `locationOther`, so the lit `Other` chip showed with none of
+              the words. The user's own answer only: the demo has no sentence to
+              put in anyone's mouth. */}
+          {otherNote && (
+            /* ⚠️ ONE LINE, `Other: <words>` — asked for directly 14 Sep 2026.
+               The colon is this card's only: the recap's pair stacks its
+               label, and a label on its own line needs no colon. */
+            <p className={`${styles.otherNote} t-body2`}>
+              <span className={styles.otherNoteLabel}>
+                {COPY.locationOtherLabel}:
+              </span>{" "}
+              <span className={styles.otherNoteValue}>{otherNote}</span>
+            </p>
+          )}
         </DataCard>
 
         {/* desktop's copy: col-1, under the face */}
         <ProgressGallery
-          className={styles.galleryDesktop}
+          className={`${styles.faceCard} ${styles.galleryDesktop}`}
           photos={photos}
           onOpen={() => setGalleryOpen(true)}
         />
@@ -191,7 +209,7 @@ export function ProgressScreen({ now }: { now: number }) {
 
         {/* mobile's copy: under the trend, above the calendar */}
         <ProgressGallery
-          className={styles.galleryMobile}
+          className={`${styles.faceCard} ${styles.galleryMobile}`}
           photos={photos}
           onOpen={() => setGalleryOpen(true)}
         />

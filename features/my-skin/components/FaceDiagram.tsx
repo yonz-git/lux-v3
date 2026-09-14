@@ -370,8 +370,17 @@ function useLineShine() {
  * reach a disabled button (checked in Chrome 152), which is why these are
  * `onPointerEnter` / `onPointerLeave`.
  */
-/* what the pointer is on — a symptom's callout pill, or a place */
-type Lit = { symptom: Symptom } | { region: string } | null;
+/* what the pointer is on — a symptom's callout pill, a place, or one of the
+   location chips under the face (`Whole face`, `Neck`, `Other`) */
+type Lit = { symptom: Symptom } | { region: string } | { chip: string } | null;
+
+/* ⚠️ THE CHIPS UNDER THE FACE LIGHT THEIR SYMPTOMS TOO, asked for directly 14
+   Sep 2026. A chip has no coordinate of its own, so it lights by the ANSWER:
+   every symptom whose places include it, and the lines that answer draws —
+   `Neck`'s to the neck, `Whole face`'s to every face region, `Other`'s none
+   (it has nothing to draw to, so only its symptoms' pills light). The other
+   way round, a hovered symptom lights the chips it was placed on. */
+const WHOLE_FACE = "Whole face";
 
 type CalloutProps = {
   /** each symptom's places, drawn as edge pills with leader lines — see
@@ -417,13 +426,16 @@ export function FaceDiagram(props: FaceDiagramProps) {
      pill that unmounts under the pointer cannot leave its pairs lit. */
   const [hover, setHover] = useState<Lit>(null);
   const active = props.calloutsHidden ? null : hover;
+  const placesOf = (s: Symptom) => props.callouts?.[s] ?? [];
   const litCallouts =
     active === null
       ? []
       : callouts.filter((c) =>
           "symptom" in active
             ? c.symptom === active.symptom
-            : c.regions.some((r) => r.id === active.region),
+            : "region" in active
+              ? c.regions.some((r) => r.id === active.region)
+              : placesOf(c.symptom).includes(active.chip),
         );
   /* a hovered place no symptom points to lights nothing and fades nothing */
   const focused = litCallouts.length > 0;
@@ -432,7 +444,20 @@ export function FaceDiagram(props: FaceDiagramProps) {
       ? []
       : "symptom" in active
         ? litCallouts.flatMap((c) => c.regions.map((r) => r.id))
-        : [active.region],
+        : "region" in active
+          ? [active.region]
+          : active.chip === WHOLE_FACE
+            ? FACE_REGION_IDS
+            : [active.chip],
+  );
+  const litChips = new Set<string>(
+    active === null || !focused
+      ? []
+      : "symptom" in active
+        ? placesOf(active.symptom)
+        : "chip" in active
+          ? [active.chip]
+          : [],
   );
   const lineLit = (c: Callout, r: Region) =>
     litCallouts.includes(c) && litRegions.has(r.id);
@@ -636,7 +661,14 @@ export function FaceDiagram(props: FaceDiagramProps) {
             >
               {props.otherLocations.map((c) => (
                 <li key={c}>
-                  <span className={`${styles.readOnlyChip} t-label`}>{c}</span>
+                  <span
+                    className={`${styles.readOnlyChip} t-label`}
+                    data-lit={litChips.has(c) || undefined}
+                    onPointerEnter={() => setHover({ chip: c })}
+                    onPointerLeave={leave}
+                  >
+                    {c}
+                  </span>
                 </li>
               ))}
             </ul>
@@ -647,14 +679,23 @@ export function FaceDiagram(props: FaceDiagramProps) {
             role="group"
             aria-label="Other locations"
           >
+            {/* `display: contents` — the span only carries the pointer and the
+                lit state; the row still lays out the `Chip`s themselves */}
             {props.locationChips.map((c) => (
-              <Chip
+              <span
                 key={c}
-                label={c}
-                selected={selected.includes(c)}
-                disabled={disabled}
-                onToggle={() => props.onToggle(c)}
-              />
+                className={styles.chipHover}
+                data-lit={litChips.has(c) || undefined}
+                onPointerEnter={() => setHover({ chip: c })}
+                onPointerLeave={leave}
+              >
+                <Chip
+                  label={c}
+                  selected={selected.includes(c)}
+                  disabled={disabled}
+                  onToggle={() => props.onToggle(c)}
+                />
+              </span>
             ))}
           </div>
         )}

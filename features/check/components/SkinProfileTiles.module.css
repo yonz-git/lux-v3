@@ -19,90 +19,32 @@
   padding: 1.4rem;
   border-radius: var(--radius-2xl); /* 24 — the strip's */
 
-  /* ⚠️ WHITE INK ON A DEEP TEAL, TUNED BY HAND IN THE BROWSER AND SUPPLIED,
-     14 Sep 2026 — the second pass. The first was a light teal at 51%
-     (`#67adb882`) with `text/primary`; this one is `#005461` at 71% with
-     `text/on-data-inverse`, every other card value unchanged: the sage top
-     glow with a faint teal catch under it, a soft drop, and the frost fully
-     DESATURATED (`saturate(0%)`), so the canvas under it reads as grey light
-     and only the fill carries the colour. The fill has no token; raise it.
-     ⚠️ WHITE ALMOST CLEARS AA ON THE CARD, and its worst case is the LIGHT end
-     of the canvas, not the floor. Hand-composited over the fill at each
-     canvas ramp stop: 5.27:1 on the floor `#acc5cc`, 4.75:1 on `#cedee2`,
-     4.57:1 on `#dce7ea`, 4.48:1 on `#dbeded`, 4.27:1 on the lightest core
-     `#ecf8f9`. The overline and the four labels sit straight on this fill,
-     so they dip under 4.5:1 over the two lightest stops; the answers sit on
-     their pills and measure lower still (see `.tileValue`).
-     ⚠️ THOSE STOPS ARE THE CANVAS BEFORE ITS 10% DARKENING (14 Sep 2026 —
-     the floor is `#9bb1b8` now and the lightest core about `#d4dfe0`). White's
-     worst case is the light end, so every figure here should now read a
-     little HIGHER. Not re-measured.
+  /* ⚠️ NO FILL, NO FROST, DARK INK — tuned by hand in DevTools and supplied,
+     14 Sep 2026 (the fourth pass). The card was white ink on a deep teal
+     glass: `#2c6e7a` at 76% under a five-layer mesh, over a desaturated
+     backdrop blur, at 3.6–5.3:1 for the white across its passes. The
+     background and both backdrop filters were switched off, which leaves
+     the card as bare canvas held by its shadows, edge ring and grain, and
+     the ink went dark. It was supplied as `#403838`, which is no LUX token
+     and sits off the app's indigo-grey hue, so the card binds the global
+     `text/primary` (`#2e2a3f`) instead (asked for: "if the font color is
+     wrong use the one that is global"). On bare canvas that is the app's
+     ordinary body ink, well clear of AA.
      ⚠️ THE RIM IS AN INSET RING, NOT A `border` (the last shadow): it adds no
      height (non-negotiable 9) and does not snap to a full pixel on a 1x
      display. It is supplied fully transparent (`#1d1c2000`) and kept as the
      slot to tune. */
-  color: var(--color-text-on-data-inverse);
-  /* ⚠️ A SOFT SHADOW UNDER EVERY WORD, asked for directly 14 Sep 2026 ("subtle
-     spread and blurred text shadows… use the darker tone of the background,
-     not black"). `text-shadow` has no spread, so it is two layers: a close
-     one that seats the letters and a wide blur that spreads a haze behind
-     them. Both are the card's teal taken dark, `#14434c`, not black, so the
-     shadow reads as depth in the fill rather than as grey dirt. Inherited by
-     the overline, the labels and the answers in their pills. */
-  text-shadow:
-    0 1px 2px rgb(20 67 76 / 0.45),
-    0 0 10px rgb(20 67 76 / 0.35);
-  /* ⚠️ A SOFT MESH OVER THE FILL — asked for directly 14 Sep 2026 from a
-     supplied reference (a frosted blue-grey field with a pale haze on one
-     side and a deeper teal pooling in the opposite corner), at much lower
-     contrast: a pale haze from the left, a brighter teal pool low on the
-     right, and a slight darkening top-right, over the same `#005461b5`
-     (12 / 16 / 14%, then 20 / 28 / 24%, then 24 / 32 / 28%, asked for
-     directly). ⚠️ AND A WARM EDGE, from a second supplied reference (peach
-     light curving into cream and then blue), much quieter than it.
-     ⚠️ THE VALUES BELOW WERE TUNED BY HAND AND SUPPLIED, 14 Sep 2026: a dusty
-     rose catch top-left (`#d0b4b8` at 12%); the left haze is now an OPAQUE
-     mid teal `#567e88` fading out by 60%, not a translucent light — so under
-     the left-hand labels the card reads as that teal rather than the
-     translucent fill; the bottom-right pool at 32%; and the top-right
-     darkening is a blue slate `#376175` at 28%. The card's existing 5% grain
-     (`::after`) does the references' noise. None of it has a token.
-     ⚠️ PLUS A DARKER BOTTOM-RIGHT CORNER, asked for directly the same turn:
-     a small deep teal `#00303c` at 24% tucked into the corner, on top, so
-     the brighter pool reads as sitting just inside it.
-     ⚠️ THEN A STEP BRIGHTER, asked for directly the same day, because
-     `SymptomTrend` on /progress took this exact mesh and the two cards read as
-     one: every teal lifted about 10% — the fill `#005461` → `#0f6270`, the left
-     haze `#567e88` → `#628a94`, the pool `#60a8ba` → `#6fb3c4`, the top-right
-     slate `#376175` → `#43707f`, the corner `#00303c` → `#063a46`. Alphas and
-     the rose catch unchanged. ⚠️ IT COSTS THE WHITE INK: over the canvas's mid
-     stop the fill now measures about 4.1:1 where it was 4.75:1, so the labels
-     sit under AA across more of the page. On /check too — this is the one
-     component.
-     ⚠️ AND BRIGHTER AGAIN, WITH A BRIGHTER MESH, asked for directly the same
-     day ("go brighter and add a bit more brighter gradient"): the fill
-     `#0f6270` → `#1f7282`, the left haze `#628a94` → `#76a0aa`, the corner
-     `#063a46` → `#0f4a56`; the pool brighter and stronger (`#6fb3c4` @32% →
-     `#86c6d5` @42%), the rose catch a little more present (12% → 18%), and
-     the top-right corner turned from a slate darkening into a pale teal light
-     (`#43707f` @28% → `#9cc4d0` @30%). ⚠️ WHITE NOW MEASURES ABOUT 3.6:1 over
-     the canvas's mid stop, under AA for the 12px labels across the page.
-     ⚠️ THEN SUPPLIED DIRECTLY: the left haze `#769da6`, a greyer pool
-     `#98bac2` at 42%, and the fill `#2c6e7a` at 76%. White measures about
-     3.9:1 over the canvas's mid stop.
-     ⚠️ THEN LESS FOG, asked for directly the same day ("a bit too foggy, make
-     it more clear"). The milk was the three pale lights and the inner glow
-     below, not the fill: the left haze went from opaque to 60% (`#769da699`),
-     the grey pool 42% → 25%, the top-right light 30% → 18%, and the inset
-     glow in `box-shadow` 74% → 40%. Fill, corner, rose catch and blur
-     unchanged. Less pale light over the teal also lifts the white ink. */
-  background:
-    radial-gradient(45% 45% at 100% 100%, #0f4a563d, #0000 70%),
-    radial-gradient(60% 55% at 0 0, #d0b4b82e, #a0353500 70%),
-    radial-gradient(110% 90% at 0 35%, #769da699, #0000 60%),
-    radial-gradient(90% 80% at 90% 105%, #98bac240, #0000 65%),
-    radial-gradient(70% 60% at 80% -10%, #9cc4d02e, #0000 70%),
-    #2c6e7ac2;
+  color: var(--color-text-primary);
+  /* ⚠️ NO TEXT SHADOW — removed 14 Sep 2026, asked for directly. From earlier
+     that day every word carried two dark-teal (`#14434c`) layers, a close
+     `0 1px 2px` at 45% and a `0 0 10px` haze at 35%, which read as depth
+     under white ink on the teal fill and as smudge under the dark ink on
+     bare canvas. */
+  /* ⚠️ NO BACKGROUND AND NO BACKDROP FILTER, 14 Sep 2026 — see the ink note
+     above. The mesh it replaced (a rose catch top-left, a teal haze from the
+     left, a pale pool low right, a light top-right and a deep corner, over
+     `#2c6e7ac2`, blurred and fully desaturated) went through five hand-tuned
+     passes that day; `git log -p` on this file has every value. */
   /* ⚠️ A DEEPER DROP, asked for directly 14 Sep 2026 ("add drop shadows to the
      profile box"): the single soft `0 4px 16px` at 10% became two — a tight
      contact shadow under the edge and a wide, lower one that lifts the card
@@ -114,8 +56,6 @@
     0 12px 32px -8px #00000038,
     inset 0 0 12px #0003,
     inset 0 0 0 0.5px #1d1c2000;
-  -webkit-backdrop-filter: blur(var(--blur-card)) saturate(0%);
-  backdrop-filter: blur(var(--blur-card)) saturate(0%);
 }
 
 /* the nav bar's lit edge ring (`::before`, bright at the top-left, dim at the
@@ -152,33 +92,36 @@
   background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='120' height='120'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='2'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
 }
 
-/* the strip's overline, in the card's white — hierarchy by size and tracking,
-   not by a muted tier (the app's muted inks are dark) */
+/* the strip's overline, in the card's ink — hierarchy by size and tracking,
+   not by a muted tier */
 .overline {
   margin: 0;
-  /* ⚠️ 16px, NOT `t-overline`'s 13 — asked for directly 14 Sep 2026. The
-     class keeps its weight, tracking and caps; only the size and its line
-     step up, 13 / 18 → 16 / 22. Off the type ramp: no Figma style has an
-     overline at 16, so raise one if it stays. */
-  font-size: 16px;
-  line-height: 22px;
-  /* ⚠️ A GRADIENT WHITE RULE UNDER IT, asked for directly 14 Sep 2026 from a
-     supplied reference: a streak of light with a faint glow around it,
-     ANCHORED LEFT — brightest under the start of the heading and fading to
-     nothing toward the right (it was brightest at the centre, fading both
-     ways, for one turn; moved left, asked for directly). Two layers — a
-     hairline in `effect/rim-highlight` (the white a LUX surface catches) over
-     a 3px band of it at 25% for the glow, fading out the same way.
-     Backgrounds, not a `border`, because a border cannot fade. 12 under the
-     words; the card has no gap, so the 12 above the tiles' text is the
-     tiles' own top padding. */
+  /* ⚠️ 18px, NOT `t-overline`'s 13 — asked for directly 14 Sep 2026, at 16 / 22,
+     then 20 / 26, then 18. The class keeps its weight, tracking and caps;
+     only the size and its line step up, to 18 / 24 (the 16's 1.375 ratio,
+     rounded down to a whole pixel). Off the type ramp: no Figma style has an
+     overline at 18, so raise one if it stays. */
+  /* ⚠️ 18 / 24 — 22 / 28 and then 20 / 26 for a turn each, stepped back down
+     2px at a time, asked for directly 14 Sep 2026 */
+  font-size: 18px;
+  line-height: 24px;
+  /* ⚠️ A GRADIENT RULE UNDER IT, IN THE INK — asked for directly 14 Sep 2026
+     from a supplied reference: a streak with a faint glow around it, ANCHORED
+     LEFT, strongest under the start of the heading and fading to nothing
+     toward the right. Two layers — a hairline over a 3px band of it at 25%
+     for the glow, fading out the same way. ⚠️ It was `effect/rim-highlight`
+     white while the card was dark teal glass; it is `currentColor` now, so
+     it is always the heading's own ink ("change the gradient border to the
+     font color"). Backgrounds, not a `border`, because a border cannot fade.
+     12 under the words; the card has no gap, so the 12 above the tiles'
+     text is the tiles' own top padding. */
   padding-bottom: var(--space-md); /* 12 */
   background:
-    linear-gradient(90deg, var(--color-effect-rim-highlight), transparent)
+    linear-gradient(90deg, currentColor, transparent)
       left bottom 1px / 100% var(--border-width-hairline) no-repeat,
     linear-gradient(
         90deg,
-        color-mix(in srgb, var(--color-effect-rim-highlight) 25%, transparent),
+        color-mix(in srgb, currentColor 25%, transparent),
         transparent 80%
       )
       left bottom / 100% 3px no-repeat;
@@ -256,9 +199,15 @@
   align-self: flex-start;
   max-width: 100%;
   margin-top: 0.3rem;
+  /* ⚠️ WHITE, NOT THE CARD'S INK — asked for directly 14 Sep 2026, when the
+     card went dark: `text/primary` on this teal measured 3.34:1, white 4.13:1. */
+  color: var(--color-text-on-brand);
   padding: 4px 14px 6px;
   border-radius: var(--radius-full);
-  background: #56848dd9;
+  /* ⚠️ INDIGO, NOT TEAL — asked for directly 14 Sep 2026 from a supplied
+     screenshot: `bg/brand` at 85%, the selection indigo, so an answer reads
+     as a picked chip. White on it clears AA where the teal did not. */
+  background: color-mix(in srgb, var(--color-bg-brand) 85%, transparent);
   box-shadow:
     inset 0 0 0 var(--border-width-hairline) var(--color-border-glass),
     inset 0 1px 2px #fff3;
@@ -279,16 +228,16 @@
   white-space: nowrap;
 }
 
-/* non-negotiable 11 — the fill made opaque, and the grain goes with the blur it
-   dithered. `#538993` is the supplied `#2c6e7ac2` composited over the
-   canvas's mid stop `#cedee2`: white measures about 3.9:1 on it (it was
-   `#3c7c86` at 4.75:1, then `#468691`, then `#52919e`, as the fill was
-   retuned on 14 Sep 2026). The pills
-   keep their blur here: it only ever sees the card, never the canvas behind
-   it, so it shows nothing through. */
+/* non-negotiable 11 — the card itself has no fill or frost any more, so it has
+   nothing to make opaque; only the grain goes. ⚠️ The PILLS are now the
+   translucent surface: with the card's backdrop root gone their 7px blur
+   sees the canvas. `#658e96` is `#56848dd9` composited over the darkened
+   canvas's mid stop (about `#b9c8cb`). (Until 14 Sep 2026 this block gave the
+   card an opaque `#538993`, which under the dark ink would read as dark on
+   dark.) */
 @media (prefers-reduced-transparency: reduce) {
-  .card {
-    background: #538993;
+  .tileValue {
+    background: var(--color-bg-brand);
     -webkit-backdrop-filter: none;
     backdrop-filter: none;
   }

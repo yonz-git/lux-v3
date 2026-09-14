@@ -46,8 +46,97 @@
   display: none;
 }
 
+/* ⚠️ THE SKIN PROFILE CARD'S SURFACE, NOT `DataCard`'s — asked for directly
+   14 Sep 2026 ("use same bg as skin profile for the box symptoms and
+   location"). NOT IN FIGMA. `DataCard`'s sage fill and backdrop blur are
+   switched off and the card takes `SkinProfileTiles`' bare-canvas recipe
+   instead: the same shadow stack, the nav bar's lit edge ring on `::before`
+   and a 5% grain on `::after`. Copied from `SkinProfileTiles.module.css` —
+   change both together, or lift it to a shared class if a third card wants
+   it. Doubled classes: `DataCard`'s `.card` is a single class, and which of
+   two single-class rules wins would depend on bundle order. Padding, gap and
+   radius stay `DataCard`'s; the face's own inner well is untouched.
+   ⚠️ THE GALLERY CARD WEARS IT TOO, asked for directly 14 Sep 2026 ("apply
+   the profile bg to gallery box") — both of its copies, desktop and mobile. */
+.faceCard.faceCard {
+  position: relative;
+  isolation: isolate;
+  background: none;
+  -webkit-backdrop-filter: none;
+  backdrop-filter: none;
+  box-shadow:
+    inset 0 2px 12px #afc5cb66,
+    inset 0 2px 6px #547c7a24,
+    0 2px 6px #0000001f,
+    0 12px 32px -8px #00000038,
+    inset 0 0 12px #0003,
+    inset 0 0 0 0.5px #1d1c2000;
+}
+
+.faceCard.faceCard::before,
+.faceCard.faceCard::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  border-radius: inherit;
+  pointer-events: none;
+}
+
+.faceCard.faceCard::before {
+  padding: 1px;
+  background: linear-gradient(
+    135deg,
+    rgba(255, 255, 255, 0.42),
+    rgba(255, 255, 255, 0) 40%,
+    rgba(255, 255, 255, 0) 60%,
+    rgba(255, 255, 255, 0.3)
+  );
+  -webkit-mask: linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0);
+  -webkit-mask-composite: xor;
+  mask: linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0);
+  mask-composite: exclude;
+}
+
+.faceCard.faceCard::after {
+  opacity: 0.05;
+  mix-blend-mode: overlay;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='120' height='120'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='2'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+}
+
+/* non-negotiable 11: with no fill or frost there is nothing to make opaque, so
+   only the grain goes — the skin profile card's own fallback. The doubled
+   class also outranks `DataCard`'s reduced-transparency sage. */
+@media (prefers-reduced-transparency: reduce) {
+  .faceCard.faceCard::after {
+    display: none;
+  }
+}
+
 .faceLabel {
   color: var(--color-text-on-data-muted);
+  /* ⚠️ 15 / 20 — 2px up from `t-overline`'s 13 / 18, asked for directly
+     14 Sep 2026; weight, tracking and caps stay the class's */
+  font-size: 15px;
+  line-height: 20px;
+}
+
+/* the typed `Other` under the face — the recap's `Meta` pair (label 2 over
+   value), in the diagram's 392 column, in this card's ink. ⚠️ CENTRED, asked
+   for directly 14 Sep 2026, under the centred chip row it names. */
+.otherNote {
+  width: 100%;
+  max-width: 392px;
+  margin: 0 auto;
+  text-align: center;
+}
+
+.otherNoteLabel {
+  color: var(--color-text-on-data-muted);
+}
+
+.otherNoteValue {
+  color: var(--color-text-on-data);
 }
 
 /* the diagram is drawn at 392 and capped there, as on the profile recap —

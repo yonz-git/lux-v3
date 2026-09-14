@@ -456,13 +456,15 @@
      same two stops at 62% / 70%, over a backdrop blur, with a lit top edge
      inside so the translucent fill does not read flat (non-negotiable 11).
      The label stays white at full strength: only the FILL thins. */
+  /* ⚠️ DENSER ROSE — 62% / 70% became 88% / 92%, asked for directly 14 Sep
+     2026 from a supplied screenshot; the frost stays behind it */
   background: linear-gradient(
     135deg,
-    color-mix(in srgb, var(--color-bg-symptom) 62%, transparent) 35%,
+    color-mix(in srgb, var(--color-bg-symptom) 88%, transparent) 35%,
     color-mix(
         in srgb,
         color-mix(in srgb, var(--color-bg-symptom) 80%, var(--color-text-primary))
-          70%,
+          92%,
         transparent
       )
       100%
@@ -652,12 +654,17 @@
   color: var(--color-text-primary);
   white-space: nowrap;
 
-  /* `filter` is the hover's light, on the callouts' clock — see HOVER */
+  /* `filter` is the hover's light, on the callouts' clock — see HOVER.
+     ⚠️ THE HOVER RUNS ON `duration/slow` TOO, asked for directly 14 Sep 2026
+     ("add smooth animation on hover on the face pills"): the wash, the lift and
+     a 1.04 scale (below) all settle over 320ms instead of 200. Selection keeps
+     its quicker `duration/base` on the fill and the border. */
   transition: background-color var(--duration-base) var(--ease-standard),
     border-color var(--duration-base) var(--ease-standard),
-    box-shadow var(--duration-base) var(--ease-standard),
+    box-shadow var(--duration-slow) var(--ease-standard),
     color var(--duration-base) var(--ease-standard),
     opacity var(--duration-base) var(--ease-standard),
+    transform var(--duration-slow) var(--ease-standard),
     filter var(--duration-slow) var(--ease-standard);
 
   /* the glint's ink (`.shine-text`, globals.css) — it MUST be the label's own
@@ -772,16 +779,31 @@
     linear-gradient(#000 0 0);
   opacity: 0;
   pointer-events: none;
-  transition: opacity var(--duration-fast) var(--ease-standard);
+  /* on the hover's `duration/slow`, not `fast`, so the ring fades in with the
+     grow rather than blinking on ahead of it (14 Sep 2026) */
+  transition: opacity var(--duration-slow) var(--ease-standard);
 }
 
 .region[data-selected="false"]:hover:not(:disabled)::after {
   opacity: 0.3;
 }
 
+/* ⚠️ A GENTLE GROW ON HOVER, BOTH STATES — asked for directly 14 Sep 2026. The
+   translate is restated because it is what centres the pill on its
+   coordinates; a bare `scale()` would throw every hovered pill off its place.
+   Hover only: pressed still never transforms (board 04b). The read-only face's
+   unpicked pills take no pointer, so they never grow. */
+.region:hover:not(:disabled) {
+  transform: translate(-50%, -50%) scale(1.04);
+}
+
 @media (hover: none) {
   .region[data-selected="false"]:hover:not(:disabled)::after {
     opacity: 0;
+  }
+
+  .region:hover:not(:disabled) {
+    transform: translate(-50%, -50%);
   }
 }
 
@@ -806,7 +828,8 @@
   mask:
     linear-gradient(#000 0 0) content-box exclude,
     linear-gradient(#000 0 0);
-  transition: opacity var(--duration-fast) var(--ease-standard);
+  /* `duration/slow`, with the grow — the regions' ring (14 Sep 2026) */
+  transition: opacity var(--duration-slow) var(--ease-standard);
 }
 
 .chips button[data-selected="false"]:hover:not(:disabled)::before {
@@ -875,9 +898,9 @@
      `StartInvestigation.module.css` is `inset 0 1px 0`: a crisp light along
      the top only. */
   --region-glass-wash: 0 0 #6a292900;
-  /* ⚠️ `#4f93a2d9`, supplied directly 14 Sep 2026 — a lighter teal at the
-     same 85%, for the moody card behind it (was `#37707dd9`) */
-  background-color: #4f93a2d9;
+  /* ⚠️ `#13758ce3`, supplied directly 14 Sep 2026 — a deeper, bluer teal at
+     89% (was `#4f93a2d9`, and `#37707dd9` before that) */
+  background-color: #13758ce3;
   -webkit-backdrop-filter: blur(1px);
   backdrop-filter: blur(1px);
   border-color: #869ea626;
@@ -1141,7 +1164,7 @@
         100%
     )
     border-box,
-    #4f93a2d9;
+    #13758ce3; /* follows the region pills' fill (was `#4f93a2d9`) */
   -webkit-backdrop-filter: blur(1px);
   backdrop-filter: blur(1px);
   /* the selected region pill's hairline and lit top edge, so the recap's pill
@@ -1150,4 +1173,51 @@
   box-shadow: inset 0 1px 0 #ffffff0d;
   color: var(--color-text-on-brand);
   white-space: nowrap;
+}
+
+/* ---------------------------------------------------------------------------
+   THE LOCATION CHIPS HOVER AND LIGHT LIKE THE REGIONS — asked for directly 14
+   Sep 2026. `Whole face`, `Neck` and `Other`, interactive (step 1's `Chip`s)
+   and read-only (the recap's and PROGRESS's spans) alike:
+   - the regions' grow, 1.04 on `duration/slow`, hover only (pressed still
+     never transforms, board 04b);
+   - the regions' lit light when their symptoms are hovered, or when they are —
+     see `WHOLE_FACE` in FaceDiagram.tsx for what each chip lights.
+   The transition list restates `Chip`'s own, adding the grow and the light
+   and moving the lift to `duration/slow` with the regions'.
+   -------------------------------------------------------------------------- */
+.chipHover {
+  display: contents;
+}
+
+.chips button[data-selected] {
+  transition: background-color var(--duration-base) var(--ease-standard),
+    border-color var(--duration-base) var(--ease-standard),
+    color var(--duration-base) var(--ease-standard),
+    opacity var(--duration-base) var(--ease-standard),
+    box-shadow var(--duration-slow) var(--ease-standard),
+    transform var(--duration-slow) var(--ease-standard),
+    filter var(--duration-slow) var(--ease-standard);
+}
+
+.readOnlyChip {
+  transition: transform var(--duration-slow) var(--ease-standard),
+    filter var(--duration-slow) var(--ease-standard);
+}
+
+.chips button[data-selected]:hover:not(:disabled),
+.readOnlyChip:hover {
+  transform: scale(1.04);
+}
+
+.chipHover[data-lit] > button,
+.readOnlyChip[data-lit] {
+  filter: brightness(1.12) drop-shadow(0 0 6px rgb(255 255 255 / 0.36));
+}
+
+@media (hover: none) {
+  .chips button[data-selected]:hover:not(:disabled),
+  .readOnlyChip:hover {
+    transform: none;
+  }
 }
