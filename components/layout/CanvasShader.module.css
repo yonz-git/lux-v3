@@ -18,14 +18,26 @@
    paints ABOVE in-flow content, so each caller had to lift its body into a
    stacking context of its own (`.welcome`, `[data-shader] .shell`). As a direct
    child of <body> at -1 it paints after the root background and before
-   everything else, on every route, with nothing asked of the screen. */
+   everything else, on every route, with nothing asked of the screen.
+
+   ⚠️ `100lvh`, NOT `inset: 0` — THE BOX MUST NOT FOLLOW THE BROWSER TOOLBAR.
+   On a phone the layout viewport changes height on every frame the toolbar
+   slides in or out while scrolling (and when the keyboard opens), and a
+   viewport-sized fixed box followed it. Each change reallocated a
+   ~1.2MP buffer and cleared it, which painted black (see the ResizeObserver
+   note in CanvasShader.tsx) — the canvas flickered black for the whole
+   gesture. The LARGE viewport never changes with the toolbar, so the box sits
+   still and the part under a visible toolbar is simply covered. `100%` stays
+   first as the fallback for a browser without `lvh`. */
 .shader {
   position: fixed;
-  inset: 0;
+  top: 0;
+  left: 0;
   z-index: -1;
   display: block;
   width: 100%;
   height: 100%;
+  height: 100lvh;
   /* purely decorative and it sits under the whole app */
   pointer-events: none;
   /* First paint is one frame behind the CSS gradient, so it arrives rather than
