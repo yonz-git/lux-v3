@@ -106,48 +106,17 @@
 }
 
 /* ---------------------------------------------------------------------------
-   THE FACE — step 1's own diagram, read back
+   THE FACE — step 1's own diagram, read back, beside its list
 
-   ⚠️ THE WRAPPER EXISTS TO OWN THE CAP. `FaceDiagram` brings its whole card
-   with it — `surface/data-strong`, its own padding, its own radius — and takes
-   no `className`, so its width cannot be written on the card itself. It is the
-   sage card nested in a light one, which is the LUX nesting direction, and as
-   of 7 Sep 2026 it is the ONLY thing in this block: the non-face chips moved
-   inside the card, where the rest of the same answer already was.
-
-   ⚠️ THE CAP IS 392, THE WIDTH THE CARD IS DRAWN AT. `.card` is `width: 100%`
-   over a `392 / 300` diagram box, so on the desktop card it took the whole
-   column and rendered a ~600-tall face: the one answer with a picture became
-   the size of everything else on the screen put together. On step 1 that is
-   correct — the diagram IS the screen and the user has to hit its regions. Here
-   it is one of five answers and is not a target at all, so it is held at the
-   size it was designed at. Left-aligned rather than centred, so its edge lands
-   on the same line as the block's label and the pills beneath it.
+   ⚠️ `SymptomLocation` OWNS THIS BLOCK'S CONTENT SINCE 15 Sep 2026 — the 392
+   cap on the diagram (it is `width: 100%` over a 392/300 box and rendered
+   ~600 tall on the desktop card without one), its centring when it stands
+   alone, the list of symptoms and places beside it, the start date and the
+   typed `Other` under the list. The `.face` cap and the centred `.otherNote`
+   line that lived here went with it. The face is still the sage card nested
+   in a light one — the LUX nesting direction — and on step 1 it is untouched:
+   there the diagram IS the screen and its regions are targets.
    -------------------------------------------------------------------------- */
-
-.face {
-  max-width: 392px;
-  /* centred in the block since 14 Sep 2026, as PROGRESS's face card draws it */
-  margin-inline: auto;
-}
-
-/* the typed `Other` under the face — PROGRESS's `.otherNote`, one centred line
-   in the diagram's 392 column. `text/muted` over `text/primary`, this block's
-   ink on the canvas */
-.otherNote {
-  width: 100%;
-  max-width: 392px;
-  margin: var(--space-md) auto 0; /* 12 */
-  text-align: center;
-}
-
-.otherNoteLabel {
-  color: var(--color-text-muted);
-}
-
-.otherNoteValue {
-  color: var(--color-text-primary);
-}
 
 /* ---------------------------------------------------------------------------
    THE TWO PICTURE BLOCKS
@@ -220,8 +189,9 @@
   box-shadow:
     inset 0 0 0 var(--border-width-hairline) rgb(255 255 255 / 0.28),
     inset 0 1px 0 rgb(255 255 255 / 0.4),
-    inset 0 4px 12px rgb(0 0 0 / 0.38),
-    inset 0 0 24px rgb(0 0 0 / 0.3);
+    /* eased with the gallery's on 15 Sep 2026 — the two stay one pair */
+    inset 0 4px 12px rgb(0 0 0 / 0.26),
+    inset 0 0 24px rgb(0 0 0 / 0.2);
   pointer-events: none;
 }
 

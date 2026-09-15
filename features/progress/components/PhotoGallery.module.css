@@ -84,9 +84,12 @@
     inset 0 1px 0 rgb(255 255 255 / 0.4),
     /* ⚠️ A SUNKEN EDGE — asked for directly 14 Sep 2026 ("add inner shadows
        to the picture"), then asked for again because 22% / 18% did not show:
-       a darker rim from the top and a wide shade all round */
-    inset 0 4px 12px rgb(0 0 0 / 0.38),
-    inset 0 0 24px rgb(0 0 0 / 0.3);
+       a darker rim from the top and a wide shade all round.
+       ⚠️ EASED 15 Sep 2026, asked for directly ("a bit less inner shadow"):
+       38% → 26% on the rim, 30% → 20% on the shade. Still above the 22% / 18%
+       that did not show, and the recap's `.photoWell` carries the same pair. */
+    inset 0 4px 12px rgb(0 0 0 / 0.26),
+    inset 0 0 24px rgb(0 0 0 / 0.2);
   pointer-events: none;
 }
 
@@ -130,7 +133,11 @@
   box-shadow:
     inset 0 2px 12px rgb(255 255 255 / 0.25),
     inset 0 1px 1px rgb(255 255 255 / 0.35);
-  color: var(--color-text-on-data);
+  /* ⚠️ THE COUNT'S INK, NOT `text/on-data` — asked for directly 15 Sep 2026
+     ("match the icon arrow colors to the 5 photos"): `text/on-data-muted`, the
+     tier `.count` and the overline take, so the circle, its chevron and the
+     count read as one voice. The ring above is `currentColor` and follows. */
+  color: var(--color-text-on-data-muted);
   /* ⚠️ HOVER GROWS IT TO 1.05 WITH NO COLOUR CHANGE — asked for directly 14 Sep
      2026, replacing the indigo pill it faded in. NOT the board's "no
      transform" rule, which is about PRESSED; this is hover only. */
@@ -174,29 +181,73 @@
   color: var(--color-text-on-data-secondary);
 }
 
-/* three across on a phone (~128 a tile at 440), four in the 544 of the desktop
-   dialog */
-.grid {
-  display: grid;
-  grid-template-columns: repeat(3, minmax(0, 1fr));
-  gap: var(--space-lg) var(--space-sm); /* 16 / 8 */
+/* ⚠️ A SLIDING ROW, NOT A GRID — redrawn 15 Sep 2026, asked for directly; the
+   reasoning is on `PhotoGallery` in the TSX. Three tiles to a view on a phone,
+   four in the 544 of the desktop dialog (`--per-view`), 12 between them
+   (`--tile-gap`, and `TILE_GAP` in the TSX must match it — the arrows scroll by
+   one view plus one gap so the next tile lands on the start edge). */
+.carousel {
+  --per-view: 3;
+  --tile-gap: 12px;
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-lg); /* 16 */
+  width: 100%;
+  min-width: 0;
+}
+
+/* the scroller: snap on the x axis, the app's hidden scrollbar (non-negotiable
+   18), and the browser's own smooth scroll for the arrows' slides. The row
+   bleeds nothing: `overflow-x: auto` clips at the sheet's content edge, so a
+   half tile is what says there is more. */
+.row {
+  display: flex;
+  gap: var(--tile-gap);
   width: 100%;
   margin: 0;
   padding: 0;
   list-style: none;
+  overflow-x: auto;
+  overflow-y: hidden;
+  scroll-snap-type: x mandatory;
+  scroll-behavior: smooth;
+  overscroll-behavior-x: contain;
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+  /* so a tile's hover lift (a transform inside the clipped well) and the
+     `pressable` overlay are never cut by the row's own clip on the y axis */
+  padding-block: 2px;
+}
+
+.row::-webkit-scrollbar {
+  display: none;
+}
+
+/* ⚠️ THE ONE PLACE THE GLOBAL REDUCED-MOTION RULE DOES NOT REACH: it collapses
+   durations, and `scroll-behavior` has none. Instant scroll there. */
+@media (prefers-reduced-motion: reduce) {
+  .row {
+    scroll-behavior: auto;
+  }
+}
+
+.slide {
+  flex: 0 0
+    calc((100% - (var(--per-view) - 1) * var(--tile-gap)) / var(--per-view));
+  min-width: 0;
+  scroll-snap-align: start;
 }
 
 .tile {
   position: relative;
-  display: flex;
-  flex-direction: column;
-  gap: var(--space-xs); /* 4 */
+  display: block;
   border-radius: var(--radius-lg);
   color: inherit;
   text-decoration: none;
 }
 
-/* the check-in record's photo well, square, at `radius/lg` */
+/* the check-in record's photo well, square, at `radius/lg`. The labels are
+   positioned against it, so it is the containing block. */
 .well {
   position: relative;
   display: block;
@@ -207,30 +258,178 @@
 }
 
 /* out of flow, so the picture can never size the well — the recap's `.photoArt`
-   note has the mechanism */
+   note has the mechanism. ⚠️ THE HOVER LIFT IS A TRANSFORM ON THE PICTURE,
+   clipped by the well, on `duration/slow` — the same clock the row's rule
+   moves on, so a hover and a slide read as one material. `transform` and
+   `filter` only: nothing lays out. */
 .thumb > .art,
 .well > .art {
   position: absolute;
   inset: 0;
 }
 
-.caption {
-  display: flex;
-  flex-direction: column;
-  padding-inline: var(--space-2xs); /* 2 — off the well's curve */
+.well > .art {
+  /* `--ease-hover`, the curve the card's own `.art` and `.more` take above —
+     one hover curve per file */
+  transition:
+    filter var(--duration-base) var(--ease-hover),
+    transform var(--duration-slow) var(--ease-hover);
+}
+
+/* ⚠️ THE DATE ON THE PHOTO — top-left, in the nav bar's own frosted dark fill
+   (`surface/nav-bar`, dark slate at 26%) over the DS's 8 blur, white
+   `t-label-sm`. A photograph of skin is light and warm, so plain white would
+   not hold on it; the pill is what the nav already does over a light canvas.
+   ⚠️ ABOVE THE PICTURE'S GLASS EDGE (`.well::after` is z-index 1), so the
+   sunken rim shades the photo and not the label. `pointer-events: none`: the
+   link is the tile. */
+.date,
+.day {
+  position: absolute;
+  z-index: 2;
+  color: var(--color-text-on-data-inverse);
+  pointer-events: none;
+  white-space: nowrap;
+}
+
+.date,
+.day {
+  padding: 2px 8px;
+  border-radius: var(--radius-full);
+  background: var(--color-surface-nav-bar);
+  box-shadow: inset 0 0 0 var(--border-width-hairline) rgb(255 255 255 / 0.22);
+  -webkit-backdrop-filter: blur(var(--blur-sm));
+  backdrop-filter: blur(var(--blur-sm));
 }
 
 .date {
-  color: var(--color-text-on-data);
+  top: var(--space-sm); /* 8 */
+  left: var(--space-sm);
 }
 
+/* the day count, bottom-right, in the same pill — see the TSX for why it is
+   not plain white on a shadow */
 .day {
+  right: var(--space-sm);
+  bottom: var(--space-sm);
+}
+
+/* non-negotiable 11: the pill's frost goes opaque — `bg/nav-bar` is the same
+   fill composited over the canvas's bottom stop */
+@media (prefers-reduced-transparency: reduce) {
+  .date,
+  .day {
+    background: var(--color-bg-nav-bar);
+    -webkit-backdrop-filter: none;
+    backdrop-filter: none;
+  }
+}
+
+/* ---- the rail under the row: the position rule and the two arrows -------- */
+
+/* ⚠️ TWO ROWS, NOT ONE — asked for directly 15 Sep 2026 ("move the arrows
+   below the line"): the position rule runs the full width of the row above,
+   and the arrows sit under it at its right end, where they already were. It
+   was one line with the rule taking the slack beside the arrows. */
+.rail {
+  display: flex;
+  flex-direction: column;
+  align-items: stretch;
+  gap: var(--space-md); /* 12 */
+  width: 100%;
+}
+
+/* a hairline in the ink at 14%, and on it the segment that says how much of
+   the row is in view and how far along it is — width and offset are the two
+   custom properties the TSX writes on every scroll, applied as a transform so
+   the segment glides with a swipe. `transform-origin: left` so the width
+   scales from the rule's start. */
+.track {
+  position: relative;
+  /* none, not `1 1 auto`: in the column rail a growing track would take height,
+     not width */
+  flex: none;
+  width: 100%;
+  height: var(--border-width-hairline);
+  background: color-mix(in srgb, var(--color-text-on-data) 14%, transparent);
+  border-radius: var(--radius-full);
+  overflow: visible;
+}
+
+.trackThumb {
+  position: absolute;
+  top: -0.5px;
+  left: 0;
+  width: 100%;
+  height: 2px;
+  border-radius: var(--radius-full);
+  background: var(--color-text-on-data-muted);
+  transform-origin: left center;
+  transform: translateX(calc(var(--track-x, 0) * 100%))
+    scaleX(var(--track-size, 1));
+  transition: transform var(--duration-slow) var(--ease-standard);
+}
+
+/* ⚠️ `translateX` IN THE THUMB'S OWN WIDTH, AND THAT WIDTH IS 100% OF THE
+   TRACK: with `scaleX` applied after, `--track-x` (scrollLeft / scrollWidth,
+   the share of the whole row scrolled past) lands the segment at that share
+   of the rule, and `--track-size` (clientWidth / scrollWidth) is its length —
+   the same two ratios a scrollbar draws. */
+
+.arrows {
+  display: flex;
+  align-items: center;
+  gap: var(--space-sm); /* 8 */
+  flex: none;
+  /* under the rule, CENTRED — it sat at the rule's right end for a turn;
+     centred asked for directly 15 Sep 2026 */
+  align-self: center;
+}
+
+/* the card's `.more` circle, as a button: 36, a hairline in the muted ink,
+   no fill, the two inner lights. The 0.7 hover fade every arrow in the app
+   takes, the DS's disabled fade at either end (non-negotiable 5), and
+   `pressable` from the TSX for the press. */
+.arrow {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: var(--size-control-sm);
+  height: var(--size-control-sm);
+  padding: 0;
+  border-radius: var(--radius-full);
+  border: var(--border-width-hairline) solid currentColor;
+  background: none;
+  box-shadow:
+    inset 0 2px 12px rgb(255 255 255 / 0.25),
+    inset 0 1px 1px rgb(255 255 255 / 0.35);
   color: var(--color-text-on-data-muted);
+  cursor: pointer;
+  transition: opacity var(--duration-fast) var(--ease-hover);
+}
+
+.arrow:disabled {
+  opacity: var(--opacity-disabled);
+  cursor: not-allowed;
+}
+
+.arrowIcon {
+  --icon-size: var(--size-icon-sm); /* 20 */
+}
+
+@media (hover: hover) {
+  .arrow:hover:not(:disabled) {
+    opacity: 0.7;
+  }
+
+  .tile:hover .art {
+    filter: saturate(0.9) contrast(0.85);
+    transform: scale(1.03);
+  }
 }
 
 @media (min-width: 1024px) {
-  .grid {
-    grid-template-columns: repeat(4, minmax(0, 1fr));
-    gap: var(--space-xl) var(--space-md); /* 20 / 12 */
+  .carousel {
+    --per-view: 4;
   }
 }

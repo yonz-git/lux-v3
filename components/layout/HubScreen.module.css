@@ -106,6 +106,13 @@
   flex-direction: column;
   gap: var(--space-md);
   width: 100%;
+  /* ⚠️ LAST TO ARRIVE — 15 Sep 2026, asked for directly ("things to appear
+     in order, top to bottom"). The shell reveals header, body and footer
+     together and the body's blocks stagger 50ms apart to the eighth; without
+     this the action landed at 0ms, before the first card. 400 is one step past
+     the stagger's cap (8 × 50), so the footer follows the last block on any
+     screen. A delay only — the animation is named in globals.css. */
+  animation-delay: 400ms;
 
   /* ⚠️ 32 IS A MINIMUM, NOT A POSITION — NOT IN FIGMA. `auto` takes whatever
      vertical space is left over, so on a screen whose content fills the column

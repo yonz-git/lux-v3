@@ -2581,28 +2581,79 @@ main[tabindex="-1"]:focus-visible {
    Keep any rule that NAMES an animation global; a module may safely set
    animation-delay, which carries no name. */
 
-[data-reveal] > * {
-  animation: lux-fade-in var(--duration-slow) var(--ease-standard) backwards;
+/* ⚠️ A FADE UP, NOT A FADE — asked for directly 15 Sep 2026 ("add for all
+   the elements on the whole [app] a smooth appearing animation … things to
+   appear in order, top to bottom … in general slight fade up"). Every block a
+   screen shell reveals (HubScreen's body, QuestionScreen's content, PROGRESS's
+   two columns) rises 8px as it fades, on `duration/slow` — the welcome page's
+   own rises run 800ms and this must read as quicker. `transform` and `opacity`
+   only; `backwards` so a delayed block holds its start state and nothing
+   flashes (see the fill-mode note above). ⚠️ THE FIXED NAV IS NOT A
+   DESCENDANT of any revealed block (both shells render it beside the shell),
+   which matters: a transform, even a moving one, makes its element the
+   containing block of a fixed descendant for as long as it lasts. */
+@keyframes lux-fade-up {
+  from {
+    opacity: 0;
+    transform: translateY(8px);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
 }
 
-/* Each block fades in just after the one above it. 40ms reads as a sequence
-   without turning a five-block screen into a performance. Applied to DIRECT
-   children only, so a ten-row option list arrives as one block rather than ten
-   cascading rows. */
+[data-reveal] > * {
+  animation: lux-fade-up var(--duration-slow) var(--ease-standard) backwards;
+}
+
+/* ⚠️ A REVEALED CONTAINER INSIDE A REVEALED CONTAINER DOES NOT FADE ITSELF —
+   its children do, one step later. HubScreen's shell reveals its header,
+   body and footer; the body reveals its blocks. Without this the body faded
+   as a whole AND its blocks staggered inside the fade, so the first block
+   arrived twice. The nested container's children instead start one step
+   after the outer sequence (`--reveal-base`), which is what puts the header
+   before the first card. */
+[data-reveal] > [data-reveal] {
+  animation: none;
+  --reveal-base: var(--reveal-step);
+}
+
+/* Each block fades up just after the one above it, top to bottom. 50ms a
+   step over eight children — a five-card dashboard finishes its sequence
+   inside 600ms; past the eighth the delay holds, so a long list never takes
+   a second to complete. Applied to DIRECT children only, so a ten-row option
+   list arrives as one block rather than ten cascading rows.
+   ⚠️ 40ms capped at the fifth child until 15 Sep 2026 — "in order, top to
+   bottom" wanted every block on a screen in the sequence, not the first
+   five. */
+[data-reveal-stagger] {
+  --reveal-step: 50ms;
+  --reveal-base: 0ms;
+}
 [data-reveal-stagger] > *:nth-child(1) {
-  animation-delay: 0ms;
+  animation-delay: calc(var(--reveal-base, 0ms) + 0 * var(--reveal-step, 50ms));
 }
 [data-reveal-stagger] > *:nth-child(2) {
-  animation-delay: 40ms;
+  animation-delay: calc(var(--reveal-base, 0ms) + 1 * var(--reveal-step, 50ms));
 }
 [data-reveal-stagger] > *:nth-child(3) {
-  animation-delay: 80ms;
+  animation-delay: calc(var(--reveal-base, 0ms) + 2 * var(--reveal-step, 50ms));
 }
 [data-reveal-stagger] > *:nth-child(4) {
-  animation-delay: 120ms;
+  animation-delay: calc(var(--reveal-base, 0ms) + 3 * var(--reveal-step, 50ms));
 }
-[data-reveal-stagger] > *:nth-child(n + 5) {
-  animation-delay: 160ms;
+[data-reveal-stagger] > *:nth-child(5) {
+  animation-delay: calc(var(--reveal-base, 0ms) + 4 * var(--reveal-step, 50ms));
+}
+[data-reveal-stagger] > *:nth-child(6) {
+  animation-delay: calc(var(--reveal-base, 0ms) + 5 * var(--reveal-step, 50ms));
+}
+[data-reveal-stagger] > *:nth-child(7) {
+  animation-delay: calc(var(--reveal-base, 0ms) + 6 * var(--reveal-step, 50ms));
+}
+[data-reveal-stagger] > *:nth-child(n + 8) {
+  animation-delay: calc(var(--reveal-base, 0ms) + 7 * var(--reveal-step, 50ms));
 }
 
 /* ⚠️ THE ONLY `!important` IN THE APP, AND IT HAS TO BE. This is the global

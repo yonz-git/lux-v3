@@ -73,31 +73,9 @@
   line-height: 20px;
 }
 
-/* the typed `Other` under the face — the recap's `Meta` pair (label 2 over
-   value), in the diagram's 392 column, in this card's ink. ⚠️ CENTRED, asked
-   for directly 14 Sep 2026, under the centred chip row it names. */
-.otherNote {
-  width: 100%;
-  max-width: 392px;
-  margin: 0 auto;
-  text-align: center;
-}
-
-.otherNoteLabel {
-  color: var(--color-text-on-data-muted);
-}
-
-.otherNoteValue {
-  color: var(--color-text-on-data);
-}
-
-/* the diagram is drawn at 392 and capped there, as on the profile recap —
-   `width: 100%` over its 392/300 box would render it far taller on desktop */
-.face {
-  width: 100%;
-  max-width: 392px;
-  margin-inline: auto;
-}
+/* ⚠️ `.face` AND `.otherNote*` WENT ON 15 Sep 2026: the 392 cap on the
+   diagram, its centring and the typed `Other` line all live in
+   `SymptomLocation.module.css` now, where the face sits beside its list. */
 
 /* mobile: col-1's wrapper is invisible to layout, like `.checkInColumn` */
 .profileColumn {

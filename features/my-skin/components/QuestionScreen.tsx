@@ -128,6 +128,14 @@ export function QuestionScreen({
 
         <div
           className={styles.card}
+          /* ⚠️ `data-reveal` ON THE CARD, 15 Sep 2026: the shell reveals the
+             card and the card's `content` reveals its blocks, so the first
+             block rose twice — once inside the card's own rise. A revealed
+             container inside a revealed container does not fade itself
+             (globals.css), so this stops the card's rise and lets its
+             children carry the entrance: the blocks in order, then Continue
+             (`.footer`'s delay in the module). */
+          data-reveal
           style={
             contentGap != null || contentGapDesktop != null
               ? ({

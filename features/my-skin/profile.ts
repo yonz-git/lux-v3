@@ -328,6 +328,15 @@ export const COPY = {
    * words" was explaining the pair rather than naming it.
    */
   locationOtherLabel: "Other",
+  /**
+   * The list beside the face — each symptom with its places — on `/progress`
+   * and the recap (`SymptomLocation`, 15 Sep 2026, asked for directly). The
+   * label names the `<ul>` for a screen reader; the empty line renders only
+   * when the card is on screen with no symptom placed, which the recap
+   * reaches through a typed `Other` alone.
+   */
+  legendLabel: "Symptoms by place",
+  legendEmpty: "No symptoms placed yet.",
   /* ⚠️ `locationSpoken` — "On the face: …", the diagram's regions in words —
      WENT ON 14 Sep 2026 with the callouts: `FaceDiagram` lists each symptom
      with its places for a screen reader now, and those places are the regions,

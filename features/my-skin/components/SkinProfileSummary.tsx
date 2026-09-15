@@ -6,7 +6,7 @@ import { HubScreen } from "@/components/layout/HubScreen";
 import { Button } from "@/components/ui/Button";
 import { Orb } from "@/components/ui/Orb";
 import { SmallButton } from "@/components/ui/SmallButton";
-import { FaceDiagram } from "./FaceDiagram";
+import { SymptomLocation } from "./SymptomLocation";
 import { SelfieSheet } from "./SelfieSheet";
 /* ⚠️ ACROSS SECTIONS, WHICH THE PLACEMENT RULE ALLOWS AND THIS IS THE THIRD
    CASE OF. `CheckInPhotoArt` draws the capture in a PROGRESS check-in record;
@@ -271,11 +271,10 @@ export function SkinProfileSummary({ now }: { now: number }) {
           profile.conditions.length > 0 ? profile.conditions.join(", ") : "None"
         }
         symptomsState={timeline?.status ?? COPY.skinTypeUnknown}
-        symptomsStarted={
-          timeline && timeline.dayNumber !== null
-            ? { date: timeline.started, day: timeline.dayNumber }
-            : undefined
-        }
+        /* ⚠️ NO `symptomsStarted` SINCE 15 Sep 2026, asked for directly: the
+           start date is under the face card's list (`SymptomLocation`), as on
+           `/progress`. The day count has no home on this screen — it is the
+           calendar's pill there, and the recap has no calendar. */
       />
 
       {hasEpisode && (
@@ -309,32 +308,23 @@ export function SkinProfileSummary({ now }: { now: number }) {
                       honest reading of that — NOT on the face, here instead —
                       where dropping the diagram would leave a chip with nothing
                       to be measured against. */}
-                  <div>
-                    <div className={styles.face}>
-                      <FaceDiagram
-                        readOnly
-                        selected={profile.faceRegions}
-                        otherLocations={profile.otherLocations}
-                        callouts={profile.places}
-                      />
-                    </div>
-                    {/* ⚠️ THE TYPED `Other`, UNDER THE PICTURE AS ONE CENTRED
-                        LINE — `Other: <words>`, PROGRESS's face card's own,
-                        since 14 Sep 2026 ("accordingly to /progress"). Until
-                        then it sat beside the diagram as a label-over-value
-                        pair and the diagram stepped down to 300 to make room;
-                        that row and its CSS are gone. */}
-                    {profile.locationNote && (
-                      <p className={`${styles.otherNote} t-body2`}>
-                        <span className={styles.otherNoteLabel}>
-                          {COPY.locationOtherLabel}:
-                        </span>{" "}
-                        <span className={styles.otherNoteValue}>
-                          {profile.locationNote}
-                        </span>
-                      </p>
-                    )}
-                  </div>
+                  {/* ⚠️ THE FACE BESIDE ITS LIST — `SymptomLocation`, 15 Sep
+                      2026, asked for directly, the same card `/progress`
+                      draws: the diagram left, a row per symptom with its
+                      places right, then the start date and the typed `Other`
+                      as labelled pairs under the rows. The `Other: <words>`
+                      line that sat centred under the face went with it. */}
+                  <SymptomLocation
+                    places={profile.places}
+                    faceRegions={profile.faceRegions}
+                    otherLocations={profile.otherLocations}
+                    otherNote={profile.locationNote}
+                    started={
+                      timeline && timeline.dayNumber !== null
+                        ? timeline.started
+                        : null
+                    }
+                  />
                 </Block>
               )}
 

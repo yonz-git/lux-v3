@@ -1287,3 +1287,32 @@ are deliberate and not drift.
 **Nothing to change in Figma**; a note on the `Button` set and `Spec/Chat
 Bubble` saying the build animates them would stop a later comp from being read
 as a correction.
+
+## 9. The symptom list, the day pill, the sliding gallery and the fade-up (15 Sep 2026)
+
+Four things the build carries since 15 Sep 2026, all asked for directly, none
+drawn in Figma. Each is recorded beside its code.
+
+- **`Symptoms and location` is the face beside a list**
+  (`features/my-skin/components/SymptomLocation.tsx`): the read-only diagram
+  left at its drawn 392, and right of it one row per symptom — an 8px rose dot
+  hanging in a 16 gutter, the name in `Label`, its places as a `·`-separated
+  set in `Label Small` — ruled by hairlines in the ink at 14%, with `Started on`
+  and the typed `Other` as label-over-value pairs on the column's foot. The list
+  drops under the face where the row does not fit. Hovering a row lights its
+  pill and lines on the face; hovering the face lights the rows. Figma has no
+  face card at all, so the whole card wants drawing.
+- **`Day n` is a pill at the trend card's top right** — a hairline ring in
+  the card's white ink, no fill, on the title's baseline (`SymptomTrend`; it
+  spent an hour on the calendar's legend first, then moved, asked for
+  directly). The `Started <date> · Day <n>` line under the skin
+  profile card's state pill is gone on `/progress` and the recap.
+- **The gallery sheet is a sliding row** (`PhotoGallery`): four photos to a
+  view on desktop, three on a phone, snap-scrolling; each photo carries its
+  date top-left and its day bottom-right in the nav bar's frosted dark pill; a
+  hairline rule under the row carries a segment showing the position, and two
+  36 arrow circles beside it. The card's photos take a lighter inner shadow and
+  its arrow circle the count's muted ink.
+- **Every screen's blocks fade UP in order** — `lux-fade-up`, 8px over 320ms,
+  50ms apart to the eighth child (`globals.css`, "Entrance reveal"). Figma's
+  motion board has no page-entrance choreography; raise one.

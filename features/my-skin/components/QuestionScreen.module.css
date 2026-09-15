@@ -70,6 +70,9 @@
    stacks a secondary "Done" over Continue with a 12 gap (Figma `footer-actions`,
    578:1557). With no `footer` child this collapses to Continue alone. */
 .footer {
+  /* the action lands after the blocks — see HubScreen.module.css's `.footer`
+     for the number; a delay only, the animation is global (15 Sep 2026) */
+  animation-delay: 400ms;
   display: flex;
   flex-direction: column;
   gap: var(--space-md);
