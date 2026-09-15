@@ -76,7 +76,9 @@ export function SkinProfileTiles({
 
   return (
     <section
-      className={[styles.card, className].filter(Boolean).join(" ")}
+      /* `canvas-card` (globals.css) is the bare-canvas surface — the shadows,
+         edge ring and grain this card's own module used to carry */
+      className={[styles.card, "canvas-card", className].filter(Boolean).join(" ")}
       aria-labelledby={titleId}
     >
       <h2 id={titleId} className={`${styles.overline} t-overline`}>

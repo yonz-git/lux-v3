@@ -45,51 +45,12 @@
      left, a pale pool low right, a light top-right and a deep corner, over
      `#2c6e7ac2`, blurred and fully desaturated) went through five hand-tuned
      passes that day; `git log -p` on this file has every value. */
-  /* ⚠️ A DEEPER DROP, asked for directly 14 Sep 2026 ("add drop shadows to the
-     profile box"): the single soft `0 4px 16px` at 10% became two — a tight
-     contact shadow under the edge and a wide, lower one that lifts the card
-     off the page. The insets are unchanged. */
-  box-shadow:
-    inset 0 2px 12px #afc5cb66, /* 74% until the fog was cut, see above */
-    inset 0 2px 6px #547c7a24,
-    0 2px 6px #0000001f,
-    0 12px 32px -8px #00000038,
-    inset 0 0 12px #0003,
-    inset 0 0 0 0.5px #1d1c2000;
-}
-
-/* the nav bar's lit edge ring (`::before`, bright at the top-left, dim at the
-   bottom-right) and its 5% grain (`::after`) — static, copied from
-   BottomNav.module.css */
-.card::before,
-.card::after {
-  content: "";
-  position: absolute;
-  inset: 0;
-  z-index: -1;
-  border-radius: inherit;
-  pointer-events: none;
-}
-
-.card::before {
-  padding: 1px;
-  background: linear-gradient(
-    135deg,
-    rgba(255, 255, 255, 0.42),
-    rgba(255, 255, 255, 0) 40%,
-    rgba(255, 255, 255, 0) 60%,
-    rgba(255, 255, 255, 0.3)
-  );
-  -webkit-mask: linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0);
-  -webkit-mask-composite: xor;
-  mask: linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0);
-  mask-composite: exclude;
-}
-
-.card::after {
-  opacity: 0.05;
-  mix-blend-mode: overlay;
-  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='120' height='120'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='2'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+  /* ⚠️ THE SHADOW STACK, THE LIT EDGE RING (`::before`) AND THE 5% GRAIN
+     (`::after`) ARE THE GLOBAL `canvas-card` CLASS NOW — lifted to globals.css
+     14 Sep 2026, once PROGRESS's face and gallery cards and the profile
+     recap's blocks wore the same recipe. The TSX adds the class. The deeper
+     two-layer drop asked for that day ("add drop shadows to the profile box")
+     is in it unchanged. */
 }
 
 /* the strip's overline, in the card's ink — hierarchy by size and tracking,
@@ -205,9 +166,10 @@
   padding: 4px 14px 6px;
   border-radius: var(--radius-full);
   /* ⚠️ INDIGO, NOT TEAL — asked for directly 14 Sep 2026 from a supplied
-     screenshot: `bg/brand` at 85%, the selection indigo, so an answer reads
-     as a picked chip. White on it clears AA where the teal did not. */
-  background: color-mix(in srgb, var(--color-bg-brand) 85%, transparent);
+     screenshot, so an answer reads as a picked chip. `bg/brand` at 85% first,
+     then `#313560` solid, asked for later the same day — which IS `bg/brand`,
+     so it binds the token. White on it clears AA where the teal did not. */
+  background: var(--color-bg-brand);
   box-shadow:
     inset 0 0 0 var(--border-width-hairline) var(--color-border-glass),
     inset 0 1px 2px #fff3;
@@ -241,8 +203,5 @@
     -webkit-backdrop-filter: none;
     backdrop-filter: none;
   }
-
-  .card::after {
-    display: none;
-  }
+  /* the card's grain goes in `canvas-card`'s own reduced-transparency rule */
 }

@@ -68,6 +68,9 @@ export type ProfileTimeline = {
    * about; the line says nothing rather than counting backwards.
    */
   day: string | null;
+  /** the same span as a bare number (16), null exactly when `day` is — for
+      `SkinProfileTiles`, which writes its own "Day" */
+  dayNumber: number | null;
   /** step 4's status radio, the user's own word for where it has got to */
   status: string | null;
 };
@@ -186,9 +189,11 @@ function timelineFrom(a: Answers, today: Date): ProfileTimeline | null {
   const status = a.timing?.status ?? null;
   if (!date && !status) return null;
 
+  const days = date ? daysBetween(date, today) : null;
   return {
     started: date ? formatLong(date) : COPY.startedUnknown,
-    day: date ? dayLabel(daysBetween(date, today)) : null,
+    day: days === null ? null : dayLabel(days),
+    dayNumber: days === null || days < 0 ? null : days + 1,
     status,
   };
 }
