@@ -5,6 +5,7 @@ import {
   useCallback,
   useContext,
   useEffect,
+  useLayoutEffect,
   useMemo,
   useState,
 } from "react";
@@ -128,6 +129,26 @@ export function InvestigationProvider({
     }
     setHydrated(true);
   }, []);
+
+  /**
+   * ⚠️ THE SCREEN IS HIDDEN UNTIL THIS RUNS — 15 Sep 2026, asked for directly:
+   * a reload painted every screen EMPTY for a frame (no chips ticked on step 1,
+   * the demo's products on `/products`) and then snapped to the saved answers,
+   * because the read above can only happen after the first render. Nothing
+   * about that can be fixed by reading earlier without a hydration mismatch, so
+   * the first render is simply not SHOWN: `globals.css` keeps `.screen`'s
+   * content invisible until <html> carries `data-store-ready`, and this stamps
+   * it.
+   * ⚠️ A LAYOUT EFFECT KEYED ON `hydrated`, NOT A LINE IN THE EFFECT ABOVE.
+   * Stamped there, the attribute would land before React committed the saved
+   * answers, and the empty screen would show for exactly the frame this exists
+   * to hide. Keyed on the state, it runs in the commit that already holds them,
+   * before that commit paints. The attribute is never removed: a client-side
+   * navigation finds the store already read.
+   */
+  useLayoutEffect(() => {
+    if (hydrated) document.documentElement.setAttribute("data-store-ready", "");
+  }, [hydrated]);
 
   /**
    * ⚠️ GATED ON `hydrated` AS STATE, NOT A REF. Effects run in declaration
