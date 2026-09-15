@@ -31,7 +31,9 @@
      own near-white at 23% rather than 55%. NOT IN FIGMA and no token; raise
      one if it stays. */
   background: #f4feff3b;
-  box-shadow: var(--shadow-frosted-row);
+  /* ⚠️ `shadow/frosted-row` at 15%, asked for directly 15 Sep 2026, with the
+     option rows and the product groups; the token stays 10% (globals.css) */
+  box-shadow: inset 2px 4px 9px rgba(0, 0, 0, 0.15);
   -webkit-backdrop-filter: blur(var(--blur-card));
   backdrop-filter: blur(var(--blur-card));
 

@@ -66,6 +66,46 @@
   --chip-hit-inline: calc(var(--space-md) / 2 + var(--border-width-hairline)); /* 7 */
 }
 
+/* ⚠️ NOT IN FIGMA — AN UNSELECTED PILL WEARS STEP 1's SYMPTOM-CHIP REST STATE,
+   asked for directly 15 Sep 2026 ("like the my skin page pills"): the nav's
+   `#dbeded` at 34% over a `blur/sm` backdrop, the 135deg rest shade (ink 10%)
+   and a `surface/data-deep` teal hairline. A copy of
+   StartInvestigation.module.css's `.chips button[data-selected="false"]`,
+   not a shared class — if this recipe spreads further, raise it as a `Chip`
+   variant rather than a third copy.
+   ⚠️ ONLY THE REST STATE CAME ACROSS. A picked pill here stays `Chip`'s
+   indigo: step 1's rose is `bg/symptom`, the colour a SYMPTOM wears, and a
+   check-in answer is not one. The hover keeps `Chip`'s own grey hairline and
+   lift for the same reason — step 1's rose hover previews a rose pick.
+   (0,2,1) over `.chip` (0,1,0). */
+.options button[data-selected="false"] {
+  --chip-rest-shade: linear-gradient(
+    135deg,
+    transparent 35%,
+    color-mix(in srgb, var(--color-text-primary) 10%, transparent) 100%
+  );
+  background: var(--chip-rest-shade), #dbeded57;
+  border-color: var(--color-surface-data-deep);
+  -webkit-backdrop-filter: blur(var(--blur-sm));
+  backdrop-filter: blur(var(--blur-sm));
+}
+
+/* `Chip`'s touch reset puts `border/chip` back after a tap at (0,3,0); this
+   restores the teal at (0,4,1) */
+@media (hover: none) {
+  .options button[data-selected="false"]:hover:not(:disabled) {
+    border-color: var(--color-surface-data-deep);
+  }
+}
+
+@media (prefers-reduced-transparency: reduce) {
+  .options button[data-selected="false"] {
+    background: var(--chip-rest-shade), var(--color-bg-frost-light-muted);
+    -webkit-backdrop-filter: none;
+    backdrop-filter: none;
+  }
+}
+
 /* ---------------------------------------------------------------------------
    Turn 3's two buttons — `Add a note` / `Take a photo`.
 

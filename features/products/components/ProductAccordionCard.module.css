@@ -22,7 +22,10 @@
 
   border-radius: var(--radius-2xl);
   background: var(--color-surface-frost-light);
-  box-shadow: var(--shadow-frosted-row);
+  /* ⚠️ `shadow/frosted-row` at 15%, asked for directly 15 Sep 2026 — it went
+     to 20% first and came back to 5% over the token's 10%; the token itself is
+     unchanged (globals.css) */
+  box-shadow: inset 2px 4px 9px rgba(0, 0, 0, 0.15);
   -webkit-backdrop-filter: blur(var(--blur-card));
   backdrop-filter: blur(var(--blur-card));
 }
@@ -58,7 +61,10 @@
   /* 12 — the expanded value whether or not it is open, for the reason on
      `.card` above: the collapsed 8 sat between nothing */
   gap: var(--space-md);
-  padding: var(--space-md); /* 12 */
+  /* ⚠️ 10% MORE THAN `space/md`, asked for directly 15 Sep 2026 ("make the
+     design breathe more"): 13.2, written as a multiple of the token so it
+     still reads as the 12 step, loosened, rather than a new number */
+  padding: calc(var(--space-md) * 1.1);
 
   /* ⚠️ SUPERSEDED 13 Sep 2026, asked for directly: the surface and radius of
      `/check/new`'s product row (`ProductList`'s `.row`), which is also this

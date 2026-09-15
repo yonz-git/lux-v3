@@ -62,10 +62,11 @@
      only the size and its line step up, to 18 / 24 (the 16's 1.375 ratio,
      rounded down to a whole pixel). Off the type ramp: no Figma style has an
      overline at 18, so raise one if it stays. */
-  /* ⚠️ 18 / 24 — 22 / 28 and then 20 / 26 for a turn each, stepped back down
-     2px at a time, asked for directly 14 Sep 2026 */
-  font-size: 18px;
-  line-height: 24px;
+  /* ⚠️ 17 / 23 — 22 / 28 and then 20 / 26 for a turn each, stepped back down
+     2px at a time to 18 / 24, asked for directly 14 Sep 2026; then 1px
+     smaller, asked for directly 15 Sep 2026, the line following it */
+  font-size: 17px;
+  line-height: 23px;
   /* ⚠️ A GRADIENT RULE UNDER IT, IN THE INK — asked for directly 14 Sep 2026
      from a supplied reference: a streak with a faint glow around it, ANCHORED
      LEFT, strongest under the start of the heading and fading to nothing

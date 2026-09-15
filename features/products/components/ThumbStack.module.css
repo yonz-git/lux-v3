@@ -1,5 +1,11 @@
 /* ⚠️ NOT IN FIGMA — a deck of up to three product drawings. See `ThumbStack`
-   for what it draws and why 28 is a literal. */
+   for what it draws and why its size is a literal.
+   ⚠️ 56, NOT 28, as of 15 Sep 2026, asked for directly with the category row
+   doubling to 112: every measure below doubled with it — the well, the
+   overlap (−10 → −20) and the radius one step (`sm` 8 → `md` 12).
+   ⚠️ THEN 30% SMALLER, the same day, asked for directly: 56 → 40 (39.2,
+   rounded to a whole pixel), the overlap −20 → −14 and the radius back to
+   `sm` 8. The row stays 112. */
 .stack {
   flex: none;
   display: flex;
@@ -24,8 +30,8 @@
   align-items: center;
   justify-content: center;
   overflow: hidden;
-  width: 28px;
-  height: 28px;
+  width: 40px;
+  height: 40px;
   border-radius: var(--radius-sm);
   background: var(--color-bg-surface-frost);
   box-shadow:
@@ -34,7 +40,7 @@
 }
 
 .thumb + .thumb {
-  margin-left: -10px;
+  margin-left: -14px;
 }
 
 /* ⚠️ FRONT TO BACK, AND CAPPED AT THREE — paired with `PREVIEW_MAX`. Later

@@ -154,10 +154,15 @@
      asked for directly: glow 0.25 → 0.4, top catch 0.35 → 0.55, ring
      0.7 → 0.9 lit and 0.3 → 0.45 dim. ⚠️ The lit stop then came down 40%,
      0.9 → 0.54, the same day — it drew a bright line down the pill's left end. */
-  --edge-glow: 0.4;
-  --edge-catch: 0.55;
   --edge-ring-lit: 0.54;
   --edge-ring-dim: 0.45;
+}
+
+/* ⚠️ NO INNER GLOW ON THE PRIMARY, 15 Sep 2026, asked for directly: the edge
+   light's two inset box-shadows (the glow and the top catch) are gone, and
+   only its 1px ring (`.edge-light::before`) stays. Secondary keeps both. */
+.button:not(.secondary) :global(.edge-light) {
+  box-shadow: none;
 }
 
 /* The label sits in its own element so the hover shine can target it without

@@ -78,7 +78,9 @@
 
   border-radius: var(--radius-lg);
   background: var(--color-surface-frost-nav);
-  box-shadow: var(--shadow-frosted-row);
+  /* ⚠️ `shadow/frosted-row` at 15%, asked for directly 15 Sep 2026, with the
+     option rows and the date field; the token stays 10% (globals.css) */
+  box-shadow: inset 2px 4px 9px rgba(0, 0, 0, 0.15);
   -webkit-backdrop-filter: blur(var(--blur-card));
   backdrop-filter: blur(var(--blur-card));
 }
@@ -107,7 +109,10 @@
   align-items: center;
   gap: var(--space-md);
   width: 100%;
-  min-height: 56px;
+  /* ⚠️ 112, DOUBLE THE COMP'S 56, as of 15 Sep 2026, asked for directly, with
+     the thumb deck doubled to 56 inside it (ThumbStack.module.css). The notes
+     in this file that say "the row must stay 56" describe what it was. */
+  min-height: 112px;
   /* ⚠️ 14 TOP AND BOTTOM, NOT 0 — changed 13 Sep 2026, asked for directly from
      a real phone. With no vertical padding the row was 56 only because of
      `min-height`, so a name that wrapped (`Long-term products` does at 375)
@@ -116,6 +121,10 @@
      the tallest thing in it is the 28 thumb stack, and 28 + 14 + 14 = 56, so
      the comp height is untouched and only a wrapped row grows (to 76). */
   padding: 14px 18px;
+  /* ⚠️ THE LEFT IS 20% MORE, asked for directly 15 Sep 2026: 18 → 21.6 (it
+     was 10%, 19.8, for a turn), so the name sits further in than the chevron
+     does from the right */
+  padding-left: calc(18px * 1.2);
   text-align: left;
 
   /* no fill of its own — `.group` above is the surface. The radius stays so
@@ -125,15 +134,19 @@
 }
 
 /* name + window travel together and take the slack, so the count and chevron
-   stay pinned right. Baseline-aligned rather than centred: two different type
-   sizes on one line sit on the same baseline, exactly as `Your products` sets
-   its group headers. */
+   stay pinned right.
+   ⚠️ STACKED, NOT ONE LINE, as of 15 Sep 2026, asked for directly: the window
+   sits UNDER the name, left-aligned with it. It used to share the name's
+   baseline, as `Your products` still sets its group headers; the 112 row has
+   the height for two lines, which the 56 one did not. `space/2xs` between
+   them, so the two read as one label. */
 .copy {
   flex: 1;
   min-width: 0;
   display: flex;
-  align-items: baseline;
-  gap: var(--space-sm);
+  flex-direction: column;
+  align-items: flex-start;
+  gap: var(--space-2xs);
 }
 
 .categoryName {
@@ -158,18 +171,50 @@
      room inside it. */
 }
 
-/* ⚠️ THE ROW MUST STAY 56. The window sits BESIDE the name on one line, never
-   under it — a second line would push the row to ~72 and break the comp's
-   height on the one screen that shows four of them stacked. */
+/* ⚠️ THE WINDOW SITS UNDER THE NAME NOW (see `.copy`). It sat beside it while
+   the row had to stay 56; the row is 112 as of 15 Sep 2026, so the second
+   line costs no height. */
 .window {
   flex: none;
   color: var(--color-text-muted);
   white-space: nowrap;
 }
 
+/* ⚠️ NOT IN FIGMA — THE COUNT IS A DISC, 15 Sep 2026, asked for directly: the
+   secondary button's gradient (`button/bg-secondary-*`) taken 15% darker, a
+   circle (36 at first, 28 now — see `min-width` below) around the `H6`
+   numeral, and the ink one step
+   up to `text/primary` now that the numeral has a ground of its own. The
+   `min-width` + padding let a two- or three-digit count stretch the circle
+   into a pill rather than overflow it.
+   ⚠️ THEN BRIGHTENED 20% AND GIVEN THE EDGE LIGHT, the same day, asked for
+   directly: each darkened end mixed 20% toward white in OKLab (a lightness
+   step, as `.specular`'s streaks take theirs), and the fixed rim light
+   (globals.css `.edge-light`) at its pale-pill defaults — a real span in
+   MyProducts.tsx, which is why the disc is `position: relative`.
+   ⚠️ SUPERSEDED THE SAME DAY, asked for directly: after a further 20% and a
+   blue tone, the disc took the COLOURS of the skin profile card's answer
+   pills on PROGRESS instead — indigo `bg/brand` with a white numeral. The
+   gradient, both brightenings and the tint are gone; the size, the shape and
+   the edge light stay. */
 .count {
+  position: relative;
   flex: none;
-  color: var(--color-text-muted);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  /* ⚠️ 28, NOT 36, asked for directly later the same day ("smaller"). A
+     literal, off the size scale as the thumb deck's wells were at 28: the
+     scale runs 24, 32, 36 and this disc is neither an icon nor a control. The
+     padding came down one step with it so a two-digit count still fits. */
+  min-width: 28px;
+  height: 28px;
+  padding: 0 var(--space-xs);
+  border-radius: var(--radius-full);
+  /* the skin profile card's answer pill (SkinProfileTiles.module.css
+     `.tileValue`): `bg/brand` solid, `text/on-brand` white */
+  background: var(--color-bg-brand);
+  color: var(--color-text-on-brand);
 }
 
 /* ⚠️ NOT IN FIGMA — the deck of the group's first three products. See

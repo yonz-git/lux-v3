@@ -276,11 +276,12 @@ export function MyProducts() {
  * `aria-expanded` / `aria-controls` rather than a link, which is what tells a
  * screen reader the difference.
  *
- * ⚠️ IT IS STILL 56. `ThumbStack` sits BETWEEN the copy and the count, not
- * under the name: a second line would take the row to ~92 and this is the one
- * screen that stacks four of them. That was the whole reason the deck won over
- * a full-size preview strip — the strip is more legible and costs the comp's
- * height on the screen that can least afford it.
+ * ⚠️ IT WAS 56 AND IS 112 AS OF 15 Sep 2026, asked for directly, with the
+ * deck doubled to 56 inside it. `ThumbStack` still sits BETWEEN the copy and
+ * the count, not under the name — the deck won over a full-size preview strip
+ * because the strip cost the comp's height on the one screen that stacks four
+ * rows. The height has now been spent on purpose, on bigger pictures in the
+ * same position, not on a second line.
  *
  * ⚠️ AND THE PANEL IS A CHILD OF THE BOX, NOT A SIBLING OF THE ROW. `.group`
  * carries the surface; the button is its header and the panel its contents.
@@ -347,7 +348,9 @@ function CategoryGroup({
         aria-label={`${BUCKET_LIST_TITLE[bucket]}, ${BUCKET_WINDOW[bucket]}, ${n} product${n === 1 ? "" : "s"}`}
       >
         <span className={styles.copy}>
-          <span className={`${styles.categoryName} t-h6`}>
+          {/* ⚠️ `H5` (18/26), one step up from `H6`, asked for directly
+              15 Sep 2026 once the row doubled to 112 */}
+          <span className={`${styles.categoryName} t-h5`}>
             {BUCKET_LIST_TITLE[bucket]}
           </span>
           <span className={`${styles.window} t-label-sm`}>
@@ -357,7 +360,11 @@ function CategoryGroup({
         {/* nothing to preview in an empty group — and an empty span would
             still take the row's two 12 gaps on either side of it */}
         {n > 0 && <ThumbStack products={products} className={styles.preview} />}
-        <span className={`${styles.count} t-h6`}>{n}</span>
+        <span className={`${styles.count} t-h6`}>
+          {n}
+          {/* the fixed rim light (globals.css `.edge-light`) */}
+          <span className="edge-light" aria-hidden="true" />
+        </span>
         <ChevronDownIcon className={styles.chevron} />
       </button>
 

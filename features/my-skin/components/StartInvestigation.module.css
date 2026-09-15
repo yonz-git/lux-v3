@@ -101,15 +101,29 @@
    `.chip` (0,1,0); the hairline and the hover rose stay `Chip`'s and this
    file's. The reduced-transparency fallback below is the opaque fill it
    replaced. */
+/* ⚠️ AND IT CARRIES A SLIGHT SHADE, asked for directly 15 Sep 2026, "to match
+   the selected ones": the selected pill's 135deg darkening (`::before` above),
+   at half its strength — ink 10% where the selected shade mixes 20%. A
+   `background-image` on the pill rather than the fading `::before`, so it
+   drops out on select while the rose shade fades in over it. */
 .chips button[data-selected="false"] {
-  background: #dbeded57;
+  --chip-rest-shade: linear-gradient(
+    135deg,
+    transparent 35%,
+    color-mix(in srgb, var(--color-text-primary) 10%, transparent) 100%
+  );
+  background: var(--chip-rest-shade), #dbeded57;
+  /* ⚠️ THE HAIRLINE IS `surface/data-deep`'s TEAL, asked for directly 15 Sep
+     2026 from a supplied swatch, where `Chip` draws `border/chip`'s grey-green.
+     The hover rose below still replaces it. */
+  border-color: var(--color-surface-data-deep);
   -webkit-backdrop-filter: blur(var(--blur-sm));
   backdrop-filter: blur(var(--blur-sm));
 }
 
 @media (prefers-reduced-transparency: reduce) {
   .chips button[data-selected="false"] {
-    background: var(--color-bg-frost-light-muted);
+    background: var(--chip-rest-shade), var(--color-bg-frost-light-muted);
     -webkit-backdrop-filter: none;
     backdrop-filter: none;
   }
@@ -129,7 +143,7 @@
   }
 
   .chips button[data-selected="false"]:hover:not(:disabled) {
-    border-color: var(--color-border-chip);
+    border-color: var(--color-surface-data-deep);
   }
 }
 
@@ -181,7 +195,9 @@
      `surface/frost-light` hue at 12% where the token is 55%, so the row reads
      as glass beside the glass face. This row only; the token is unchanged. */
   background: #f4feff1f;
-  box-shadow: var(--shadow-frosted-row);
+  /* ⚠️ `shadow/frosted-row` at 15%, asked for directly 15 Sep 2026 — the app's
+     token is 10% (globals.css) and is unchanged; this row only */
+  box-shadow: inset 2px 4px 9px rgba(0, 0, 0, 0.15);
   -webkit-backdrop-filter: blur(var(--blur-card));
   backdrop-filter: blur(var(--blur-card));
   color: var(--color-text-primary);
@@ -203,6 +219,19 @@
 
 .otherFieldWrap {
   position: relative;
+}
+
+/* ⚠️ THE FIELD'S FOCUS RING IS THE ✓ / ✕ CIRCLES' OWN RIM, asked for directly
+   15 Sep 2026: `border/subtle` at full strength, where `TextField` draws
+   `gradient/brand` at 30%. This field only. (0,2,1) and (0,3,1) over
+   `TextField`'s `.wrap::after` (0,1,1) and `.wrap:focus-within::after`
+   (0,2,1), so both win on specificity rather than module load order. */
+.otherFieldWrap > span[class]::after {
+  background: var(--color-border-subtle);
+}
+
+.otherFieldWrap > span[class]:focus-within::after {
+  opacity: 1;
 }
 
 /* ✓ then ✕ in the field, ✎ then ✕ on the confirmed row */

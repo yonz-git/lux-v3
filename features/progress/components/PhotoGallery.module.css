@@ -97,7 +97,11 @@
   width: 100%;
   height: 100%;
   object-fit: cover;
-  filter: saturate(0.7);
+  /* ⚠️ AND AT 85% CONTRAST, asked for directly 15 Sep 2026 ("less contrast").
+     Gallery only — the other photo wells keep their own filter. The hover
+     rule below repeats it in the same order, so the two lists interpolate
+     function by function and hover lifts only the saturation. */
+  filter: saturate(0.7) contrast(0.85);
   transition: filter var(--duration-base) var(--ease-standard);
 }
 
@@ -110,11 +114,15 @@
   align-items: center;
   justify-content: center;
   flex: none;
-  width: var(--size-control-md);
-  height: var(--size-control-md);
+  /* ⚠️ 36 (`size/control-sm`), NOT 48, and the hairline IN THE ARROW'S INK —
+     both asked for directly 15 Sep 2026. The ring was `border/glass` white;
+     `currentColor` is `text/on-data`, so the circle and the chevron read as
+     one mark. The inner lights below stay. */
+  width: var(--size-control-sm);
+  height: var(--size-control-sm);
   margin-inline-start: var(--space-xs); /* + the strip's 8: 12 after the photos */
   border-radius: var(--radius-full);
-  border: var(--border-width-hairline) solid var(--color-border-glass);
+  border: var(--border-width-hairline) solid currentColor;
   /* ⚠️ NO FILL AND NO FROST — asked for directly 14 Sep 2026 ("remove the bg
      color of the arrow button"). The hairline and the inner lights stay, so
      the circle still reads as a control. */
@@ -136,7 +144,7 @@
 @media (hover: hover) {
   .strip:hover .art,
   .tile:hover .art {
-    filter: saturate(0.9);
+    filter: saturate(0.9) contrast(0.85);
   }
 
   .strip:hover .more {
