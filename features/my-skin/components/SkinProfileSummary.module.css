@@ -8,9 +8,10 @@
    became bare-canvas `canvas-card`s (globals.css) with 15px overlines, the
    typed `Other` is one centred `Other: <words>` line under the face, and the
    photo well carries the gallery thumbs' inner shadow. The notes below are the
-   history of the layout that decision replaced; `.headline*`, `.identity*`,
-   `.cardLabel`, `.meta*` and `.located[data-with-note]` no longer match
-   anything the component renders.
+   history of the layout that decision replaced. The rules that only the old
+   layout used — the headline card's `.identity*`, `.cardLabel` and
+   `.headlineLabel/Value`, the `.meta*` pairs and the side-by-side
+   `.located[data-with-note]` row — were deleted on 15 Sep 2026.
 
    ⚠️ NOT IN FIGMA. There is no recap frame on `06. Screen Designs`, so nothing
    here is transcribed; it is assembled from recipes that already exist, which is
@@ -50,82 +51,12 @@
    answers"). */
 
 /* ---------------------------------------------------------------------------
-   THE HEADLINE — Surface System B, the screen's one statement
-
-   `DataCard` carries the whole recipe (surface/data, the frosted-data shadow,
-   radius/2xl, 20/24 padding, a 16 gap, NO stroke), so this only positions it and
-   colours its lines. Same split `Analysis` makes with its verdict card.
-
-   ⚠️ THE CARD IS EVERYTHING TRUE BETWEEN EPISODES: the skin type and the
-   tendencies as two columns, and the known conditions as a full-width row under
-   them. Every answer about the episode itself — what was noticed, when, where —
-   is drawn in the light blocks below, as what it is. A supplied comp also gave
-   this card a `border/glass` rule with a current-symptoms line and a start date
-   under it; those were cut the same day, asked for directly, and there is no
-   divider left because there are no longer two halves to divide.
-
-   ⚠️ THE CONDITIONS ARRIVED LAST AND THEY ARE WHY THE SPLIT IS CLEAN. They had
-   a light block of their own, which put a standing fact about the skin in among
-   the episode. Moved here, each surface system says one thing: sage for what
-   the skin IS, light for what it is DOING.
-
-   ⚠️ THE GAP UNDER THE OVERLINE IS `DataCard`'s OWN 16 AND IS NOT WRITTEN HERE.
-   The comp draws it looser, but the card's internal rhythm is the component's
-   recipe (20/24 padding, a 16 row gap) and every other sage card in the app
-   keeps it. A local override would make this the one data card in LUX that
-   spaces its own heading differently.
+   THE PROFILE CARD — `SkinProfileTiles`, PROGRESS's own card, since 14 Sep
+   2026. It styles itself; this only spaces it from the blocks below.
    -------------------------------------------------------------------------- */
 
 .headline {
   margin-bottom: var(--space-3xl); /* 32 — see the interval run above */
-}
-
-/* ⚠️ THE SECOND COLUMN IS RIGHT-ALIGNED AND THAT IS THE WHOLE LAYOUT. Two
-   labelled values pushed to opposite edges read as one row of facts about the
-   same subject; the same two stacked read as two sections. `align-items:
-   flex-start` keeps the labels on one line when the tendencies wrap onto two,
-   and `min-width: 0` on the columns lets them wrap at all rather than pushing
-   the row wider than the card. */
-.identity {
-  display: flex;
-  align-items: flex-start;
-  justify-content: space-between;
-  gap: var(--space-lg); /* 16 */
-}
-
-.identityCol {
-  min-width: 0;
-}
-
-.identityEnd {
-  text-align: right;
-}
-
-/* the card's own heading. `t-overline` supplies the caps and the 1.82px
-   tracking; `DataCard`'s row gap supplies the space under it, so this only
-   zeroes the paragraph margin and picks the ink. */
-.cardLabel {
-  margin: 0;
-  color: var(--color-text-on-data-muted);
-}
-
-.headlineLabel {
-  margin: 0 0 var(--space-2xs); /* 2 */
-  color: var(--color-text-on-data-muted);
-}
-
-.headlineValue {
-  margin: 0;
-  color: var(--color-text-on-data);
-  /* the skin type is one or three words — balanced so "Normal or balanced"
-     does not break with a single word stranded on line two.
-
-     ⚠️ THE ONE LOCAL `balance` LEFT, AND IT HAS TO BE LOCAL. The ramp balances
-     HEADINGS; this value is `t-button` (17px), a CONTROL class the ramp
-     deliberately leaves alone so a chip or a button label cannot rewrap. Here
-     the class is doing duty as a data value on a card, so the rule it is
-     excluded from is the rule it wants. */
-  text-wrap: balance;
 }
 
 /* ---------------------------------------------------------------------------
@@ -213,90 +144,6 @@
 
 .otherNoteValue {
   color: var(--color-text-primary);
-}
-
-/* ⚠️ AND THE DIAGRAM SHARES THE BLOCK WHEN THERE IS A TYPED ANSWER — asked for
-   directly, 8 Sep 2026, in as many words: "the face diagram should shrink in
-   size and give space for the typed in text to be displayed". The first build
-   of that shrank the picture and put the sentence under it, which freed the
-   space and then left it empty — the block was the same shape, only smaller.
-   The row spends it.
-
-   ⚠️ THE FLEX BASES ARE WHAT DECIDE SIDE-BY-SIDE vs STACKED, AND NOTHING ELSE
-   DOES. `300 + 16 + 190` needs 506 of content box, so at 440 (block inner width
-   ~352) the pair cannot fit and the note wraps under a 300-wide diagram; on
-   desktop the block has ~776 and it fits, so the answer reads across — picture,
-   then the part of the answer the picture could not draw. No media query, and
-   deliberately not: this wraps on the CONTENT, and the same block is ~776 wide
-   on the desktop card and ~352 on a phone for reasons that have nothing to do
-   with a breakpoint.
-
-   ⚠️ `align-items: flex-start` IS LOAD-BEARING. Stretched, the `Meta` pair
-   would grow to the diagram's ~200 of height and its label would float in the
-   middle of it; the two things line up on their tops, where the block's own
-   label already is. */
-/* ⚠️ CENTRED, NOT LEFT-HUNG — asked for directly, 9 Sep 2026. `.face` caps at
-   300 (below) and stops growing there, so on any row wider than ~300+16+190 it
-   used to sit flush against the block's left edge with dead air on the right.
-   Centring the line reads as one deliberate object instead of a box someone
-   forgot to size. It only visibly moves anything once a line has slack to give
-   — the side-by-side row still fills edge to edge on its own. */
-.located[data-with-note] {
-  display: flex;
-  flex-wrap: wrap;
-  align-items: flex-start;
-  justify-content: center;
-  gap: var(--space-lg); /* 16 */
-}
-
-/* ⚠️ THE DIAGRAM STEPS DOWN FROM ITS DRAWN 392 ONLY IN THE ROW. The cap above
-   is the width the card is DRAWN at and is right for a block whose only content
-   is the diagram; here it is one of two answers, and 392 over a `392 / 300` box
-   is ~300 of picture before the chip row — enough that on a 440 phone the typed
-   line started below the fold. 300 takes the box to ~230.
-
-   ⚠️ AND IT DOES NOT GO BELOW 300 — 250 WAS BUILT FIRST AND BROKE THE PICTURE.
-   The diagram positions its region pills as PERCENTAGES of the box but sets
-   their labels at a fixed `t-label` 14, so below a certain width the pills stop
-   scaling with the box and start eating each other. Measured on the middle row:
-   `Cheeks (L)` / `Nose` / `Cheeks (R)` sit at -7 and -6 — the overlap the
-   diagram is DRAWN with — at every width from 300 up to its own 392, and go to
-   -11 and -10 at 280, where the selected pill covers the label beside it. 300
-   is the last width the face reads as itself. Anything that wants it narrower
-   has to make the labels responsive first, which is a `FaceDiagram` change and
-   a Figma question.
-
-   ⚠️ IT IS A LITERAL FOR THE SAME REASON 392 IS. Both are widths in the
-   diagram's own coordinate space, not steps on the spacing scale — writing
-   `--space-*` arithmetic here would dress a drawing measurement up as a layout
-   one. */
-.located[data-with-note] .face {
-  flex: 0 1 300px;
-  max-width: 300px;
-}
-
-/* ⚠️ THE NOTE TAKES THE REST, AND ITS BASIS IS A MEASURE RATHER THAN A SHARE.
-   190 is the narrowest this sentence can be set before it breaks into a column
-   of two-word lines; below that the row is worse than the stack, so the basis
-   is what forces the wrap rather than a breakpoint deciding it. ⚠️ THE `Meta`'s
-   OWN 12 TOP MARGIN GOES, in both directions, because the FLEX GAP is doing
-   that job now: beside the picture a top margin would drop the label below the
-   diagram's top edge, and under it the wrapped line already carries the row
-   gap's 16. A margin on top of a gap is two spacings for one interval. */
-/* ⚠️ CAPPED AT THE SAME 300 AS `.face`, added with the centring above. When
-   the note wraps onto its own line, `flex: 1 1 190px` used to grow it to fill
-   whatever the block's own width was, which put its LEFT edge back at the
-   block's edge — one line centred, one line not, reading as two different
-   alignments stacked on each other. Capped to match `.face`'s width, the two
-   lines centre to the SAME offset and the note's own left-aligned text lands
-   flush under the box's left edge instead. On the side-by-side row this same
-   cap narrows the note from filling the leftover ~460 down to 300 — the
-   trade for one consistent left edge instead of the note stretching wider
-   than the picture beside it. */
-.located[data-with-note] .meta {
-  flex: 1 1 190px;
-  max-width: 300px;
-  margin-top: 0;
 }
 
 /* ---------------------------------------------------------------------------
@@ -407,75 +254,6 @@
 .photoAction {
   margin-top: var(--space-md); /* 12 */
   align-self: flex-start;
-}
-
-/* ---------------------------------------------------------------------------
-   THE LABELLED PAIR — a single typed or stated fact, under the answer it
-   belongs to. Step 4's two lines under the symptom pills, and step 1's typed
-   "Other" under the face.
-
-   ⚠️ ALL OF STEP 4 LIVES HERE NOW. It had the sage card's lower half, then a
-   block of its own drawn as a two-node timeline rail; both are gone, asked for
-   directly, 7 Sep 2026. A date under a skin type is a date and a date under the
-   pills that name what was noticed is the AGE of those symptoms — which is the
-   only reading it was ever there for — and once the date sits here the status
-   has nowhere else it can honestly go either.
-
-   ⚠️ THE RAIL WENT WITH IT, AND IT WAS THE ONE DRAWING ON THIS SCREEN WITH NO
-   EXISTING RECIPE. Two 10px discs joined by a hairline, vertical on mobile and
-   horizontal across a grid on desktop. It is not a loss worth mourning: a
-   two-node rail is a lot of apparatus for two lines of text, and the span it
-   drew is stated in five words here. The ask stays open in
-   `docs/figma-catchup.md` because PROGRESS and the analysis both draw spans of
-   time and none of the three agree — but it belongs to the DS, not to this
-   screen.
-   -------------------------------------------------------------------------- */
-
-/* ⚠️ THE CARD'S LABEL-OVER-VALUE SHAPE, NOT TWO RUNNING LINES — asked for
-   directly, 8 Sep 2026. Both facts were `t-body3` sentences ("Started Aug 31,
-   2026 · Day 9", "Current state: Getting worse"), which drew step 4 as footnotes
-   under the pills while every other answer on the screen is a labelled value.
-   The geometry is `.headlineLabel` / `.headlineValue` two hundred lines up: 2
-   between a label and its value, the value at `t-button`. The INK is this
-   surface's, not that one's — System A's `text/muted` over `text/primary`,
-   where the card takes `text/on-data*`. */
-.meta {
-  margin-top: var(--space-md); /* 12 — the interval the block's own label takes */
-}
-
-/* the two pairs are still a pair — when it started, and where it has got to —
-   so they sit closer to each other than either does to the label above them.
-   ⚠️ 8, NOT THE 4 THE RUNNING LINES USED: each pair is now two lines deep with
-   2 inside it, and 4 between them left the four lines reading as one column. */
-.meta + .meta {
-  margin-top: var(--space-sm); /* 8 */
-}
-
-.metaLabel {
-  margin: 0 0 var(--space-2xs); /* 2 — the card's own label gap */
-  color: var(--color-text-muted);
-}
-
-.metaValue {
-  margin: 0;
-  color: var(--color-text-primary);
-}
-
-/* ⚠️ THE PAIR IS SHARED WITH THE LOCATION BLOCK AS OF 8 Sep 2026 and needed
-   nothing of its own to go there: 12 under the face is the same interval it
-   takes under the label, because both are "the block's own label gap", and the
-   ink is this surface's either way. What it is NOT is a caption — a caption
-   describes the picture above it, and this describes the answer the picture
-   could not draw. */
-
-/* ⚠️ ADJACENCY, NOT A FIXED TOP MARGIN. The label already carries its own 12,
-   so a pair straight under it takes none; a margin on the pair itself stacked
-   on that 12 and opened 24 under a heading with one line beneath it. It was
-   written for when `TagList` could render nothing between the two; the list
-   was deleted on 14 Sep 2026, and step 4's pairs now sit under the label every
-   time. */
-.blockLabel + .meta {
-  margin-top: 0;
 }
 
 /* ---------------------------------------------------------------------------

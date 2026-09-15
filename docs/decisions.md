@@ -1336,11 +1336,13 @@ moves the pill, which is exactly the drift the ramp exists to prevent. The
 browser also caps `balance` at a handful of lines, so it is a heading tool by
 construction.
 
-⚠️ **ONE LOCAL DECLARATION SURVIVES**, on `SkinProfileSummary`'s
-`.headlineValue`. It wears `t-button` — a control class — as a DATA VALUE on the
-recap's sage card, so the rule the ramp excludes it from is the rule it wants.
-That is the shape of a legitimate local `text-wrap`: a control class doing
-non-control duty. Anything else belongs on the ramp.
+⚠️ **ONE LOCAL DECLARATION SURVIVED, AND IS GONE AS OF 15 Sep 2026**, on
+`SkinProfileSummary`'s `.headlineValue`. It wore `t-button` — a control class —
+as a DATA VALUE on the recap's sage card, so the rule the ramp excludes it from
+was the rule it wanted. The card was replaced by `SkinProfileTiles` on 14 Sep
+2026 and the class was deleted the next day. That is still the shape of a
+legitimate local `text-wrap`: a control class doing non-control duty. Anything
+else belongs on the ramp.
 
 ## Pressed was one component's state and is now the app's
 

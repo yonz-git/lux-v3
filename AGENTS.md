@@ -595,9 +595,10 @@ ROLE, the same way tabular figures are (non-negotiable 19). ⚠️ **The CONTROL
 classes are deliberately excluded** — `t-label`, `t-label-sm`, `t-button`,
 `t-button-md`, `t-button-sm`, `t-nav` and `t-overline` size chips, buttons and section labels whose
 widths are measured against Figma, and balancing a two-line chip label moves the
-pill. `SkinProfileSummary`'s `.headlineValue` is the one local `balance` left,
-because it wears `t-button` as a data value rather than as a control. **Do not
-write `text-wrap` in a module** unless you are in that same position.
+pill. **No local `balance` is left** — `SkinProfileSummary`'s `.headlineValue`
+was the last, and it went on 15 Sep 2026 with the sage card that used it. **Do
+not write `text-wrap` in a module** unless a control class is doing duty as a
+data value, which was that rule's reason.
 
 ### Spacing — `--space-*`
 
