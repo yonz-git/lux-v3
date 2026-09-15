@@ -433,3 +433,18 @@
     --per-view: 4;
   }
 }
+
+/* the intro's count follows `--per-view` — see `PER_VIEW_*` */
+.perViewDesktop {
+  display: none;
+}
+
+@media (min-width: 1024px) {
+  .perViewMobile {
+    display: none;
+  }
+
+  .perViewDesktop {
+    display: inline;
+  }
+}
