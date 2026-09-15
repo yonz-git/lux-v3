@@ -102,7 +102,7 @@
      rule below repeats it in the same order, so the two lists interpolate
      function by function and hover lifts only the saturation. */
   filter: saturate(0.7) contrast(0.85);
-  transition: filter var(--duration-base) var(--ease-standard);
+  transition: filter var(--duration-base) var(--ease-hover);
 }
 
 /* The circle that says the row is a control: the segmented toggle's frosted
@@ -134,7 +134,7 @@
   /* ⚠️ HOVER GROWS IT TO 1.05 WITH NO COLOUR CHANGE — asked for directly 14 Sep
      2026, replacing the indigo pill it faded in. NOT the board's "no
      transform" rule, which is about PRESSED; this is hover only. */
-  transition: transform var(--duration-base) var(--ease-standard);
+  transition: transform var(--duration-base) var(--ease-hover);
 }
 
 .moreIcon {

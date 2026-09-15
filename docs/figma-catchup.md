@@ -578,6 +578,17 @@ navigating control takes and that the sets do not draw it. The inline text links
 they have no radius or padding, so the overlay reads as a highlighter box, and
 what a pressed text link should look like is an open question for the file.
 
+### `ease/hover` — a second UI curve, code-only (15 Sep 2026)
+
+`09 Motion` has one UI curve, `ease/standard` (0.2, 0, 0, 1). Every hover
+rode it, and it front-loads: 50% of the change at 20% of the duration. On
+`duration/fast` a hover was half done in 24ms and read as a snap. The build
+adds `--ease-hover: cubic-bezier(0.25, 0.1, 0.25, 1)` (CSS `ease`) on `:root`
+in `globals.css` and puts every hover-only transition on it; durations are
+unchanged. For Figma: add `ease/hover` to `09 Motion`, and note on board 04b
+that hover uses it while anything that enters or settles keeps
+`ease/standard`.
+
 ### Mobile frames pad 58 at the top; the build uses 40
 
 40 is the value every other screen uses, and page-level whitespace is what

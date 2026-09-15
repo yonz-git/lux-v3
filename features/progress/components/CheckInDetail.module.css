@@ -156,7 +156,7 @@
   color: var(--color-text-on-data);
   text-decoration: underline;
   text-underline-offset: 3px;
-  transition: opacity var(--duration-fast) var(--ease-standard);
+  transition: opacity var(--duration-fast) var(--ease-hover);
 }
 
 .noteEdit:hover {
@@ -328,7 +328,7 @@
   padding: 0;
   border-radius: var(--radius-full);
   color: var(--color-text-on-data-muted);
-  transition: opacity var(--duration-fast) var(--ease-standard);
+  transition: opacity var(--duration-fast) var(--ease-hover);
 }
 
 .remove:hover {
@@ -406,8 +406,9 @@
      15 Sep 2026 ("smoothen hover animation"). The fill ran on `duration/fast`
      (120) under ink on `duration/base` (200), so the row darkened, finished,
      and only then did its text finish going white — two steps where there
-     should be one. Both now take 320 on `ease/standard`. */
-  transition: background-color var(--duration-slow) var(--ease-standard);
+     should be one. Both now take 320 on `ease/hover` (globals.css
+     `--ease-hover`). */
+  transition: background-color var(--duration-slow) var(--ease-hover);
 }
 
 .result:hover {
@@ -420,7 +421,7 @@
 .resultName,
 .resultMeta,
 .plus {
-  transition: color var(--duration-slow) var(--ease-standard);
+  transition: color var(--duration-slow) var(--ease-hover);
 }
 
 .result:hover .resultName,

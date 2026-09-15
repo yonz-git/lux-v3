@@ -113,7 +113,7 @@
   height: var(--size-control-sm);
   border-radius: var(--radius-full);
   color: var(--color-icon-default);
-  transition: background-color var(--duration-fast) var(--ease-standard);
+  transition: background-color var(--duration-fast) var(--ease-hover);
 }
 
 .navBtn:hover {
@@ -195,7 +195,7 @@
 .action {
   color: var(--color-text-brand);
   padding: var(--space-2xs) 0;
-  transition: opacity var(--duration-fast) var(--ease-standard);
+  transition: opacity var(--duration-fast) var(--ease-hover);
 }
 
 .action:hover {

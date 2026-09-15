@@ -123,10 +123,10 @@
      interpolate background-image; registered <color> properties do. */
   transition:
     opacity var(--duration-base) var(--ease-standard),
-    color var(--button-hover-duration) var(--ease-standard),
-    border-color var(--button-hover-duration) var(--ease-standard),
-    --grad-start var(--button-hover-duration) var(--ease-standard),
-    --grad-end var(--button-hover-duration) var(--ease-standard);
+    color var(--button-hover-duration) var(--ease-hover),
+    border-color var(--button-hover-duration) var(--ease-hover),
+    --grad-start var(--button-hover-duration) var(--ease-hover),
+    --grad-end var(--button-hover-duration) var(--ease-hover);
 }
 
 /* ⚠️ NOT IN FIGMA — THE PRIMARY'S HOVER RIM IS LOUDER, 14 Sep 2026, asked for

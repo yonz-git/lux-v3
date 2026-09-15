@@ -146,7 +146,7 @@
 .remove {
   color: var(--color-text-error);
   border-radius: var(--radius-sm);
-  transition: opacity var(--duration-fast) var(--ease-standard);
+  transition: opacity var(--duration-fast) var(--ease-hover);
 }
 
 .remove:hover {

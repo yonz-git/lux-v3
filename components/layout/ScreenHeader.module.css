@@ -20,7 +20,7 @@
   margin-left: calc((var(--size-icon-md) - var(--size-touch-target)) / 2);
   color: var(--color-icon-default);
   border-radius: var(--radius-full);
-  transition: opacity var(--duration-fast) var(--ease-standard);
+  transition: opacity var(--duration-fast) var(--ease-hover);
 }
 
 .back:hover {

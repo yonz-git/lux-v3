@@ -39,8 +39,8 @@
   text-decoration: none;
   white-space: nowrap;
 
-  transition: --grad-start var(--duration-hover) var(--ease-standard),
-    --grad-end var(--duration-hover) var(--ease-standard);
+  transition: --grad-start var(--duration-hover) var(--ease-hover),
+    --grad-end var(--duration-hover) var(--ease-hover);
 }
 
 .button:hover:not(:disabled) {

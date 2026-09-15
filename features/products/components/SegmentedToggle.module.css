@@ -148,8 +148,8 @@
   opacity: 0;
   transition:
     opacity var(--duration-base) var(--ease-standard),
-    --grad-start var(--duration-hover) var(--ease-standard),
-    --grad-end var(--duration-hover) var(--ease-standard);
+    --grad-start var(--duration-hover) var(--ease-hover),
+    --grad-end var(--duration-hover) var(--ease-hover);
 }
 
 /* Selected state — gradient pill visible, white label. */

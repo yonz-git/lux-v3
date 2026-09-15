@@ -37,7 +37,7 @@
   padding: 0;
   border-radius: var(--radius-full);
   color: var(--color-icon-on-data);
-  transition: opacity var(--duration-fast) var(--ease-standard);
+  transition: opacity var(--duration-fast) var(--ease-hover);
 }
 
 .arrowIcon {
@@ -193,7 +193,7 @@
      going away on a later render cannot cancel a landing mid-flight; only a
      disc with a starting style (below) ever has anything to transition. */
   transition:
-    opacity var(--duration-fast) var(--ease-standard),
+    opacity var(--duration-fast) var(--ease-hover),
     background-color var(--duration-slow) var(--ease-standard) var(--duration-base),
     color var(--duration-slow) var(--ease-standard) var(--duration-base),
     scale var(--duration-slow) var(--ease-standard) var(--duration-base);

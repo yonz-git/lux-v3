@@ -117,7 +117,7 @@
   padding: 0;
   color: var(--color-text-primary);
   border-radius: var(--radius-sm);
-  transition: opacity var(--duration-fast) var(--ease-standard);
+  transition: opacity var(--duration-fast) var(--ease-hover);
 }
 
 .edit:hover {
@@ -203,7 +203,7 @@
   padding: 0;
   border-radius: var(--radius-full);
   color: var(--color-icon-default);
-  transition: opacity var(--duration-fast) var(--ease-standard);
+  transition: opacity var(--duration-fast) var(--ease-hover);
 }
 
 .pendingRemove:hover {
@@ -268,7 +268,7 @@
   padding: 0;
   color: var(--color-text-primary);
   border-radius: var(--radius-sm);
-  transition: opacity var(--duration-fast) var(--ease-standard);
+  transition: opacity var(--duration-fast) var(--ease-hover);
 }
 
 .cancel:hover {
@@ -307,7 +307,7 @@
 
   border-radius: var(--radius-sm);
   color: inherit;
-  transition: background-color var(--duration-fast) var(--ease-standard);
+  transition: background-color var(--duration-fast) var(--ease-hover);
 }
 
 .pick:hover {
@@ -440,8 +440,8 @@
   --shine-ink: var(--color-text-on-brand);
   transition:
     opacity var(--duration-hover) var(--ease-standard),
-    --grad-start var(--duration-hover) var(--ease-standard),
-    --grad-end var(--duration-hover) var(--ease-standard);
+    --grad-start var(--duration-hover) var(--ease-hover),
+    --grad-end var(--duration-hover) var(--ease-hover);
 }
 
 @media (hover: hover) {
@@ -514,7 +514,7 @@
   color: var(--color-text-secondary);
   /* the hover shine's ink — see `.askConfirm` */
   --shine-ink: var(--color-text-secondary);
-  transition: background-color var(--duration-fast) var(--ease-standard);
+  transition: background-color var(--duration-fast) var(--ease-hover);
 }
 
 @media (hover: hover) {
