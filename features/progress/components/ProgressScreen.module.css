@@ -46,6 +46,17 @@
   display: none;
 }
 
+/* ⚠️ THE SKIN PROFILE CARD'S PADDING ON A PHONE, asked for directly 15 Sep
+   2026: `SkinProfileTiles`' 1.4rem (22.4) where `DataCard` gives 20. Doubled
+   to beat `DataCard`'s single class on specificity rather than load order.
+   Desktop keeps `DataCard`'s 24 — restated in the 1024 block below, since
+   this doubled rule would otherwise outrank that one too. */
+.faceCard.faceCard,
+.galleryDesktop.galleryDesktop,
+.galleryMobile.galleryMobile {
+  padding: 1.4rem;
+}
+
 /* ⚠️ THE FACE AND GALLERY CARDS ARE BARE CANVAS — asked for directly 14 Sep
    2026 ("use same bg as skin profile for the box symptoms and location",
    then "apply the profile bg to gallery box"). NOT IN FIGMA. The recipe was
@@ -181,6 +192,13 @@
   .cta,
   .lastCheckIn {
     margin-top: 0;
+  }
+
+  /* `DataCard`'s desktop 24, back over the phone's 1.4rem above */
+  .faceCard.faceCard,
+  .galleryDesktop.galleryDesktop,
+  .galleryMobile.galleryMobile {
+    padding: var(--space-2xl); /* 24 */
   }
 
   /* ⚠️ THE ACTION STAYS UNDER THE CALENDAR, NOT IN FIGMA. The handoff puts

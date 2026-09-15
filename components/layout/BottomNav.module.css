@@ -173,7 +173,12 @@
      408 viewport. `(100vw - 320px) / 8` spends exactly the slack there is — 0
      on a 320 phone (235 in 243), ~7 at 375 (290 in 298) — capped at
      `space/md` from 416 up. */
-  padding: 0 clamp(0px, calc((100vw - 320px) / 8), var(--space-md));
+  /* ⚠️ 2 UNDER, 0 OVER — asked for directly 15 Sep 2026 ("more bottom padding
+     to match the top"). The label's 22 line box was already centred in the
+     44 (11 / 11), but `t-nav`'s glyphs sit low in that box, so the pill read
+     heavier underneath. 2 of bottom padding lifts the centred label 1px; the
+     pill stays 44 because `min-height` still sets it. */
+  padding: 0 clamp(0px, calc((100vw - 320px) / 8), var(--space-md)) 2px;
   border-radius: var(--radius-full);
 
   /* duration/base to match the button's hover fade, so both controls soften at

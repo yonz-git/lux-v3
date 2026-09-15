@@ -142,10 +142,14 @@
    are the record. `--today-ring` is shared with the legend key below so the
    key keeps mirroring the day exactly. ⚠️ At 15% the ring is decorative, not
    a contrast-bearing edge — "today" is also named in the legend, so the state
-   is not carried by this ring alone. */
+   is not carried by this ring alone.
+   ⚠️ RAISED TO 50% ON 15 Sep 2026, asked for directly ("make this white circle
+   more visible") — at 15% the legend key all but vanished on the card. It is
+   still under full white, so the indigo discs stay the loudest mark, and the
+   day's ring rises with the key because the two share this variable. */
 .grid,
 .legend {
-  --today-ring: color-mix(in srgb, var(--color-text-on-data-inverse) 15%, transparent);
+  --today-ring: color-mix(in srgb, var(--color-text-on-data-inverse) 50%, transparent);
 }
 
 .day[data-today] {

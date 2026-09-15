@@ -132,6 +132,11 @@
   color: var(--color-text-on-data);
   /* ⚠️ REGULAR, NOT `t-h5`'s MEDIUM — asked for directly 14 Sep 2026 */
   font-weight: var(--font-weight-regular);
+  /* ⚠️ ALL CAPS, asked for directly 15 Sep 2026 ("capitalize"), like the
+     other cards' headings on PROGRESS — but at `H5`'s size and tracking, not
+     `t-overline`'s. The source text stays `Symptom Trend`, so a screen reader
+     reads words rather than letters. */
+  text-transform: uppercase;
 }
 
 .chart {
