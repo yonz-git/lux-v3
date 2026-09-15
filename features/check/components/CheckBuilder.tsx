@@ -6,7 +6,7 @@ import styles from "./CheckBuilder.module.css";
 import { HubScreen } from "@/components/layout/HubScreen";
 import { Button } from "@/components/ui/Button";
 import { SearchField } from "@/components/ui/SearchField";
-import { SkinProfileStrip } from "./SkinProfileStrip";
+import { SkinProfileTiles } from "./SkinProfileTiles";
 import { ProductRow } from "@/features/products/components/ProductList";
 import { ProductDetails } from "@/features/products/components/ProductDetails";
 import { ProductThumb } from "@/features/products/components/ProductThumb";
@@ -18,11 +18,13 @@ import { useInvestigation } from "@/lib/store/InvestigationProvider";
 import { DROP_EXIT_MS, useDialogPresence, useHeldWhileClosing } from "@/lib/useModalDialog";
 import { MAX_CHECK_PRODUCTS, matchedActives } from "@/features/check/check";
 import { useCheckSearch } from "@/features/check/useCheckSearch";
-import { ownedProducts, skinProfile } from "@/lib/demo";
+import { ownedProducts } from "@/lib/demo";
+import { formatLong } from "@/lib/date";
+import { useToday } from "@/lib/useToday";
+import { dayNumber, progressView } from "@/features/progress/progress";
 import {
   type CatalogProduct,
   fullName,
-  resultMeta,
 } from "@/features/products/products";
 
 /**
@@ -67,9 +69,12 @@ import {
  * button, same pattern as `CheckBasket`'s own remove control, and the tag's
  * fill/label are unchanged.
  */
-export function CheckBuilder() {
+export function CheckBuilder({ now }: { now: number }) {
   const router = useRouter();
   const { answers, setAnswer } = useInvestigation();
+  /* the skin profile card's values, from PROGRESS's own view — so the two
+     cards cannot say different things about the same person */
+  const profile = progressView(answers, useToday(now));
 
   const [sheetOpen, setSheetOpen] = useState(false);
   const [addManually, setAddManually] = useState(false);
@@ -176,19 +181,21 @@ export function CheckBuilder() {
 
   const ownedIdsWhenOpened = (answers.products ?? []).map((p) => p.id);
 
-  /** The row's meta line, plus the ingredient that pulled it in when the query
-   *  matched nothing visible on the row itself. */
+  /** The line under a dropdown row: ONLY the ingredient that pulled it in when
+   *  the query matched nothing visible on the row itself, and nothing
+   *  otherwise. ⚠️ It carried the brand and the size too until 15 Sep 2026 —
+   *  the brand now leads the title (`fullName`) and the size lives in the
+   *  details, both asked for directly. */
   function metaFor(p: CatalogProduct): string {
-    const base = resultMeta(p);
-    if (!searching) return base;
+    if (!searching) return "";
     const hits = matchedActives(p, query);
-    if (hits.length === 0) return base;
-    const face = `${p.brand} ${p.name} ${p.size}`.toLowerCase();
+    if (hits.length === 0) return "";
+    const face = `${p.brand} ${p.name}`.toLowerCase();
     /* only when the match is INVISIBLE on the row — "Retinol B3 Serum" already
        says retinol, and repeating it reads as a bug rather than a reason */
     const hidden = hits.filter((h) => !face.includes(h.toLowerCase().split(" ")[0]));
-    if (hidden.length === 0) return base;
-    return `${base} · Contains ${hidden.join(", ")}`;
+    if (hidden.length === 0) return "";
+    return `Contains ${hidden.join(", ")}`;
   }
 
   /** ⚠️ ONE FIXED SLOT FOR BOTH STATES — NOT IN FIGMA. The handoff's swap is
@@ -247,7 +254,21 @@ export function CheckBuilder() {
         layout="card"
         tightTop
       >
-        <SkinProfileStrip {...skinProfile(answers)} />
+        {/* ⚠️ PROGRESS's SKIN PROFILE CARD, NOT THE STRIP — asked for directly
+            15 Sep 2026 ("update the profile card accordingly to progress
+            page"). The same `SkinProfileTiles` with the same four answers and
+            the state's start date, derived exactly as `ProgressScreen` derives
+            them. `/check/results` took the same card the same day. */}
+        <SkinProfileTiles
+          skinType={profile.skinType ?? "Not set"}
+          tendencies={profile.tendencies?.length ? profile.tendencies.join(", ") : "None"}
+          conditions={profile.conditions?.length ? profile.conditions.join(", ") : "None"}
+          symptomsState={profile.status ?? "Not set"}
+          symptomsStarted={{
+            date: formatLong(profile.start),
+            day: dayNumber(profile.start, profile.today),
+          }}
+        />
 
         {/* ⚠️ THE RESULTS ARE A FLOATING DROPDOWN, NOT THE PAGE'S LIST —
             NOT IN FIGMA, and the same call the PRODUCTS tray already made. They
@@ -340,16 +361,18 @@ export function CheckBuilder() {
                             <ProductThumb product={p} />
                             <span className={styles.resultCopy}>
                               <span className={`${styles.resultName} t-h6`}>
-                                {p.name}
+                                {fullName(p)}
                               </span>
-                              {/* ⚠️ BRAND **AND SIZE**, plus the ingredient that
-                                  pulled the row in when the query matches
-                                  nothing visible on it — typing "salicylic"
-                                  returns "BHA Exfoliant · Paula's Choice", a row
-                                  with the word nowhere on it. */}
-                              <span className={`${styles.resultMeta} t-label-sm`}>
-                                {metaFor(p)}
-                              </span>
+                              {/* ⚠️ ONLY the ingredient that pulled the row in
+                                  when the query matches nothing visible on it
+                                  — typing "salicylic" returns "Paula's Choice
+                                  BHA Exfoliant", a row with the word nowhere on
+                                  it. No size under the title (15 Sep 2026). */}
+                              {metaFor(p) && (
+                                <span className={`${styles.resultMeta} t-label-sm`}>
+                                  {metaFor(p)}
+                                </span>
+                              )}
                             </span>
                             {trailingFor(p)}
                           </div>
@@ -380,8 +403,7 @@ export function CheckBuilder() {
                       without leaving for the Products tab and coming back.
                       Same block the hub opens: `ProductDetails`. */}
                   <ProductRow
-                    name={p.name}
-                    meta={resultMeta(p)}
+                    name={fullName(p)}
                     product={p}
                     trailing={trailingFor(p)}
                     details={<ProductDetails product={p} />}

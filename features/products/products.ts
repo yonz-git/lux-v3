@@ -342,16 +342,61 @@ export function productById(id: string): CatalogProduct | undefined {
   return CATALOG.find((p) => p.id === id);
 }
 
-/** The row title: the comps write "CeraVe Moisturizing Cream", brand first. */
+/** A quantity written into a name: "50ml", "1.7 fl oz", "200 g". */
+const QUANTITY_IN_NAME = /\s*\b\d+(?:[.,]\d+)?\s*(?:fl\.?\s*oz|oz|ml|cl|l|g|kg)\b\.?/gi;
+
+/**
+ * The row title: the comps write "CeraVe Moisturizing Cream", brand first.
+ *
+ * ⚠️ TWO CLEAN-UPS FOR LIVE OPEN BEAUTY FACTS NAMES, 15 Sep 2026 — asked for
+ * directly ("remove 50ml"). OBF names are crowdsourced and often carry their
+ * own size and brand: "DOVE Déodorant Femme … Original 50ml" by "Dove" titled
+ * itself "Dove DOVE Déodorant … 50ml". The size is stripped out of the name
+ * (it lives in `ProductDetails`, in ml), and the brand is not prefixed a
+ * second time when the name already opens with it, case aside. The
+ * catalogue's own names carry neither, so they are untouched.
+ */
 export function fullName(p: CatalogProduct): string {
-  return `${p.brand} ${p.name}`;
+  const name = p.name.replace(QUANTITY_IN_NAME, "").replace(/\s{2,}/g, " ").trim();
+  return name.toLowerCase().startsWith(p.brand.toLowerCase())
+    ? name
+    : `${p.brand} ${name}`;
 }
 
-/** The `meta` line under a search result: "CeraVe — 16 oz tub". Live Open
- *  Beauty Facts entries sometimes carry no size, so the dash is dropped
- *  rather than trailing on nothing. */
-export function resultMeta(p: CatalogProduct): string {
-  return p.size ? `${p.brand}, ${p.size}` : p.brand;
+/** One US fluid ounce in millilitres. */
+const ML_PER_FL_OZ = 29.5735;
+
+/**
+ * A product's size as the app SHOWS it: millilitres, the number and the unit
+ * only — "16 oz tub" reads "473 ml", "1.35 fl oz" reads "40 ml", Open Beauty
+ * Facts' "50ml" reads "50 ml". Asked for directly 15 Sep 2026 ("use ml, not oz
+ * nor tub").
+ *
+ * ⚠️ A DISPLAY FORMAT, NOT A DATA CHANGE. `size` keeps the catalogue's own
+ * words because `ProductArt`'s `formFor` reads "tub" and "pump" out of it to
+ * pick the vessel, and search still matches "16 oz".
+ *
+ * ⚠️ PLAIN `oz` IS READ AS FLUID OUNCES. On a cream tub it is strictly a
+ * weight; a prototype asked for one unit, and 1 oz of cream is close enough to
+ * 1 fl oz that the number a reader sees is honest to within a few percent.
+ * A size it cannot parse (grams, a count) is passed through untouched.
+ */
+export function sizeInMl(size: string | undefined): string | undefined {
+  const text = size?.trim();
+  if (!text) return undefined;
+  const match = text.match(/(\d+(?:[.,]\d+)?)\s*(fl\.?\s*oz|oz|ml|cl|l)\b/i);
+  if (!match) return text;
+  const amount = Number.parseFloat(match[1].replace(",", "."));
+  const unit = match[2].toLowerCase().replace(/[\s.]/g, "");
+  const ml =
+    unit === "ml"
+      ? amount
+      : unit === "cl"
+        ? amount * 10
+        : unit === "l"
+          ? amount * 1000
+          : amount * ML_PER_FL_OZ;
+  return `${Math.round(ml)} ml`;
 }
 
 /**
@@ -378,11 +423,12 @@ const FIELD_WEIGHT = {
   /** the product's own name — what someone is most likely typing */
   name: 40,
   brand: 30,
-  /** ⚠️ SIZE IS SEARCHABLE, and it was not. `resultMeta` puts it on every row
-      precisely because the catalogue holds a 16 oz and a 12 oz CeraVe
-      Moisturizing Cream that are identical on brand alone — so the one field
-      that exists to tell two rows apart was the one field you could see and
-      not type. "16 oz" returned nothing. */
+  /** ⚠️ SIZE IS SEARCHABLE, and it was not. The catalogue holds a 16 oz and a
+      12 oz CeraVe Moisturizing Cream that are identical on brand alone — so
+      the one field that exists to tell two rows apart was the one field you
+      could see and not type. "16 oz" returned nothing. (Rows stopped printing
+      the size under the name on 15 Sep 2026; it lives in `ProductDetails`, in
+      ml, and still matches here in the catalogue's own words.) */
   size: 16,
   /** what the product CONTAINS — see `extraTerms` below */
   ingredient: 12,

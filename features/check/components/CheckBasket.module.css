@@ -39,7 +39,10 @@
   backdrop-filter: blur(var(--blur-card));
 
   color: var(--color-text-on-data);
-  text-align: left;
+  /* ⚠️ CENTRED IN BOTH STATES, asked for directly 15 Sep 2026 — the goal line
+     first, then the ready line ("align center too"). The chevron is taken out
+     of the flow (`.barChevron`) so it cannot pull the words off centre. */
+  text-align: center;
   transition: opacity var(--duration-fast) var(--ease-standard);
 }
 
@@ -70,20 +73,35 @@
 .barLabel {
   flex: 1;
   min-width: 0;
+  /* the chevron's 24 plus an 8 gap, reserved on BOTH sides — so a long label
+     wraps before it reaches the arrow, and the words stay centred on the pill
+     whether or not the arrow is there */
+  padding-inline: calc(var(--size-icon-md) + var(--space-sm));
 }
 
 /* points UP, because the sheet opens upward */
 .barChevron {
-  flex: none;
+  /* ⚠️ ABSOLUTE, NOT A FLEX ITEM — asked for directly 15 Sep 2026 ("don't
+     count the up arrow"). In the row it took 24 + the 12 gap off the label's
+     width, so the centred words sat 18 left of the pill's middle. Pinned to
+     the bar's own right padding and vertically centred, it no longer takes
+     part in the layout; `.bar` is `position: fixed`, so it is the containing
+     block. */
+  position: absolute;
+  top: 50%;
+  right: var(--space-xl); /* 20 — the bar's own side padding */
   width: var(--size-icon-md);
   height: var(--size-icon-md);
-  transform: rotate(180deg);
+  transform: translateY(-50%) rotate(180deg);
   color: var(--color-icon-on-data);
 }
 
 @media (min-width: 1024px) {
   .bar {
-    width: var(--width-card-focus); /* 640 */
+    /* ⚠️ THE NAV'S 598, NOT THE CARD COLUMN'S 640 — asked for directly
+       15 Sep 2026 ("match the width of the element to the nav bar"). On a
+       phone the two already shared `size/nav-width-mobile`. */
+    width: var(--size-nav-width-desktop); /* 598 */
     max-width: none;
   }
 }

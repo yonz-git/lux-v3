@@ -18,7 +18,9 @@
   display: flex;
   flex-direction: column;
   gap: var(--space-lg); /* 16 — see above */
-  padding: var(--space-lg) 18px;
+  /* ⚠️ 10% MORE, asked for directly 15 Sep 2026 ("make it breathe more"):
+     17.6 / 19.8 */
+  padding: calc(var(--space-lg) * 1.1) calc(18px * 1.1);
 
   border-radius: var(--radius-2xl);
   background: var(--color-surface-frost-light);
@@ -61,10 +63,11 @@
   /* 12 — the expanded value whether or not it is open, for the reason on
      `.card` above: the collapsed 8 sat between nothing */
   gap: var(--space-md);
-  /* ⚠️ 10% MORE THAN `space/md`, asked for directly 15 Sep 2026 ("make the
-     design breathe more"): 13.2, written as a multiple of the token so it
-     still reads as the 12 step, loosened, rather than a new number */
-  padding: calc(var(--space-md) * 1.1);
+  /* ⚠️ 20% MORE THAN `space/md` — 10% asked for directly 15 Sep 2026 ("make
+     the design breathe more"), then 10% more again the same day: 14.4,
+     written as a multiple of the token so it still reads as the 12 step,
+     loosened, rather than a new number */
+  padding: calc(var(--space-md) * 1.2);
 
   /* ⚠️ SUPERSEDED 13 Sep 2026, asked for directly: the surface and radius of
      `/check/new`'s product row (`ProductList`'s `.row`), which is also this
@@ -72,6 +75,15 @@
      read as one. The opaque-fill argument above is traded knowingly; the
      frosted-row shadow `.card` already carries is what keeps each edge. */
   border-radius: var(--radius-lg); /* 16 */
+
+  /* ⚠️ 40% OF `surface/frost-light`, asked for directly 15 Sep 2026 ("use the
+     /check/new card's bg"). The two cards ALREADY shared the same fill — the
+     difference was the ground: `/check/new`'s row sits on the page card, this
+     one on the group's much lighter `frost-nav` box, so the same 55% white
+     composited near-white here. 40% of it (22% net) lands the card on the
+     same grey-blue the check row reads as. Measured by eye against both
+     screens, not by a token. */
+  background: color-mix(in srgb, var(--color-surface-frost-light) 40%, transparent);
 }
 
 .card.compact > :global(.collapse) {
@@ -96,10 +108,6 @@
 
 .name {
   color: var(--color-text-primary);
-}
-
-.size {
-  color: var(--color-text-muted);
 }
 
 /* one glyph, two states — `chevron-up` in Figma is a chevron-down at 180°.

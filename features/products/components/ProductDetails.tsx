@@ -4,7 +4,7 @@ import { useId, useState } from "react";
 import styles from "./ProductDetails.module.css";
 import { Collapse } from "@/components/ui/Collapse";
 import { ChevronDownIcon } from "@/components/ui/icons";
-import { formatAdded, type CatalogProduct } from "@/features/products/products";
+import { formatAdded, sizeInMl, type CatalogProduct } from "@/features/products/products";
 
 /**
  * What a product IS: added, brand, size, and its ingredient list behind a
@@ -41,10 +41,12 @@ import { formatAdded, type CatalogProduct } from "@/features/products/products";
  * card's `icon-sm`: that one step is what says this disclosure belongs TO the
  * card rather than being a second card.
  *
- * ⚠️ IT IS NOT DRAWN WHEN THERE IS NOTHING TO LIST. Every catalogue entry
- * carries an INCI list and so does every Open Beauty Facts result, but
- * `ingredients` is optional on `CatalogProduct` and a disclosure that opens
- * onto nothing is worse than an absent one.
+ * ⚠️ THE DISCLOSURE IS NOT DRAWN WHEN THERE IS NOTHING TO LIST. Every
+ * catalogue entry carries an INCI list and so does every Open Beauty Facts
+ * result, but `ingredients` is optional on `CatalogProduct` and a disclosure
+ * that opens onto nothing is worse than an absent one. ⚠️ THE ROW IS, since
+ * 15 Sep 2026 ("ingredients too"): a plain `Ingredients · Not set` detail
+ * takes its place, so a hand-added product still shows every field it lacks.
  */
 export function ProductDetails({
   product,
@@ -62,7 +64,13 @@ export function ProductDetails({
           <Detail label="Added" value={formatAdded(product.addedOn)} />
         )}
         <Detail label="Brand" value={product.brand} />
-        <Detail label="Size" value={product.size} />
+        {/* in ml — see `sizeInMl`. ⚠️ ALWAYS A ROW: a product added by hand
+            can carry no size, and the row was hidden for it for a turn on
+            15 Sep 2026 until "size missing" — it says `Not set`, as the skin
+            profile tiles do for an unanswered field. */}
+        <Detail label="Size" value={sizeInMl(product.size) ?? "Not set"} />
+        {/* no list to disclose — the row still says so, as `Size` does */}
+        {!product.ingredients && <Detail label="Ingredients" value="Not set" />}
       </dl>
 
       {product.ingredients && (
@@ -89,8 +97,12 @@ export function ProductDetails({
   );
 }
 
-/** `detail · …` — label left in Label Small/muted, value right in Body 3. */
-function Detail({ label, value }: { label: string; value: string }) {
+/** `detail · …` — label left in Label Small/muted, value right in Body 3.
+ *  ⚠️ NO VALUE, NO ROW — a label over an empty cell reads as a value that
+ *  failed to load. A caller that wants the row regardless passes a fallback
+ *  (`Size` passes `Not set`). */
+function Detail({ label, value }: { label: string; value?: string }) {
+  if (!value) return null;
   return (
     <div className={styles.detail}>
       <dt className={`${styles.detailLabel} t-label-sm`}>{label}</dt>

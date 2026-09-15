@@ -52,14 +52,18 @@ export function ProductRow({
   details,
 }: {
   name: string;
-  meta: string;
+  /** a second line under the name — absent draws none */
+  meta?: string;
   trailing?: ReactNode;
   onClick?: () => void;
   /** ⚠️ THE PRODUCT, NOT A URL. The thumb draws the product when there is no
    *  photograph to show, so it needs to know which product it is — see
    *  ProductThumb. `name` and `meta` stay separate props because a row does
-   *  not always title itself the way `fullName` would: the check list shows
-   *  the product name with the brand moved down into the meta line. */
+   *  not always title itself the way `fullName` would.
+   *  ⚠️ EVERY CALLER PASSES `fullName` AND NO SIZE AS OF 15 Sep 2026, asked
+   *  for directly: the brand leads the title as it does on `/products`, and
+   *  the size lives in `ProductDetails` only, in ml. `meta` survives for the
+   *  check's "Contains …" hint. */
   product: CatalogProduct;
   /** what the row opens onto. Absent = the row does not open. */
   details?: ReactNode;
@@ -72,7 +76,7 @@ export function ProductRow({
       <ProductThumb product={product} />
       <span className={styles.copy}>
         <span className={`${styles.name} t-h6`}>{name}</span>
-        <span className={`${styles.meta} t-label-sm`}>{meta}</span>
+        {meta && <span className={`${styles.meta} t-label-sm`}>{meta}</span>}
       </span>
       {trailing}
     </>
@@ -92,7 +96,7 @@ export function ProductRow({
             <ProductThumb product={product} />
             <span className={styles.copy}>
               <span className={`${styles.name} t-h6`}>{name}</span>
-              <span className={`${styles.meta} t-label-sm`}>{meta}</span>
+              {meta && <span className={`${styles.meta} t-label-sm`}>{meta}</span>}
             </span>
             <ChevronDownIcon className={styles.chevron} />
           </button>

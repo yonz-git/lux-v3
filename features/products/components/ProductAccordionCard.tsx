@@ -92,7 +92,11 @@ export function ProductAccordionCard({
         aria-controls={panelId}
         onClick={() => setOpen((o) => !o)}
       >
-        <ProductThumb product={product} size={compact ? "sm" : "md"} />
+        {/* ⚠️ AN OPEN COMPACT CARD TAKES THE FULL 48 PICTURE — asked for
+            directly 15 Sep 2026, "like in the check new page", whose rows
+            carry the 48 at rest. Closed it stays 36; the well eases between
+            the two (ProductThumb.module.css). */}
+        <ProductThumb product={product} size={compact && !open ? "sm" : "md"} />
         <span className={styles.copy}>
           {/* ⚠️ `Label` COMPACT, `H6` OTHERWISE — both are real styles from the
               ramp, and the smaller card takes the smaller of the two rather
@@ -106,7 +110,9 @@ export function ProductAccordionCard({
           >
             {fullName(product)}
           </span>
-          <span className={`${styles.size} t-label-sm`}>{product.size}</span>
+          {/* ⚠️ NO SIZE UNDER THE NAME — removed 15 Sep 2026, asked for
+              directly: it repeated `ProductDetails`' own Size row, which now
+              reads in ml */}
         </span>
         <ChevronDownIcon className={styles.chevron} />
       </button>

@@ -110,7 +110,7 @@ export function YourProducts() {
                 <ul className={styles.list}>
                   {g.products.map((p) => (
                     <li key={p.id}>
-                      <ProductRow name={fullName(p)} meta={p.size} product={p} />
+                      <ProductRow name={fullName(p)} product={p} />
                     </li>
                   ))}
                 </ul>
@@ -125,7 +125,6 @@ export function YourProducts() {
               <li key={p.id}>
                 <ProductRow
                   name={fullName(p)}
-                  meta={p.size}
                   product={p}
                   trailing={<Tag>{p.duration}</Tag>}
                 />

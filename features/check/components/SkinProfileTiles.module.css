@@ -78,15 +78,19 @@
      12 under the words; the card has no gap, so the 12 above the tiles'
      text is the tiles' own top padding. */
   padding-bottom: var(--space-md); /* 12 */
+  /* ⚠️ THINNER, 15 Sep 2026, asked for directly ("this border a bit
+     thinner"): the glow band 3px → 2px, with the hairline on its bottom pixel
+     rather than 1px up inside it — the rule now reads as one fine line with a
+     1px halo above it, where it read as a 2–3px bar. */
   background:
     linear-gradient(90deg, currentColor, transparent)
-      left bottom 1px / 100% var(--border-width-hairline) no-repeat,
+      left bottom / 100% var(--border-width-hairline) no-repeat,
     linear-gradient(
         90deg,
         color-mix(in srgb, currentColor 25%, transparent),
         transparent 80%
       )
-      left bottom / 100% 3px no-repeat;
+      left bottom / 100% 2px no-repeat;
 }
 
 /* ⚠️ TWO TILES A ROW AT EVERY WIDTH — asked for directly 14 Sep 2026, when

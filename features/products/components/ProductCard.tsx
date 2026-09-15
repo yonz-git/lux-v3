@@ -7,8 +7,8 @@ import { fullName, type CatalogProduct } from "@/features/products/products";
  * The big product card on `04 — Confirm product` (577:1430) and
  * `04 — Product match` (578:1482).
  *
- * One component, because the two are the same card: an image well, the name, the
- * size, and — on Confirm only — a description. Product match adds a "N% match"
+ * One component, because the two are the same card: an image well, the name and
+ * — on Confirm only — a description. Product match adds a "N% match"
  * `Tag` above the image and drops the description.
  *
  * ⚠️ THE IMAGE WELL WAS A CAMERA GLYPH, AND IS NOW A DRAWN VESSEL. There was
@@ -49,7 +49,8 @@ export function ProductCard({
       </div>
 
       <p className={`${styles.name} t-h5`}>{fullName(product)}</p>
-      <p className={`${styles.size} t-label-sm`}>{product.size}</p>
+      {/* ⚠️ NO SIZE UNDER THE NAME — removed 15 Sep 2026, asked for directly
+          for every product title in the app */}
       {showDescription && product.description && (
         <div className={styles.ingredients}>
           <p className={`${styles.ingredientsLabel} t-label-sm`}>Ingredients</p>

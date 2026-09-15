@@ -7,7 +7,9 @@
   flex-direction: column;
   align-items: flex-start;
   gap: var(--space-md);
-  padding: var(--space-xl);
+  /* ⚠️ 10% MORE, asked for directly 15 Sep 2026 ("make it breathe more"): 22,
+     `space/xl` loosened rather than a new number */
+  padding: calc(var(--space-xl) * 1.1);
 
   border-radius: var(--radius-2xl);
   background: var(--color-surface-frost-light);
@@ -33,6 +35,9 @@
   border-radius: var(--radius-lg);
   /* OPAQUE — it stands in for a photograph */
   background: var(--color-bg-surface-frost);
+  /* ⚠️ A SLIGHT DROP SHADOW, `shadow/sm`, asked for directly 15 Sep 2026 for
+     every product picture in the app — the one well that is not `ProductThumb` */
+  box-shadow: var(--shadow-sm);
 }
 
 /* the drawn vessel — see ProductArt. It centres in the letterbox well rather
@@ -47,10 +52,6 @@
 
 .name {
   color: var(--color-text-primary);
-}
-
-.size {
-  color: var(--color-text-muted);
 }
 
 .ingredients {
