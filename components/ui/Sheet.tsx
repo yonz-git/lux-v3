@@ -3,6 +3,7 @@
 import { useEffect, useRef } from "react";
 import { createPortal } from "react-dom";
 import styles from "./Sheet.module.css";
+import { CloseIcon } from "./icons";
 import { useDialogPresence, useModalDialog, useMounted } from "@/lib/useModalDialog";
 
 /**
@@ -68,6 +69,7 @@ export function Sheet({
   children,
   className,
   dismissLabel = "Done",
+  dismiss = "label",
 }: {
   open: boolean;
   onClose: () => void;
@@ -78,6 +80,13 @@ export function Sheet({
   /** the words on the tray's one way out — `Done` unless a caller's close
    *  means something else (CHECK's basket says `Cancel`) */
   dismissLabel?: string;
+  /** ⚠️ WHERE THE ONE WAY OUT SITS — added 15 Sep 2026, asked for directly
+   *  on PROGRESS's photo gallery ("remove done and add x top right corner").
+   *  `label` is the worded button at the tray's foot, every other tray's;
+   *  `corner` is a labelled ✕ pinned to the top-right instead, for a tray
+   *  whose content is a viewer rather than a task. Still exactly ONE dismissal
+   *  either way — the rule the doc comment above exists to keep. */
+  dismiss?: "label" | "corner";
 }) {
   const trayRef = useRef<HTMLDivElement>(null);
   const mounted = useMounted();
@@ -188,11 +197,25 @@ export function Sheet({
           onPointerUp={onGrabEnd}
           onPointerCancel={onGrabEnd}
         />
+        {/* the tray's one way out, on every view — see the doc comment. A
+            corner ✕ comes FIRST in the DOM, so Tab reaches the exit before
+            the content, as it would reach a header's close. */}
+        {dismiss === "corner" && (
+          <button
+            type="button"
+            className={`${styles.close} pressable`}
+            aria-label="Close"
+            onClick={onClose}
+          >
+            <CloseIcon className={styles.closeIcon} />
+          </button>
+        )}
         {children}
-        {/* the tray's one way out, on every view — see the doc comment */}
-        <button type="button" className={`${styles.dismiss} t-label`} onClick={onClose}>
-          {dismissLabel}
-        </button>
+        {dismiss === "label" && (
+          <button type="button" className={`${styles.dismiss} t-label`} onClick={onClose}>
+            {dismissLabel}
+          </button>
+        )}
       </div>
     </>,
     document.body,
