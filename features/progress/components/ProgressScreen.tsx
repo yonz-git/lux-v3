@@ -146,7 +146,10 @@ export function ProgressScreen({ now }: { now: number }) {
             the card unmounted under the reader ("it disappears when I scroll
             down"). An unlit face is the honest reading of "no place marked
             yet", the same rule the recap's location card follows. */}
-        <DataCard className={styles.faceCard} aria-labelledby="progress-face">
+        <DataCard
+          className={`${styles.faceCard} canvas-card`}
+          aria-labelledby="progress-face"
+        >
           <h2 id="progress-face" className={`${styles.faceLabel} t-overline`}>
             {COPY.locationLabel}
           </h2>
@@ -187,7 +190,7 @@ export function ProgressScreen({ now }: { now: number }) {
 
         {/* desktop's copy: col-1, under the face */}
         <ProgressGallery
-          className={`${styles.faceCard} ${styles.galleryDesktop}`}
+          className={`${styles.galleryDesktop} canvas-card`}
           photos={photos}
           onOpen={() => setGalleryOpen(true)}
         />
@@ -209,7 +212,7 @@ export function ProgressScreen({ now }: { now: number }) {
 
         {/* mobile's copy: under the trend, above the calendar */}
         <ProgressGallery
-          className={`${styles.faceCard} ${styles.galleryMobile}`}
+          className={`${styles.galleryMobile} canvas-card`}
           photos={photos}
           onOpen={() => setGalleryOpen(true)}
         />
