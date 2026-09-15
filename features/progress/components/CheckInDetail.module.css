@@ -188,6 +188,16 @@
   align-self: flex-start;
 }
 
+/* ⚠️ THE NOTE FIELD DROPS ITS TOP LIGHT AND SINKS DEEPER, asked for directly
+   15 Sep 2026 ("remove this border on this state and add more inner shadow
+   15%"): `TextField`'s `inset 0 1px 0 #fff9` read as a white rim along the
+   top, and the frosted-row shadow goes 10% → 15%. The focus ring (`.wrap`'s
+   `::after`) is untouched — it is the field's only focus indicator. (0,1,1)
+   over `TextField`'s `.field` (0,1,0). */
+.noteEditor input {
+  box-shadow: inset 2px 4px 9px rgba(0, 0, 0, 0.15);
+}
+
 .noteHint {
   margin: 0;
   color: var(--color-text-on-data-muted);
@@ -284,8 +294,11 @@
    asked for 13 Sep 2026. Scoped two classes plus the attribute deep so it
    outranks `.tag[data-variant="neutral"]` whichever module loads last. */
 .productHead .productGroup[data-variant] {
-  background: color-mix(in srgb, var(--color-bg-brand-soft) 38%, transparent);
-  color: var(--color-text-primary);
+  /* ⚠️ A DEEP BLUE AT 38% WITH A WHITE LABEL, supplied directly 15 Sep 2026
+     from DevTools: `#000e71` where it was `bg/brand-soft`, and `text/on-brand`
+     white where it was `text/primary`. No token holds `#000e71`. */
+  background: color-mix(in srgb, #000e71 38%, transparent);
+  color: var(--color-text-on-brand);
 }
 
 .productName {
@@ -363,6 +376,14 @@
   align-self: center;
 }
 
+/* the well's small title — `Label Small` in the card's muted ink, inset 8 so
+   its edge lands on the rows' own 8 padding rather than the well's wall */
+.resultsTitle {
+  margin: 0;
+  padding: var(--space-xs) var(--space-sm) 0; /* 4 / 8 */
+  color: var(--color-text-on-data-muted);
+}
+
 .resultList {
   display: flex;
   flex-direction: column;
@@ -381,7 +402,12 @@
   padding: var(--space-sm) var(--space-sm);
   text-align: left;
   border-radius: var(--radius-md);
-  transition: background-color var(--duration-fast) var(--ease-standard);
+  /* ⚠️ ONE CLOCK FOR THE FILL AND THE INK, `duration/slow`, asked for directly
+     15 Sep 2026 ("smoothen hover animation"). The fill ran on `duration/fast`
+     (120) under ink on `duration/base` (200), so the row darkened, finished,
+     and only then did its text finish going white — two steps where there
+     should be one. Both now take 320 on `ease/standard`. */
+  transition: background-color var(--duration-slow) var(--ease-standard);
 }
 
 .result:hover {
@@ -390,11 +416,11 @@
 
 /* ⚠️ NOT IN FIGMA — the hovered row's ink goes white, asked for 13 Sep 2026.
    It eases with the fill rather than snapping, so the name, the meta and the
-   plus change together at `duration/base`. */
+   plus change together — on the fill's own `duration/slow` (see `.result`). */
 .resultName,
 .resultMeta,
 .plus {
-  transition: color var(--duration-base) var(--ease-standard);
+  transition: color var(--duration-slow) var(--ease-standard);
 }
 
 .result:hover .resultName,
@@ -448,6 +474,24 @@
   width: var(--size-icon-sm); /* 20 */
   height: var(--size-icon-sm);
   color: var(--color-text-on-data-secondary);
+}
+
+/* ⚠️ NOT IN FIGMA — THE SMALL TYPE STEPS UP ON DESKTOP, asked for directly
+   15 Sep 2026: every `Label Small` and `Caption` on this record's cards (the
+   meta lines, the group and symptom pills, the results title, the note hint)
+   takes `--font-size-xs` (14) at 1024+, where both styles are
+   `--font-size-3xs` (12). The line steps with it to `--line-height-xs` (22),
+   the scale's own partner for the 14 size (`Body 3`'s pairing), so a 14 is
+   not jammed into a 16 line. Weights stay each style's own. The phone is
+   untouched. The header's `Day <n>` tag sits outside every card, so it is
+   named on its own, doubled to match. (0,2,0) over the global single class. */
+@media (min-width: 1024px) {
+  .card :global(.t-label-sm),
+  .card :global(.t-caption),
+  .dayTag.dayTag {
+    font-size: var(--font-size-xs);
+    line-height: var(--line-height-xs);
+  }
 }
 
 @media (min-width: 1024px) {

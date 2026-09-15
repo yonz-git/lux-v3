@@ -1,6 +1,7 @@
 "use client";
 
 import styles from "./CameraCapture.module.css";
+import { SuccessCheckIcon } from "./icons";
 
 /**
  * The viewfinder + shutter block, shared by every capture surface in the app.
@@ -55,6 +56,10 @@ export function CameraCapture({
         <span className={styles.guide} aria-hidden="true" />
         {captured && (
           <p role="status" className={`${styles.captured} reveal-quick t-label`}>
+            {/* ⚠️ A TICK THAT DRAWS ITSELF ON, 15 Sep 2026 — see `.tick-draw`
+                in globals.css. SelfieSheet carries the same label and the
+                same tick; keep them in step. */}
+            <SuccessCheckIcon className={`${styles.capturedIcon} tick-draw`} />
             Photo captured
           </p>
         )}

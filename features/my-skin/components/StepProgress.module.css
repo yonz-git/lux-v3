@@ -8,7 +8,11 @@
    token — that component had been bound to the PRIMITIVE neutral/200. */
 
 .track {
-  width: 100%;
+  /* ⚠️ 80% OF THE COLUMN ON A PHONE, CENTRED — asked for directly 15 Sep 2026
+     ("reduce width on mobile page, 20% less"). It ran the full 392 edge to
+     edge; desktop keeps its own fixed 400 below. */
+  width: 80%;
+  margin-inline: auto;
   height: var(--size-progress-track);
   border-radius: var(--radius-full);
   /* ⚠️ THE TRACK AT 80%, asked for directly 14 Sep 2026 ("tone down the white

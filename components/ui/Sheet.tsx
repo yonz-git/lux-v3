@@ -67,6 +67,7 @@ export function Sheet({
   title,
   children,
   className,
+  dismissLabel = "Done",
 }: {
   open: boolean;
   onClose: () => void;
@@ -74,6 +75,9 @@ export function Sheet({
   children: React.ReactNode;
   /** added to the tray, for a caller that needs to adjust its own dialog */
   className?: string;
+  /** the words on the tray's one way out — `Done` unless a caller's close
+   *  means something else (CHECK's basket says `Cancel`) */
+  dismissLabel?: string;
 }) {
   const trayRef = useRef<HTMLDivElement>(null);
   const mounted = useMounted();
@@ -187,7 +191,7 @@ export function Sheet({
         {children}
         {/* the tray's one way out, on every view — see the doc comment */}
         <button type="button" className={`${styles.dismiss} t-label`} onClick={onClose}>
-          Done
+          {dismissLabel}
         </button>
       </div>
     </>,

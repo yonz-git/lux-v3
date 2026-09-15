@@ -19,12 +19,28 @@
      floor for a one-line row and it still grows to the comp's 94 when the
      name wraps to two lines. */
   min-height: 76px;
-  padding: 14px 18px;
+  /* ⚠️ 10% MORE, asked for directly 15 Sep 2026 ("make it breathe more"):
+     15.4 / 19.8, so a one-line row now measures ~79 over the 48 thumb */
+  padding: calc(14px * 1.1) calc(18px * 1.1);
   text-align: left;
 
   border-radius: var(--radius-lg);
-  background: var(--color-surface-frost-light);
-  box-shadow: var(--shadow-frosted-row);
+  /* ⚠️ THE PRODUCTS HUB'S CARD COLOUR, asked for directly 15 Sep 2026 ("change
+     the bg color like the products cards in product page"). A hub card is
+     `surface/frost-light` at 40% sitting on its group's `surface/frost-nav`
+     box; this row has no group under it, so it paints both layers itself —
+     the group's fill as the colour and the card's thin white as an image over
+     it — and lands on the same pale mint without depending on what is behind
+     it. It was `surface/frost-light` at full strength, which read grey here. */
+  background-color: var(--color-surface-frost-nav);
+  background-image: linear-gradient(
+    color-mix(in srgb, var(--color-surface-frost-light) 40%, transparent),
+    color-mix(in srgb, var(--color-surface-frost-light) 40%, transparent)
+  );
+  /* ⚠️ `shadow/frosted-row` at 15%, asked for directly 15 Sep 2026 ("match
+     inner shadows like on the products page") — the depth the PRODUCTS hub's
+     groups and cards took the same day. The token stays 10% (globals.css). */
+  box-shadow: inset 2px 4px 9px rgba(0, 0, 0, 0.15);
   -webkit-backdrop-filter: blur(var(--blur-card));
   backdrop-filter: blur(var(--blur-card));
 }

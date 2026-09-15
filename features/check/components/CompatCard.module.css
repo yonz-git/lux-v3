@@ -53,7 +53,12 @@
      one. It replaces a literal-hex diagonal; the frost-on-frost argument above
      is traded knowingly, and the shadow is what keeps each card's edge. */
   border-radius: var(--radius-lg); /* 16 */
-  background: var(--color-surface-frost-light);
+  /* ⚠️ THE PRODUCTS HUB'S CARD COLOUR, asked for directly 15 Sep 2026 ("use
+     same bg color as the product cards in products page"): `surface/frost-light`
+     at 40%, the fill `ProductAccordionCard`'s compact card took the same day.
+     Both sit in a frosted box, so the same thin white composites to the same
+     pale mint here. */
+  background: color-mix(in srgb, var(--color-surface-frost-light) 40%, transparent);
   box-shadow: var(--shadow-frosted-row);
   -webkit-backdrop-filter: blur(var(--blur-card));
   backdrop-filter: blur(var(--blur-card));

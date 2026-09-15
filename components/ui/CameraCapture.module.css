@@ -52,6 +52,18 @@
   position: absolute;
   bottom: var(--space-lg);
   color: var(--color-effect-rim-highlight);
+  /* the tick beside the words, 15 Sep 2026 — see CameraCapture.tsx */
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-xs); /* 4 */
+}
+
+/* 20 (`size/icon-sm`) on the 20 label line, in the label's own white. A width
+   rather than `--icon-size`: `SuccessCheckIcon` sets that property inline, and
+   a class beats the `:where()` default it feeds. */
+.capturedIcon {
+  width: var(--size-icon-sm);
+  height: var(--size-icon-sm);
 }
 
 .copy {
@@ -84,7 +96,10 @@
   background: var(--color-bg-glass);
   box-shadow: var(--shadow-md);
 
-  transition: opacity var(--duration-fast) var(--ease-standard);
+  /* ⚠️ `duration/slow`, NOT `duration/fast` — asked for directly 15 Sep 2026
+     ("make the hover smooth"). A 0.8 fade over 120ms read as a flicker on a
+     64 disc. Still a fade and nothing else: LUX does not scale a control. */
+  transition: opacity var(--duration-slow) var(--ease-standard);
 }
 
 .shutter:hover {

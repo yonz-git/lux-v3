@@ -97,6 +97,22 @@
   margin-top: var(--space-3xl); /* 32 */
 }
 
+/* The landing's two actions as `HubScreen`'s footer (see CheckScreen.tsx) —
+   centred on the column, 12 between the button and the link, Welcome's own
+   rhythm near enough. `.cta`'s 32 above is the no-profile hero's; in the
+   footer the button is the first thing and takes none. */
+.actions {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--space-md); /* 12 */
+  width: 100%;
+}
+
+.actions .cta {
+  margin-top: 0;
+}
+
 /* ⚠️ RESOLVED. This used to read "376 on desktop, not the 280 `Progress — empty`
    uses ... worth resolving in Figma", and it has been: every primary action in
    the app is now `--width-action`, which is this 376. See globals.css. */

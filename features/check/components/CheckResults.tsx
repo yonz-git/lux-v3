@@ -6,7 +6,7 @@ import { useRouter } from "next/navigation";
 import styles from "./CheckResults.module.css";
 import { HubScreen } from "@/components/layout/HubScreen";
 import { ChatBubble } from "@/components/ui/ChatBubble";
-import { SkinProfileStrip } from "./SkinProfileStrip";
+import { SkinProfileTiles } from "./SkinProfileTiles";
 import { CompatCard } from "./CompatCard";
 import { ProductThumb } from "@/features/products/components/ProductThumb";import { SummaryCard, IngredientsCard, NextStepsCard } from "./ResultCards";
 import { Button } from "@/components/ui/Button";
@@ -31,12 +31,14 @@ import {
   worstBand,
   type SavedCheck,
 } from "@/features/check/check";
-import { DEMO_PRODUCTS, ownedProducts, skinProfile } from "@/lib/demo";
+import { DEMO_PRODUCTS, ownedProducts } from "@/lib/demo";
+import { formatLong } from "@/lib/date";
+import { useToday } from "@/lib/useToday";
+import { dayNumber, progressView } from "@/features/progress/progress";
 import {
   DURATIONS,
   bucketFor,
   fullName,
-  resultMeta,
   type CatalogProduct,
   type Duration,
   type SavedProduct,
@@ -108,9 +110,12 @@ import { useCheckSearch } from "@/features/check/useCheckSearch";
  * ran and a seeded one go through the same code and neither can drift from the
  * model in lib/check.ts.
  */
-export function CheckResults() {
+export function CheckResults({ now }: { now: number }) {
   const router = useRouter();
   const { answers, setAnswer } = useInvestigation();
+  /* the skin profile card's values, from PROGRESS's own view — the same
+     derivation `/check/new` and `/progress` use, so the three cannot disagree */
+  const profile = progressView(answers, useToday(now));
   /* null = untouched, so the box is showing exactly the check that was run. An
      array = the user has removed something and nothing has been analysed yet. */
   const [pending, setPending] = useState<CatalogProduct[] | null>(null);
@@ -255,7 +260,20 @@ export function CheckResults() {
         </span>
       </ChatBubble>
 
-      <SkinProfileStrip className={styles.profile} {...skinProfile(answers)} />
+      {/* ⚠️ PROGRESS's SKIN PROFILE CARD, NOT THE STRIP — asked for directly
+          15 Sep 2026 ("update the profile card according to progress page"),
+          as `/check/new` took it the same day. `.profile` keeps its spacing. */}
+      <SkinProfileTiles
+        className={styles.profile}
+        skinType={profile.skinType ?? "Not set"}
+        tendencies={profile.tendencies?.length ? profile.tendencies.join(", ") : "None"}
+        conditions={profile.conditions?.length ? profile.conditions.join(", ") : "None"}
+        symptomsState={profile.status ?? "Not set"}
+        symptomsStarted={{
+          date: formatLong(profile.start),
+          day: dayNumber(profile.start, profile.today),
+        }}
+      />
 
       {/* 2 — the numbers */}
       <div className={styles.block}>
@@ -705,10 +723,8 @@ function ProductPicker({
               >
                 <ProductThumb product={p} size="sm" />
                 <span className={styles.pickCopy}>
-                  <span className={`${styles.pickName} t-label`}>{p.name}</span>
-                  <span className={`${styles.pickMeta} t-label-sm`}>
-                    {resultMeta(p)}
-                  </span>
+                  {/* brand-led title, no size under it — 15 Sep 2026 */}
+                  <span className={`${styles.pickName} t-label`}>{fullName(p)}</span>
                 </span>
                 <PlusIcon className={styles.pickPlus} />
               </button>

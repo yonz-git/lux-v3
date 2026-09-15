@@ -28,8 +28,14 @@
 
    Shared by all five steps — the track is one element, and a per-step gap is
    the kind of drift this file exists to prevent. */
+/* ⚠️ 32 ON A PHONE, NOT 20 — asked for directly 15 Sep 2026 ("give more top
+   padding and match the bottom padding"). The track sat 20 under the header
+   row and 32 over the content, so it read as hung off the header rather than
+   set between the two. It now takes the content's own default gap
+   (`--space-3xl`, what `.card`'s `margin-top` falls back to), so the space
+   above and below the track are one value. Desktop keeps its 24 below. */
 .progressWrap {
-  padding-top: var(--space-xl); /* 20 */
+  padding-top: var(--space-3xl); /* 32 */
 }
 
 .card {

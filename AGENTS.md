@@ -562,7 +562,7 @@ table is stale — say so rather than working around it.
 | `t-h1` | 40/48 | — | 500 | not used by any screen |
 | `t-h2` | 32/40 | — | 500 | — |
 | `t-h3` | 24/32 | — | 500 | — |
-| **`t-h4-h3`** | **20/28** | **24/32** | 500 | ⭐ **every page `<h1>`, hub and flow alike** |
+| **`t-h4-h3`** | **20/28** | **20/28** ⚠️ | 500 | ⭐ **every page `<h1>`, hub and flow alike** — no desktop step since 15 Sep 2026 |
 | `t-h4` | 20/28 | — | 500 | fixed-size headings |
 | `t-h5` | 18/26 | — | 500 | card titles |
 | `t-h6` | 16/24 | — | 500 | desktop option-row labels, row titles |
@@ -865,6 +865,9 @@ type and every `nav=` prop. Do not "fix" the mismatch by renaming the id — see
     `H6` is 24 where `Label` is 20); desktop chat bubbles are **`Body 1`
     (18/28), not `Body 2`** — use `t-body2-body1`; and **every page title is
     `t-h4-h3`, including a hub's**, which the comps draw one step larger.
+    ⚠️ **And `t-h4-h3` is 20/28 on desktop too, as of 15 Sep 2026** — asked for
+    directly, "for all the pages". The class name still reads "H3 on desktop";
+    the rule in `globals.css` no longer steps up. Do not put the 24/32 back.
 17. ⚠️ **SURFACE SYSTEM B's TEXT IS DARK, NOT WHITE — ON `surface/data`.**
     That surface composites too light for white text at any alpha; measured, it
     failed WCAG AA on 38 of 59 text nodes on `/check/results`. `text/on-data` is

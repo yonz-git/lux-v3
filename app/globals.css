@@ -1251,19 +1251,21 @@ main[tabindex="-1"]:focus-visible {
 
 /* Responsive heading steps — the mobile→desktop translation table on board
    02 steps a title up one ramp entry at 1024. Declared here with the rest of
-   the ramp so a screen never writes a raw font-size of its own. */
+   the ramp so a screen never writes a raw font-size of its own.
+
+   ⚠️ `t-h4-h3` NO LONGER STEPS UP — asked for directly 15 Sep 2026, "use
+   --font-size-lg: 20px for desktop … for all the pages". It is `H4` (20/28)
+   at every width now; the desktop block that took it to `H3` (24/32) is gone.
+   The NAME is kept because every page title, flow question and empty-state
+   title in the app carries it, and renaming eleven callers would be churn for
+   a size — read it as "the page-title style", not as a promise of H3 on
+   desktop. NOT IN FIGMA, whose desktop comps draw the titles at H3; see
+   non-negotiable 16 in AGENTS.md, which this supersedes. */
 .t-h4-h3 {
   font-size: var(--font-size-lg);
   line-height: var(--line-height-md);
   font-weight: var(--font-weight-medium);
   margin: 0;
-}
-
-@media (min-width: 1024px) {
-  .t-h4-h3 {
-    font-size: var(--font-size-xl);
-    line-height: var(--line-height-xl);
-  }
 }
 
 .t-h3-h2 {
@@ -1375,6 +1377,44 @@ main[tabindex="-1"]:focus-visible {
    is what you see. Never make `.screen` transparent unconditionally. */
 :root[data-canvas-ready] .screen {
   background: transparent;
+}
+
+/* ⚠️ A SCREEN'S CONTENT WAITS FOR THE ANSWER STORE — 15 Sep 2026, asked for
+   directly. The store reads localStorage in an effect (it cannot be earlier
+   without a hydration mismatch), so on a reload the first paint was the EMPTY
+   screen — step 1 with nothing ticked, `/products` on the demo library — and a
+   frame later the saved answers snapped in. `InvestigationProvider` stamps
+   `data-store-ready` on <html> in the commit that holds the saved answers;
+   until then everything in `.screen` except the nav is `visibility: hidden`.
+   The canvas behind and the fixed nav stay on screen, so a reload reads as the
+   content arriving, not as the page blinking. `visibility`, not `display` or
+   `opacity`: the layout is already in place, nothing reflows when it shows,
+   and it creates no stacking context (see the reveal notes under Motion).
+   ⚠️ NEVER REMOVED ONCE SET, so a client-side navigation is never hidden. */
+:root:not([data-store-ready]) .screen > :not(nav) {
+  visibility: hidden;
+}
+
+/* ⚠️ THE CAPTURE TICK DRAWS ITSELF ON — NOT IN FIGMA, asked for directly
+   15 Sep 2026 ("add check icon next to photo captured with animation
+   smooth"). `SuccessCheckIcon`'s one stroke is about 23 units long, so a
+   24-unit dash hidden by a 24 offset and run to 0 traces it left to right.
+   `duration/slower` (480, the hero clock) after a 120 beat, so the label's own
+   200 fade has begun before the stroke starts. Named HERE, not in a module:
+   a module localizes the keyframes and the animation resolves to nothing.
+   `backwards`, so the hidden stroke holds through the delay and the drawn one
+   is simply the rule's own resting state afterwards. `prefers-reduced-motion`
+   collapses the duration globally, which leaves the tick drawn. */
+@keyframes lux-tick-draw {
+  from {
+    stroke-dashoffset: 24;
+  }
+}
+
+.tick-draw path {
+  stroke-dasharray: 24;
+  stroke-dashoffset: 0;
+  animation: lux-tick-draw var(--duration-slower) var(--ease-standard) 120ms backwards;
 }
 
 /* ============================================================================
@@ -1626,7 +1666,13 @@ main[tabindex="-1"]:focus-visible {
 .canvas-card.canvas-card {
   position: relative;
   isolation: isolate;
-  background: none;
+  /* ⚠️ A FAINT TINT, NOT `none` — supplied directly from DevTools 15 Sep 2026:
+     a pale aqua `#c6e1e8` at 17%. Still no backdrop blur, so this is a tint
+     over the canvas rather than a frosted surface, and it needs no
+     reduced-transparency fallback of its own (non-negotiable 11 is about
+     frost). Every card carrying this class takes it — PROGRESS's face and
+     gallery cards, the recap's blocks and every `SkinProfileTiles` card. */
+  background: #c6e1e82b;
   -webkit-backdrop-filter: none;
   backdrop-filter: none;
   box-shadow:

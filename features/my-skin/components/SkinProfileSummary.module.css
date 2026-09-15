@@ -96,7 +96,10 @@
 /* ⚠️ 15 / 20 — `t-overline`'s 13 / 18 up 2px, PROGRESS's face and gallery
    overlines (14 Sep 2026) */
 .blockLabel {
-  margin: 0 0 var(--space-md); /* 12 */
+  /* ⚠️ 16 UNDER, NOT 12 — asked for directly 15 Sep 2026 ("more bottom
+     padding, match the gallery card"): `DataCard`'s own 16 gap, which is what
+     PROGRESS's gallery and face overlines sit on */
+  margin: 0 0 var(--space-lg); /* 16 */
   color: var(--color-text-muted);
   font-size: 15px;
   line-height: 20px;

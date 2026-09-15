@@ -22,7 +22,6 @@ import {
   bucketFor,
   fullName,
   productById,
-  resultMeta,
   SCAN_MATCH,
   type CatalogProduct,
   type Duration,
@@ -422,11 +421,9 @@ function SearchView({
                   >
                     <ProductThumb product={p} />
                     <span className={styles.resultCopy}>
+                      {/* brand-led title, no size under it — 15 Sep 2026 */}
                       <span className={`${styles.resultName} t-h6`}>
-                        {p.name}
-                      </span>
-                      <span className={`${styles.resultMeta} t-label-sm`}>
-                        {resultMeta(p)}
+                        {fullName(p)}
                       </span>
                     </span>
                   </button>
@@ -664,7 +661,6 @@ function ConfirmView({
               <li key={p.id}>
                 <ProductRow
                   name={fullName(p)}
-                  meta={p.size}
                   product={p}
                   trailing={
                     <button

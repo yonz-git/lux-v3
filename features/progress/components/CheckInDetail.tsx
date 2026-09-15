@@ -24,7 +24,6 @@ import {
   BUCKET_LIST_TITLE,
   formatAdded,
   fullName,
-  resultMeta,
   searchProducts,
 } from "@/features/products/products";
 import {
@@ -274,7 +273,13 @@ export function CheckInDetail({ date, now }: { date: string; now: number }) {
       title={title}
       subtitle="Check-in record"
       backHref="/progress"
-      action={dayTag ? <Tag variant="brand">{dayTag}</Tag> : undefined}
+      action={
+        dayTag ? (
+          <Tag variant="brand" className={styles.dayTag}>
+            {dayTag}
+          </Tag>
+        ) : undefined
+      }
       nav="progress"
       layout="grid"
       /* ⚠️ NOT IN FIGMA — 440, not the comp's 640: the square 392 photo plus
@@ -541,7 +546,8 @@ export function CheckInDetail({ date, now }: { date: string; now: number }) {
                           why it is on this day's list until someone says
                           otherwise. */}
                       <span className={`${styles.productMeta} t-label-sm`}>
-                        {p.size ? `${p.size} · ` : ""}
+                        {/* no size — it left every title's second line on
+                            15 Sep 2026, asked for directly */}
                         Added {formatAdded(p.addedOn)}
                       </span>
                     </span>
@@ -591,6 +597,12 @@ export function CheckInDetail({ date, now }: { date: string; now: number }) {
 
               <Collapse open={searching}>
                 <div className={styles.results}>
+                  {/* ⚠️ NOT IN FIGMA — a small title over the well, asked for
+                      directly 15 Sep 2026: the field searches only what you
+                      already own, and the title says so before the rows do */}
+                  <h3 className={`${styles.resultsTitle} t-label-sm`}>
+                    Your products
+                  </h3>
                   {resultsShown.matches.length > 0 ? (
                     <ul className={styles.resultList}>
                       {resultsShown.matches.map((p) => (
@@ -605,11 +617,9 @@ export function CheckInDetail({ date, now }: { date: string; now: number }) {
                           >
                             <ProductThumb product={p} />
                             <span className={styles.resultCopy}>
+                              {/* brand-led title, no size under it — 15 Sep 2026 */}
                               <span className={`${styles.resultName} t-h6`}>
-                                {p.name}
-                              </span>
-                              <span className={`${styles.resultMeta} t-label-sm`}>
-                                {resultMeta(p)}
+                                {fullName(p)}
                               </span>
                             </span>
                             <PlusIcon className={styles.plus} />

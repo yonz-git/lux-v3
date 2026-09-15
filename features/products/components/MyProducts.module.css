@@ -207,8 +207,10 @@
      literal, off the size scale as the thumb deck's wells were at 28: the
      scale runs 24, 32, 36 and this disc is neither an icon nor a control. The
      padding came down one step with it so a two-digit count still fits. */
-  min-width: 28px;
-  height: 28px;
+  /* ⚠️ AND 10% UNDER THAT, 15 Sep 2026, asked for directly: 28 → 25.2,
+     written as the multiple so the step it came from stays readable */
+  min-width: calc(28px * 0.9);
+  height: calc(28px * 0.9);
   padding: 0 var(--space-xs);
   border-radius: var(--radius-full);
   /* the skin profile card's answer pill (SkinProfileTiles.module.css

@@ -42,6 +42,34 @@ export function CheckScreen() {
       layout="plain"
       center
       tightTop
+      /* ⚠️ THE ACTIONS ARE THE FOOTER, NOT THE HERO'S LAST ROWS — asked for
+         directly 15 Sep 2026 ("bring the button down closer to the nav bar and
+         the orb and chat bubble to the center, just like the welcome page").
+         In the hero they were centred WITH the orb and bubble as one block,
+         which left the button mid-screen and the pair above it high. As
+         `HubScreen`'s footer they sit after the trailing spacer: on a phone
+         the orb and bubble centre in the space between the heading and the
+         actions, and the actions drop to just above the nav — Welcome's
+         composition. On desktop `HubScreen` re-groups them under the hero, as
+         it does for every centred screen with a footer. */
+      footer={
+        <div className={styles.actions}>
+          <Button href="/check/new" className={styles.cta}>
+            Start analysis
+          </Button>
+          {/* ⚠️ THE TRAILING CHEVRON IS NOT IN FIGMA. 601:1952 draws this as a
+              bare text link, which reads as the one thing on the screen that
+              might not go anywhere — the CTA above it is a filled button and
+              every OTHER row in CHECK that pushes a view (`CheckHistory`'s own
+              rows) ends in this exact glyph. Same `ChevronRightIcon` at
+              `icon-sm`, currentColor, so it takes `text/brand` from the link
+              and cannot drift from it. Nothing else about the link changed. */}
+          <Link href="/check/history" className={`${styles.link} t-body3`}>
+            <span className={styles.linkLabel}>View previous analyses</span>
+            <ChevronRightIcon className={styles.linkArrow} />
+          </Link>
+        </div>
+      }
       /* ⚠️ NOT IN FIGMA — 601:1952 paints this screen with the static
          `gradient/canvas-*`. It shows the app-wide living canvas instead, like
          every route since 12 Sep 2026 (see `AppCanvas` in CanvasShader.tsx);
@@ -97,20 +125,6 @@ export function CheckScreen() {
           Check how your products may suit your skin and work together in the
           same routine.
         </ChatBubble>
-        <Button href="/check/new" className={styles.cta}>
-          Start analysis
-        </Button>
-        {/* ⚠️ THE TRAILING CHEVRON IS NOT IN FIGMA. 601:1952 draws this as a
-            bare text link, which reads as the one thing on the screen that
-            might not go anywhere — the CTA above it is a filled button and
-            every OTHER row in CHECK that pushes a view (`CheckHistory`'s own
-            rows) ends in this exact glyph. Same `ChevronRightIcon` at
-            `icon-sm`, currentColor, so it takes `text/brand` from the link and
-            cannot drift from it. Nothing else about the link changed. */}
-        <Link href="/check/history" className={`${styles.link} t-body3`}>
-          <span className={styles.linkLabel}>View previous analyses</span>
-          <ChevronRightIcon className={styles.linkArrow} />
-        </Link>
       </div>
     </HubScreen>
   );

@@ -167,7 +167,14 @@ export function CheckBasketSheet({
   }
 
   return (
-    <Sheet open={open} onClose={onClose} title="Products in this check">
+    /* ⚠️ `Cancel`, NOT THE SHEET'S `Done` — asked for directly 15 Sep 2026.
+       Only this sheet: every other tray keeps `Done`. */
+    <Sheet
+      open={open}
+      onClose={onClose}
+      title="Products in this check"
+      dismissLabel="Cancel"
+    >
       <h2 className={`${styles.sheetTitle} t-h4`}>Products in this check</h2>
 
       <ul className={styles.basket}>

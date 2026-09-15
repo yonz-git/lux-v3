@@ -12,6 +12,18 @@
   height: var(--size-control-md);
   border-radius: var(--radius-md);
   background: var(--color-bg-surface-frost);
+  /* ⚠️ THE SIZE EASES, added 15 Sep 2026: a compact card's 36 well grows to
+     48 when the card opens (ProductAccordionCard.tsx), and a size that snaps
+     is the one thing LUX motion rules out. `duration/base`, the same clock
+     the card's chevron turns on. */
+  transition:
+    width var(--duration-base) var(--ease-standard),
+    height var(--duration-base) var(--ease-standard),
+    border-radius var(--duration-base) var(--ease-standard);
+  /* ⚠️ A SLIGHT DROP SHADOW AT EVERY SIZE, asked for directly 15 Sep 2026 for
+     every product picture in the app: `shadow/sm`, the lightest elevation.
+     It was the 36 well's alone (see `.sm`); the 48 now takes it too. */
+  box-shadow: var(--shadow-sm);
 }
 
 /* ⚠️ NOT IN FIGMA — the same well at `size/control-sm`, for a product card
@@ -25,14 +37,10 @@
   width: var(--size-control-sm); /* 36 */
   height: var(--size-control-sm);
   border-radius: var(--radius-sm);
-  /* ⚠️ AND IT SITS SLIGHTLY OFF ITS CARD — `shadow-sm`, the app's lightest
-     elevation. The compact card is opaque and the well is opaque in the same
-     family, so at 36 the picture and the card it lies on were one flat shape
-     with a radius change in the middle of it. A hairline rim would have drawn
-     a frame; the shadow says the same thing by lifting the picture instead.
-     ⚠️ THE 48 WELL DOES NOT TAKE IT: it lies on `frost-light`, which already
-     has an edge under it, and it appears on four other screens. */
-  box-shadow: var(--shadow-sm);
+  /* the `shadow-sm` lift is `.thumb`'s own now, at both sizes. It started
+     here: at 36 the opaque picture and the opaque compact card were one flat
+     shape with a radius change in the middle of it, and a hairline rim would
+     have drawn a frame where a shadow lifts the picture instead. */
 }
 
 .glyph {
