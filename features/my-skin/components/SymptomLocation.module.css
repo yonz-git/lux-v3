@@ -58,6 +58,12 @@
   flex: 1 1 160px;
   flex-direction: column;
   min-width: 0;
+  /* ⚠️ 20 IN FROM THE COLUMN'S EDGE AFTER ALL — asked for directly 15 Sep 2026
+     ("give more left side space"), reversing the "no padding" call above. The
+     text, the rules and the meta all move in together, and the hanging dot
+     (-12) now sits 8 INSIDE the column instead of in the card's padding, where
+     on a phone it crowded the card's rim. The text column is 20 narrower. */
+  padding-left: var(--space-xl); /* 20 */
   color: var(--color-text-on-data);
 }
 
