@@ -70,10 +70,24 @@
      ⚠️ RETUNED IN DEVTOOLS AND SUPPLIED, the same day: a sage `#98b4b6` at 72%
      rather than the near-white, a brighter 60% top light, and a 120px blur
      with no saturate. */
-  background: #98b4b6b8;
-  box-shadow: inset 0 1px 0 #fff9, var(--shadow-lg);
-  -webkit-backdrop-filter: blur(120px);
-  backdrop-filter: blur(120px);
+  /* ⚠️ 57%, NOT 72% — 15 points less, asked for directly 15 Sep 2026 with the
+     blur below ("make it frosty, I think we did it already") */
+  background: #98b4b691;
+  /* ⚠️ NO TOP LIGHT AND A REAL DROP SHADOW, asked for directly 15 Sep 2026
+     ("remove the top border light and add drop shadow"): the `inset 0 1px 0
+     #fff9` read as a white rim along the top edge, and `shadow/lg` alone was
+     too soft to lift the panel off the rows it opens over. The added layer is
+     the check basket bar's own `0 6px 20px` at 12% black, under `shadow/lg`. */
+  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.12), var(--shadow-lg);
+  /* ⚠️ THE BLUR WAS ALWAYS ON, AND THAT WAS THE PROBLEM — 15 Sep 2026. Nothing
+     above the panel cuts its backdrop (checked: no ancestor carries a filter,
+     an opacity or a backdrop-filter of its own), but at 120px the rows behind
+     smeared into one even colour, and under a 72% fill that reads as a flat
+     tinted panel, not frost. `blur/card` keeps the rows as soft shapes you can
+     see moving under the dates, and 140% saturate keeps their hue from going
+     grey — the recipe the panel first shipped with, over the thinner fill. */
+  -webkit-backdrop-filter: blur(var(--blur-card)) saturate(140%);
+  backdrop-filter: blur(var(--blur-card)) saturate(140%);
   /* it hangs from the trigger's LEFT edge, not its middle, so `.drop` settles
      from that corner — "Dropdowns" in globals.css */
   transform-origin: top left;

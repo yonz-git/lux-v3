@@ -88,7 +88,7 @@ export function SymptomTrend({
       className={[styles.card, className].filter(Boolean).join(" ")}
       aria-labelledby="trend-title"
     >
-      <h2 id="trend-title" className={`${styles.title} t-h5`}>
+      <h2 id="trend-title" className={`${styles.title} t-overline`}>
         Symptom Trend
       </h2>
 

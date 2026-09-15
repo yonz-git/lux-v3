@@ -395,18 +395,29 @@
    onto whichever segment is hovered; here the secondary gradient runs end for
    end instead (non-negotiable 5), as `SmallButton`'s does. The hovered rules
    sit one class above the toggle's (0,4,0) and (0,4,1). */
-.reset > .placesToggle button:last-child:not(:disabled) {
+/* ⚠️ BOTH LIVE RESETS ARE A TRANSPARENT BUTTON — 15 Sep 2026, asked for
+   directly, in three turns: `Reset all` lost its fill ("make this btn
+   transparent bg"), then for one turn lost its edge light too (a misreading —
+   "the transparent button disappeared"), and `Reset` takes the same button
+   the moment it becomes clickable ("add it to reset button also"). So a live
+   reset is the edge light's rim and glow around the words, in `text/brand`,
+   with no fill; the secondary pill fades in only under the pointer.
+   `:not(:first-child)` is `Reset` and `Reset all` — `Save` is the first
+   segment and keeps its indigo. A disabled reset matches nothing here and
+   stays the toggle's plain faded text. */
+.reset > .placesToggle button:not(:first-child):not(:disabled) {
   color: var(--color-text-brand);
   --shine-ink: var(--color-text-brand);
 }
 
-.reset > .placesToggle button:last-child:not(:disabled)::before {
-  opacity: 1;
+.reset > .placesToggle button:not(:first-child):not(:disabled)::before {
+  opacity: 0;
   --grad-start: var(--color-button-bg-secondary-start);
   --grad-end: var(--color-button-bg-secondary-end);
 }
 
-.reset > .placesToggle button:last-child:not(:disabled) > :global(.edge-light) {
+/* the edge light at the pale pills' strengths — `.edge` sets the indigo ones */
+.reset > .placesToggle button:not(:first-child):not(:disabled) > :global(.edge-light) {
   opacity: 1;
   --edge-glow: 0.25;
   --edge-catch: 0.35;
@@ -415,14 +426,15 @@
 }
 
 @media (hover: hover) {
-  .reset > .placesToggle button:last-child:not(:disabled):hover {
+  .reset > .placesToggle button:not(:first-child):not(:disabled):hover {
     color: var(--color-text-brand);
     --shine-ink: var(--color-text-brand);
   }
 
-  .reset > .placesToggle button:last-child:not(:disabled):hover::before {
-    --grad-start: var(--color-button-bg-secondary-end);
-    --grad-end: var(--color-button-bg-secondary-start);
+  /* the pill appears under the pointer rather than reversing — with no fill at
+     rest there is no gradient to run end for end */
+  .reset > .placesToggle button:not(:first-child):not(:disabled):hover::before {
+    opacity: 1;
   }
 }
 

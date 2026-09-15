@@ -71,7 +71,13 @@
 
 .tick {
   --icon-size: var(--size-icon-sm);
-  color: var(--color-feedback-success);
+  /* ⚠️ INDIGO, NOT `feedback/success` GREEN — asked for directly 15 Sep 2026
+     ("the check icons that are green, use one of the indigo"). `bg/brand`, the
+     app's one indigo for selection and the primary button's dark end. A done
+     pass is progress, not a verdict, so it does not need the feedback hue —
+     and on CHECK green sits too close to the results' own verdict colours.
+     Both callers take it: CHECK's `Analyzing` and the investigation's passes. */
+  color: var(--color-bg-brand);
 }
 
 @media (min-width: 1024px) {

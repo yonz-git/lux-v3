@@ -130,13 +130,17 @@
 
 .title {
   color: var(--color-text-on-data);
-  /* ⚠️ REGULAR, NOT `t-h5`'s MEDIUM — asked for directly 14 Sep 2026 */
-  font-weight: var(--font-weight-regular);
-  /* ⚠️ ALL CAPS, asked for directly 15 Sep 2026 ("capitalize"), like the
-     other cards' headings on PROGRESS — but at `H5`'s size and tracking, not
-     `t-overline`'s. The source text stays `Symptom Trend`, so a screen reader
-     reads words rather than letters. */
-  text-transform: uppercase;
+  /* ⚠️ MEDIUM, `t-overline`'s own — it was Regular from 14 Sep 2026 (asked
+     for directly, over `t-h5`'s Medium) until 15 Sep 2026, when the title took
+     the other cards' overline "like this one" and the weight went with it */
+  /* ⚠️ ALL CAPS AT THE OTHER CARDS' TITLE SIZE, asked for directly 15 Sep
+     2026 ("capitalize", then "match the others titles size"): `t-overline`
+     (caps + 1.82 tracking) at 15 / 20, the size `Progress gallery` and
+     `Symptoms and location` take. It was `t-h5` 18 / 26 in sentence case.
+     The regular weight above stays. The source text stays `Symptom Trend`,
+     so a screen reader reads words rather than letters. */
+  font-size: 15px;
+  line-height: 20px;
 }
 
 .chart {
