@@ -23,10 +23,12 @@ const PREVIEW_MAX = 3;
  * is IDENTITY rather than detail: same brand → same tint, same packaging → same
  * silhouette. At 28 a vessel is not identifiable and is not meant to be.
  *
- * ⚠️ 28 IS A LITERAL AND OFF THE SIZE SCALE, deliberately. `--size-*` has 24
- * and 32 and nothing between, and this well is neither an icon nor a control,
- * so binding either token would name it as something it is not. Raise a
- * `product-thumb / small` in Figma and this becomes a token.
+ * ⚠️ THE SIZE IS A LITERAL AND OFF THE SIZE SCALE, deliberately. It was 28
+ * (between `--size-*`'s 24 and 32), went to 56 on 15 Sep 2026 and settled at
+ * 40 the same day (between 36 and 48), and this well is neither an icon nor
+ * a control, so binding a token
+ * would name it as something it is not. Raise a `product-thumb / small` in
+ * Figma and this becomes a token.
  *
  * ⚠️ DECORATIVE — `aria-hidden`, and no per-product alt text. Every caller's
  * row already names what the group holds; the drawings illustrate a group,

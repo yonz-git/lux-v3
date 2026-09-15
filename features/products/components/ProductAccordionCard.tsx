@@ -97,9 +97,12 @@ export function ProductAccordionCard({
           {/* ⚠️ `Label` COMPACT, `H6` OTHERWISE — both are real styles from the
               ramp, and the smaller card takes the smaller of the two rather
               than an ad-hoc size. Medium weight either way: this is still the
-              card's title, not its body. */}
+              card's title, not its body.
+              ⚠️ ONE STEP UP EACH SIDE as of 15 Sep 2026, asked for directly
+              with the category rows' names (`H6` → `H5`): compact `Label` →
+              `H6`, otherwise `H6` → `H5`. */}
           <span
-            className={`${styles.name} ${compact ? "t-label" : "t-h6"}`}
+            className={`${styles.name} ${compact ? "t-h6" : "t-h5"}`}
           >
             {fullName(product)}
           </span>
