@@ -39,44 +39,46 @@ import styles from "./SkinProfileTiles.module.css";
  * currently disagree about the demo skin type. Wire them to `skinProfile()`
  * (and step 3's conditions) before this outlives the trial.
  *
- * ⚠️ THE STATE TILE CARRIES ITS START DATE — asked for directly 14 Sep 2026,
- * after `/progress`'s profile card (which held `Started <date> · Day <n>`)
- * became the gallery. It is a line under the pill, not a fifth tile, because
- * a date is only the age of something when it sits under the something — the
- * recap's rule. Optional. The date and the day are each kept whole, so a
- * narrow tile breaks at the `·` and never inside a date.
- * ⚠️ `/progress` AND THE RECAP STOPPED PASSING IT ON 15 Sep 2026, asked for
- * directly: there the date sits under the face card's symptom list
- * (`SymptomLocation`) and the day count is the calendar's own pill
- * (`CheckInCalendar`'s `day`). `/check/new` and `/check/results` still pass
- * it — neither has a face card or a calendar to carry it.
+ * ⚠️ NO START DATE, ON ANY SCREEN — 15 Sep 2026, asked for directly. The
+ * state tile carried `Started <date> · Day <n>` from 14 Sep; `/progress` and
+ * the recap dropped it first, then `/check/new` and `/check/results`, and the
+ * prop went with it so no caller can bring it back on one screen alone.
+ *
+ * ⚠️ ONE CARD, FOUR SCREENS, ONE LOOK — asked for directly 15 Sep 2026 ("when
+ * I fix one it is automatically fixed on others"). Callers hand over the RAW
+ * answers; the joining, the `None` for an empty set and the `Not set` for a
+ * missing answer all live here. Do not add a prop that lets one screen draw
+ * this card differently — change the card.
  *
  * A `dl`: each tile is one term and its value, grouped in a `div` so a tile is
- * one box. The start date is a second `dd` under the same term.
+ * one box.
  */
+const NOT_SET = "Not set";
+const NONE = "None";
+
+const joined = (list?: readonly string[]) =>
+  list && list.length > 0 ? list.join(", ") : NONE;
+
 export function SkinProfileTiles({
   skinType,
   tendencies,
   conditions,
   symptomsState,
-  symptomsStarted,
   className,
 }: {
-  skinType: string;
-  tendencies: string;
-  conditions: string;
+  skinType?: string | null;
+  tendencies?: readonly string[] | null;
+  conditions?: readonly string[] | null;
   /** where the current episode stands — step 4's status */
-  symptomsState: string;
-  /** when the episode started — `{ date: "Aug 31, 2026", day: 15 }` */
-  symptomsStarted?: { date: string; day: number };
+  symptomsState?: string | null;
   className?: string;
 }) {
   const titleId = useId();
   const tiles = [
-    { label: "Skin type", value: skinType },
-    { label: "Tendencies", value: tendencies },
-    { label: "Known conditions", value: conditions },
-    { label: "Symptoms state", value: symptomsState, started: symptomsStarted },
+    { label: "Skin type", value: skinType || NOT_SET },
+    { label: "Tendencies", value: joined(tendencies ?? undefined) },
+    { label: "Known conditions", value: joined(conditions ?? undefined) },
+    { label: "Symptoms state", value: symptomsState || NOT_SET },
   ];
 
   return (
@@ -90,17 +92,10 @@ export function SkinProfileTiles({
         Your skin profile
       </h2>
       <dl className={styles.tiles}>
-        {tiles.map(({ label, value, started }) => (
+        {tiles.map(({ label, value }) => (
           <div key={label} className={styles.tile}>
             <dt className={`${styles.tileLabel} t-body3`}>{label}</dt>
             <dd className={`${styles.tileValue} t-body3`}>{value}</dd>
-            {started && (
-              <dd className={`${styles.tileMeta} t-label-sm`}>
-                <span className={styles.nowrap}>Started {started.date}</span>
-                {" · "}
-                <span className={styles.nowrap}>Day {started.day}</span>
-              </dd>
-            )}
           </div>
         ))}
       </dl>

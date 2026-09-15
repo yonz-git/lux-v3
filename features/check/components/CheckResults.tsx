@@ -32,9 +32,8 @@ import {
   type SavedCheck,
 } from "@/features/check/check";
 import { DEMO_PRODUCTS, ownedProducts } from "@/lib/demo";
-import { formatLong } from "@/lib/date";
 import { useToday } from "@/lib/useToday";
-import { dayNumber, progressView } from "@/features/progress/progress";
+import { progressView } from "@/features/progress/progress";
 import {
   DURATIONS,
   bucketFor,
@@ -265,14 +264,10 @@ export function CheckResults({ now }: { now: number }) {
           as `/check/new` took it the same day. `.profile` keeps its spacing. */}
       <SkinProfileTiles
         className={styles.profile}
-        skinType={profile.skinType ?? "Not set"}
-        tendencies={profile.tendencies?.length ? profile.tendencies.join(", ") : "None"}
-        conditions={profile.conditions?.length ? profile.conditions.join(", ") : "None"}
-        symptomsState={profile.status ?? "Not set"}
-        symptomsStarted={{
-          date: formatLong(profile.start),
-          day: dayNumber(profile.start, profile.today),
-        }}
+        skinType={profile.skinType}
+        tendencies={profile.tendencies}
+        conditions={profile.conditions}
+        symptomsState={profile.status}
       />
 
       {/* 2 — the numbers */}

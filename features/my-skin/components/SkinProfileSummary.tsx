@@ -263,18 +263,10 @@ export function SkinProfileSummary({ now }: { now: number }) {
           real day count — "No start date given" is not a date. */}
       <SkinProfileTiles
         className={styles.headline}
-        skinType={profile.skinType ?? COPY.skinTypeUnknown}
-        tendencies={
-          profile.tendencies.length > 0 ? profile.tendencies.join(", ") : "None"
-        }
-        conditions={
-          profile.conditions.length > 0 ? profile.conditions.join(", ") : "None"
-        }
-        symptomsState={timeline?.status ?? COPY.skinTypeUnknown}
-        /* ⚠️ NO `symptomsStarted` SINCE 15 Sep 2026, asked for directly: the
-           start date is under the face card's list (`SymptomLocation`), as on
-           `/progress`. The day count has no home on this screen — it is the
-           calendar's pill there, and the recap has no calendar. */
+        skinType={profile.skinType}
+        tendencies={profile.tendencies}
+        conditions={profile.conditions}
+        symptomsState={timeline?.status}
       />
 
       {hasEpisode && (
