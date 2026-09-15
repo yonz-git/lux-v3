@@ -116,6 +116,43 @@
   }
 }
 
+/* ⚠️ THE CORNER ✕ — `dismiss="corner"`, added 15 Sep 2026 (see Sheet.tsx).
+   A 44 target (`size/touch-target`) around a 24 glyph, pinned to the tray's
+   top-right: the tray is `position: fixed`, so it is the containing block and
+   the ✕ sits in its padding rather than in the centred column. On a phone it
+   shares the top row with the grabber, 4 down and 8 in; the desktop dialog's
+   48 padding puts it 16 in. The same 0.7 hover fade as `Done`, and the global
+   focus outline follows its round radius. */
+.close {
+  position: absolute;
+  top: var(--space-xs); /* 4 */
+  right: var(--space-sm); /* 8 */
+  z-index: 1;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: var(--size-touch-target);
+  height: var(--size-touch-target);
+  padding: 0;
+  border-radius: var(--radius-full);
+  color: var(--color-text-on-data);
+  transition: opacity var(--duration-fast) var(--ease-hover);
+}
+
+.closeIcon {
+  --icon-size: var(--size-icon-md); /* 24 */
+}
+
+.close:hover {
+  opacity: 0.7;
+}
+
+@media (hover: none) {
+  .close:hover {
+    opacity: 1;
+  }
+}
+
 /* 40x5, border/glass, fully rounded */
 .grabber {
   width: 40px;
@@ -202,6 +239,12 @@
 
   .grabber {
     display: none;
+  }
+
+  /* 16 in from the dialog's corner, inside its 48 padding */
+  .close {
+    top: var(--space-lg);
+    right: var(--space-lg);
   }
 }
 
