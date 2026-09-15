@@ -2,6 +2,7 @@
 
 import styles from "./SelfieSheet.module.css";
 import { Sheet } from "@/components/ui/Sheet";
+import { SuccessCheckIcon } from "@/components/ui/icons";
 import { useInvestigation } from "@/lib/store/InvestigationProvider";
 
 /**
@@ -85,6 +86,9 @@ export function SelfieSheet({
             role="status"
             className={`${styles.captured} reveal-quick t-label`}
           >
+            {/* the tick draws itself on — `.tick-draw` in globals.css — and
+                replays on a retake, since the key re-mounts the line */}
+            <SuccessCheckIcon className={`${styles.capturedIcon} tick-draw`} />
             Photo captured
           </p>
         )}

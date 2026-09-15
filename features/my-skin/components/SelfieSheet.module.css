@@ -83,6 +83,16 @@
   position: absolute;
   bottom: var(--space-xl);
   color: var(--color-effect-rim-highlight);
+  /* the tick beside the words, 15 Sep 2026 — CameraCapture.module.css's
+     `.captured` took the same change; keep them in step */
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-xs); /* 4 */
+}
+
+.capturedIcon {
+  width: var(--size-icon-sm); /* 20 */
+  height: var(--size-icon-sm);
 }
 
 .controls {
@@ -104,7 +114,9 @@
   background: var(--color-bg-glass);
   box-shadow: var(--shadow-md);
 
-  transition: opacity var(--duration-fast) var(--ease-standard);
+  /* ⚠️ `duration/slow`, asked for directly 15 Sep 2026 ("make the hover
+     smooth") — the same change as CameraCapture.module.css's shutter */
+  transition: opacity var(--duration-slow) var(--ease-standard);
 }
 
 .shutter:hover {
