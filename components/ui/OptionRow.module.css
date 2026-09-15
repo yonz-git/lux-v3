@@ -42,7 +42,10 @@
      reduced-transparency fallback below keeps its opaque frost. */
   background: #edf8fb0f;
 
-  box-shadow: var(--shadow-frosted-row);
+  /* ⚠️ `shadow/frosted-row` at 15%, asked for directly 15 Sep 2026 — the same
+     depth the step 1 `Other` row took the same day. The token stays 10%
+     (globals.css) for everything else that reads it. */
+  box-shadow: inset 2px 4px 9px rgba(0, 0, 0, 0.15);
   -webkit-backdrop-filter: blur(var(--blur-card));
   backdrop-filter: blur(var(--blur-card));
 
@@ -99,7 +102,10 @@
   justify-content: center;
   width: 22px;
   height: 22px;
-  border: 1.4px solid var(--color-border-default);
+  /* ⚠️ NOT IN FIGMA — `#777e91`, asked for directly 15 Sep 2026, where it was
+     `border/default`. No token holds this value; the selected states still set
+     their own ink over it. */
+  border: 1.4px solid #777e91;
   color: var(--color-text-on-brand);
   transition:
     border-color var(--duration-base) var(--ease-standard),
