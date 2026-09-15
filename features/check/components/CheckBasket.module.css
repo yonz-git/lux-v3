@@ -43,7 +43,7 @@
      first, then the ready line ("align center too"). The chevron is taken out
      of the flow (`.barChevron`) so it cannot pull the words off centre. */
   text-align: center;
-  transition: opacity var(--duration-fast) var(--ease-standard);
+  transition: opacity var(--duration-fast) var(--ease-hover);
 }
 
 .bar:hover {
@@ -212,7 +212,7 @@
   border-radius: var(--radius-full);
   /* white by explicit request, matching the label it sits beside */
   color: var(--color-text-on-data-inverse);
-  transition: opacity var(--duration-fast) var(--ease-standard);
+  transition: opacity var(--duration-fast) var(--ease-hover);
 }
 
 .remove:hover {

@@ -275,8 +275,8 @@
   color: var(--color-text-muted);
 
   transition:
-    color var(--duration-fast) var(--ease-standard),
-    border-color var(--duration-fast) var(--ease-standard);
+    color var(--duration-fast) var(--ease-hover),
+    border-color var(--duration-fast) var(--ease-hover);
 }
 
 /* hover darkens the rim and the glyph, subtly — asked for directly 14 Sep 2026.
@@ -548,8 +548,8 @@
   backdrop-filter: blur(var(--blur-card)) saturate(160%);
   color: var(--color-text-brand);
   cursor: pointer;
-  transition: --grad-start var(--duration-hover) var(--ease-standard),
-    --grad-end var(--duration-hover) var(--ease-standard);
+  transition: --grad-start var(--duration-hover) var(--ease-hover),
+    --grad-end var(--duration-hover) var(--ease-hover);
 }
 
 .undoAction:hover {

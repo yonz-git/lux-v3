@@ -183,7 +183,7 @@
 
   /* duration/base to match the button's hover fade, so both controls soften at
      the same pace */
-  transition: opacity var(--duration-base) var(--ease-standard);
+  transition: opacity var(--duration-base) var(--ease-hover);
 }
 
 /* the pill — `state/pressed-overlay`, the one darkening value LUX has, borrowed

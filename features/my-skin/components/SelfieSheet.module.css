@@ -114,9 +114,10 @@
   background: var(--color-bg-glass);
   box-shadow: var(--shadow-md);
 
-  /* ⚠️ `duration/slow`, asked for directly 15 Sep 2026 ("make the hover
-     smooth") — the same change as CameraCapture.module.css's shutter */
-  transition: opacity var(--duration-slow) var(--ease-standard);
+  /* ⚠️ `duration/slow` on `ease/hover`, asked for directly 15 Sep 2026 ("make
+     the hover smooth") — the same change, and the same reason, as
+     CameraCapture.module.css's shutter */
+  transition: opacity var(--duration-slow) var(--ease-hover);
 }
 
 .shutter:hover {

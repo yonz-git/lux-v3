@@ -40,6 +40,22 @@
   initial-value: #313560;
 }
 
+/* `--shine-ink` IS REGISTERED so a label's ink can cross-fade. `.shine-text`
+   paints its glyphs from this property, not from `color`, and an unregistered
+   custom property never interpolates, so `SegmentedToggle`'s hover swapped the
+   label from dark to white in one frame while the pill faded over 200ms.
+   ⚠️ `inherits: true`: it is SET on the button and READ by the label span inside
+   it. `--collapse-gap` is the opposite case.
+   ⚠️ THE INITIAL-VALUE IS `text/primary` (`neutral-800`, #2e2a3f) AND MUST MOVE
+   WITH IT. A registered property always has a value, so `.shine-text`'s
+   `var(--shine-ink, var(--color-text-primary))` fallback can no longer fire,
+   and this initial-value takes its place. */
+@property --shine-ink {
+  syntax: "<color>";
+  inherits: true;
+  initial-value: #2e2a3f;
+}
+
 @property --specular-angle {
   syntax: "<angle>";
   /* written on the control, read by the `.specular` span inside it */
@@ -549,6 +565,24 @@
 
 :root {
   --color-text-success-ink: #46664f;
+}
+
+/* ⚠️ NOT IN FIGMA — `ease/hover`, THE CURVE FOR A HOVER, 15 Sep 2026, asked for
+   directly ("the hover effect is not smooth"). It is CSS `ease`, written out.
+
+   `09 Motion` holds one UI curve, `ease/standard` (0.2, 0, 0, 1), and every
+   hover in the app rode it. It is a strong decelerate, right for a block that
+   ARRIVES and settles and wrong for a hover: it lands half its change in the
+   first fifth of the duration (50% at 20%, 88% at 50%). On `duration/fast`
+   that is half a dim in 24ms, a snap with an invisible tail, and lengthening
+   the duration only stretches the tail (the selfie shutter went 120 → 320 and
+   still snapped). This curve is 30% done at 20% and 80% at 50%, so the change
+   is spread across the time the transition says it takes.
+
+   ONLY FOR TRANSITIONS WHOSE SOLE JOB IS A HOVER. Selection, press, entrance
+   and exit keep `ease/standard`. Raise `ease/hover` in `09 Motion`. */
+:root {
+  --ease-hover: cubic-bezier(0.25, 0.1, 0.25, 1);
 }
 
 /* ⚠️ NOT IN FIGMA — `bg/symptom`, THE PROFILE SYMPTOM PILL FILL, asked for
@@ -3132,7 +3166,7 @@ main[tabindex="-1"]:focus-visible {
   /* the angle is written on the parent and inherited; transitioning it HERE
      is what makes the streak turn rather than jump between pointer moves */
   transition:
-    opacity var(--duration-hover) var(--ease-standard),
+    opacity var(--duration-hover) var(--ease-hover),
     --specular-angle var(--duration-fast) linear;
 }
 

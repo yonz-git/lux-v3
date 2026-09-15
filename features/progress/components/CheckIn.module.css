@@ -159,8 +159,8 @@
   /* the armed ring (`::after`, below) positions against this */
   position: relative;
 
-  transition: border-color var(--duration-base) var(--ease-standard),
-    box-shadow var(--duration-fast) var(--ease-standard);
+  transition: border-color var(--duration-base) var(--ease-hover),
+    box-shadow var(--duration-fast) var(--ease-hover);
 }
 
 /* ⚠️ NOT IN FIGMA — A SUBTLE HOVER, asked for directly 13 Sep 2026. The same
@@ -256,6 +256,7 @@
   text-decoration: underline;
   cursor: pointer;
   font: inherit;
+  transition: opacity var(--duration-fast) var(--ease-hover);
 }
 
 .remove:hover {

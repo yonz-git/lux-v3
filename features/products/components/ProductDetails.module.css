@@ -64,7 +64,7 @@
 
 .inciLabel {
   color: var(--color-text-muted);
-  transition: color var(--duration-fast) var(--ease-standard);
+  transition: color var(--duration-fast) var(--ease-hover);
 }
 
 .inciToggle:hover .inciLabel {

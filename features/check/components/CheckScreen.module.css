@@ -131,13 +131,15 @@
   gap: var(--space-xs); /* 4 */
   color: var(--color-text-brand);
   text-decoration: none;
-  transition: opacity var(--duration-fast) var(--ease-standard);
+  transition: opacity var(--duration-fast) var(--ease-hover);
 }
 
 /* ⚠️ THE UNDERLINE IS ON THE LABEL ONLY. Text decoration propagates into flex
    items, so underlining `.link` would draw the rule under the glyph as well — a
    chevron with a line struck through its foot. The label carries it; the arrow
-   takes the link's `text/brand` through currentColor and fades with it.
+   takes the link's `text/brand` through currentColor and fades with it. The
+   underline is always drawn and fades in by colour, because
+   text-decoration-line is discrete and snapped on (15 Sep 2026).
 
    It does NOT move on hover: that would be a transform, and nothing in LUX
    translates on interaction.
@@ -153,12 +155,18 @@
   height: var(--size-icon-sm);
 }
 
+.linkLabel {
+  text-decoration: underline;
+  text-decoration-color: transparent;
+  transition: text-decoration-color var(--duration-fast) var(--ease-hover);
+}
+
 .link:hover {
   opacity: 0.7;
 }
 
 .link:hover .linkLabel {
-  text-decoration: underline;
+  text-decoration-color: var(--color-text-brand);
 }
 
 @media (hover: none) {
@@ -167,6 +175,6 @@
   }
 
   .link:hover .linkLabel {
-    text-decoration: none;
+    text-decoration-color: transparent;
   }
 }

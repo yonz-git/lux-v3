@@ -96,10 +96,12 @@
   background: var(--color-bg-glass);
   box-shadow: var(--shadow-md);
 
-  /* ⚠️ `duration/slow`, NOT `duration/fast` — asked for directly 15 Sep 2026
-     ("make the hover smooth"). A 0.8 fade over 120ms read as a flicker on a
-     64 disc. Still a fade and nothing else: LUX does not scale a control. */
-  transition: opacity var(--duration-slow) var(--ease-standard);
+  /* ⚠️ `duration/slow` ON `ease/hover` — asked for directly 15 Sep 2026 ("make
+     the hover smooth"), twice. The duration went 120 → 320 first and the fade
+     still snapped: `ease/standard` lands half its change in the first fifth of
+     any duration. The curve was the fix (globals.css `--ease-hover`). Still a
+     fade and nothing else: LUX does not scale a control. */
+  transition: opacity var(--duration-slow) var(--ease-hover);
 }
 
 .shutter:hover {

@@ -239,7 +239,7 @@
   padding: 0;
   border-radius: var(--radius-full);
   color: var(--color-icon-default);
-  transition: opacity var(--duration-fast) var(--ease-standard);
+  transition: opacity var(--duration-fast) var(--ease-hover);
 }
 
 .removeIcon {

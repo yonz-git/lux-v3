@@ -82,7 +82,8 @@
   cursor: pointer;
   z-index: 0;
   transition:
-    color var(--duration-base) var(--ease-standard);
+    color var(--duration-base) var(--ease-standard),
+    --shine-ink var(--duration-base) var(--ease-standard);
 }
 
 /* ⚠️ THE PILL FOLLOWS THE POINTER — asked for directly 13 Sep 2026 ("when I
@@ -95,9 +96,9 @@
    `:has()` is what lets the hovered segment reach its sibling.
 
    The grad endpoints are set on `::before`, where the gradient is painted, for
-   the reason recorded on the reversal below. The label ink swaps with the
-   pill; `--shine-ink` is unregistered, so it changes at once while the pill
-   cross-fades on `duration/base`. */
+   the reason recorded on the reversal below. The label ink cross-fades with
+   the pill on `duration/base`: `--shine-ink` is a registered <color>
+   (globals.css), so it interpolates like `color` does. */
 @media (hover: hover) {
   /* `:not(:disabled)` throughout: a disabled segment never takes the pill */
   .segment:not(.selected):not(:disabled):hover {
@@ -148,8 +149,8 @@
   opacity: 0;
   transition:
     opacity var(--duration-base) var(--ease-standard),
-    --grad-start var(--duration-hover) var(--ease-standard),
-    --grad-end var(--duration-hover) var(--ease-standard);
+    --grad-start var(--duration-hover) var(--ease-hover),
+    --grad-end var(--duration-hover) var(--ease-hover);
 }
 
 /* Selected state — gradient pill visible, white label. */

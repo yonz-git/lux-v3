@@ -1029,6 +1029,12 @@ from it toggles like an ordinary one and the bug is invisible in the screen.
 | `--duration-slower` | 480ms | orb and hero entrances |
 
 `--ease-standard` is the default for anything that enters and settles.
+⚠️ **A HOVER TAKES `--ease-hover`, NOT `--ease-standard` — 15 Sep 2026.**
+`--ease-standard` lands half its change in the first fifth of any duration,
+so a hover on it snaps however long it runs (the selfie shutter went 120 →
+320ms and still snapped). `--ease-hover` is CSS `ease`, declared on `:root`
+in `globals.css`. Only for a transition whose sole job is a hover: selection,
+press, entrance and exit keep `--ease-standard`.
 
 - **Pressed never uses a transform** — "LUX does not bounce." Overlay
   `state/pressed-overlay` at 14% instead. ⚠️ **AND IT IS A SHARED CLASS NOW —
