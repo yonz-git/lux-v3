@@ -160,6 +160,9 @@ export function ProgressGallery({
  * a tap.
  */
 const TILE_GAP = 12;
+/** `--per-view` in the stylesheet — keep the two in step */
+const PER_VIEW_MOBILE = 3;
+const PER_VIEW_DESKTOP = 4;
 
 export function PhotoGallery({
   open,
@@ -236,7 +239,18 @@ export function PhotoGallery({
       <div className={styles.head}>
         <h2 className={`${styles.heading} t-h6`}>{TITLE}</h2>
         <p className={`${styles.intro} t-body3`}>
-          {photoCount(photos.length)} from your check-ins, newest first
+          {/* ⚠️ THE NUMBER IS THE PHOTOS IN VIEW — 3 on a phone, 4 on
+              desktop (`--per-view`) — asked for directly 15 Sep 2026. It was
+              the whole diary, which read as a miscount beside a row that
+              shows fewer. Capped by the diary so it never claims a photo
+              that does not exist. */}
+          <span className={styles.perViewMobile}>
+            {photoCount(Math.min(photos.length, PER_VIEW_MOBILE))}
+          </span>
+          <span className={styles.perViewDesktop}>
+            {photoCount(Math.min(photos.length, PER_VIEW_DESKTOP))}
+          </span>{" "}
+          from your check-ins, newest first
         </p>
       </div>
 
