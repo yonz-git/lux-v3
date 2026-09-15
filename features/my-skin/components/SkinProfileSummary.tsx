@@ -112,8 +112,8 @@ import { COPY, isEmpty, recap } from "@/features/my-skin/profile";
  * desktop), and for an hour it was ALSO the sage card's lower half. Both are
  * gone and the whole of step 4 is two labelled pairs under the symptom pills:
  * `Started on` over `Aug 31, 2026 · Day 8`, and `Current state` over `Getting
- * worse` — see `Meta` below for the shape and 8 Sep 2026's move onto it. The
- * reasoning is that a date is only the age of something when it sits under the
+ * worse`. ⚠️ Both moved into `SkinProfileTiles` on 14 Sep 2026, and the `Meta`
+ * pair that drew them was deleted. The reasoning is that a date is only the age of something when it sits under the
  * something — on its own it is a date, and a rail is a lot of apparatus for two
  * lines of text. ⚠️ **The block's flag counts the timeline**, so a walk that answered
  * step 4 and nothing on step 1 still has somewhere to show it.
@@ -309,15 +309,7 @@ export function SkinProfileSummary({ now }: { now: number }) {
                       honest reading of that — NOT on the face, here instead —
                       where dropping the diagram would leave a chip with nothing
                       to be measured against. */}
-                  {/* ⚠️ THE DIAGRAM AND THE TYPED ANSWER SHARE THE BLOCK —
-                      asked for directly, 8 Sep 2026: "the face diagram should
-                      shrink in size and give space for the typed in text". The
-                      row is what spends the space the diagram gives up; the
-                      diagram alone keeps the whole block and its 392, because
-                      there is nothing to share it with. `data-with-note` is how
-                      the block says which of the two it is — see `.located` and
-                      `.face[data-with-note]`. */}
-                  <div className={styles.located}>
+                  <div>
                     <div className={styles.face}>
                       <FaceDiagram
                         readOnly
@@ -326,20 +318,12 @@ export function SkinProfileSummary({ now }: { now: number }) {
                         callouts={profile.places}
                       />
                     </div>
-                    {/* ⚠️ A `Meta` PAIR, NOT A `Tag` AND NOT A CAPTION. The
-                        pills on this screen are SETS drawn as sets; this is one
-                        typed sentence, which is the shape the label-over-value
-                        pair already exists for (step 4's two facts use it, and
-                        so do the sage card's three). ⚠️ AND BESIDE THE PICTURE
-                        RATHER THAN UNDER IT WHEREVER THERE IS ROOM, which is
-                        the difference between a caption and an answer: a
-                        caption describes the picture above it, this is the part
-                        of the answer the picture could not draw. */}
-                    {/* ⚠️ AND AS OF 14 Sep 2026 IT IS UNDER THE PICTURE, AS
-                        ONE CENTRED LINE — `Other: <words>`, PROGRESS's face
-                        card's own, asked for directly ("accordingly to
-                        /progress"). The side-by-side row and the 300 step-down
-                        it needed are retired with it. */}
+                    {/* ⚠️ THE TYPED `Other`, UNDER THE PICTURE AS ONE CENTRED
+                        LINE — `Other: <words>`, PROGRESS's face card's own,
+                        since 14 Sep 2026 ("accordingly to /progress"). Until
+                        then it sat beside the diagram as a label-over-value
+                        pair and the diagram stepped down to 300 to make room;
+                        that row and its CSS are gone. */}
                     {profile.locationNote && (
                       <p className={`${styles.otherNote} t-body2`}>
                         <span className={styles.otherNoteLabel}>
