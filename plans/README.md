@@ -10,6 +10,11 @@ These plans come from the `improve-animations` audits of 13 Sep 2026. Each one i
 - ⚠️ **`globals.css` line numbers read 14 higher on `main`.** `7481990` (on `main`) added 14 lines near the top of `app/globals.css`.
 - Every plan quotes by text and says to STOP if its excerpt isn't found.
 
+**Batch 3 (026–027)** answers "quite many elements the hover effect is not smooth" (15 Sep 2026). It was written against `a3b3fb3` on `new-adjustments`, with a dirty tree.
+
+- ⚠️ **The excerpts are quoted from the working tree, not from `a3b3fb3`.** The selfie shutters' `duration/slow` in particular exists only as an uncommitted edit.
+- Both sweeps paired every `:hover` in 31 stylesheets with its base transition. Only five hovers had nothing animating (027). The rest were covered, but all rode `--ease-standard`, which front-loads half its change into the first fifth of any duration. That is the snap (026).
+
 ## Plans
 
 | # | Plan | Severity | Category | Depends on | Status |
@@ -39,6 +44,8 @@ These plans come from the `improve-animations` audits of 13 Sep 2026. Each one i
 | 023 | [013's recipe in four more places](023-removal-recipe-follow-ups.md) | LOW | Missed opportunity | 015, 016, 019 | TODO |
 | 024 | [Step 1's "Other" button and field swap in place](024-step1-other-swaps-in-place.md) | LOW | Missed opportunity | — | TODO |
 | 025 | [The calendar's height follows the month](025-calendar-height-follows-month.md) | LOW | Missed opportunity | 015 | TODO |
+| 026 | [Hovers run on a hover curve, not the entrance curve](026-hover-curve.md) | HIGH | Easing & duration | — | DONE — plus the `CheckInDetail` `.result` comment the plan missed. ⚠️ `PhotoGallery`'s carousel (`.well > .art`, `.arrow`) arrived after this plan and its hovers still ride `--ease-standard` |
+| 027 | [Five hovers that still snap](027-five-hovers-that-snap.md) | MEDIUM | Easing & duration | 026 step 1 | DONE — ⚠️ follow-up open: `SegmentedToggle` `.segment:disabled` still snaps its ink |
 
 ## Recommended order
 
@@ -69,6 +76,13 @@ These plans come from the `improve-animations` audits of 13 Sep 2026. Each one i
 9. **023**: after 015, 016 and 019.
 10. **024**, then **025**: 025 needs 015's hook.
 
+### Batch 3
+
+Independent of batches 1 and 2. It can run before them.
+
+1. **026**: adds `--ease-hover` and swaps the curve on every hover-only transition. Its step 4 (the button gradient reversals) is separable, so revert only that step if the buttons feel wrong.
+2. **027**: needs 026's token. It adds the transitions that were missing, fades the two underlines by colour, and registers `--shine-ink`.
+
 ## Overlaps to watch
 
 - **`app/globals.css`** is edited by 005, 006, 007 and 011. Batch 2 does not touch it.
@@ -80,6 +94,9 @@ These plans come from the `improve-animations` audits of 13 Sep 2026. Each one i
 - **`features/products/components/MyProducts.tsx`**: 019 (part C) → 023 (parts A and B).
 - **`lib/useHeightTransition.ts`**: created by 015 for `Sheet`, reused by 025.
 - **`components/layout/HubScreen.tsx`**: edited by 014 only. 018 and 019 rely on its heading and shell behaviour without editing it.
+- **`app/globals.css`**: 026 (the token and `.specular`), then 027 (`@property --shine-ink`).
+- **`CheckResults.module.css`, `SegmentedToggle.module.css`, `StartInvestigation.module.css`**: 026 swaps curves in some rules, 027 edits different rules. 026 leaves `.historyLink`, `.segment`'s `color` and `.segment::before`'s `opacity` alone on purpose.
+- **`AddProductMethodSheet.module.css`**: 026 swaps four curves. Batch 2's 015, 016 and 023 edit the TSX, not these rules.
 
 ## Not planned — documented decisions the audit respected
 
@@ -104,3 +121,11 @@ The code documents these as decisions, so no plan changes them:
 - **Step 5 rows travelling into their groups** (a shared-layout move). 020 fades the new headers in instead.
 - **`SmallButton` disabled fade.** Nothing disables a `SmallButton` (checked 13 Sep 2026: no caller passes `disabled`), so its comment saying so is accurate and there is no state to animate.
 - **Empty lines left when a list's last product goes.** The day record's "No products recorded" and the add tray's empty "Added products" block each pop in one frame after the last row has already closed.
+
+### Batch 3
+
+- **Durations.** The shutter went 120 → 320ms and still snapped, so 026 changes the curve and leaves every duration alone. If a hover still feels quick after 026, duration is the lever then, and it will work.
+- **Press, selection, entrance and exit keep `--ease-standard`.** `.pressable`, `Chip`, `OptionRow`, `FaceDiagram`, `DateField`'s days, reveals, `Collapse`, `.drop` and `Sheet` all stay. A press wants the fast start, and selection feel was not the complaint.
+- **The 600ms hover shine band.** Its curve is the band's crossing, a separate documented decision.
+- **JavaScript hovers.** `Snackbar` pauses its timer on `onMouseEnter`, which is not a visual change. `FaceDiagram`'s `onPointerEnter` handlers drive the lit and focus highlights, whose transitions also carry selection, so the file is excluded along with its CSS.
+- **`app/prototypes/dark-welcome/picker.css`.** A prototype switcher, not product UI.

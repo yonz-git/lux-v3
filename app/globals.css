@@ -40,6 +40,22 @@
   initial-value: #313560;
 }
 
+/* `--shine-ink` IS REGISTERED so a label's ink can cross-fade. `.shine-text`
+   paints its glyphs from this property, not from `color`, and an unregistered
+   custom property never interpolates, so `SegmentedToggle`'s hover swapped the
+   label from dark to white in one frame while the pill faded over 200ms.
+   ⚠️ `inherits: true`: it is SET on the button and READ by the label span inside
+   it. `--collapse-gap` is the opposite case.
+   ⚠️ THE INITIAL-VALUE IS `text/primary` (`neutral-800`, #2e2a3f) AND MUST MOVE
+   WITH IT. A registered property always has a value, so `.shine-text`'s
+   `var(--shine-ink, var(--color-text-primary))` fallback can no longer fire,
+   and this initial-value takes its place. */
+@property --shine-ink {
+  syntax: "<color>";
+  inherits: true;
+  initial-value: #2e2a3f;
+}
+
 @property --specular-angle {
   syntax: "<angle>";
   /* written on the control, read by the `.specular` span inside it */

@@ -563,7 +563,7 @@
   margin-top: var(--space-3xl); /* 32 */
   color: var(--color-text-brand);
   text-decoration: none;
-  transition: opacity var(--duration-fast) var(--ease-standard);
+  transition: opacity var(--duration-fast) var(--ease-hover);
 }
 
 .historyArrow {
@@ -571,12 +571,18 @@
   height: var(--size-icon-sm);
 }
 
+.historyLabel {
+  text-decoration: underline;
+  text-decoration-color: transparent;
+  transition: text-decoration-color var(--duration-fast) var(--ease-hover);
+}
+
 .historyLink:hover {
   opacity: 0.7;
 }
 
 .historyLink:hover .historyLabel {
-  text-decoration: underline;
+  text-decoration-color: var(--color-text-brand);
 }
 
 @media (hover: none) {
@@ -585,6 +591,6 @@
   }
 
   .historyLink:hover .historyLabel {
-    text-decoration: none;
+    text-decoration-color: transparent;
   }
 }
