@@ -3,7 +3,6 @@
 import { useState } from "react";
 import styles from "./SkinProfileSummary.module.css";
 import { HubScreen } from "@/components/layout/HubScreen";
-import { DataCard } from "@/components/ui/DataCard";
 import { Button } from "@/components/ui/Button";
 import { Orb } from "@/components/ui/Orb";
 import { SmallButton } from "@/components/ui/SmallButton";
@@ -16,14 +15,25 @@ import { SelfieSheet } from "./SelfieSheet";
    CALLER SHOULD PROMOTE IT: the rule in AGENTS.md is that a component two
    sections use stops belonging to either, and this is the second. */
 import { CheckInPhotoArt } from "@/features/progress/components/CheckInPhotoArt";
+import { SkinProfileTiles } from "@/features/check/components/SkinProfileTiles";
 import { useInvestigation } from "@/lib/store/InvestigationProvider";
 import { useToday } from "@/lib/useToday";
 import { COPY, isEmpty, recap } from "@/features/my-skin/profile";
-import type { ProfileRecap } from "@/features/my-skin/profile";
 
 /**
  * `/investigation/profile` — the skin profile recap, between step 4 (Timing)
  * and step 5 (Your products).
+ *
+ * ⚠️ READ THIS FIRST — REDRAWN TO MATCH PROGRESS, 14 Sep 2026, asked for
+ * directly ("fix /investigation/profile accordingly to /progress"). The
+ * surface split the notes below defend is RETIRED: the sage `Headline` card
+ * and the `Symptoms state` block are one `SkinProfileTiles` (PROGRESS's own
+ * card, indigo answer pills, the state with its start date), and the location
+ * and photo blocks are bare-canvas `canvas-card`s with 15px overlines. The
+ * typed `Other` is a centred `Other: <words>` line under the face, and the
+ * photo well has the gallery thumbs' inner shadow. `Headline` and `Meta` were
+ * deleted with it. Everything else below — the route, the CTA, the photo
+ * control, the raw-answers rule — still holds; the surface history does not.
  *
  * ⚠️ NOT A FLOW STEP, AND `TOTAL_STEPS` IS STILL 5. No progress track, no
  * `Save & exit`, back chevron kept — a pushed view, the same standing
@@ -214,7 +224,7 @@ export function SkinProfileSummary({ now }: { now: number }) {
      14 Sep 2026. So it renders only when there is a status or a dated start to
      show; "No start date given" with no status is a screen reporting on its
      own gaps, and would draw a heading over nothing. */
-  const hasCurrent = Boolean(profile.timeline?.status || profile.timeline?.day);
+  const timeline = profile.timeline;
   const hasLocation =
     profile.faceRegions.length > 0 ||
     profile.otherLocations.length > 0 ||
@@ -232,7 +242,7 @@ export function SkinProfileSummary({ now }: { now: number }) {
      and nothing else — no heading, no border, no card. A label naming a group
      is what this screen deleted once already ("From your answers"), and it
      would be the same mistake at a smaller scale. */
-  const hasEpisode = hasCurrent || hasLocation;
+  const hasEpisode = hasLocation || Boolean(profile.photo);
 
   return (
     <HubScreen
@@ -242,45 +252,34 @@ export function SkinProfileSummary({ now }: { now: number }) {
       layout="card"
       tightTop
     >
-      <Headline profile={profile} />
+      {/* ⚠️ PROGRESS's SKIN PROFILE CARD, NOT THE SAGE STATEMENT — asked for
+          directly 14 Sep 2026 ("fix /investigation/profile accordingly to
+          /progress"). The sage `Headline` card and the separate `Symptoms
+          state` block are both gone: `SkinProfileTiles` holds skin type,
+          tendencies, known conditions AND the state with its start date, the
+          way `/progress` draws them. ⚠️ STILL THE RAW ANSWERS, never
+          `skinProfile()`: an unanswered value says so ("Not answered", "None")
+          rather than borrowing the demo's. The start line only renders with a
+          real day count — "No start date given" is not a date. */}
+      <SkinProfileTiles
+        className={styles.headline}
+        skinType={profile.skinType ?? COPY.skinTypeUnknown}
+        tendencies={
+          profile.tendencies.length > 0 ? profile.tendencies.join(", ") : "None"
+        }
+        conditions={
+          profile.conditions.length > 0 ? profile.conditions.join(", ") : "None"
+        }
+        symptomsState={timeline?.status ?? COPY.skinTypeUnknown}
+        symptomsStarted={
+          timeline && timeline.dayNumber !== null
+            ? { date: timeline.started, day: timeline.dayNumber }
+            : undefined
+        }
+      />
 
       {hasEpisode && (
         <div className={styles.blocks}>
-          {hasCurrent && (
-            <Block
-              label={COPY.currentLabel(profile.symptoms.length)}
-              id="profile-current"
-            >
-              {/* ⚠️ THE STATUS FIRST, AND WITH NO LABEL OF ITS OWN — asked for
-                  directly 13 Sep 2026. The block's heading already names the
-                  state, so "Getting worse" is its value; a second label over
-                  it would say the same words twice. It
-                  wears `.meta` without a label so the block's existing
-                  `.blockLabel + .meta` / `.meta + .meta` spacing covers it. */}
-              {profile.timeline?.status && (
-                <div className={styles.meta}>
-                  <p className={`${styles.metaValue} t-button`}>
-                    {profile.timeline.status}
-                  </p>
-                </div>
-              )}
-              {/* ⚠️ THE AGE OF THE STATE, UNDER THE STATE — moved off the sage
-                  card 7 Sep 2026, asked for directly. Gated on the day count
-                  rather than on the date, because the line only reads as a span
-                  with both halves: `started` also carries "No start date given"
-                  when step 4 was left blank, and `day` is null for that and for
-                  a date in the future. Neither is worth a line. And it is a
-                  separate pair from the status rather than a `·` segment on it:
-                  "Sep 4 · Day 10" is one fact, "Getting worse" another. */}
-              {profile.timeline?.day && (
-                <Meta
-                  label={COPY.startedLabel}
-                  value={`${profile.timeline.started} · ${profile.timeline.day}`}
-                />
-              )}
-            </Block>
-          )}
-
           {(hasLocation || profile.photo) && (
             /* ⚠️ THE TWO BLOCKS THAT HOLD A PICTURE, PAIRED WHEN BOTH EXIST.
                `data-pair` is what turns the stack into two columns at 1024 —
@@ -318,10 +317,7 @@ export function SkinProfileSummary({ now }: { now: number }) {
                       there is nothing to share it with. `data-with-note` is how
                       the block says which of the two it is — see `.located` and
                       `.face[data-with-note]`. */}
-                  <div
-                    className={styles.located}
-                    data-with-note={profile.locationNote ? "" : undefined}
-                  >
+                  <div className={styles.located}>
                     <div className={styles.face}>
                       <FaceDiagram
                         readOnly
@@ -339,11 +335,20 @@ export function SkinProfileSummary({ now }: { now: number }) {
                         the difference between a caption and an answer: a
                         caption describes the picture above it, this is the part
                         of the answer the picture could not draw. */}
+                    {/* ⚠️ AND AS OF 14 Sep 2026 IT IS UNDER THE PICTURE, AS
+                        ONE CENTRED LINE — `Other: <words>`, PROGRESS's face
+                        card's own, asked for directly ("accordingly to
+                        /progress"). The side-by-side row and the 300 step-down
+                        it needed are retired with it. */}
                     {profile.locationNote && (
-                      <Meta
-                        label={COPY.locationOtherLabel}
-                        value={profile.locationNote}
-                      />
+                      <p className={`${styles.otherNote} t-body2`}>
+                        <span className={styles.otherNoteLabel}>
+                          {COPY.locationOtherLabel}:
+                        </span>{" "}
+                        <span className={styles.otherNoteValue}>
+                          {profile.locationNote}
+                        </span>
+                      </p>
                     )}
                   </div>
                 </Block>
@@ -420,99 +425,6 @@ export function SkinProfileSummary({ now }: { now: number }) {
   );
 }
 
-/**
- * The sage statement — who the skin is.
- *
- * ⚠️ IDENTITY ONLY, AND IT HELD MORE FOR ABOUT AN HOUR ON 7 Sep 2026. A
- * supplied comp gave it two halves across a `border/glass` rule — the skin type
- * and tendencies above, `Current: <symptoms> on <places>` and
- * `Started <date> · Day <n>` below — and that was cut back the same day, asked
- * for directly. The rule, the current line and the date are all gone: the
- * symptoms are already drawn as themselves in the block under this card, and
- * the date now sits with them there, which is the only place it reads as the
- * age of those symptoms rather than as a date on its own. What is left is the
- * one thing this card can say that no block below it says — what the skin IS,
- * which is true between episodes.
- *
- * ⚠️ THE VALUES ARE 17px (`t-button`), NOT `t-h4` — asked for directly. It is
- * the only declared 17 in the ramp, so the size lands exactly where it was
- * asked for without a font-size written on a screen (non-negotiable 3). The
- * side effect worth knowing: `t-button` is REGULAR where `t-h4` was MEDIUM, so
- * the card is now quiet rather than the loudest thing on the page. That suits
- * what it is left holding.
- *
- * ⚠️ THE TWO MULTI-SELECTS IN HERE ARE JOINED STRINGS, NOT PILLS, AND THAT IS
- * NOW TWO OF THEM. The rule on this screen is that a multi-select is a SET and
- * gets drawn as one — the symptoms as callouts on the face (they were `Tag`s
- * until 13 Sep 2026) and the other locations as chips inside the face card.
- * The card is the one place that trades the set for a glance, the
- * same trade `SkinProfileStrip` makes when it puts the profile on someone
- * else's screen in one line, and the trade is what lets three answers sit in
- * one short card instead of three. The conditions kept their pills right up
- * until they moved in here; a row of pills beside two lines of text would have
- * made the card look like two cards.
- *
- * ⚠️ AND IT DOES CARRY THE COMP'S OVERLINE, AFTER ALL — ASKED FOR, AFTER THE
- * FIRST BUILD LEFT IT OUT. The objection was that the h1 24px above it said the
- * same thing, and naming the page twice is what got "From your answers" deleted
- * from this screen. It was answered first by the word "Your" — the h1 names the
- * PAGE, the overline names what is in THIS CARD — and then settled outright
- * when the page title became `About your skin`. The card was also the only
- * block on the screen with nothing at the top of it saying what it held.
- */
-function Headline({ profile }: { profile: ProfileRecap }) {
-  const { skinType, tendencies, conditions } = profile;
-  if (!skinType && tendencies.length === 0 && conditions.length === 0) {
-    return null;
-  }
-
-  return (
-    <DataCard className={styles.headline}>
-      <p className={`${styles.cardLabel} t-overline`}>{COPY.cardLabel}</p>
-
-      <div className={styles.identity}>
-        <div className={styles.identityCol}>
-          <p className={`${styles.headlineLabel} t-body3`}>
-            {COPY.skinTypeLabel}
-          </p>
-          <p className={`${styles.headlineValue} t-button`}>
-            {skinType ?? COPY.skinTypeUnknown}
-          </p>
-        </div>
-
-        {tendencies.length > 0 && (
-          <div className={`${styles.identityCol} ${styles.identityEnd}`}>
-            <p className={`${styles.headlineLabel} t-body3`}>
-              {COPY.tendenciesLabel}
-            </p>
-            <p className={`${styles.headlineValue} t-button`}>
-              {tendencies.join(", ")}
-            </p>
-          </div>
-        )}
-      </div>
-
-      {/* ⚠️ A THIRD ROW, NOT A THIRD COLUMN. `Known conditions` (shortened from
-          "Known skin conditions" 13 Sep 2026) is the longest label on the card
-          and its value can be a typed sentence (step
-          3's "Other"), so squeezed into the identity row it would wrap on
-          every phone. Full width under it, in the same label-over-value shape
-          the two columns use. */}
-      {conditions.length > 0 && (
-        <div className={styles.identityCol}>
-          <p className={`${styles.headlineLabel} t-body3`}>
-            {COPY.conditionsLabel}
-          </p>
-          <p className={`${styles.headlineValue} t-button`}>
-            {conditions.join(", ")}
-          </p>
-        </div>
-      )}
-    </DataCard>
-  );
-}
-
-/** One light block: a name for what it holds, and the answer under it. */
 function Block({
   label,
   id,
@@ -523,37 +435,12 @@ function Block({
   children: React.ReactNode;
 }) {
   return (
-    <section className={styles.block} aria-labelledby={id}>
+    <section className={`${styles.block} canvas-card`} aria-labelledby={id}>
       <h2 id={id} className={`${styles.blockLabel} t-overline`}>
         {label}
       </h2>
       {children}
     </section>
-  );
-}
-
-/**
- * One of step 4's two facts, drawn in the sage card's label-over-value shape.
- *
- * ⚠️ IT WAS TWO RUNNING LINES OF `t-body3` UNTIL 8 Sep 2026 — "Started Aug 31,
- * 2026 · Day 9" and "Current state: Getting worse" — and it was asked to match
- * the card above it. The shape is the card's: a muted `t-body3` label over the
- * answer at `t-button` (17, the ramp's only declared 17 and never a font-size
- * on a screen). The INK is not the card's: these sit on a light frosted block,
- * so they take `text/muted` over `text/primary` rather than the card's
- * `text/on-data*` pair, which is Surface System B's.
- *
- * ⚠️ AND THE COLON WENT WITH THE CHANGE. `Current state: Getting worse` needed
- * one because the label ran into the answer on one line; a label on its own
- * line is already separated from what it labels, and the card's three pairs
- * carry none.
- */
-function Meta({ label, value }: { label: string; value: string }) {
-  return (
-    <div className={styles.meta}>
-      <p className={`${styles.metaLabel} t-body3`}>{label}</p>
-      <p className={`${styles.metaValue} t-button`}>{value}</p>
-    </div>
   );
 }
 
