@@ -43,8 +43,13 @@ import styles from "./SkinProfileTiles.module.css";
  * after `/progress`'s profile card (which held `Started <date> · Day <n>`)
  * became the gallery. It is a line under the pill, not a fifth tile, because
  * a date is only the age of something when it sits under the something — the
- * recap's rule. Optional: `/progress` passes it. The date and the day are
- * each kept whole, so a narrow tile breaks at the `·` and never inside a date.
+ * recap's rule. Optional. The date and the day are each kept whole, so a
+ * narrow tile breaks at the `·` and never inside a date.
+ * ⚠️ `/progress` AND THE RECAP STOPPED PASSING IT ON 15 Sep 2026, asked for
+ * directly: there the date sits under the face card's symptom list
+ * (`SymptomLocation`) and the day count is the calendar's own pill
+ * (`CheckInCalendar`'s `day`). `/check/new` and `/check/results` still pass
+ * it — neither has a face card or a calendar to carry it.
  *
  * A `dl`: each tile is one term and its value, grouped in a `div` so a tile is
  * one box. The start date is a second `dd` under the same term.

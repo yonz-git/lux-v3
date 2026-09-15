@@ -1,11 +1,11 @@
 "use client";
 
-import { useId } from "react";
+import { useCallback, useEffect, useId, useRef, useState } from "react";
 import Link from "next/link";
 import styles from "./PhotoGallery.module.css";
 import { DataCard } from "@/components/ui/DataCard";
 import { Sheet } from "@/components/ui/Sheet";
-import { ChevronRightIcon } from "@/components/ui/icons";
+import { ChevronLeftIcon, ChevronRightIcon } from "@/components/ui/icons";
 import { CheckInPhotoArt } from "./CheckInPhotoArt";
 import { dayNumber, type CheckIn } from "@/features/progress/progress";
 import { formatDay, formatShort, fromIso } from "@/lib/date";
@@ -107,6 +107,60 @@ export function ProgressGallery({
   );
 }
 
+/**
+ * The gallery sheet — a row of photos that SLIDES, four to a view on desktop
+ * and three on a phone, each photo wearing its own date.
+ *
+ * ⚠️ NOT IN FIGMA — redrawn 15 Sep 2026, asked for directly ("create a nicer
+ * way to display date. it can be on the photo, display only 4 and use sliding
+ * feature, and mobile only 3. and dont forget to add smooth animation effect"),
+ * from a supplied bento reference: image tiles with a small label set INTO a
+ * corner of the picture, and a hairline rule running under the row. It was a
+ * 3 / 4-column grid of every photo with `Sep 13` over `Day 14` captioned under
+ * each tile, which put the date a line away from the picture it belongs to
+ * and stacked nine tiles into three rows of scrolling on a phone.
+ *
+ * ⚠️ THE ROW IS A NATIVE SCROLLER WITH SCROLL SNAP, NOT A TRANSFORMED TRACK.
+ * `scroll-snap-type: x mandatory` on the `<ul>`, `snap-align: start` on every
+ * tile, and the arrows call `scrollBy` for one view's width. That buys three
+ * things a translated track has to re-implement: a swipe on touch that
+ * follows the finger and settles with the platform's own physics, an
+ * interruptible move (a second tap mid-slide retargets rather than restarting
+ * — the interruptibility rule in AGENTS.md's motion section), and keyboard
+ * reach — tabbing into an off-screen tile scrolls it into view because the
+ * tiles are real links. `scroll-behavior: smooth` is the slide the arrows
+ * produce; the global `prefers-reduced-motion` rule does not reach it, so the
+ * stylesheet sets it back to `auto` there itself.
+ *
+ * ⚠️ THE RULE UNDER THE ROW IS THE POSITION, AND IT MOVES WITH THE SCROLL. A
+ * hairline the width of the row, with a darker segment whose width is the
+ * share of photos in view and whose offset is the share scrolled past —
+ * `--track-size` / `--track-x`, written on every scroll event and applied as
+ * `transform`, so it glides under a swipe rather than jumping page to page.
+ * It is not a scrollbar (the app hides those, non-negotiable 18) and it is not
+ * a control: the arrows beside it are, and they disable at either end with the
+ * DS's own fade, as the calendar's do.
+ *
+ * ⚠️ THE DATE IS ON THE PHOTO. `Sep 13` sits in the tile's top-left corner in
+ * a frosted dark pill — the nav bar's own fill (`surface/nav-bar`, dark slate
+ * at 26%) over an 8 blur, white `t-label-sm` — and `Day 14` in the bottom-right
+ * in the same pill. ⚠️ It was plain white on a drop shadow for its first
+ * render and did not hold: the placeholder photograph is lightest exactly
+ * there (a pale callout circle sits in that corner), so the count went under.
+ * One pill recipe, two corners: the date names the photo, the day count is
+ * its place in the investigation. Both are inside the link, so the tile's
+ * accessible name is unchanged.
+ *
+ * ⚠️ EVERYTHING THAT MOVES OR HOVERS IS ON A CURVE. The slide is the
+ * browser's smooth scroll; the rule's segment moves on `duration/slow` +
+ * `ease/standard`; a hovered tile's picture scales 1.03 inside its clipped well
+ * on the same clock (a transform, so no layout) and lifts its saturation as
+ * before; the arrows take `pressable` and the 0.7 hover fade every arrow in
+ * the app takes. `hover: hover` guards the hover rules so nothing sticks after
+ * a tap.
+ */
+const TILE_GAP = 12;
+
 export function PhotoGallery({
   open,
   onClose,
@@ -120,8 +174,63 @@ export function PhotoGallery({
   /** the investigation's first day, so each tile can say which day it was */
   start: Date;
 }) {
+  const scroller = useRef<HTMLUListElement | null>(null);
+  /* where the row is: the share in view, the share scrolled past, and whether
+     either end has been reached — read off the scroller, never guessed from a
+     page index, so a swipe that stops between tiles is drawn where it stopped */
+  const [pos, setPos] = useState({ size: 1, x: 0, atStart: true, atEnd: true });
+
+  const measure = useCallback(() => {
+    const el = scroller.current;
+    if (!el) return;
+    const { scrollLeft, scrollWidth, clientWidth } = el;
+    const max = scrollWidth - clientWidth;
+    setPos({
+      size: scrollWidth > 0 ? clientWidth / scrollWidth : 1,
+      /* ⚠️ OVER `scrollWidth`, NOT `clientWidth`: the segment's `translateX`
+         is a percentage of its own UNSCALED width, which is the full rule, so
+         the offset has to be the share of the whole row scrolled past. Over
+         `clientWidth` it ran off the end of the rule on the first slide. */
+      x: scrollWidth > 0 ? scrollLeft / scrollWidth : 0,
+      atStart: scrollLeft <= 1,
+      atEnd: max <= 1 || scrollLeft >= max - 1,
+    });
+  }, []);
+
+  /* ⚠️ A CALLBACK REF, NOT AN EFFECT ON `open`. `Sheet` mounts its children on
+     its own clock (it holds them through the exit), so an effect keyed on
+     `open` can run before the row exists and never measure it — which drew
+     the rule's segment at full width with both arrows dead. The observer
+     attaches the moment the `<ul>` mounts and follows its width from then on
+     (the phone tray and the desktop dialog are different widths). */
+  const observer = useRef<ResizeObserver | null>(null);
+  const setScroller = useCallback(
+    (el: HTMLUListElement | null) => {
+      observer.current?.disconnect();
+      observer.current = null;
+      scroller.current = el;
+      if (!el) return;
+      measure();
+      observer.current = new ResizeObserver(measure);
+      observer.current.observe(el);
+    },
+    [measure],
+  );
+  useEffect(() => () => observer.current?.disconnect(), []);
+
+  const slide = (dir: -1 | 1) => {
+    const el = scroller.current;
+    if (!el) return;
+    el.scrollBy({ left: dir * (el.clientWidth + TILE_GAP) });
+  };
+
+  const multiple = photos.length > 1;
+
   return (
-    <Sheet open={open} onClose={onClose} title={TITLE}>
+    /* ⚠️ A CORNER ✕, NOT `Done` — asked for directly 15 Sep 2026 ("remove done
+       and add x top right corner"). The gallery is something you look through
+       and leave, so its exit sits where a viewer's does. */
+    <Sheet open={open} onClose={onClose} title={TITLE} dismiss="corner">
       {/* `Sheet` uses the title for its aria-label only, so the visible
           heading is rendered here, as `SelfieSheet` does */}
       <div className={styles.head}>
@@ -131,34 +240,81 @@ export function PhotoGallery({
         </p>
       </div>
 
-      <ul className={styles.grid}>
-        {photos.map((p) => {
-          const day = fromIso(p.date);
-          if (!day) return null;
-          const n = dayNumber(start, day);
+      <div className={styles.carousel}>
+        <ul
+          ref={setScroller}
+          className={styles.row}
+          onScroll={measure}
+          aria-label="Photos"
+        >
+          {photos.map((p) => {
+            const day = fromIso(p.date);
+            if (!day) return null;
+            const n = dayNumber(start, day);
 
-          return (
-            <li key={p.date}>
-              {/* the photo leads to its record — the check-in it was taken at */}
-              <Link
-                href={`/progress/check-in/${p.date}`}
-                className={`${styles.tile} pressable`}
-                aria-label={`Photo from ${formatDay(day)}, day ${n}`}
-              >
-                <span className={styles.well}>
-                  <CheckInPhotoArt seed={p.date} className={styles.art} />
-                </span>
-                <span className={styles.caption}>
-                  <span className={`${styles.date} t-label-sm`}>
-                    {formatShort(day)}
+            return (
+              <li key={p.date} className={styles.slide}>
+                {/* the photo leads to its record — the check-in it was taken at */}
+                <Link
+                  href={`/progress/check-in/${p.date}`}
+                  className={`${styles.tile} pressable`}
+                  aria-label={`Photo from ${formatDay(day)}, day ${n}`}
+                >
+                  <span className={styles.well}>
+                    <CheckInPhotoArt seed={p.date} className={styles.art} />
+                    <span className={`${styles.date} t-label-sm`} aria-hidden="true">
+                      {formatShort(day)}
+                    </span>
+                    <span className={`${styles.day} t-label-sm`} aria-hidden="true">
+                      Day {n}
+                    </span>
                   </span>
-                  <span className={`${styles.day} t-label-sm`}>Day {n}</span>
-                </span>
-              </Link>
-            </li>
-          );
-        })}
-      </ul>
+                </Link>
+              </li>
+            );
+          })}
+        </ul>
+
+        {multiple && (
+          <div className={styles.rail}>
+            <span
+              className={styles.track}
+              aria-hidden="true"
+              style={
+                {
+                  "--track-size": pos.size,
+                  "--track-x": pos.x,
+                } as React.CSSProperties
+              }
+            >
+              <span className={styles.trackThumb} />
+            </span>
+            <div className={styles.arrows}>
+              {/* ‹ moves the row toward its start (the newest photos), ›
+                  toward its end (the older ones) — the chevron points the way
+                  the row moves, whatever the dates do */}
+              <button
+                type="button"
+                className={`${styles.arrow} pressable`}
+                aria-label="Newer photos"
+                disabled={pos.atStart}
+                onClick={() => slide(-1)}
+              >
+                <ChevronLeftIcon className={styles.arrowIcon} />
+              </button>
+              <button
+                type="button"
+                className={`${styles.arrow} pressable`}
+                aria-label="Older photos"
+                disabled={pos.atEnd}
+                onClick={() => slide(1)}
+              >
+                <ChevronRightIcon className={styles.arrowIcon} />
+              </button>
+            </div>
+          </div>
+        )}
+      </div>
     </Sheet>
   );
 }

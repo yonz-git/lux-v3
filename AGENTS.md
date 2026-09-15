@@ -696,11 +696,17 @@ for:
 | `.reveal` | `slow` 320ms | a block arriving with the screen |
 | `.reveal-quick` | `base` 200ms | something the user just revealed |
 | `.reveal-hero` | `slower` 480ms | the orb and hero entrances |
-| `[data-reveal]` | `slow` 320ms | applies the fade to every DIRECT child |
-| `[data-reveal-stagger]` | + 0/40/80/120/160ms | stagger those children, capped at the 5th |
+| `[data-reveal]` | `slow` 320ms | ⚠️ a FADE UP (8px rise) on every DIRECT child, since 15 Sep 2026 |
+| `[data-reveal-stagger]` | + 50ms a child, to the 8th | stagger those children top to bottom; the delay holds past the 8th |
 
-All five run the global `lux-fade-in`. The stagger hits **direct children only**,
-so a ten-row option list arrives as one block rather than ten cascading rows.
+The three classes run the global `lux-fade-in`; the two attributes run
+`lux-fade-up`. The stagger hits **direct children only**, so a ten-row option
+list arrives as one block rather than ten cascading rows. ⚠️ **A `[data-reveal]`
+INSIDE a `[data-reveal]` does not fade itself** — its children start one step
+later (`--reveal-base`), so a shell's header lands before the body's first
+card and nothing arrives twice. PROGRESS's two column wrappers carry both
+attributes for this reason (asked for directly 15 Sep 2026: "things to appear
+in order, top to bottom … slight fade up").
 
 ⚠️ **A DROPDOWN IS NOT A REVEAL, AS OF 13 Sep 2026 — it opens down AND closes
 back up.** Every disclosure and dropdown panel wore `.reveal-quick` and left in

@@ -6,7 +6,7 @@ import { HubScreen } from "@/components/layout/HubScreen";
 import { Button } from "@/components/ui/Button";
 import { DataCard } from "@/components/ui/DataCard";
 import { Orb } from "@/components/ui/Orb";
-import { FaceDiagram } from "@/features/my-skin/components/FaceDiagram";
+import { SymptomLocation } from "@/features/my-skin/components/SymptomLocation";
 import { COPY } from "@/features/my-skin/profile";
 import { SkinProfileTiles } from "@/features/check/components/SkinProfileTiles";
 import { InvestigationRecord } from "./InvestigationRecord";
@@ -117,7 +117,13 @@ export function ProgressScreen({ now }: { now: number }) {
           renders one copy per breakpoint and hides the other with
           `display: none` (out of the a11y tree too). No `order` anywhere: the
           visual order matches the DOM at both widths. */}
-      <div className={styles.profileColumn}>
+      {/* ⚠️ THE COLUMNS REVEAL THEIR OWN CARDS, 15 Sep 2026 — HubScreen's body
+          staggers its DIRECT children, and on this screen those are these two
+          wrappers, so without the hooks the cards inside arrived as one block
+          (on a phone the wrappers are `display: contents` and have no box to
+          fade at all). The nested rule in globals.css keeps a wrapper from
+          fading on top of its children. */}
+      <div className={styles.profileColumn} data-reveal data-reveal-stagger>
         {/* ⚠️ NOT IN FIGMA — CHECK's tiles card, asked for directly 14 Sep
             2026. Unlike on `/check` it reads this screen's own answers. It is
             the screen's ONLY skin profile now: the sage `Your skin profile`
@@ -128,10 +134,10 @@ export function ProgressScreen({ now }: { now: number }) {
           tendencies={tendencies?.length ? tendencies.join(", ") : "None"}
           conditions={conditions?.length ? conditions.join(", ") : "None"}
           symptomsState={status ?? "Not set"}
-          symptomsStarted={{
-            date: formatLong(start),
-            day: dayNumber(start, today),
-          }}
+          /* ⚠️ NO `symptomsStarted` SINCE 15 Sep 2026, asked for directly: the
+             date is under the face card's list (`SymptomLocation`) and the day
+             count is the calendar's pill. `/check/new` and `/check/results`
+             still pass it — they have neither card. */
         />
 
         {/* ⚠️ ABOVE THE GALLERY, asked for directly 14 Sep 2026 — it sat
@@ -153,39 +159,24 @@ export function ProgressScreen({ now }: { now: number }) {
           <h2 id="progress-face" className={`${styles.faceLabel} t-overline`}>
             {COPY.locationLabel}
           </h2>
-          {/* ⚠️ NOT IN FIGMA — THE CALLOUTS, 14 Sep 2026, asked for directly
-              ("the face diagram should work like we fixed"): each symptom a
-              pill at the face's edge with a line to each of its places, as
-              step 1 draws them once saved. They took over from the symptom
-              pills on the profile card above. ⚠️ The visually hidden sentence
-              that named the regions went with them — `FaceDiagram` lists
-              every symptom with its places for a screen reader, and those
-              places are the regions, so both said one answer twice. */}
-          <div className={styles.face}>
-            <FaceDiagram
-              readOnly
-              selected={face.faceRegions}
-              otherLocations={face.otherLocations}
-              callouts={places}
-            />
-          </div>
-          {/* ⚠️ THE TYPED `Other`, UNDER THE FACE — asked for directly 14 Sep
-              2026 ("other when typed in is not showing under"). The recap has
-              drawn it since 8 Sep as a label-over-value pair; this card never
-              read `locationOther`, so the lit `Other` chip showed with none of
-              the words. The user's own answer only: the demo has no sentence to
-              put in anyone's mouth. */}
-          {otherNote && (
-            /* ⚠️ ONE LINE, `Other: <words>` — asked for directly 14 Sep 2026.
-               The colon is this card's only: the recap's pair stacks its
-               label, and a label on its own line needs no colon. */
-            <p className={`${styles.otherNote} t-body2`}>
-              <span className={styles.otherNoteLabel}>
-                {COPY.locationOtherLabel}:
-              </span>{" "}
-              <span className={styles.otherNoteValue}>{otherNote}</span>
-            </p>
-          )}
+          {/* ⚠️ THE FACE BESIDE ITS LIST — `SymptomLocation`, 15 Sep 2026,
+              asked for directly ("move the diagram to left and display the
+              list on right"). It holds the read-only diagram with its callouts
+              (14 Sep 2026: a pill per symptom, a line to each place), a row
+              per symptom with its places, the episode's start date and the
+              typed `Other` — which was a centred `Other: <words>` line under
+              the face here until then, and is a labelled pair under the list
+              now. The `visually-hidden` sentence that once named the regions
+              is still gone: the list IS the spoken answer, and the diagram's
+              own hidden list is switched off inside the component so nothing
+              says the pairing twice. */}
+          <SymptomLocation
+            places={places}
+            faceRegions={face.faceRegions}
+            otherLocations={face.otherLocations}
+            otherNote={otherNote}
+            started={formatLong(start)}
+          />
         </DataCard>
 
         {/* desktop's copy: col-1, under the face */}
@@ -196,8 +187,14 @@ export function ProgressScreen({ now }: { now: number }) {
         />
       </div>
 
-      <div className={styles.checkInColumn}>
-        <SymptomTrend className={styles.trend} checkIns={checkIns} />
+      <div className={styles.checkInColumn} data-reveal data-reveal-stagger>
+        {/* the day count rides the trend's title — asked for directly 15 Sep
+            2026, after an hour on the calendar's legend */}
+        <SymptomTrend
+          className={styles.trend}
+          checkIns={checkIns}
+          day={dayNumber(start, today)}
+        />
 
         {/* § 09 — only when the user actually saved a finding. ⚠️ NOT IN
             FIGMA, and absent by default: PROGRESS opens populated because it

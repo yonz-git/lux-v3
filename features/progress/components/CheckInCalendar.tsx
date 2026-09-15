@@ -99,6 +99,9 @@ export function CheckInCalendar({
 }: {
   checkIns: CheckIn[];
   today: Date;
+  /* ⚠️ `day` — a `Day 16` pill at the legend's right end — lived here for an
+     hour on 15 Sep 2026 and moved to `SymptomTrend`'s title, asked for
+     directly. */
   className?: string;
 }) {
   /* ⚠️ DERIVED EVERY RENDER, NOT FROZEN AT MOUNT — 7 Sep 2026. This used to be

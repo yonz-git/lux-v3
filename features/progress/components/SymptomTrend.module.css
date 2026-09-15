@@ -128,6 +128,29 @@
   background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='120' height='120'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='2'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
 }
 
+/* the title and the day pill on one line, the pill at the far end on the
+   title's baseline — see `day` in SymptomTrend.tsx (15 Sep 2026) */
+.head {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: var(--space-lg); /* 16 */
+}
+
+/* `Day 16` — a hairline ring in the card's own white ink (`currentColor`), no
+   fill, `t-label-sm`, tabular figures; an inset shadow, not a border, so it
+   adds no height (non-negotiable 9). Moved here from the calendar's legend,
+   asked for directly 15 Sep 2026. */
+.dayPill {
+  flex: none;
+  padding: 3px 10px;
+  border-radius: var(--radius-full);
+  color: var(--color-text-on-data);
+  box-shadow: inset 0 0 0 var(--border-width-hairline) currentColor;
+  font-variant-numeric: tabular-nums;
+  white-space: nowrap;
+}
+
 .title {
   color: var(--color-text-on-data);
   /* ⚠️ MEDIUM, `t-overline`'s own — it was Regular from 14 Sep 2026 (asked

@@ -403,7 +403,22 @@ type FaceDiagramProps = CalloutProps &
         /** a new number shines every region's label once — see the note above */
         glint?: number;
       }
-    | { readOnly: true; selected: string[]; otherLocations?: string[] }
+    | {
+        readOnly: true;
+        selected: string[];
+        otherLocations?: string[];
+        /** a symptom lit from OUTSIDE the diagram — `SymptomLocation`'s list
+            row under the pointer; lights that symptom's pill and lines exactly
+            as hovering the pill does. See LIT FROM THE LIST below. */
+        litSymptom?: Symptom | null;
+        /** reports the symptoms the diagram's own hover is lighting, so the
+            list beside it can light their rows; called with `[]` on leave */
+        onLit?: (symptoms: Symptom[]) => void;
+        /** the pairing is written out visibly beside the diagram, so the
+            hidden "Symptoms by place" list is not rendered — it would say the
+            answer twice to a screen reader */
+        legendOutside?: boolean;
+      }
   );
 
 /* how long a glint keeps its class: `.shine-on-enter` runs 1200ms, and this is
@@ -425,7 +440,16 @@ export function FaceDiagram(props: FaceDiagramProps) {
      the callouts are hidden, and cleared when the pointer leaves the face, so a
      pill that unmounts under the pointer cannot leave its pairs lit. */
   const [hover, setHover] = useState<Lit>(null);
-  const active = props.calloutsHidden ? null : hover;
+  /* ⚠️ LIT FROM THE LIST — NOT IN FIGMA, 15 Sep 2026. `SymptomLocation` draws
+     the pairing as rows beside this diagram, and a row under the pointer is
+     the same reading aid as a pill under it, so it feeds the same state. The
+     diagram's own hover wins while it has one (the pointer can only be in one
+     place); the list's lights the face when the pointer is on the words. */
+  const external: Lit =
+    props.readOnly === true && props.litSymptom
+      ? { symptom: props.litSymptom }
+      : null;
+  const active = props.calloutsHidden ? null : (hover ?? external);
   const placesOf = (s: Symptom) => props.callouts?.[s] ?? [];
   const litCallouts =
     active === null
@@ -462,6 +486,19 @@ export function FaceDiagram(props: FaceDiagramProps) {
   const lineLit = (c: Callout, r: Region) =>
     litCallouts.includes(c) && litRegions.has(r.id);
   const leave = () => setHover(null);
+
+  /* the other direction: what THIS hover lights, told to the list. Keyed on
+     the symptoms as a string so the effect runs on a change of pairing, not on
+     every render; the callback rides a ref so a new function identity per
+     render cannot re-fire it. Only the diagram's OWN hover is reported —
+     echoing the list's light back at it would loop. */
+  const onLit = props.readOnly === true ? props.onLit : undefined;
+  const onLitRef = useRef(onLit);
+  onLitRef.current = onLit;
+  const reported = hover === null || props.calloutsHidden ? "" : litCallouts.map((c) => c.symptom).join("|");
+  useEffect(() => {
+    onLitRef.current?.(reported === "" ? [] : (reported.split("|") as Symptom[]));
+  }, [reported]);
 
   /* the glint in progress — the number it was started for, or null. Set during
      render, the pattern `SafetyNotice` uses, so the shine never starts a frame
@@ -642,7 +679,9 @@ export function FaceDiagram(props: FaceDiagramProps) {
         })}
       </div>
 
-      {callouts.length > 0 && !props.calloutsHidden && (
+      {callouts.length > 0 &&
+        !props.calloutsHidden &&
+        !(props.readOnly === true && props.legendOutside) && (
         <ul className="visually-hidden" aria-label="Symptoms by place">
           {callouts.map((c) => (
             <li key={c.symptom}>

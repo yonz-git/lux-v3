@@ -62,9 +62,21 @@ import { fromIso } from "@/lib/date";
  */
 export function SymptomTrend({
   checkIns,
+  day,
   className,
 }: {
   checkIns: CheckIn[];
+  /**
+   * Which day of the investigation today is — `Day 16`, a quiet pill at the
+   * title's right end.
+   *
+   * ⚠️ NOT IN FIGMA — asked for directly 15 Sep 2026 ("the day 16 pill
+   * should be on top right of the trend graph"). It was the calendar's, at
+   * its legend's right end, for an hour the same day; the count belongs with
+   * the chart whose x axis it measures. Hairline ring in this card's white
+   * ink, no fill; a hidden "of your investigation" for a screen reader.
+   */
+  day?: number;
   className?: string;
 }) {
   const summary = trendSummary(checkIns);
@@ -88,9 +100,17 @@ export function SymptomTrend({
       className={[styles.card, className].filter(Boolean).join(" ")}
       aria-labelledby="trend-title"
     >
-      <h2 id="trend-title" className={`${styles.title} t-overline`}>
-        Symptom Trend
-      </h2>
+      <div className={styles.head}>
+        <h2 id="trend-title" className={`${styles.title} t-overline`}>
+          Symptom Trend
+        </h2>
+        {day !== undefined && (
+          <span className={`${styles.dayPill} t-label-sm`}>
+            Day {day}
+            <span className="visually-hidden"> of your investigation</span>
+          </span>
+        )}
+      </div>
 
       {points.length === 0 ? (
         /* ⚠️ NOT IN FIGMA — there is no empty variant of this card. The comp

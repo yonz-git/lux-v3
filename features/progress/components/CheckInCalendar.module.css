@@ -258,3 +258,6 @@
 .legendLabel {
   color: var(--color-text-on-data-muted);
 }
+
+/* the `Day 16` pill that sat at the legend's right end for an hour on 15 Sep
+   2026 is `SymptomTrend`'s now */
