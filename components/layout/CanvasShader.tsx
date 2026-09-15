@@ -133,8 +133,10 @@ const RAMP_TOKENS = [
 /* ⚠️ THE 10% DARKENING, FOR THE TWO STOPS THIS FILE BORROWS — 14 Sep 2026. The
    canvas tokens carry it themselves (overridden on `:root` in globals.css);
    these two fill other components, so they are scaled here instead, to the
-   same x0.9. Keep the two in step: a stop left light re-opens the pale cores. */
-const BORROWED_STOP_SCALE = 0.9;
+   same x0.9. Keep the two in step: a stop left light re-opens the pale cores.
+   ⚠️ 15 Sep 2026: the canvas was then brightened 14% ("make the bg 14%
+   brighter"), so this is x0.9 x1.14 = x1.026 now, in step with globals.css. */
+const BORROWED_STOP_SCALE = 1.026;
 const BORROWED_STOPS: ReadonlySet<string> = new Set([
   "--color-bg-progress-track",
   "--color-bg-nav",

@@ -797,11 +797,17 @@
    PREDATES THIS AND READS LOWER NOW — the `Remove` action's red, the
    `text/muted` table, the ring table. They were not re-measured; treat them as
    upper bounds, and re-measure before closing any of them. */
+/* ⚠️ AND THEN 14% BRIGHTER, 15 Sep 2026 — asked for directly, "make the bg 14%
+   brighter". Each darkened stop x1.14 per sRGB channel, which lands at x1.026
+   of Figma: a touch LIGHTER than the generated gradient, not back on it. The
+   floor is `#b1cad2` and `text/secondary` measures 5.01:1 on it, so the
+   bare-canvas failures listed above are figures for the darker canvas, which
+   no longer ships; they were not re-measured one by one. */
 :root {
-  --color-gradient-canvas-start: #c6d0d3; /* Figma #dce7ea */
-  --color-gradient-canvas-mid: #b9c8cb; /* Figma #cedee2 */
-  --color-gradient-canvas-end-mobile: #9bb1b8; /* Figma #acc5cc */
-  --color-gradient-canvas-end-desktop: #a6bcc2; /* Figma #b9d1d7 */
+  --color-gradient-canvas-start: #e2edf1; /* Figma #dce7ea; #c6d0d3 on 14 Sep */
+  --color-gradient-canvas-mid: #d3e4e7; /* Figma #cedee2; #b9c8cb on 14 Sep */
+  --color-gradient-canvas-end-mobile: #b1cad2; /* Figma #acc5cc; #9bb1b8 on 14 Sep */
+  --color-gradient-canvas-end-desktop: #bdd6dd; /* Figma #b9d1d7; #a6bcc2 on 14 Sep */
 }
 
 /* ⚠️ THE NAV BAR NO LONGER BINDS `surface/frost-nav`, AS OF 13 Sep 2026 —
@@ -836,7 +842,7 @@
    the nav alone would leave 10px of dead reservation under every screen. */
 :root {
   --color-surface-nav-bar: #17292f42;
-  --color-bg-nav-bar: #798e95;
+  --color-bg-nav-bar: #89a0a8; /* the fill over #b1cad2, the brightened floor (15 Sep 2026) */
   --size-nav-height: 65px;
 }
 
