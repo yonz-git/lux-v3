@@ -31,7 +31,7 @@
 @property --grad-start {
   syntax: "<color>";
   inherits: false;
-  initial-value: #546982;
+  initial-value: #485780;
 }
 
 @property --grad-end {
@@ -441,12 +441,14 @@
      `@property --grad-*` initial-values moved with it, and so did `bg/brand`
      (to `#313560`, its siblings by the same step), so the button's dark end and
      the selection indigo are still one value. White measures 5.65:1 and
-     11.61:1 at the ends. */
-  --color-gradient-brand-start: #546982;
+     11.61:1 at the ends.
+     ⚠️ The START retuned again 15 Sep 2026, asked for directly: `#546982` →
+     `#485780`, darker and bluer. The end and `bg/brand` did not move. */
+  --color-gradient-brand-start: #485780;
   --color-gradient-brand-end: #313560;
 
   /* the mirrors of the two lines above — these are the ones `Button` reads */
-  --color-button-bg-default-start: #546982;
+  --color-button-bg-default-start: #485780;
   --color-button-bg-default-end: #313560;
 
   /* ⚠️ NOT IN FIGMA — `gradient/secondary` made TRANSLUCENT, 14 Sep 2026,
