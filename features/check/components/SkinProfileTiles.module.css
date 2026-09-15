@@ -186,15 +186,6 @@
    In the card's white like the labels, not a dimmer tier: the labels already
    sit under AA on this fill, and a muted white would only go further under.
    6 under the pill (the tile's 2 gap + 4). */
-.tileMeta {
-  margin: var(--space-xs) 0 0; /* 4 */
-}
-
-/* each half kept whole, so the line breaks at the `·` */
-.nowrap {
-  white-space: nowrap;
-}
-
 /* non-negotiable 11 — the card itself has no fill or frost any more, so it has
    nothing to make opaque; only the grain goes. ⚠️ The PILLS are now the
    translucent surface: with the card's backdrop root gone their 7px blur

@@ -19,9 +19,8 @@ import { DROP_EXIT_MS, useDialogPresence, useHeldWhileClosing } from "@/lib/useM
 import { MAX_CHECK_PRODUCTS, matchedActives } from "@/features/check/check";
 import { useCheckSearch } from "@/features/check/useCheckSearch";
 import { ownedProducts } from "@/lib/demo";
-import { formatLong } from "@/lib/date";
 import { useToday } from "@/lib/useToday";
-import { dayNumber, progressView } from "@/features/progress/progress";
+import { progressView } from "@/features/progress/progress";
 import {
   type CatalogProduct,
   fullName,
@@ -256,18 +255,14 @@ export function CheckBuilder({ now }: { now: number }) {
       >
         {/* ⚠️ PROGRESS's SKIN PROFILE CARD, NOT THE STRIP — asked for directly
             15 Sep 2026 ("update the profile card accordingly to progress
-            page"). The same `SkinProfileTiles` with the same four answers and
-            the state's start date, derived exactly as `ProgressScreen` derives
-            them. `/check/results` took the same card the same day. */}
+            page"). The same `SkinProfileTiles` with the same four answers,
+            derived exactly as `ProgressScreen` derives them. `/check/results`
+            took the same card the same day. */}
         <SkinProfileTiles
-          skinType={profile.skinType ?? "Not set"}
-          tendencies={profile.tendencies?.length ? profile.tendencies.join(", ") : "None"}
-          conditions={profile.conditions?.length ? profile.conditions.join(", ") : "None"}
-          symptomsState={profile.status ?? "Not set"}
-          symptomsStarted={{
-            date: formatLong(profile.start),
-            day: dayNumber(profile.start, profile.today),
-          }}
+          skinType={profile.skinType}
+          tendencies={profile.tendencies}
+          conditions={profile.conditions}
+          symptomsState={profile.status}
         />
 
         {/* ⚠️ THE RESULTS ARE A FLOATING DROPDOWN, NOT THE PAGE'S LIST —

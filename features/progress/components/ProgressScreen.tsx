@@ -130,14 +130,10 @@ export function ProgressScreen({ now }: { now: number }) {
             card under it became `Progress gallery` the same day, and its
             `Started <date> · Day <n>` moved under the state tile. */}
         <SkinProfileTiles
-          skinType={skinType ?? "Not set"}
-          tendencies={tendencies?.length ? tendencies.join(", ") : "None"}
-          conditions={conditions?.length ? conditions.join(", ") : "None"}
-          symptomsState={status ?? "Not set"}
-          /* ⚠️ NO `symptomsStarted` SINCE 15 Sep 2026, asked for directly: the
-             date is under the face card's list (`SymptomLocation`) and the day
-             count is the calendar's pill. `/check/new` and `/check/results`
-             still pass it — they have neither card. */
+          skinType={skinType}
+          tendencies={tendencies}
+          conditions={conditions}
+          symptomsState={status}
         />
 
         {/* ⚠️ ABOVE THE GALLERY, asked for directly 14 Sep 2026 — it sat
