@@ -59,6 +59,12 @@ import { ProductThumb } from "@/features/products/components/ProductThumb";
  *
  * ⚠️ IT IS A SIBLING OF THE TOGGLE, NOT A CHILD. A `<button>` may not contain
  * another one, so `.head` is the flex row and the `<h3>` takes the slack.
+ *
+ * ⚠️ ON A NARROW PHONE THE SCORE WRAPS UNDER THE NAME — NOT IN FIGMA, 16 Sep
+ * 2026. The pill, the figure and the chevron take the header's second line,
+ * right-aligned, whenever keeping them beside the name would leave it under 84
+ * wide: at 320 it had 24, two or three letters a line, and 0 in edit mode.
+ * Nothing moves at 440 or 1440. The numbers are on `.toggle` in the module.
  */
 export function CompatCard({
   analysis,
