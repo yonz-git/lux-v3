@@ -64,9 +64,10 @@
      overline at 18, so raise one if it stays. */
   /* ⚠️ 17 / 23 — 22 / 28 and then 20 / 26 for a turn each, stepped back down
      2px at a time to 18 / 24, asked for directly 14 Sep 2026; then 1px
-     smaller, asked for directly 15 Sep 2026, the line following it */
-  font-size: 17px;
-  line-height: 23px;
+     smaller, asked for directly 15 Sep 2026, the line following it; then 1px
+     smaller again, 16 / 22, asked for directly 16 Sep 2026 */
+  font-size: 16px;
+  line-height: 22px;
   /* ⚠️ A GRADIENT RULE UNDER IT, IN THE INK — asked for directly 14 Sep 2026
      from a supplied reference: a streak with a faint glow around it, ANCHORED
      LEFT, strongest under the start of the heading and fading to nothing
