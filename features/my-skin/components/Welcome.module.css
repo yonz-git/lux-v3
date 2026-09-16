@@ -110,20 +110,37 @@
    The question bubble is shorter than the ceiling and is unaffected.
    Same [data-from] specificity bump as the desktop rule below:
    ChatBubble.module.css's own .bubble is one class, and CSS Modules load in
-   bundle order, so a bare .bubbleReply could silently lose.
-
-   ⚠️ AND `hug` ON THE BUBBLE ITSELF, ADDED 16 Sep 2026 — asked for directly
-   ("on actual mobile there is this extra right space of the chat bubble"),
-   reported from a real phone after the 264 tuning above shipped. This ceiling
-   was measured in one browser at one moment; a device's own text metrics wrap
-   the sentence slightly differently, and the preview here cannot reproduce
-   that to check. `hug` (ChatBubble.tsx) measures the ACTUAL rendered line on
-   whatever's actually rendering it and trims the box to that, so it is right
-   regardless of the device — the same fix `/check`'s intro bubble already
-   carried. 264 stays: it still decides where the lines BREAK (and keeps the
-   106px height), `hug` only removes whatever slack is left after that. */
+   bundle order, so a bare .bubbleReply could silently lose. */
 .bubbleReply[data-from="ai"] {
   max-width: min(100%, 264px);
+}
+
+/* ⚠️ THE MOBILE LINES ARE WRITTEN, NOT MEASURED — 17 Sep 2026, asked for
+   directly from a real iPhone, where the reply bubble still showed ~30px of
+   empty fill down its right after `hug` (ChatBubble.tsx) was tried on it.
+   A wrapped box keeps the width it wrapped AT, and the 264 ceiling above was
+   tuned against Chrome's metrics; Safari breaks the same sentence at
+   different words, so the slack comes back on a device the preview cannot
+   reproduce. With each line its own block, the bubble's max-content IS its
+   longest line, so the flex item shrink-wraps to it in every engine with no
+   JS and no measuring. The ceiling is lifted to the base 322 on mobile, so
+   it never re-breaks a written line; a line still wraps if the viewport or a
+   user's text spacing leaves less room than it needs. */
+.line {
+  display: block;
+}
+
+@media (max-width: 1023.98px) {
+  .bubbleReply[data-from="ai"] {
+    max-width: min(100%, 322px);
+  }
+}
+
+@media (min-width: 1024px) {
+  /* desktop keeps its 380 measure and wraps the sentence as one run */
+  .line {
+    display: inline;
+  }
 }
 
 /* the actions' entrance is on each child — see `.welcome-rise` in globals.css */

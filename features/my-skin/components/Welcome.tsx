@@ -78,13 +78,16 @@ export function Welcome() {
             <ChatBubble
               from="ai"
               align="center"
-              hug
               className={returning ? styles.bubbleReply : `bubble-swap-in ${styles.bubbleReply}`}
               entrance={false}
               aria-hidden
             >
-              I can help identify possible links between skincare products and
-              skin reactions.
+              {/* ⚠️ ONE SPAN PER MOBILE LINE — see `.line` in the module. The
+                  spaces sit inside the spans so desktop, where they run
+                  inline, still reads as one sentence. */}
+              <span className={styles.line}>I can help identify possible </span>
+              <span className={styles.line}>links between skincare </span>
+              <span className={styles.line}>products and skin reactions.</span>
             </ChatBubble>
           </div>
         </div>
