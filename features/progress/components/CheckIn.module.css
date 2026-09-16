@@ -75,8 +75,9 @@
    variant rather than a third copy.
    ⚠️ ONLY THE REST STATE CAME ACROSS. A picked pill here stays `Chip`'s
    indigo: step 1's rose is `bg/symptom`, the colour a SYMPTOM wears, and a
-   check-in answer is not one. The hover keeps `Chip`'s own grey hairline and
-   lift for the same reason — step 1's rose hover previews a rose pick.
+   check-in answer is not one. The hover keeps `Chip`'s own hairline and lift
+   for the same reason — step 1's rose hover previews a rose pick, and `Chip`'s
+   hairline is the indigo this pill turns (16 Sep 2026; it was grey).
    (0,2,1) over `.chip` (0,1,0). */
 .options button[data-selected="false"] {
   --chip-rest-shade: linear-gradient(
