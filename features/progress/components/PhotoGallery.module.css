@@ -162,18 +162,15 @@
 /* ---- the gallery, in `Sheet` ---------------------------------------------- */
 
 /* The tray is a centred column with a 20 gap; the heading and its count are
-   one unit inside it. */
+   one unit inside it. The heading is the card's `.overline` (above) — the
+   same caps, tracking, 15 / 20 and muted ink — so the gallery is titled the
+   way the card that opens it is. */
 .head {
   display: flex;
   flex-direction: column;
   align-items: center;
   gap: var(--space-xs); /* 4 */
   text-align: center;
-}
-
-.heading {
-  margin: 0;
-  color: var(--color-text-on-data);
 }
 
 .intro {

@@ -252,7 +252,11 @@ export function PhotoGallery({
       {/* `Sheet` uses the title for its aria-label only, so the visible
           heading is rendered here, as `SelfieSheet` does */}
       <div className={styles.head}>
-        <h2 className={`${styles.heading} t-h6`}>{TITLE}</h2>
+        {/* ⚠️ THE CARD'S OVERLINE, NOT `t-h6` — 16 Sep 2026, asked for
+            directly ("capitalize", "same as this" to the card's
+            `PROGRESS GALLERY`): one title, drawn one way on the card that
+            opens the gallery and on the gallery itself */}
+        <h2 className={`${styles.overline} t-overline`}>{TITLE}</h2>
         <p className={`${styles.intro} t-body3`}>
           {/* ⚠️ THE NUMBER IS THE PHOTOS IN VIEW — 3 on a phone, 4 on
               desktop (`--per-view`) — asked for directly 15 Sep 2026. It was
