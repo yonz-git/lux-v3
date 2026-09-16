@@ -1,7 +1,8 @@
 /* The PRODUCTS hub shell.
 
-   Mobile: heading -> 24 -> body, or (a centred screen, `/check`) heading ->
-           flex -> body -> flex -> footer. Nothing here is 392 wide by
+   Mobile: heading -> 24 -> body, or (a centred screen) heading -> flex ->
+           body -> flex -> footer, or (`center="low"`, `/check`) above, holding
+           the heading -> body -> below. Nothing here is 392 wide by
            accident — it is 440 minus two margin/mobile.
    Desktop: `card` puts the heading and body inside one centred 920 frosted card,
             32 below the header; `plain` floats a 640 column on the gradient with
@@ -94,6 +95,28 @@
   flex: 1 1 0;
 }
 
+/* ⚠️ `center="low"` — 00 WELCOME'S PLACEMENT, NOT IN FIGMA (see `center` in
+   HubScreen.tsx). The weights are Welcome's own, copied from
+   Welcome.module.css rather than tuned here: 266:70 on a phone, and 130:215 on
+   desktop below. Move them there first and here second, or `/check` stops
+   landing on Welcome.
+
+   ⚠️ THE BASIS IS WHAT MAKES IT THE SAME COLUMN. Welcome's group is placed in
+   the space under `.screen`'s own top padding — 40, and 120 on desktop — while
+   a hub pads `--content-top` (32 with `tightTop`) and starts this spacer
+   there. Giving it the difference as a basis puts the free space back on
+   Welcome's footing, so a body as tall as Welcome's group lands on Welcome's
+   pixels at every height, not only at one — keeping it that tall is the
+   screen's job. The heading inside floors the spacer: where the share is
+   shorter than the heading, the heading wins and the body waits under it. */
+.above {
+  flex: 266 1 calc(var(--space-4xl) - var(--content-top));
+}
+
+.below {
+  flex: 70 1 0;
+}
+
 /* ⚠️ THE FOOTER OWNS ITS OWN TOP GAP. `.shell` has no row gap, so a footer
    rendered flush against the body — on `My Products — filled` the Start
    analysis button sat directly on the last category row and read as a fourth
@@ -144,16 +167,31 @@
     align-items: stretch;
   }
 
-  /* ⚠️ THE FOOTER STAYS AT THE BOTTOM ON DESKTOP TOO — 16 Sep 2026, asked for
-     directly on `/check` ("the button should be lower and the orb and chat
-     bubble in the middle", as on Welcome). A rule here used to move the
-     trailing spacer below the footer, centring the body and the footer as one
-     group — `Product added`'s desktop comp, and that screen is gone. `/check`
-     was its last caller, and the regroup put `Start analysis` 48 under the
-     bubble in the middle of the screen at every desktop size (y 483 of 768 at
-     1024x768). Without it a centred screen is the same stack at both
-     breakpoints: the body centres between the heading and the footer, and the
-     footer sits on the nav reservation `[data-footer]` gives it in globals.css. */
+  /* ⚠️ NO DESKTOP REGROUP. A rule here used to drop the trailing spacer below
+     the footer, centring a centred screen's body and footer as one group —
+     `Product added`'s desktop comp, and that screen is gone. Its last caller
+     was `/check`, where it put `Start analysis` mid-screen; that landing now
+     places its actions with `center="low"`, and no screen passes both `center`
+     and `footer`. */
+
+  /* Welcome's desktop weights and top padding — see `.above` above. */
+  .above {
+    flex: 130 1 calc(var(--space-9xl) - var(--content-top));
+  }
+
+  /* ⚠️ THE WEIGHT IS THE NAV GUARD, AND THIS FLOOR IS FOR WHEN IT RUNS OUT.
+     `center="low"` reserves no nav on desktop (globals.css), because Welcome
+     does not: its 215 share keeps the group off the floating pill. On a short
+     window the share runs under the pill too, so it stops at a phone's
+     reservation — 16 clear of the nav — and the space above gives way instead.
+     Not the desktop hub's 40: every pixel of floor is a window height at which
+     `/check` stops landing on Welcome, and 16 already keeps the last line out
+     from under the pill. It first catches below 726 tall; the share measured
+     120 at 1440x780 and 112 at 1024x768. */
+  .below {
+    flex: 215 1 0;
+    min-height: calc(var(--nav-inset-bottom) + var(--size-nav-height) + var(--space-lg));
+  }
 
   /* ⚠️ THE 32 BELONGS TO THE CARD, NOT THE HEADER. Every desktop hub frame puts
      a 32 spacer directly above the card — `Long-term products list` after its

@@ -1,13 +1,15 @@
 /* Check — start (601:1952) / Check — no profile — desktop (606:2183).
 
-   heading -> flex -> hero -> flex -> nav.
+   `/check`: above (the heading) -> hero -> actions -> below -> nav, placed and
+   spaced the way 00 Welcome is — see `.heroChat` and `.actions`.
+   `/check/no-profile`: heading -> flex -> hero -> flex -> nav.
    ⚠️ The skin-profile strip and tiles left this screen 14 Sep 2026, asked for
    directly, and `.belowHeading` — their block — went with them.
 
-   The hero is the established LUX empty-state block, and its spacing is the
-   `My Products — empty` one exactly: a 16 gap throughout, with a named 16-tall
-   spacer frame above the title and above the CTA, so those two distances are 48
-   and the title/description pair stays tight at 16. */
+   The no-profile hero is the established LUX empty-state block, and its
+   spacing is the `My Products — empty` one exactly: a 16 gap throughout, with a
+   named 16-tall spacer frame above the title and above the CTA, so those two
+   distances are 48 and the title/description pair stays tight at 16. */
 
 .hero {
   display: flex;
@@ -58,31 +60,35 @@
   --bubble-max: min(100%, 254px);
 }
 
-/* ⚠️ THE ORB SITS DOWN ON THE BUBBLE, NOT 48 ABOVE IT. `.hero > svg`'s 48 is
+/* ⚠️ `/check`'S ORB AND BUBBLE ARE WELCOME'S `.hero`, NUMBER FOR NUMBER — 16 Sep
+   2026, see the note in CheckScreen.tsx. Welcome.module.css is the source:
+   the orb 20 over the bubble on a phone and 23 on desktop (literals there,
+   hand-tuned in Figma, so a literal here), and the whole pair 40 lower than
+   the spacers alone put it. That 40 is Welcome's own nudge, paid back out of
+   `.actions`' top margin below exactly as Welcome pays it — change one and
+   change the other, or the button moves.
+
+   ⚠️ THE ORB SITS DOWN ON THE BUBBLE, NOT 48 ABOVE IT. `.hero > svg`'s 48 is
    the empty-state block's rhythm — an orb over a HEADING — and it still is on
    `/check/no-profile`, which is that block. A bubble is the orb speaking, so it
-   hangs off the orb the way 00 Welcome's does: 19 on mobile and 23 on desktop
-   there, which is 20/24 on the scale, i.e. the 16 gap plus 4/8.
-   ⚠️ Equal specificity with `.hero > svg` (0,1,1) — it wins on source order
-   alone, so this block must stay BELOW it in the file.
+   hangs off the orb the way Welcome's does. The zero below takes `.hero`'s 32
+   back off it — the orb renders as `span.lux-orb`, which `.hero >
+   :global(.lux-orb)` matches — and it must stay BELOW that rule, which it ties
+   on specificity. */
+.heroChat {
+  gap: var(--space-xl); /* 20 */
+  margin-top: var(--space-4xl); /* 40 — Welcome's nudge */
+}
 
-   ⚠️ AND IT HAS TO MATCH THE HALO WRAPPER TOO. `<Orb halo />` wraps the SVG in
-   a span (it needs a parent to hang the rim light on — see `.orb-halo` in
-   globals.css), so the orb here is NOT a direct `svg` child of `.heroChat` any
-   more and this rule silently stopped applying: the orb fell back to the bare
-   16 gap. `.hero > svg` above is left alone deliberately — `/check/no-profile`
-   uses it and takes no halo. */
 .heroChat > svg,
 .heroChat > :global(.orb-halo),
 .heroChat > :global(.lux-orb) {
-  margin-bottom: var(--space-xs); /* + the 16 gap = 20 */
+  margin-bottom: 0;
 }
 
 @media (min-width: 1024px) {
-  .heroChat > svg,
-  .heroChat > :global(.orb-halo),
-  .heroChat > :global(.lux-orb) {
-    margin-bottom: var(--space-sm); /* + the 16 gap = 24 */
+  .heroChat {
+    gap: 23px;
   }
 
   /* ⚠️ THE CTA's WIDTH IS NOW THE CEILING, NOT THE WIDTH — changed 13 Sep 2026,
@@ -105,20 +111,52 @@
   margin-top: var(--space-3xl); /* 32 */
 }
 
-/* The landing's two actions as `HubScreen`'s footer (see CheckScreen.tsx) —
-   centred on the column, 12 between the button and the link, Welcome's own
-   rhythm near enough. `.cta`'s 32 above is the no-profile hero's; in the
-   footer the button is the first thing and takes none. */
+/* `/check`'s two actions — Welcome's `.actions`, number for number (see
+   `.heroChat`): 13 between the button and the link, and on a phone the same
+   viewport-scaled drop under the bubble, less the 40 `.heroChat` took above.
+
+   ⚠️ TWO LINES HERE ARE TALLER THAN WELCOME'S, AND THE GROUP PAYS FOR BOTH SO
+   IT STAYS WELCOME'S HEIGHT. Welcome's spacers share out whatever its group
+   does not use, so a group 34 taller would lift the orb 13 off Welcome's on
+   desktop (34 x 130/345) and drop the button 15. Each line is paid where it
+   arises instead:
+   - the link is a `t-body3` line (22) where Welcome's caption is `t-caption`
+     (16), and hangs the 6 into the space below — the negative bottom margin;
+   - on desktop the bubble runs to three lines where Welcome's runs to two, so
+     the drop under it is Welcome's 100 less that line (28): the button lands
+     where Welcome's does and the bubble reaches 28 nearer it. On a phone both
+     bubbles are three lines, and nothing is owed.
+   `.cta`'s 32 above is the no-profile hero's; here the button leads its group
+   and takes none. */
 .actions {
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: var(--space-md); /* 12 */
+  gap: 13px; /* Welcome's, off the scale there too */
   width: 100%;
+  margin-top: clamp(0px, 17vh - var(--space-4xl), 123px);
+  margin-bottom: calc(var(--line-height-3xs) - var(--line-height-xs)); /* -6 */
+}
+
+/* ⚠️ LAST TO ARRIVE, AS THE FOOTER WAS — 15 Sep 2026 ("things to appear in
+   order, top to bottom"). Out of the footer these are the body's second block,
+   which the reveal stagger starts at 100ms — ahead of the bubble, whose own
+   entrance waits 200. 400 is `HubScreen`'s `.footer` delay. A delay only; the
+   animation is named in globals.css. ⚠️ THREE CLASSES, NOT TWO: the stagger's
+   `[data-reveal-stagger] > *:nth-child(2)` is (0,2,0), and two classes would
+   only tie it and win on bundle order — the trap non-negotiable 13 records. */
+.hero.heroChat + .actions {
+  animation-delay: 400ms;
 }
 
 .actions .cta {
   margin-top: 0;
+}
+
+@media (min-width: 1024px) {
+  .actions {
+    margin-top: calc(100px - var(--line-height-md)); /* 72 */
+  }
 }
 
 /* ⚠️ RESOLVED. This used to read "376 on desktop, not the 280 `Progress — empty`

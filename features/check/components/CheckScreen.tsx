@@ -40,40 +40,27 @@ export function CheckScreen() {
       subtitle="Product compatibility"
       nav="check"
       layout="plain"
-      center
+      /* ⚠️ PLACED EXACTLY WHERE 00 WELCOME PLACES ITS GROUP — 16 Sep 2026, the
+         third time this was asked for ("still not exactly same layout as the
+         welcome page"). The first two moves missed the same way: they CENTRED
+         the orb and bubble and PINNED the actions to the nav, first on a phone
+         (15 Sep, the actions as `HubScreen`'s footer) and then on desktop too
+         (16 Sep). Welcome does neither. Its orb, bubble, button and caption are
+         one group at fixed intervals, set low in the column by two weighted
+         spacers, so at 1440x780 this screen's orb sat 57 above Welcome's and
+         its bubble 133 over the button rather than 100; at 440x957 the orb sat
+         47 high and the button 62 low.
+         `center="low"` is Welcome's placement (weights, column, the heading
+         riding above — see HubScreen.tsx); `.heroChat` and `.actions` in the
+         module are its intervals, with the two lines this screen draws taller
+         than Welcome's paid for inside the group. Measured after: the orb, the
+         bubble's top, the button and the link's top are Welcome's to the pixel
+         at 1920x1080, 1440x900, 1440x780, 1024x768, 440x957, 390x844 and
+         375x667. They part only where a spacer hits its floor — under 726 tall
+         on desktop, and a 320x568 phone, where the heading outgrows its share
+         and the page scrolls 48. */
+      center="low"
       tightTop
-      /* ⚠️ THE ACTIONS ARE THE FOOTER, NOT THE HERO'S LAST ROWS — asked for
-         directly 15 Sep 2026 ("bring the button down closer to the nav bar and
-         the orb and chat bubble to the center, just like the welcome page").
-         In the hero they were centred WITH the orb and bubble as one block,
-         which left the button mid-screen and the pair above it high. As
-         `HubScreen`'s footer they sit after the trailing spacer: on a phone
-         the orb and bubble centre in the space between the heading and the
-         actions, and the actions drop to just above the nav — Welcome's
-         composition.
-         ⚠️ AND ON DESKTOP TOO, AS OF 16 Sep 2026 — asked for again. `HubScreen`
-         used to re-group a centred screen's footer under its hero at 1024 and
-         up, so this fix only ever reached a phone: on a laptop the button sat
-         48 under the bubble mid-screen. That regroup is gone; the actions sit
-         40 above the nav at every desktop size, the hub's own clearance. */
-      footer={
-        <div className={styles.actions}>
-          <Button href="/check/new" className={styles.cta}>
-            Start analysis
-          </Button>
-          {/* ⚠️ THE TRAILING CHEVRON IS NOT IN FIGMA. 601:1952 draws this as a
-              bare text link, which reads as the one thing on the screen that
-              might not go anywhere — the CTA above it is a filled button and
-              every OTHER row in CHECK that pushes a view (`CheckHistory`'s own
-              rows) ends in this exact glyph. Same `ChevronRightIcon` at
-              `icon-sm`, currentColor, so it takes `text/brand` from the link
-              and cannot drift from it. Nothing else about the link changed. */}
-          <Link href="/check/history" className={`${styles.link} t-body3`}>
-            <span className={styles.linkLabel}>View previous analyses</span>
-            <ChevronRightIcon className={styles.linkArrow} />
-          </Link>
-        </div>
-      }
       /* ⚠️ NOT IN FIGMA — 601:1952 paints this screen with the static
          `gradient/canvas-*`. It shows the app-wide living canvas instead, like
          every route since 12 Sep 2026 (see `AppCanvas` in CanvasShader.tsx);
@@ -118,8 +105,8 @@ export function CheckScreen() {
             makes: this landing IS Welcome's composition (orb, centred AI
             bubble, one CTA) on bare canvas, so the orb is the same brand
             object doing the same job. `.heroChat > .orb-halo` below the SVG
-            rule in the module is what keeps its spacing — see the note there.
-            Third route, same rule as the shader: not without a Figma
+            rule in the module keeps the empty state's 32 off it — see the note
+            there. Third route, same rule as the shader: not without a Figma
             decision. */}
         <Orb animateIn halo />
         {/* ⚠️ `hug`, 13 Sep 2026 — asked for directly: the bubble trims to its
@@ -129,6 +116,23 @@ export function CheckScreen() {
           Check how your products may suit your skin and work together in the
           same routine.
         </ChatBubble>
+      </div>
+
+      <div className={styles.actions}>
+        <Button href="/check/new" className={styles.cta}>
+          Start analysis
+        </Button>
+        {/* ⚠️ THE TRAILING CHEVRON IS NOT IN FIGMA. 601:1952 draws this as a
+            bare text link, which reads as the one thing on the screen that
+            might not go anywhere — the CTA above it is a filled button and
+            every OTHER row in CHECK that pushes a view (`CheckHistory`'s own
+            rows) ends in this exact glyph. Same `ChevronRightIcon` at
+            `icon-sm`, currentColor, so it takes `text/brand` from the link
+            and cannot drift from it. Nothing else about the link changed. */}
+        <Link href="/check/history" className={`${styles.link} t-body3`}>
+          <span className={styles.linkLabel}>View previous analyses</span>
+          <ChevronRightIcon className={styles.linkArrow} />
+        </Link>
       </div>
     </HubScreen>
   );

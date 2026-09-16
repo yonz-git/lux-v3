@@ -1648,17 +1648,17 @@ main[tabindex="-1"]:focus-visible {
     padding-bottom: 0;
   }
 
-  /* ⚠️ BUT A CENTRED SCREEN WITH A FOOTER RESERVES THE NAV AT EVERY HEIGHT —
-     16 Sep 2026. The 0 above is for a hero with nothing under it. `/check`'s
-     actions are `HubScreen`'s footer and sit at the BOTTOM of the column on
-     desktop now, not grouped under the hero (see `HubScreen.module.css`), so
-     with 0 they would land under the floating pill at any height above 860.
-     `data-footer` is set by HubScreen; the value is the hub's own 40 of
-     clearance, the same calc as the rule below. */
-  .screen[data-layout="hub"][data-center][data-footer] {
-    padding-bottom: calc(
-      var(--nav-inset-bottom) + var(--size-nav-height) + var(--space-4xl)
-    );
+  /* ⚠️ `center="low"` RESERVES NOTHING ON DESKTOP AT ANY HEIGHT — 16 Sep 2026,
+     `/check`, which is placed the way 00 Welcome is (see `center` in
+     HubScreen.tsx). Welcome's column runs to the bottom of the window and its
+     weights keep the group off the floating nav, so a reservation here would
+     be a different column and every weight would land somewhere else. The
+     guard the height query below gives `[data-center]` is the lower spacer's
+     floor instead — see `.below` in HubScreen.module.css. `data-low` is set by
+     HubScreen, and deliberately not `data-center`, so that query cannot reach
+     it. */
+  .screen[data-layout="hub"][data-low] {
+    padding-bottom: 0;
   }
 
   /* ⚠️ A SHORT DESKTOP VIEWPORT TAKES THE RESERVATION BACK. The 0 above is
