@@ -77,27 +77,7 @@
    on specificity. */
 .heroChat {
   gap: var(--space-xl); /* 20 */
-  margin-top: calc(var(--space-4xl) + var(--drop)); /* Welcome's 40, then the drop */
-}
-
-/* ⚠️ THEN 10% LOWER THAN WELCOME'S — NOT IN FIGMA, 16 Sep 2026, asked for
-   directly as soon as the two matched ("move down the orb and bubble of the
-   check page 10%"). Taken the way this app takes a percentage, as a share of
-   the thing itself: the orb's top was 278 at 1440x900 and 334 at 440x957, so
-   28 and 33, rounded to the scale — 24 on desktop, 32 on a phone. THE ORB AND
-   BUBBLE ONLY: the button and link keep Welcome's place, so `.actions` takes
-   `--drop` back off its top margin, as Welcome pays for its own 40. One
-   property on both, so the two halves cannot drift apart. */
-.heroChat,
-.actions {
-  --drop: var(--space-3xl); /* 32 */
-}
-
-@media (min-width: 1024px) {
-  .heroChat,
-  .actions {
-    --drop: var(--space-2xl); /* 24 */
-  }
+  margin-top: var(--space-4xl); /* 40 — Welcome's nudge */
 }
 
 .heroChat > svg,
@@ -133,10 +113,7 @@
 
 /* `/check`'s two actions — Welcome's `.actions`, number for number (see
    `.heroChat`): 13 between the button and the link, and on a phone the same
-   viewport-scaled drop under the bubble, less the 40 `.heroChat` took above
-   and less `--drop`. The clamp's floor stays 0, so on a phone too short to
-   repay the drop (under 424 tall) the button gives way rather than the bubble
-   running into it.
+   viewport-scaled drop under the bubble, less the 40 `.heroChat` took above.
 
    ⚠️ TWO LINES HERE ARE TALLER THAN WELCOME'S, AND THE GROUP PAYS FOR BOTH SO
    IT STAYS WELCOME'S HEIGHT. Welcome's spacers share out whatever its group
@@ -146,9 +123,9 @@
    - the link is a `t-body3` line (22) where Welcome's caption is `t-caption`
      (16), and hangs the 6 into the space below — the negative bottom margin;
    - on desktop the bubble runs to three lines where Welcome's runs to two, so
-     the drop under it is Welcome's 100 less that line (28), and less `--drop`
-     (24): the button lands where Welcome's does, 48 under the bubble. On a
-     phone both bubbles are three lines, and nothing is owed.
+     the drop under it is Welcome's 100 less that line (28): the button lands
+     where Welcome's does and the bubble reaches 28 nearer it. On a phone both
+     bubbles are three lines, and nothing is owed.
    `.cta`'s 32 above is the no-profile hero's; here the button leads its group
    and takes none. */
 .actions {
@@ -157,7 +134,7 @@
   align-items: center;
   gap: 13px; /* Welcome's, off the scale there too */
   width: 100%;
-  margin-top: clamp(0px, 17vh - var(--space-4xl) - var(--drop), 123px - var(--drop));
+  margin-top: clamp(0px, 17vh - var(--space-4xl), 123px);
   margin-bottom: calc(var(--line-height-3xs) - var(--line-height-xs)); /* -6 */
 }
 
@@ -178,7 +155,7 @@
 
 @media (min-width: 1024px) {
   .actions {
-    margin-top: calc(100px - var(--line-height-md) - var(--drop)); /* 48 */
+    margin-top: calc(100px - var(--line-height-md)); /* 72 */
   }
 }
 
