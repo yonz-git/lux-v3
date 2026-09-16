@@ -63,7 +63,12 @@
      text, the rules and the meta all move in together, and the hanging dot
      (-12) now sits 8 INSIDE the column instead of in the card's padding, where
      on a phone it crowded the card's rim. The text column is 20 narrower. */
-  padding-left: var(--space-xl); /* 20 */
+  /* ⚠️ 28, NOT 20 — 16 Sep 2026, asked for directly ("align the dots to the
+     diagram"). The drawn diagram sits 12 inside `FaceDiagram`'s own `.card`
+     padding, so with the dot at -16 (`.mark`) a 16 + 12 padding puts the
+     dot's left edge on the diagram's left edge once the list has wrapped
+     under the face; the 8 between dot and name is unchanged. */
+  padding-left: calc(var(--space-lg) + var(--space-md)); /* 28 */
   color: var(--color-text-on-data);
 }
 
@@ -116,7 +121,11 @@
    pill's, so the two read as one material. */
 .mark {
   position: absolute;
-  left: calc(-1 * (var(--space-sm) + var(--space-xs))); /* -12 */
+  /* ⚠️ -16, NOT -12 — 16 Sep 2026, asked for directly ("increase the space
+     between the dot and the text to double"): the 8px dot's right edge now
+     sits 8 from the name, where it was 4. Still inside the card's 22.4 / 24
+     padding. */
+  left: calc(-1 * var(--space-lg)); /* -16 */
   top: calc(var(--row-top) + 6px);
   width: 8px;
   height: 8px;
@@ -193,7 +202,11 @@
   flex-direction: column;
   gap: var(--space-md); /* 12 */
   margin: auto 0 0;
-  padding-top: var(--space-2xl); /* 24 — the minimum under the last row */
+  /* 9.6 — the minimum under the last row, which adds its own 16 below: 25.6
+     from the last places line to `Started on`. ⚠️ It was 24 (40 in all) until
+     16 Sep 2026, then cut 20% twice, each asked for directly ("20% less
+     space", "20% more less"): 40 → 32 → 25.6. */
+  padding-top: calc(var(--space-lg) * 0.6);
 }
 
 .pair {

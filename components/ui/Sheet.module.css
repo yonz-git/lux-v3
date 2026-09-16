@@ -51,12 +51,21 @@
   /* ⚠️ `surface/data`, NOT `-data-strong` — the tray read too dark. 44% of the
      same sage; the cards inside keep 62%, so the card-on-tray step the recipe
      depends on is the one that survived, just one token lighter underneath. */
-  background: var(--color-surface-data);
+  /* ⚠️ LIGHTER, MORE SEE-THROUGH AND FROSTED — 16 Sep 2026, asked for
+     directly ("make both frosted and less opacity and brighten the color
+     10%"), phone and desktop alike. `surface/data`'s own sage mixed 10% toward
+     white, at 30% instead of its 44%; `saturate` on the blur keeps what shows
+     through from going grey behind the thinner fill. The reduced-transparency
+     fallback below still composites the full token. */
+  background: rgb(
+    from var(--color-surface-data) calc(r + (255 - r) * 0.1)
+      calc(g + (255 - g) * 0.1) calc(b + (255 - b) * 0.1) / 0.3
+  );
   box-shadow: var(--shadow-sheet-mobile);
-  /* NOT optional: surface/data-strong is 62% translucent and the nav underneath
-     reads straight through an unblurred tray */
-  -webkit-backdrop-filter: blur(var(--blur-card));
-  backdrop-filter: blur(var(--blur-card));
+  /* NOT optional: a translucent tray lets the nav underneath read straight
+     through without a blur */
+  -webkit-backdrop-filter: blur(var(--blur-card)) saturate(1.4);
+  backdrop-filter: blur(var(--blur-card)) saturate(1.4);
 
   /* THE TRAY CAN EXPAND. AddProductMethodSheet grows this well past its
      original two-card content (a search field + results, a viewfinder, a
@@ -160,9 +169,10 @@
   border-radius: var(--radius-full);
   background: var(--color-border-glass);
   /* the grabber is an affordance attached to the tray's top edge, not the
-     first item of a 20-gap content stack. Cancels most of the tray's row-gap
-     so what follows sits 12 below it. */
-  margin-bottom: calc(var(--space-md) - var(--space-xl));
+     first item of a 20-gap content stack. ⚠️ What follows sits 24 below it,
+     not 12 — 16 Sep 2026, asked for directly on `CheckBasket` ("more space on
+     top before the title"): at 12 the title pressed up under the grabber. */
+  margin-bottom: calc(var(--space-2xl) - var(--space-xl));
   /* ⚠️ IT DRAGS — `Sheet`'s pointer handlers. `touch-action: none` or the
      browser takes the pull as a scroll and cancels the pointer mid-drag. */
   position: relative;
@@ -206,35 +216,13 @@
     border-radius: var(--radius-3xl);
     box-shadow: var(--shadow-sheet-desktop);
 
-    /* ⚠️ NOT IN FIGMA — DESKTOP MODALS TAKE THE FLOW CARD'S LIGHT FROST, NOT
-       SAGE, asked for directly 12 Sep 2026. Mobile keeps `surface/data`
-       unchanged; this is a desktop-only swap so every `Sheet` dialog
-       (`AddProductMethodSheet`, `SelfieSheet`, `CheckBasket`, `CheckIn`'s
-       capture) reads like `QuestionScreen`'s own desktop card rather than a
-       System B readout. Content inside still sets `text/on-data` (#2e2a3f,
-       dark) for its ink — that ink already reads correctly on a light ground,
-       so nothing inside any of the four callers needed to change.
-       ⚠️ A LITERAL, NOT `--color-surface-card-desktop` — asked for directly.
-       Same hue (`blue/50` #edf8fb) at 24% instead of the token's 55%, a
-       lighter/more transparent tray than the flow card.
-       ⚠️ BLUR DROPPED TO `--blur-sm` (8px) TOO, ALSO ASKED FOR DIRECTLY. At
-       24% alpha, `--blur-card-desktop`'s 32px still smeared the rows behind
-       into a flat wash before the tint even landed on top, so the tray read
-       as an opaque card instead of glass — a light tint over a blurred-to-
-       mush backdrop looks the same as a light tint over nothing. 8px keeps
-       enough of the blur to soften text-legibility noise without erasing the
-       shapes of what is actually behind it.
-       ⚠️ AND BACK UP TO 16px, 13 Sep 2026 — asked for directly on
-       `SelfieSheet`, where 8px let the step's face diagram and chip labels read
-       straight through the tray AND through the viewfinder well inside it. The
-       well's own `--blur-card` cannot help: this `backdrop-filter` makes the
-       tray a backdrop root, so everything nested inside blurs only the tray's
-       own painting and the page behind gets THIS value alone. A literal
-       because the scale jumps from `--blur-md` (10) to `--blur-card` (28), and
-       28 is the wash the note above cut. */
-    background: #edf8fb3d;
-    -webkit-backdrop-filter: blur(16px);
-    backdrop-filter: blur(16px);
+    /* ⚠️ THE PHONE TRAY'S SAGE ON DESKTOP TOO — 16 Sep 2026, asked for
+       directly on `CheckBasket` ("use the left bg color"). From 12 Sep every
+       desktop dialog swapped to a light frost (`#edf8fb` at 24%, blur 16 —
+       see git history for its three rounds of tuning), so one `Sheet` wore two
+       different grounds on either side of 1024. It keeps the base rule's
+       `surface/data` and `--blur-card` now, at every width and for every
+       caller; the ink inside was always `text/on-data`, the sage's own. */
   }
 
   .grabber {
@@ -245,18 +233,6 @@
   .close {
     top: var(--space-lg);
     right: var(--space-lg);
-  }
-}
-
-@media (min-width: 1024px) and (prefers-reduced-transparency: reduce) {
-  /* the desktop counterpart to the sage fallback below — `surface/data`'s
-     opaque composite would be the wrong colour once the transparent tray is
-     the light frost instead. `bg/surface-frost` is already the opaque token
-     `QuestionScreen`'s own reduced-transparency fallback uses for this card. */
-  .tray {
-    background: var(--color-bg-surface-frost);
-    -webkit-backdrop-filter: none;
-    backdrop-filter: none;
   }
 }
 

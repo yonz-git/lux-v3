@@ -32,13 +32,26 @@
   padding: 14px var(--space-xl); /* 14 / 20 */
 
   border-radius: var(--radius-full);
-  background: var(--color-surface-data-strong);
+  /* ⚠️ HALF THE FILL AND A REAL FROST — 16 Sep 2026, asked for directly ("give
+     less opacity and make it frosted"). `surface/data-strong` is 62%, which
+     read as a solid slab with the blur behind it doing nothing visible; mixed
+     to half (≈31%) the page shows through, and `saturate` keeps what shows
+     through from going grey. The reduced-transparency fallback below still
+     composites the full token, so that path is unchanged. */
+  background: color-mix(
+    in srgb,
+    var(--color-surface-data-strong) 50%,
+    transparent
+  );
   box-shadow: 0 6px 20px rgba(0, 0, 0, 0.12),
     var(--shadow-frosted-row);
-  -webkit-backdrop-filter: blur(var(--blur-card));
-  backdrop-filter: blur(var(--blur-card));
+  -webkit-backdrop-filter: blur(var(--blur-card)) saturate(1.4);
+  backdrop-filter: blur(var(--blur-card)) saturate(1.4);
 
   color: var(--color-text-on-data);
+  /* the label's shine paints from this, not from `color` — the surface's own
+     ink, per `.shine-text` in globals.css */
+  --shine-ink: var(--color-text-on-data);
   /* ⚠️ CENTRED IN BOTH STATES, asked for directly 15 Sep 2026 — the goal line
      first, then the ready line ("align center too"). The chevron is taken out
      of the flow (`.barChevron`) so it cannot pull the words off centre. */
@@ -57,6 +70,7 @@
 .bar[data-quiet] {
   margin: 0;
   color: var(--color-text-on-data-secondary);
+  --shine-ink: var(--color-text-on-data-secondary);
   cursor: default;
 }
 
@@ -73,6 +87,9 @@
 .barLabel {
   flex: 1;
   min-width: 0;
+  /* ⚠️ 1.5px OVER `t-body2`'s 16 — asked for directly 16 Sep 2026. Off the
+     type ramp (non-negotiable 3); the class keeps the weight and the 26 line. */
+  font-size: 17.5px;
   /* the chevron's 24 plus an 8 gap, reserved on BOTH sides — so a long label
      wraps before it reaches the arrow, and the words stay centred on the pill
      whether or not the arrow is there */

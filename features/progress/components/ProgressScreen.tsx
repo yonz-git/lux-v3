@@ -104,6 +104,15 @@ export function ProgressScreen({ now }: { now: number }) {
       subtitle="Your skin investigation"
       nav="progress"
       layout="grid"
+      /* ⚠️ PROPORTIONAL COLUMNS, NOT `640px 1fr` — 16 Sep 2026, asked for
+         directly ("the spaces are not equal"). The default fixed col-1 at 640
+         and let col-2 fall to its content's minimum (the 376 check-in button),
+         so between 1024 and ~1200 the two columns were wider than the page:
+         at 1100 col-2 ran 20px past the viewport, with 80 of margin on the
+         left and none on the right. `640fr 616fr` is exactly 640 / 616 at the
+         capped 1280 grid, and below it both columns give up width in step.
+         `minmax(0, …)` lets them shrink under their content's minimum. */
+      gridColumns="minmax(0, 640fr) minmax(0, 616fr)"
       tightTop
     >
       {/* ⚠️ NOT IN FIGMA — two stacks on desktop, asked for directly 13 Sep

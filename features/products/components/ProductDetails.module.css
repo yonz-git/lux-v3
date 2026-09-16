@@ -6,24 +6,33 @@
    the list's own rhythm while staying outside the <dl>, which is why the gap
    lives on this wrapper rather than on the <dl>. */
 
+/* ⚠️ VALUES SIT BESIDE THEIR LABELS, NOT AT THE FAR EDGE — 16 Sep 2026, asked
+   for directly ("it's weird to have to jump the view to read the info"). The
+   rows were `space-between`, which put a card's width between `Brand` and
+   `CeraVe`. Now a two-column grid: the labels take the widest label's width
+   and every value starts on one left edge 16 after it. ⚠️ It lined up after
+   the ingredients chevron for a turn the same day and was moved back closer,
+   asked for directly ("about 15px space in between" — 16, the scale's step).
+   Each row's `div` is `display: contents` so its term and value land in the
+   columns. */
+/* ⚠️ 16 BETWEEN THE ROWS AND THE INGREDIENTS TOGGLE, NOT THE ROWS' 8 — 16 Sep
+   2026, asked for directly ("more space between size and ingredients"). */
 .details {
   display: flex;
   flex-direction: column;
-  gap: var(--space-sm);
+  gap: var(--space-lg);
 }
 
 .list {
   margin: 0;
-  display: flex;
-  flex-direction: column;
-  gap: var(--space-sm);
+  display: grid;
+  grid-template-columns: max-content minmax(0, 1fr);
+  align-items: center;
+  gap: var(--space-sm) var(--space-lg);
 }
 
 .detail {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: var(--space-md);
+  display: contents;
 }
 
 .detailLabel {
@@ -33,14 +42,13 @@
 .detailValue {
   margin: 0;
   color: var(--color-text-primary);
-  text-align: right;
 }
 
 /* ---- ingredients, the nested disclosure ---------------------------------
-   It borrows the detail row's geometry — label left, glyph right — and NOTHING
-   else: no surface, no radius, no border. A second frosted box inside a
-   frosted card would read as a card within a card, which is the nesting rule
-   this app keeps for the reverse case. */
+   No surface, no radius, no border. A second frosted box inside a frosted card
+   would read as a card within a card, which is the nesting rule this app keeps
+   for the reverse case. ⚠️ The chevron sits right after its label, not at the
+   far edge — the same 16 Sep 2026 change as the rows above. */
 .inci {
   display: flex;
   flex-direction: column;
@@ -55,9 +63,8 @@
 .inciToggle {
   display: flex;
   align-items: center;
-  justify-content: space-between;
-  gap: var(--space-md);
-  width: 100%;
+  gap: var(--space-xs);
+  width: fit-content;
   text-align: left;
   border-radius: var(--radius-sm);
 }

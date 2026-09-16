@@ -87,7 +87,16 @@ export function CheckBasketBar({
 
   const content = (
     <>
-      <span className={`${styles.barLabel} t-body2`}>{label}</span>
+      {/* ⚠️ THE LABEL SHINES AS IT ARRIVES — 16 Sep 2026, asked for directly
+          ("text shine"). The app's own `.shine-text` + `.shine-on-enter`, the
+          bubbles' recipe; keyed on the words so a new count glints again
+          rather than changing silently. `--shine-ink` is set on `.bar`. */}
+      <span
+        key={label}
+        className={`${styles.barLabel} t-body2 shine-text shine-on-enter`}
+      >
+        {label}
+      </span>
       {/* the comp rotates a chevron-down 180°; an up chevron is the same glyph
           and says "this opens upward" without a transform to maintain */}
       {ready && <ChevronDownIcon className={styles.barChevron} />}
@@ -96,14 +105,15 @@ export function CheckBasketBar({
 
   if (!ready) {
     return (
-      <p className={styles.bar} data-quiet aria-live="polite">
+      /* `rise-in` — the bar fades up as it appears (globals.css), 16 Sep 2026 */
+      <p className={`${styles.bar} rise-in`} data-quiet aria-live="polite">
         {content}
       </p>
     );
   }
 
   return (
-    <button type="button" className={styles.bar} onClick={onExpand}>
+    <button type="button" className={`${styles.bar} rise-in`} onClick={onExpand}>
       {content}
     </button>
   );
@@ -174,6 +184,8 @@ export function CheckBasketSheet({
       onClose={onClose}
       title="Products in this check"
       dismissLabel="Cancel"
+      /* grows up out of the bar's edge — `.sheet-grow` in globals.css */
+      className="sheet-grow"
     >
       <h2 className={`${styles.sheetTitle} t-h4`}>Products in this check</h2>
 
