@@ -1,8 +1,8 @@
 /* The PRODUCTS hub shell.
 
-   Mobile: heading -> 24 -> body, or (Product added) flex -> body -> flex ->
-           footer. Nothing here is 392 wide by accident — it is 440 minus two
-           margin/mobile.
+   Mobile: heading -> 24 -> body, or (a centred screen, `/check`) heading ->
+           flex -> body -> flex -> footer. Nothing here is 392 wide by
+           accident — it is 440 minus two margin/mobile.
    Desktop: `card` puts the heading and body inside one centred 920 frosted card,
             32 below the header; `plain` floats a 640 column on the gradient with
             the heading at the top of the full 1280 column. */
@@ -144,11 +144,16 @@
     align-items: stretch;
   }
 
-  /* the trailing spacer drops below the footer, so the body and the footer are
-     centred together as one group */
-  .flex[data-tail] {
-    order: 1;
-  }
+  /* ⚠️ THE FOOTER STAYS AT THE BOTTOM ON DESKTOP TOO — 16 Sep 2026, asked for
+     directly on `/check` ("the button should be lower and the orb and chat
+     bubble in the middle", as on Welcome). A rule here used to move the
+     trailing spacer below the footer, centring the body and the footer as one
+     group — `Product added`'s desktop comp, and that screen is gone. `/check`
+     was its last caller, and the regroup put `Start analysis` 48 under the
+     bubble in the middle of the screen at every desktop size (y 483 of 768 at
+     1024x768). Without it a centred screen is the same stack at both
+     breakpoints: the body centres between the heading and the footer, and the
+     footer sits on the nav reservation `[data-footer]` gives it in globals.css. */
 
   /* ⚠️ THE 32 BELONGS TO THE CARD, NOT THE HEADER. Every desktop hub frame puts
      a 32 spacer directly above the card — `Long-term products list` after its

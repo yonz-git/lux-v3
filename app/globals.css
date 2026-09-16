@@ -1648,6 +1648,19 @@ main[tabindex="-1"]:focus-visible {
     padding-bottom: 0;
   }
 
+  /* ⚠️ BUT A CENTRED SCREEN WITH A FOOTER RESERVES THE NAV AT EVERY HEIGHT —
+     16 Sep 2026. The 0 above is for a hero with nothing under it. `/check`'s
+     actions are `HubScreen`'s footer and sit at the BOTTOM of the column on
+     desktop now, not grouped under the hero (see `HubScreen.module.css`), so
+     with 0 they would land under the floating pill at any height above 860.
+     `data-footer` is set by HubScreen; the value is the hub's own 40 of
+     clearance, the same calc as the rule below. */
+  .screen[data-layout="hub"][data-center][data-footer] {
+    padding-bottom: calc(
+      var(--nav-inset-bottom) + var(--size-nav-height) + var(--space-4xl)
+    );
+  }
+
   /* ⚠️ A SHORT DESKTOP VIEWPORT TAKES THE RESERVATION BACK. The 0 above is
      right for the 1440x900 canvas, where a centred hero clears the floating
      nav with room to spare — and wrong for a laptop or a split window, where

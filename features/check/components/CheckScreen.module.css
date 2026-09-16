@@ -45,9 +45,17 @@
      than a separate block. `--bubble-enter-delay` is `ChatBubble`'s own hook,
      so this module sets a DELAY and never names an animation. */
   --bubble-enter-delay: 200ms;
-  /* mobile keeps the component's own hug and its own 322 ceiling */
   --bubble-width: fit-content;
-  --bubble-max: min(100%, 322px);
+  /* ⚠️ 254 ON MOBILE, NOT THE 322 EVERY OTHER BUBBLE GETS — 16 Sep 2026, asked
+     for directly ("trim right side space of chat bubble"), the move Welcome's
+     reply bubble made on 6 Sep. `hug` already cut the box to its longest line,
+     so the slack was the RAGGED lines: at 322 the sentence broke 249/244/96,
+     "same routine." alone with 154 of empty fill beside it. From 244 to 254 it
+     breaks 184/197/207 — the same three lines and 106 height, the box 244 wide
+     instead of 286. At 242 and below it goes to four lines, so 254 is the
+     widest value in that band. Not Welcome's 264: there it breaks 218/163/207
+     and the middle line is short instead. */
+  --bubble-max: min(100%, 254px);
 }
 
 /* ⚠️ THE ORB SITS DOWN ON THE BUBBLE, NOT 48 ABOVE IT. `.hero > svg`'s 48 is
