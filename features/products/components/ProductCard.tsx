@@ -1,15 +1,17 @@
 import styles from "./ProductCard.module.css";
 import { Tag } from "@/components/ui/Tag";
 import { ProductArt } from "./ProductArt";
+import { ProductDetails } from "./ProductDetails";
 import { fullName, type CatalogProduct } from "@/features/products/products";
 
 /**
  * The big product card on `04 — Confirm product` (577:1430) and
  * `04 — Product match` (578:1482).
  *
- * One component, because the two are the same card: an image well, the name and
- * — on Confirm only — a description. Product match adds a "N% match"
- * `Tag` above the image and drops the description.
+ * One component, because the two are the same card: an image well, the name
+ * and the product's details (Brand, Size, the ingredients dropdown). Product
+ * match adds a "N% match" `Tag` above the image. (Confirm showed the
+ * catalogue description under an `Ingredients` label until 16 Sep 2026.)
  *
  * ⚠️ THE IMAGE WELL WAS A CAMERA GLYPH, AND IS NOW A DRAWN VESSEL. There was
  * no product imagery in the file and no product icon in the design system, so
@@ -29,12 +31,10 @@ import { fullName, type CatalogProduct } from "@/features/products/products";
 export function ProductCard({
   product,
   matchScore,
-  showDescription,
 }: {
   product: CatalogProduct;
   /** renders the "92% match" brand Tag above the image */
   matchScore?: number;
-  showDescription?: boolean;
 }) {
   return (
     <div className={styles.card}>
@@ -50,13 +50,17 @@ export function ProductCard({
 
       <p className={`${styles.name} t-h5`}>{fullName(product)}</p>
       {/* ⚠️ NO SIZE UNDER THE NAME — removed 15 Sep 2026, asked for directly
-          for every product title in the app */}
-      {showDescription && product.description && (
-        <div className={styles.ingredients}>
-          <p className={`${styles.ingredientsLabel} t-label-sm`}>Ingredients</p>
-          <p className={`${styles.description} t-body3`}>{product.description}</p>
-        </div>
-      )}
+          for every product title in the app.
+          ⚠️ THE PRODUCT'S DETAILS, NOT A LABELLED DESCRIPTION — 16 Sep 2026,
+          asked for directly ("edit this way so ingredients are dropdown",
+          then "there is no info"). The block here read `Ingredients` over the
+          catalogue's one-line DESCRIPTION, which is not an ingredient list.
+          It is `ProductDetails` now, the record the product cards open onto:
+          Brand, Size and the ingredients dropdown, each saying `Not set` when
+          the product lacks it — so a live search result with no INCI list
+          still shows what is and is not known rather than nothing. No
+          `addedOn` here, so no `Added` row: it is not in the library yet. */}
+      <ProductDetails product={product} />
     </div>
   );
 }

@@ -54,24 +54,6 @@
   color: var(--color-text-primary);
 }
 
-.ingredients {
-  display: flex;
-  flex-direction: column;
-  gap: var(--space-xs);
-}
-
-.ingredientsLabel {
-  /* ⚠️ NOT `text/muted`: neutral-400 on a frosted card measures 2.27:1 at
-     12-13px, the app-wide failure AGENTS.md flags. Stepped one entry down the
-     declared ramp to `text/secondary`; hierarchy against `.description` is
-     carried by size and tracking, as it is on the data cards. */
-  color: var(--color-text-secondary);
-}
-
-.description {
-  color: var(--color-text-secondary);
-}
-
 @media (prefers-reduced-transparency: reduce) {
   .card {
     background: var(--color-bg-surface-frost);
