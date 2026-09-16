@@ -148,8 +148,12 @@
   transition: opacity var(--duration-fast) var(--ease-hover);
 }
 
+/* ⚠️ 30% UNDER `icon/md`, 16 Sep 2026, asked for directly on the gallery
+   ("reduce -30% the x of the progress gallery") — the one `dismiss="corner"`
+   caller, so the corner ✕ is that ✕. 16.8, written as the multiple, and ONLY
+   the glyph: the 44 target round it keeps its size. */
 .closeIcon {
-  --icon-size: var(--size-icon-md); /* 24 */
+  --icon-size: calc(var(--size-icon-md) * 0.7);
 }
 
 .close:hover {

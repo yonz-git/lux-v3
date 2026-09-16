@@ -46,18 +46,26 @@ import styles from "./SkinProfileTiles.module.css";
  *
  * ⚠️ ONE CARD, FOUR SCREENS, ONE LOOK — asked for directly 15 Sep 2026 ("when
  * I fix one it is automatically fixed on others"). Callers hand over the RAW
- * answers; the joining, the `None` for an empty set and the `Not set` for a
- * missing answer all live here. Do not add a prop that lets one screen draw
- * this card differently — change the card.
+ * answers; the `None` for an empty set and the `Not set` for a missing answer
+ * live here. Do not add a prop that lets one screen draw this card
+ * differently — change the card.
  *
- * A `dl`: each tile is one term and its value, grouped in a `div` so a tile is
- * one box.
+ * ⚠️ ONE PILL PER ANSWER, NOT ONE PILL OF COMMAS — 16 Sep 2026, asked for
+ * directly ("2 conditions should be 2 pills"). Tendencies and conditions were
+ * joined into a single pill, so `Rosacea, Psoriasis` wrapped inside one
+ * indigo shape and read as one condition with a long name. A multi-select is a
+ * SET (AGENTS.md), and each member is its own pill now, wrapping as a row.
+ *
+ * A `dl`: each tile is one term and its values, grouped in a `div` so a tile is
+ * one box. ⚠️ A SET IS SEVERAL `dd`s UNDER ONE `dt` — the HTML form for a name
+ * with more than one value — rather than a list nested in one `dd`.
  */
 const NOT_SET = "Not set";
 const NONE = "None";
 
-const joined = (list?: readonly string[]) =>
-  list && list.length > 0 ? list.join(", ") : NONE;
+/** a set's members, or `None` in the one pill an empty set gets */
+const members = (list?: readonly string[] | null) =>
+  list && list.length > 0 ? list : [NONE];
 
 export function SkinProfileTiles({
   skinType,
@@ -75,10 +83,10 @@ export function SkinProfileTiles({
 }) {
   const titleId = useId();
   const tiles = [
-    { label: "Skin type", value: skinType || NOT_SET },
-    { label: "Tendencies", value: joined(tendencies ?? undefined) },
-    { label: "Known conditions", value: joined(conditions ?? undefined) },
-    { label: "Symptoms state", value: symptomsState || NOT_SET },
+    { label: "Skin type", values: [skinType || NOT_SET] },
+    { label: "Tendencies", values: members(tendencies) },
+    { label: "Known conditions", values: members(conditions) },
+    { label: "Symptoms state", values: [symptomsState || NOT_SET] },
   ];
 
   return (
@@ -92,10 +100,14 @@ export function SkinProfileTiles({
         Your skin profile
       </h2>
       <dl className={styles.tiles}>
-        {tiles.map(({ label, value }) => (
+        {tiles.map(({ label, values }) => (
           <div key={label} className={styles.tile}>
             <dt className={`${styles.tileLabel} t-body3`}>{label}</dt>
-            <dd className={`${styles.tileValue} t-body3`}>{value}</dd>
+            {values.map((value) => (
+              <dd key={value} className={`${styles.tileValue} t-body3`}>
+                {value}
+              </dd>
+            ))}
           </div>
         ))}
       </dl>

@@ -241,9 +241,10 @@ tendencies as two labelled columns pushed to opposite edges, then **known skin
 conditions as a full-width row under them** (a row, not a third column — it has
 the longest label and its value can be a typed sentence). Values at **17px
 (`t-button`, the ramp's only declared 17 — never a font-size on a screen)**.
-⚠️ **Both multi-selects in the card are JOINED with commas, not pilled** — the
-one place on this screen that trades a set for a glance. No divider and no
-dates. ⚠️ **It carried both for
+⚠️ **Both multi-selects in the card were JOINED with commas until 16 Sep 2026;
+each member is its own pill now** — the card is `SkinProfileTiles` on every
+screen, and "2 conditions should be 2 pills" was asked for directly. No divider
+and no dates. ⚠️ **It carried both for
 about an hour on 7 Sep 2026** — a supplied comp gave it a `border/glass` rule
 with `Current: <symptoms> on <places>` and `Started <date> · Day <n>` under it —
 **and both were cut the same day, asked for directly.** ⚠️ **The overline was
@@ -262,11 +263,11 @@ diagram as callouts** — a pill per symptom at the face's edge with a line to
 each of its places, the pairing step 1 has kept since that day — **and the
 block became `Symptom state` / `Symptoms state`**, the noun following how many
 symptoms were reported (`COPY.currentLabel`), both asked for directly.
-⚠️ **The joined tendencies are the ONE exception to the set rule below**, the
-same trade `SkinProfileStrip` makes.
+⚠️ **The joined tendencies WERE the one exception to the set rule below** (the
+unrendered `SkinProfileStrip` still makes that trade); since 16 Sep 2026 there
+is none on screen.
 
-A multi-select is a SET, never a sentence with commas in it — the card above is
-the exception. ⚠️ **No `Tag`s are left on the recap as of 14 Sep 2026**: the
+A multi-select is a SET, never a sentence with commas in it. ⚠️ **No `Tag`s are left on the recap as of 14 Sep 2026**: the
 symptoms are the face's callouts and the other locations are chips inside the
 face card (below), so the tag list and its chip-dressed `.pill` class were
 deleted. The recap has exactly one control — `Update photo`, a `SmallButton`

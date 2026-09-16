@@ -3335,18 +3335,24 @@ main[tabindex="-1"]:focus-visible {
     inset 0 1px 1px rgba(255, 255, 255, var(--edge-catch, 0.35));
 }
 
+/* ⚠️ `--edge-ring` REPLACES THE WHOLE SWEEP — 16 Sep 2026. A span that wants
+   another ring sets it (the all-round one below is the only other so far);
+   everything else keeps this four-stop sweep, tuned by its two strengths. */
 .edge-light::before {
   content: "";
   position: absolute;
   inset: 0;
   border-radius: inherit;
   padding: 1px;
-  background: linear-gradient(
-    135deg,
-    rgba(255, 255, 255, var(--edge-ring-lit, 0.7)),
-    rgba(255, 255, 255, 0) 40%,
-    rgba(255, 255, 255, 0) 60%,
-    rgba(255, 255, 255, var(--edge-ring-dim, 0.3))
+  background: var(
+    --edge-ring,
+    linear-gradient(
+      135deg,
+      rgba(255, 255, 255, var(--edge-ring-lit, 0.7)),
+      rgba(255, 255, 255, 0) 40%,
+      rgba(255, 255, 255, 0) 60%,
+      rgba(255, 255, 255, var(--edge-ring-dim, 0.3))
+    )
   );
   -webkit-mask:
     linear-gradient(#000 0 0) content-box,
@@ -3356,6 +3362,24 @@ main[tabindex="-1"]:focus-visible {
     linear-gradient(#000 0 0) content-box,
     linear-gradient(#000 0 0);
   mask-composite: exclude;
+}
+
+/* ⚠️ THE ALL-ROUND RING — the `Reset` pills' (StartInvestigation), shared as
+   of 16 Sep 2026, when the gallery's photo frames and date pills took it,
+   asked for directly ("u can reuse the border we made for the reset button").
+   The sweep above with its lit corners a touch brighter (0.7 → 0.85,
+   0.3 → 0.45) and its quiet middle lifted off zero to 0.15, so it still
+   travels round the shape but never vanishes along a long edge. A span takes
+   it with `--edge-ring: var(--edge-ring-all-round)`; retune it HERE and every
+   caller follows. */
+:root {
+  --edge-ring-all-round: linear-gradient(
+    135deg,
+    rgba(255, 255, 255, 0.85),
+    rgba(255, 255, 255, 0.15) 40%,
+    rgba(255, 255, 255, 0.15) 60%,
+    rgba(255, 255, 255, 0.45)
+  );
 }
 
 /* ============================================================================
