@@ -259,10 +259,15 @@
    the column it belongs to is the group's. 16 − 8 used to set the cards'
    concentric 8 radius; they are 12 as of 13 Sep 2026 — see `.compact` in
    ProductAccordionCard.module.css. */
+/* ⚠️ THE CARDS LINE UP WITH THE GROUP'S NAME — 16 Sep 2026, asked for directly
+   ("give more space here, align with Long-term…"). The sides and bottom were
+   8, which put a card's edge 14 left of the name above it; they are now the
+   row's own left padding (`.category`, 18 × 1.2), so the card's edge and the
+   name share one left line, and the right and bottom match it. */
 .panel {
   display: flex;
   flex-direction: column;
-  padding: 0 var(--space-sm) var(--space-sm);
+  padding: 0 calc(18px * 1.2) calc(18px * 1.2);
 }
 
 /* 8 between cards, not the list's 12 — inside the box every gap is the box's

@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import styles from "./SymptomLocation.module.css";
 import { FaceDiagram, FACE_REGION_IDS, type SymptomPlaces } from "./FaceDiagram";
 import { SYMPTOMS, type Symptom } from "@/features/my-skin/safety";
@@ -81,6 +81,31 @@ export function SymptomLocation({
      lighting (light the rows) — see the note above */
   const [litRow, setLitRow] = useState<Symptom | null>(null);
   const [litByFace, setLitByFace] = useState<readonly Symptom[]>([]);
+  /* ⚠️ A TAP LIGHTS A ROW ON TOUCH — 16 Sep 2026, asked for directly, the same
+     change as TAP in `FaceDiagram.tsx`. Touch ignores enter/leave (they fire
+     on press and lift, so the row only flashed); a tap on a row lights it and
+     its pairs on the face, a second tap or a tap anywhere else clears it, and
+     a pill tapped on the face takes the light over. A mouse keeps hover. */
+  const readoutRef = useRef<HTMLDivElement | null>(null);
+  const touching = useRef(false);
+  const onFaceLit = (symptoms: Symptom[]) => {
+    setLitByFace(symptoms);
+    if (symptoms.length > 0 && touching.current) setLitRow(null);
+  };
+
+  useEffect(() => {
+    if (litRow === null) return;
+    const clear = (e: PointerEvent) => {
+      if (e.pointerType !== "touch") return;
+      const target = e.target instanceof Element ? e.target : null;
+      const onTarget =
+        target?.closest("[data-tap-light]") &&
+        readoutRef.current?.contains(target);
+      if (!onTarget) setLitRow(null);
+    };
+    document.addEventListener("pointerdown", clear);
+    return () => document.removeEventListener("pointerdown", clear);
+  }, [litRow]);
   const rows = SYMPTOMS.flatMap((s) => {
     const p = places[s];
     return p && p.length > 0 ? [{ symptom: s, places: [...p].sort(byPlace) }] : [];
@@ -89,7 +114,13 @@ export function SymptomLocation({
   const hasMeta = Boolean(started) || Boolean(otherNote);
 
   return (
-    <div className={styles.readout}>
+    <div
+      ref={readoutRef}
+      className={styles.readout}
+      onPointerDown={(e) => {
+        touching.current = e.pointerType === "touch";
+      }}
+    >
       <div className={styles.face}>
         <FaceDiagram
           readOnly
@@ -97,7 +128,7 @@ export function SymptomLocation({
           otherLocations={otherLocations}
           callouts={places}
           litSymptom={litRow}
-          onLit={setLitByFace}
+          onLit={onFaceLit}
           legendOutside
         />
       </div>
@@ -116,8 +147,17 @@ export function SymptomLocation({
                 data-lit={
                   litRow === symptom || litByFace.includes(symptom) || undefined
                 }
-                onPointerEnter={() => setLitRow(symptom)}
-                onPointerLeave={() => setLitRow(null)}
+                data-tap-light
+                onPointerEnter={(e) => {
+                  if (e.pointerType !== "touch") setLitRow(symptom);
+                }}
+                onPointerLeave={(e) => {
+                  if (e.pointerType !== "touch") setLitRow(null);
+                }}
+                onClick={() => {
+                  if (touching.current)
+                    setLitRow((prev) => (prev === symptom ? null : symptom));
+                }}
               >
                 <span className={styles.mark} aria-hidden="true" />
                 <span className={`${styles.name} t-label`}>{symptom}</span>

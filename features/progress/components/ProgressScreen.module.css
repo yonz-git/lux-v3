@@ -10,8 +10,10 @@
    desktop's columns (tiles, face, gallery, calendar, trend).
 
    DESKTOP — the handoff's 1280 dashboard grid, NOT a page card:
-     col-1  640 fixed   tiles / face diagram / gallery, one stack
-     col-2  616 fill    trend / record / calendar / CTA / caption, one stack
+     col-1  640         tiles / face diagram / gallery, one stack
+     col-2  616         trend / record / calendar / CTA / caption, one stack
+   ⚠️ Both are FRACTIONS of the grid (`640fr 616fr`, passed as `gridColumns`),
+   16 Sep 2026: exactly 640 / 616 at 1280, narrowing together below it.
    ⚠️ NOT IN FIGMA — the handoff puts the profile at the top of col-2 and the
    calendar alone in col-1, and has no face diagram here. Rearranged on 13 Sep
    2026, asked for directly; on 14 Sep the profile card became the gallery and
@@ -21,6 +23,32 @@
 
 .calendar {
   margin-top: var(--space-lg); /* 16 */
+}
+
+/* ⚠️ THE SHEET'S FROST, NOT `DataCard`'s SAGE — 16 Sep 2026, asked for
+   directly ("use the same bg for the calendar"): `surface/data` mixed 10%
+   toward white at 30%, blurred and saturated — the recipe on `.tray` in
+   `components/ui/Sheet.module.css`. Keep the two in step. Doubled class so it
+   outranks `DataCard`'s single-class `.card` whatever the bundle order. */
+.calendar.calendar {
+  background: rgb(
+    from var(--color-surface-data) calc(r + (255 - r) * 0.1)
+      calc(g + (255 - g) * 0.1) calc(b + (255 - b) * 0.1) / 0.3
+  );
+  -webkit-backdrop-filter: blur(var(--blur-card)) saturate(1.4);
+  backdrop-filter: blur(var(--blur-card)) saturate(1.4);
+}
+
+/* non-negotiable 11 — the doubled rule above would otherwise outrank
+   `DataCard`'s own solid fallback */
+@media (prefers-reduced-transparency: reduce) {
+  .calendar.calendar {
+    background:
+      linear-gradient(var(--color-surface-data), var(--color-surface-data)),
+      var(--color-bg-canvas);
+    -webkit-backdrop-filter: none;
+    backdrop-filter: none;
+  }
 }
 
 .trend {
@@ -149,6 +177,9 @@
   .ctaDesktop.ctaDesktop {
     display: flex;
     width: var(--width-action);
+    /* col-2 is narrower than 376 below ~1100 now that the columns share the
+       width (see `gridColumns` in the TSX); the button follows it down */
+    max-width: 100%;
     margin-top: var(--space-2xl); /* 24 */
   }
 

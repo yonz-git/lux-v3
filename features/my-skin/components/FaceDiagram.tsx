@@ -6,6 +6,7 @@ import {
   useRef,
   useState,
   type CSSProperties,
+  type PointerEvent as ReactPointerEvent,
 } from "react";
 import styles from "./FaceDiagram.module.css";
 import { Chip } from "@/components/ui/Chip";
@@ -440,6 +441,29 @@ export function FaceDiagram(props: FaceDiagramProps) {
      the callouts are hidden, and cleared when the pointer leaves the face, so a
      pill that unmounts under the pointer cannot leave its pairs lit. */
   const [hover, setHover] = useState<Lit>(null);
+  /* ⚠️ TAP LIGHTS IT ON TOUCH — 16 Sep 2026, asked for directly ("this hover
+     highlight effect is not working on mobile, make it tap and work"). A touch
+     fires `pointerenter` on press and `pointerleave` on lift, so the pairing
+     flashed for the length of the tap and went out. Touch now ignores
+     enter/leave, and a TAP pins the pairing instead: tap a symptom pill, a
+     read-only place or a read-only chip to light it, tap it again (or tap
+     anywhere that is not one of them) to clear it, tap another to move the
+     light. A mouse keeps hover exactly as before. Step 1's editable places
+     and chips are not pinned — a tap on those toggles the answer. */
+  const [pinned, setPinned] = useState<Lit>(null);
+  const cardRef = useRef<HTMLDivElement | null>(null);
+  /* whether the pointer that is about to click is a finger — `click` itself
+     does not say so in every browser */
+  const touching = useRef(false);
+  const notTouch = (e: ReactPointerEvent) => e.pointerType !== "touch";
+  const enter = (lit: Lit) => (e: ReactPointerEvent) => {
+    if (notTouch(e)) setHover(lit);
+  };
+  const sameLit = (a: Lit, b: Lit) =>
+    a !== null && b !== null && JSON.stringify(a) === JSON.stringify(b);
+  const tap = (lit: Lit) => () => {
+    if (touching.current) setPinned((prev) => (sameLit(prev, lit) ? null : lit));
+  };
   /* ⚠️ LIT FROM THE LIST — NOT IN FIGMA, 15 Sep 2026. `SymptomLocation` draws
      the pairing as rows beside this diagram, and a row under the pointer is
      the same reading aid as a pill under it, so it feeds the same state. The
@@ -449,7 +473,14 @@ export function FaceDiagram(props: FaceDiagramProps) {
     props.readOnly === true && props.litSymptom
       ? { symptom: props.litSymptom }
       : null;
-  const active = props.calloutsHidden ? null : (hover ?? external);
+  /* a row tapped in the list takes the light from a pill pinned here */
+  const [seenExternal, setSeenExternal] = useState<Symptom | null>(null);
+  const externalSymptom = external ? external.symptom : null;
+  if (externalSymptom !== seenExternal) {
+    setSeenExternal(externalSymptom);
+    if (externalSymptom !== null) setPinned(null);
+  }
+  const active = props.calloutsHidden ? null : (hover ?? pinned ?? external);
   const placesOf = (s: Symptom) => props.callouts?.[s] ?? [];
   const litCallouts =
     active === null
@@ -485,17 +516,35 @@ export function FaceDiagram(props: FaceDiagramProps) {
   );
   const lineLit = (c: Callout, r: Region) =>
     litCallouts.includes(c) && litRegions.has(r.id);
-  const leave = () => setHover(null);
+  const leave = (e: ReactPointerEvent) => {
+    if (notTouch(e)) setHover(null);
+  };
 
-  /* the other direction: what THIS hover lights, told to the list. Keyed on
+  /* a pinned pairing clears on a tap anywhere that is not a tap target of
+     THIS diagram — the page, the card's own background, another block */
+  useEffect(() => {
+    if (pinned === null) return;
+    const clear = (e: PointerEvent) => {
+      const target = e.target instanceof Element ? e.target : null;
+      const onTarget =
+        target?.closest("[data-tap-light]") &&
+        cardRef.current?.contains(target);
+      if (!onTarget) setPinned(null);
+    };
+    document.addEventListener("pointerdown", clear);
+    return () => document.removeEventListener("pointerdown", clear);
+  }, [pinned]);
+
+  /* the other direction: what THIS diagram lights, told to the list. Keyed on
      the symptoms as a string so the effect runs on a change of pairing, not on
      every render; the callback rides a ref so a new function identity per
-     render cannot re-fire it. Only the diagram's OWN hover is reported —
-     echoing the list's light back at it would loop. */
+     render cannot re-fire it. Only the diagram's OWN hover or pin is reported
+     — echoing the list's light back at it would loop. */
   const onLit = props.readOnly === true ? props.onLit : undefined;
   const onLitRef = useRef(onLit);
   onLitRef.current = onLit;
-  const reported = hover === null || props.calloutsHidden ? "" : litCallouts.map((c) => c.symptom).join("|");
+  const own = hover ?? pinned;
+  const reported = own === null || props.calloutsHidden ? "" : litCallouts.map((c) => c.symptom).join("|");
   useEffect(() => {
     onLitRef.current?.(reported === "" ? [] : (reported.split("|") as Symptom[]));
   }, [reported]);
@@ -517,7 +566,13 @@ export function FaceDiagram(props: FaceDiagramProps) {
   }, [glintRun]);
 
   return (
-    <div className={styles.card}>
+    <div
+      ref={cardRef}
+      className={styles.card}
+      onPointerDown={(e) => {
+        touching.current = e.pointerType === "touch";
+      }}
+    >
       <div
         className={styles.diagram}
         data-readonly={readOnly || undefined}
@@ -619,8 +674,10 @@ export function FaceDiagram(props: FaceDiagramProps) {
                 data-side={c.side}
                 data-lit={litCallouts.includes(c) || undefined}
                 style={{ top: pct(c.y) }}
-                onPointerEnter={() => setHover({ symptom: c.symptom })}
+                data-tap-light
+                onPointerEnter={enter({ symptom: c.symptom })}
                 onPointerLeave={leave}
+                onClick={tap({ symptom: c.symptom })}
               >
                 {c.symptom}
               </span>
@@ -643,8 +700,10 @@ export function FaceDiagram(props: FaceDiagramProps) {
               data-lit={litRegions.has(r.id) || undefined}
               className={`${styles.region} t-label-sm`}
               style={position}
-              onPointerEnter={() => setHover({ region: r.id })}
+              data-tap-light
+              onPointerEnter={enter({ region: r.id })}
               onPointerLeave={leave}
+              onClick={tap({ region: r.id })}
             >
               {r.id}
             </span>
@@ -660,7 +719,7 @@ export function FaceDiagram(props: FaceDiagramProps) {
               className={`${styles.region} t-label-sm`}
               style={position}
               onClick={() => props.onToggle(r.id)}
-              onPointerEnter={() => setHover({ region: r.id })}
+              onPointerEnter={enter({ region: r.id })}
               onPointerLeave={leave}
             >
               {/* the label is its own element so the glint lights the words and
@@ -703,8 +762,10 @@ export function FaceDiagram(props: FaceDiagramProps) {
                   <span
                     className={`${styles.readOnlyChip} t-label`}
                     data-lit={litChips.has(c) || undefined}
-                    onPointerEnter={() => setHover({ chip: c })}
+                    data-tap-light
+                    onPointerEnter={enter({ chip: c })}
                     onPointerLeave={leave}
+                    onClick={tap({ chip: c })}
                   >
                     {c}
                   </span>
@@ -725,7 +786,7 @@ export function FaceDiagram(props: FaceDiagramProps) {
                 key={c}
                 className={styles.chipHover}
                 data-lit={litChips.has(c) || undefined}
-                onPointerEnter={() => setHover({ chip: c })}
+                onPointerEnter={enter({ chip: c })}
                 onPointerLeave={leave}
               >
                 <Chip

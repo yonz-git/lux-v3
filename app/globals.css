@@ -1697,12 +1697,12 @@ main[tabindex="-1"]:focus-visible {
    no frost, held by its shadows), copied onto PROGRESS's face and gallery cards
    with a note to lift it "if a third card wants it" — and the profile recap's
    blocks were cards three and four ("fix /investigation/profile accordingly to
-   /progress"). The shadow stack, the nav bar's lit edge ring on `::before`, a
-   5% grain on `::after`. `SkinProfileTiles` still carries its own copy.
+   /progress"). The shadow stack and a 5% grain on `::after` (the lit edge ring
+   that sat on `::before` went 16 Sep 2026).
    ⚠️ DOUBLED CLASS: `DataCard`'s `.card` is a single class, and which of two
    single-class rules wins would otherwise be bundle order. It switches the
    card's fill and backdrop blur OFF — a caller that wants a fill does not want
-   this class. ⚠️ BOTH PSEUDO-ELEMENTS ARE TAKEN. */
+   this class. ⚠️ `::after` IS TAKEN. */
 .canvas-card.canvas-card {
   position: relative;
   isolation: isolate;
@@ -1715,16 +1715,23 @@ main[tabindex="-1"]:focus-visible {
   background: #c6e1e82b;
   -webkit-backdrop-filter: none;
   backdrop-filter: none;
+  /* ⚠️ THE INSET SHADOWS AT HALF STRENGTH — 16 Sep 2026, asked for directly
+     ("lower the inner shadow"): 40% → 20%, 14% → 7%, 20% → 10%. Then the two
+     DROP shadows at half strength too, asked for directly the same day
+     ("lower the drop shadow"): 12% → 6%, 22% → 11%. */
   box-shadow:
-    inset 0 2px 12px #afc5cb66,
-    inset 0 2px 6px #547c7a24,
-    0 2px 6px #0000001f,
-    0 12px 32px -8px #00000038,
-    inset 0 0 12px #0003,
+    inset 0 2px 12px #afc5cb33,
+    inset 0 2px 6px #547c7a12,
+    0 2px 6px #0000000f,
+    0 12px 32px -8px #0000001c,
+    inset 0 0 12px #0000001a,
     inset 0 0 0 0.5px #1d1c2000;
 }
 
-.canvas-card.canvas-card::before,
+/* ⚠️ NO LIT EDGE RING — removed 16 Sep 2026, asked for directly ("remove the
+   hairline border on these boxes"). It was a 1px white gradient ring on
+   `::before`; the card is held by its shadows alone now, and `::before` is
+   free. */
 .canvas-card.canvas-card::after {
   content: "";
   position: absolute;
@@ -1732,24 +1739,6 @@ main[tabindex="-1"]:focus-visible {
   z-index: -1;
   border-radius: inherit;
   pointer-events: none;
-}
-
-.canvas-card.canvas-card::before {
-  padding: 1px;
-  background: linear-gradient(
-    135deg,
-    rgba(255, 255, 255, 0.42),
-    rgba(255, 255, 255, 0) 40%,
-    rgba(255, 255, 255, 0) 60%,
-    rgba(255, 255, 255, 0.3)
-  );
-  -webkit-mask: linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0);
-  -webkit-mask-composite: xor;
-  mask: linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0);
-  mask-composite: exclude;
-}
-
-.canvas-card.canvas-card::after {
   opacity: 0.05;
   mix-blend-mode: overlay;
   background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='120' height='120'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='2'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
@@ -2613,6 +2602,29 @@ main[tabindex="-1"]:focus-visible {
   animation: lux-fade-up var(--duration-slow) var(--ease-standard) backwards;
 }
 
+/* ⚠️ THE SAME FADE UP FOR AN ELEMENT THAT OWNS ITS `transform` — 16 Sep 2026,
+   for CHECK's basket bar ("add appearing animation fade up"). `lux-fade-up`
+   animates `transform`, which would wipe the bar's `translateX(-50%)`
+   centring for the length of the rise. This moves the individual `translate`
+   property instead, which composes with `transform` rather than replacing
+   it. Same 8px, same clock. ⚠️ ITS OWN KEYFRAME NAME — `lux-rise-in` is
+   Welcome's 24px rise (`.welcome-rise`, above), and a second `@keyframes` of
+   the same name silently replaces the first for the whole document. */
+@keyframes lux-rise-in-sm {
+  from {
+    opacity: 0;
+    translate: 0 8px;
+  }
+  to {
+    opacity: 1;
+    translate: 0 0;
+  }
+}
+
+.rise-in {
+  animation: lux-rise-in-sm var(--duration-slow) var(--ease-standard) backwards;
+}
+
 /* ⚠️ A REVEALED CONTAINER INSIDE A REVEALED CONTAINER DOES NOT FADE ITSELF —
    its children do, one step later. HubScreen's shell reveals its header,
    body and footer; the body reveals its blocks. Without this the body faded
@@ -2757,6 +2769,50 @@ main[tabindex="-1"]:focus-visible {
 @media (min-width: 1024px) {
   [data-tray="tray"] {
     animation-name: lux-fade-in;
+  }
+}
+
+/* ⚠️ A TRAY THAT GROWS FROM ITS BOTTOM EDGE — `.sheet-grow`, 16 Sep 2026,
+   asked for directly on CHECK's basket ("animate this better, grow from bottom
+   to top smooth"). The basket opens from the bar pinned at the bottom of the
+   screen, so the tray unrolls upward out of that edge rather than fading in
+   the middle of nowhere: a `clip-path` reveal from the bottom, with a 24px
+   rise and the fade under it, on `duration/slower` so the growth is legible.
+   ⚠️ `translate`, NOT `transform` — the desktop dialog is centred by
+   `transform: translate(-50%, -50%)`, which a transform keyframe would wipe
+   for the length of the entrance; the individual property composes with it.
+   ⚠️ `clip-path` ONLY WHILE ANIMATING: `backwards` fill drops it at the end,
+   so the settled tray's drop shadow is not clipped. The exit is the shared
+   one below — a quick fade down; closing is the app getting out of the way.
+   Opt-in by class on the `Sheet` (`className`), so the other trays keep their
+   own entrance. */
+@keyframes lux-sheet-grow {
+  from {
+    opacity: 0;
+    translate: 0 24px;
+    clip-path: inset(100% 0 0 0 round var(--sheet-grow-radius));
+  }
+  40% {
+    opacity: 1;
+  }
+  to {
+    opacity: 1;
+    translate: 0 0;
+    clip-path: inset(0 0 0 0 round var(--sheet-grow-radius));
+  }
+}
+
+[data-tray="tray"].sheet-grow {
+  /* the mobile tray's own corners — rounded on top, square where it docks */
+  --sheet-grow-radius: 28px 28px 0 0;
+  animation: lux-sheet-grow var(--duration-slower) var(--ease-standard)
+    backwards;
+}
+
+@media (min-width: 1024px) {
+  [data-tray="tray"].sheet-grow {
+    --sheet-grow-radius: var(--radius-3xl);
+    animation-name: lux-sheet-grow;
   }
 }
 
