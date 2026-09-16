@@ -142,14 +142,26 @@ export function ProgressGallery({
  * DS's own fade, as the calendar's do.
  *
  * ⚠️ THE DATE IS ON THE PHOTO. `Sep 13` sits in the tile's top-left corner in
- * a frosted dark pill — the nav bar's own fill (`surface/nav-bar`, dark slate
- * at 26%) over an 8 blur, white `t-label-sm` — and `Day 14` in the bottom-right
- * in the same pill. ⚠️ It was plain white on a drop shadow for its first
- * render and did not hold: the placeholder photograph is lightest exactly
- * there (a pale callout circle sits in that corner), so the count went under.
- * One pill recipe, two corners: the date names the photo, the day count is
- * its place in the investigation. Both are inside the link, so the tile's
- * accessible name is unchanged.
+ * a glass pill, white `t-label-sm`, and `Day 14` in the bottom-right in the
+ * same pill. ⚠️ It was plain white on a drop shadow for its first render and
+ * did not hold: the placeholder photograph is lightest exactly there (a pale
+ * callout circle sits in that corner), so the count went under. One pill
+ * recipe, two corners: the date names the photo, the day count is its place in
+ * the investigation. Both are inside the link, so the tile's accessible name
+ * is unchanged.
+ *
+ * ⚠️ AND THE PHOTO SITS IN A GLASS FRAME — 16 Sep 2026, asked for directly to
+ * a supplied reference ("edit our gallery image like the first image … the
+ * border radius, the frosted border around with transparency and also the
+ * pill with transparency, frosted, and the gradient border around"). A 6 bezel
+ * of frost round a photo whose corners it rounds further (32 outside, 26 in,
+ * after a first pass at 24 / 18 read too square), and the pills went from the
+ * nav bar's dark slate to clear glass over a dimmed blur. The frame and both pills are rimmed with the `Reset` pills' ring
+ * — "reuse the border we made for the reset button" — which is one token,
+ * `--edge-ring-all-round` in globals.css, so the three can never drift from
+ * it. ⚠️ THE GALLERY SHEET'S TILES ONLY: the card's thumbnails, the check-in
+ * record's photo and the recap's are untouched. The numbers are in the
+ * stylesheet.
  *
  * ⚠️ EVERYTHING THAT MOVES OR HOVERS IS ON A CURVE. The slide is the
  * browser's smooth scroll; the rule's segment moves on `duration/slow` +
@@ -159,7 +171,6 @@ export function ProgressGallery({
  * the app takes. `hover: hover` guards the hover rules so nothing sticks after
  * a tap.
  */
-const TILE_GAP = 12;
 /** `--per-view` in the stylesheet — keep the two in step */
 const PER_VIEW_MOBILE = 3;
 const PER_VIEW_DESKTOP = 4;
@@ -224,7 +235,11 @@ export function PhotoGallery({
   const slide = (dir: -1 | 1) => {
     const el = scroller.current;
     if (!el) return;
-    el.scrollBy({ left: dir * (el.clientWidth + TILE_GAP) });
+    /* one view plus one gap. ⚠️ THE GAP IS READ OFF THE ROW, 16 Sep 2026 —
+       it was a `TILE_GAP = 12` copy of `--tile-gap`, and the gap changing
+       ("-20%") is exactly the edit that copy would have missed */
+    const gap = Number.parseFloat(getComputedStyle(el).columnGap) || 0;
+    el.scrollBy({ left: dir * (el.clientWidth + gap) });
   };
 
   const multiple = photos.length > 1;
@@ -274,13 +289,22 @@ export function PhotoGallery({
                   className={`${styles.tile} pressable`}
                   aria-label={`Photo from ${formatDay(day)}, day ${n}`}
                 >
-                  <span className={styles.well}>
-                    <CheckInPhotoArt seed={p.date} className={styles.art} />
-                    <span className={`${styles.date} t-label-sm`} aria-hidden="true">
-                      {formatShort(day)}
-                    </span>
-                    <span className={`${styles.day} t-label-sm`} aria-hidden="true">
-                      Day {n}
+                  {/* ⚠️ THE PHOTO SITS IN A GLASS FRAME — 16 Sep 2026, see
+                      the doc comment. The edge light goes FIRST so the well
+                      paints over its inner glow: the ring stays on the frame's
+                      outer edge and the photo is never washed. */}
+                  <span className={styles.frame}>
+                    <span className="edge-light" aria-hidden="true" />
+                    <span className={styles.well}>
+                      <CheckInPhotoArt seed={p.date} className={styles.art} />
+                      <span className={`${styles.date} t-label-sm`} aria-hidden="true">
+                        <span className="edge-light" />
+                        {formatShort(day)}
+                      </span>
+                      <span className={`${styles.day} t-label-sm`} aria-hidden="true">
+                        <span className="edge-light" />
+                        Day {n}
+                      </span>
                     </span>
                   </span>
                 </Link>

@@ -183,12 +183,15 @@
 
 /* ⚠️ A SLIDING ROW, NOT A GRID — redrawn 15 Sep 2026, asked for directly; the
    reasoning is on `PhotoGallery` in the TSX. Three tiles to a view on a phone,
-   four in the 544 of the desktop dialog (`--per-view`), 12 between them
-   (`--tile-gap`, and `TILE_GAP` in the TSX must match it — the arrows scroll by
-   one view plus one gap so the next tile lands on the start edge). */
+   four in the 544 of the desktop dialog (`--per-view`), `--tile-gap` between
+   them — the arrows scroll by one view plus one gap so the next tile lands on
+   the start edge, and the TSX reads the gap back off the row rather than
+   keeping a copy of it.
+   ⚠️ THE GAP IS 20% UNDER 12, 16 Sep 2026, asked for directly ("reduce the gap
+   between the images -20%"): 9.6, written as the multiple. */
 .carousel {
   --per-view: 3;
-  --tile-gap: 12px;
+  --tile-gap: calc(12px * 0.8);
   display: flex;
   flex-direction: column;
   gap: var(--space-lg); /* 16 */
@@ -238,22 +241,65 @@
   scroll-snap-align: start;
 }
 
+/* The frame's two numbers live on the TILE, which takes the frame's own
+   radius, so `pressable`'s overlay and the focus outline follow the glass
+   rather than the photo inside it; the frame and the well inherit both. */
 .tile {
+  --frame-width: calc(var(--space-xs) + var(--space-2xs)); /* 6 */
+  --frame-radius: var(--radius-3xl); /* 32 */
   position: relative;
   display: block;
-  border-radius: var(--radius-lg);
+  border-radius: var(--frame-radius);
   color: inherit;
   text-decoration: none;
 }
 
-/* the check-in record's photo well, square, at `radius/lg`. The labels are
-   positioned against it, so it is the containing block. */
+/* ⚠️ A GLASS FRAME ROUND THE PHOTO — NOT IN FIGMA, 16 Sep 2026, asked for
+   directly to a supplied reference ("edit our gallery image like the first
+   image … the border radius, the frosted border around with transparency").
+   The reference sets each picture in a pale frosted bezel with a lit rim; here
+   that is 6 of `surface/frost-light` over an 8 blur, rounder than the photo
+   was, and the photo inside it takes the frame's radius less the 6: the two
+   corners are concentric, so the bezel is one even width all the way round.
+   ⚠️ 6, NOT 8 OR 4 — the three were built side by side at 375: 8 left an
+   88 photo in a mat, 4 read as a rim rather than glass. 4 + 2 on the scale.
+   ⚠️ ROUNDER AND CLEARER THE SAME DAY, asked for directly ("give more border
+   radius like the image i gave u and lets try less opacity -40%"): the frame
+   went 24 → `radius/3xl` (32), so the photo 18 → 26, and the frost 60% → 36%,
+   written as the multiple.
+   ⚠️ THE RIM IS THE `Reset` PILLS' RING (`--edge-ring-all-round`, globals.css)
+   — "reuse the border we made for the reset button", asked for directly the
+   same day — on an `.edge-light` span, so retuning that ring retunes this.
+   ⚠️ NO DROP SHADOW: the row clips on both axes (`overflow-x: auto` forces
+   `overflow-y` off `visible`), and a shadow cut at the row's edge reads as a
+   rendering fault. The frame is set apart by its fill and its rim. */
+.frame {
+  position: relative;
+  display: block;
+  padding: var(--frame-width);
+  border-radius: var(--frame-radius);
+  background: color-mix(
+    in srgb,
+    var(--color-surface-frost-light) calc(60% * 0.6),
+    transparent
+  );
+  -webkit-backdrop-filter: blur(var(--blur-sm)) saturate(1.4);
+  backdrop-filter: blur(var(--blur-sm)) saturate(1.4);
+}
+
+.frame > :global(.edge-light) {
+  --edge-ring: var(--edge-ring-all-round);
+}
+
+/* the check-in record's photo well, square. The labels are positioned against
+   it, so it is the containing block. */
 .well {
   position: relative;
   display: block;
   aspect-ratio: 1 / 1;
   overflow: hidden;
-  border-radius: var(--radius-lg); /* 16 */
+  /* 32 − 6 = 26, concentric with the frame round it */
+  border-radius: calc(var(--frame-radius) - var(--frame-width));
   background: var(--color-surface-data-strong);
 }
 
@@ -276,10 +322,7 @@
     transform var(--duration-slow) var(--ease-hover);
 }
 
-/* ⚠️ THE DATE ON THE PHOTO — top-left, in the nav bar's own frosted dark fill
-   (`surface/nav-bar`, dark slate at 26%) over the DS's 8 blur, white
-   `t-label-sm`. A photograph of skin is light and warm, so plain white would
-   not hold on it; the pill is what the nav already does over a light canvas.
+/* ⚠️ THE DATE ON THE PHOTO — top-left, white `t-label-sm` in a glass pill.
    ⚠️ ABOVE THE PICTURE'S GLASS EDGE (`.well::after` is z-index 1), so the
    sunken rim shades the photo and not the label. `pointer-events: none`: the
    link is the tile. */
@@ -292,14 +335,45 @@
   white-space: nowrap;
 }
 
+/* ⚠️ CLEAR GLASS, NOT THE NAV BAR'S SLATE — 16 Sep 2026, asked for directly
+   to the same reference ("the pill with transparency, frosted"). The pill was
+   `surface/nav-bar` (dark slate at 26%), which over a smooth photo read as a
+   flat taupe chip. Now it is barely tinted — `surface/frost-light` at 18%,
+   about 10% white — and the photo behind it does the work: blurred 8,
+   saturated 1.4 and DIMMED to 0.8, so the glass is see-through and the white
+   label still holds. Measured by compositing over the sample photo's own
+   pixels under both pills (the backdrop averages under an 8 blur): white
+   4.55–4.66:1, where the same tint without the dimming gave 3.1:1. The soft
+   shadow under the words is for the pale callout circle the day pill sits on.
+   ⚠️ A skin photo is light and warm — plain white with no pill did not hold on
+   it (the first render, 15 Sep 2026), which is why the pill stays at all. */
 .date,
 .day {
   padding: 2px 8px;
   border-radius: var(--radius-full);
-  background: var(--color-surface-nav-bar);
-  box-shadow: inset 0 0 0 var(--border-width-hairline) rgb(255 255 255 / 0.22);
-  -webkit-backdrop-filter: blur(var(--blur-sm));
-  backdrop-filter: blur(var(--blur-sm));
+  background: color-mix(
+    in srgb,
+    var(--color-surface-frost-light) 18%,
+    transparent
+  );
+  -webkit-backdrop-filter: blur(var(--blur-sm)) saturate(1.4) brightness(0.8);
+  backdrop-filter: blur(var(--blur-sm)) saturate(1.4) brightness(0.8);
+  text-shadow: 0 1px 2px rgb(0 0 0 / 0.25);
+}
+
+/* ⚠️ THE PILL'S EDGE IS THE `Reset` RING, NOT A FLAT HAIRLINE — 16 Sep 2026,
+   asked for directly ("the pill with transparency, frosted, and the gradient
+   border around", then "reuse the border we made for the reset button"). It
+   was a 22% white inset line, even all round. `z-index: -1` inside the pill's
+   own stacking context puts the ring and its glow over the fill and UNDER the
+   words; the glow is halved from the pale pills' 0.25, because a 12 blur
+   inside a 20-tall pill fills it and milks the white label. */
+.date > :global(.edge-light),
+.day > :global(.edge-light) {
+  z-index: -1;
+  --edge-ring: var(--edge-ring-all-round);
+  --edge-glow: 0.12;
+  --edge-catch: 0.25;
 }
 
 .date {
@@ -314,12 +388,21 @@
   bottom: var(--space-sm);
 }
 
-/* non-negotiable 11: the pill's frost goes opaque — `bg/nav-bar` is the same
-   fill composited over the canvas's bottom stop */
+/* non-negotiable 11: the pill's frost goes opaque. ⚠️ `bg/nav-bar`, the fill
+   it had before it turned to glass, NOT the glass made opaque: an opaque pale
+   pill would carry the white label at about 1.1:1 */
 @media (prefers-reduced-transparency: reduce) {
   .date,
   .day {
     background: var(--color-bg-nav-bar);
+    -webkit-backdrop-filter: none;
+    backdrop-filter: none;
+  }
+
+  /* the frame's opaque counterpart — `bg/frost-light` is `surface/frost-light`
+     made opaque, the same colour */
+  .frame {
+    background: var(--color-bg-frost-light);
     -webkit-backdrop-filter: none;
     backdrop-filter: none;
   }
@@ -328,9 +411,9 @@
 /* ---- the rail under the row: the position rule and the two arrows -------- */
 
 /* ⚠️ TWO ROWS, NOT ONE — asked for directly 15 Sep 2026 ("move the arrows
-   below the line"): the position rule runs the full width of the row above,
-   and the arrows sit under it at its right end, where they already were. It
-   was one line with the rule taking the slack beside the arrows. */
+   below the line"): the position rule runs across the row above, and the
+   arrows sit under it. It was one line with the rule taking the slack beside
+   the arrows. */
 .rail {
   display: flex;
   flex-direction: column;
@@ -343,13 +426,18 @@
    the row is in view and how far along it is — width and offset are the two
    custom properties the TSX writes on every scroll, applied as a transform so
    the segment glides with a swipe. `transform-origin: left` so the width
-   scales from the rule's start. */
+   scales from the rule's start.
+   ⚠️ 80% OF THE ROW, CENTRED — 16 Sep 2026, asked for directly ("reduce the
+   slider bar width -20%"). It ran the row's full width. Centred because the
+   arrows under it are; the segment's two ratios are shares of the RULE, so
+   they need nothing to follow. */
 .track {
   position: relative;
   /* none, not `1 1 auto`: in the column rail a growing track would take height,
      not width */
   flex: none;
-  width: 100%;
+  width: 80%;
+  align-self: center;
   height: var(--border-width-hairline);
   background: color-mix(in srgb, var(--color-text-on-data) 14%, transparent);
   border-radius: var(--radius-full);

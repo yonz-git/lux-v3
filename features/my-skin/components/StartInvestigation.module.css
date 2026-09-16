@@ -416,35 +416,22 @@
   --grad-end: var(--color-button-bg-secondary-end);
 }
 
-/* the edge light at the pale pills' strengths — `.edge` sets the indigo ones */
+/* the edge light at the pale pills' glow strengths — `.edge` sets the indigo
+   ones.
+   ⚠️ THE RING STILL SWEEPS, BUT NEVER DISAPPEARS — 16 Sep 2026, asked for
+   directly ("make these border shine more visible all around", then "not like
+   flat border … give gradient like before, the parts that were less visible
+   slightly more visible"). The default sweep falls to 0 between 40% and 60%,
+   so on these pale pills the ring vanished along the long edges.
+   ⚠️ IT IS THE SHARED `--edge-ring-all-round` NOW (globals.css), the same
+   day, when the gallery's photos and date pills took this ring ("reuse the
+   border we made for the reset button"). The values live there; this rule
+   only picks the ring, which is also why the two strengths are gone. */
 .reset > .placesToggle button:not(:first-child):not(:disabled) > :global(.edge-light) {
   opacity: 1;
   --edge-glow: 0.25;
   --edge-catch: 0.35;
-  --edge-ring-lit: 0.7;
-  --edge-ring-dim: 0.3;
-}
-
-/* ⚠️ THE RING STILL SWEEPS, BUT NEVER DISAPPEARS — 16 Sep 2026, asked for
-   directly ("make these border shine more visible all around", then "not like
-   flat border … give gradient like before, the parts that were less visible
-   slightly more visible"). `.edge-light::before` falls to 0 between 40% and
-   60%, so on these pale pills the ring vanished along the long edges. Same
-   four-stop sweep here, the lit corners a touch brighter (0.7 → 0.85, 0.3 →
-   0.45) and the quiet middle lifted off zero to 0.15 — still a highlight
-   travelling round the pill, not an even outline. Only the gradient is
-   restated; the 1px mask stays the global rule's. */
-.reset
-  > .placesToggle
-  button:not(:first-child):not(:disabled)
-  > :global(.edge-light)::before {
-  background: linear-gradient(
-    135deg,
-    rgba(255, 255, 255, 0.85),
-    rgba(255, 255, 255, 0.15) 40%,
-    rgba(255, 255, 255, 0.15) 60%,
-    rgba(255, 255, 255, 0.45)
-  );
+  --edge-ring: var(--edge-ring-all-round);
 }
 
 @media (hover: hover) {
