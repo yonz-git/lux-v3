@@ -219,6 +219,30 @@
   flex-direction: column;
   gap: var(--space-lg); /* 16 */
   padding-block: var(--space-md) var(--space-xl); /* 12 / 20 */
+
+  /* ⚠️ NOT IN FIGMA — THE SCROLLED EDGES FADE, asked for directly 16 Sep 2026:
+     without a mask a bubble scrolling past the header or the footer disappears
+     at the panel's own rounded corner, a hard line with nothing soft about it.
+     `--space-2xl` (24) is the same distance in from both edges regardless of
+     content, so a bubble dissolves before it reaches either boundary instead of
+     being cut by it. Static, not scroll-position-aware: it fades a hair of the
+     first and last bubble even at the very top or bottom of the scroll range,
+     which is the accepted trade for not wiring a scroll listener to a panel
+     that never holds more than three short turns. */
+  -webkit-mask-image: linear-gradient(
+    to bottom,
+    transparent,
+    #000 var(--space-2xl),
+    #000 calc(100% - var(--space-2xl)),
+    transparent
+  );
+  mask-image: linear-gradient(
+    to bottom,
+    transparent,
+    #000 var(--space-2xl),
+    #000 calc(100% - var(--space-2xl)),
+    transparent
+  );
 }
 
 .body::-webkit-scrollbar {
