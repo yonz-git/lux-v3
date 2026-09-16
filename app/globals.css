@@ -2891,6 +2891,49 @@ main[tabindex="-1"]:focus-visible {
   }
 }
 
+/* ⚠️ `.sheet-dialog-tablet` — A SHEET THAT IS A DOCKED TRAY ON A PHONE ONLY.
+   NOT IN FIGMA, 16 Sep 2026, asked for directly on PROGRESS's photo gallery
+   ("this size of the gallery should only be used on mobile size; use the 4
+   images modal for bigger size than mobile"). Between 480 and 1023 the tray
+   takes the desktop dialog recipe from `Sheet.module.css` — centred, 640 wide,
+   48 padding, `radius/3xl`, no grabber, the ✕ 16 in — so a tablet gets the
+   four-photo modal instead of a full-width strip of three giant tiles.
+   ⚠️ 480, NOT 768 — moved the same day, asked for directly on a ~527-wide
+   window. 480 clears every phone (the 440 comp canvas included). Narrower
+   than the 640 dialog, it keeps 16 of the page's own edge each side.
+   ⚠️ 480 IS NOT A NEW APP BREAKPOINT: desktop is still 1024 (non-negotiable
+   12). It is this opt-in's own floor, and only the gallery opts in. It lives
+   here, not in a module, because it renames the tray's animation. Doubled
+   class for specificity over `Sheet`'s module rule, which may load later. */
+@media (min-width: 480px) and (max-width: 1023.98px) {
+  [data-tray="tray"].sheet-dialog-tablet.sheet-dialog-tablet {
+    left: 50%;
+    right: auto;
+    bottom: auto;
+    top: 50%;
+    transform: translate(-50%, -50%);
+    max-height: calc(
+      100dvh - var(--size-nav-height) - var(--nav-inset-bottom) -
+        var(--space-2xl) - var(--space-4xl)
+    );
+    width: calc(100% - 2 * var(--space-lg));
+    max-width: var(--width-card-focus); /* 640 */
+    padding: var(--space-5xl);
+    border-radius: var(--radius-3xl);
+    box-shadow: var(--shadow-sheet-desktop);
+    animation-name: lux-fade-in;
+  }
+
+  [data-tray="tray"].sheet-dialog-tablet > span[aria-hidden="true"]:first-child {
+    display: none; /* the grabber */
+  }
+
+  [data-tray="tray"].sheet-dialog-tablet > button[aria-label="Close"] {
+    top: var(--space-lg);
+    right: var(--space-lg);
+  }
+}
+
 /* ============================================================================
    Dropdowns open DOWN and close back UP — `components/ui/Collapse.tsx` and
    `.drop`.

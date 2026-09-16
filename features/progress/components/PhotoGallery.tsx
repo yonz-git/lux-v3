@@ -248,7 +248,13 @@ export function PhotoGallery({
     /* ⚠️ A CORNER ✕, NOT `Done` — asked for directly 15 Sep 2026 ("remove done
        and add x top right corner"). The gallery is something you look through
        and leave, so its exit sits where a viewer's does. */
-    <Sheet open={open} onClose={onClose} title={TITLE} dismiss="corner">
+    <Sheet
+      open={open}
+      onClose={onClose}
+      title={TITLE}
+      dismiss="corner"
+      className="sheet-dialog-tablet"
+    >
       {/* `Sheet` uses the title for its aria-label only, so the visible
           heading is rendered here, as `SelfieSheet` does */}
       <div className={styles.head}>
