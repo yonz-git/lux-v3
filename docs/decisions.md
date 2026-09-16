@@ -1496,6 +1496,26 @@ After both changes the probe is clean: 18 routes x 3 widths, nothing clipped or
 spilled, and no page scrolls horizontally at 320 (which is 1.4.10 measured at
 the same time).
 
+⚠️ **`CompatCard`'S NAME CAME BACK ON 16 Sep 2026, AND `break-word` COULD NOT
+CLOSE IT TWICE.** The net only holds while a column is wider than one letter.
+On 13 Sep the compared products took a 36 thumb with a 12 gap in front of
+their names and the box's inset went from 8 to 16 a side, 64 out of the name's
+width, and at 320 beside a Risky or Avoid score that left it 24 — and 11–14
+under the overrides, narrower than a glyph with its 0.12em of tracking, so
+three names spilled. ⚠️ **It was never only a 1.4.12 failure.**
+At 24 the name read two or three letters a line with no override at all, and
+in edit mode, where the ✕ takes 44 more, it was 0 wide and spilling at
+baseline. The probe reports neither: it differences against the baseline, and
+it never presses `Edit`. Both were measured by hand.
+
+The fix is `SymptomLocation`'s, wrapping by basis: the name's `flex-basis` is
+84, so when the thumb, the name and the score cannot share a line, the score
+takes the next one, right-aligned so the figures and chevrons keep their
+column. **Nothing moves at 440 or 1440**, in either mode, with or without the
+overrides — checked by reverting the declarations on the same build and
+diffing every box in the header. Why 84 and not 96 is on `.toggle` in
+`CompatCard.module.css`.
+
 ## Every empty state is one recipe, and one screen was not using it
 
 ⚠️ **The recipe was already there and already documented** — `ProgressScreen`
