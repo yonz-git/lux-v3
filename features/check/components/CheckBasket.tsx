@@ -203,7 +203,9 @@ export function CheckBasketSheet({
                   compatibility check is asking about. Hidden from assistive tech,
                   where the list semantics already say it. */}
               {i > 0 && (
-                <span className={`${styles.and} t-label-sm`} aria-hidden="true">
+                /* `t-label`, one step over `t-label-sm` — asked for directly
+                   16 Sep 2026 ("1 step bigger") */
+                <span className={`${styles.and} t-label`} aria-hidden="true">
                   and
                 </span>
               )}
@@ -251,7 +253,8 @@ export function CheckBasketSheet({
         )}
       </ul>
 
-      <p className={`${styles.count} t-caption`}>
+      {/* `t-body3`, one step over `t-caption` — asked for directly 16 Sep 2026 */}
+      <p className={`${styles.count} t-body3`}>
         {products.length} of {MAX_CHECK_PRODUCTS} products
       </p>
 
