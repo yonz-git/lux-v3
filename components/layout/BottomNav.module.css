@@ -143,7 +143,7 @@
 }
 
 /* ⚠️ TEXT-ONLY SINCE 13 Sep 2026, asked for directly — no icon above the
-   label, so an item is one line of `t-nav` (16 Light) in a pill. */
+   label, so an item is one line of `t-nav` (14 Regular mobile / 16 desktop) in a pill. */
 .item {
   display: flex;
   align-items: center;
@@ -167,12 +167,16 @@
 
   min-width: var(--size-touch-target);
   min-height: var(--size-touch-target);
-  /* ⚠️ THE PADDING SHRINKS WITH THE VIEWPORT, AND THAT IS WHAT LETS FOUR 16px
-     LABELS FIT. They measure 235 together; the bar's inside is
-     `min(380, 100vw - 48) - 29`. A fixed 12 a side needs 331 and clips below a
-     408 viewport. `(100vw - 320px) / 8` spends exactly the slack there is — 0
-     on a 320 phone (235 in 243), ~7 at 375 (290 in 298) — capped at
-     `space/md` from 416 up. */
+  /* ⚠️ THE PADDING SHRINKS WITH THE VIEWPORT — WRITTEN FOR FOUR 16px LABELS,
+     KEPT UNCHANGED WHEN MOBILE STEPPED DOWN TO 14px (16 Sep 2026, see `.t-nav`
+     in globals.css). At 16px they measured 235 together against a bar inside
+     of `min(380, 100vw - 48) - 29`, which is exactly 0 slack on a 320 phone
+     (235 in 243) and ~7 at 375 (290 in 298) — the formula was tuned to spend
+     precisely that. At 14px the same four labels measure ~209, so the
+     identical formula now leaves real slack at every width (~62 at 320)
+     instead of spending it to the pixel. Left as-is rather than tightened
+     again: it still cannot overflow, and a fixed 12 a side needs 331, which
+     still clips below a 408 viewport — capped at `space/md` from 416 up. */
   /* ⚠️ 2 UNDER, 0 OVER — asked for directly 15 Sep 2026 ("more bottom padding
      to match the top"). The label's 22 line box was already centred in the
      44 (11 / 11), but `t-nav`'s glyphs sit low in that box, so the pill read

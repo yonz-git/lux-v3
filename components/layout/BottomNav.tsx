@@ -54,7 +54,7 @@ export type NavSection = "none" | "my-skin" | "progress" | "check" | "products";
 /* ⚠️ TEXT-ONLY SINCE 13 Sep 2026 — asked for directly. The four icons were an
    outline, a dotted ring, a filled glyph and a solid bottle-and-drop: four
    weights in one row, which read less finished than the words alone. The
-   labels carry the bar now (`t-nav`, 16 Regular). The glyphs stay in `icons.tsx`
+   labels carry the bar now (`t-nav`, 14 Regular mobile / 16 desktop). The glyphs stay in `icons.tsx`
    for their other callers; redraw them as ONE set in Figma before bringing
    icons back. */
 const items = [
@@ -86,7 +86,7 @@ export function BottomNav({
       aria-label="Sections"
     >
       {items.map(({ id, label, href }) => {
-        /* ⚠️ NOT IN FIGMA — the label is the whole item (`t-nav`, 16 Regular),
+        /* ⚠️ NOT IN FIGMA — the label is the whole item (`t-nav`, 14 Regular mobile / 16 desktop),
            and it takes the buttons' hover shine, `.shine-text`. */
         const content = (
           <span className={`${styles.label} t-nav shine-text shine-on-hover`}>
