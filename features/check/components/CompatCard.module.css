@@ -92,11 +92,38 @@
   font: inherit;
 }
 
+/* ⚠️ NOT IN FIGMA — ON A NARROW PHONE THE SCORE WRAPS UNDER THE NAME,
+   16 Sep 2026. WRAPPING BY BASIS, no media query — `SymptomLocation`'s idiom.
+   The name wants 84 and takes every pixel over that; when the thumb, the name's
+   84 and the score cannot share a line, the score takes the next one, pushed
+   right so the chevron and the figure stay in the column every other card
+   keeps.
+
+   ⚠️ THE NAME HAD 24 AT 320. The compact card's header is 216 there, and the
+   36 thumb with its 12 gap (13 Sep 2026) plus a Risky or Avoid score (129–132)
+   left the name two or three letters a line in a header 264 tall — and 0 wide
+   in edit mode, where the ✕ takes 44 more. `overflow-wrap: break-word` on
+   `body` hid it, since nothing spilled, until the WCAG 1.4.12 overrides
+   widened a glyph past the 11–14 left and `npm run spacing` failed. See "The
+   layout survives the user's own text spacing" in docs/decisions.md.
+
+   ⚠️ WHY 84. A Risky or Avoid name gets 94.1 or more at 390 and up and 81.7
+   or less at 375 and below — in edit mode, 88.1 or more at 428 and 76.7 or
+   less at 414 — so a list never splits between the two layouts at a common
+   phone width. 96 would, at 390, where Avoid's pill is 2.6 wider than
+   Risky's. 440's tightest name, Avoid in edit mode, is 100.1, so both comp
+   widths keep the one-line row with 16 of headroom. The compatible rows have
+   no pill and wrap only in edit mode, below 355.
+
+   8 between the two lines, not the row's 12: tighter than the card's own 12
+   padding, so the score reads as this name's rather than as a row between
+   cards. */
 .toggle {
   display: flex;
+  flex-wrap: wrap;
   align-items: center;
   justify-content: space-between;
-  gap: var(--space-md);
+  gap: var(--space-sm) var(--space-md); /* 8 between lines / 12 */
   width: 100%;
   /* ⚠️ the UA button padding is 1px 6px, not zero (non-negotiable 13) */
   padding: 0;
@@ -105,7 +132,10 @@
 }
 
 .name {
-  flex: 1;
+  /* the basis is the wrap threshold — see `.toggle`. With a zero basis the
+     name's hypothetical size is 0, so the line never breaks and the name is
+     what gives way instead of the score. */
+  flex: 1 1 84px;
   min-width: 0;
   color: var(--color-text-primary);
 }
@@ -115,6 +145,9 @@
   align-items: center;
   gap: 10px;
   flex: none;
+  /* right-aligned when it is alone on the wrapped line; beside the name the
+     name's growth has already taken the slack and this resolves to 0 */
+  margin-inline-start: auto;
   /* percentages stacked down a list of products read as a column, so the
      figures take one width — 98% and 71% have to align on their own `%`.
      See the note in globals.css. */

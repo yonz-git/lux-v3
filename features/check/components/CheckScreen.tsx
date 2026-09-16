@@ -50,8 +50,12 @@ export function CheckScreen() {
          `HubScreen`'s footer they sit after the trailing spacer: on a phone
          the orb and bubble centre in the space between the heading and the
          actions, and the actions drop to just above the nav — Welcome's
-         composition. On desktop `HubScreen` re-groups them under the hero, as
-         it does for every centred screen with a footer. */
+         composition.
+         ⚠️ AND ON DESKTOP TOO, AS OF 16 Sep 2026 — asked for again. `HubScreen`
+         used to re-group a centred screen's footer under its hero at 1024 and
+         up, so this fix only ever reached a phone: on a laptop the button sat
+         48 under the bubble mid-screen. That regroup is gone; the actions sit
+         40 above the nav at every desktop size, the hub's own clearance. */
       footer={
         <div className={styles.actions}>
           <Button href="/check/new" className={styles.cta}>
