@@ -74,7 +74,18 @@
    hangs off the orb the way Welcome's does. The zero below takes `.hero`'s 32
    back off it — the orb renders as `span.lux-orb`, which `.hero >
    :global(.lux-orb)` matches — and it must stay BELOW that rule, which it ties
-   on specificity. */
+   on specificity.
+
+   ⚠️ `.lux-orb` IS NO LONGER A DIRECT CHILD HERE, AND THE RULE BELOW IS LEFT
+   AS-IS ON PURPOSE — 16 Sep 2026. `<Orb>` on this screen is now wrapped in
+   `.orb-hero` (globals.css, the mobile 10% shrink), so neither this rule nor
+   `.hero > svg` above still reaches `.lux-orb`: both need a DIRECT child and
+   the wrapper sits between. `.orb-hero` supplies its own margin-bottom
+   (-13px mobile, 0 desktop) that already nets to zero extra gap beyond
+   `.heroChat`'s own `gap` — do NOT add `.orb-hero` to the selector below to
+   "cover" it: that rule's 0 has higher specificity than `.orb-hero`'s own
+   -13px (two classes beat one), so it would win and reopen a 33px gap where
+   20 is intended. See the doc comment on `.orb-hero` for the full argument. */
 .heroChat {
   gap: var(--space-xl); /* 20 */
   margin-top: var(--space-4xl); /* 40 — Welcome's nudge */

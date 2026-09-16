@@ -46,12 +46,17 @@ export function Welcome() {
               symbol — the same geometry to the pixel — fades over the
               assembling mark on its way in; `LogoEntrance` aims the two by
               class. */}
-          <Orb
-            size="var(--size-orb-lg)"
-            animateIn={!returning}
-            halo
-            className={returning ? undefined : "orb-from-entrance"}
-          />
+          {/* ⚠️ `orb-hero` (globals.css) — 10% smaller on mobile, asked for
+              directly 16 Sep 2026. It wraps rather than resizes `<Orb>`
+              itself; see the doc comment there for why. */}
+          <div className="orb-hero">
+            <Orb
+              size="var(--size-orb-lg)"
+              animateIn={!returning}
+              halo
+              className={returning ? undefined : "orb-from-entrance"}
+            />
+          </div>
           {/* centred rather than left, because Welcome is a hero composition —
               see the note in ChatBubble.module.css */}
           {/* the two bubbles occupy the same grid cell and cross-fade — see
@@ -73,6 +78,7 @@ export function Welcome() {
             <ChatBubble
               from="ai"
               align="center"
+              hug
               className={returning ? styles.bubbleReply : `bubble-swap-in ${styles.bubbleReply}`}
               entrance={false}
               aria-hidden
