@@ -175,7 +175,17 @@
   margin-bottom: calc(var(--space-2xl) - var(--space-xl));
   /* ⚠️ IT DRAGS — `Sheet`'s pointer handlers. `touch-action: none` or the
      browser takes the pull as a scroll and cancels the pointer mid-drag. */
-  position: relative;
+  /* ⚠️ STICKY, NOT `relative` — 16 Sep 2026, asked for directly on the
+     add-product tray ("add this on that modal too"). A tall tray scrolls
+     inside itself, and the grabber scrolled away with the content, so the one
+     affordance saying "pull me down" was gone exactly on the trays that need
+     it. It pins where it rests, 8 below the tray's top edge — `top: 0` is
+     measured inside the tray's own 8 of top padding. Sticky is positioned, so
+     it is still the containing block for the `::before` hit area. */
+  position: sticky;
+  top: 0;
+  z-index: 1;
+  flex: none;
   touch-action: none;
   cursor: grab;
 }

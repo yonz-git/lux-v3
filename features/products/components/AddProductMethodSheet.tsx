@@ -6,6 +6,7 @@ import { Sheet } from "@/components/ui/Sheet";
 import { CameraCapture } from "@/components/ui/CameraCapture";
 import { ChatBubble } from "@/components/ui/ChatBubble";
 import { ProductCard } from "./ProductCard";
+import { ProductAccordionCard } from "./ProductAccordionCard";
 import { Button } from "@/components/ui/Button";
 import { OptionRow } from "@/components/ui/OptionRow";
 import SegmentedToggle from "./SegmentedToggle";
@@ -557,15 +558,22 @@ function ConfirmView({
         </ChatBubble>
       )}
 
-      {showsCard && (
-        <ProductCard
-          product={product}
-          matchScore={
-            isScan ? (draft.matchScore ?? SCAN_MATCH.score) : undefined
-          }
-          showDescription={!isScan}
-        />
-      )}
+      {/* ⚠️ A SEARCHED PRODUCT IS A DROPDOWN ROW, NOT THE BIG CARD — 16 Sep
+          2026, asked for directly ("make it as a dropdown like here", pointing
+          at the PRODUCTS hub's compact card). The same `ProductAccordionCard`
+          the hub draws, closed by default, opening onto the same
+          `ProductDetails`; no Remove, because nothing is added yet. A SCAN
+          keeps `ProductCard`: its "92% match" tag and big picture are the
+          answer to "is this what the camera saw?". */}
+      {showsCard &&
+        (isScan ? (
+          <ProductCard
+            product={product}
+            matchScore={draft.matchScore ?? SCAN_MATCH.score}
+          />
+        ) : (
+          <ProductAccordionCard product={product} compact />
+        ))}
 
       {stage === "verify" && draft && (
         <div className={styles.confirmBlock}>
@@ -640,7 +648,9 @@ function ConfirmView({
 
       {(stage === "added" || stage === "rejected") && (
         <div className={styles.confirmBlock}>
-          <p className={`${styles.confirmLabel} t-label-sm`}>
+          {/* `t-label`, one step over `t-label-sm` — asked for directly 16 Sep
+              2026, with `Added products` below */}
+          <p className={`${styles.confirmLabel} t-label`}>
             {stage === "added"
               ? "Add another product"
               : "Search for a different product"}
@@ -655,7 +665,9 @@ function ConfirmView({
 
       {addedProducts.length > 0 && stage !== "verify" && (
         <div className={styles.confirmBlock}>
-          <p className={`${styles.confirmLabel} t-label-sm`}>Added products</p>
+          {/* `t-label`, one step over `t-label-sm` — asked for directly 16 Sep
+              2026, as the check basket's "and" took the same day */}
+          <p className={`${styles.confirmLabel} t-label`}>Added products</p>
           <ul className={styles.addedList}>
             {addedProducts.map((p) => (
               <li key={p.id}>

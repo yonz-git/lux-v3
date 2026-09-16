@@ -1,12 +1,12 @@
 "use client";
 
-import { useState } from "react";
+import { useId, useState } from "react";
 import styles from "./ProductAccordionCard.module.css";
 import { ProductThumb } from "./ProductThumb";
 import { Collapse } from "@/components/ui/Collapse";
 import { ChevronDownIcon } from "@/components/ui/icons";
 import { ProductDetails } from "./ProductDetails";
-import { fullName, type SavedProduct } from "@/features/products/products";
+import { fullName, type CatalogProduct } from "@/features/products/products";
 
 /**
  * One saved product, collapsed or expanded. Figma `product · …` inside
@@ -73,12 +73,19 @@ export function ProductAccordionCard({
   onRemove,
   compact = false,
 }: {
-  product: SavedProduct;
-  onRemove: () => void;
+  /** `addedOn` when the user owns it — `ProductDetails` shows `Added` then */
+  product: CatalogProduct & { addedOn?: string };
+  /** ⚠️ OPTIONAL since 16 Sep 2026: the add tray's confirm view draws this
+      card for a product not yet in the library, where there is nothing to
+      remove — no action row is drawn without it */
+  onRemove?: () => void;
   compact?: boolean;
 }) {
   const [open, setOpen] = useState(false);
-  const panelId = `product-${product.id}`;
+  /* ⚠️ `useId`, NOT `product-${id}` — the add tray can draw this card for a
+     product the hub underneath is also drawing, and two panels would share
+     one id */
+  const panelId = useId();
 
   return (
     <div
@@ -123,15 +130,17 @@ export function ProductAccordionCard({
 
           <ProductDetails product={product} />
 
-          <div className={styles.actions}>
-            <button
-              type="button"
-              className={`${styles.remove} t-label tap-target`}
-              onClick={onRemove}
-            >
-              Remove
-            </button>
-          </div>
+          {onRemove && (
+            <div className={styles.actions}>
+              <button
+                type="button"
+                className={`${styles.remove} t-label tap-target`}
+                onClick={onRemove}
+              >
+                Remove
+              </button>
+            </div>
+          )}
         </div>
       </Collapse>
     </div>

@@ -383,9 +383,12 @@
   width: 20px;
   height: 20px;
 
-  border: var(--border-width-hairline) solid var(--color-border-subtle);
+  /* ⚠️ A BARE ✕, NO CIRCLE — 16 Sep 2026, asked for directly ("remove the
+     circle around the x"). It was a 20px frosted disc with a hairline ring.
+     The radius stays so the focus outline still draws round. */
+  border: none;
   border-radius: var(--radius-full);
-  background: var(--color-surface-frost-light);
+  background: none;
   color: var(--color-text-muted);
   transition: color var(--duration-fast) var(--ease-hover);
 }

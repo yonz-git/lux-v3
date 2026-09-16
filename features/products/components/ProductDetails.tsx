@@ -1,9 +1,7 @@
 "use client";
 
-import { useId, useState } from "react";
 import styles from "./ProductDetails.module.css";
-import { Collapse } from "@/components/ui/Collapse";
-import { ChevronDownIcon } from "@/components/ui/icons";
+import { IngredientsDisclosure } from "./IngredientsDisclosure";
 import { formatAdded, sizeInMl, type CatalogProduct } from "@/features/products/products";
 
 /**
@@ -54,9 +52,6 @@ export function ProductDetails({
   /** `addedOn` when the user owns it — see the note above. */
   product: CatalogProduct & { addedOn?: string };
 }) {
-  const [inciOpen, setInciOpen] = useState(false);
-  const inciId = useId();
-
   return (
     <div className={styles.details}>
       <dl className={styles.list}>
@@ -73,25 +68,9 @@ export function ProductDetails({
         {!product.ingredients && <Detail label="Ingredients" value="Not set" />}
       </dl>
 
+      {/* the shared dropdown — `ProductCard` draws the same one */}
       {product.ingredients && (
-        <div className={styles.inci} data-open={inciOpen}>
-          <button
-            type="button"
-            className={styles.inciToggle}
-            aria-expanded={inciOpen}
-            aria-controls={inciId}
-            onClick={() => setInciOpen((o) => !o)}
-          >
-            <span className={`${styles.inciLabel} t-label-sm`}>Ingredients</span>
-            <ChevronDownIcon className={styles.inciChevron} />
-          </button>
-
-          <Collapse open={inciOpen}>
-            <p id={inciId} className={`${styles.inciList} t-body3`}>
-              {product.ingredients}
-            </p>
-          </Collapse>
-        </div>
+        <IngredientsDisclosure ingredients={product.ingredients} />
       )}
     </div>
   );

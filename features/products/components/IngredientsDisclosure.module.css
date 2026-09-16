@@ -1,0 +1,60 @@
+/* The ingredients dropdown — see IngredientsDisclosure.tsx. No surface, no
+   radius, no border: a second frosted box inside a frosted card would read as a
+   card within a card, which is the nesting rule this app keeps for the reverse
+   case. Lifted from ProductDetails.module.css, 16 Sep 2026. */
+
+.inci {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-sm);
+  width: 100%;
+}
+
+/* the same 8, declared on the list's `Collapse` — "Dropdowns" in globals.css */
+.inci > :global(.collapse) {
+  --collapse-gap: var(--space-sm);
+}
+
+.toggle {
+  display: flex;
+  align-items: center;
+  gap: var(--space-xs);
+  width: fit-content;
+  text-align: left;
+  border-radius: var(--radius-sm);
+}
+
+.label {
+  color: var(--color-text-muted);
+  transition: color var(--duration-fast) var(--ease-hover);
+}
+
+.toggle:hover .label {
+  color: var(--color-text-primary);
+}
+
+@media (hover: none) {
+  .toggle:hover .label {
+    color: var(--color-text-muted);
+  }
+}
+
+/* ⚠️ icon-xs (16) AGAINST A CARD'S icon-sm (20) — see the TSX */
+.chevron {
+  flex: none;
+  width: var(--size-icon-xs);
+  height: var(--size-icon-xs);
+  color: var(--color-text-muted);
+  transition: transform var(--duration-base) var(--ease-standard);
+}
+
+.inci[data-open="true"] .chevron {
+  transform: rotate(180deg);
+}
+
+/* An INCI list is one long comma-separated run, so it wraps as a paragraph */
+.list {
+  margin: 0;
+  color: var(--color-text-secondary);
+  overflow-wrap: anywhere;
+}

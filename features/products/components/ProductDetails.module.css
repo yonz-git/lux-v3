@@ -21,6 +21,9 @@
   display: flex;
   flex-direction: column;
   gap: var(--space-lg);
+  /* the add tray's confirm card is `align-items: flex-start`; full width there
+     too, so an opened ingredient list wraps at the card's edge */
+  width: 100%;
 }
 
 .list {
@@ -44,65 +47,5 @@
   color: var(--color-text-primary);
 }
 
-/* ---- ingredients, the nested disclosure ---------------------------------
-   No surface, no radius, no border. A second frosted box inside a frosted card
-   would read as a card within a card, which is the nesting rule this app keeps
-   for the reverse case. ⚠️ The chevron sits right after its label, not at the
-   far edge — the same 16 Sep 2026 change as the rows above. */
-.inci {
-  display: flex;
-  flex-direction: column;
-  gap: var(--space-sm);
-}
-
-/* the same 8, declared on the list's `Collapse` — "Dropdowns" in globals.css */
-.inci > :global(.collapse) {
-  --collapse-gap: var(--space-sm);
-}
-
-.inciToggle {
-  display: flex;
-  align-items: center;
-  gap: var(--space-xs);
-  width: fit-content;
-  text-align: left;
-  border-radius: var(--radius-sm);
-}
-
-.inciLabel {
-  color: var(--color-text-muted);
-  transition: color var(--duration-fast) var(--ease-hover);
-}
-
-.inciToggle:hover .inciLabel {
-  color: var(--color-text-primary);
-}
-
-@media (hover: none) {
-  .inciToggle:hover .inciLabel {
-    color: var(--color-text-muted);
-  }
-}
-
-/* ⚠️ icon-xs (16) AGAINST THE CARD'S icon-sm (20). Same glyph, same rotation,
-   one step smaller — that size difference is the only thing saying this
-   disclosure belongs TO the card rather than being another one. */
-.inciChevron {
-  flex: none;
-  width: var(--size-icon-xs);
-  height: var(--size-icon-xs);
-  color: var(--color-text-muted);
-  transition: transform var(--duration-base) var(--ease-standard);
-}
-
-.inci[data-open="true"] .inciChevron {
-  transform: rotate(180deg);
-}
-
-/* An INCI list is one long comma-separated run, so it wraps as a paragraph
-   rather than sitting in the right-aligned value column the detail rows use. */
-.inciList {
-  margin: 0;
-  color: var(--color-text-secondary);
-  overflow-wrap: anywhere;
-}
+/* the ingredients dropdown lives in IngredientsDisclosure.module.css since
+   16 Sep 2026 — shared with the add tray's confirm card */
