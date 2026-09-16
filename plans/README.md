@@ -15,6 +15,12 @@ These plans come from the `improve-animations` audits of 13 Sep 2026. Each one i
 - ⚠️ **The excerpts are quoted from the working tree, not from `a3b3fb3`.** The selfie shutters' `duration/slow` in particular exists only as an uncommitted edit.
 - Both sweeps paired every `:hover` in 31 stylesheets with its base transition. Only five hovers had nothing animating (027). The rest were covered, but all rode `--ease-standard`, which front-loads half its change into the first fifth of any duration. That is the snap (026).
 
+**Batch 4 (028–031)** audits only the motion that landed after batch 3: the gallery carousel, the 15 Sep fade-up stagger, the basket bar's frost/shine/rise, and the products/progress/flow edits (16 Sep 2026). Written against `3933d37` on `new-adjustments`, with a dirty tree.
+
+- ⚠️ **028 quotes uncommitted code.** The basket bar's `rise-in`, shine and 17.5px label were working-tree edits when it was written. The other three quote committed files.
+- ⚠️ **One regression was fixed during the audit, not planned.** The new `.rise-in` had declared a second `@keyframes lux-rise-in`, which silently replaced Welcome's 24px rise with an 8px one. It was renamed `lux-rise-in-sm` in the same working tree.
+- ⚠️ **014 is stale.** It quotes `lux-fade-in` on `[data-reveal] > *` (now `lux-fade-up`), and it removes `data-reveal` from `QuestionScreen`'s `.shell` without knowing `.card` has carried one since 15 Sep. Amend it before executing it.
+
 ## Plans
 
 | # | Plan | Severity | Category | Depends on | Status |
@@ -32,7 +38,7 @@ These plans come from the `improve-animations` audits of 13 Sep 2026. Each one i
 | 011 | [Breath tokens and two timing comments](011-breath-tokens-and-timing-comments.md) | LOW | Cohesion & tokens | after 001, 005 | DONE — plus a step 8 added for two more stale comments |
 | 012 | [Today's check-in lands on the calendar](012-checkin-disc-lands-on-calendar.md) | MEDIUM | Missed opportunity | — | DONE — amended before execution: waits for store hydration |
 | 013 | [Removed products close; Undo reopens](013-product-removal-closes-smoothly.md) | MEDIUM | Missed opportunity | 007 | DONE |
-| 014 | [Page chrome stays still when the page changes](014-page-chrome-stays-still.md) | HIGH | Purpose & frequency | — | TODO |
+| 014 | [Page chrome stays still when the page changes](014-page-chrome-stays-still.md) | HIGH | Purpose & frequency | — | TODO — ⚠️ STALE since the 15 Sep fade-up; amend before executing (see batch 4) |
 | 015 | [The add tray's height follows its view](015-tray-height-follows-view.md) | MEDIUM | Missed opportunity | — | TODO |
 | 016 | [Tray views fade in; a closing tray keeps its view](016-tray-views-arrive-and-hold-on-close.md) | MEDIUM | Missed opportunity + exit bug | 015 | TODO |
 | 017 | [Selection marks fade in and out](017-selection-marks-fade.md) | LOW | Missed opportunity | — | TODO |
@@ -44,8 +50,12 @@ These plans come from the `improve-animations` audits of 13 Sep 2026. Each one i
 | 023 | [013's recipe in four more places](023-removal-recipe-follow-ups.md) | LOW | Missed opportunity | 015, 016, 019 | TODO |
 | 024 | [Step 1's "Other" button and field swap in place](024-step1-other-swaps-in-place.md) | LOW | Missed opportunity | — | TODO |
 | 025 | [The calendar's height follows the month](025-calendar-height-follows-month.md) | LOW | Missed opportunity | 015 | TODO |
-| 026 | [Hovers run on a hover curve, not the entrance curve](026-hover-curve.md) | HIGH | Easing & duration | — | DONE — plus the `CheckInDetail` `.result` comment the plan missed. ⚠️ `PhotoGallery`'s carousel (`.well > .art`, `.arrow`) arrived after this plan and its hovers still ride `--ease-standard` |
-| 027 | [Five hovers that still snap](027-five-hovers-that-snap.md) | MEDIUM | Easing & duration | 026 step 1 | DONE — ⚠️ follow-up open: `SegmentedToggle` `.segment:disabled` still snaps its ink |
+| 026 | [Hovers run on a hover curve, not the entrance curve](026-hover-curve.md) | HIGH | Easing & duration | — | DONE — plus the `CheckInDetail` `.result` comment the plan missed. (A note here said `PhotoGallery`'s carousel hovers still rode `--ease-standard`; the batch 4 audit found they arrived on `--ease-hover` already.) |
+| 027 | [Five hovers that still snap](027-five-hovers-that-snap.md) | MEDIUM | Easing & duration | 026 step 1 | DONE — its open `SegmentedToggle` follow-up is plan 031 |
+| 028 | [The basket bar arrives once and stays put](028-basket-bar-stays-put.md) | MEDIUM | Purpose & frequency / Interruptibility | — | TODO |
+| 029 | [The screen's action is never invisible while it can be pressed](029-footer-action-never-hidden.md) | MEDIUM | Purpose & frequency / Cohesion | — (014 must be amended separately) | TODO |
+| 030 | [The gallery's position segment stays under the finger](030-gallery-track-follows-scroll.md) | MEDIUM | Interruptibility / Performance | — | TODO |
+| 031 | [Save / Reset fade both ways, ink included](031-segment-disable-enable-both-fade.md) | LOW-MEDIUM | Interruptibility | 027 (done) | TODO |
 
 ## Recommended order
 
@@ -83,6 +93,15 @@ Independent of batches 1 and 2. It can run before them.
 1. **026**: adds `--ease-hover` and swaps the curve on every hover-only transition. Its step 4 (the button gradient reversals) is separable, so revert only that step if the buttons feel wrong.
 2. **027**: needs 026's token. It adds the transitions that were missing, fades the two underlines by colour, and registers `--shine-ink`.
 
+### Batch 4
+
+All four are independent of each other and of batch 2, so any order works. By leverage:
+
+1. **028**: the basket bar re-enters and re-shines inside `/check/new`'s core add loop. It needs the uncommitted bar work committed first.
+2. **029**: two declarations, and it unhides `Continue` on every flow step.
+3. **031**: two transition lists, and it closes 027's open follow-up.
+4. **030**: the largest TSX change of the four, on a screen people open occasionally.
+
 ## Overlaps to watch
 
 - **`app/globals.css`** is edited by 005, 006, 007 and 011. Batch 2 does not touch it.
@@ -97,6 +116,7 @@ Independent of batches 1 and 2. It can run before them.
 - **`app/globals.css`**: 026 (the token and `.specular`), then 027 (`@property --shine-ink`).
 - **`CheckResults.module.css`, `SegmentedToggle.module.css`, `StartInvestigation.module.css`**: 026 swaps curves in some rules, 027 edits different rules. 026 leaves `.historyLink`, `.segment`'s `color` and `.segment::before`'s `opacity` alone on purpose.
 - **`AddProductMethodSheet.module.css`**: 026 swaps four curves. Batch 2's 015, 016 and 023 edit the TSX, not these rules.
+- **`components/layout/HubScreen.module.css` / `QuestionScreen.module.css`**: 029 changes only `.footer`'s `animation-delay`. 014 edits the TSX shells. Amend 014 first if both are run.
 
 ## Not planned — documented decisions the audit respected
 
@@ -129,3 +149,13 @@ The code documents these as decisions, so no plan changes them:
 - **The 600ms hover shine band.** Its curve is the band's crossing, a separate documented decision.
 - **JavaScript hovers.** `Snackbar` pauses its timer on `onMouseEnter`, which is not a visual change. `FaceDiagram`'s `onPointerEnter` handlers drive the lit and focus highlights, whose transitions also carry selection, so the file is excluded along with its CSS.
 - **`app/prototypes/dark-welcome/picker.css`.** A prototype switcher, not product UI.
+
+### Batch 4
+
+Found and vetted, but not selected for plans on 16 Sep 2026:
+- **`/progress`'s phone stagger order.** The two column wrappers each restart `nth-child` counting under `display: contents`, so on a phone the trend lands with the first card and the check-in CTA before the calendar (`ProgressScreen.tsx`, the two `data-reveal data-reveal-stagger` wrappers).
+- **`SymptomLocation`'s hover highlight** (`.mark`, `.name`, `.places`) rides `--ease-standard` on `duration/slow`. It mirrors `FaceDiagram`'s glow, which 026 excluded as selection, so switching one end alone would split one highlight across two curves.
+- **`ProductThumb` animates `width`/`height`/`border-radius`** (36 → 48 as a compact card opens). It is a layout transition, but it was chosen so the name beside it moves too.
+- **`PhotoGallery`'s hover scales** (`.strip:hover .more` 1.05, `.tile:hover .art` 1.03) jump instantly under reduced motion. Keeping the saturation lift and dropping the scale there would be the fix.
+- **320ms hovers**: `SelfieSheet` `.shutter`, `CheckInDetail`'s search results. Over the 300ms UI budget, but both were asked for directly ("make the hover smooth", "smoothen hover animation").
+- **Plan 014's amendment.** Recorded above as stale, not rewritten.
