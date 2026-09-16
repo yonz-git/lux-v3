@@ -124,10 +124,21 @@
    answer right) on desktop for a turn; both are gone.
    ⚠️ 8 A SIDE. The left was 8 plus 2, then 8 plus 4, for a turn each, and
    came back to 8 by hand. */
+/* ⚠️ A WRAPPING ROW, NOT A COLUMN — 16 Sep 2026, when a set's members became
+   one pill each (see the TSX). The label takes the whole first line, and the
+   pills flow after it, 6 apart (the tiles' own gap) and wrapping when the
+   tile runs out: every pill row, the first included, sits the same 2 + 0.3rem
+   under the one above it.
+   ⚠️ `align-content: flex-start` IS LOAD-BEARING: the grid stretches a
+   one-pill tile to the height of a two-pill tile beside it, and a wrapping
+   flexbox's default shares that extra height between its lines, which pushed
+   `Not set` 20px down from its label. */
 .tile {
   display: flex;
-  flex-direction: column;
-  gap: var(--space-2xs); /* 2 — the strip's label-to-value */
+  flex-flow: row wrap;
+  align-content: flex-start;
+  align-items: flex-start;
+  gap: var(--space-2xs) calc(var(--space-sm) - 2px); /* 2 — the strip's label-to-value / 6 */
   min-width: 0;
   /* ⚠️ 6 ON TOP, 4 UNDER THE ANSWER — asked for directly 14 Sep 2026, in
      three turns: a row's pills sat 12 + 6 + 12 = 30 above the next row's
@@ -142,6 +153,11 @@
 .tileLabel,
 .tileValue {
   margin: 0;
+}
+
+/* the label's own line, so the pills start under it */
+.tileLabel {
+  flex-basis: 100%;
 }
 
 /* ⚠️ THE ANSWER IS A FILLED FROSTED PILL, TUNED BY HAND AND SUPPLIED 14 Sep
