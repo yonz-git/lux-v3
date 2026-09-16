@@ -267,6 +267,10 @@
    radius like the image i gave u and lets try less opacity -40%"): the frame
    went 24 → `radius/3xl` (32), so the photo 18 → 26, and the frost 60% → 36%,
    written as the multiple.
+   ⚠️ AND 30% CLEARER AGAIN, frost AND rim, asked for directly the same day
+   ("30% less opacity for the frosted part of the border and the edge line
+   also"): the frost 36% → 25.2%, the next multiple on the same line, and the
+   frame's edge light at 0.7 opacity (the rule below it).
    ⚠️ THE RIM IS THE `Reset` PILLS' RING (`--edge-ring-all-round`, globals.css)
    — "reuse the border we made for the reset button", asked for directly the
    same day — on an `.edge-light` span, so retuning that ring retunes this.
@@ -280,15 +284,20 @@
   border-radius: var(--frame-radius);
   background: color-mix(
     in srgb,
-    var(--color-surface-frost-light) calc(60% * 0.6),
+    var(--color-surface-frost-light) calc(60% * 0.6 * 0.7),
     transparent
   );
   -webkit-backdrop-filter: blur(var(--blur-sm)) saturate(1.4);
   backdrop-filter: blur(var(--blur-sm)) saturate(1.4);
 }
 
+/* ⚠️ THE SHARED RING AT 70% — opacity on THIS span, not a retune of
+   `--edge-ring-all-round`, so the `Reset` pills and the date pills that share
+   the token keep their full ring. It dims the ring, its top catch and its
+   inner glow together, which is the whole of the lit edge. */
 .frame > :global(.edge-light) {
   --edge-ring: var(--edge-ring-all-round);
+  opacity: 0.7;
 }
 
 /* the check-in record's photo well, square. The labels are positioned against
