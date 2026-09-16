@@ -191,7 +191,10 @@
   --tile-gap: calc(12px * 0.8);
   display: flex;
   flex-direction: column;
-  gap: var(--space-lg); /* 16 */
+  /* ⚠️ 40% OVER 16, between the photos and the slider under them — 16 Sep
+     2026, asked for directly ("give 40% more space in between these"): 22.4,
+     written as the multiple */
+  gap: calc(var(--space-lg) * 1.4);
   width: 100%;
   min-width: 0;
 }
