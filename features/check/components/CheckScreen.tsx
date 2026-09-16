@@ -58,10 +58,7 @@ export function CheckScreen() {
          at 1920x1080, 1440x900, 1440x780, 1024x768, 440x957, 390x844 and
          375x667. They part only where a spacer hits its floor — under 726 tall
          on desktop, and a 320x568 phone, where the heading outgrows its share
-         and the page scrolls 48.
-         ⚠️ THEN THE ORB AND BUBBLE WENT 10% LOWER, asked for directly the same
-         day: 24 below Welcome's on desktop and 32 on a phone, with the button
-         and link left on Welcome's. `--drop` in the module. */
+         and the page scrolls 48. */
       center="low"
       tightTop
       /* ⚠️ NOT IN FIGMA — 601:1952 paints this screen with the static
