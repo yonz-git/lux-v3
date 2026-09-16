@@ -1257,10 +1257,19 @@ main[tabindex="-1"]:focus-visible {
 /* ⚠️ REGULAR (400), NOT LIGHT, AS OF 14 Sep 2026 — asked for directly. The
    note above predates it: every label is Regular now, so weight no longer
    marks the active item; the recessed pill and full opacity do. */
+/* ⚠️ MOBILE STEPS DOWN TO 14/22 AS OF 16 Sep 2026, asked for directly —
+   desktop keeps 16/22. `--line-height-xs` (22) is unchanged at both sizes:
+   it is already the exact pairing `--font-size-xs` uses on `.t-body3`, so
+   this introduces no new line-height value, only a narrower one on mobile. */
 .t-nav {
-  font-size: var(--font-size-sm);
+  font-size: var(--font-size-xs);
   line-height: var(--line-height-xs);
   font-weight: var(--font-weight-regular);
+}
+@media (min-width: 1024px) {
+  .t-nav {
+    font-size: var(--font-size-sm);
+  }
 }
 .t-button-sm {
   font-size: var(--font-size-xs);

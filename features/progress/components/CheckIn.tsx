@@ -194,6 +194,10 @@ export function CheckInPanel({
   const askedExtras = changes.length > 0;
   const canSubmit = Boolean(choice) && askedExtras;
 
+  /* shared by every scroll-into-view effect below */
+  const prefersReducedMotion = () =>
+    window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+
   /* ⚠️ THE NOTE FIELD SCROLLS IN, IT DOES NOT JUMP — asked for directly 13 Sep
      2026 ("the chat moves up … now is stiff"). It used to carry `autoFocus`,
      and focusing a field makes the browser scroll it into view in a single
@@ -214,12 +218,43 @@ export function CheckInPanel({
     const input = noteRef.current;
     if (!input) return;
     input.focus({ preventScroll: true });
-    const reduce = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
     const timer = window.setTimeout(() => {
-      input.scrollIntoView({ behavior: reduce ? "auto" : "smooth", block: "nearest" });
+      input.scrollIntoView({ behavior: prefersReducedMotion() ? "auto" : "smooth", block: "nearest" });
     }, 200);
     return () => window.clearTimeout(timer);
   }, [noteOpen]);
+
+  /* ⚠️ EVERY NEW TURN SCROLLS INTO VIEW TOO, asked for directly 16 Sep 2026 —
+     the panel is a fixed-height surface with its own scroller (`ChatPanel`'s
+     `.body`, not the page), so a turn that answers into existence below the
+     fold stayed below the fold until the user found it themselves. Turn 2 has
+     no `Collapse` over it — it mounts at full height the instant `choice` is
+     set — so there is nothing to wait out; turn 3 does, so its effect keeps
+     the note field's 200ms rule (`--duration-base` — keep in step) rather than
+     aiming at a row still growing. Neither effect re-fires on an unrelated
+     re-render: `choice` is a stable reference into `SKIN_TREND_CHOICES` for as
+     long as `trend` itself hasn't changed, and `askedExtras` is a boolean, so
+     React's dependency check only sees the turn actually arrive. */
+  const turn2Ref = useRef<HTMLDivElement>(null);
+  useEffect(() => {
+    if (!choice) return;
+    turn2Ref.current?.scrollIntoView({
+      behavior: prefersReducedMotion() ? "auto" : "smooth",
+      block: "nearest",
+    });
+  }, [choice]);
+
+  const turn3Ref = useRef<HTMLDivElement>(null);
+  useEffect(() => {
+    if (!askedExtras) return;
+    const timer = window.setTimeout(() => {
+      turn3Ref.current?.scrollIntoView({
+        behavior: prefersReducedMotion() ? "auto" : "smooth",
+        block: "nearest",
+      });
+    }, 200);
+    return () => window.clearTimeout(timer);
+  }, [askedExtras]);
 
   const pickTrend = (label: string) => {
     setTrend(label);
@@ -311,7 +346,7 @@ export function CheckInPanel({
 
           {/* ---- turn 2 — what specifically changed ------------------------- */}
           {choice && (
-            <div className={styles.turn}>
+            <div className={styles.turn} ref={turn2Ref}>
               <ChatBubble from="ai" size="compact">
                   {changeReply(choice.direction)}
                 </ChatBubble>
@@ -347,7 +382,7 @@ export function CheckInPanel({
 
           {/* ---- turn 3 — optional note and photo --------------------------- */}
           <Collapse open={askedExtras}>
-            <div className={styles.turn}>
+            <div className={styles.turn} ref={turn3Ref}>
               <ChatBubble from="ai" size="compact">
                 Would you like to add any notes or take a photo?
               </ChatBubble>
