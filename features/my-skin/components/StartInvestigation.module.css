@@ -425,6 +425,28 @@
   --edge-ring-dim: 0.3;
 }
 
+/* ⚠️ THE RING STILL SWEEPS, BUT NEVER DISAPPEARS — 16 Sep 2026, asked for
+   directly ("make these border shine more visible all around", then "not like
+   flat border … give gradient like before, the parts that were less visible
+   slightly more visible"). `.edge-light::before` falls to 0 between 40% and
+   60%, so on these pale pills the ring vanished along the long edges. Same
+   four-stop sweep here, the lit corners a touch brighter (0.7 → 0.85, 0.3 →
+   0.45) and the quiet middle lifted off zero to 0.15 — still a highlight
+   travelling round the pill, not an even outline. Only the gradient is
+   restated; the 1px mask stays the global rule's. */
+.reset
+  > .placesToggle
+  button:not(:first-child):not(:disabled)
+  > :global(.edge-light)::before {
+  background: linear-gradient(
+    135deg,
+    rgba(255, 255, 255, 0.85),
+    rgba(255, 255, 255, 0.15) 40%,
+    rgba(255, 255, 255, 0.15) 60%,
+    rgba(255, 255, 255, 0.45)
+  );
+}
+
 @media (hover: hover) {
   .reset > .placesToggle button:not(:first-child):not(:disabled):hover {
     color: var(--color-text-brand);
