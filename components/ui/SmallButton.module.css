@@ -55,6 +55,32 @@
   }
 }
 
+/* ⚠️ NO RIM AT REST — 16 Sep 2026, asked for directly ("on default state
+   remove this border on secondary buttons"), the rule `Button`'s secondary
+   takes (see `.secondary :global(.edge-light)` there): the edge light's ring
+   and top catch read as a border on the pale pill, so both wait for the
+   pointer. The inner glow stays. */
+.button :global(.edge-light) {
+  --edge-catch: 0;
+  transition: box-shadow var(--duration-hover) var(--ease-hover);
+}
+
+.button :global(.edge-light)::before {
+  opacity: 0;
+  transition: opacity var(--duration-hover) var(--ease-hover);
+}
+
+@media (hover: hover) {
+  /* `initial` drops the override, so the catch is the global default again */
+  .button:hover:not(:disabled) :global(.edge-light) {
+    --edge-catch: initial;
+  }
+
+  .button:hover:not(:disabled) :global(.edge-light)::before {
+    opacity: 1;
+  }
+}
+
 /* Disabled — matching `Small Button / * / Disabled` (225:59 / 225:62) after the
    22 Aug 2026 swap: the whole control at opacity/disabled (0.4), i.e. its own
    Default faded. Nothing recoloured — a node fade takes the gradient, the label

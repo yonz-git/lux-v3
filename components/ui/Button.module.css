@@ -307,6 +307,38 @@
   }
 }
 
+/* ⚠️ NO RIM AT REST ON THE SECONDARY — 16 Sep 2026, asked for directly ("on
+   default state remove this border on secondary buttons"). The edge light
+   (globals.css `.edge-light`) drew a 1px ring and a 1px top catch round the
+   pale pill, and on a frosted fill that pair reads as a border. Both go at
+   rest and come back under the pointer on the hover's own clock, so they
+   arrive with the gradient reversal and `.specular`'s streaks. The soft inner
+   glow stays — it is the frost's depth, not a line. `SmallButton` takes the
+   same rule; the primary keeps its ring.
+   ⚠️ `.button.secondary`, NOT `.secondary`: the two classes match the
+   primary's `.button:not(.secondary)` rule above one for one, so biome's
+   descending-specificity check stays quiet. The two never match one button. */
+.button.secondary :global(.edge-light) {
+  --edge-catch: 0;
+  transition: box-shadow var(--button-hover-duration) var(--ease-hover);
+}
+
+.button.secondary :global(.edge-light)::before {
+  opacity: 0;
+  transition: opacity var(--button-hover-duration) var(--ease-hover);
+}
+
+@media (hover: hover) {
+  /* `initial` drops the override, so the catch is the global default again */
+  .button.secondary:hover:not(:disabled) :global(.edge-light) {
+    --edge-catch: initial;
+  }
+
+  .button.secondary:hover:not(:disabled) :global(.edge-light)::before {
+    opacity: 1;
+  }
+}
+
 /* Ghost exists in the Figma set; add it when a screen needs one. Note that
    Ghost's hover variant still references `bg/accent-mint`, a variable no longer
    in 02 Color — resolve that in Figma first. */
