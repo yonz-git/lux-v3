@@ -120,7 +120,15 @@
    the height where a Figma stroke does not, so 56 with a 1px border needs the
    padding written as a calc, or the pair renders 58 and breaks the row rhythm
    the pills above it set.
-   -------------------------------------------------------------------------- */
+
+   ⚠️ THE HAIRLINE IS TRANSPARENT AT REST AS OF 16 Sep 2026, asked for directly
+   — the row recipe's `border/subtle` line read as an unwanted outline on the
+   default tile. The BORDER ITSELF STAYS: dropping it instead of hiding it
+   would need the height math above rewritten and would make hover's stroke
+   jump the box by a pixel when it appears. `border-color: transparent` keeps
+   the geometry this file already measured and simply shows nothing at rest;
+   hover and the touch fallback below still revert to it, not to
+   `border/subtle`. */
 .extras {
   display: grid;
   grid-template-columns: 1fr 1fr;
@@ -141,18 +149,21 @@
      one is #f4feff, the brightest value in the app, and these two buttons
      rendered as white stickers next to bubbles and pills that are not — the
      same trap the Chip fill note documents. This is the row recipe verbatim:
-     same fill, same 1px border/subtle, same inner shadow, same radius/lg, same
-     blur. They sit beside chips and under bubbles, so they must be of the same
+     same fill, same inner shadow, same radius/lg, same blur — the hairline is
+     the one line item that diverges, see the note on `.extra`'s border above.
+     They sit beside chips and under bubbles, so they must be of the same
      material as both. */
   background: var(--color-surface-frost-light);
-  border: var(--border-width-hairline) solid var(--color-border-subtle);
+  border: var(--border-width-hairline) solid transparent;
   border-radius: var(--radius-lg);
-  /* ⚠️ NOT IN FIGMA — THE NAV'S BEVEL OVER THE ROW'S OWN SHADOW, asked for
-     directly 13 Sep 2026 alongside the same edge on `ChatPanel`. The two
-     tiles sit inside that panel, so they take the same catch of light along
-     the top and the same soft drop, and read as raised glass rather than
-     flat cut-outs. `--shadow-nav` verbatim — no new value. */
-  box-shadow: var(--shadow-nav), var(--shadow-frosted-row);
+  /* ⚠️ THE NAV'S BEVEL IS GONE AS OF 16 Sep 2026, asked for directly — it ran
+     13 Sep 2026 to 16 Sep 2026 as `--shadow-nav` verbatim (the same catch of
+     light along the top `ChatPanel` wears), but on this rounded a pill the
+     inset highlight traced the WHOLE edge, not just the top, and read as
+     exactly the outline the transparent border above was written to remove.
+     `--shadow-frosted-row` alone stays: a soft inner shadow from one corner,
+     not a bevel that rings the shape. */
+  box-shadow: var(--shadow-frosted-row);
   -webkit-backdrop-filter: blur(var(--blur-card));
   backdrop-filter: blur(var(--blur-card));
 
@@ -165,18 +176,21 @@
 
 /* ⚠️ NOT IN FIGMA — A SUBTLE HOVER, asked for directly 13 Sep 2026. The same
    answer `Chip` gives a pointer, so every control in the check-in responds
-   alike: the hairline firms to `border/default` and the tile lifts on
-   `--shadow-sm`, added on top of its bevel and inset rather than replacing
-   them. No fill change, so hover cannot be mistaken for the armed state. */
+   alike: the hairline firms from transparent to `border/default` and the tile
+   lifts on `--shadow-sm`, added on top of its inset rather than replacing it.
+   No fill change, so hover cannot be mistaken for the armed state. ⚠️ THE
+   BEVEL DID NOT COME BACK FOR HOVER EITHER, 16 Sep 2026 — see the note on
+   `.extra`'s box-shadow above; the border doing the outlining now is a real
+   `border-color` change, not `--shadow-nav`'s ring. */
 .extra:hover {
   border-color: var(--color-border-default);
-  box-shadow: var(--shadow-nav), var(--shadow-frosted-row), var(--shadow-sm);
+  box-shadow: var(--shadow-frosted-row), var(--shadow-sm);
 }
 
 @media (hover: none) {
   .extra:hover {
-    border-color: var(--color-border-subtle);
-    box-shadow: var(--shadow-nav), var(--shadow-frosted-row);
+    border-color: transparent;
+    box-shadow: var(--shadow-frosted-row);
   }
 }
 
