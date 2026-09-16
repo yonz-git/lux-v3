@@ -2,6 +2,7 @@
 
 import { useId, useState } from "react";
 import styles from "./IngredientsDisclosure.module.css";
+import { IngredientTerms } from "./IngredientTerms";
 import { Collapse } from "@/components/ui/Collapse";
 import { ChevronDownIcon } from "@/components/ui/icons";
 
@@ -18,6 +19,17 @@ import { ChevronDownIcon } from "@/components/ui/icons";
  * `icon-xs` against a card's `icon-sm`: that one step is what says this
  * disclosure belongs TO the card rather than being a second card. The chevron
  * sits right after its label, not at the far edge.
+ *
+ * ⚠️ THE NAMES IN THE LIST EXPLAIN THEMSELVES, AS OF 16 Sep 2026 — also NOT IN
+ * FIGMA. Hover one, or tap it on a phone, and a small panel says what it is.
+ * Only names the glossary knows are dotted; the rest stay plain text. The
+ * reasoning is on `IngredientTerms`, and the lines are in
+ * `features/products/ingredients.ts`.
+ *
+ * ⚠️ EVERY CALLER GETS IT — there is no switch. It was opt-in for an afternoon
+ * ("do it on /products first"), with only the hub's cards passing `explain`,
+ * and went to every list the same day ("apply to all the elements that contain
+ * ingredients part"): the hub, the add tray's cards and `/check/new`'s rows.
  */
 export function IngredientsDisclosure({
   ingredients,
@@ -47,8 +59,10 @@ export function IngredientsDisclosure({
       </button>
 
       <Collapse open={open}>
+        {/* each name the glossary knows explains itself on hover or tap —
+            see IngredientTerms */}
         <p id={listId} className={`${styles.list} t-body3`}>
-          {ingredients}
+          <IngredientTerms ingredients={ingredients} />
         </p>
       </Collapse>
     </div>

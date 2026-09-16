@@ -409,6 +409,7 @@ treatment — but there is no component to keep them in sync.
 | **Product imagery** | No product or bottle icon exists outside the nav, so every thumb and image well drew a camera — which identifies nothing down a list. Nine vessel silhouettes by packaging type, tinted per brand. Raise a real illustration set. |
 | **Check-in photo** | The photos card's entire content is a picture, so a camera glyph says "no photo" on the record of one the user took. Raise real imagery. |
 | **Opaque sage** | `surface/data-strong` has no solid counterpart — see the token list. |
+| **Toggletip** | `features/products/components/IngredientTerms.tsx` — an ingredient name that explains itself, asked for directly 16 Sep 2026, on every ingredient list: `My Products` (`581:1593`), the add tray's product cards and `Check — add products` (`602:1972`). No tooltip or definition treatment exists anywhere in the file. The name takes a dotted 1px underline in `text/muted` at a 3px offset (no token spaces an underline), going to `text/primary` on hover and while open. The panel wears the trays' ground (asked for directly, pointing at `CheckBasket`'s dialog): `surface/data` mixed 10% toward white at 30% and 140% saturate, but `blur/sm` (8) rather than the tray's `blur/card` — over 14px text 28 of blur read as a solid box — plus a doubled drop shadow, at `radius/lg` with 12/16 padding and a 280 max width; `Label` name, `Label Small` role and `Body 3` sentence, all three in `text/on-data`. Raise the tray's fill as a token — it is inline in `Sheet` and copied here. It opens under its name 8 away, or over it when the viewport has no room, and settles on `.drop`'s motion. Raise a Tooltip/Toggletip component with the underline as its trigger style, and note on it that it opens on hover AND pins on tap. |
 | **Reasoning accordion** | The THIRD accordion, and the first stacked into a group: § 08's six reasoning sections on `/investigation/analysis`. Composed from `ProductAccordionCard`'s recipe by way of `features/my-skin/components/Disclosure.tsx`, with a hairline between rows instead of a card each. Three accordions on three surfaces is now the strongest case in this file for one component — raise it and migrate all three. |
 | **Hypothesis card** | The result card on `/investigation/analysis`: overline, headline, a confidence Tag, the products involved, then the accordion stack. Frosted light card, System A. ⚠️ **Deliberately carries NO score, no bar and no percentage** — unlike `CompatCard`, which is the same species of object answering a different question. Any Figma component for it must not grow one. |
 | **Ranked list** | § 11's investigation-priority list: one card holding numbered rows, because the RANKING is the content and rows-as-cards would lose it. The ordinal is a small indigo disc, set as meta rather than as a metric — it is a position in a queue, not a score. |
@@ -1003,6 +1004,11 @@ organised by.
 A fourth row, Ingredients, is a nested disclosure: an INCI list is 15–25 terms,
 which as a right-aligned value would push every other card in an open group off
 the screen.
+
+⚠️ **The names in that list explain themselves, as of 16 Sep 2026.** A name the
+glossary knows carries a dotted underline; hovering it (or tapping it on a
+phone) opens a small panel with the name, its role and one sentence. No frame
+draws the underline or the panel — see **Toggletip** in §3.
 
 ### CHECK: eight screens are five routes, and the basket stopped being modal
 

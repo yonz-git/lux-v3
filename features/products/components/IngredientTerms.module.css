@@ -1,0 +1,183 @@
+/* Ingredient names that explain themselves — see IngredientTerms.tsx.
+   ⚠️ NOT IN FIGMA, all of it: the design system has no tooltip and no
+   definition treatment. */
+
+/* ⚠️ A NAME IN A SENTENCE, NOT A CONTROL LAID ON TOP OF ONE. The global
+   `button` reset already inherits the paragraph's font and colour and zeroes
+   the padding, so the list's `t-body3` and `text/secondary` carry straight
+   through. The button holds the name AND its comma (see the TSX); a long name
+   wider than the line still wraps inside itself, comma on its last line. */
+.term {
+  text-align: start;
+  cursor: help;
+  border-radius: var(--radius-xs);
+}
+
+/* the one signal that the word does something — a dotted underline, the
+   long-standing mark for "this term has a definition". On the words only, so
+   the comma after them stays plain and keeps the paragraph's ink. */
+.word {
+  text-decoration-line: underline;
+  text-decoration-style: dotted;
+  text-decoration-thickness: 1px;
+  /* ⚠️ A LITERAL — no token spaces an underline. 3 clears the descenders of
+     14px Figtree without drifting into the next line's ascenders at 22. */
+  text-underline-offset: 3px;
+  text-decoration-color: var(--color-text-muted);
+
+  /* ⚠️ THE SELECTION RECIPE, NOT THE HOVER ONE — a pin (tap, Enter, Space)
+     runs this, and on a phone it is all this ever runs. `--ease-hover` is for a
+     transition whose sole job is a hover, which is scoped below. */
+  transition:
+    color var(--duration-base) var(--ease-standard),
+    text-decoration-color var(--duration-base) var(--ease-standard);
+}
+
+/* hover and the open name share one state: ink up, underline to the ink */
+.term:hover .word,
+.term[data-active] .word {
+  color: var(--color-text-primary);
+  text-decoration-color: currentColor;
+}
+
+@media (hover: hover) {
+  .term:hover:not([data-active]) .word {
+    transition:
+      color var(--duration-fast) var(--ease-hover),
+      text-decoration-color var(--duration-fast) var(--ease-hover);
+  }
+}
+
+@media (hover: none) {
+  .term:hover:not([data-active]) .word {
+    color: inherit;
+    text-decoration-color: var(--color-text-muted);
+  }
+}
+
+/* ⚠️ THE TRAY'S GROUND, NOT A NEW ONE — asked for directly 16 Sep 2026, on
+   `CheckBasket`'s dialog ("use this bg for the explanation cards"). The fill
+   and the 140% saturate are `Sheet.module.css` `.tray`'s, copied: `surface/
+   data`'s sage mixed 10% toward white, at 30%.
+   ⚠️ COPIED, NOT SHARED — `Sheet` holds its fill inline rather than as a
+   token, so if the tray is retuned this does not follow it. It was the date
+   picker calendar's `#98b4b6` at 57% for its first hours.
+   ⚠️ THE BLUR IS `blur/sm`, NOT THE TRAY'S `blur/card` — asked for directly
+   the same day ("still the opacity is opaque and no frosty"). The tray is
+   frosty because big shapes sit behind it; this panel sits over 14px ingredient
+   names, and 28px of blur smeared them into one even colour, so a 30% fill
+   read as a solid grey-teal box. At 8 the lines behind stay soft grey bars:
+   visibly see-through, and too blurred to compete with the explanation. 4 was
+   tried and left the words behind still half legible.
+   The drop shadow — the basket bar's `0 6px 20px` under `shadow/lg` — lifts
+   it off the card. `radius/lg` and 12/16 padding: the tray's 32 and 48 would
+   round a three-line note into a lozenge. */
+.panel {
+  /* the UA's popover box — centred, bordered, Canvas-filled — cleared */
+  position: fixed;
+  inset: auto;
+  margin: 0;
+  border: 0;
+  overflow: visible;
+
+  /* ⚠️ NO `display` HERE — it is on `.panel:popover-open` below. See there. */
+  flex-direction: column;
+  gap: var(--space-2xs);
+  width: max-content;
+  /* ⚠️ 280 IS A LITERAL, NOT `width/action` — that token has been 376 since
+     5 Sep 2026. A note much wider than 40 characters a line stops reading as
+     a note. */
+  max-width: min(280px, calc(100vw - 2 * var(--space-lg)));
+  padding: var(--space-md) var(--space-lg);
+
+  border-radius: var(--radius-lg);
+  background: rgb(
+    from var(--color-surface-data) calc(r + (255 - r) * 0.1)
+      calc(g + (255 - g) * 0.1) calc(b + (255 - b) * 0.1) / 0.3
+  );
+  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.12), var(--shadow-lg);
+  -webkit-backdrop-filter: blur(var(--blur-sm)) saturate(1.4);
+  backdrop-filter: blur(var(--blur-sm)) saturate(1.4);
+  /* a sage ground takes the sage's own ink — the same #2e2a3f as
+     `text/primary`, bound by role (non-negotiable 17) */
+  color: var(--color-text-on-data);
+  text-align: start;
+  white-space: normal;
+}
+
+/* ⚠️ `display` ONLY WHILE OPEN. A `display` on `.panel` beats the browser's
+   own `display: none` for a closed popover, so the closed node was styled on
+   the first layout read — before `data-side` was on it — and fixed its
+   entrance from `.drop`'s fall. A panel above its name fell in from above. */
+.panel:popover-open {
+  display: flex;
+}
+
+/* ⚠️ THE BRIDGE ACROSS `GAP`. Names are one 22px line tall and touch, so the
+   8px between a name and its panel lies over the NEXT line's name (the line
+   above, for a panel on top), and that name's hover moved the panel a line
+   further off — a pointer heading for the panel never reached it (WCAG 1.4.13,
+   hoverable). This strip is the panel's, so leaving the name lands on the
+   panel. Its height is `GAP` in the TSX. It covers the top 8 of the names
+   under it while the panel is open; the other 14 still answer. */
+.panel::before {
+  content: "";
+  position: absolute;
+  inset-inline: 0;
+  height: 8px;
+}
+
+.panel[data-side="bottom"]::before {
+  bottom: 100%;
+}
+
+.panel[data-side="top"]::before {
+  top: 100%;
+}
+
+/* a panel on its way out takes no pointer — it must not catch the hover that
+   would hold it open, and nor must its bridge */
+.panel[data-state="leaving"] {
+  pointer-events: none;
+}
+
+/* ⚠️ OVER ITS NAME, IT RISES FROM BELOW. `.drop` falls 4px from above, which
+   is right for a panel hanging under its trigger and backwards for one sitting
+   on top of it — it would travel away from the name it explains. */
+@starting-style {
+  .panel[data-side="top"] {
+    transform: translateY(4px) scale(0.98);
+  }
+}
+
+.panel[data-side="top"][data-state="leaving"] {
+  transform: translateY(4px) scale(0.98);
+}
+
+/* ⚠️ ONE INK FOR ALL THREE LINES — the role was `text/secondary` for an
+   hour. The panel is translucent, so its ground is whatever it floats over,
+   and composited by hand a secondary ink fell short of AA for 12px over the
+   add tray's sage. `text/on-data` does not. The hierarchy is size and
+   weight — 14 Medium, 12 Medium, 14 Regular — which is how SURFACE SYSTEM B
+   carries it anyway. */
+.name,
+.role {
+  color: var(--color-text-on-data);
+}
+
+.about {
+  margin-top: var(--space-2xs);
+  color: var(--color-text-on-data);
+}
+
+/* the tray's own fallback: the full `surface/data` composited over
+   `bg/canvas`, an opaque sage from two semantic tokens */
+@media (prefers-reduced-transparency: reduce) {
+  .panel {
+    background:
+      linear-gradient(var(--color-surface-data), var(--color-surface-data)),
+      var(--color-bg-canvas);
+    -webkit-backdrop-filter: none;
+    backdrop-filter: none;
+  }
+}
