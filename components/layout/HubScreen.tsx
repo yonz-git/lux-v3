@@ -77,8 +77,18 @@ export function HubScreen({
    * the hero, which is not what the comp draws.
    */
   belowHeading?: ReactNode;
-  /** centre the body between two equal flexible spacers */
-  center?: boolean;
+  /**
+   * `true` centres the body between two equal flexible spacers.
+   *
+   * ⚠️ `"low"` PLACES IT THE WAY 00 WELCOME PLACES ITS GROUP — NOT IN FIGMA,
+   * `/check` only, 16 Sep 2026. Asked for directly, three times: that landing is
+   * Welcome's composition and should sit exactly where Welcome's does. The
+   * spacers take Welcome's weights instead of 1:1, the page heading rides at
+   * the top of the space ABOVE the body instead of taking a row of its own, and
+   * on desktop the nav is not reserved — the space below is the guard. See the
+   * rules on `.above` and `.below` in the stylesheet.
+   */
+  center?: boolean | "low";
   /**
    * Take the screen's top padding one step down the scale, 40 -> 32.
    *
@@ -96,11 +106,12 @@ export function HubScreen({
    * hugs its square photo, and two halves for the cards beside it.
    */
   gridColumns?: string;
-  /** the screen's actions below the body — `/check`'s and `My Products`' */
+  /** the screen's actions below the body — `My Products`' */
   footer?: ReactNode;
   children?: ReactNode;
 }) {
   const hasHeader = Boolean(backHref || action);
+  const low = center === "low";
 
   /* ⚠️ NOT IN FIGMA — the hub title steps DOWN one ramp entry, `t-h3-h2`
      → `t-h4-h3` (24/32 → 20/28 mobile, 32/40 → 24/32 desktop). The comps give
@@ -125,10 +136,9 @@ export function HubScreen({
     <main
       className="screen"
       data-layout="hub"
-      data-center={center || undefined}
-      /* a centred screen's footer sits at the bottom, so on desktop it needs
-         the nav reservation a centred hero goes without — globals.css */
-      data-footer={footer ? true : undefined}
+      data-center={center === true || undefined}
+      /* `center="low"` reserves no nav on desktop at any height — globals.css */
+      data-low={low || undefined}
       data-tight-top={tightTop || undefined}
     >
       <div className={styles.shell} data-reveal>
@@ -159,10 +169,24 @@ export function HubScreen({
             the same way. The 24 under it comes from `.header + .heading` on
             desktop and from `.heading` itself on mobile; the body's own
             `.body > .heading + *` rule simply has no heading to match. */}
-        {(layout !== "card" || center) && heading}
-        {belowHeading}
+        {(layout !== "card" || center) && !low && heading}
+        {!low && belowHeading}
 
-        {center && <div className={styles.flex} aria-hidden="true" />}
+        {center === true && <div className={styles.flex} aria-hidden="true" />}
+
+        {/* ⚠️ `center="low"` PUTS THE HEADING INSIDE THE SPACE ABOVE, NOT OVER
+            IT. Welcome has no visible heading and places its group in the whole
+            column; the only way to land in the same place under a page title is
+            for the title not to take a row of its own. As the spacer's content
+            it also sets the spacer's floor, so a short screen cannot slide the
+            orb up into the title. Not `aria-hidden`, unlike the plain spacers —
+            it carries the page's h1. */}
+        {low && (
+          <div className={styles.above}>
+            {heading}
+            {belowHeading}
+          </div>
+        )}
 
         <div
           className={styles.body}
@@ -179,14 +203,9 @@ export function HubScreen({
           {children}
         </div>
 
-        {/* ⚠️ THE TRAILING SPACER STAYS ABOVE THE FOOTER AT BOTH BREAKPOINTS,
-            as of 16 Sep 2026. On desktop it used to drop below the footer, which
-            centred the body and the actions as one group (`Product added`'s
-            comp, since deleted); `/check`, the last centred screen with a
-            footer, asked for its actions at the bottom instead, so the footer
-            sits on the nav and the body centres above it everywhere. See the
-            note in the stylesheet. */}
-        {center && <div className={styles.flex} aria-hidden="true" />}
+        {/* the trailing spacer sits above the footer at both breakpoints — see
+            the note on the desktop block in the stylesheet */}
+        {center && <div className={low ? styles.below : styles.flex} aria-hidden="true" />}
 
         {footer && <div className={styles.footer}>{footer}</div>}
       </div>
