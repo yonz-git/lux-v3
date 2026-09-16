@@ -96,7 +96,7 @@ export function HubScreen({
    * hugs its square photo, and two halves for the cards beside it.
    */
   gridColumns?: string;
-  /** pinned below the body — `Product added`'s two stacked buttons */
+  /** the screen's actions below the body — `/check`'s and `My Products`' */
   footer?: ReactNode;
   children?: ReactNode;
 }) {
@@ -126,6 +126,9 @@ export function HubScreen({
       className="screen"
       data-layout="hub"
       data-center={center || undefined}
+      /* a centred screen's footer sits at the bottom, so on desktop it needs
+         the nav reservation a centred hero goes without — globals.css */
+      data-footer={footer ? true : undefined}
       data-tight-top={tightTop || undefined}
     >
       <div className={styles.shell} data-reveal>
@@ -176,12 +179,14 @@ export function HubScreen({
           {children}
         </div>
 
-        {/* ⚠️ THE TRAILING SPACER MOVES BELOW THE FOOTER ON DESKTOP. On mobile
-            `Product added` pins its two buttons to the bottom of the screen and
-            centres the success block above them; on desktop the comp centres the
-            block AND the buttons together as one group, with 40 between them.
-            Same DOM, reordered — see .tail in the stylesheet. */}
-        {center && <div className={styles.flex} data-tail aria-hidden="true" />}
+        {/* ⚠️ THE TRAILING SPACER STAYS ABOVE THE FOOTER AT BOTH BREAKPOINTS,
+            as of 16 Sep 2026. On desktop it used to drop below the footer, which
+            centred the body and the actions as one group (`Product added`'s
+            comp, since deleted); `/check`, the last centred screen with a
+            footer, asked for its actions at the bottom instead, so the footer
+            sits on the nav and the body centres above it everywhere. See the
+            note in the stylesheet. */}
+        {center && <div className={styles.flex} aria-hidden="true" />}
 
         {footer && <div className={styles.footer}>{footer}</div>}
       </div>
