@@ -213,9 +213,16 @@
 }
 
 /* 28 tall: 6 + 16 + 6. The subtle band tint behind the band colour — the one
-   place the -subtle feedback tokens are used. */
+   place the -subtle feedback tokens are used.
+   ⚠️ A HAIRLINE IN THE TEXT'S OWN COLOUR — NOT IN FIGMA, asked for directly
+   16 Sep 2026 ("add border of the color of the text for those pills").
+   `currentColor`, so it is `--band` in all three bands and cannot drift from
+   the ink. Rule 9: the padding gives the hairline back, so the pill still
+   lands on 28 and its label does not move. */
 .tag {
-  padding: 6px var(--space-md); /* 6 / 12 */
+  padding: calc(6px - var(--border-width-hairline))
+    calc(var(--space-md) - var(--border-width-hairline)); /* 6 / 12 with the ring */
+  border: var(--border-width-hairline) solid currentColor;
   border-radius: var(--radius-full);
   background: var(--band-subtle);
   color: var(--band);

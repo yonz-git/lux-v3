@@ -94,6 +94,16 @@ export function ChatBubble({
   const bubbleRef = useRef<HTMLDivElement>(null);
   const textRef = useRef<HTMLSpanElement>(null);
 
+  /* biome-ignore lint/correctness/useExhaustiveDependencies: `children` IS
+     LOAD-BEARING AND THE RULE CANNOT SEE IT. The body reaches the text through
+     `textRef` and a Range, never through the prop, so Biome reads the dep as
+     surplus. It is the trigger for new text: the observer watches the row,
+     whose width is the column's, so text that wraps to the same number of lines
+     leaves the row the same size and nothing fires — and `fonts.ready` resolves
+     once. Drop it and the bubble keeps the width pinned for the OLD text: slack
+     after a shorter line, or lines breaking at that width instead of the CSS
+     ceiling. Element children are a new object on every parent render, so they
+     re-measure each time; that is a layout read before paint, not a flicker. */
   useLayoutEffect(() => {
     if (!hug) return;
     const bubble = bubbleRef.current;

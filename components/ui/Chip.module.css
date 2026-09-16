@@ -58,9 +58,15 @@
    the same screen — at one step softer: the hairline firms to `border/default`
    and the pill lifts on `--shadow-sm`. (The region pills are glass since
    14 Sep 2026 and brighten on hover instead; this hover did not follow.) No fill change, so hover can never be mistaken for
-   selection. `duration/fast` for the lift, per board 04b's hover row. */
+   selection. `duration/fast` for the lift, per board 04b's hover row.
+   ⚠️ THE HAIRLINE FIRMS TO THE SELECTED INDIGO, NOT `border/default`'s GREY —
+   16 Sep 2026, asked for directly ("change the border color on hover of the
+   buttons like on the left to the color of the buttons like on the right").
+   The edge previews the colour the pill turns when picked, which is what
+   step 1's symptom row already did with its rose (StartInvestigation); every
+   indigo `Chip` now does it from here. Still no fill change. */
 .chip:hover:not(:disabled) {
-  border-color: var(--color-border-default);
+  border-color: var(--color-bg-brand);
   box-shadow: var(--shadow-sm);
 }
 

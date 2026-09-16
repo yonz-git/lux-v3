@@ -184,6 +184,50 @@ chevron is `icon-xs` against the header's `icon-sm`, which is the only thing
 saying it belongs TO the card rather than being a second one. It is not drawn
 when `ingredients` is absent.
 
+**⚠️ THE NAMES IN THAT LIST EXPLAIN THEMSELVES, AS OF 16 Sep 2026 — NOT IN
+FIGMA.** Asked for directly: "add hover effect on the ingredient that explains
+what it is? on mobile it should be tapping". Rest a mouse on a name, or tap it,
+and a small panel gives the name, what it does in the formula and one plain
+sentence (`features/products/components/IngredientTerms.tsx`). ⚠️ **Every
+ingredient list in the app draws it** — the `/products` hub's cards first ("do
+it on /products first"), then everywhere the same day ("apply to all the
+elements that contain ingredients part"): the hub, the add tray's cards (so
+step 5 as well) and `/check/new`'s rows. `/check/results` does not — its
+`Ingredients of concern` card already explains each ingredient in a sentence of
+its own, and `CompatCard`'s risky ingredients are status pills. Five decisions in it
+that are easy to undo by accident:
+
+- **Only names the glossary knows are dotted.** Every live Open Beauty Facts
+  result carries names `features/products/ingredients.ts` has no line for, and
+  an underline that opens onto nothing teaches the reader the dotted names are
+  not worth trying. The rest stay plain text.
+- **It is a `popover="manual"` in the top layer, not an absolute tooltip or a
+  portal.** The list renders in the add tray (`overflow-y: auto` clips an
+  absolute panel), on `backdrop-filter`ed cards (which capture
+  `position: fixed`, the bug `Sheet` records) and inside an `aria-modal` dialog
+  (a portal to `body` would sit outside it, out of a screen reader's reach).
+  The top layer has none of the three problems. `manual`, because an `auto`
+  popover's Escape also reaches `Sheet`, and one key would close both.
+- **Hover and tap are one panel.** A mouse opens it on rest and it closes after
+  a 150ms grace that lets the pointer cross onto it (WCAG 1.4.13); a click, tap,
+  Enter or Space pins it. Escape, a press elsewhere, focus moving on or the name
+  scrolling out of sight dismiss it.
+- **A wrong explanation is worse than none, so the lookup refuses to guess.**
+  The whole name is tried first; the fallbacks (brackets removed, the sides of
+  a slash, a bracket's contents) only run on text that reads as ONE name, and a
+  slash only splits when every side names the same entry. Unconditional, they
+  explained `Dimethicone/Vinyl Dimethicone Crosspolymer` as Dimethicone and
+  made a 950-character run-on list one dotted button. `splitInci` also keeps
+  a comma between digits (`1,2-Hexanediol`) and treats an unclosed bracket as
+  text. All found by a review on 16 Sep 2026; the reasoning is in
+  `features/products/ingredients.ts`.
+- **The glossary is not `lib/actives.ts`.** That module is what the app REASONS
+  about; this is what it EXPLAINS, and no score or hypothesis may read it. It is
+  hand-written — drafted and adversarially fact-checked, roles in CosIng's
+  function vocabulary — and has the same standing as `ACTIVES[id].concern`: not
+  a citable authority, and under the claim-language rule, which `npm run vocab`
+  enforces over it.
+
 **⚠️ THAT BLOCK IS `features/products/components/ProductDetails.tsx`, AND TWO SCREENS OPEN IT.**
 It started local to `ProductAccordionCard`, i.e. to this hub; `/check/new`
 expands its own rows onto the same thing now (see CHECK below). It is one
@@ -1572,6 +1616,7 @@ risk. All are on the missing-from-the-DS list.
 | Skin-profile tiles | `features/check/components/SkinProfileTiles.tsx`        | ⚠️ **NOT IN FIGMA** — asked for directly 14 Sep 2026, under the untouched skin-profile strip on `/check`: the overline, then skin type, tendencies, known conditions and symptoms state as four flat tiles (label over value, left-aligned), two a row at every width, under a white hairline brightest at the left and fading out toward the right. It replaced a same-day plan card (star, "Monthly", plan copy), and its glass has been tuned by hand twice: now a deep teal `#005461` @71% with white ink, 4.27–5.27:1 on the card (the overline dips under AA only over the canvas's two lightest stops) and 4.80:1 or better in a tile. The column's width at every breakpoint — it was 140% on desktop for a while. The tiles' backdrop blur came off — the card's own `backdrop-filter` made it invisible anyway. ⚠️ The `/check` values are literals and contradict the seeded strip; wire them to `skinProfile()` if the trial stays. |
 | Product imagery    | `features/products/components/ProductArt.tsx`                          | ⚠️ **THE CAMERA GLYPH IS GONE — DECIDED HERE, NOT IN FIGMA.** No product or bottle icon exists outside the bottom nav, so every thumb (`ProductThumb`, 48) and image well (`ProductCard`, 352x140) drew a camera. That reads as "no photo yet" once and as nothing at all down a list — `/check/new`, the PRODUCTS hub and the add tray all show the same mark on every row, so the thumbnail identifies nothing. `ProductArt` draws the vessel instead: **nine** silhouettes (tub, pump, tube, dropper, bottle, airless, spray, sachet, tin) by packaging type, tinted per brand, so same brand → same tint and same type → same shape. ⚠️ **IT WAS FIVE FORMS AND ONE FALLBACK TINT, WHICH WAS ENOUGH ONLY WHILE THE CATALOGUE WAS THE SEARCH.** Both searches are live now, so the list is whatever the database holds — masks, mists, sticks, ointments — and every one of them fell through `formFor`'s default to the same pump on a `sage` body. A column of identical pumps is the camera glyph with an extra step. Three axes of variety, all keyed on a stable FNV-1a `hash` (never `Math.random()` or an index — a thumbnail that changes identity between two screens is worse than one that repeats): unnamed brands hash into a 7-tint `RING`, unrecognised names hash across all nine `FORMS`, and `labelVariant` picks one of three label treatments off the product id so two products of the same form AND brand still differ. Brand strings are diacritic-folded before hashing, because OBF files the same house as both "Avene" and "Avène". ⚠️ **AND IT IS THE ONLY PICTURE — THE API'S PHOTOS ARE NOT READ.** Open Beauty Facts carries `image_front_url` and it used to win over the drawing. Its images are crowdsourced with no quality gate, so a result list mixed usable front-of-package shots with stubs, angled boxes and rows that fell back to a drawing anyway — two kinds of picture in one column, which is worse at telling rows apart than either alone. `features/products/openBeautyFacts.ts` no longer requests the image fields, `CatalogProduct` has no `imageUrl`, and `useProductPhoto` is deleted; `artFor` serves live results via `formFor`/`paletteFor`. **The API still supplies every WORD** — name, brand, size and the INCI list. The pigments are LOCAL LITERALS drawn from the LUX family and must not become tokens — `02 Color` has no "bottle glass" role, and binding a lid to `bg/brand` would move the artwork every time the brand colour did. **Raise a real illustration set in Figma.** |
 | Check-in photo     | `features/progress/components/CheckInPhotoArt.tsx`                     | ⚠️ **NOT IN FIGMA.** `Check-in detail` draws its photo wells as a camera glyph, the same hole `ProductThumb` had and the same failure: the PHOTOS card's entire content is the picture, so a camera icon there says "no photo" on the record of one the user took. Drawn instead — a soft crop of skin with the flushed patch the investigation is about, `slice`-cropped to fill the well the way a photograph would be, grained with `feTurbulence` because three overlapping gradients in a picture frame read as a loading state. **No feature is drawn and it is not anyone's face.** Tone and blush position are keyed on the DAY with the same FNV-1a hash `ProductArt` uses, never `Math.random()`. Pigments are LOCAL LITERALS — `02 Color` has no skin-tone role and should not grow one for a placeholder. Every capture surface in LUX is a placeholder; this is the record of one. **Raise real imagery in Figma.** |
+| Toggletip          | `features/products/components/IngredientTerms.tsx`       | ⚠️ **NOT IN FIGMA** — asked for directly 16 Sep 2026. No tooltip, toggletip or definition treatment exists in the DS. An ingredient name the glossary knows takes a dotted `text/muted` underline; hover or tap opens a panel on the trays' ground — `Sheet`'s `.tray` fill and saturate, copied, asked for directly on `CheckBasket`'s dialog, at `blur/sm` rather than `blur/card` so the text behind shows through as frost — with a drop shadow, at `radius/lg`, 12/16 padding, 280 wide at most. ⚠️ **A `popover="manual"` in the top layer**, because the tray clips, frosted cards capture `position: fixed`, and a portal would leave the text outside the tray's `aria-modal` dialog. See the PRODUCTS entry above for the rest. **Raise a Toggletip component in Figma.** |
 | Opaque sage        | `components/ui/Sheet.module.css`                                   | `surface/data-strong` is 62% and has no solid counterpart the way `bg/nav` is `surface/frost-nav`'s. The `prefers-reduced-transparency` tray composites the same sage over `bg/canvas`. ⚠️ **Worse since 8 Sep 2026:** `surface/data-deep` `#4f838f @85%` is the new third step and four surfaces put WHITE on it, so its contrast is a composite that moves with whatever is behind it (3.42–3.77:1). An opaque counterpart would make the ratio a property of the token rather than of the scroll position. |
 | Data card          | `components/ui/DataCard.tsx`                            | The whole of SURFACE SYSTEM B. `surface/data` + `surface/frosted-data` + `radius/2xl` + 20/24 padding, **no stroke**. Not a component in Figma — every PROGRESS and CHECK card is composed from those tokens. Its `prefers-reduced-transparency` fallback composites the same sage over `bg/canvas`, exactly as `Sheet` does.                                                       |
 | Calendar (record)  | `features/progress/components/CheckInCalendar.tsx`                     | On the handoff's own missing list. ⚠️ THE SECOND CALENDAR IN THE APP AND NOT THE SAME ONE — `DateField` is a Monday-first interactive date PICKER, this is a Sunday-first read-only RECORD, and both match their frames. Do not merge them; raise the week-start split in Figma instead.                                                                                            |
