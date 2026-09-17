@@ -95,14 +95,24 @@ export function Sheet({
      — `lib/useModalDialog.ts` owns all three, and owns the note explaining why
      `onClose` is read through a ref rather than depended on. PROGRESS's
      check-in overlay is the second caller. */
-  useModalDialog(open, onClose, trayRef);
-
   /* ⚠️ `present` OUTLIVES `open` BY THE LENGTH OF THE EXIT — see
      `useDialogPresence`. The tray used to leave in one frame after a 320ms
-     entrance. Every behaviour still keys off `open`, which is why the hook
-     above is not given `present`: the dialog stops BEING modal the moment the
-     user closes it, and only its painting lingers. */
+     entrance. Every behaviour still keys off `open`: the dialog stops BEING
+     modal the moment the user closes it, and only its painting lingers. */
   const { present, leaving } = useDialogPresence(open);
+
+  /* Escape, the focus trap and the return of focus to whatever opened the tray
+     — `lib/useModalDialog.ts` owns all three, and owns the note explaining why
+     `onClose` is read through a ref rather than depended on. PROGRESS's
+     check-in overlay is the second caller.
+     ⚠️ ARMED ON `open && present`, NOT `open` — 17 Sep 2026. `present` lags
+     `open` by one render (it is set in an effect), so on the render where
+     `open` flips the tray is not in the DOM yet and the hook's `focus()` found
+     a null ref: every Sheet left focus on its opener, and a screen reader never
+     heard the dialog open. Measured on all four Sheets and the check-in
+     overlay. The `&&` keeps the closing edge on `open` — the trap disarms and
+     focus returns the moment the user closes, before the exit has played. */
+  useModalDialog(open && present, onClose, trayRef);
 
   /* The drag writes the tray's transform inline, frame by frame — state would
      re-render the whole tray on every pointermove. */

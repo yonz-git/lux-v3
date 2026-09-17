@@ -114,9 +114,17 @@ export function ChatBubble({
     const measure = () => {
       /* lay out at the CSS width first, so the lines break where they should */
       bubble.style.removeProperty("width");
-      const range = document.createRange();
-      range.selectNodeContents(text);
-      const rects = [...range.getClientRects()].filter((r) => r.width > 0);
+      /* TEXT NODES ONLY: a range over the wrapper's contents also returns the
+         box of every child ELEMENT, and a block child (a written line, as on
+         `/check`) reports the full content width, so the trim came out wider
+         than the text */
+      const rects: DOMRect[] = [];
+      const walker = document.createTreeWalker(text, NodeFilter.SHOW_TEXT);
+      for (let node = walker.nextNode(); node; node = walker.nextNode()) {
+        const range = document.createRange();
+        range.selectNodeContents(node);
+        for (const r of range.getClientRects()) if (r.width > 0) rects.push(r);
+      }
       if (rects.length === 0 || bubble.offsetWidth === 0) return;
       const scale = bubble.getBoundingClientRect().width / bubble.offsetWidth || 1;
       const lineWidth =

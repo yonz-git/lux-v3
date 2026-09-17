@@ -2269,6 +2269,68 @@ main[tabindex="-1"]:focus-visible {
 }
 
 /* ============================================================================
+   The hero orb's MOBILE SIZE — 10% smaller than the desktop/default 130.
+
+   ⚠️ NOT IN FIGMA, AND ON THE SAME TWO ROUTES AS THE HALO BELOW: 00 Welcome and
+   the CHECK landing — the identical composition, asked for directly 16 Sep
+   2026 ("reduce the orb size 10% on mobile"). Every other orb in the app is
+   unaffected; this class is opt-in on the two callers that wrap `<Orb>` with
+   it, the same way `halo` is opt-in on the prop.
+
+   ⚠️ IT IS A WRAPPER BECAUSE THE SIZE CANNOT BE. `Orb`'s siri renderer sets its
+   own width/height as an INLINE style (`SiriOrb`'s blur and contrast are
+   computed FROM the pixel size in JS — see siri-orb.tsx — so it can never take
+   a CSS var; a token string parses to NaN there), and an inline style beats
+   any external rule short of `!important`. `transform` is a different
+   property: it composes with `.lux-orb`'s own entrance (`lux-orb-grow`) and
+   float (`lux-orb-float`) animations instead of fighting them, because each
+   runs on its own element — the entrance on `.lux-orb` itself, the float on
+   the inner `.lux-orb-float`, this scale on their ANCESTOR — and nested
+   transforms multiply rather than override. The entrance hand-off in
+   LogoEntrance.tsx measures both ends with `getBoundingClientRect`, which is
+   transform-aware, so the travelling symbol still lands exactly on the
+   shrunk mark.
+
+   ⚠️ `transform-origin: top`, NOT A CENTRED SCALE, AND `margin-bottom: -13px`
+   PAYS FOR IT. 130 × 0.9 = 117, a 13px difference. Scaling from the centre
+   would inset the orb 6.5px from BOTH edges, opening the gap below it (a
+   `gap` on the flex parent, on both callers) to 26.5 instead of 20. Anchoring
+   the scale at the top keeps the visual top edge exactly where an unscaled
+   orb's was — nothing sits above the orb on either screen, so that edge needs
+   no compensation — and the negative margin takes the 13px the box no longer
+   needs back out of the flow, so the gap below reads as the intended 20
+   again. `flex: none` carries over `.lux-orb`'s own inline copy, since the
+   wrapper is the flex item now, not the orb.
+
+   ⚠️ DOES NOT NEED A `.heroChat`-SCOPED OVERRIDE ON `/check` — see
+   CheckScreen.module.css. That screen zeroes `.lux-orb`'s own margin-bottom
+   because the visible gap there comes from `.heroChat`'s `gap` instead, but
+   that rule only ever matched a DIRECT child; this wrapper sits between
+   `.heroChat` and `.lux-orb` now, so neither it nor the base `.hero > svg`
+   rule reaches `.lux-orb` any more. This class's own -13px already nets to
+   zero extra gap by itself — adding it to that zero-out list would double up
+   and OPEN a 33px gap instead of closing one.
+
+   The group is 13px shorter on mobile as a result. Both callers place it with
+   flex-grow spacers rather than a fixed offset, so the freed space
+   redistributes instead of the group simply losing 13px off its bottom: the
+   orb sits a little lower and the actions a little higher than before, the
+   same as any other change to the group's content height — see Welcome's own
+   40px nudge for the identical mechanism. */
+.orb-hero {
+  flex: none;
+  transform-origin: top center;
+  transform: scale(0.9);
+  margin-bottom: -13px;
+}
+
+@media (min-width: 1024px) {
+  .orb-hero {
+    transform: none;
+    margin-bottom: 0;
+  }
+}
+/* ============================================================================
    The orb HALO — an ambient line of light travelling around the sphere's rim.
 
    ⚠️ NOT IN FIGMA, AND ON TWO ROUTES ONLY (`<Orb halo />`): 00 Welcome and the
@@ -2888,6 +2950,49 @@ main[tabindex="-1"]:focus-visible {
 @media (min-width: 1024px) {
   [data-tray="tray"][data-state="leaving"] {
     transform: translate(-50%, -50%);
+  }
+}
+
+/* ⚠️ `.sheet-dialog-tablet` — A SHEET THAT IS A DOCKED TRAY ON A PHONE ONLY.
+   NOT IN FIGMA, 16 Sep 2026, asked for directly on PROGRESS's photo gallery
+   ("this size of the gallery should only be used on mobile size; use the 4
+   images modal for bigger size than mobile"). Between 480 and 1023 the tray
+   takes the desktop dialog recipe from `Sheet.module.css` — centred, 640 wide,
+   48 padding, `radius/3xl`, no grabber, the ✕ 16 in — so a tablet gets the
+   four-photo modal instead of a full-width strip of three giant tiles.
+   ⚠️ 480, NOT 768 — moved the same day, asked for directly on a ~527-wide
+   window. 480 clears every phone (the 440 comp canvas included). Narrower
+   than the 640 dialog, it keeps 16 of the page's own edge each side.
+   ⚠️ 480 IS NOT A NEW APP BREAKPOINT: desktop is still 1024 (non-negotiable
+   12). It is this opt-in's own floor, and only the gallery opts in. It lives
+   here, not in a module, because it renames the tray's animation. Doubled
+   class for specificity over `Sheet`'s module rule, which may load later. */
+@media (min-width: 480px) and (max-width: 1023.98px) {
+  [data-tray="tray"].sheet-dialog-tablet.sheet-dialog-tablet {
+    left: 50%;
+    right: auto;
+    bottom: auto;
+    top: 50%;
+    transform: translate(-50%, -50%);
+    max-height: calc(
+      100dvh - var(--size-nav-height) - var(--nav-inset-bottom) -
+        var(--space-2xl) - var(--space-4xl)
+    );
+    width: calc(100% - 2 * var(--space-lg));
+    max-width: var(--width-card-focus); /* 640 */
+    padding: var(--space-5xl);
+    border-radius: var(--radius-3xl);
+    box-shadow: var(--shadow-sheet-desktop);
+    animation-name: lux-fade-in;
+  }
+
+  [data-tray="tray"].sheet-dialog-tablet > span[aria-hidden="true"]:first-child {
+    display: none; /* the grabber */
+  }
+
+  [data-tray="tray"].sheet-dialog-tablet > button[aria-label="Close"] {
+    top: var(--space-lg);
+    right: var(--space-lg);
   }
 }
 

@@ -115,6 +115,34 @@
   max-width: min(100%, 264px);
 }
 
+/* ⚠️ THE MOBILE LINES ARE WRITTEN, NOT MEASURED — 17 Sep 2026, asked for
+   directly from a real iPhone, where the reply bubble still showed ~30px of
+   empty fill down its right after `hug` (ChatBubble.tsx) was tried on it.
+   A wrapped box keeps the width it wrapped AT, and the 264 ceiling above was
+   tuned against Chrome's metrics; Safari breaks the same sentence at
+   different words, so the slack comes back on a device the preview cannot
+   reproduce. With each line its own block, the bubble's max-content IS its
+   longest line, so the flex item shrink-wraps to it in every engine with no
+   JS and no measuring. The ceiling is lifted to the base 322 on mobile, so
+   it never re-breaks a written line; a line still wraps if the viewport or a
+   user's text spacing leaves less room than it needs. */
+.line {
+  display: block;
+}
+
+@media (max-width: 1023.98px) {
+  .bubbleReply[data-from="ai"] {
+    max-width: min(100%, 322px);
+  }
+}
+
+@media (min-width: 1024px) {
+  /* desktop keeps its 380 measure and wraps the sentence as one run */
+  .line {
+    display: inline;
+  }
+}
+
 /* the actions' entrance is on each child — see `.welcome-rise` in globals.css */
 .actions {
   display: flex;

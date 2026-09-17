@@ -108,13 +108,20 @@ export function CheckScreen() {
             rule in the module keeps the empty state's 32 off it — see the note
             there. Third route, same rule as the shader: not without a Figma
             decision. */}
-        <Orb animateIn halo />
+        {/* ⚠️ `orb-hero` (globals.css) — 10% smaller on mobile, matching
+            Welcome's, asked for directly 16 Sep 2026. */}
+        <div className="orb-hero">
+          <Orb animateIn halo />
+        </div>
         {/* ⚠️ `hug`, 13 Sep 2026 — asked for directly: the bubble trims to its
             longest line instead of keeping the CTA's width with empty fill
             down its right side. See the note on `hug` in ChatBubble.tsx. */}
+        {/* ⚠️ ONE SPAN PER MOBILE LINE, 17 Sep 2026 — `hug` alone still left
+            fill down the right on a real iPhone. See `.line` in the module. */}
         <ChatBubble from="ai" align="center" full hug className={styles.intro}>
-          Check how your products may suit your skin and work together in the
-          same routine.
+          <span className={styles.line}>Check how your products </span>
+          <span className={styles.line}>may suit your skin and work </span>
+          <span className={styles.line}>together in the same routine.</span>
         </ChatBubble>
       </div>
 

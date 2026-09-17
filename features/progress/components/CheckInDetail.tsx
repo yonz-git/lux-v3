@@ -173,7 +173,9 @@ export function CheckInDetail({ date, now }: { date: string; now: number }) {
   const title = day ? formatDay(day) : "Check-in record";
   /* `Day 4` — the same 1-based count the profile card writes, so the tag and
      "Started … · Day 12" cannot disagree about which day this is. */
-  const dayTag = day ? `Day ${dayNumber(view.start, day)}` : null;
+  const dayN = day ? dayNumber(view.start, day) : 0;
+  /* none on a seeded day from before the start — see `checkInsFor` */
+  const dayTag = day && dayN >= 1 ? `Day ${dayN}` : null;
 
   const products = entry ? productsForCheckIn(answers, entry) : [];
 

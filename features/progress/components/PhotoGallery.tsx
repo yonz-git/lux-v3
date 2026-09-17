@@ -248,7 +248,13 @@ export function PhotoGallery({
     /* ⚠️ A CORNER ✕, NOT `Done` — asked for directly 15 Sep 2026 ("remove done
        and add x top right corner"). The gallery is something you look through
        and leave, so its exit sits where a viewer's does. */
-    <Sheet open={open} onClose={onClose} title={TITLE} dismiss="corner">
+    <Sheet
+      open={open}
+      onClose={onClose}
+      title={TITLE}
+      dismiss="corner"
+      className="sheet-dialog-tablet"
+    >
       {/* `Sheet` uses the title for its aria-label only, so the visible
           heading is rendered here, as `SelfieSheet` does */}
       <div className={styles.head}>
@@ -291,7 +297,11 @@ export function PhotoGallery({
                 <Link
                   href={`/progress/check-in/${p.date}`}
                   className={`${styles.tile} pressable`}
-                  aria-label={`Photo from ${formatDay(day)}, day ${n}`}
+                  aria-label={
+                    n >= 1
+                      ? `Photo from ${formatDay(day)}, day ${n}`
+                      : `Photo from ${formatDay(day)}`
+                  }
                 >
                   {/* ⚠️ THE PHOTO SITS IN A GLASS FRAME — 16 Sep 2026, see
                       the doc comment. The edge light goes FIRST so the well
@@ -305,10 +315,14 @@ export function PhotoGallery({
                         <span className="edge-light" />
                         {formatShort(day)}
                       </span>
-                      <span className={`${styles.day} t-label-sm`} aria-hidden="true">
-                        <span className="edge-light" />
-                        Day {n}
-                      </span>
+                      {/* no pill on a seeded photo from before the start —
+                          see `checkInsFor` */}
+                      {n >= 1 && (
+                        <span className={`${styles.day} t-label-sm`} aria-hidden="true">
+                          <span className="edge-light" />
+                          Day {n}
+                        </span>
+                      )}
                     </span>
                   </span>
                 </Link>
