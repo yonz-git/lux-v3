@@ -12,10 +12,9 @@
  * exactly what the user recorded and nothing else. What that produced in
  * practice is the state a reader of this prototype is in MOST of the time:
  * walk the flow, answer step 4, and `/progress` opens on an empty calendar and
- * a chart with no line. The demo keeps its nine days; a real investigation now
- * gets the comp's own FIVE, anchored to the user's flare date. Both are clipped
- * at today and both merge with whatever the user records. See `checkInsFor` and
- * `SAMPLE_OFFSETS`.
+ * a chart with no line. Both branches now get the same NINE days, anchored
+ * `DEMO_SPAN` before today, clipped at today and merged with whatever the user
+ * records. See `checkInsFor`.
  *
  * The seed is anchored to a start date and clipped at today, and everything the
  * screen states about it — the day count, the percentage, "3 days ago" — is
@@ -252,37 +251,6 @@ export function dayNumber(start: Date, today: Date): number {
  * comp's days; do not extend past the last one. */
 const DEMO_OFFSETS = [0, 1, 3, 4, 5, 7, 9, 10, 12];
 const DEMO_SEVERITY = [9, 9, 7, 5, 7, 5, 3, 3, 1];
-
-/**
- * The FIVE-POINT sample the REAL branch seeds — the comp's own days and
- * severities, i.e. the subset `DEMO_OFFSETS` was widened from.
- *
- * ⚠️ THIS IS A PROTOTYPE SEED ON A REAL INVESTIGATION, WHICH THE DEMO SEED
- * DELIBERATELY IS NOT. Answering step 4 flips `isDemo` false, and until now
- * that took the whole seeded fortnight with it: walk the flow and `/progress`
- * arrives with an empty calendar and a trend chart with no line, because
- * nothing has written a check-in yet. That is the honest readout and it is
- * also the state a reader of this prototype spends most of their time in — the
- * flow is the thing they walk, so the flow is the path that lands them on the
- * dead chart.
- *
- * So the real branch seeds too, and it seeds FIVE rather than nine: nine is the
- * density the CALENDAR needs to look like a daily habit, five is what the CHART
- * needs to have a shape, and on a real investigation the fewer invented days
- * the better. They are the comp's own — `Progress — active` plots 9, 7, 5, 3, 1
- * — so the five sample days and the demo's nine cannot disagree about the
- * series they are both drawn from.
- *
- * ⚠️ ANCHORED TO THE USER'S OWN FLARE DATE, NOT TO TODAY, and clipped at both
- * ends by `checkInsFor` like every other entry. A user who answered step 4 with
- * "three days ago" gets the two offsets that fit and no invented future.
- *
- * ⚠️ DELETE THIS WITH THE REST OF THE SEED the moment there is a backend. It is
- * the one place the app puts words in a real user's mouth, and it exists only
- * because a portfolio walk has to reach a populated dashboard.
- */
-const SAMPLE_OFFSETS = [0, 3, 7, 9, 12];
-const SAMPLE_SEVERITY = [9, 7, 5, 3, 1];
 
 /**
  * The seeded check-in history — see the file header.
@@ -636,8 +604,8 @@ export function recordCheckIn(current: CheckIn[], entry: CheckIn): CheckIn[] {
 }
 
 /**
- * What `/progress` actually plots — the user's own check-ins, plus the seeded
- * series only while the whole screen is the demo.
+ * What `/progress` actually plots — the user's own check-ins, merged over the
+ * seeded series on both branches.
  *
  * ⚠️ THE SEED NO LONGER STOPS WHEN THE INVESTIGATION GOES REAL — IT THINS.
  * It was unconditional, then it was demo-only on the reasoning that a readout
@@ -645,9 +613,20 @@ export function recordCheckIn(current: CheckIn[], entry: CheckIn): CheckIn[] {
  * was right about the principle and wrong about this build: the flow is the
  * thing a reader walks, so the demo-only seed handed every reader who finished
  * step 4 an empty calendar and a flat chart — the trend graph, which is the
- * design being shown, could only be seen by NOT walking the app. The real
- * branch seeds five (`SAMPLE_OFFSETS`) against the demo's nine, and the honest
+ * design being shown, could only be seen by NOT walking the app. The honest
  * empty readout is still built and still reachable at `/progress/empty`.
+ *
+ * ⚠️ AND IT NO LONGER THINS EITHER — BOTH BRANCHES SEED THE DEMO'S NINE, FROM
+ * `demoStart(today)`, NOT FROM THE FLARE DATE. 17 Sep 2026, asked for directly
+ * ("add several checked in dates on vercel version too"). The real branch used
+ * to seed the comp's five (0, 3, 7, 9, 12) from the user's own start, and the
+ * clip below cut every one after today — so a flare answered as a few days
+ * ago, the usual answer on a walk, opened on one or two discs. The user chose
+ * nine always, knowing the cost: ⚠️ A SEEDED DAY CAN NOW PREDATE THE USER'S
+ * START, so the profile card can read "Started Sep 14 · Day 4" over discs on
+ * Sep 2. A seed dated before the start carries no `Day N` tag (the gallery
+ * pill and the record's tag both drop it) rather than a `Day 0` or a clamped
+ * `Day 1` that would repeat across four dates.
  *
  * ⚠️ THE TWO ARE MERGED ON BOTH BRANCHES, on purpose. A check-in recorded during a
  * demo walk is dated the demo's today, which is the real one, so it lands three
@@ -670,6 +649,10 @@ export function recordCheckIn(current: CheckIn[], entry: CheckIn): CheckIn[] {
  * record from before the investigation began is the readout inventing data,
  * which is the exact failure the demo clip above was added to fix.
  *
+ * ⚠️ THE CLIP IS ON THE USER'S RECORDS ONLY — the seed is exempt on purpose,
+ * per the note above; clipping it at the start is exactly the thinning that
+ * was asked away.
+ *
  * One filter, both branches, no special case: the demo's own start is 2 Aug and
  * its offsets begin at 0, so the demo path is unchanged. ⚠️ The cost is that
  * moving your flare date LATER discards check-ins now behind it — correct, on
@@ -683,9 +666,7 @@ export function checkInsFor(a: Answers, view: ProgressView): CheckIn[] {
     );
   });
 
-  const seed = view.isDemo
-    ? demoCheckIns(view.start, view.today)
-    : demoCheckIns(view.start, view.today, SAMPLE_OFFSETS, SAMPLE_SEVERITY);
+  const seed = demoCheckIns(demoStart(view.today), view.today);
 
   return recorded.reduce(recordCheckIn, seed);
 }

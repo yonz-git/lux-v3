@@ -297,7 +297,11 @@ export function PhotoGallery({
                 <Link
                   href={`/progress/check-in/${p.date}`}
                   className={`${styles.tile} pressable`}
-                  aria-label={`Photo from ${formatDay(day)}, day ${n}`}
+                  aria-label={
+                    n >= 1
+                      ? `Photo from ${formatDay(day)}, day ${n}`
+                      : `Photo from ${formatDay(day)}`
+                  }
                 >
                   {/* ⚠️ THE PHOTO SITS IN A GLASS FRAME — 16 Sep 2026, see
                       the doc comment. The edge light goes FIRST so the well
@@ -311,10 +315,14 @@ export function PhotoGallery({
                         <span className="edge-light" />
                         {formatShort(day)}
                       </span>
-                      <span className={`${styles.day} t-label-sm`} aria-hidden="true">
-                        <span className="edge-light" />
-                        Day {n}
-                      </span>
+                      {/* no pill on a seeded photo from before the start —
+                          see `checkInsFor` */}
+                      {n >= 1 && (
+                        <span className={`${styles.day} t-label-sm`} aria-hidden="true">
+                          <span className="edge-light" />
+                          Day {n}
+                        </span>
+                      )}
                     </span>
                   </span>
                 </Link>
