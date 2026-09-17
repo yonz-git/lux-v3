@@ -239,11 +239,26 @@
     calc((100% - (var(--per-view) - 1) * var(--tile-gap)) / var(--per-view));
   min-width: 0;
   scroll-snap-align: start;
+  /* the tile's radius is a share of this width — see `--frame-radius` */
+  container-type: inline-size;
 }
 
 /* The frame's two numbers live on the TILE, which takes the frame's own
    radius, so `pressable`'s overlay and the focus outline follow the glass
    rather than the photo inside it; the frame and the well inherit both. */
+/* ⚠️ THE RADIUS IS A PROPORTION OF THE TILE, NOT A FIXED 32 — 17 Sep 2026,
+   asked for directly ("this much border radius looks good … apply on all
+   browser sizes so that it looks consistent"). 32 was approved on the
+   four-up dialog, where a tile is 128.8 wide ((544 − 3 × 9.6) / 4), so the
+   frame's corner is 32 / 128.8 = 24.84% of the tile's width and every size
+   keeps that shape: ~26 on a 375 phone's 105 tile, ~29 on a 494 dialog's
+   116, 32 again at 800 and up. `cqi` reads the `.slide` container, the
+   tile's own width, and resolves wherever the property is USED, so the
+   frame and the well (both inside the slide) get the same length. The 6
+   frame stays fixed: the inner corner is still this less 6, concentric.
+   The plain 32 stays for an engine without container units: the override
+   sits in `@supports`, because a second declaration of a custom property
+   is never "invalid" at parse time and would not fall back. */
 .tile {
   --frame-width: calc(var(--space-xs) + var(--space-2xs)); /* 6 */
   --frame-radius: var(--radius-3xl); /* 32 */
@@ -252,6 +267,12 @@
   border-radius: var(--frame-radius);
   color: inherit;
   text-decoration: none;
+}
+
+@supports (width: 1cqi) {
+  .tile {
+    --frame-radius: calc(100cqi * 32 / 128.8);
+  }
 }
 
 /* ⚠️ A GLASS FRAME ROUND THE PHOTO — NOT IN FIGMA, 16 Sep 2026, asked for
@@ -525,9 +546,13 @@
   }
 }
 
-/* four from 480 — the gallery is a dialog from there (`.sheet-dialog-tablet`,
-   globals.css), so only a phone gets three */
-@media (min-width: 480px) {
+/* ⚠️ FOUR FROM 600, NOT FROM THE DIALOG'S 480 — 17 Sep 2026, asked for
+   directly on a 494-wide window ("on this mobile size show 3 first"). The
+   gallery is a dialog from 480 (`.sheet-dialog-tablet`, globals.css), but
+   four-up in a dialog that narrow made 84px tiles. 600 is where four tiles
+   reach ~110 (dialog content = viewport − 32 − 96, less three 9.6 gaps);
+   below it the dialog shows three, ~116 each at 494. */
+@media (min-width: 600px) {
   .carousel {
     --per-view: 4;
   }
@@ -538,7 +563,7 @@
   display: none;
 }
 
-@media (min-width: 480px) {
+@media (min-width: 600px) {
   .perViewMobile {
     display: none;
   }
