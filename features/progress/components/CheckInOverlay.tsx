@@ -54,10 +54,6 @@ export function CheckInOverlay({
   const overlayRef = useRef<HTMLDivElement>(null);
   const mounted = useMounted();
 
-  /* Escape, the focus trap, and focus returning to `Check in today` on close —
-     `lib/useModalDialog.ts`, shared with `Sheet`. */
-  useModalDialog(open, onClose, overlayRef);
-
   /* ⚠️ THE OVERLAY USED TO ARRIVE AND LEAVE WITH NO MOTION OF ITS OWN, and the
      contents made that read worse rather than better: `ChatPanel` carries
      `data-reveal`, so the orb, the bubble and the chips faded up over 320ms
@@ -65,6 +61,12 @@ export function CheckInOverlay({
      single frame for all of it. The panel is the object here — it fades as one,
      and it leaves the same way it came. See `useDialogPresence`. */
   const { present, leaving } = useDialogPresence(open);
+
+  /* Escape, the focus trap, and focus returning to `Check in today` on close —
+     `lib/useModalDialog.ts`, shared with `Sheet`. ⚠️ Armed on `open && present`
+     for the reason `Sheet` gives: `present` lags `open` by a render, and the
+     hook's `focus()` ran against a null ref. */
+  useModalDialog(open && present, onClose, overlayRef);
 
   if (!present || !mounted) return null;
 
