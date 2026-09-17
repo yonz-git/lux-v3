@@ -546,9 +546,13 @@
   }
 }
 
-/* four from 480 — the gallery is a dialog from there (`.sheet-dialog-tablet`,
-   globals.css), so only a phone gets three */
-@media (min-width: 480px) {
+/* ⚠️ FOUR FROM 600, NOT FROM THE DIALOG'S 480 — 17 Sep 2026, asked for
+   directly on a 494-wide window ("on this mobile size show 3 first"). The
+   gallery is a dialog from 480 (`.sheet-dialog-tablet`, globals.css), but
+   four-up in a dialog that narrow made 84px tiles. 600 is where four tiles
+   reach ~110 (dialog content = viewport − 32 − 96, less three 9.6 gaps);
+   below it the dialog shows three, ~116 each at 494. */
+@media (min-width: 600px) {
   .carousel {
     --per-view: 4;
   }
@@ -559,7 +563,7 @@
   display: none;
 }
 
-@media (min-width: 480px) {
+@media (min-width: 600px) {
   .perViewMobile {
     display: none;
   }
