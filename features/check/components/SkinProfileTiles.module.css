@@ -178,25 +178,32 @@
    on the lightest core `#ecf8f9`, for 14px text that needs 4.5:1. The fill
    is lighter than the card it sits on, so it costs the answers contrast;
    a pill at or below the card's own darkness would restore it. */
+/* ⚠️ OUTLINED, NOT FILLED — 24 Sep 2026, asked for directly: "static data
+   looks tappable … give data tags an outlined style and keep solid indigo for
+   actions only". The pill was solid `bg/brand` with white ink, which is the
+   `Check in today` button's own dark end and `Chip`'s selected state, so on
+   `/progress` four read-only answers sat beside a primary button wearing its
+   colour. An outline keeps the indigo as the app's one accent while saying
+   the pill is a READING, not a control.
+   ⚠️ THE RING IS AN INSET SHADOW, NOT A `border`: it adds no height, so the
+   4 / 14 / 6 padding is untouched and the pills sit where they did
+   (non-negotiable 9). At 45% the ring is visible without drawing as a
+   control's edge; the ink is the full token.
+   ⚠️ CONTRAST IMPROVES: `bg/brand` (#313560, the globals.css override) on the
+   card's bare canvas measures 10.7:1 on the lightest ramp stop (#ecf8f9) and
+   6.42:1 on the floor (#acc5cc), where the white-on-indigo pill sat at
+   4.16–4.29:1 against the 4.5:1 that 14px text needs. No blur: there is no fill left to frost, which
+   also drops this component out of the reduced-transparency case below. */
 .tileValue {
   align-self: flex-start;
   max-width: 100%;
   margin-top: 0.3rem;
-  /* ⚠️ WHITE, NOT THE CARD'S INK — asked for directly 14 Sep 2026, when the
-     card went dark: `text/primary` on this teal measured 3.34:1, white 4.13:1. */
-  color: var(--color-text-on-brand);
+  color: var(--color-bg-brand);
   padding: 4px 14px 6px;
   border-radius: var(--radius-full);
-  /* ⚠️ INDIGO, NOT TEAL — asked for directly 14 Sep 2026 from a supplied
-     screenshot, so an answer reads as a picked chip. `bg/brand` at 85% first,
-     then `#313560` solid, asked for later the same day — which IS `bg/brand`,
-     so it binds the token. White on it clears AA where the teal did not. */
-  background: var(--color-bg-brand);
-  box-shadow:
-    inset 0 0 0 var(--border-width-hairline) var(--color-border-glass),
-    inset 0 1px 2px #fff3;
-  -webkit-backdrop-filter: blur(7px);
-  backdrop-filter: blur(7px);
+  background: none;
+  box-shadow: inset 0 0 0 var(--border-width-hairline)
+    color-mix(in srgb, var(--color-bg-brand) 45%, transparent);
 }
 
 /* `Started <date> · Day <n>` under the state's pill — see SkinProfileTiles.tsx.
@@ -210,11 +217,6 @@
    canvas's mid stop (about `#b9c8cb`). (Until 14 Sep 2026 this block gave the
    card an opaque `#538993`, which under the dark ink would read as dark on
    dark.) */
-@media (prefers-reduced-transparency: reduce) {
-  .tileValue {
-    background: var(--color-bg-brand);
-    -webkit-backdrop-filter: none;
-    backdrop-filter: none;
-  }
-  /* the card's grain goes in `canvas-card`'s own reduced-transparency rule */
-}
+/* ⚠️ THE PILL NO LONGER APPEARS HERE — it is outlined with no fill and no
+   blur since 24 Sep 2026 (see above), so there is nothing to make opaque.
+   The card's grain goes in `canvas-card`'s own reduced-transparency rule. */

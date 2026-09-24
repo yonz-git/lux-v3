@@ -27,11 +27,14 @@ import styles from "./SkinProfileTiles.module.css";
  * grain, 1.4rem a side, at the column's width at every breakpoint. An 18px
  * overline sits over a left-anchored rule in its own ink. Four tiles, two a
  * row at every width, 6 apart; each tile is only spacing — label over answer,
- * left-aligned — and each answer is a filled frosted teal pill in WHITE, the
- * one place the card's dark ink does not reach.
- * ⚠️ WHITE ON THE TEAL PILLS IS STILL UNDER AA — 4.13:1 on `#56848d`,
- * against 4.5:1 (the dark ink was 3.3:1). The labels and overline sit on the
- * canvas and clear it.
+ * left-aligned — and each answer is an OUTLINED indigo pill.
+ * ⚠️ THE PILL WAS SOLID `bg/brand` WITH WHITE INK UNTIL 24 Sep 2026, when it
+ * was asked for outlined: filled, it wore the primary button's own indigo, so
+ * a read-only answer on `/progress` read as tappable beside `Check in today`.
+ * Solid indigo is for actions and for `Chip`'s selected state; a readout gets
+ * the ring. It fixed the contrast too — the white pill measured 4.13–4.29:1
+ * against the 4.5:1 that 14px needs, and the ink now measures 6.42:1 or
+ * better. See the module.
  *
  * ⚠️ THE VALUES ARE THE CALLER'S, AND ON `/check` THEY ARE LITERALS — `Dry`,
  * `Acne-prone`, `None`, as supplied. That breaks the "screens echo answers"
