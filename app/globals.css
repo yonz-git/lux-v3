@@ -692,7 +692,18 @@
      hue now pulls 15% toward the deep end (`-hue` is what the pill is TINTED
      from, `#597f8c` as supplied), the base goes 60% → 72%, the top light
      40% → 22%, the pooled glow 20% → 8% and the edge light 35% → 14%. */
-  --color-face-pill-selected-hue: color-mix(in srgb, #597f8c 85%, #1c2b30);
+  /* ⚠️ THE DEEP CORE, NAMED — 25 Sep 2026. It was the bare `#1c2b30` written
+     twice below, the colour every selected stop is deepened TOWARD, i.e. the
+     darkest tone this glass has. `SkinProfileTiles`' outlined answer pills
+     bind it as their ink and ring ("use the active tone of this, the
+     darkest"), so the readout's pills and the face's picked pills are one
+     family. NOT IN FIGMA, like the rest of this block. */
+  --color-face-pill-selected-core: #1c2b30;
+  --color-face-pill-selected-hue: color-mix(
+    in srgb,
+    #597f8c 85%,
+    var(--color-face-pill-selected-core)
+  );
   --color-face-pill-selected-light: color-mix(
     in srgb,
     var(--color-face-pill-selected-hue) 70%,
@@ -701,7 +712,7 @@
   --color-face-pill-selected-deep: color-mix(
     in srgb,
     var(--color-face-pill-selected-hue) 65%,
-    #1c2b30
+    var(--color-face-pill-selected-core)
   );
   --color-surface-face-pill-selected-base: color-mix(
     in srgb,

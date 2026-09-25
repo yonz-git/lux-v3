@@ -32,8 +32,9 @@ import styles from "./SkinProfileTiles.module.css";
  * was asked for outlined: filled, it wore the primary button's own indigo, so
  * a read-only answer on `/progress` read as tappable beside `Check in today`.
  * Solid indigo is for actions and for `Chip`'s selected state; a readout gets
- * the ring. It fixed the contrast too — the white pill measured 4.13–4.29:1
- * against the 4.5:1 that 14px needs, and the ink now measures 6.42:1 or
+ * the ring — and, since 25 Sep, the face pill's deep core rather than any
+ * indigo at all (see the module). It fixed the contrast too — the white pill measured 4.13–4.29:1
+ * against the 4.5:1 that 14px needs, and the ink now measures 8.08:1 or
  * better. See the module.
  *
  * ⚠️ THE VALUES ARE THE CALLER'S, AND ON `/check` THEY ARE LITERALS — `Dry`,

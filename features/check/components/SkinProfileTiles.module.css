@@ -189,21 +189,47 @@
    4 / 14 / 6 padding is untouched and the pills sit where they did
    (non-negotiable 9). At 45% the ring is visible without drawing as a
    control's edge; the ink is the full token.
-   ⚠️ CONTRAST IMPROVES: `bg/brand` (#313560, the globals.css override) on the
-   card's bare canvas measures 10.7:1 on the lightest ramp stop (#ecf8f9) and
-   6.42:1 on the floor (#acc5cc), where the white-on-indigo pill sat at
-   4.16–4.29:1 against the 4.5:1 that 14px text needs. No blur: there is no fill left to frost, which
+   ⚠️ CONTRAST IMPROVES: `face-pill-selected-core` (#1c2b30) on the card's
+   bare canvas measures 13.47:1 on the lightest ramp stop (#ecf8f9) and 8.08:1
+   on the floor (#acc5cc), where the white-on-indigo pill sat at 4.16–4.29:1
+   against the 4.5:1 that 14px text needs. ⚠️ The glass's own
+   `face-pill-selected-deep` (#3e5963) was the other candidate and measures
+   4.13:1 on the floor — under AA for 14px, which is why the CORE is the one
+   bound here. No blur: there is no fill left to frost, which
    also drops this component out of the reduced-transparency case below. */
 .tileValue {
   align-self: flex-start;
   max-width: 100%;
   margin-top: 0.3rem;
-  color: var(--color-bg-brand);
+  /* ⚠️ THE FACE PILL'S DEEP CORE, NOT INDIGO AT ALL — 25 Sep 2026, asked for
+     directly ("use the active tone of this, the darkest") against a selected
+     region pill. It went `bg/brand` → `bg/brand-hover` → `indigo/900` → this
+     in four turns. `face-pill-selected-core` (#1c2b30, globals.css) is the
+     value every stop of that selected glass is deepened toward, so a read-only
+     answer now reads in the same family as a picked location and in NEITHER
+     of the action indigos. The ring below takes it at 45%, so the pill is one
+     colour at two strengths. */
+  color: var(--color-face-pill-selected-core);
   padding: 4px 14px 6px;
   border-radius: var(--radius-full);
-  background: none;
-  box-shadow: inset 0 0 0 var(--border-width-hairline)
-    color-mix(in srgb, var(--color-bg-brand) 45%, transparent);
+  /* ⚠️ A FROSTED FILL, SLIGHTLY BRIGHTER THAN THE CARD — 25 Sep 2026, asked
+     for directly ("give frosted bg that is slightly brighter"). The pill was
+     `background: none` from the outline pass. `surface/frost-light` is the
+     app's pale frost (`#f4feff` at 55%) and it is what every light frosted
+     surface here binds; over the card's bare canvas it lifts the pill about
+     two ramp stops without becoming a fill you could mistake for a control's.
+     The 8 blur is `blur-sm`, the face pills' own. The ink is unaffected
+     (13.8:1 over the lit pill), and the ring stays the mark that says
+     "readout". */
+  background: var(--color-surface-frost-light);
+  -webkit-backdrop-filter: blur(var(--blur-sm));
+  backdrop-filter: blur(var(--blur-sm));
+  /* ⚠️ 1.5, NOT `border-width-hairline` — 25 Sep 2026: 1 → 1.5 → 2, each
+     asked for directly, then back half a pixel ("make it 0.5px thinner").
+     Written as the token + 0.5 so it follows a retune of the hairline; it is
+     still an inset shadow, so the extra half pixel costs no height. */
+  box-shadow: inset 0 0 0 calc(var(--border-width-hairline) + 0.5px)
+    color-mix(in srgb, var(--color-face-pill-selected-core) 45%, transparent);
 }
 
 /* `Started <date> · Day <n>` under the state's pill — see SkinProfileTiles.tsx.
@@ -217,6 +243,13 @@
    canvas's mid stop (about `#b9c8cb`). (Until 14 Sep 2026 this block gave the
    card an opaque `#538993`, which under the dark ink would read as dark on
    dark.) */
-/* ⚠️ THE PILL NO LONGER APPEARS HERE — it is outlined with no fill and no
-   blur since 24 Sep 2026 (see above), so there is nothing to make opaque.
-   The card's grain goes in `canvas-card`'s own reduced-transparency rule. */
+/* non-negotiable 11: the pill's frost goes opaque. `bg/frost-light` is
+   `surface/frost-light` made opaque — the same colour — and the card's grain
+   goes in `canvas-card`'s own reduced-transparency rule. */
+@media (prefers-reduced-transparency: reduce) {
+  .tileValue {
+    background: var(--color-bg-frost-light);
+    -webkit-backdrop-filter: none;
+    backdrop-filter: none;
+  }
+}
