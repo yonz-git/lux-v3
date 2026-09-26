@@ -27,6 +27,15 @@
      directly 13 Sep 2026, a softer corner on the face card. It is the page
      card's own radius, so the two nest as one family. NOT IN FIGMA. */
   border-radius: var(--radius-3xl);
+  /* ⚠️ AND THE CARD CLIPS ITS DRAWING — 26 Sep 2026. The head hangs ~158 units
+     below `.diagram` and the bottom margin there reserves room for it; at
+     `FACE_ZOOM` 1.3225 the neck and shoulders outgrew that reservation and
+     spilled 43px past the card's rounded bottom onto the page (measured at
+     440 on `/progress`, where the card has no chip row under the face to
+     absorb it). Clipping cuts an already-faded tail — the silhouette is gone
+     by 99% of the frame — where growing the reservation would push step 1's
+     chip row away from the face instead. */
+  overflow: hidden;
   /* the grain (`::after`) paints between this card's fill and its content */
   position: relative;
   isolation: isolate;
