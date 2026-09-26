@@ -86,7 +86,7 @@
     color-mix(in srgb, var(--color-text-primary) 10%, transparent) 100%
   );
   background: var(--chip-rest-shade), #dbeded57;
-  border-color: var(--color-surface-data-deep);
+  --chip-edge: var(--color-surface-data-deep);
   -webkit-backdrop-filter: blur(var(--blur-sm));
   backdrop-filter: blur(var(--blur-sm));
 }
@@ -95,7 +95,7 @@
    restores the teal at (0,4,1) */
 @media (hover: none) {
   .options button[data-selected="false"]:hover:not(:disabled) {
-    border-color: var(--color-surface-data-deep);
+    --chip-edge: var(--color-surface-data-deep);
   }
 }
 
