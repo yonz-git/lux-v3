@@ -258,10 +258,12 @@
    registered by the eyes and the lips to the rows the region pills are
    seated on and drawn 5% larger than that registration gives, asked for
    directly.
-   ⚠️ THE FOOTPRINT IS 260x322 AT 66,55 AS OF 26 Sep 2026 — the 226x280 at
-   83,10 every landmark was read at, scaled 1.15 about the crown's centre
-   (196,10) and dropped 45 (15% of the box), asked for directly ("make the
-   whole face diagram bigger 15% and move it down 15%"). `REGIONS` in
+   ⚠️ THE FOOTPRINT IS 299x370 AT 47,55 AS OF 26 Sep 2026 — the 226x280 at
+   83,10 every landmark was read at, scaled 1.3225 about the crown's centre
+   (196,10) and dropped 45 (15% of the box). Two asks the same day, and the
+   second compounds on the first: "make the whole face diagram bigger 15% and
+   move it down 15%", then "make the face diagram 15% bigger" again, so
+   1.15 x 1.15. The drop stays 45. `REGIONS` in
    FaceDiagram.tsx takes the SAME map (`FACE_ZOOM`, `FACE_DROP`), so every
    pill still sits on its feature; change one and change the other. The box
    is taller than the head, by 1040/830, and hangs ~158 units below
@@ -287,10 +289,12 @@
    step, the fade has it by then. */
 .form {
   position: absolute;
-  left: calc((196 - 113 * 1.15) / 392 * 100%);
+  /* the zoom is written once per line and is `FACE_ZOOM` in FaceDiagram.tsx —
+     change both together */
+  left: calc((196 - 113 * 1.15 * 1.15) / 392 * 100%);
   top: calc((10 + 45) / 300 * 100%);
-  width: calc(226 * 1.15 / 392 * 100%);
-  height: calc(280 * 1.15 / 300 * 1040 / 830 * 100%);
+  width: calc(226 * 1.15 * 1.15 / 392 * 100%);
+  height: calc(280 * 1.15 * 1.15 / 300 * 1040 / 830 * 100%);
   pointer-events: none;
 }
 

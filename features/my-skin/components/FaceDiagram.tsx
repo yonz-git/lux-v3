@@ -85,15 +85,16 @@ type Region = { id: string; x: number; y: number };
    grows; `.region` translates -50% on both axes so one set of fractions means
    the same point at 440 and at 1024+.
 
-   ⚠️ THE DRAWING IS 15% LARGER AND 45 UNITS LOWER THAN EVERY SEAT BELOW SAYS,
-   AS OF 26 Sep 2026 — asked for directly ("make the whole face diagram bigger
-   15% and move it down 15%"). The seats are still written at the footprint
+   ⚠️ THE DRAWING IS 32.25% LARGER AND 45 UNITS LOWER THAN EVERY SEAT BELOW
+   SAYS, AS OF 26 Sep 2026 — asked for directly ("make the whole face diagram
+   bigger 15% and move it down 15%"), then 15% bigger again the same day, which
+   compounds: 1.15 x 1.15 = 1.3225. The seats are still written at the footprint
    they were read at (226x280 at 83,10); `seat` maps each one the way `.form`
    in the module CSS maps the drawing — scaled about the crown's centre
    (196,10), then dropped 45 — so a pill stays on its feature. `FACE_ZOOM` and
    `FACE_DROP` here and the `.form` calc there are ONE value written twice;
    change both. The callout rails and the neck point take the same map. */
-const FACE_ZOOM = 1.15;
+const FACE_ZOOM = 1.15 * 1.15;
 const FACE_DROP = 45 / 300;
 const seatX = (x: number) => 0.5 + (x - 0.5) * FACE_ZOOM;
 const seatY = (y: number) => (y - 10 / 300) * FACE_ZOOM + 10 / 300 + FACE_DROP;
