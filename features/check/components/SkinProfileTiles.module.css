@@ -210,18 +210,33 @@
      of the action indigos. The ring below takes it at 45%, so the pill is one
      colour at two strengths. */
   color: var(--color-face-pill-selected-core);
-  padding: 4px 14px 6px;
+  /* ⚠️ 5.5 / 4.5, NOT 4 / 6 — 25 Sep 2026, asked about directly ("the top
+     space is less than the bottom"), and the eye was right: the 4 / 6 was
+     written for the optical centre of a FILLED pill, but `t-body3`'s 22 line
+     box already carries 4 of half-leading above the glyphs and 5 below
+     (14px text in a 22 line box, ascent 10 / descent 0.2 on a capitalised
+     word), so 4 / 6 measured 6 above the ink and 9 below. Half a pixel each
+     way from an even 5 / 5 lands both gaps on 7.5. The height is still 32,
+     so no row moves. */
+  padding: 5.5px 14px 4.5px;
   border-radius: var(--radius-full);
   /* ⚠️ A FROSTED FILL, SLIGHTLY BRIGHTER THAN THE CARD — 25 Sep 2026, asked
      for directly ("give frosted bg that is slightly brighter"). The pill was
      `background: none` from the outline pass. `surface/frost-light` is the
      app's pale frost (`#f4feff` at 55%) and it is what every light frosted
-     surface here binds; over the card's bare canvas it lifts the pill about
-     two ramp stops without becoming a fill you could mistake for a control's.
+     surface here binds; over the card's bare canvas it lifts the pill about a
+     ramp stop without becoming a fill you could mistake for a control's.
      The 8 blur is `blur-sm`, the face pills' own. The ink is unaffected
-     (13.8:1 over the lit pill), and the ring stays the mark that says
-     "readout". */
-  background: var(--color-surface-frost-light);
+     (9.89:1 or better over the lit pill), and the ring stays the mark that
+     says "readout". */
+  /* ⚠️ AND 60% OF THAT TOKEN, 25 Sep 2026 — asked for directly ("give more
+     transparency to these pills"): 55% → about 33% white over the card. The
+     multiple, not a new rgba, so a retune of the token still carries. */
+  background: color-mix(
+    in srgb,
+    var(--color-surface-frost-light) 60%,
+    transparent
+  );
   -webkit-backdrop-filter: blur(var(--blur-sm));
   backdrop-filter: blur(var(--blur-sm));
   /* ⚠️ 1.5, NOT `border-width-hairline` — 25 Sep 2026: 1 → 1.5 → 2, each
