@@ -154,8 +154,9 @@ export type CatalogProduct = {
    * products with no ingredients to open.
    */
   ingredients?: string;
-  /* ⚠️ NO `imageUrl`. Every product is DRAWN — see `ProductArt`, and the note
-     in lib/openBeautyFacts.ts on why the API's photos are not read. */
+  /* ⚠️ NO `imageUrl`. Every product's picture is chosen locally by packaging
+     type (a photograph since 26 Sep 2026, a drawing before) — see `ProductArt`,
+     and the note in lib/openBeautyFacts.ts on why the API's photos are not read. */
 };
 
 /** A product the user has added: a catalogue entry plus their answers. */

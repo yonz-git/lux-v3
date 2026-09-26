@@ -9,16 +9,19 @@ import type { CatalogProduct } from "@/features/products/products";
  * ⚠️ THE CAMERA GLYPH IS GONE. The comps draw a 20px camera in `icon/muted`
  * here because the design system has no product imagery and no bottle icon —
  * fine on one card, and useless down a list, where every row then carries the
- * same mark and the thumbnail identifies nothing. It now falls back to a drawn
- * vessel tinted per brand; see `ProductArt`, which owns that decision.
+ * same mark and the thumbnail identifies nothing. It shows a product
+ * photograph instead; see `ProductArt`, which owns that decision.
  *
- * ⚠️ AND SO IS THE PHOTOGRAPH. This well used to prefer a real Open Beauty
- * Facts image and drop to the illustration only when one was missing, broken
- * or too small — which meant a search result list drew some rows from a photo
- * and some from a vessel, at different croppings and colour temperatures. Two
- * kinds of picture in one column is worse at telling rows apart than either
- * kind alone. Every product is drawn now; see lib/openBeautyFacts.ts, which no
- * longer even requests the image fields.
+ * ⚠️ AND THE API'S PHOTOGRAPH IS GONE. This well used to prefer a real Open
+ * Beauty Facts image and drop to the illustration only when one was missing,
+ * broken or too small — which meant a search result list drew some rows from a
+ * photo and some from a vessel, at different croppings and colour
+ * temperatures. Two kinds of picture in one column is worse at telling rows
+ * apart than either kind alone; see lib/openBeautyFacts.ts, which no longer
+ * even requests the image fields. ⚠️ **That rule still holds, and on 26 Sep
+ * 2026 the one kind of picture became a PHOTOGRAPH** — a local product cut-out
+ * picked by packaging type, replacing the drawn vessel. Every product, catalogue
+ * or live, still gets the same kind; see `ProductArt`.
  *
  * ⚠️ IT TAKES THE PRODUCT, NOT A URL. It used to take `imageUrl` alone, which
  * is all a photo needs; an illustration needs to know WHICH product it is

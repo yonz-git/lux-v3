@@ -19,9 +19,11 @@ const PREVIEW_MAX = 3;
  * category rows. See `MyProducts` for why a closed row wanted it.
  *
  * It is `ProductArt` at 28 in the same opaque well `ProductThumb` uses at 48 —
- * the existing recipe at a smaller size, not a new one. What the drawings carry
- * is IDENTITY rather than detail: same brand → same tint, same packaging → same
- * silhouette. At 28 a vessel is not identifiable and is not meant to be.
+ * the existing recipe at a smaller size, not a new one. What the pictures carry
+ * is IDENTITY rather than detail: same packaging → same kind of bottle. At this
+ * size a product is not identifiable and is not meant to be. ⚠️ They were drawn
+ * vessels tinted per brand until 26 Sep 2026; they are photographs picked by
+ * packaging type now, so brand no longer changes the picture — see `ProductArt`.
  *
  * ⚠️ THE SIZE IS A LITERAL AND OFF THE SIZE SCALE, deliberately. It was 28
  * (between `--size-*`'s 24 and 32), went to 56 on 15 Sep 2026 and settled at
@@ -31,7 +33,7 @@ const PREVIEW_MAX = 3;
  * Figma and this becomes a token.
  *
  * ⚠️ DECORATIVE — `aria-hidden`, and no per-product alt text. Every caller's
- * row already names what the group holds; the drawings illustrate a group,
+ * row already names what the group holds; the pictures illustrate a group,
  * they are not a list of products.
  *
  * `className` goes on the deck itself, so a caller can fade or place it

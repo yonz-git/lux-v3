@@ -24,6 +24,10 @@ import { fullName, type CatalogProduct } from "@/features/products/products";
  * as by a usable front-of-package shot. A drawing that is always the right
  * vessel in the right brand tint answers it more reliably than a photo that is
  * sometimes right. See `ProductArt` and lib/openBeautyFacts.ts.
+ * ⚠️ **Since 26 Sep 2026 the well shows a local product PHOTOGRAPH, not a
+ * drawing** — one of eight cleaned cut-outs picked by packaging type. It is
+ * still ours rather than OBF's, and it is by type, not brand: it says "a jar
+ * like this", not "this exact jar".
  *
  * The well stays OPAQUE — a frosted well would show the canvas gradient
  * through the artwork.

@@ -1,0 +1,18 @@
+/* The product cut-out inside any well. The caller's own class sizes it to the
+   well (100% x 100%); this only decides how the picture sits there.
+
+   `contain`, not `cover` — see ProductArt on why a cover crop would behead
+   every bottle in the 352x140 letterbox. The inset keeps a cap off the well's
+   edge the way the drawings' cropped viewBox did; it is a `scale`, not a
+   percentage padding, because padding resolves against WIDTH and would halve
+   the bottle in the letterbox. The shadow stands the transparent cut-out on
+   the well's floor rather than floating it. Its colour is the app ink
+   (`text/primary`, #2e2a3f) at 16%, written as a literal because a
+   `drop-shadow()` cannot take `--shadow-sm` (a `box-shadow` list) and there is
+   no shadow-colour token to bind. */
+.photo {
+  display: block;
+  object-fit: contain;
+  scale: 0.84;
+  filter: drop-shadow(0 2px 3px rgb(46 42 63 / 0.16));
+}

@@ -40,10 +40,10 @@
   box-shadow: var(--shadow-sm);
 }
 
-/* the drawn vessel — see ProductArt. It centres in the letterbox well rather
-   than filling it: `preserveAspectRatio="xMidYMid meet"` on a square
-   composition means the height is what binds, so the bottle sits at the well's
-   full 140 and the well's own opaque fill is the ground. */
+/* the product photograph — see ProductArt. It centres in the letterbox well
+   rather than filling it: `object-fit: contain` on a tall cut-out means the
+   height is what binds, so the bottle sits at the well's height and the well's
+   own opaque fill is the ground. */
 .art {
   width: 100%;
   height: 100%;

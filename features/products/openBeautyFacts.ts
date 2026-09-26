@@ -15,6 +15,9 @@ import type { CatalogProduct } from "./products";
  * packaging → same silhouette) and they encode it for EVERY row. So the API
  * keeps supplying the words, and the pictures are all ours. The fields are not
  * merely ignored — they are not requested, so the response is smaller too.
+ * ⚠️ "Ours" means eight local product photographs since 26 Sep 2026, picked by
+ * packaging type; the drawings described above were replaced, the reasoning
+ * for not reading OBF's photos was not.
  *
  * ⚠️ USES THE LEGACY `cgi/search.pl` ENDPOINT, NOT `api/v2/search`. The v2
  * endpoint is search-a-licious-backed and returned near-unfiltered results in
