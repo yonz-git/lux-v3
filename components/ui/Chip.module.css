@@ -42,29 +42,47 @@
      card, and the border is the only thing left to draw it. The height does not
      move: `box-sizing: border-box` is global and the chip is sized by
      `min-height`, so the 1px sits inside the 40 (non-negotiable 8b). */
-  /* ⚠️ THE EDGE IS AN INSET RING, AND THE BORDER IS GEOMETRY ONLY — 26 Sep
-     2026, asked for directly ("make these pill border 0.5px thicker"). Chrome
-     FLOORS `border-width` to whole pixels, so a 1.5px border rendered at 1
-     (measured: `border-width: 1.5px` computes back as `1px`); an inset shadow
-     takes fractional widths, which is how the skin-profile pills got theirs.
-     The 1px border stays, transparent, so every box in the app keeps the size
-     it had — `box-sizing: border-box` and the 40 `min-height` are unchanged
-     and no caller's padding compensation moves.
-     ⚠️ SO A CALLER RECOLOURS `--chip-edge`, NOT `border-color` — a
-     `border-color` on a transparent border paints nothing. `--chip-lift` is
-     the second slot, because a hover that sets `box-shadow` wholesale would
-     otherwise wipe the ring. A caller that replaces `box-shadow` outright
-     drops the ring on purpose (the face card's glass pills, step 1's selected
-     symptom) and those keep their own edges. */
+  /* ⚠️ THE 1.5px EDGE IS THE BORDER PLUS AN INSET RING — 26 Sep 2026, asked
+     for directly ("make these pill border 0.5px thicker"). Chrome FLOORS
+     `border-width` to whole pixels, so a 1.5px border rendered at 1 (measured:
+     `border-width: 1.5px` computes back as `1px`); an inset shadow takes
+     fractional widths, which is how the skin-profile pills got theirs. So the
+     border draws the OUTER 1px and the ring adds the remaining 0.5 inside it.
+     The box does not move: `box-sizing: border-box` and the 40 `min-height`
+     are unchanged and no caller's padding compensation moves.
+     ⚠️ THE BORDER WAS TRANSPARENT, WITH THE WHOLE 1.5 IN THE RING, AND THAT
+     DREW A PALE LINE AROUND THE EDGE — an inset shadow is clipped to the
+     PADDING box while the fill is clipped to the BORDER box, so the pill's own
+     background painted in the 1px band OUTSIDE the ring and read as a second,
+     lighter border over the real one (measured on step 1's frosted symptoms,
+     where the band was `#dbeded57` over the card). Asked for directly 26 Sep
+     2026: "fix the bg or white border that is going over the actual border".
+     ⚠️ KEEP `background-clip` AT ITS `border-box` DEFAULT. `--chip-edge` can
+     be translucent (`surface/data-deep` is 85%), so the border has to
+     composite over the chip's own fill exactly as the ring does, or the two
+     halves of one edge come out different shades.
+     ⚠️ A CALLER STILL RECOLOURS `--chip-edge`, WHICH IS NOW THE BORDER'S
+     COLOUR TOO — so an override needs no second declaration. `--chip-lift` is
+     the second shadow slot, because a hover that sets `box-shadow` wholesale
+     would otherwise wipe the ring. A caller that replaces `box-shadow`
+     outright drops the ring on purpose (the face card's glass pills, step 1's
+     selected symptom) and both restate the border themselves — transparent
+     and `border-width: 0` — at higher specificity. */
   --chip-border: calc(var(--border-width-hairline) + 0.5px);
   --chip-edge: var(--color-border-chip);
   --chip-lift: 0 0 #0000;
-  border: var(--border-width-hairline) solid transparent;
-  box-shadow: inset 0 0 0 var(--chip-border) var(--chip-edge), var(--chip-lift);
+  border: var(--border-width-hairline) solid var(--chip-edge);
+  box-shadow: inset 0 0 0
+      calc(var(--chip-border) - var(--border-width-hairline)) var(--chip-edge),
+    var(--chip-lift);
 
   transition: background-color var(--duration-base) var(--ease-standard),
     color var(--duration-base) var(--ease-standard),
     opacity var(--duration-base) var(--ease-standard),
+    /* ⚠️ `--chip-edge` is an unregistered custom property and does not
+       interpolate — without this the outer 1px would SNAP to the hover colour
+       while the inner 0.5 faded with the shadow */
+      border-color var(--duration-fast) var(--ease-standard),
     box-shadow var(--duration-fast) var(--ease-standard);
 }
 
@@ -149,11 +167,13 @@
    transitions on `duration/base`; a gradient image cannot interpolate and
    would snap on while the colour was still fading in. It is inset by the
    hairline so it covers the border too — otherwise the flat indigo border
-   would draw a lighter rim around the dark corner. */
+   would draw a lighter rim around the dark corner. ⚠️ THE HAIRLINE, NOT
+   `--chip-border`: the edge's fractional half is an inset ring now (top of
+   this file), so the border box is the pill and 1.5 hung 0.5px outside it. */
 .chip::before {
   content: "";
   position: absolute;
-  inset: calc(var(--chip-border) * -1);
+  inset: calc(var(--border-width-hairline) * -1);
   z-index: -1;
   border-radius: inherit;
   background: linear-gradient(
