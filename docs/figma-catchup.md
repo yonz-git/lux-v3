@@ -404,7 +404,7 @@ treatment — but there is no component to keep them in sync.
 | **Compat accordion** | The second accordion, different surface, different header, plus a band. The band drives pill, score and bar fill through one property so they cannot drift. |
 | **Status pill** | Not `Tag` — Tag is Neutral/Brand only and these carry the feedback colours. ⚠️ The risky-ingredient tags in an expanded compat card carry a 1px ring in their own ink as of 16 Sep 2026 (asked for directly) — `currentColor`, so the band colour in all three bands, with the padding reduced by the hairline so the pill stays 28. |
 | **Skin-profile strip** | The one sage element on a Check screen. Same System B recipe as the data card but an 86-tall strip with 18/20 padding. |
-| **Face-region picker** | The region coordinates **are** the design — "Cheeks (L)" only means the left cheek because of where it sits. Stored as % of the 392×300 card so it scales. ⚠️ **The face is a CONTOUR DRAWING as of 13 Sep 2026, not the CSS dome** — white level lines cut from a supplied illustration (`features/my-skin/assets/face-contour.webp`, 226×280 at 83,10), over a shading layer masked to the head's outline (`face-silhouette.webp`: lighter centre, deep sage `#284a4d` toward the edge), with a pointer-following shine masked to the lines. ⚠️ **The lines are drawn clearer than the asset as of 14 Sep 2026** (asked for directly, twice): an SVG `feComponentTransfer` in `FaceDiagram.tsx` lifts each line pixel's alpha to its square root, because the asset is pure white and only its alpha has room to rise. A curve rather than a multiplier: the thin antialiased strokes are what read as unclear, and a square root lifts those most while leaving solid strokes solid (a 1.2× multiplier was tried first and was too faint to see). The shine is not brightened with them. The pills moved onto the drawing's own landmarks (see `REGIONS` in `FaceDiagram.tsx`). ⚠️ **The unselected region pills are frosted glass as of 14 Sep 2026** (asked for directly — a soft frosted glass button, gentle lighting, blurred background for depth, pill shape kept; then edges as soft shades rather than lines, a thinner fill and less blur. A near-white at 75% was tried first and read as one flat colour, and a version with a white hairline and 1px highlight crescents read as outlined; the final values were then tuned by hand in the browser, twice, and supplied): a pale aqua base `#d3ffff` 40%, a fill from white 30% at the top to indigo-grey `#919ebd` 43% at the bottom, a radial light clear at the top-left and gathering pale sage `#d2d9c7` 28% toward the far edges, and a pale sage tint `#d3e7e8` 27% over all of it, under `blur(4) saturate(170%)` so the lines behind stay visible; no drawn edge — a soft grey shade `#484d4e` 29% blurred inside the bottom-right, plus `shadow/sm`. Hover swaps the tint for a 14% white wash and `shadow/md`. `text/primary` holds 6.33:1 or better. Values under `surface/face-pill` in `globals.css`. The location chips under the face (`Whole face`, `Neck`, `Other`) wear the same glass when unselected (asked for directly), and the same hover as the regions: the white wash, `shadow/md` and the 30% `gradient/brand` ring. Selected, the regions and those chips are the same glass in INDIGO (asked for directly; `surface/face-pill-selected`): a `bg/brand` base at 60%, a fill from `gradient/brand`'s light end at 40% to `bg/brand-hover` 60%, `bg/brand-soft` light pooled at the top-left (20%), a `bg/brand` tint (15%), a `bg/brand-soft` light (35%) and a `bg/brand-hover` shade (90%) inside the edges — toned down from 50/45/80% to be less shiny, asked for directly — `shadow/button`, and the existing diagonal shade. The white label holds 5.67:1 or better. Every other selected `Chip` in the app stays flat indigo. The label stays `text/primary` and the selected pill stays indigo `bg/brand`. They were opaque `bg/frost-light-muted` only because the old dome's dark outline showed through a translucent fill. Raise the glass pill as a variant. Figma has no face artwork at all — raise the drawing, its shading and a note on the shine; the old `gradient/face-form` / `face-tier` tokens are deleted. |
+| **Face-region picker** | The region coordinates **are** the design — "Cheeks (L)" only means the left cheek because of where it sits. Stored as % of the 392×300 card so it scales. ⚠️ **The face is a CONTOUR DRAWING as of 13 Sep 2026, not the CSS dome** — white level lines until 26 Sep 2026 and a wireframe traced from a reference image since, drawn 5% larger than its registration and with a neck and shoulders drawn from a second reference (`features/my-skin/assets/face-art.svg`, the head 260×322 at 66,55 in a 670×1040 frame, by `scripts/face-art.mjs`; see the entries below — it is a placeholder with an IP caveat), over a shading layer masked to the head's outline (`face-silhouette.svg`: lighter centre, deep sage `#284a4d` toward the edge), with a pointer-following shine masked to the lines. ⚠️ **The lines are drawn clearer than the asset as of 14 Sep 2026** (asked for directly, twice): an SVG `feComponentTransfer` in `FaceDiagram.tsx` lifts each line pixel's alpha to its square root, because the asset is pure white and only its alpha has room to rise. A curve rather than a multiplier: the thin antialiased strokes are what read as unclear, and a square root lifts those most while leaving solid strokes solid (a 1.2× multiplier was tried first and was too faint to see). The shine is not brightened with them. The pills moved onto the drawing's own landmarks (see `REGIONS` in `FaceDiagram.tsx`). ⚠️ **The unselected region pills are frosted glass as of 14 Sep 2026** (asked for directly — a soft frosted glass button, gentle lighting, blurred background for depth, pill shape kept; then edges as soft shades rather than lines, a thinner fill and less blur. A near-white at 75% was tried first and read as one flat colour, and a version with a white hairline and 1px highlight crescents read as outlined; the final values were then tuned by hand in the browser, twice, and supplied): a pale aqua base `#d3ffff` 40%, a fill from white 30% at the top to indigo-grey `#919ebd` 43% at the bottom, a radial light clear at the top-left and gathering pale sage `#d2d9c7` 28% toward the far edges, and a pale sage tint `#d3e7e8` 27% over all of it, under `blur(4) saturate(170%)` so the lines behind stay visible; no drawn edge — a soft grey shade `#484d4e` 29% blurred inside the bottom-right, plus `shadow/sm`. Hover swaps the tint for a 14% white wash and `shadow/md`. `text/primary` holds 6.33:1 or better. Values under `surface/face-pill` in `globals.css`. The location chips under the face (`Whole face`, `Neck`, `Other`) wear the same glass when unselected (asked for directly), and the same hover as the regions: the white wash, `shadow/md` and the 30% `gradient/brand` ring. Selected, the regions and those chips are the same glass in INDIGO (asked for directly; `surface/face-pill-selected`): a `bg/brand` base at 60%, a fill from `gradient/brand`'s light end at 40% to `bg/brand-hover` 60%, `bg/brand-soft` light pooled at the top-left (20%), a `bg/brand` tint (15%), a `bg/brand-soft` light (35%) and a `bg/brand-hover` shade (90%) inside the edges — toned down from 50/45/80% to be less shiny, asked for directly — `shadow/button`, and the existing diagonal shade. The white label holds 5.67:1 or better. Every other selected `Chip` in the app stays flat indigo. The label stays `text/primary` and the selected pill stays indigo `bg/brand`. They were opaque `bg/frost-light-muted` only because the old dome's dark outline showed through a translucent fill. Raise the glass pill as a variant. Figma has no face artwork at all — raise the drawing, its shading and a note on the shine; the old `gradient/face-form` / `face-tier` tokens are deleted. |
 | **`My skin` nav icon** | The nav's fourth glyph. `Bottom-Nav-Bar` (`410:258`) ships three and the DS has no face or skin mark anywhere. Stroke-drawn, unlike its three filled neighbours: a solid disc at 24 is far heavier, and the face only reads with the eyes and mouth left open. |
 | **Product imagery** | No product or bottle icon exists outside the nav, so every thumb and image well drew a camera — which identifies nothing down a list. Nine vessel silhouettes by packaging type, tinted per brand. Raise a real illustration set. |
 | **Check-in photo** | The photos card's entire content is a picture, so a camera glyph says "no photo" on the record of one the user took. Raise real imagery. |
@@ -857,6 +857,64 @@ matched to the drawing above. The head's footprint on the card is unchanged
 hover shine fade out over the neck, from 80% of the box's height to 98%. The
 diagram takes a 30-unit bottom margin, so the chip row sits under the faded
 tail. For Figma this needs the face artwork re-exported with its neck.
+
+### The face drawing is a wireframe traced from a reference image (26 Sep 2026)
+
+From a supplied reference ("can you recreate this"): a front-on 3D head as
+a glowing quad mesh, its loops flowing round the eyes, nose and mouth. A
+procedural head was sculpted and drawn as that mesh first, then reshaped
+against the reference (ears, nose, lips, neck, a jawline), and did not
+read as a real human face; image generation was blocked on the account
+(Gemini credits depleted, Figma not linked to Weave). ⚠️ **The decision
+to trace the reference image itself was the product owner's**, asked for
+directly ("use the reference, trace it and wire it in"): it is a
+wireframe-head image found on Pinterest (pin 305611524731014086), someone
+else's artwork, and it must be replaced with a generated or licensed head
+before anything ships beyond the prototype. `scripts/face-art.mjs`
+(`npm run face`) holds the source as `assets/source/face-reference.png`
+(its brightest channel) and traces it: registered to the frame by one
+uniform scale on the eye row and the mouth line (the chin and crown land
+with them; the nose tip lands 27 rows below its pill, still under it), a
+local-contrast line rule (the mesh lines on the face are dimmer than the
+outline's glow), Zhang–Suen thinning, chaining, pruning of the mesh where
+glows touch, joining across gaps, smoothing, and vector strokes whose
+opacity is the source's own glow (`face-art.svg`, ~45 KB); the silhouette
+is the image's non-background region (`face-silhouette.svg`). The same
+script takes any light-lines-on-black image, so a generated head drops in
+by changing the three measured landmarks. White only — the sage is the
+card's. For Figma there is nothing to raise from this one; it is a
+placeholder with a provenance.
+
+**Later the same day, asked for directly ("make it 5% bigger and add the
+neck part like the image I attached"):** the head is drawn 5% larger than
+the registration gives, about the eye row (the eyes sit 3 rows under their
+pill, the lips 15, the nose tip 38 — all under pills ~100 rows tall; no
+pill moved), and the neck and the shoulders are DRAWN from a second
+supplied reference, a clean line drawing of a neck: measured in units of
+its own neck width and hung off the traced jaw at the lowest row where
+the jaw is a neck wide, as clean strokes in the wireframe's stroke width,
+no mesh (its collarbones were drawn too and removed within the hour,
+asked for directly). The frame grew from 670×980 to 670×1040 for them
+(not wider — the shoulder strokes fade out before the frame's edge). The
+neck fade of 14 Sep is now on the shading only (90% → 99%) and gone from
+the lines and the shine, because the strokes end by design and a fade
+dimmed the drawing's last marks. The neck is not a traced work — it is a
+few measured proportions — but it is drawn to match the head it is on, so
+it goes when the head goes.
+
+**Then, asked for directly ("make the whole face diagram bigger 15% and
+move it down 15%"):** the drawing's footprint on the card is 260×322 at
+66,55 — the 226×280 at 83,10 every landmark was read at, scaled 1.15
+about the crown's centre and dropped 45 units — and the region pills take
+the same map in `FaceDiagram.tsx`, so they stay on their features (their
+seats are still written at the old footprint). The drawing hangs ~158
+units below the 392×300 box, the diagram's bottom margin is 152, and both
+chip rows sit under the shoulders (the read-only row's −12 pull-up from 7
+Sep is gone with the dead air it took). **And the pointer shine is back**
+("add the hover lightening effect we had before"): on the hairline vector
+mesh the 13 Sep glow (one soft 3px shadow, the layer at 0.6) lit nothing,
+so it takes two shadows (1.5px at 0.9 under 5px at 0.7), the layer at 1
+and a 16cqw light with a fuller core.
 
 ### PROGRESS's profile card shows the status and the latest photos, and its face shows callouts (14 Sep 2026)
 

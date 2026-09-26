@@ -2,7 +2,6 @@
 
 import {
   useEffect,
-  useId,
   useRef,
   useState,
   type CSSProperties,
@@ -11,8 +10,8 @@ import {
 import styles from "./FaceDiagram.module.css";
 import { Chip } from "@/components/ui/Chip";
 import { SYMPTOMS, type Symptom } from "@/features/my-skin/safety";
-import contour from "../assets/face-contour.webp";
-import silhouette from "../assets/face-silhouette.webp";
+import art from "../assets/face-art.svg";
+import silhouette from "../assets/face-silhouette.svg";
 
 /**
  * The face-region picker on 03b — Figma `face-diagram-card` (392x300).
@@ -34,13 +33,40 @@ import silhouette from "../assets/face-silhouette.webp";
  * 392x300 ratio in the comment above now belongs to the diagram illustration
  * alone — the card itself grows to fit the chip row under it.
  *
- * ⚠️ THE FACE IS A CONTOUR DRAWING, NOT A DOME — NOT IN FIGMA, chosen 13 Sep
- * 2026 from a three-way prototype (photo / sage / contour), asked for
- * directly. It replaced a CSS terraced dome (a filled ellipse plus five
- * nested tiers). The asset is white level lines on transparency, cut from a
- * supplied illustration at the neck — see `.lines` for its footprint — and a
- * shine follows the pointer ACROSS THE LINES ONLY (`.shine`, masked by the same
- * image). Raise both in Figma: the DS still has no face artwork.
+ * ⚠️ THE FACE IS A WIREFRAME TRACED FROM A SUPPLIED REFERENCE IMAGE — NOT IN
+ * FIGMA, AND NOT OURS. It was a CSS terraced dome, then from 13 Sep 2026 a
+ * contour drawing (a scanned head's iso-depth lines, asked for directly),
+ * and since 26 Sep 2026 a quad-mesh head: the lines of a wireframe-head
+ * image found on Pinterest (pin 305611524731014086) thinned to skeletons
+ * and written as vector strokes by `scripts/face-art.mjs` (`npm run face`;
+ * the provenance and the IP position are in its header). A procedural
+ * head was built and reshaped against that reference first and did not
+ * read as a real face; image generation was blocked on the account; the
+ * decision to trace the reference itself was the product owner's, asked
+ * for directly ("use the reference, trace it and wire it in"). ⚠️ Replace
+ * the source with a generated or licensed head before this ships beyond
+ * the prototype — the script takes any light-lines-on-black image.
+ *
+ * The asset is white lines on transparency, each line's opacity the
+ * source's own glow at that point — see `.art` for its footprint — and a
+ * shine follows the pointer ACROSS THE LINES ONLY (`.shine`, masked by the
+ * same image). The silhouette is the same image's non-background region
+ * plus the neck column, so the shading it masks falls down the neck.
+ * ⚠️ REGISTERED BY THE EYES AND THE LIPS, THEN DRAWN 5% LARGER (asked for
+ * directly 26 Sep 2026): one uniform scale maps the image's eye row and
+ * mouth line onto `REGIONS`' rows below, and the head is then enlarged
+ * about the eye row, so the eyes sit 3 rows under their pill, the lips 15,
+ * the nose tip 38 (this head's nose is longer than the landmark spacing)
+ * — all still under their pills, which are ~100 rows tall. ⚠️ THE NECK AND
+ * THE SHOULDERS ARE DRAWN, NOT TRACED: the image is
+ * cut at the chin, and they follow a second supplied line drawing (asked
+ * for directly: "add the neck part like the image I attached"), measured
+ * and hung off the traced jaw by the script. The frame is 670x1040 for
+ * them, up from the 980 of the first asset — `.form` in the module CSS
+ * carries what that costs. ⚠️ AND THE WHOLE DRAWING IS 15% LARGER AND 45
+ * UNITS LOWER ON THE CARD than the footprint every seat and measurement in
+ * this file is written at (asked for directly) — see `REGIONS`. Raise the artwork in Figma: the DS still has no
+ * face artwork.
  */
 /* `x`/`y` are the pill's CENTRE, as fractions of the 392x300 box. */
 type Region = { id: string; x: number; y: number };
@@ -57,7 +83,21 @@ type Region = { id: string; x: number; y: number };
    ⚠️ AND `y` IS THE CENTRE, NOT THE TOP. A pill is a fixed-ratio object in a box
    that scales, so a top-anchored pill's centre drifts up the face as the diagram
    grows; `.region` translates -50% on both axes so one set of fractions means
-   the same point at 440 and at 1024+. */
+   the same point at 440 and at 1024+.
+
+   ⚠️ THE DRAWING IS 15% LARGER AND 45 UNITS LOWER THAN EVERY SEAT BELOW SAYS,
+   AS OF 26 Sep 2026 — asked for directly ("make the whole face diagram bigger
+   15% and move it down 15%"). The seats are still written at the footprint
+   they were read at (226x280 at 83,10); `seat` maps each one the way `.form`
+   in the module CSS maps the drawing — scaled about the crown's centre
+   (196,10), then dropped 45 — so a pill stays on its feature. `FACE_ZOOM` and
+   `FACE_DROP` here and the `.form` calc there are ONE value written twice;
+   change both. The callout rails and the neck point take the same map. */
+const FACE_ZOOM = 1.15;
+const FACE_DROP = 45 / 300;
+const seatX = (x: number) => 0.5 + (x - 0.5) * FACE_ZOOM;
+const seatY = (y: number) => (y - 10 / 300) * FACE_ZOOM + 10 / 300 + FACE_DROP;
+const seat = (r: Region): Region => ({ ...r, x: seatX(r.x), y: seatY(r.y) });
 const REGIONS: Region[] = [
   { id: "Forehead", x: 199 / 392, y: 74 / 300 },
   { id: "Eye area", x: 199 / 392, y: 139 / 300 },
@@ -69,7 +109,7 @@ const REGIONS: Region[] = [
   { id: "Cheeks (R)", x: 278 / 392, y: 181 / 300 },
   { id: "Around mouth", x: 199 / 392, y: 223 / 300 },
   { id: "Chin / jaw", x: 199 / 392, y: 266 / 300 },
-];
+].map(seat);
 
 /** So "Whole face" can select/clear every region pill in one tap — see StartInvestigation. */
 export const FACE_REGION_IDS = REGIONS.map((r) => r.id);
@@ -112,21 +152,25 @@ type Callout = {
   regions: Region[];
 };
 
-const MIDDLE_ROW = 181 / 300;
+const MIDDLE_ROW = seatY(181 / 300);
 /* how far a crossing callout steps off the middle row: a line from `Nose` to
    the edge passes `Cheeks (L)` 41% of the way along, and has to be 17 clear of
    that pill's centre there */
-const MIDDLE_ROW_STEP = 50 / 300;
+const MIDDLE_ROW_STEP = (50 / 300) * FACE_ZOOM;
 /* one pill plus air — the pill is at most 24px tall (see `.symptom`) */
 const CALLOUT_PITCH = 30 / 300;
-const CALLOUT_TOP = 14 / 300;
-const CALLOUT_BOTTOM = 286 / 300;
+/* the rails follow the drawing's map too, so the stack still spans the head */
+const CALLOUT_TOP = seatY(14 / 300);
+const CALLOUT_BOTTOM = seatY(286 / 300);
 
 /* the neck is not a pill, so its line ends on the drawing: level with the neck
    below the `Chin / jaw` pill, at the neck's edge on the side its callout
-   is on (the neck spans about 152–264 of the box's width there) */
-const NECK: Region = { id: "Neck", x: 199 / 392, y: 290 / 300 };
-const NECK_X = { left: 156 / 392, right: 242 / 392 };
+   is on. ⚠️ The drawn neck of 26 Sep 2026 is wider than the 14 Sep one these
+   were read on (152–264): its sides are `NECK_HALF` 180 either side of frame
+   x 337 (the script prints both), i.e. 136–257 of the box's width at the
+   footprint the seats are written in, and the dot sits on the line. */
+const NECK: Region = seat({ id: "Neck", x: 199 / 392, y: 290 / 300 });
+const NECK_X = { left: seatX(136 / 392), right: seatX(257 / 392) };
 
 const mean = (ns: number[]) => ns.reduce((a, b) => a + b, 0) / ns.length;
 
@@ -434,7 +478,6 @@ export function FaceDiagram(props: FaceDiagramProps) {
   const glint = props.readOnly !== true ? (props.glint ?? 0) : 0;
   const shine = useLineShine();
   /* each instance owns its filter, under an id stable across SSR */
-  const brightenId = useId();
   const callouts = layoutCallouts(props.callouts ?? {});
 
   /* the pairing under the pointer — see HOVER in the note above. Ignored while
@@ -591,39 +634,26 @@ export function FaceDiagram(props: FaceDiagramProps) {
           aria-hidden="true"
           style={
             {
-              "--face-lines": `url(${contour.src})`,
+              "--face-art": `url(${art.src})`,
               "--face-silhouette": `url(${silhouette.src})`,
-              "--face-lines-brighten": `url("#${brightenId}")`,
             } as CSSProperties
           }
         >
-          {/* ⚠️ THE LINES ARE LIFTED, asked for directly 14 Sep 2026, twice —
-              NOT IN FIGMA. The asset is pure white on transparency, so
-              `brightness()` has no colour left to raise; what reads as the
-              line's clarity is its ALPHA, and only an SVG filter can change
-              that. ⚠️ A CURVE, NOT A MULTIPLIER: half the line pixels are thin
-              antialiased strokes under 40% alpha, and ×1.2 (tried first, mean
-              0.414 → 0.494) left them as faint as before. Each alpha goes to
-              its square root instead — mean 0.414 → 0.622, strokes under 40%
-              from 48% of the lines to 9%, and the 0.2% already opaque stay
-              exactly that, so no line thickens or clips. Only `.lines` takes
-              it: `.shine` masks by the same image and keeps the strength it
-              was dimmed to. */}
-          <svg className={styles.filters} aria-hidden="true" focusable="false">
-            <filter id={brightenId}>
-              <feComponentTransfer>
-                <feFuncA type="gamma" amplitude="1" exponent="0.5" />
-              </feComponentTransfer>
-            </filter>
-          </svg>
+          {/* ⚠️ NO ALPHA LIFT ANY MORE. The contour asset ran through an SVG
+              filter raising each pixel's alpha to its square root (asked for
+              directly 14 Sep 2026, twice), because a faint antialiased line
+              only has its alpha to raise. The mesh carries the LIGHT in its
+              alpha — a shadowed segment at 0.4 is the form — and a square
+              root would pull 0.4 to 0.63 and flatten the head. Gone with the
+              contour lines, 26 Sep 2026. */}
           <span className={styles.volume} />
           {/* biome-ignore lint/performance/noImgElement: a fixed decorative
               asset masked by CSS; next/image's wrapper and srcset buy nothing */}
           <img
-            className={styles.lines}
-            src={contour.src}
-            width={contour.width}
-            height={contour.height}
+            className={styles.art}
+            src={art.src}
+            width={art.width}
+            height={art.height}
             alt=""
             draggable={false}
           />

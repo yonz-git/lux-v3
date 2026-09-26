@@ -191,11 +191,15 @@
   position: relative;
   width: 100%;
   aspect-ratio: 392 / 300;
-  /* ⚠️ ROOM FOR THE NECK, 14 Sep 2026: the drawing now hangs ~41 units below
-     this box and fades out (see `.form`); 30 of them are cleared here so the
-     chip row sits under the faded tail, not over the neck. A margin percentage
-     resolves against WIDTH, which is the 392 this is written in. */
-  margin-bottom: calc(30 / 392 * 100%);
+  /* ⚠️ ROOM FOR THE NECK, 14 Sep 2026, AND FOR THE LARGER, LOWER HEAD SINCE
+     26 Sep 2026: the drawing hangs ~158 units below this box (see `.form` —
+     the shoulder strokes end at box y≈448), and 152 of them are cleared here
+     so the chip row starts under the shoulders, `.card`'s own 12 gap clear of
+     their last visible mark. It was 30 of a ~41 hang while the neck faded to
+     nothing; the neck ENDS now, in the shoulders, and a row over them would
+     sit on the drawing. A margin percentage resolves against WIDTH, which is
+     the 392 this is written in. */
+  margin-bottom: calc(152 / 392 * 100%);
   /* The 392x300 box used to end ~20% below the lowest pill, because the drawn
      face bottomed out at y=241 and nothing filled the rest; a -9% bottom margin
      pulled the chip row up into that dead air. The head now runs to y=290 of
@@ -220,69 +224,87 @@
   gap: 10px;
 }
 
-/* ⚠️ THE ILLUSTRATION — A CONTOUR HEAD, NOT A DOME. NOT IN FIGMA, chosen 13 Sep
-   2026, asked for directly; see FaceDiagram.tsx. Three layers in the head's
-   own footprint, 226x280 at 83,10 of the 392x300 box — the dome's footprint
-   (230x260 at 81,20) near enough that every pill kept its breathing room:
+/* ⚠️ THE ILLUSTRATION — A WIREFRAME TRACED FROM A REFERENCE, NOT A DOME. NOT
+   IN FIGMA; a contour drawing from 13 Sep 2026, the traced mesh from 26 Sep
+   2026 — see FaceDiagram.tsx for what it is and whose it is.
+   Three layers in the head's own footprint, 226x280 at 83,10 of the 392x300
+   box — the dome's footprint (230x260 at 81,20) near enough that every pill
+   kept its breathing room:
 
-   1. `.volume` — the 3D. Shading masked to the head's OUTLINE
+   1. `.volume` — the ground. Shading masked to the head's OUTLINE
       (`--face-silhouette`): lighter in the middle, a deep sage toward the edge,
-      so a drawing of lines reads as a form under them. ⚠️ Centred at 42%, the
-      face's middle rather than the box's, because the neck below the chin is
-      meant to fall into the dark.
-   2. `.lines` — the level lines, brightest at the centre and stepping down to
-      60% toward the edge, the same light as `.volume` read on the lines.
+      so the mesh reads as a form on a form. ⚠️ Centred at 42%, the face's
+      middle rather than the box's, because the neck below the chin is meant
+      to fall into the dark.
+   2. `.art` — the head, brightest at the centre and stepping down to 60%
+      toward the edge, the same light as `.volume` read on the mesh. The
+      mesh carries its own light too (the source's glow, kept as each
+      line's opacity), and the two agree: light in the middle, and the rim
+      lit where it turns away.
    3. `.glow` + `.shine` — a light that follows the pointer, masked to the
-      LINES (`--face-lines`), so it catches on them rather than lighting the
-      skin between.
+      MESH (`--face-art`), so it catches on the lines rather than lighting
+      the skin between.
 
    ⚠️ EVERY COLOUR AND ALPHA HERE IS A CHOSEN VALUE, raw rather than a token
    because `02 Color` has no role for face artwork. `#284a4d` is the halo's
    core taken one step deeper. Raise the drawing and its shading in Figma. */
-/* ⚠️ THE DRAWING RUNS 980 SOURCE ROWS NOW, NOT 830 — the neck, asked for
-   directly 14 Sep 2026. The asset stopped in a hard cut under the chin. From
-   row 740 down (blended over 20 rows) both images now come straight from the
-   same supplied illustration, registered to the head at 0.1848 scale within
-   half a pixel: the neck's own contour lines to row 979, and the neck's
-   outline for the silhouette. ⚠️ THE SWITCH IS AT 740, NOT AT THE OLD CUT: the
-   old asset had already faded its last ~90 rows toward the cut, lines and
-   silhouette both, so splicing at 830 left a band where the shading died and
-   came back, and a box where the neck lines thinned. The masks below fade the
-   whole neck out. The head keeps its 226x280 footprint at
-   83,10, so every region pill still sits on its landmark; the box is only
-   taller, by 980/830, and hangs ~41 units below `.diagram` — which is why
-   `.diagram` carries a bottom margin. Every percentage of HEIGHT in the
-   layers below is the old value × 830/980, so the shading and the falloff
-   stay where they were on the face. */
+/* ⚠️ THE DRAWING'S FRAME IS 670x1040 AND THE HEAD SITS IN THE TOP 830 ROWS
+   OF IT. The frame is inherited from the first asset (a supplied
+   illustration cut at the neck, 830 rows, then extended to 980 for the
+   neck on 14 Sep 2026, and to 1040 on 26 Sep 2026 for the drawn neck and
+   shoulders — 1100 for an hour, while the reference's collarbones were
+   drawn too); since 26 Sep 2026 both images come out of
+   `scripts/face-art.mjs` (see FaceDiagram.tsx) in that frame, the head
+   registered by the eyes and the lips to the rows the region pills are
+   seated on and drawn 5% larger than that registration gives, asked for
+   directly.
+   ⚠️ THE FOOTPRINT IS 260x322 AT 66,55 AS OF 26 Sep 2026 — the 226x280 at
+   83,10 every landmark was read at, scaled 1.15 about the crown's centre
+   (196,10) and dropped 45 (15% of the box), asked for directly ("make the
+   whole face diagram bigger 15% and move it down 15%"). `REGIONS` in
+   FaceDiagram.tsx takes the SAME map (`FACE_ZOOM`, `FACE_DROP`), so every
+   pill still sits on its feature; change one and change the other. The box
+   is taller than the head, by 1040/830, and hangs ~158 units below
+   `.diagram` — which is why `.diagram` carries a bottom margin. Every
+   percentage of HEIGHT in the layers below is the 830-row value × 830/1040,
+   so the shading and the falloff stay where they were on the face. ⚠️ The frame is NOT widened for the shoulders: a wider
+   frame moves `.form`'s left and width and every percentage of WIDTH below
+   with them, so the shoulder strokes fade out before the frame's edge
+   instead (the script's `SHOULDER_FADE`).
+   ⚠️ THE NECK FADE IS ON THE SHADING ONLY, AS OF 26 Sep 2026 — 90% → 99% of
+   the box on `.volume`, and gone from `.art` and `.shine`. Until then all
+   three faded 80% → 98%, which was right for a neck that ran off the frame
+   (14 Sep) and empty for one cut at the chin (26 Sep, morning). The neck
+   now ENDS by design — the shoulders taper to nothing in the asset, at row
+   ~1012 — and a fade over its last fifth dimmed the drawing's last marks.
+   The shaded neck still has to fall into the dark: the silhouette follows
+   the neck and shoulder strokes (not a straight-sided column — that put an
+   edge across the shoulder curve, and it was asked to be smoothed), holds
+   to where the shoulders start (row ~935, 90%) and is gone by the frame's
+   last rows (~1030, 99%), where its own hard bottom edge would otherwise
+   show. Below the shoulder strokes' ends the silhouette runs to the frame's
+   sides; at 1024 the frame's bottom corners were zoomed and show no band or
+   step, the fade has it by then. */
 .form {
   position: absolute;
-  left: calc(83 / 392 * 100%);
-  top: calc(10 / 300 * 100%);
-  width: calc(226 / 392 * 100%);
-  height: calc(280 / 300 * 980 / 830 * 100%);
+  left: calc((196 - 113 * 1.15) / 392 * 100%);
+  top: calc((10 + 45) / 300 * 100%);
+  width: calc(226 * 1.15 / 392 * 100%);
+  height: calc(280 * 1.15 / 300 * 1040 / 830 * 100%);
   pointer-events: none;
 }
 
 .volume,
-.lines,
+.art,
 .glow,
 .shine {
   position: absolute;
   inset: 0;
 }
 
-/* the holder for `.lines`' filter — out of layout but still rendered, since a
-   filter inside a `display: none` SVG resolves to nothing in some engines */
-.filters {
-  position: absolute;
-  width: 0;
-  height: 0;
-  overflow: hidden;
-}
-
 .volume {
   background: radial-gradient(
-    ellipse 50% 38.96% at 50% 35.57%,
+    ellipse 50% 36.71% at 50% 33.52%,
     rgb(255 255 255 / 0.24) 0%,
     rgb(255 255 255 / 0.1) 40%,
     rgb(40 74 77 / 0) 72%,
@@ -291,36 +313,29 @@
   /* the second layer fades the shading out down the neck — see `.form` */
   -webkit-mask:
     var(--face-silhouette) center / contain no-repeat,
-    linear-gradient(#000 80%, transparent 98%);
+    linear-gradient(#000 90%, transparent 99%);
   -webkit-mask-composite: source-in;
   mask:
     var(--face-silhouette) center / contain no-repeat,
-    linear-gradient(#000 80%, transparent 98%);
+    linear-gradient(#000 90%, transparent 99%);
   mask-composite: intersect;
 }
 
-/* the asset's lines were thickened by about half a pixel and lifted when it was
-   cut, so a 1px source line does not antialias to grey at card size — brighter
-   than the prototype's, deliberately not bolder.
-   ⚠️ AND CLEARER AGAIN, asked for directly 14 Sep 2026 (twice): the filter is
-   an SVG one in FaceDiagram.tsx lifting each line pixel's alpha to its square
-   root (the reason and the numbers are there). A filter runs before the mask,
-   so the falloff below still applies to the lifted lines. */
-.lines {
+/* the mesh is vector (1.55 frame-px strokes; the 670-wide frame draws at
+   212px at 440 and 263px at 1024, measured, so a 0.5–0.6px hairline), so
+   it stays crisp at every DPR. ⚠️ THE
+   ALPHA LIFT IS GONE — the contour asset took an SVG filter here (asked for
+   directly 14 Sep 2026, twice); the mesh's alpha IS its light, and lifting
+   it flattens the head. See FaceDiagram.tsx. */
+.art {
   width: 100%;
   height: 100%;
   object-fit: contain;
   user-select: none;
-  filter: var(--face-lines-brighten);
-  /* the second layer fades the lines out down the neck — see `.form` */
-  -webkit-mask-image:
-    radial-gradient(ellipse 50% 38.96% at 50% 35.57%, #000 45%, rgb(0 0 0 / 0.6) 100%),
-    linear-gradient(#000 80%, transparent 98%);
-  -webkit-mask-composite: source-in;
-  mask-image:
-    radial-gradient(ellipse 50% 38.96% at 50% 35.57%, #000 45%, rgb(0 0 0 / 0.6) 100%),
-    linear-gradient(#000 80%, transparent 98%);
-  mask-composite: intersect;
+  /* no neck fade on the lines since 26 Sep 2026 — the strokes end by design,
+     see `.form` */
+  -webkit-mask-image: radial-gradient(ellipse 50% 36.71% at 50% 33.52%, #000 45%, rgb(0 0 0 / 0.6) 100%);
+  mask-image: radial-gradient(ellipse 50% 36.71% at 50% 33.52%, #000 45%, rgb(0 0 0 / 0.6) 100%);
 }
 
 /* ⚠️ THE GLOW IS A WRAPPER BECAUSE A FILTER RUNS BEFORE A MASK. On `.shine`
@@ -330,41 +345,44 @@
    ⚠️ IT FADES, IT DOES NOT SNAP — `duration/slow`, the page-level reveal, so
    the light arrives and leaves like light. The position is FaceDiagram.tsx's
    rAF loop writing `--shine-x`/`--shine-y` onto this element. */
-/* ⚠️ ONE SOFT GLOW AT HALF STRENGTH. A full-white 1.5px shadow under a 5px one
-   filled the gaps between neighbouring lines and bloomed into a white patch;
-   the ask was "a little bit of shine", and this keeps it on the lines. */
+/* ⚠️ TWO SHADOWS AGAIN, AS OF 26 Sep 2026 — a 1.5px near-white one under a
+   5px one. That pair was cut to one soft 3px shadow at half strength on the
+   RASTER contour asset ("a little bit of shine"), where the lines were wide
+   enough that the light filled the gaps between them into a white patch.
+   The mesh is a hairline vector now (see `.art`), and the same soft shadow
+   on it was invisible: the mask keeps half a pixel of each line and nothing
+   blooms off it. Asked back directly ("add the hover lightening effect we
+   had before") — checked in the pane, this is the first pair that shows. */
 .glow {
   opacity: 0;
-  filter: drop-shadow(0 0 3px rgb(255 255 255 / 0.5));
+  filter: drop-shadow(0 0 1.5px rgb(255 255 255 / 0.9)) drop-shadow(0 0 5px rgb(255 255 255 / 0.7));
   mix-blend-mode: plus-lighter;
   transition: opacity var(--duration-slow) var(--ease-standard);
 }
 
-/* 0.6, not 1 — the light at full strength read too bright over the lines,
-   asked for directly 13 Sep 2026, in two 20% steps (1 → 0.8 → 0.6). Dimming
-   the whole layer takes the glow down with the shine, so the two keep their
-   proportion. */
+/* ⚠️ BACK TO 1 AS OF 26 Sep 2026. It was 0.6 — the light at full strength
+   read too bright over the raster lines, asked for directly 13 Sep 2026, in
+   two 20% steps (1 → 0.8 → 0.6). On the hairline mesh 0.6 of almost nothing
+   was nothing; see `.glow`. Dimming the whole layer still takes the glow
+   down with the shine, so the two keep their proportion. */
 .glow[data-active] {
-  opacity: 0.6;
+  opacity: 1;
 }
 
 /* the radius is in `cqw` of `.diagram`, so the light is the same size relative
-   to the face at 440 and at 1440 */
+   to the face at 440 and at 1440. ⚠️ 16cqw and a fuller core as of 26 Sep 2026
+   (14cqw, 0.85 → 0.45 at 30% before) — retuned with `.glow` for the hairline
+   mesh, see there. */
 .shine {
   background: radial-gradient(
-    circle 14cqw at var(--shine-x, 50%) var(--shine-y, 40%),
-    rgb(255 255 255 / 0.85) 0%,
-    rgb(255 255 255 / 0.45) 30%,
+    circle 16cqw at var(--shine-x, 50%) var(--shine-y, 40%),
+    rgb(255 255 255 / 1) 0%,
+    rgb(255 255 255 / 0.6) 35%,
     transparent 100%
   );
-  -webkit-mask:
-    var(--face-lines) center / contain no-repeat,
-    linear-gradient(#000 80%, transparent 98%);
-  -webkit-mask-composite: source-in;
-  mask:
-    var(--face-lines) center / contain no-repeat,
-    linear-gradient(#000 80%, transparent 98%);
-  mask-composite: intersect;
+  /* no neck fade since 26 Sep 2026, like `.art` — see `.form` */
+  -webkit-mask: var(--face-art) center / contain no-repeat;
+  mask: var(--face-art) center / contain no-repeat;
 }
 
 /* ---------------------------------------------------------------------------
@@ -1086,27 +1104,18 @@
   box-shadow: none;
 }
 
-/* ⚠️ THE READ-ONLY CHIP ROW IS PULLED UP INTO THE DIAGRAM BOX'S OWN DEAD AIR —
-   asked for directly, 7 Sep 2026, and this is the same move the comment at
-   `.diagram` records being retired for the INTERACTIVE mode. It is right here
-   and was wrong there because the two rows sit under different things: on step
-   1 the row is a live control group and needs its clearance, while these are
-   read-only pills under a picture, and the picture stops well before its box
-   does.
-
-   The numbers, in the 392x300 coordinate space every value in this file uses:
-   ⚠️ THE PULL IS 12 NOW, NOT 20 — the dome bottomed out at y=280 and the
-   contour head runs to y=290 (13 Sep 2026), so 20 would have laid the pills
-   over the neck. 12 cancels `.card`'s own row gap exactly: the row starts at
-   the box's own bottom edge, ~10 under the drawing and still clear of the
-   `Chin / jaw` pill (centre y=266). Nothing overlaps: the space being closed
-   is empty in every state, because the regions are fixed coordinates rather
-   than content that can grow.
-
-   ⚠️ SCOPED TO THE READ-ONLY LIST. `.chips` in the interactive mode keeps the
-   full gap — see above. */
+/* ⚠️ THE READ-ONLY CHIP ROW WAS PULLED UP INTO THE DIAGRAM BOX'S OWN DEAD AIR
+   from 7 Sep 2026 (asked for directly) TO 26 Sep 2026, AND IS NOT ANY MORE.
+   The pull was −12 — `.card`'s own row gap, so the row started at the box's
+   bottom edge — and it was right while the picture stopped ~10 short of its
+   box: a read-only row under a picture needs no control clearance, and the
+   space it closed was empty in every state. The picture now hangs ~76 units
+   BELOW the box (the neck and the collarbones, see `.form` and `.diagram`),
+   so there is no dead air to take, and a row pulled up sat on the collarbone
+   hooks. It keeps `.diagram`'s margin and the card gap like the interactive
+   `.chips` row does; the class stays for the list reset. */
 .chipList {
-  margin: calc(var(--space-md) * -1) 0 0; /* -12 */
+  margin: 0;
   padding: 0;
   list-style: none;
 }
