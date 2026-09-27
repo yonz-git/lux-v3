@@ -565,7 +565,7 @@ export function CheckResults({ now }: { now: number }) {
       {/* ⚠️ NOT IN FIGMA — the history link `/check` ends on, repeated at the
           foot of a result so the way to the other checks is not only the back
           chevron. See `.historyLink`. */}
-      <Link href="/check/history" className={`${styles.historyLink} t-body3`}>
+      <Link href="/check/history" className={`${styles.historyLink} t-body3 tap-target`}>
         <span className={styles.historyLabel}>View previous analyses</span>
         <ChevronRightIcon className={styles.historyArrow} />
       </Link>

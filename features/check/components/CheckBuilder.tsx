@@ -210,7 +210,7 @@ export function CheckBuilder({ now }: { now: number }) {
         {basketIds.includes(p.id) ? (
           <button
             type="button"
-            className={styles.remove}
+            className={`${styles.remove} tap-target`}
             aria-label={`Remove ${fullName(p)} from this analysis`}
             onClick={() => remove(p.id)}
           >
@@ -223,7 +223,7 @@ export function CheckBuilder({ now }: { now: number }) {
             label="Add"
             arrow={false}
             specular={false}
-            className={styles.add}
+            className={`${styles.add} tap-target`}
             disabled={full}
             aria-label={`Add ${fullName(p)} to this analysis`}
             onClick={() => add(p)}

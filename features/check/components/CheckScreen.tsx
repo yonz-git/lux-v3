@@ -154,7 +154,7 @@ export function CheckScreen() {
             rows) ends in this exact glyph. Same `ChevronRightIcon` at
             `icon-sm`, currentColor, so it takes `text/brand` from the link
             and cannot drift from it. Nothing else about the link changed. */}
-        <Link href="/check/history" className={`${styles.link} t-body3`}>
+        <Link href="/check/history" className={`${styles.link} t-body3 tap-target`}>
           <span className={styles.linkLabel}>View previous analyses</span>
           <ChevronRightIcon className={styles.linkArrow} />
         </Link>

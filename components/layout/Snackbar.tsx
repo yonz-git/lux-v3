@@ -10,6 +10,7 @@ import {
   useRef,
   useState,
 } from "react";
+import { usePathname } from "next/navigation";
 import styles from "./Snackbar.module.css";
 import { SmallButton } from "@/components/ui/SmallButton";
 
@@ -53,16 +54,14 @@ import { SmallButton } from "@/components/ui/SmallButton";
  * back two while claiming to walk back one.
  */
 
-/* ⚠️ THE BAR HOLDS FOR 4s AND THEN TAKES 320ms TO GO — IT WAS 6s AND A CUT.
-   Six seconds is longer than it takes to read four words and decide, so the bar
-   sat over the last row of the page long after it had been answered; and it
-   left by being unmounted, which is a frame-perfect disappearance in a design
-   system whose first sentence is "nothing snaps". The hold is the window to
-   notice a mistake — 4s, with the pause below covering anyone who needs longer
-   — and the exit is `duration/slow`, the token board 04b gives to anything
-   overlay-scale leaving the screen. The two are separate numbers because the
-   pause has to be able to cancel one and not the other. */
-const DISMISS_MS = 4000;
+/* ⚠️ THE BAR DOES NOT TIME OUT — 27 Sep 2026, from a review against Apple's HIG
+   ("don't auto-dismiss on a timer"). It held 4s (6s before that) with a pause
+   on hover and focus, and neither pause exists on a phone or for a screen
+   reader still reading the message, so the one way back from a removal could
+   leave before it was reachable. It now stays until the user moves on: a press
+   anywhere outside it, Escape, a route change, or the next `show()`. The exit
+   is still `duration/slow`, the token board 04b gives to anything
+   overlay-scale leaving the screen. */
 /* ⚠️ KEEP IN STEP WITH `--duration-slow` (320ms) — the fade is a CSS transition
    on `.bar` and this timeout only decides when the faded-out bar unmounts. Too
    short and it is cut off; too long and the live region holds a message nobody
@@ -70,7 +69,7 @@ const DISMISS_MS = 4000;
 const EXIT_MS = 320;
 
 type Snack = {
-  /** identity, so a repeat of the same message still restarts the timer */
+  /** identity, so a repeat of the same message re-runs its entrance */
   id: number;
   message: string;
   actionLabel: string;
@@ -95,58 +94,60 @@ export function useSnackbar() {
 
 export function SnackbarProvider({ children }: { children: React.ReactNode }) {
   const [snack, setSnack] = useState<Snack | null>(null);
-  const [paused, setPaused] = useState(false);
-  /* ⚠️ THE EXIT REMEMBERS WHY IT STARTED, AND IT HAS TO. An auto-dismiss that
-     has begun fading is cancelled by the pointer arriving (below); a dismissal
-     the user asked for by pressing the action is not — and the pointer is by
-     definition on the bar at that moment, so one flag for both would have the
-     press cancel itself. */
-  const [leaving, setLeaving] = useState<"auto" | "action" | null>(null);
+  const [leaving, setLeaving] = useState(false);
   const nextId = useRef(0);
+  const regionRef = useRef<HTMLDivElement>(null);
+  const pathname = usePathname();
 
   const show = useCallback(({ message, actionLabel = "Undo", onAction }: ShowArgs) => {
     nextId.current += 1;
-    setPaused(false);
-    setLeaving(null);
+    setLeaving(false);
     setSnack({ id: nextId.current, message, actionLabel, onAction });
   }, []);
 
-  /* ⚠️ THE TIMER PAUSES WHILE THE BAR IS HOVERED OR HOLDS FOCUS, AND THAT IS
-     WHAT PAYS FOR THE SHORTER HOLD. Four seconds is the window to notice a
-     mistake and reach the control; it is not enough to read the message,
-     decide, move a pointer across the screen and land on a 36px button, and a
-     bar that vanishes from under the cursor on the way to it is worse than no
-     bar. Keyboard users get the same guarantee for the same reason: tabbing to
-     the action must not be a race. */
+  /* Moving on is the dismissal: a press outside the bar, Escape, or leaving
+     the route. `pointerdown` in the capture phase so a press that opens
+     something else still counts, and on `document` so a press inside the bar
+     (its own action) is excluded by the containment check, not by ordering. */
   useEffect(() => {
-    if (!snack || paused || leaving) return;
-    const timer = setTimeout(() => setLeaving("auto"), DISMISS_MS);
-    return () => clearTimeout(timer);
-  }, [snack, paused, leaving]);
+    if (!snack || leaving) return;
+    const onPointer = (e: PointerEvent) => {
+      if (!regionRef.current?.contains(e.target as Node)) setLeaving(true);
+    };
+    const onKey = (e: KeyboardEvent) => {
+      if (e.key === "Escape") setLeaving(true);
+    };
+    document.addEventListener("pointerdown", onPointer, true);
+    document.addEventListener("keydown", onKey);
+    return () => {
+      document.removeEventListener("pointerdown", onPointer, true);
+      document.removeEventListener("keydown", onKey);
+    };
+  }, [snack, leaving]);
+
+  const lastPath = useRef(pathname);
+  useEffect(() => {
+    if (lastPath.current === pathname) return;
+    lastPath.current = pathname;
+    setLeaving(true);
+  }, [pathname]);
 
   /* The fade itself is CSS — `.bar[data-state="leaving"]` transitions to
-     opacity 0. This only unmounts what has finished fading, and hands the
-     pointer arriving mid-fade its bar back rather than letting it vanish from
-     under the cursor a few pixels short of the button. */
+     opacity 0. This only unmounts what has finished fading. */
   useEffect(() => {
     if (!leaving) return;
-    if (leaving === "auto" && paused) {
-      setLeaving(null);
-      return;
-    }
     const timer = setTimeout(() => {
       setSnack(null);
-      setLeaving(null);
+      setLeaving(false);
     }, EXIT_MS);
     return () => clearTimeout(timer);
-  }, [leaving, paused]);
+  }, [leaving]);
 
   /* ⚠️ THE BAR CLIMBS ABOVE AN OPEN SHEET'S `Done`. Its resting place is the
      nav clearance, which is exactly where a tray's own dismissal sits — so an
      undo raised from inside the add tray covered the tray's only way out.
      While a sheet is open the region's `bottom` is measured from that button's
      top edge instead, 12 above it; with no sheet it falls back to the CSS. */
-  const regionRef = useRef<HTMLDivElement>(null);
   const [liftTo, setLiftTo] = useState<number | null>(null);
   useLayoutEffect(() => {
     if (!snack) return;
@@ -181,23 +182,11 @@ export function SnackbarProvider({ children }: { children: React.ReactNode }) {
           announced — mounting the region and its message together is the
           classic way to ship a toast no screen reader ever reads. It takes no
           layout (fixed) and no clicks (pointer-events: none) while empty. */}
-      {/* ⚠️ THE PAUSE HANDLERS SIT ON THE REGION, NOT ON THE BAR. `mouseenter`
-          fires on an element when the pointer enters its SUBTREE, so the region
-          hears the bar being entered even though it is `pointer-events: none`
-          itself — and `focus` bubbles up from the action. Putting them here also
-          keeps the bar a plain container: a `<div>` carrying interaction
-          handlers and no role is exactly what `noStaticElementInteractions`
-          objects to, and the honest fix is that the interactive thing in here is
-          the button, not the box. */}
       <div
         ref={regionRef}
         className={styles.region}
         style={liftTo != null ? { bottom: liftTo } : undefined}
         role="status"
-        onMouseEnter={() => setPaused(true)}
-        onMouseLeave={() => setPaused(false)}
-        onFocus={() => setPaused(true)}
-        onBlur={() => setPaused(false)}
       >
         {snack && (
           /* ⚠️ NO `key` ON THE BAR — only on its message. The bar used to be
@@ -214,7 +203,7 @@ export function SnackbarProvider({ children }: { children: React.ReactNode }) {
               arrow={false}
               onClick={() => {
                 snack.onAction();
-                setLeaving("action");
+                setLeaving(true);
               }}
             />
           </div>

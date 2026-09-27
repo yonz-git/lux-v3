@@ -477,7 +477,7 @@
   align-items: center;
   min-height: clamp(18px, 6cqw, 24px);
   padding: 0 clamp(4px, 1.8cqw, var(--space-sm));
-  font-size: clamp(8px, 3cqw, 12px);
+  font-size: clamp(11px, 3cqw, 12px); /* 11 is the HIG floor */
   line-height: 1.3;
   white-space: nowrap;
   border-radius: var(--radius-full);
@@ -634,9 +634,9 @@
      above: at the diagram's common 276px rendered width (the `.face` +
      typed-note case) this lands the font at ~10px, `Cheeks (L)` and `Nose`
      8-9px clear of each other where they used to overlap. */
-  min-height: clamp(20px, 9cqw, 30px);
+  min-height: clamp(28px, 9cqw, 30px); /* 28 is the HIG minimum control */
   padding: 0 clamp(3px, 1.8cqw, calc(var(--space-sm) - var(--border-width-hairline)));
-  font-size: clamp(8px, 3.6cqw, 12px);
+  font-size: clamp(11px, 3.6cqw, 12px); /* 11 is the HIG floor */
   line-height: 1.3;
 
   /* ⚠️ LIGHT FROSTED GLASS, NOT AN OPAQUE PILL — asked for directly 14 Sep

@@ -77,6 +77,8 @@
 
 .input {
   flex: 1;
+  /* fills the pill's 50 so a tap anywhere on it lands in the field (HIG 44) */
+  align-self: stretch;
   min-width: 0;
   border: 0;
   background: none;
