@@ -418,13 +418,16 @@
   bottom: var(--space-sm);
 }
 
-/* non-negotiable 11: the pill's frost goes opaque. ⚠️ `bg/nav-bar`, the fill
-   it had before it turned to glass, NOT the glass made opaque: an opaque pale
-   pill would carry the white label at about 1.1:1 */
+/* non-negotiable 11: the pill's frost goes opaque. ⚠️ A DARK fill, NOT the
+   glass made opaque: an opaque pale pill would carry the white label at about
+   1.1:1. ⚠️ IT WAS `bg/nav-bar` — the fill this pill had before it turned to
+   glass — UNTIL 27 Sep 2026, when the nav bar went back to the app's light
+   frosted-pill glass and that token stopped being dark. `bg/photo-pill` holds
+   the value it had (globals.css); white measures 5.14:1 on it. */
 @media (prefers-reduced-transparency: reduce) {
   .date,
   .day {
-    background: var(--color-bg-nav-bar);
+    background: var(--color-bg-photo-pill);
     -webkit-backdrop-filter: none;
     backdrop-filter: none;
   }

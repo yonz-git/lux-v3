@@ -476,6 +476,7 @@
   --color-button-bg-secondary-start: #deeff391;
   --color-button-bg-secondary-end: #b9c8cddb;
 
+
   /* ⚠️ NOT IN FIGMA. The highlight of the light that sweeps the lockup in the
      entrance (components/ui/LuxLogo.tsx, `LightStops`) — asked for as this
      value on 12 Sep 2026, replacing `bg/brand-soft`. It is between the ramp's
@@ -855,40 +856,64 @@
   --color-gradient-canvas-end-desktop: #bdd6dd; /* Figma #b9d1d7; #a6bcc2 on 14 Sep */
 }
 
-/* ⚠️ THE NAV BAR NO LONGER BINDS `surface/frost-nav`, AS OF 13 Sep 2026 —
-   asked for directly, NOT IN FIGMA. It is the nav's own pair rather than a
-   change to the token above, because that token also fills `SearchField`,
-   `Snackbar`, `SegmentedToggle` and the product groups, and only the bar was
-   asked to move.
+/* ⚠️ THE NAV BAR IS BACK ON `surface/frost-nav`, AS OF 27 Sep 2026 — asked for
+   directly, with the undo snackbar held up beside it: "make the nav bar
+   transparent like the undo bar and use dark font". `Snackbar` was always
+   drawn as a SIBLING OF THE NAV — same fill, same rim, same shadow, same blur
+   (see Snackbar.module.css) — so for the fourteen days the bar spent on its
+   own deep teal, the two floating pills the app stacks one above the other
+   were two different materials. They are one again, and the ink went with the
+   material: the bar's labels are `text/primary`, the snackbar's own ink.
 
-   ⚠️ THE FILL IS `#17292f42`, A DARK SLATE TEAL AT 26% — asked for directly
-   later the same day. It was `#356472b0` (69%) for a few hours. At 26% the bar
-   reads as the canvas darkened under glass, not as a dark slab.
+   ⚠️ THE PAIR STAYS AS THE NAV'S OWN INDIRECTION, NOW ALIASING THE SHARED
+   FROSTED-PILL PAIR. Pointing `.nav` straight at `surface/frost-nav` would
+   have been the same pixels and would have broken the dark-welcome prototype,
+   whose four themes re-colour the bar by overriding exactly these two names
+   (app/prototypes/dark-welcome/themes.css). An alias keeps one source of truth
+   for the value AND keeps that seam.
 
-   ⚠️ `bg/nav-bar` IS THE BAR AS IT COMPOSITES, NOT THE FILL'S HEX MADE OPAQUE.
-   Non-negotiable 7 wants the reduced-transparency fallback to be the same
-   colour, opaque — at 88% or 69% the fill's own hex is exactly that. At 26% it
-   is not: `#17292f` opaque is near black, a different-looking control.
-   `#798e95` is the fill over `#9bb1b8`, the canvas's bottom stop, where the
-   bar sits. ⚠️ It was `#859ca3` over `#acc5cc` until the canvas was darkened
-   10% on 14 Sep 2026 — see the canvas override above; the two move together.
+   ⚠️ WHAT THE DEEP TEAL WAS, SO NOBODY RE-DERIVES IT: `#17292f` at 69%
+   (`#356472b0`) for a few hours on 13 Sep 2026 — a dark slab laid on the
+   canvas — then 26% (`#17292f42`), then 55% (`#17292f8c`) on 26 Sep, tried
+   because 26% failed its own labels. `bg/nav-bar` was never that hex made
+   opaque but the fill COMPOSITED over the canvas's bottom stop, which is why
+   it moved with the canvas: `#859ca3` over `#acc5cc`, `#798e95` over `#9bb1b8`
+   (14 Sep), `#89a0a8` over `#b1cad2` (15 Sep), `#5c7178` at 55%.
 
-   ⚠️ THE LABELS ARE WHITE (`text/on-data-inverse`) AND DO NOT CLEAR AA ON THIS
-   FILL. Hand-composited over `#9bb1b8`: white ~3.4:1 (it was ~2.9:1 over the
-   lighter canvas; the inactive 0.85 and the active pill were ~2.5 and ~3.5 then
-   and have not been re-measured). The dark app ink would measure ~4.0:1 here —
-   white was chosen for the 69% teal and that reason no longer holds. Kept white
-   pending a decision. */
-/* ⚠️ THE BAR IS 65 TALL, NOT FIGMA's 75 — 13 Sep 2026, asked for directly
-   when it went text-only (labels, no icons). An override of the generated
-   `size/nav-height` rather than a literal on the nav, because eleven rules
-   reserve clearance FROM this token — `.screen`'s bottom padding, `Sheet`'s
-   max-height, `Snackbar`, `CheckBasket`, `CheckInOverlay` — and a literal at
-   the nav alone would leave 10px of dead reservation under every screen. */
+   ⚠️ AND THE INK QUESTION IS CLOSED THE OTHER WAY. On the 26% bar white read
+   2.74:1 and the dark app ink ~4.0:1, with a note here saying white was kept
+   pending a decision; the 55% bar put white at 5.14:1 and the ink at ~1.9:1.
+   On THIS bar — `#dbeded` at 48% compositing to `#c5dbdf` over the canvas
+   floor — `text/primary` measures 9.60:1, and 6.50:1 through the inactive
+   item's 0.85 opacity. Both clear AA at 16px, which neither ink ever did on
+   the teal. White here would be 1.4:1, so the ink is not optional.
+
+   ⚠️ `bg/photo-pill` IS THE LEFTOVER, AND IT IS DELIBERATE. PROGRESS's gallery
+   pills borrowed `bg/nav-bar` for their reduced-transparency fallback because
+   they needed a DARK opaque fill under a white label; following the bar back
+   to `#dbeded` would carry that white at about 1.1:1. It keeps the value the
+   bar had, under its own name, and no longer tracks the nav. */
+/* ⚠️ THE BAR IS 58.5 TALL, NOT FIGMA's 75 — it went to 65 on 13 Sep 2026 when
+   it became text-only (labels, no icons), and down another 10% on 27 Sep,
+   asked for directly. An override of the generated `size/nav-height` rather
+   than a literal on the nav, because eleven rules reserve clearance FROM this
+   token — `.screen`'s bottom padding, `Sheet`'s max-height, `Snackbar`,
+   `CheckBasket`, `CheckInOverlay` — and a literal at the nav alone would leave
+   dead reservation under every screen.
+   ⚠️ THE FRACTION IS EXACT, NOT ROUNDED: 65 x 0.9. Rounding to 58 or 59 would
+   make "10% shorter" a number nobody can re-derive, and the bar is already on
+   subpixel positions (`translateX(-50%)` on an odd width).
+   ⚠️ THE FLOOR IS 56 AND THIS CLEARS IT BY 2.5. An item is `min-height: 44`,
+   the touch-target minimum, inside the nav's own 6 of vertical padding — so
+   anything under 56 either clips the target or is reservation the bar cannot
+   use. Do not take the next 10% off without moving one of those two. */
 :root {
-  --color-surface-nav-bar: #17292f42;
-  --color-bg-nav-bar: #89a0a8; /* the fill over #b1cad2, the brightened floor (15 Sep 2026) */
-  --size-nav-height: 65px;
+  --color-surface-nav-bar: var(--color-surface-frost-nav);
+  --color-bg-nav-bar: var(--color-bg-nav);
+  /* the deep teal's last composite, kept for PROGRESS's gallery pills — see
+     the note above and `.date`/`.day` in PhotoGallery.module.css */
+  --color-bg-photo-pill: #5c7178;
+  --size-nav-height: 58.5px;
 }
 
 :root {

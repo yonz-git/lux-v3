@@ -2,6 +2,12 @@
 
 import Link from "next/link";
 import styles from "./BottomNav.module.css";
+import {
+  CheckIcon,
+  MySkinIcon,
+  ProductsIcon,
+  ProgressIcon,
+} from "@/components/ui/icons";
 
 /**
  * The bottom navigation, from Figma component set `Bottom-Nav-Bar` (410:258).
@@ -51,23 +57,29 @@ import styles from "./BottomNav.module.css";
 
 export type NavSection = "none" | "my-skin" | "progress" | "check" | "products";
 
-/* ⚠️ TEXT-ONLY SINCE 13 Sep 2026 — asked for directly. The four icons were an
-   outline, a dotted ring, a filled glyph and a solid bottle-and-drop: four
-   weights in one row, which read less finished than the words alone. The
-   labels carry the bar now (`t-nav`, 14 Regular mobile / 16 desktop). The glyphs stay in `icons.tsx`
-   for their other callers; redraw them as ONE set in Figma before bringing
-   icons back. */
+/* ⚠️ THE ICONS ARE BACK — 27 Sep 2026, asked for directly ("can u find nice
+   icons to add?"), after a fortnight of text only. They went on 13 Sep because
+   the four glyphs were four different drawings — an outline, a dotted ring, a
+   filled glyph and a solid bottle-and-drop — and this file said to redraw them
+   as ONE set before bringing them back. That is what `icons.tsx` now holds:
+   one 24 box, one 1.5 stroke, one hand. The labels stay; an icon over a word
+   is the Figma component's own shape (`Bottom-Nav-Bar`, 410:258). */
 const items = [
-  { id: "my-skin", label: "My skin", href: "/investigation/start" },
-  { id: "progress", label: "Progress", href: "/progress" },
+  {
+    id: "my-skin",
+    label: "My skin",
+    href: "/investigation/start",
+    Icon: MySkinIcon,
+  },
+  { id: "progress", label: "Progress", href: "/progress", Icon: ProgressIcon },
   /* ⚠️ THE LABEL IS `Analysis`, THE ID IS STILL `check`. The id keys the route
      map, the `NavSection` type and every screen's `nav=` prop; renaming it
      would touch a dozen files to change a word the user never sees. The LABEL
      is the word the user sees, and the word the product means is analysis —
      the app was calling one idea "check", "investigation" and "findings". See
      `docs/decisions.md`, "the naming". */
-  { id: "check", label: "Analysis", href: "/check" },
-  { id: "products", label: "Products", href: "/products" },
+  { id: "check", label: "Analysis", href: "/check", Icon: CheckIcon },
+  { id: "products", label: "Products", href: "/products", Icon: ProductsIcon },
 ] as const;
 
 export function BottomNav({
@@ -85,13 +97,16 @@ export function BottomNav({
       style={style}
       aria-label="Sections"
     >
-      {items.map(({ id, label, href }) => {
+      {items.map(({ id, label, href, Icon }) => {
         /* ⚠️ NOT IN FIGMA — the label is the whole item (`t-nav`, 14 Regular mobile / 16 desktop),
            and it takes the buttons' hover shine, `.shine-text`. */
         const content = (
-          <span className={`${styles.label} t-nav shine-text shine-on-hover`}>
-            {label}
-          </span>
+          <>
+            <Icon className={styles.icon} />
+            <span className={`${styles.label} t-nav shine-text shine-on-hover`}>
+              {label}
+            </span>
+          </>
         );
         const isActive = active === id;
 

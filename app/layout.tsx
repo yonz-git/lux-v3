@@ -15,7 +15,17 @@ import { AppCanvas } from "@/components/layout/CanvasShader";
  */
 const figtree = Figtree({
   subsets: ["latin"],
-  weight: ["300", "400", "500"],
+  /* ⚠️ 600 IS LOADED FOR EXACTLY ONE CALLER — the selected bottom-nav label,
+     27 Sep 2026, asked for directly twice ("make the selected tab font
+     bolder", after it had already gone 400 -> 500). It is a DEVIATION from
+     non-negotiable 4, which holds the app to Light / Regular / Medium, and it
+     is recorded as the user's call rather than quietly generalised: nothing
+     else may reach for `--font-weight-semibold` without the same decision.
+     ⚠️ IT HAD TO BE ADDED HERE OR THE WEIGHT WOULD HAVE BEEN A LIE. Only the
+     weights listed are downloaded; `font-weight: 600` against a 300/400/500
+     family renders as 500 or as a synthesised faux-bold, neither of which is
+     the face Figtree draws. */
+  weight: ["300", "400", "500", "600"],
   variable: "--font-figtree",
   display: "swap",
 });

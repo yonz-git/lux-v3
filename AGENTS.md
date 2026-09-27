@@ -621,9 +621,18 @@ Controls `sm` 36 · `md` 48 (`Button size="md"`) · `lg` 62 (`Button`'s default 
 
 ### Icons — 13 exist, in `components/ui/icons.tsx`
 
-Nav: `MySkinIcon` `ProgressIcon` `CheckIcon` `ProductsIcon` — ⚠️ the nav bar
-itself is text-only since 13 Sep 2026 and draws none of them; they stay for
-their other callers (`PassList`)
+Nav: `MySkinIcon` `ProgressIcon` `CheckIcon` `ProductsIcon` — ⚠️ **redrawn as
+ONE set on 27 Sep 2026 and back in the bar.** They were four different drawings
+(a ring of dots, a filled circle in a broken ring, a droplet, a solid bottle),
+which is why the bar went text-only on 13 Sep; the set is now one 24 box, one
+1.5 stroke, `currentColor`, rendered at `size/icon-sm` over the labels.
+⚠️ **`MySkinIcon` IS TRACED FROM `face-silhouette.svg`, THE DIAGRAM'S OWN
+OUTLINE** — asked for directly after three hand-drawn faces failed; the head is
+cut at the jaw and simplified to 28 points. Regenerate it if the diagram is
+retraced (`scripts/face-art.mjs`); nothing keeps the two in step. ⚠️ The
+old note said they were kept "for their other callers (`PassList`)" — that was
+wrong: `PassList` imports `SuccessCheckIcon`, and the four had no caller at all
+while the bar was text-only. ⚠️ NOT IN FIGMA: the file still holds the old four
 Chevrons: `ChevronLeftIcon` `ChevronRightIcon` `ChevronDownIcon`
 Actions: `PlusIcon` `CloseIcon` `SearchIcon` `CameraIcon` `NoteIcon`
 Feedback: `SuccessCheckIcon`
@@ -739,6 +748,13 @@ variant structures — read `docs/design.md`.
    text style. No ad-hoc `font-size`.
 4. **Weights are Light / Regular / Medium only.** `--font-weight-semibold` and
    `--font-weight-bold` exist as tokens but using them is drift.
+   ⚠️ **ONE DECLARED EXCEPTION, 27 Sep 2026: the SELECTED bottom-nav label is
+   `--font-weight-semibold` (600).** Asked for directly twice — the second time
+   with 500 already on screen — so it is a design call, not an oversight, and
+   `BottomNav.module.css` carries the reasoning. It is the app's only caller,
+   600 had to be added to the Figtree request in `app/layout.tsx` for it to
+   render at all, and it is **not** permission to reach for 600 anywhere else:
+   raise the weight ramp in Figma instead.
 5. **Buttons: one rule for every style.** Hover runs the gradient END FOR END at
    full strength; disabled fades the whole control to `opacity/disabled` (0.4).
    Applies to `Button`, `SmallButton` and the back button alike.
@@ -810,24 +826,45 @@ type and every `nav=` prop. Do not "fix" the mismatch by renaming the id — see
    — a fallback must not be translucent or a different hue. Same colour as
    `bg/bubble-ai`, so the nav sits on the AI bubble's hue, and `Search Field`
    binds the same token: one frosted-pill surface, two components.
-   ⚠️ **THE BAR LEFT THAT TOKEN ON 13 Sep 2026**, asked for directly: it fills
-   with its own `--color-surface-nav-bar` `#17292f42` (dark slate teal, 26% —
-   it was `#356472b0` for a few hours), falls back to `--color-bg-nav-bar`
-   `#798e95` (the fill composited over the canvas's bottom stop and made
-   opaque; at 26% the fill's own hex made opaque would be near black), and its
-   labels are WHITE (`text/on-data-inverse`). ⚠️ **IT IS TEXT-ONLY AND 65 TALL** —
-   no icons, labels in `t-nav` (16 Light; the active one Regular, and every
-   label on a soft `filter: drop-shadow` — not `text-shadow`, which would paint
-   over the shine's clipped fill), inactive items at 0.85 opacity and
-   the active one in a recessed pill of `state/pressed-overlay` with an inner
-   shadow; the height is an
-   override of `--size-nav-height` so every nav reservation follows it. The search field, snackbar,
+   ⚠️ **THE BAR LEFT THAT TOKEN ON 13 Sep 2026 AND CAME BACK TO IT ON 27 Sep
+   2026**, both asked for directly. It spent those two weeks on its own deep
+   slate teal (`#356472b0` at 69% for a few hours, then `#17292f42` at 26%,
+   then `#17292f8c` at 55% on 26 Sep) with WHITE labels; the ask that ended it
+   held the undo snackbar up beside it — "make the nav bar transparent like the
+   undo bar and use dark font" — and `Snackbar` was always drawn as the nav's
+   sibling on this very token. So the bar is `surface/frost-nav` again, falls
+   back to `bg/nav`, and its labels are `text/primary`, the snackbar's own ink.
+   `--color-surface-nav-bar` / `--color-bg-nav-bar` survive as ALIASES of that
+   pair, because the dark-welcome prototype themes the bar through those names. ⚠️ **IT IS AN ICON OVER A LABEL, AND 58.5 TALL** — text-only from 13 Sep to
+   27 Sep 2026, when the four glyphs were redrawn as one set and came back at
+   `size/icon-sm` (20) with a 2 gap; labels in `t-nav` (16 Regular, the ACTIVE
+   one semibold — see non-negotiable 4), inactive items at 0.85 opacity and the
+   active one at full ink with no fill of its own. The height went 75 -> 65
+   (13 Sep, with the icons out) -> **58.5** (27 Sep, "reduce the height 10%"),
+   always as an override of `--size-nav-height` so every nav reservation
+   follows it. ⚠️ **56 IS THE FLOOR** — a 44 touch target inside the bar's own
+   6 of vertical padding. The search field, snackbar,
    segmented toggle and product groups still bind `surface/frost-nav`. Measured
-   by hand-compositing over the canvas, white reads about 2.9:1 on the bar (the
-   dark app ink would be ~4.8:1), so the 16px labels are short of AA. See
-   globals.css. ⚠️ It also carries a lit top-left edge ring and a 5% noise
-   grain, both static `::before`/`::after` at `z-index: -1` so they sit under
-   the labels — see `BottomNav.module.css`.
+   by hand-compositing over the canvas, `text/primary` reads **9.60:1** on the
+   bar and **6.50:1** through the inactive item's 0.85 opacity, so every state
+   clears AA — which no state did in the deep-teal fortnight, where white was
+   2.74:1 at 26% and the app ink ~1.9:1 at 55%. The labels' dark drop-shadow
+   went with the white: it separated white strokes from a light backdrop and
+   only smudges dark ones. See globals.css.
+   ⚠️ **AND THE BAR SPENT 27 Sep 2026 BEING SOMETHING ELSE ENTIRELY — read
+   this before "restoring" any of it.** In one day it took KokonutUI's
+   `MorphicNavbar`: the four items became one contiguous segmented track with
+   the active item lifting out of it on a gap, then the outer pill was removed,
+   then the segments took `gradient/secondary` opaque with drop shadows, and
+   the selected tab was tried both brighter and darker than its neighbours.
+   **All of it was reverted the same day** — "revert the nav bar to transparent
+   frosted and without the separation effect" — so the bar is the frosted pill
+   again, rim, shadows, edge ring and grain included, with `space-between`
+   items that carry no fill of their own. ⚠️ **TWO THINGS WERE KEPT**: the dark
+   ink, and the **semibold selected label**, which is now the only thing
+   marking the active item (the recessed `state/pressed-overlay` well went with
+   the rest). See non-negotiable 4 for the weight exception.
+
 8. **Chat bubbles carry an asymmetric tail corner, and NO border.** Three
    corners at `--radius-bubble` (30), the sender-side corner at
    `--radius-bubble-tail` (1). AI = tail top-left, sits left; user = top-right,
