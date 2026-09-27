@@ -36,8 +36,26 @@ import { ChevronRightIcon } from "@/components/ui/icons";
 export function CheckScreen() {
   return (
     <HubScreen
-      title="Analysis"
-      subtitle="Product compatibility"
+      /* ⚠️ NO PAGE HEADING AT ALL — 26 Sep 2026, asked for directly ("remove
+         this", over the `Analysis` / `Product compatibility` block). It is the
+         last difference between this screen and the one it has been chased
+         toward for three rounds: 00 Welcome has no visible heading, and the
+         note below spends fifteen lines paying for a title this screen no
+         longer draws. `HubScreen`'s `title` is optional and renders nothing
+         when absent, so `center="low"`'s `.above` is now an empty weighted
+         spacer — which is exactly what Welcome's is.
+         ⚠️ THE PAGE IS STILL NAMED. `metadataTitleFor("/check")` still returns
+         `Analysis`, so the tab, `RouteAnnouncer`'s announcement and the nav
+         item all keep the word; what went is the visible restatement of it.
+         Three names for one thing was the argument that deleted the hero's own
+         H4/H3 heading (see the bubble below) — this is the same cut, one level
+         up. ⚠️ AND IT TOOK AN AA FAILURE WITH IT: the subtitle measured 3.84:1
+         in `text/secondary` on the canvas floor, one of the two figures the
+         note below defers.
+         ⚠️ `/check/no-profile` KEPT ITS HEADING, deliberately — it is the empty
+         state, and the LUX empty-state recipe (AGENTS.md) holds the heading at
+         the top while only the block centres. Raise it there if the two tops
+         should match. */
       nav="check"
       layout="plain"
       /* ⚠️ PLACED EXACTLY WHERE 00 WELCOME PLACES ITS GROUP — 16 Sep 2026, the

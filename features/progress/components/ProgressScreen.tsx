@@ -100,8 +100,19 @@ export function ProgressScreen({ now }: { now: number }) {
 
   return (
     <HubScreen
-      title="Progress"
-      subtitle="Your skin investigation"
+      /* ⚠️ NO PAGE HEADING — 27 Sep 2026, asked for directly ("remove this",
+         over the `Progress` / `Your skin investigation` block), the same cut
+         `/check` took the day before. The dashboard names itself: every card
+         under it carries its own overline, the nav says `Progress`, and the
+         h1 was a third statement of the same word above a screen that is
+         already a list of labelled blocks. `HubScreen`'s `title` is optional
+         and renders nothing when absent.
+         ⚠️ THE PAGE IS STILL NAMED — `metadataTitleFor("/progress")` keeps the
+         tab and `RouteAnnouncer`'s announcement; what went is the visible
+         restatement.
+         ⚠️ `/progress/empty` KEEPS ITS HEADING, deliberately — the LUX
+         empty-state recipe (AGENTS.md) holds the heading at the top while only
+         the block centres, and `ProgressEmpty` below is drawn to it. */
       nav="progress"
       layout="grid"
       /* ⚠️ PROPORTIONAL COLUMNS, NOT `640px 1fr` — 16 Sep 2026, asked for
