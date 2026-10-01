@@ -62,13 +62,63 @@
 
   /* ---- control sizes ------------------------------------------------------ */
   --size-round: 56px;          /* every round button: back, ✕, +, mic, send  */
-  --size-chip: 56px;           /* option chips (55 in the ref)               */
+  /* ⚠️ 44, NOT THE REFERENCE'S 55 — asked for directly on the canvas, 1 Oct
+     2026 ("adjust those pills' height again. less height"). 44 is the touch
+     floor, so the chip IS its hit area. A field stays 56 (`--size-field`). */
+  --size-chip: 44px;
+  --space-chip-inline: 18px;   /* the 44 chip's side padding, off-scale      */
+  --size-field: 56px;          /* text and search fields, the radio rows     */
   --size-tab: 56px;            /* pill tabs (57 in the ref)                  */
   --size-slider: 64px;         /* slide-to-start track                       */
   --size-pill: 36px;           /* the small time pill (17.7 × 1.745 ≈ 31, raised to the control floor) */
 }
 
 /* non-negotiable 11: no translucent surface without a solid fallback */
+/* ============================================================================
+   THE CANVAS ROUND, 1 Oct 2026 — values settled on the design canvas (LUX v3
+   artifact, "First pages") before the build. Each was asked for directly.
+   ========================================================================== */
+:root {
+  /* the question panel — "this is also too white and bright": fill 55% -> 30%,
+     a softer edge and rim, so the canvas shows through as frost */
+  --color-panel: rgb(244 254 255 / 0.3);
+  --color-border-panel: rgb(255 255 255 / 0.45);
+  --color-rim-panel: rgb(255 255 255 / 0.6);
+
+  /* NAV B, the round-button bar — "the nav bar needs to be more transparent
+     too": bar 10% / edge 40% / rim 50%, its circles 12% */
+  --color-nav-bar: rgb(255 255 255 / 0.1);
+  --color-border-nav: rgb(255 255 255 / 0.4);
+  --color-rim-nav: rgb(255 255 255 / 0.5);
+  --color-nav-item: rgb(255 255 255 / 0.12);
+  --shadow-nav-vg: inset 0 1px 0 var(--color-rim-nav), 0 8px 24px rgb(46 42 63 / 0.06);
+
+  /* the bar is 56 circles in 6 of padding and a 1px edge: 70 tall. Every
+     `.screen` reservation reads these two, so they move together. */
+  --size-nav-height: 70px;
+  --nav-inset-bottom: var(--space-lg);
+  --nav-inset-inline: var(--space-sm); /* "50% less side paddings": 16 -> 8 */
+}
+
+@media (min-width: 1024px) {
+  :root {
+    --nav-inset-bottom: var(--space-2xl); /* the desktop Welcome board's 24 */
+  }
+}
+
+/* the flow screens open 24 from the top, as the step boards do */
+.screen[data-layout="flow"] {
+  --content-top: var(--space-2xl);
+}
+
+@media (prefers-reduced-transparency: reduce) {
+  :root {
+    --color-panel: #e3eef0;
+    --color-nav-bar: #dbeded;
+    --color-nav-item: #e8f3f3;
+  }
+}
+
 @media (prefers-reduced-transparency: reduce) {
   :root {
     --color-glass: #f4f6f9;
@@ -241,8 +291,10 @@
           the top, no border — on lux-v2's sage frost (`--surface-sheet`, the
           v2 tray's fill and blur). It holds a title row and a panel.
    PANEL  the frost box inside it (and the Storyboard's description card):
-          `surface/frost-light`, a 1px glass edge, a white inset rim, 12 blur,
-          radius 28. Ink on it is the app's dark ink.
+          `--color-panel` (30% — toned down on the canvas from
+          `surface/frost-light`'s 55%), a 1px glass edge, a white inset rim,
+          12 blur, radius 28. Ink on it is the app's dark ink. Every
+          investigation question sits in one.
    ========================================================================== */
 
 .vg-sheet {
@@ -256,9 +308,9 @@
 
 .vg-panel {
   border-radius: var(--radius-panel);
-  background: var(--color-surface-frost-light);
-  border: var(--border-width-hairline) solid var(--color-border-glass);
-  box-shadow: var(--shadow-panel);
+  background: var(--color-panel);
+  border: var(--border-width-hairline) solid var(--color-border-panel);
+  box-shadow: inset 0 1px 0 var(--color-rim-panel);
   -webkit-backdrop-filter: blur(12px);
   backdrop-filter: blur(12px);
   color: var(--color-text-primary);

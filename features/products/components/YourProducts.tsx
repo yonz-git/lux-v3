@@ -74,7 +74,6 @@ export function YourProducts() {
            half empty, so at 40 it hung off the progress track instead of
            sitting in the page. */
         contentGapDesktop={64}
-        titleVisible
         nav="products"
         tightTop
       >

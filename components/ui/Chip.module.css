@@ -1,8 +1,9 @@
 /* Chip — VidGen's option chip (`9:16`, `1080p`, `15s`), 1 Oct 2026.
 
-   DEFAULT   glass: white @50%, 1px white @55% edge, the inset white @80% rim,
-             56 tall (`--size-chip`; 55 in the reference), 16 Regular label in
-             the app's secondary ink, a leading glyph in the brand indigo.
+   DEFAULT   glass: white @25%, 1px white @55% edge, the inset white @80% rim,
+             44 tall (`--size-chip` — 55 in the reference, taken down on the
+             canvas) with 18 a side, 16 Regular label in the app's secondary
+             ink, a leading glyph in the brand indigo.
    SELECTED  lux-v2's: flat `bg/brand` shading to `bg/brand-hover` at 135°,
              white label and glyph.
 
@@ -21,7 +22,7 @@
   justify-content: center;
   gap: 9px; /* the reference's glyph-to-label gap */
   min-height: var(--size-chip);
-  padding: 0 var(--space-xl);
+  padding: 0 var(--space-chip-inline);
   border: var(--border-width-hairline) solid var(--chip-edge);
   border-radius: var(--radius-full);
   color: var(--color-text-secondary);

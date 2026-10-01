@@ -1,11 +1,11 @@
-/* The shared shell for the investigation question screens.
-   Figma mobile: padding 58/24/115/24, header -> 12 -> track -> 32 -> content
-                 -> flex -> Continue (62) -> fixed nav.
-   Figma desktop: padding 40/80/0/80, header -> progress-wrap (padTop 16) ->
-                 40 -> ONE centred frosted card (920) holding content + Continue.
+/* The shared shell for the investigation question screens — lux-v3, from the
+   canvas boards (1 Oct 2026; LUX v3 artifact, "First pages").
 
-   Translated, not transcribed: the fixed spacer frames become flex, so the
-   composition holds on viewports the 957/900 canvases never anticipated. */
+   mobile:  padding 24 -> header row -> 16 -> track -> 24 -> centred title ->
+            24 -> the step's panels, 24 apart -> 24 -> Continue (56) -> nav.
+   desktop: not drawn on the canvas. The same column at `width/card-focus`
+            (640), centred, with no card round it — each question is already
+            its own panel, and frost round frost does not read. */
 
 .shell {
   flex: 1;
@@ -15,34 +15,15 @@
   flex-direction: column;
 }
 
-/* ⚠️ NOT IN FIGMA — 12 -> 20 mobile, 16 -> 24 desktop. The comps set 12 against
-   a 38-tall header row, taking that height from `Save & exit`, the tallest
-   child they drew. The BUILT row is 44: the back chevron's tap target is 44 at
-   every breakpoint and it is the taller child, so the same 12 reads tighter
-   than it was drawn.
-
-   ⚠️ 20, NOT THE 18 THAT WOULD RESTORE THE DRAWN GAP EXACTLY. The spacing
-   scale has no 18, and a literal `18px` here would be the app's first
-   off-scale spacing value. `--space-xl` is the step above, and the +4
-   mobile-to-desktop offset the comps use is preserved.
-
-   Shared by all five steps — the track is one element, and a per-step gap is
-   the kind of drift this file exists to prevent. */
-/* ⚠️ 32 ON A PHONE, NOT 20 — asked for directly 15 Sep 2026 ("give more top
-   padding and match the bottom padding"). The track sat 20 under the header
-   row and 32 over the content, so it read as hung off the header rather than
-   set between the two. It now takes the content's own default gap
-   (`--space-3xl`, what `.card`'s `margin-top` falls back to), so the space
-   above and below the track are one value. Desktop keeps its 24 below. */
 .progressWrap {
-  padding-top: var(--space-3xl); /* 32 */
+  padding-top: var(--space-lg); /* 16 */
 }
 
 .card {
   display: flex;
   flex-direction: column;
   flex: 1;
-  margin-top: var(--content-gap, var(--space-3xl)); /* 32 by default */
+  margin-top: var(--content-gap, var(--space-2xl)); /* 24 by default */
 }
 
 .content {
@@ -50,19 +31,15 @@
   flex-direction: column;
 }
 
-/* ⚠️ NOT IN FIGMA — the comps set the visible page title left-aligned in H3/H2
-   with the same 12 gap every other block uses. Centred in H4/H3 instead: the
-   title sits directly above a stack of left-aligned AI bubbles, and at H3 it
-   read as a fourth, louder line of the same conversation rather than as the
-   screen's name. One step down the ramp and off the bubbles' axis separates
-   the two. The 20 below it is the break — the bubbles keep their own 12. */
+/* the step's name, centred over its panels (canvas, "center") */
 .title {
   text-align: center;
-  margin-bottom: var(--space-xl); /* 20 */
+  margin-bottom: var(--space-2xl); /* 24 */
 }
 
+/* Continue follows the content; it is not pushed to the foot of the screen */
 .spacer {
-  flex: 1 1 auto;
+  flex: none;
   min-height: var(--space-2xl);
 }
 
@@ -92,81 +69,28 @@
     max-width: var(--width-content-max); /* 1280 */
   }
 
-  .progressWrap {
-    padding-top: var(--space-2xl); /* 24 */
-  }
-
   .card {
     flex: none;
     align-self: center;
     width: 100%;
-    max-width: var(--width-card-form); /* 920 */
-    /* 40 — desktop's spacer is 40 on every frame, title-first or not, so the
-       mobile `--content-gap` is deliberately NOT read here. A screen that needs
-       more air above the card sets `--content-gap-desktop` instead, which keeps
-       the two breakpoints independent: mobile's gap comes from the comp, the
-       desktop card floats in a page that is mostly whitespace. */
+    max-width: var(--width-card-focus); /* 640 */
     margin-top: var(--content-gap-desktop, var(--space-4xl));
-    padding: var(--space-5xl); /* 48 */
-
-    border-radius: var(--radius-3xl);
-    /* ⚠️ `#edf8fb0f`, supplied directly 14 Sep 2026 — the option rows' own 6%
-       pale aqua, in place of `surface/card-desktop`. NOT IN FIGMA and no
-       token; raise one if it stays. */
-    background: #edf8fb0f;
-    box-shadow: var(--shadow-frosted-card-desktop);
-    /* ⚠️ THE FROST IS ON `::before`, NOT ON THE CARD — 14 Sep 2026. An element
-       with `backdrop-filter` is a BACKDROP ROOT: every backdrop filter inside
-       it can only see the card's own contents, never the page behind. That is
-       why the date picker's frosted panel rendered the option rows and labels
-       under it razor-sharp — measured on `/investigation/timing` at 1440: the
-       card was the panel's only backdrop-root ancestor, and switching its blur
-       off made the panel's blur work at once. A pseudo-element is a SIBLING of
-       the content, not an ancestor, so the card keeps its frost and stops
-       swallowing its children's. `isolation` keeps the `z-index: -1` layer
-       above the card's fill; it does not make a backdrop root. */
-    position: relative;
-    isolation: isolate;
-  }
-
-  .card::before {
-    content: "";
-    position: absolute;
-    inset: 0;
-    z-index: -1;
-    border-radius: inherit;
-    pointer-events: none;
-    -webkit-backdrop-filter: blur(var(--blur-card-desktop));
-    backdrop-filter: blur(var(--blur-card-desktop));
   }
 
   .spacer {
-    flex: none;
     /* the card's own gap, unless a screen asks for more */
     min-height: var(--continue-gap, var(--space-3xl));
   }
 
-  /* the mobile cap is lifted: the footer spans the card again, so a stacked
+  /* the mobile cap is lifted: the footer spans the column again, so a stacked
      secondary keeps the width it had */
   .footer {
     max-width: none;
   }
 
-  /* Continue is `width/action` x 62, centred — not stretched to the card
-     width. It was 280 until the action width was unified; see globals.css. */
+  /* Continue is `width/action`, centred — not stretched to the column */
   .footer .continue {
     width: var(--width-action);
     align-self: center;
-  }
-}
-
-@media (min-width: 1024px) and (prefers-reduced-transparency: reduce) {
-  .card {
-    background: var(--color-bg-surface-frost);
-  }
-
-  .card::before {
-    -webkit-backdrop-filter: none;
-    backdrop-filter: none;
   }
 }

@@ -1,310 +1,112 @@
-/* Bottom-Nav-Bar — Figma component set 410:258 (Active x Size, 8 variants).
-   The nav is FIXED: identical placement on every screen, `--nav-inset-bottom`
-   from the bottom, horizontally centred, above everything else. */
+/* NAV B — the round-button bar, lux-v3 (1 Oct 2026, picked on the design
+   canvas). Replaces the v2 frosted pill of four icon-over-label items.
+
+   BAR     a thin glass pill: white @10%, a 1px white @40% edge, a white @50%
+           rim along the top, 16 blur. 6 of padding round 56 circles, so 70
+           tall — `--size-nav-height`, which every `.screen` reservation reads.
+   ITEM    a 56 glass circle (white @12%) with the section's glyph in indigo.
+   ACTIVE  the brand gradient pill with the glyph and the word in white; it
+           takes `flex: 1` so the bar's slack goes to where you are.
+
+   The bar is fixed `--nav-inset-bottom` off the bottom. On mobile it spans the
+   screen 8 in from each side when a section is active and hugs its circles,
+   centred, when none is (`data-compact`). Desktop always hugs. */
 
 .nav {
   position: fixed;
-  left: 50%;
-  transform: translateX(-50%);
   bottom: var(--nav-inset-bottom);
+  left: var(--nav-inset-inline);
+  right: var(--nav-inset-inline);
   z-index: var(--z-nav);
 
-  width: var(--size-nav-width-mobile);
+  box-sizing: border-box;
   height: var(--size-nav-height);
-  max-width: calc(100vw - (var(--margin-mobile) * 2));
-
   display: flex;
-  justify-content: space-between;
   align-items: center;
-  padding: 6px 14px;
+  justify-content: space-between;
+  gap: var(--space-group);
+  padding: calc((var(--size-nav-height) - var(--size-round)) / 2 - var(--border-width-hairline));
 
   border-radius: var(--radius-full);
-
-  /* ⚠️ THE RIM IS NOT IN FIGMA. `Bottom-Nav-Bar` (410:258) has no stroke, and
-     with none the pill has no edge for the light to catch — it reads as a
-     sticker laid on the canvas rather than a piece of glass above it.
-     `border/glass` is the token the system already keeps for this, but the
-     rim it draws (55% white, 1px) reads as a drawn outline rather than a
-     catch of light, so this one is dialled back by hand: 0.5px at 33% white
-     (#ffffff54) from 13 Sep 2026, and HALVED to 16% (#ffffff2a) on 27 Sep,
-     asked for directly ("lower the opacity of the border line 50%"). At a
-     third it still read as a drawn line around the pill; at a sixth it only
-     catches where the light already is. ⚠️ NOT IN FIGMA, and deliberately NOT
-     `border/glass` — the token stays as-is for the dividers inside SYSTEM B
-     that do want it.
-     The global reset is `border-box`, so the rim sits INSIDE the 75px instead
-     of adding to it; non-negotiable 9's min-height dance is not needed here.
-     ⚠️ And this fill is a flat `background-color`, NOT a gradient, so it does
-     NOT want `background-origin: border-box` — non-negotiable 10 is about
-     background IMAGES. Adding it here would be cargo cult. */
-  border: 0.5px solid #ffffff2a;
-  /* ⚠️ `surface/frost-nav` AGAIN SINCE 27 Sep 2026 — asked for directly, the
-     undo snackbar held up beside it ("make the nav bar transparent like the
-     undo bar"), and asked for again at the end of that day's experiments
-     ("revert the nav bar to transparent frosted"). `--color-surface-nav-bar`
-     is an ALIAS of it now rather than the bar's own deep teal; the
-     indirection stays because the dark-welcome prototype themes the bar
-     through that name. See globals.css. */
-  background: var(--color-surface-nav-bar);
-  /* ⚠️ NOT IN FIGMA — the buttons' edge glow (globals.css `.edge-light`), added
-     14 Sep 2026, asked for directly: the page card's inward white glow from the
-     top plus a 1px top catch, laid over the nav's own dark inner shadow. Values
-     copied, not shared — `.edge-light` is a span and the bar has no spare child. */
-  /* ⚠️ AND `shadow/nav` IS WRITTEN OUT, NOT READ, as of the same day: its drop
-     shadow was asked "a bit more" — 0 2px 12px @8% → 0 4px 16px @14%. The
-     inner dark shadow is the token's own, unchanged. */
-  box-shadow:
-    inset 0 2px 12px rgba(255, 255, 255, 0.25),
-    inset 0 1px 1px rgba(255, 255, 255, 0.35),
-    0 4px 16px rgba(0, 0, 0, 0.14),
-    inset 0 0 12px rgba(0, 0, 0, 0.2);
-
-  /* ⚠️ `saturate()` IS LOAD-BEARING, NOT DECORATION. A blur averages
-     neighbouring pixels, which drags the sampled backdrop toward grey — the
-     reason a plain `blur()` frost always looks like dishwater. Every real
-     frosted material pushes the saturation back up to compensate. It is
-     supported everywhere `backdrop-filter` is, unlike the SVG `url()` filters
-     a liquid-glass library would need (Chromium-only; WebKit bug 245510). */
-  -webkit-backdrop-filter: blur(var(--blur-card)) saturate(160%);
-  backdrop-filter: blur(var(--blur-card)) saturate(160%);
+  border: var(--border-width-hairline) solid var(--color-border-nav);
+  background: var(--color-nav-bar);
+  box-shadow: var(--shadow-nav-vg);
+  -webkit-backdrop-filter: blur(16px);
+  backdrop-filter: blur(16px);
 }
 
-/* ⚠️ NOT IN FIGMA — THE EDGE OF LIGHT AND THE GRAIN, asked for directly
-   13 Sep 2026 ("edge + grain, keep the teal"). Figma can draw neither.
-
-   `::before` is a 1px ring lit at the top-left and dim at the bottom-right,
-   just inside the uniform 0.5px rim above rather than replacing it: the rim is
-   the hairline all the way round, this is light catching one corner of it —
-   the cue that reads as a curved surface under a light, not an outline. The
-   mask punches out the interior so only the ring paints.
-
-   `::after` is a static fractal-noise tile at 5% in `overlay`: dither, not
-   texture, so the blur over the canvas gradient does not band into steps.
-
-   ⚠️ BOTH SIT AT `z-index: -1`, AND THAT IS WHAT KEEPS THE TYPE CLEAN. `.nav`
-   is fixed with a z-index, so it is already a stacking context; -1 paints the
-   two over the bar's own fill and UNDER the items. Left at `auto`, an
-   absolutely positioned pseudo paints above in-flow content, and the grain
-   would dither every icon and label.
-
-   ⚠️ NEITHER MOVES. The bar is on every screen and touched constantly; a
-   highlight that sweeps or brightens on hover is the animation a
-   hundred-times-a-day control should not have. */
-.nav::before,
-.nav::after {
-  content: "";
-  position: absolute;
-  inset: 0;
-  z-index: -1;
-  border-radius: inherit;
-  pointer-events: none;
-}
-
-.nav::before {
-  padding: 1px;
-  /* ⚠️ 70% / 30% AS OF 14 Sep 2026, asked for directly — "the same edge light"
-     the buttons carry (globals.css `.edge-light::before`). It was 48% / 20% the
-     day before, itself dialled down from a 60% lit corner; this deliberately
-     brightens past both. ⚠️ Then the lit stop came down 40%, 0.7 → 0.42, the
-     same day — asked for directly, it drew a bright line down the bar's left end. */
-  background: linear-gradient(
-    135deg,
-    rgba(255, 255, 255, 0.42),
-    rgba(255, 255, 255, 0) 40%,
-    rgba(255, 255, 255, 0) 60%,
-    rgba(255, 255, 255, 0.3)
-  );
-  -webkit-mask: linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0);
-  -webkit-mask-composite: xor;
-  mask: linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0);
-  mask-composite: exclude;
-}
-
-.nav::after {
-  opacity: 0.05;
-  mix-blend-mode: overlay;
-  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='120' height='120'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='2'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+/* nothing is active — the bar hugs its four circles and centres */
+.nav[data-compact] {
+  left: 50%;
+  right: auto;
+  transform: translateX(-50%);
 }
 
 @media (min-width: 1024px) {
   .nav {
-    width: var(--size-nav-width-desktop);
-    max-width: none;
+    left: 50%;
+    right: auto;
+    transform: translateX(-50%);
   }
 }
 
-/* The fallback drops the transparency, NOT the dimension: `bg/nav` is the same
-   hue fully opaque, and the rim and the bevel both survive because neither
-   depends on anything showing through. A fallback that flattens the control is
-   a worse control, not a safer one. */
 @media (prefers-reduced-transparency: reduce) {
   .nav {
-    background: var(--color-bg-nav-bar);
     -webkit-backdrop-filter: none;
     backdrop-filter: none;
   }
-
-  /* the grain dithers a blur that is no longer there; the edge ring stays,
-     like the rim and the bevel, because it depends on nothing showing through */
-  .nav::after {
-    display: none;
-  }
 }
 
-/* ⚠️ AN ICON OVER A LABEL AGAIN, AS OF 27 Sep 2026 — the shape
-   `Bottom-Nav-Bar` (410:258) draws, and the shape this bar had until 13 Sep,
-   when the four mismatched glyphs were dropped and the item became one line of
-   `t-nav`. The set was redrawn as one hand (`icons.tsx`) and the icon came
-   back with it.
-   ⚠️ THE COLUMN COSTS THE BAR NOTHING. 20 (`size/icon-sm`) + 2 + the label's
-   22 line box is exactly the 44 `min-height` the item already reserved for its
-   touch target, and the bar is 58.5 with 6 of padding — 2.5 to spare. An icon
-   at `md` (24) would not fit without the bar growing again, which is why the
-   glyphs are drawn in a 24 box but rendered at 20. */
 .item {
+  flex: none;
+  box-sizing: border-box;
+  width: var(--size-round);
+  height: var(--size-round);
   display: flex;
-  flex-direction: column;
   align-items: center;
   justify-content: center;
-  gap: 2px;
+  gap: var(--space-sm);
 
-  /* ⚠️ NOT IN FIGMA — INACTIVE RESTS AT 0.85, NOT THE COMPONENT'S 0.5, AND THE
-     ACTIVE ITEM IS A PILL AS WELL AS FULL WHITE. At 0.5 the inactive labels
-     were the faintest thing on the bar, because the fade was the only thing
-     saying "you are here". The pill says it now, so the fade can rise. On the
-     `#17292f42` fill, hand-composited over the canvas's bottom stop, inactive
-     is ~2.5:1, full white ~2.9:1 and ~3.5:1 inside the pill — none clears
-     4.5:1 at 16px; see globals.css for the ink that would. */
-  opacity: 0.85;
-  /* ⚠️ `text/primary`, THE APP INK — 27 Sep 2026, asked for directly ("use
-     dark font") with the frosted fill. It was `text/on-data-inverse` white
-     from 13 Sep 2026, which was right for the deep teal and is 1.4:1 on this
-     glass, where the app ink is 9.60:1 (6.50:1 through the 0.85 rest fade).
-     The ink follows the material: same fill as the undo snackbar, same ink as
-     the undo snackbar (`.message` in Snackbar.module.css). */
-  color: var(--color-text-primary);
-  /* an item can render as <a> once its section exists; links carry an
-     underline by default */
-  text-decoration: none;
-
-  min-width: var(--size-touch-target);
-  min-height: var(--size-touch-target);
-  /* ⚠️ THE PADDING SHRINKS WITH THE VIEWPORT — WRITTEN FOR FOUR 16px LABELS,
-     KEPT UNCHANGED WHEN MOBILE STEPPED DOWN TO 14px (16 Sep 2026, see `.t-nav`
-     in globals.css). At 16px they measured 235 together against a bar inside
-     of `min(380, 100vw - 48) - 29`, which is exactly 0 slack on a 320 phone
-     (235 in 243) and ~7 at 375 (290 in 298) — the formula was tuned to spend
-     precisely that. At 14px the same four labels measure ~209, so the
-     identical formula now leaves real slack at every width (~62 at 320)
-     instead of spending it to the pixel. Left as-is rather than tightened
-     again: it still cannot overflow, and a fixed 12 a side needs 331, which
-     still clips below a 408 viewport — capped at `space/md` from 416 up. */
-  /* ⚠️ 2 OVER, 0 UNDER — 27 Sep 2026, asked for directly ("give more top
-     padding, balance it with the bottom"), and it is the exact REVERSE of the
-     rule that stood here from 15 Sep. That one read "2 under, 0 over" for a
-     text-only item, where the only ink was a label sitting low in its 22 line
-     box. The item is an icon over a label now and the ink moved with it:
-     measured in the bar, the icon's own art starts 1.7 below the top of its
-     box (the glyphs are drawn with a 2 margin in a 24 viewBox) while the
-     label's ink stops about 4 above the bottom of its line box, so the
-     content read 8 from the top against 12 from the bottom. 2 of TOP padding
-     pushes it down onto the middle: about 10 and 10.
-     ⚠️ MEASURE THE INK, NOT THE BOXES. Both halves of that asymmetry live
-     inside boxes that are themselves perfectly centred — `.item` sits 6.25
-     from either edge of the bar, which is why this looks balanced in DevTools
-     and is not. */
-  padding: 2px clamp(0px, calc((100vw - 320px) / 8), var(--space-md)) 0;
   border-radius: var(--radius-full);
-
-  /* duration/base to match the button's hover fade, so both controls soften at
-     the same pace */
-  transition: opacity var(--duration-base) var(--ease-hover);
+  border: var(--border-width-hairline) solid var(--color-border-nav);
+  background-color: var(--color-nav-item);
+  box-shadow: inset 0 1px 0 var(--color-rim-nav);
+  color: var(--color-bg-brand);
+  text-decoration: none;
+  transition: background-color var(--duration-base) var(--ease-hover);
 }
 
-/* ⚠️ THE ACTIVE ITEM HAS NO FILL OF ITS OWN — 27 Sep 2026, asked for directly
-   ("remove the white bg color on the selected nav tab, just make it the same,
-   rather make the font bolder when selected"). It was a recessed WELL from
-   13 Sep: `state/pressed-overlay` with an inner shadow from the top edge and a
-   light lip along the bottom, drawn to read as pressed INTO the bar. That was
-   built for a deep teal surface where a darkening carried; on the frosted
-   glass the bar tried the selected tab both darker and brighter than its
-   neighbours in one afternoon and wears neither. The WEIGHT marks it now (see
-   `.label`), with the rest fade lifting to full ink. */
-.item[data-active="true"] {
-  opacity: 1;
-}
-
-/* ⚠️ THE SELECTED LABEL IS SEMIBOLD, AND THIS FILE SAID FOR A FORTNIGHT THAT
-   THERE WAS NO WEIGHT OVERRIDE LEFT — 27 Sep 2026, asked for directly twice
-   ("rather make the font bolder when selected", then again with 500 already on
-   screen), and kept deliberately when everything else that day was reverted.
-   From 13 Sep the selected label was Regular against Light; on 14 Sep every
-   label went Regular, set on `t-nav` in globals.css, and the override was
-   deleted because it had nothing left to change. It is the ONLY thing marking
-   the active item now that the well is gone, which is why it is a full two
-   steps up rather than one.
-   ⚠️ THIS BREAKS NON-NEGOTIABLE 4, WHICH SAYS LIGHT / REGULAR / MEDIUM AND
-   CALLS ANYTHING ELSE DRIFT. It is here because it was asked for twice, the
-   second time with Medium in front of the user — a design call, not an
-   oversight — and it is the app's ONLY caller of `--font-weight-semibold`. Do
-   not read it as permission to use 600 elsewhere; raise the weight ramp in
-   Figma instead.
-   ⚠️ AND 600 HAD TO BE ADDED TO THE FONT REQUEST (app/layout.tsx), which
-   loaded 300/400/500 only. Asking for a weight the family does not ship gets
-   the nearest face or a synthesised faux-bold, neither of which is Figtree.
-   ⚠️ IT DOES NOT MOVE THE ROW. The items are spaced by `space-between` and
-   sized by their own labels, so `Progress` gains about a pixel when it is the
-   active one; measured at 320, where the row has the least slack, nothing
-   wraps and nothing clips. */
-.item[data-active="true"] .label {
-  font-weight: var(--font-weight-semibold);
-}
-
-
-/* hover goes to full ink — above the 0.85 rest, so hovering never dims */
 .item:hover {
-  opacity: 1;
+  background-color: var(--color-glass);
 }
 
-/* pointer-only: a touch device has no hover, and leaving it on means the state
-   sticks after a tap */
 @media (hover: none) {
   .item:hover {
-    opacity: 0.85;
-  }
-
-  .item[data-active="true"]:hover {
-    opacity: 1;
+    background-color: var(--color-nav-item);
   }
 }
 
-/* the glyph is drawn in a 24 box and rendered at 20 — see `.item`. It takes
-   its colour from the item (`currentColor`) and its opacity from the same rest
-   fade the label rides, so icon and word are always one state. */
+/* the section you are in — the primary action's gradient and lift */
+.item[data-active="true"] {
+  flex: 1 1 auto;
+  width: auto;
+  padding: 0 var(--space-xl) 0 var(--space-chip-inline);
+  border-color: transparent;
+  /* non-negotiable 10 */
+  background-origin: border-box;
+  background-image: linear-gradient(
+    90deg,
+    var(--color-gradient-brand-start),
+    var(--color-gradient-brand-end)
+  );
+  box-shadow: var(--shadow-brand-vg);
+  color: var(--color-text-on-brand);
+}
+
 .icon {
-  --icon-size: var(--size-icon-sm);
+  --icon-size: 22px; /* the canvas draws the set at 22 inside a 56 circle */
 }
 
 .label {
-  /* ⚠️ THE INK IS `--shine-ink`, NOT `color` — 13 Sep 2026, asked for
-     directly: the label carries the buttons' hover shine (`.shine-text` +
-     `.shine-on-hover`, globals.css). That recipe paints the glyphs with a
-     gradient whose two ends are this ink and sets `color: transparent`; a
-     `color` here loads after it and would paint solid ink over the band.
-     `text/primary` on the frosted bar — see `.item`. */
-  --shine-ink: var(--color-text-primary);
-  /* ⚠️ IT MAY WRAP — `nowrap` went with the icons. Under a reader's own text
-     spacing (WCAG 1.4.12) the four labels need ~298 before padding, more than
-     a 320 phone's bar holds; breaking a label onto a second line inside the
-     65 bar (two lines of 22 fit) loses nothing, where `nowrap` pushed it out
-     of its pill. At default spacing nothing wraps at any width. */
-  text-align: center;
-  /* ⚠️ NO DROP SHADOW — 27 Sep 2026, with the frosted fill and the dark ink.
-     It was added 13 Sep for the WHITE label on the deep teal bar: a soft dark
-     halo separating white strokes from a light backdrop. Under dark ink on
-     pale glass that halo is a smudge under dark letters, and the ink needs no
-     help at 9.60:1. ⚠️ IF IT EVER COMES BACK, IT COMES BACK AS
-     `filter: drop-shadow`, NOT `text-shadow`: the shine paints these glyphs
-     with a background clipped to the text over `color: transparent`, so a
-     text-shadow lands ON TOP of that fill and greys the letters. */
+  white-space: nowrap;
 }

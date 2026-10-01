@@ -1,0 +1,85 @@
+/* The question panel — see QuestionPanel.tsx. The surface is `.vg-panel`. */
+
+.panel {
+  position: relative;
+  isolation: isolate;
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-xl); /* 20, question to answers */
+  padding: var(--space-panel) var(--space-gutter) var(--space-gutter); /* 32 / 24 / 24 */
+  /* ⚠️ THE FROST MOVES TO `::before`. An element with `backdrop-filter` is a
+     backdrop root, so every frosted thing inside it — the chips, the date
+     picker's popover — could only blur the panel's own contents, never the
+     page (QuestionScreen's old desktop card found this on 14 Sep 2026). A
+     pseudo-element is a sibling of the content, not its ancestor. */
+  -webkit-backdrop-filter: none;
+  backdrop-filter: none;
+}
+
+.panel::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  border-radius: inherit;
+  pointer-events: none;
+  -webkit-backdrop-filter: blur(12px);
+  backdrop-filter: blur(12px);
+}
+
+@media (prefers-reduced-transparency: reduce) {
+  .panel::before {
+    -webkit-backdrop-filter: none;
+    backdrop-filter: none;
+  }
+}
+
+/* two questions on one step stand 24 apart */
+.panel + .panel {
+  margin-top: var(--space-2xl);
+}
+
+.head {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-sm);
+}
+
+.question {
+  margin: 0;
+  display: flex;
+  align-items: flex-start;
+  gap: var(--space-md);
+  color: var(--color-text-primary);
+}
+
+.sparkle {
+  color: var(--color-bg-brand);
+  /* sits on the first line's cap height, not its box top */
+  margin-top: 2px;
+}
+
+.hint {
+  margin: 0;
+  color: var(--color-text-secondary);
+}
+
+/* the answer chips — a wrapping row, 4 apart */
+.chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-group);
+}
+
+/* the answer rows — a column, 8 apart */
+.rows {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-sm);
+}
+
+/* a field an answer opens (`Other`) grows in with `Collapse`; the panel's 20
+   is declared on it, as globals.css asks */
+.panel > :global(.collapse) {
+  --collapse-gap: var(--space-xl);
+}

@@ -14,7 +14,7 @@
   width: 100%;
   /* Figma is 50 tall with padding 12/16 — min-height owns the box so the input's
      own line box can never push it past 50 */
-  min-height: var(--size-chip); /* 56, a VidGen control */
+  min-height: var(--size-field); /* 56, a VidGen control */
   padding: 0 var(--space-lg);
 
   border-radius: var(--radius-full);

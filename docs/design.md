@@ -19,8 +19,12 @@ colors:
   glass-strong: "#FFFFFF66"
   glass-edge: "#FFFFFF8C"
   glass-rim: "#FFFFFFCC"
-  panel: "#F4FEFF8C"
-  panel-rim: "#FFFFFFE6"
+  panel: "#F4FEFF4D"
+  panel-edge: "#FFFFFF73"
+  panel-rim: "#FFFFFF99"
+  nav-bar: "#FFFFFF1A"
+  nav-edge: "#FFFFFF66"
+  nav-item: "#FFFFFF1F"
   sheet: "#8AB0B24D"
   data-deep: "#4F838FD9"
   progress-track: "#ECF8F9CC"
@@ -219,6 +223,13 @@ components:
     rounded: "{rounded.full}"
     padding: 0 16px
     height: 36px
+  button-small-primary:
+    backgroundColor: "{colors.primary}"
+    textColor: "{colors.on-primary}"
+    typography: "{typography.button-sm}"
+    rounded: "{rounded.full}"
+    padding: 0 16px
+    height: 36px
   icon-button-glass:
     backgroundColor: "{colors.glass}"
     textColor: "{colors.primary}"
@@ -244,22 +255,22 @@ components:
     textColor: "{colors.on-surface-secondary}"
     typography: "{typography.chip}"
     rounded: "{rounded.full}"
-    padding: 0 20px
-    height: 56px
+    padding: 0 18px
+    height: 44px
   chip-hover:
     backgroundColor: "{colors.glass-strong}"
     textColor: "{colors.on-surface-secondary}"
     typography: "{typography.chip}"
     rounded: "{rounded.full}"
-    padding: 0 20px
-    height: 56px
+    padding: 0 18px
+    height: 44px
   chip-selected:
     backgroundColor: "{colors.primary}"
     textColor: "{colors.on-primary}"
     typography: "{typography.chip}"
     rounded: "{rounded.full}"
-    padding: 0 20px
-    height: 56px
+    padding: 0 18px
+    height: 44px
   option-row:
     backgroundColor: "{colors.glass}"
     textColor: "{colors.on-surface}"
@@ -316,14 +327,14 @@ components:
     backgroundColor: "{colors.panel}"
     textColor: "{colors.on-surface}"
     rounded: "{rounded.panel}"
-    padding: "{spacing.gutter}"
+    padding: 32px 24px 24px
   nav-bar:
-    backgroundColor: "{colors.glass}"
+    backgroundColor: "{colors.nav-bar}"
     rounded: "{rounded.full}"
     padding: 6px
-    height: 68px
+    height: 70px
   nav-item:
-    backgroundColor: "{colors.glass}"
+    backgroundColor: "{colors.nav-item}"
     textColor: "{colors.primary}"
     rounded: "{rounded.full}"
     size: 56px
@@ -332,7 +343,7 @@ components:
     textColor: "{colors.on-primary}"
     typography: "{typography.label}"
     rounded: "{rounded.full}"
-    padding: 0 22px 0 18px
+    padding: 0 20px 0 18px
     height: 56px
   step-progress-track:
     backgroundColor: "{colors.progress-track}"
@@ -429,8 +440,12 @@ of a selected chip's shade. The ground is the canvas gradient
 Everything that sits on the canvas is made of white at low strength: `glass`
 (25%) for controls, `glass-strong` (40%) for hover and a selected row, a 1px
 `glass-edge` (55%) and a `glass-rim` highlight along the top. Boxes are
-`panel` (`#F4FEFF` at 55%) and the `sheet` (lux-v2's sage tray at 30%). There
-is no opaque white fill anywhere.
+`panel` (`#F4FEFF` at 30%, with a 45% `panel-edge` and a 60% `panel-rim`) and
+the `sheet` (lux-v2's sage tray at 30%). The panel was 55% until the canvas
+review called it "too white and bright"; the cards on Progress and Check still
+draw the 55% until they are redesigned. The nav is lighter still: a 10%
+`nav-bar` with a 40% `nav-edge`, its circles `nav-item` at 12%. There is no
+opaque white fill anywhere.
 Text is `on-surface` `#2E2A3F`, with `on-surface-secondary` for chip labels
 and supporting copy and `on-surface-muted` for captions; all three clear WCAG
 AA on glass over the canvas (secondary measures about 5.8:1 at the darkest end
@@ -473,12 +488,17 @@ sheet, `gutter` (24) for screen side margins and a panel's side padding,
 `panel` (32) for a panel's top padding and its padding on desktop, `section`
 (48) between unrelated groups.
 Inside a panel the rhythm is label → 20 → body → 20 → controls → 44 → the
-round-button row. Density is comfortable, never tight: controls are 56 tall
-and sit 4 apart, which reads as one group with room to tap.
+round-button row. Density is comfortable, never tight: fields and round
+buttons are 56 tall, answer chips 44 (the touch floor), and they sit 4 apart,
+which reads as one group with room to tap.
+A question screen runs: 24 from the top, the header row, 16, the progress
+track, 24, the centred step title, 24, the step's panels 24 apart, 24, then
+Continue. Continue follows the content; it is not pinned to the bottom.
 Mobile is the design frame (390–440 wide); desktop starts at 1024 and caps the
-content column. Breakpoints are mobile-first; never write a 440 or 1440 query.
-The bottom nav floats `5px` above the screen edge and every screen reserves
-clearance for it.
+content column (question screens at 640). Breakpoints are mobile-first; never
+write a 440 or 1440 query.
+The bottom nav floats 16 above the screen edge (24 on desktop) and every
+screen reserves clearance for it.
 
 ## Elevation & Depth
 
@@ -511,26 +531,37 @@ the primary gradient, the brand shadow, white `button` label. Hover runs the
 gradient end for end over 400ms; pressed adds a 14% dark overlay (never a
 scale); disabled fades the whole control to 40%. `button-secondary` is glass.
 `button-small` is the 36-tall glass pill for `Save & exit` and similar; a
-leading glyph takes `primary`.
+leading glyph takes `primary`. `button-small-primary` is the same pill in flat
+`primary` for a small action that commits, such as step 1's `Save`.
 **Round buttons.** `icon-button-glass` (`+`, camera, note), `icon-button-primary`
 (the indigo circle for submit or continue) and `icon-button-outline` (back on a
 bare canvas) are 56 circles; `back-button` in a page header is a 48 glass
 circle with the arrow. Every one has a written accessible name.
-**Selection.** `chip` answers a question: glass, 56 tall, an optional leading
+**Selection.** `chip` answers a question: glass, 44 tall, an optional leading
 glyph in `primary`; `chip-selected` is the primary colour shading to
 `primary-hover`, white label and glyph. A single-select chip group needs a real
 radiogroup. `option-row` is for longer answers; selected firms the edge to
 `primary` over `glass-strong`. `tag` is read-only; `tag-brand` marks something.
-**Fields.** `text-field` and `search-field` are glass pills, 56 tall.
+**Fields.** `text-field`, `search-field` and the date field are glass pills,
+56 tall.
+**Question panel.** Every investigation question is a `panel` padded
+32/24/24: the question as a `panel-label` led by the sparkle glyph, an
+optional hint in `body-sm`, then its answers 20 below — chips in a wrapping
+row 4 apart, or option rows 8 apart. Two questions on one step are two panels.
 **Sheet and panel.** Every overlay is the `sheet`: sage frost, 36/44 corners,
 floating `inset` in from the screen on mobile, a title row of the LUX orb
 (50px) + `page-title` + a `sheet-close` glass circle, and a `panel` inside it.
 `panel` is also every card and readout.
-**Bottom nav (decided).** `nav-bar` is a glass pill holding four `nav-item`
+**Bottom nav (built).** `nav-bar` is a glass pill holding four `nav-item`
 glass circles (My skin, Progress, Analysis, Products); the current section is
 `nav-item-active`, which stretches into an indigo pill with its glyph and
 `label`. The others show the glyph only and carry the section name as their
-accessible name.
+accessible name. With a section active the bar runs the phone's width, 8 in
+from each side; with none (Welcome) it hugs its circles, centred. Desktop
+always hugs.
+**Welcome (kept from lux-v2).** The orb, the reply bubble, the 62-tall
+`Create skin profile` button and the disclaimer stay where v2 had them; only
+the nav is new.
 **Step progress (decided: lux-v2's).** A 4px `step-progress-track` at 80% of
 the column (400 on desktop) with a `primary` `step-progress-fill`; the fill
 grows from the step you came from.
@@ -546,7 +577,9 @@ otherwise; a legend names both marks.
 **Score cards (decided).** A 2×2 grid of `score-card`s: a 64px `score-ring`
 (band-coloured arc on a white track, the score in Light), the product name and
 brand, and a `score-band-pill` with a band-coloured dot and the band word.
-**Not designed yet:** the face diagram, chat bubbles, the undo bar, the safety
+**Face diagram (kept from lux-v2).** The face card follows step 1's panel; a
+picked region is v2's teal glass (`#13758C` at 89%).
+**Not designed yet:** chat bubbles beyond Welcome's, the undo bar, the safety
 notice, the analysing state, product cards and the add-product tray, empty
 states. Design each here first, then build it.
 

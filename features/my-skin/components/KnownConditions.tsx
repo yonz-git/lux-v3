@@ -1,9 +1,10 @@
 "use client";
 
-import styles from "./KnownConditions.module.css";
 import { QuestionScreen } from "./QuestionScreen";
-import { OptionRow } from "@/components/ui/OptionRow";
-import { OtherBlock } from "./OtherBlock";
+import { QuestionPanel } from "./QuestionPanel";
+import panel from "./QuestionPanel.module.css";
+import { OtherField } from "./OtherField";
+import { Chip } from "@/components/ui/Chip";
 import { useInvestigation } from "@/lib/store/InvestigationProvider";
 import { toggleMulti } from "@/lib/store/answers";
 
@@ -18,8 +19,11 @@ import { toggleMulti } from "@/lib/store/answers";
  *
  * "None" is the one exclusive answer on this screen — it stays a checkbox and
  * clears the rest via toggleMulti (it is in `EXCLUSIVE_OPTIONS`, lib/answers.ts).
+ *
+ * ⚠️ lux-v3 (1 Oct 2026, the canvas boards): the answers are CHIPS in one glass
+ * panel, `Other` among them, and the field `Other` opens sits under the group.
  */
-const CONDITIONS = ["Rosacea", "Eczema", "Perioral dermatitis", "Psoriasis", "None"];
+const CONDITIONS = ["Rosacea", "Eczema", "Perioral dermatitis", "Psoriasis", "None", "Other"];
 
 export function KnownConditions() {
   const { answers, setAnswer } = useInvestigation();
@@ -29,47 +33,30 @@ export function KnownConditions() {
   const toggle = (label: string) =>
     setAnswer("conditions", (prev) => toggleMulti(prev ?? [], label));
 
-  const row = (label: string) => (
-    <OptionRow
-      key={label}
-      control="checkbox"
-      label={label}
-      selected={selected.includes(label)}
-      onSelect={() => toggle(label)}
-    />
-  );
-
   return (
-    <QuestionScreen id="conditions" tightTop>
-      <div className={styles.heading}>
-        {/* ⚠️ AN `<h2>`, NOT AN `<h1>` — the step's own title is the page's one
-            `<h1>`, rendered by `QuestionScreen` (visually hidden here). This is a
-            question WITHIN that step, so it is a level down. Marking both as
-            `<h1>` gave a screen reader two — on `skin-type`, three — peer page
-            titles with nothing saying the questions belong to the step. The
-            `t-h4-h3` class carries every visual property, so the tag change moves
-            nothing on screen. */}
-        <h2 className={`${styles.question} t-h4-h3`}>
-          Do you have any diagnosed skin conditions?
-        </h2>
-      </div>
-
-      <div
-        className={styles.optionsBlock}
-        role="group"
-        aria-label="Do you have any diagnosed skin conditions?"
-      >
-        <div className={styles.options}>
-          {CONDITIONS.map(row)}
-          <OtherBlock
-            selected={selected.includes("Other")}
-            onToggle={() => toggle("Other")}
-            value={other}
-            onChange={(v) => setAnswer("conditionsOther", v)}
-            placeholder="Type the condition"
-          />
+    <QuestionScreen id="conditions">
+      <QuestionPanel question="Do you have any diagnosed skin conditions?">
+        <div
+          className={panel.chips}
+          role="group"
+          aria-label="Do you have any diagnosed skin conditions?"
+        >
+          {CONDITIONS.map((label) => (
+            <Chip
+              key={label}
+              label={label}
+              selected={selected.includes(label)}
+              onToggle={() => toggle(label)}
+            />
+          ))}
         </div>
-      </div>
+        <OtherField
+          open={selected.includes("Other")}
+          value={other}
+          onChange={(v) => setAnswer("conditionsOther", v)}
+          placeholder="Type the condition"
+        />
+      </QuestionPanel>
     </QuestionScreen>
   );
 }

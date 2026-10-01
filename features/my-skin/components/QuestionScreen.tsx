@@ -31,11 +31,12 @@ import { type StepId, stepFor, prevHref, nextHref } from "@/features/my-skin/flo
  * compatibility check, a section none of them belong to and whose own landing
  * cannot reach them. `My skin` is that missing item; see `BottomNav.tsx`.
  *
- * On desktop the content and the Continue button move INSIDE one centred
- * frosted card (`width/card-form`, 920). On mobile there is no card: the content
- * sits on the gradient and Continue is pushed to the bottom by a flex spacer.
- * Continue is full-width on mobile and 280 centred on desktop, on every
- * investigation screen — GETTING STARTED and PRODUCTS add-flow alike.
+ * ⚠️ lux-v3 (1 Oct 2026, from the canvas boards): every question sits in its
+ * own glass panel (`QuestionPanel`), so there is no card round the content at
+ * either breakpoint — a frosted card round frosted panels doubles the frost.
+ * The column is the phone's on mobile and `width/card-focus` (640) on desktop.
+ * Continue follows the content 24 below rather than being pushed to the
+ * bottom: full width on mobile, `width/action` centred on desktop.
  *
  * ⚠️ CONTINUE IS DISABLED UNTIL THE STEP IS ANSWERED. The rule lives on the step
  * in `lib/flow.ts`, not in the screen, so a new screen cannot forget it.
@@ -49,7 +50,6 @@ export function QuestionScreen({
   onContinue,
   contentGap,
   contentGapDesktop,
-  titleVisible,
   nav = "my-skin",
   tightTop,
 }: {
@@ -89,16 +89,6 @@ export function QuestionScreen({
    * floating in a page that is mostly whitespace.
    */
   contentGapDesktop?: number;
-  /**
-   * Render the step's title as visible copy instead of visually-hidden.
-   *
-   * ⚠️ EVERY SCREEN GETS AN `<h1>` EITHER WAY — the four PRODUCTS screens that
-   * show a title just show the same string the others hide. Before this there
-   * was no heading on any flow screen at all: the question lives in a chat
-   * bubble, which is a div, so a screen-reader user had nothing to navigate by.
-   * The string comes from the step, so a new screen cannot forget it.
-   */
-  titleVisible?: boolean;
   /**
    * Which bottom-nav item lights up. Defaults to `my-skin`, the section the
    * investigation flow lives in; step 5 passes `products`. See the note above.
@@ -152,13 +142,12 @@ export function QuestionScreen({
               QuestionScreen, so without a key the DOM is reused and the
               animation never re-runs. */}
           <div className={styles.content} data-reveal data-reveal-stagger key={id}>
-            <h1
-              className={
-                titleVisible ? `${styles.title} t-h4-h3` : "visually-hidden"
-              }
-            >
-              {title}
-            </h1>
+            {/* ⚠️ EVERY STEP SHOWS ITS TITLE, CENTRED — lux-v3, 1 Oct 2026, from
+                the canvas ("center"). Until then only step 5 showed it and the
+                other four hid the same `<h1>`; the question itself now sits in
+                each screen's panel as an `<h2>`. The string comes from the
+                step, so a new screen cannot forget it. */}
+            <h1 className={`${styles.title} t-h4-h3`}>{title}</h1>
             {children}
           </div>
 

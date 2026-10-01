@@ -22,20 +22,19 @@
   justify-content: space-between;
   gap: var(--space-md);
   width: 100%;
-  min-height: 52px;
-  padding: 0 18px;
+  /* lux-v3 (1 Oct 2026, the canvas boards): a VidGen glass field — 56, a
+     pill, the chips' own glass and rim. It was v2's 52 rounded row on an
+     inset shadow. */
+  min-height: var(--size-field);
+  padding: 0 var(--space-xl);
   text-align: left;
 
-  border-radius: var(--radius-lg);
-  /* ⚠️ `#f4feff3b`, supplied directly 14 Sep 2026 — `surface/frost-light`'s
-     own near-white at 23% rather than 55%. NOT IN FIGMA and no token; raise
-     one if it stays. */
-  background: #f4feff3b;
-  /* ⚠️ `shadow/frosted-row` at 15%, asked for directly 15 Sep 2026, with the
-     option rows and the product groups; the token stays 10% (globals.css) */
-  box-shadow: inset 2px 4px 9px rgba(0, 0, 0, 0.15);
-  -webkit-backdrop-filter: blur(var(--blur-card));
-  backdrop-filter: blur(var(--blur-card));
+  border-radius: var(--radius-full);
+  border: var(--border-width-hairline) solid var(--color-border-glass);
+  background: var(--color-glass);
+  box-shadow: var(--shadow-glass);
+  -webkit-backdrop-filter: blur(10px);
+  backdrop-filter: blur(10px);
 
   color: var(--color-text-primary);
 }

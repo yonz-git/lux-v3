@@ -34,6 +34,23 @@
   }
 }
 
+.primary {
+  border-color: transparent;
+  background: var(--color-bg-brand);
+  box-shadow: none;
+  color: var(--color-text-on-brand);
+}
+
+.primary:hover:not(:disabled) {
+  background-color: var(--color-bg-brand-hover);
+}
+
+@media (hover: none) {
+  .primary:hover:not(:disabled) {
+    background-color: var(--color-bg-brand);
+  }
+}
+
 .button:disabled {
   opacity: var(--opacity-disabled);
   cursor: not-allowed;

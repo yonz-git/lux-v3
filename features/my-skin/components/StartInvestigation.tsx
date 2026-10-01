@@ -1,13 +1,15 @@
 "use client";
 
-import { useEffect, useId, useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import styles from "./StartInvestigation.module.css";
 import { QuestionScreen } from "./QuestionScreen";
+import { QuestionPanel } from "./QuestionPanel";
+import panel from "./QuestionPanel.module.css";
 import { Chip } from "@/components/ui/Chip";
+import { SmallButton } from "@/components/ui/SmallButton";
 import { TextField } from "@/components/ui/TextField";
 import { FaceDiagram, FACE_REGION_IDS } from "./FaceDiagram";
 import { Button } from "@/components/ui/Button";
-import SegmentedToggle from "@/features/products/components/SegmentedToggle";
 import {
   PlusIcon,
   CloseIcon,
@@ -107,17 +109,20 @@ import {
  * closed, so a description restored from the store arrives as the confirmed
  * row rather than as an open field.
  *
+ * ⚠️ lux-v3 (1 Oct 2026, the canvas boards): THE QUESTION LEADS AGAIN, IN ITS
+ * PANEL, AND THE FACE CARD FOLLOWS IT. The panel holds the question, the
+ * instruction, the symptom chips and the places row — `Mark where you notice
+ * <symptom>` beside `Reset` and `Save`, two small pills where the products
+ * tray's three-way pill was. `Reset all` takes the row while no symptom is
+ * open. The picked symptom is the app's indigo chip, no longer the rose
+ * `bg/symptom` (the canvas drew it indigo; the face's callouts keep the rose).
+ * The typed description and `Take a photo` were not on the board and stay,
+ * under the face card: they are answers, not decoration.
+ *
  * NOTHING starts selected. The Figma frames show options already chosen
  * because a comp has to show a filled-in state; the prototype starts empty and
  * Continue stays disabled until a symptom has at least one place marked.
  *
- * ⚠️ `gapBeforeContinue` IS 48, NOT THE COMP'S 104. Figma 476:2670 draws an
- * extra spacer above Continue, but 957 and 900 are fixed canvases and that
- * spacer is an artefact of them (AGENTS.md, "translate, don't transcribe").
- * Measured at 1600x868: the 104 put Continue at y 1002 and the card's bottom
- * edge off-screen too, so a laptop user saw neither the primary action nor any
- * cue that one existed below the fold. 48 is the card's own between-block gap
- * and is on the spacing scale, which 104 never was.
  */
 /* ⚠️ `SYMPTOMS` MOVED TO `features/my-skin/safety.ts` AND THAT IS NOT A TIDY-UP.
    Two of these chips — Swelling and Rash — are the only members of the product
@@ -160,7 +165,6 @@ const UNDO_MS = 4000;
 export function StartInvestigation() {
   const { answers, setAnswer } = useInvestigation();
   const reported = symptomsOf(answers);
-  const instructionId = useId();
 
   /* the symptom whose places are being marked, or null between symptoms —
      this screen's state, never an answer (see the note at the top) */
@@ -256,8 +260,8 @@ export function StartInvestigation() {
     setUndo(null);
     requestAnimationFrame(() =>
       resetRef.current
-        ?.querySelectorAll<HTMLButtonElement>('[role="group"] button')
-        [2]?.focus({ preventScroll: true }),
+        ?.querySelector<HTMLButtonElement>('[role="group"] button:last-child')
+        ?.focus({ preventScroll: true }),
     );
   };
 
@@ -337,21 +341,97 @@ export function StartInvestigation() {
   };
 
   return (
-    <QuestionScreen id="start" gapBeforeContinue={48} tightTop>
-      {/* ⚠️ AN `<h2>`, NOT AN `<h1>` — the step's own title is the page's one
-          `<h1>`, rendered by `QuestionScreen` (visually hidden here). This is a
-          question WITHIN that step, so it is a level down. Marking both as
-          `<h1>` gave a screen reader two — on `skin-type`, three — peer page
-          titles with nothing saying the questions belong to the step. The
-          `t-h4-h3` class carries every visual property, so the tag change moves
-          nothing on screen. */}
-      <h2 className={`${styles.question} t-h4-h3`}>
-        What is currently happening to your skin?
-      </h2>
+    <QuestionScreen id="start">
+      <QuestionPanel
+        question="What is currently happening to your skin?"
+        hint="For each symptom, select the affected areas in the face diagram."
+      >
+        {/* the chips and the notice they can reveal are one block: the
+            notice brings its own 20 in as it opens (SafetyNotice's `.clip`),
+            so it must not also take a slot in the panel's gap while closed */}
+        <div>
+          <div
+            ref={chipsRef}
+            className={panel.chips}
+            role="group"
+            aria-label="What is currently happening to your skin?"
+          >
+            {SYMPTOMS.map((s) => (
+              <Chip
+                key={s}
+                label={s}
+                selected={placing === s || reported.includes(s)}
+                disabled={placing !== null && placing !== s}
+                onToggle={() => tapSymptom(s)}
+              />
+            ))}
+          </div>
 
-      <p id={instructionId} className={`${styles.instruction} t-body3-body2`}>
-        For each symptom, select the affected areas in the face diagram.
-      </p>
+          <SafetyNotice show={showSafetyNotice} />
+        </div>
+
+        {/* the places row — only once there is something for it to act on */}
+        {(placing || reported.length > 0 || undo) && (
+          <div ref={resetRef} className={styles.places}>
+            {/* always mounted with the row, so the announcement lands in an
+                existing region */}
+            <p className="visually-hidden" aria-live="polite">
+              {undo ? "Selections cleared" : ""}
+            </p>
+            {undo ? (
+              <div key={undo.id} className={styles.undo}>
+                <span className={`${styles.undoMessage} t-body3`}>
+                  Selections cleared
+                </span>
+                <SmallButton
+                  ref={undoRef}
+                  label="Undo"
+                  arrow={false}
+                  onClick={undoReset}
+                />
+              </div>
+            ) : (
+              <p className={`${styles.placesHint} t-body3`}>
+                {placing ? (
+                  <>
+                    Mark where you notice <b>{placing.toLowerCase()}</b>
+                  </>
+                ) : (
+                  "Tap a symptom to change its places"
+                )}
+              </p>
+            )}
+            {!undo && (
+              <div className={styles.placesActions} role="group" aria-label="Symptom places">
+                {placing ? (
+                  <>
+                    <SmallButton
+                      label="Reset"
+                      arrow={false}
+                      disabled={!placeMarked}
+                      onClick={resetSymptom}
+                    />
+                    <SmallButton
+                      label="Save"
+                      variant="primary"
+                      arrow={false}
+                      disabled={!placeMarked}
+                      onClick={finishSymptom}
+                    />
+                  </>
+                ) : (
+                  <SmallButton
+                    label="Reset all"
+                    arrow={false}
+                    disabled={nothingSelected}
+                    onClick={resetAll}
+                  />
+                )}
+              </div>
+            )}
+          </div>
+        )}
+      </QuestionPanel>
 
       <div className={styles.diagram}>
         <FaceDiagram
@@ -368,79 +448,6 @@ export function StartInvestigation() {
              mount on `Save` and draw in then, not unseen under the fade. */
           callouts={placing ? withAreas(answers.start, placing, []) : answers.start}
           calloutsHidden={placing !== null}
-        />
-      </div>
-
-      {/* ⚠️ THE SYMPTOM CHIPS SIT UNDER THE FACE, NOT UNDER THE QUESTION —
-          asked for directly 14 Sep 2026: the face card leads, and the chips
-          sit right above the `Save` / `Reset` / `Reset all` pill that acts on
-          them. `SafetyNotice` moves with them, because it reveals under the
-          chip grid (safety.ts). NOT IN FIGMA. */}
-      <div
-        ref={chipsRef}
-        className={styles.chips}
-        role="group"
-        aria-label="What is currently happening to your skin?"
-        aria-describedby={instructionId}
-      >
-        {SYMPTOMS.map((s) => (
-          <Chip
-            key={s}
-            label={s}
-            selected={placing === s || reported.includes(s)}
-            disabled={placing !== null && placing !== s}
-            onToggle={() => tapSymptom(s)}
-          />
-        ))}
-      </div>
-
-      <SafetyNotice show={showSafetyNotice} />
-
-      <div
-        ref={resetRef}
-        className={styles.reset}
-        data-undo={undo ? "" : undefined}
-      >
-        {/* always mounted, so the announcement lands in an existing region */}
-        <p className="visually-hidden" aria-live="polite">
-          {undo ? "Selections cleared" : ""}
-        </p>
-        {undo && (
-          <div key={undo.id} className={styles.undo}>
-            <span className={`${styles.undoMessage} t-label-sm`}>
-              Selections cleared
-            </span>
-            <button
-              ref={undoRef}
-              type="button"
-              className={`${styles.undoAction} t-label pressable`}
-              onClick={undoReset}
-            >
-              Undo
-            </button>
-          </div>
-        )}
-        {/* ⚠️ NOT IN FIGMA — ONE PILL, THREE COMMANDS, asked for directly 14
-            Sep 2026: `Save` / `Reset` used to open in their own segmented
-            pill under the chips, with `Reset all` a separate button down
-            here. They share the products tray's `SegmentedToggle` now, under
-            the face card: `Save` is the filled segment, and each command
-            fades while it has nothing to act on (`Save` and `Reset` until the
-            symptom being placed has a place, `Reset all` until anything is
-            selected). `actions` keeps them buttons in a group, not tabs.
-            ⚠️ `Save` was `Done` for an hour and was renamed, asked for
-            directly. The places are already stored as they are tapped (see
-            the note at the top); the label names the step the reader is
-            finishing, and what it does is unchanged. */}
-        <SegmentedToggle
-          actions
-          label="Symptom places"
-          className={styles.placesToggle}
-          options={["Save", "Reset", "Reset all"]}
-          disabled={[!placeMarked, !placeMarked, nothingSelected]}
-          onChange={(i) =>
-            i === 0 ? finishSymptom() : i === 1 ? resetSymptom() : resetAll()
-          }
         />
       </div>
 

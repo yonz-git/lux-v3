@@ -36,8 +36,17 @@ import {
  * (606:2183) already gives that exact link. The nav item is named for the
  * thing, not the act, for the same reason.
  *
- * Size is handled by CSS (380 mobile / 598 desktop) rather than a prop, since
- * on the web the breakpoint decides, not the caller.
+ * ⚠️ NAV B, THE ROUND-BUTTON BAR — lux-v3, 1 Oct 2026, picked on the design
+ * canvas ("nav B"). Four 56 glass circles, icon only, in a thin glass bar.
+ * The ACTIVE section is the one item that grows into a labelled indigo pill,
+ * so the bar names where you are and nothing else. Two shapes fall out of
+ * `active`, never a prop:
+ *   a section is active -> the bar runs the width of the phone, 8 in from
+ *                          each side, and the pill takes the slack
+ *   `none` (Welcome)    -> the bar hugs its four circles, centred
+ *                          ("undo the full width only when it's needed")
+ * Desktop always hugs. Inactive labels are visually hidden, not dropped: each
+ * circle is still named by its word.
  *
  * ⚠️ ALL FOUR SECTIONS ARE LINKS. My skin, Progress, Check and Products each
  * have a landing, so every item is a real `next/link` carrying
@@ -95,20 +104,21 @@ export function BottomNav({
     <nav
       className={className ? `${styles.nav} ${className}` : styles.nav}
       style={style}
+      data-compact={active === "none" || undefined}
       aria-label="Sections"
     >
       {items.map(({ id, label, href, Icon }) => {
-        /* ⚠️ NOT IN FIGMA — the label is the whole item (`t-nav`, 14 Regular mobile / 16 desktop),
-           and it takes the buttons' hover shine, `.shine-text`. */
+        const isActive = active === id;
+        /* the active pill shows its word; a circle keeps it for the screen
+           reader only */
         const content = (
           <>
             <Icon className={styles.icon} />
-            <span className={`${styles.label} t-nav shine-text shine-on-hover`}>
+            <span className={isActive ? `${styles.label} t-nav` : "visually-hidden"}>
               {label}
             </span>
           </>
         );
-        const isActive = active === id;
 
         if (href) {
           return (

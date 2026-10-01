@@ -1,7 +1,9 @@
 "use client";
 
-import styles from "./SkinType.module.css";
 import { QuestionScreen } from "./QuestionScreen";
+import { QuestionPanel } from "./QuestionPanel";
+import panel from "./QuestionPanel.module.css";
+import { Chip } from "@/components/ui/Chip";
 import { OptionRow } from "@/components/ui/OptionRow";
 import { useInvestigation } from "@/lib/store/InvestigationProvider";
 import { toggleMulti } from "@/lib/store/answers";
@@ -22,6 +24,11 @@ import { toggleMulti } from "@/lib/store/answers";
  *
  * Continue stays disabled until BOTH questions are answered.
  *
+ * ⚠️ lux-v3 (1 Oct 2026, the canvas boards): each question is its own glass
+ * panel. Skin type keeps its radio ROWS — five long, mutually exclusive
+ * descriptions read best as a list. Tendencies became CHIPS, exclusives
+ * included and still checkboxes: short labels, zero or more.
+ *
  * ⚠️ THE OPENING AI BUBBLE IS GONE — removed 6 Sep 2026, not yet reflected in
  * Figma. "Thanks for sharing that. Let me ask a few questions about your skin
  * first." restated the step's own title and desktop already hid it as padding,
@@ -39,60 +46,44 @@ export function SkinType() {
   const skinType = answers["skin-type"] ?? null;
   const tendencies = answers.tendencies ?? [];
 
-  const tendencyRow = (label: string) => (
-    <OptionRow
-      key={label}
-      control="checkbox"
-      label={label}
-      selected={tendencies.includes(label)}
-      onSelect={() =>
-        setAnswer("tendencies", (prev) => toggleMulti(prev ?? [], label))
-      }
-    />
-  );
-
   return (
-    <QuestionScreen id="skin-type" tightTop>
-      {/* ⚠️ AN `<h2>`, NOT AN `<h1>` — the step's own title is the page's one
-          `<h1>`, rendered by `QuestionScreen` (visually hidden here). This is a
-          question WITHIN that step, so it is a level down. Marking both as
-          `<h1>` gave a screen reader two — on `skin-type`, three — peer page
-          titles with nothing saying the questions belong to the step. The
-          `t-h4-h3` class carries every visual property, so the tag change moves
-          nothing on screen. */}
-      <h2 className={`${styles.question} t-h4-h3`}>
-        Which description fits your skin most often?
-      </h2>
+    <QuestionScreen id="skin-type">
+      <QuestionPanel question="Which description fits your skin most often?">
+        <div
+          className={panel.rows}
+          role="radiogroup"
+          aria-label="Which description fits your skin most often?"
+        >
+          {SKIN_TYPES.map((o) => (
+            <OptionRow
+              key={o}
+              control="radio"
+              label={o}
+              selected={skinType === o}
+              onSelect={() => setAnswer("skin-type", o)}
+            />
+          ))}
+        </div>
+      </QuestionPanel>
 
-      <div
-        className={styles.typeOptions}
-        role="radiogroup"
-        aria-label="Which description fits your skin most often?"
-      >
-        {SKIN_TYPES.map((o) => (
-          <OptionRow
-            key={o}
-            control="radio"
-            label={o}
-            selected={skinType === o}
-            onSelect={() => setAnswer("skin-type", o)}
-          />
-        ))}
-      </div>
-
-      <h2 className={`${styles.tendenciesPrompt} ${styles.question} t-h4-h3`}>
-        Do any of these usually apply?
-      </h2>
-
-      <div
-        className={styles.optionsBlock}
-        role="group"
-        aria-label="Do any of these usually apply?"
-      >
-        <div className={styles.tendencyOptions}>{TENDENCIES.map(tendencyRow)}</div>
-        <hr className={styles.divider} />
-        <div className={styles.tendencyOptions}>{EXCLUSIVES.map(tendencyRow)}</div>
-      </div>
+      <QuestionPanel question="Do any of these usually apply?">
+        <div
+          className={panel.chips}
+          role="group"
+          aria-label="Do any of these usually apply?"
+        >
+          {[...TENDENCIES, ...EXCLUSIVES].map((label) => (
+            <Chip
+              key={label}
+              label={label}
+              selected={tendencies.includes(label)}
+              onToggle={() =>
+                setAnswer("tendencies", (prev) => toggleMulti(prev ?? [], label))
+              }
+            />
+          ))}
+        </div>
+      </QuestionPanel>
     </QuestionScreen>
   );
 }

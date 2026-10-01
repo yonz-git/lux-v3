@@ -156,9 +156,29 @@
   margin-top: clamp(0px, 17vh - var(--space-4xl), 123px);
 }
 
+/* ⚠️ lux-v3 KEEPS v2's WELCOME, asked for directly on the canvas, 1 Oct 2026
+   ("the welcome page design doesn't work. we will keep the v2 version just
+   replace the nav bar"). The VidGen layer re-sized two things under it — the
+   button to 56 and the bubble's body to 16/22 — and both are put back here,
+   on this screen only, so the orb, the reply and the action sit where v2 had
+   them: the 62 `Button` (`--button-height` is its own hook) and the bubble at
+   v2's 16/26 (18/28 desktop). The face is Urbanist, as the whole app is. */
 .cta {
+  --button-height: var(--size-control-lg); /* 62 */
   width: 100%;
   max-width: 338px; /* the Welcome CTA is narrower than the content column */
+}
+
+/* (0,2,0), so it outranks `.t-body2-body1` on the same element whichever
+   stylesheet loads last */
+.bubbleReply[data-from] {
+  line-height: 26px;
+}
+
+@media (min-width: 1024px) {
+  .bubbleReply[data-from] {
+    line-height: 28px;
+  }
 }
 
 .disclaimer {

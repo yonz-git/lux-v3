@@ -1,11 +1,14 @@
 "use client";
 
-import type { ButtonHTMLAttributes, ReactNode } from "react";
+import type { ButtonHTMLAttributes, ReactNode, Ref } from "react";
 import Link from "next/link";
 import styles from "./SmallButton.module.css";
 
 type Props = {
   label: string;
+  /** `primary` is the flat indigo pill — a small action that commits, such as
+   *  step 1's `Save` (canvas boards, 1 Oct 2026). Glass by default. */
+  variant?: "glass" | "primary";
   arrow?: boolean;
   /** a leading glyph from `icons.tsx`, sized to icon/sm (20) by the module */
   icon?: ReactNode;
@@ -13,6 +16,7 @@ type Props = {
   specular?: boolean;
   href?: string;
   className?: string;
+  ref?: Ref<HTMLButtonElement>;
 } & Omit<ButtonHTMLAttributes<HTMLButtonElement>, "className">;
 
 /**
@@ -28,6 +32,7 @@ type Props = {
  */
 export function SmallButton({
   label,
+  variant = "glass",
   arrow = true,
   icon,
   specular: _specular,
@@ -50,7 +55,14 @@ export function SmallButton({
       )}
     </>
   );
-  const cls = [styles.button, "pressable", className].filter(Boolean).join(" ");
+  const cls = [
+    styles.button,
+    variant === "primary" && styles.primary,
+    "pressable",
+    className,
+  ]
+    .filter(Boolean)
+    .join(" ");
 
   // a disabled control must not stay a link — links are not disableable
   if (href && !rest.disabled) {

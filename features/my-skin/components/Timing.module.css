@@ -1,66 +1,18 @@
-/* 03c — Timing. Figma mobile 488:851 / desktop 491:1031.
-   Three labelled fields, each `label` + control with a gap of 8, separated by 24.
-   The tallest screen in the flow (1221 in Figma); here it simply scrolls. */
+/* 03c — Timing, on the canvas board's single panel (lux-v3, 1 Oct 2026). */
 
-.question {
-  color: var(--color-text-primary);
-  text-align: center;
+/* the date picker opens out of this panel over Continue, so the panel stacks
+   above what follows it */
+.panel {
+  z-index: 1;
 }
 
 .field {
   display: flex;
   flex-direction: column;
   gap: var(--space-sm);
-  margin-top: var(--space-2xl);
-}
-
-/* The date field owns a popover, so it must sit above the fields below it.
-   Without this it depends on nothing else in the stack creating a stacking
-   context — which is exactly how the calendar ended up rendering underneath. */
-.fieldWithPopover {
-  position: relative;
-  z-index: 1;
 }
 
 .label {
+  margin: 0;
   color: var(--color-text-primary);
-}
-
-/* the Figma `date-field` is 52 tall, slightly shorter than a row, with the
-   same frosted recipe */
-.date {
-  width: 100%;
-  min-height: 52px;
-  padding: 0 18px;
-
-  border-radius: var(--radius-lg);
-  background: var(--color-surface-frost-light);
-  box-shadow: var(--shadow-frosted-row);
-  -webkit-backdrop-filter: blur(var(--blur-card));
-  backdrop-filter: blur(var(--blur-card));
-
-  color: var(--color-text-primary);
-  font-family: inherit;
-}
-
-.options {
-  display: flex;
-  flex-direction: column;
-  gap: var(--space-md);
-}
-
-@media (min-width: 1024px) {
-  .options {
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: var(--gutter-desktop);
-  }
-}
-
-@media (prefers-reduced-transparency: reduce) {
-  .date {
-    background: var(--color-bg-surface-frost);
-    -webkit-backdrop-filter: none;
-    backdrop-filter: none;
-  }
 }
