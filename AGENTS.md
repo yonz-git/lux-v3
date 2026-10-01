@@ -49,8 +49,11 @@ them, because that lives in three better places:
    twelve screens to one, why CHECK's basket stopped being modal, the contrast
    measurements behind SURFACE SYSTEM B, and the list of things faked here
    because the design system has no component for them.
-3. **`/styleguide`** — every token and component rendered live. It is what
-   Figma used to be for: the place to SEE the system before changing it.
+3. **`docs/design.md`** — THE DESIGN SYSTEM TO BUILD FROM: the rules, the
+   type ramp, colour, glass, spacing roles, sizes, icons, components and
+   screen patterns. **Read it before building or restyling a screen.**
+   **`/styleguide`** renders the same system live — the place to SEE it before
+   changing it.
 
 4. **`docs/product-brief.md`** — the 11 Aug product brief. It specifies the
    controlled vocabulary the product may and may not use, the safety branch and

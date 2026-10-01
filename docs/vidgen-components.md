@@ -25,24 +25,18 @@ soft glow. Controls are **circles**: ~56 round glass icon buttons, and a dark
 indigo circle as the one primary action. Options are pill chips with a leading
 icon. Colour is quiet — indigo, lilac and sage, with one soft lilac glow.
 
-## Decide these first — they change every component
+## Decisions (status 1 Oct 2026)
 
-1. **Typeface.** Urbanist replaces Figtree? It is the biggest single change to
-   the feel, and every `t-*` size has to be re-checked (Urbanist runs narrower
-   and lighter at the same size).
-2. **Which screens are dark.** The references put the working screens on
-   indigo and the welcome on the light canvas. LUX's readouts (PROGRESS, CHECK
-   results) are built on sage cards with dark ink; going dark rewrites both
-   surface systems and every contrast measurement in `AGENTS.md`.
-3. **The primary action's shape.** The references have no full-width text
-   button — the primary is an icon circle (sparkle) or the slide-to-start
-   control. LUX's flow needs a labelled `Continue` on every step. A labelled
-   pill in the new style has to be designed.
-4. **Navigation.** The references have a top row of pill tabs and no bottom
-   bar. LUX has a four-item bottom nav whose placement is a non-negotiable.
-   Keep the bottom bar restyled, or move to top pill tabs?
-5. ~~**Brand indigo.**~~ Settled: `globals.css` already runs
-   `#485780 → #313560`, the same pair the references use.
+1. **Typeface — decided: Urbanist.**
+2. **Dark screens — decided: none.** The references' dark indigo ground was
+   tried and dropped with their gradients; lux-v2's canvas stays.
+3. **Primary action — decided: a labelled indigo pill** (`Button`, 56 tall)
+   for worded actions, and the indigo circle (`IconButton variant="primary"`)
+   where a glyph is enough.
+4. **Navigation — OPEN.** Keep the bottom bar restyled, or move to pill tabs.
+5. **Brand indigo — decided:** `#485780 → #313560`, lux-v2's.
+
+The system that came out of these is `docs/design.md`.
 
 ## A — Shown in the references: restyle directly
 
