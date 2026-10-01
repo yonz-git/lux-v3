@@ -87,42 +87,39 @@ export function formatFull(d: Date): string {
 }
 
 /* ---------------------------------------------------------------------------
-   SUNDAY-FIRST — the PROGRESS check-in calendar
+   THE CHECK-IN CALENDAR'S MONTH — Monday-first, like the date picker
 
-   ⚠️ THE TWO CALENDARS IN LUX START THE WEEK ON DIFFERENT DAYS, and that is
-   what the Figma frames do. `DateField` (03c Timing) is Monday-first; the
-   PROGRESS check-in calendar (552:1255 / 554:1260) is Sunday-first — its header
-   reads S M T W T F S and Aug 1 2026, a Saturday, sits in the LAST column.
-   Neither frame is ambiguous, so both are reproduced rather than silently
-   unified. Raise it in Figma: one product should pick one.
+   ⚠️ ONE WEEK START FOR THE WHOLE APP, AS OF lux-v3 (1 Oct 2026). The two
+   calendars used to disagree because their Figma frames did: `DateField` was
+   Monday-first and the PROGRESS check-in calendar (552:1255) Sunday-first, and
+   this file said "one product should pick one". The canvas picked: Calendar A
+   is drawn Monday-first, the date picker's week.
    -------------------------------------------------------------------------- */
 
-export const WEEKDAYS_SUNDAY = ["S", "M", "T", "W", "T", "F", "S"];
-
-/** Full names, because the initials repeat (S/T twice) and a screen reader
- *  reading "S, M, T, W, T, F, S" tells you nothing about which S you are on. */
-export const WEEKDAY_NAMES_SUNDAY = [
-  "Sunday",
+/** Full names, because the initials repeat (T/S twice) and a screen reader
+ *  reading "M, T, W, T, F, S, S" tells you nothing about which T you are on. */
+export const WEEKDAY_NAMES = [
   "Monday",
   "Tuesday",
   "Wednesday",
   "Thursday",
   "Friday",
   "Saturday",
+  "Sunday",
 ];
 
 /**
- * The month laid out Sunday-first, as whole weeks of 7.
+ * The month laid out Monday-first, as whole weeks of 7.
  *
  * ⚠️ PADS WITH `null`, NOT WITH THE NEIGHBOURING MONTHS. `monthGrid` above
  * shows the days either side because a date PICKER lets you reach them; this
- * calendar is a read-only record of one month, and the comp leaves those cells
- * empty. It also returns only the rows the month actually needs (5 or 6) rather
- * than a fixed 42, so a short month does not render a blank trailing week.
+ * calendar is a read-only record of one month, so those cells stay empty. It
+ * also returns only the rows the month needs (5 or 6) rather than a fixed 42,
+ * so a short month does not render a blank trailing week.
  */
-export function monthGridSunday(month: Date): (Date | null)[] {
+export function monthRecordGrid(month: Date): (Date | null)[] {
   const first = startOfMonth(month);
-  const lead = first.getDay(); // 0 = Sunday, which is already what we want
+  const lead = (first.getDay() + 6) % 7; // getDay() is Sunday-first
   const days = new Date(first.getFullYear(), first.getMonth() + 1, 0).getDate();
   const cells = Math.ceil((lead + days) / 7) * 7;
 

@@ -2,7 +2,7 @@
 
 import { useId, type ReactNode } from "react";
 import styles from "./QuestionPanel.module.css";
-import { SparkleIcon } from "@/components/ui/icons";
+import { Orb } from "@/components/ui/Orb";
 
 /**
  * One investigation question in its glass panel — lux-v3, 1 Oct 2026, from the
@@ -34,7 +34,12 @@ export function QuestionPanel({
     >
       <div className={styles.head}>
         <h2 id={id} className={`${styles.question} t-h5`}>
-          <SparkleIcon className={styles.sparkle} />
+          {/* ⚠️ THE SMALL ORB, NOT A SPARKLE — asked for directly 1 Oct 2026
+              ("apply the small orb for all those icons"): LUX asking the
+              question, as the orb speaks the check-in and the results */}
+          <span className={styles.orb} aria-hidden="true">
+            <Orb size="26px" />
+          </span>
           {question}
         </h2>
         {hint && <p className={`${styles.hint} t-body3`}>{hint}</p>}

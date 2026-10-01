@@ -76,13 +76,13 @@
   flex-direction: column;
   gap: var(--space-sm);
 
-  border-radius: var(--radius-lg);
-  background: var(--color-surface-frost-nav);
-  /* ⚠️ `shadow/frosted-row` at 15%, asked for directly 15 Sep 2026, with the
-     option rows and the date field; the token stays 10% (globals.css) */
-  box-shadow: inset 2px 4px 9px rgba(0, 0, 0, 0.15);
-  -webkit-backdrop-filter: blur(var(--blur-card));
-  backdrop-filter: blur(var(--blur-card));
+  /* lux-v3: the 30% panel at the score cards' 24 radius (app/vidgen.css) */
+  border-radius: var(--radius-2xl); /* 24 */
+  border: var(--border-width-hairline) solid var(--color-border-panel);
+  background: var(--color-panel);
+  box-shadow: inset 0 1px 0 var(--color-rim-panel);
+  -webkit-backdrop-filter: blur(12px);
+  backdrop-filter: blur(12px);
 }
 
 .group > :global(.collapse) {
@@ -130,7 +130,7 @@
   /* no fill of its own — `.group` above is the surface. The radius stays so
      the focus outline, which follows `border-radius`, still traces the box's
      own corners when the row is the whole box. */
-  border-radius: var(--radius-lg);
+  border-radius: var(--radius-2xl);
 }
 
 /* name + window travel together and take the slack, so the count and chevron
@@ -304,7 +304,7 @@
 
 @media (prefers-reduced-transparency: reduce) {
   .group {
-    background: var(--color-bg-nav);
+    background: var(--color-panel);
     -webkit-backdrop-filter: none;
     backdrop-filter: none;
   }

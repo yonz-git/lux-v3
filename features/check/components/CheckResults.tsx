@@ -1,19 +1,19 @@
 "use client";
 
-import { useId, useState } from "react";
+import { useId, useRef, useState } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import styles from "./CheckResults.module.css";
 import { HubScreen } from "@/components/layout/HubScreen";
 import { ChatBubble } from "@/components/ui/ChatBubble";
+import { Orb } from "@/components/ui/Orb";
 import { SkinProfileTiles } from "./SkinProfileTiles";
-import { CompatCard } from "./CompatCard";
+import { CompatCard, PendingCompatCard } from "./CompatCard";
 import { ProductThumb } from "@/features/products/components/ProductThumb";import { SummaryCard, IngredientsCard, NextStepsCard } from "./ResultCards";
 import { Button } from "@/components/ui/Button";
 import { OptionRow } from "@/components/ui/OptionRow";
 import { SearchField } from "@/components/ui/SearchField";
-import { Tag } from "@/components/ui/Tag";
-import { ChevronRightIcon, CloseIcon, PlusIcon } from "@/components/ui/icons";
+import { ChevronRightIcon, PlusIcon } from "@/components/ui/icons";
 import { Collapse } from "@/components/ui/Collapse";
 import { useInvestigation } from "@/lib/store/InvestigationProvider";
 import { useHeldWhileClosing } from "@/lib/useModalDialog";
@@ -33,6 +33,7 @@ import {
 } from "@/features/check/check";
 import { DEMO_PRODUCTS, ownedProducts } from "@/lib/demo";
 import { useToday } from "@/lib/useToday";
+import { useShrinkWrap } from "@/lib/useShrinkWrap";
 import { progressView } from "@/features/progress/progress";
 import {
   DURATIONS,
@@ -142,6 +143,10 @@ export function CheckResults({ now }: { now: number }) {
   const primary = primaryConcern(products);
   const advice = routineAdvice(products);
   const band = worstBand(results);
+  const verdictText = verdict(band, primary ? fullName(primary.product) : null);
+  /* the bubble hugs its longest line — see lib/useShrinkWrap.ts */
+  const verdictRef = useRef<HTMLSpanElement>(null);
+  useShrinkWrap(verdictRef, verdictText);
 
   /* The set the box is showing: the check as run, or the user's edit of it.
      ⚠️ `shown` FILTERS THE RESULTS RATHER THAN RE-ANALYSING — see the note on
@@ -251,13 +256,19 @@ export function CheckResults({ now }: { now: number }) {
     >
       {/* 1 — the verdict, in the AI's voice. `full` so it spans the column the
              way 548:1141 does rather than hugging its text. */}
-      <ChatBubble from="ai" full className={styles.bubble}>
-        {/* the sentence keeps a reading measure while the bubble keeps the
-            comp's full-width row — see `.verdict` */}
-        <span className={styles.verdict}>
-          {verdict(band, primary ? fullName(primary.product) : null)}
-        </span>
-      </ChatBubble>
+      {/* ⚠️ THE ORB SPEAKS IT — asked for directly 1 Oct 2026 ("add the chat
+          orb in front of the bubble"): the check-in chat's avatar, 44, at the
+          bubble's tail corner, so the verdict reads as LUX talking. */}
+      <div className={styles.speaker}>
+        <Orb size="44px" animateIn halo className={styles.orb} />
+        <ChatBubble from="ai" full className={styles.bubble}>
+          {/* the sentence keeps a reading measure while the bubble keeps the
+              comp's full-width row — see `.verdict` */}
+          <span ref={verdictRef} className={styles.verdict}>
+            {verdictText}
+          </span>
+        </ChatBubble>
+      </div>
 
       {/* ⚠️ PROGRESS's SKIN PROFILE CARD, NOT THE STRIP — asked for directly
           15 Sep 2026 ("update the profile card according to progress page"),
@@ -345,8 +356,10 @@ export function CheckResults({ now }: { now: number }) {
                 their own section unnamed in the outline. It is the header of a
                 box now, which is exactly what a heading is for, and
                 h1 → h2 → h3 is the order they render in. */}
-            <h2 className={`${styles.comparedLabel} t-h6`}>
-              Compared Products ({list.length})
+            {/* lux-v3 (Scores B, canvas): the box's name is an overline over
+                the grid, as the board draws it */}
+            <h2 className={`${styles.comparedLabel} t-overline`}>
+              Compatibility · {list.length} products
             </h2>
 
             {/* ⚠️ `Edit` IS A MODE ON THIS BOX, NOT A DOOR TO ANOTHER SCREEN.
@@ -374,13 +387,15 @@ export function CheckResults({ now }: { now: number }) {
             </button>
           </div>
 
-          <div className={styles.panel}>
+          {/* the entrance — the cards, their rings and scores, one after
+              another (CompatCard.module.css, end) */}
+          <div className={styles.panel} data-motion>
             <ul className={styles.stack}>
-              {shown.map((analysis) => (
+              {shown.map((analysis, i) => (
                 <li key={analysis.product.id}>
                   <CompatCard
-                    compact
                     analysis={analysis}
+                    index={i}
                     /* ⚠️ PASSED ONLY WHILE EDITING — the resting list is the
                        read-only accordion it has always been. */
                     onRemove={
@@ -397,7 +412,7 @@ export function CheckResults({ now }: { now: number }) {
 
               {added.map((p) => (
                 <li key={p.id}>
-                  <PendingRow
+                  <PendingCompatCard
                     product={p}
                     onRemove={
                       editing
@@ -570,45 +585,6 @@ export function CheckResults({ now }: { now: number }) {
         <ChevronRightIcon className={styles.historyArrow} />
       </Link>
     </HubScreen>
-  );
-}
-
-/**
- * A product in the set that the check has not scored — everything the user has
- * added since it ran.
- *
- * ⚠️ IT IS A ROW, NOT A `CompatCard` WITH A BLANK SCORE. A card that opens onto
- * a bar, a percentage and a recommendation has nothing to open onto here, and a
- * disclosure that discloses an empty panel is worse than no disclosure. What it
- * says instead is the only true thing available: it is in the set, and the
- * numbers above do not include it. Same 52 and the same fill as the picker's
- * rows, so an added product looks like what it is — the thing you just picked,
- * now in the list.
- */
-function PendingRow({
-  product,
-  onRemove,
-}: {
-  product: CatalogProduct;
-  onRemove?: () => void;
-}) {
-  const name = fullName(product);
-
-  return (
-    <div className={styles.pendingRow}>
-      <span className={`${styles.pendingName} t-h6`}>{name}</span>
-      <Tag className={styles.pendingTag}>Not analysed yet</Tag>
-      {onRemove && (
-        <button
-          type="button"
-          className={styles.pendingRemove}
-          aria-label={`Remove ${name} from this analysis`}
-          onClick={onRemove}
-        >
-          <CloseIcon className={styles.pendingRemoveIcon} />
-        </button>
-      )}
-    </div>
   );
 }
 

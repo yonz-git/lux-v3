@@ -209,6 +209,12 @@
      sit on the drawing. A margin percentage resolves against WIDTH, which is
      the 392 this is written in. */
   margin-bottom: calc(152 / 392 * 100%);
+  /* ⚠️ PULLED UP 28 UNITS INTO THE CARD'S TOP — asked for directly 1 Oct 2026
+     ("reduce this top space"): the head started ~52 below the card's edge,
+     against ~45 at the sides. A width percentage, like the margin above, so
+     the pills keep their places on the drawing. `.card` clips what rises
+     past its padding (only the drawing's faded halo). */
+  margin-top: calc(-28 / 392 * 100%);
   /* The 392x300 box used to end ~20% below the lowest pill, because the drawn
      face bottomed out at y=241 and nothing filled the rest; a -9% bottom margin
      pulled the chip row up into that dead air. The head now runs to y=290 of

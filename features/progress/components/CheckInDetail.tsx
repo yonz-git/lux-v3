@@ -277,7 +277,11 @@ export function CheckInDetail({ date, now }: { date: string; now: number }) {
       backHref="/progress"
       action={
         dayTag ? (
-          <Tag variant="brand" className={styles.dayTag}>
+          /* ⚠️ A READING, NOT A BUTTON — neutral glass, asked for directly
+             1 Oct 2026 ("use a different design as this is not a button"):
+             solid indigo is the primary action's colour. It is the trend
+             card's `Day 16` pill now. */
+          <Tag className={styles.dayTag}>
             {dayTag}
           </Tag>
         ) : undefined

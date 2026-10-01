@@ -299,3 +299,10 @@
        whose content grows. */
   }
 }
+
+/* ⚠️ FULL SIZE — asked for directly 1 Oct 2026 ("the x button too small
+   here"). Its box is already the small 16, so the app-wide 60% for a ✕
+   (app/vidgen.css) left it ~10. (0,2,1) over that rule's (0,1,1). */
+.close svg[data-lux-icon] {
+  scale: 1;
+}

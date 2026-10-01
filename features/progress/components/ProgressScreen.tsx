@@ -17,6 +17,7 @@ import { PhotoGallery, ProgressGallery } from "./PhotoGallery";
 import { useInvestigation } from "@/lib/store/InvestigationProvider";
 import { useToday } from "@/lib/useToday";
 import { formatLong } from "@/lib/date";
+import { ownedProducts } from "@/lib/demo";
 import {
   checkInsFor,
   dayNumber,
@@ -209,6 +210,8 @@ export function ProgressScreen({ now }: { now: number }) {
         <SymptomTrend
           className={styles.trend}
           checkIns={checkIns}
+          today={today}
+          products={ownedProducts(answers)}
           day={dayNumber(start, today)}
         />
 

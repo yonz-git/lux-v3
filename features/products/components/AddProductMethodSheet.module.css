@@ -12,23 +12,12 @@
   flex-direction: column;
   gap: var(--space-md);
 
-  /* ⚠️ WHITE BY REQUEST, AND IT DOES NOT MEET AA. These tiles sit on
-     `surface/data-deep` (`#4f838f @85%`), which composites over the tray to
-     #5a8b96 — white 3.77:1, hover 3.43:1, against 4.5:1. It was 1.49–2.63:1
-     before that surface existed, which is why globals.css redefines
-     `text/on-data*` dark for the rest of the app. That global default is still
-     right for `surface/data`; this list is not on `surface/data`, and the ink
-     measures 3.67:1 here, below the white. See the measurement table on
-     `--color-surface-data-deep` in globals.css.
-
-     ⚠️ NAMED, NOT RAW `#fff`. These were four literal hexes; they now take
-     `text/on-data-inverse`, which is the ink the deep-sage surface is paired
-     with. The pairing is what the exception rests on, so the token is what
-     should be greppable, not the colour. */
-  --color-text-on-data: var(--color-text-on-data-inverse);
-  --color-text-on-data-secondary: var(--color-text-on-data-inverse);
-  --color-text-on-data-muted: var(--color-text-on-data-inverse);
-  --color-icon-on-data: var(--color-text-on-data-inverse);
+  /* lux-v3: the tiles are glass with the app's ink — the white-on-deep-sage
+     exception (3.77:1) went with the deep tier. */
+  --color-text-on-data: var(--color-text-primary);
+  --color-text-on-data-secondary: var(--color-text-secondary);
+  --color-text-on-data-muted: var(--color-text-muted);
+  --color-icon-on-data: var(--color-icon-default);
 }
 
 /* 70 tall on mobile / 78 on desktop, padding 14/18, gap 12, radius/lg.
@@ -51,17 +40,17 @@
   padding: 14px 18px;
   text-align: left;
 
-  border-radius: var(--radius-lg);
-  /* ⚠️ `surface/data-deep`, NOT `-data-strong` — BY EXPLICIT REQUEST, and the
+  /* lux-v3: a glass tile at 24 — the chips' material on the sheet's frost */
+  border-radius: var(--radius-2xl); /* 24 */
+  border: var(--border-width-hairline) solid var(--color-border-glass);
+  /* (v2) ⚠️ `surface/data-deep`, NOT `-data-strong` — BY EXPLICIT REQUEST, and the
      same swap the basket sheet's rows and `ResultCards`' emphasis block take.
      A 62% sage card on the 44% sage tray is two steps of one hue with almost
      nothing between them; the darker sage separates the cards from the tray.
      `#4f838f @85%` as of 8 Sep 2026, which is what lifts the white above from
      ~1.6:1 to 3.77:1 — better, still short of AA. See globals.css. */
-  background: var(--color-surface-data-deep);
-  box-shadow: var(--shadow-frosted-row);
-  -webkit-backdrop-filter: blur(var(--blur-card));
-  backdrop-filter: blur(var(--blur-card));
+  background: var(--color-glass);
+  box-shadow: var(--shadow-glass);
 
   transition: background-color var(--duration-fast) var(--ease-hover);
 }
@@ -76,12 +65,12 @@
    `surface/data-deep-hover` is the same hue two lightness steps up, still
    opaque, white at 4.71:1. */
 .method:hover {
-  background: var(--color-surface-data-deep-hover);
+  background: var(--color-glass-strong);
 }
 
 @media (hover: none) {
   .method:hover {
-    background: var(--color-surface-data-deep);
+    background: var(--color-glass);
   }
 }
 

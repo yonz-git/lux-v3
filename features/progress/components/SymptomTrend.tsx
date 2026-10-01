@@ -1,108 +1,104 @@
+"use client";
+
 import { useId, type CSSProperties } from "react";
 import styles from "./SymptomTrend.module.css";
 import { DataCard } from "@/components/ui/DataCard";
-import { SEVERITY_MAX, type CheckIn, trendSummary } from "@/features/progress/progress";
-import { fromIso } from "@/lib/date";
+import {
+  SEVERITY_MAX,
+  TREND_BANDS,
+  TREND_DAYS,
+  type CheckIn,
+  severityLabel,
+  trendDays,
+  trendEvents,
+  trendHeight,
+  trendReading,
+} from "@/features/progress/progress";
+import { formatShort, fromIso, sameDay, toIso } from "@/lib/date";
 
 /**
- * `card · symptom trend` — Figma 553:1239 (mobile) / 554:1412 (desktop).
+ * The symptom trend — TREND C, lux-v3 (1 Oct 2026), picked on the design canvas
+ * ("Trend C — Bands and events") with two asks: every day labelled, and the
+ * mild / moderate / severe bands equally spaced.
  *
- * Reported severity over the check-ins so far: a white line through white dots,
- * a 10/5/0 y-axis, a date per point along the bottom, and a sentence naming the
- * direction.
+ * An overline, a one-line reading ("From moderate to mild in 10 days"), then
+ * the chart: three equal bands named down the left, a 2px indigo line through
+ * the check-ins of the last fortnight ending on a ringed dot, a dashed line
+ * and a pill where a product started, and every day of the window under it,
+ * today in indigo. `progress.ts` owns the bands, the window, the reading and
+ * the events; this file only draws them.
  *
- * ⚠️ THE DESIGN SYSTEM HAS NO LINE CHART — it is on the handoff's missing list,
- * and this is composed from tokens like the calendar beside it.
+ * ⚠️ v2's TEAL MESH, WHITE INK — the card was the 30% panel with dark ink
+ * for the first build, and took v2's background back the same day, asked for
+ * directly ("keep the design and use the bg color of v2"). The layout is
+ * Trend C's; the fill, the grain and the white ink are v2's. See the block at
+ * the end of the module.
  *
- * ⚠️ IT IS DRAWN FROM THE DATA, NOT EXPORTED AS AN ASSET. The Figma frames hold
- * the line as one baked vector and the points as five ellipses at fixed
- * coordinates, which is the right thing in a comp and the wrong thing here: the
- * number of check-ins and the severity of each are the whole content of this
- * card, so a fixed picture would be a lie the moment the series changed.
- * Reproducing the comp's geometry from the plotted values instead:
+ * ⚠️ X IS THE CALENDAR, NOT THE CHECK-IN COUNT. Each of the 14 days has its
+ * place whether or not it holds a check-in, so a gap in the record is a gap on
+ * the chart, and the line joins the days that do. Every day is its number;
+ * the months the window spans are named at the left ("Sep–Oct").
  *
- *   The plot band is 110 tall, and the three y-axis labels are 16-tall boxes
- *   spread top-to-bottom. Their CENTRES therefore sit at 8, 55 and 102, which
- *   is where 10, 5 and 0 belong — so a value maps to `102 - (v / 10) * 94`.
- *   Checks out against the comp: its top point plots at 8.9, i.e. y = 18, and
- *   the first ellipse is at y = 14 with a height of 8 — centre 18. ✓
+ * ⚠️ THE LINE STRETCHES, THE DOT MUST NOT. The plot is an SVG with
+ * `preserveAspectRatio="none"` and a non-scaling stroke so it fills any card
+ * width; the end dot, the event lines and every label are positioned elements,
+ * so they stay round and sharp at every width.
  *
- * ⚠️ THE CARD IS `surface/data-deep`, NOT `surface/data` — NOT IN FIGMA, BY
- * EXPLICIT REQUEST, and it is the one place in PROGRESS where SURFACE SYSTEM
- * B's dark ink is deliberately reversed. Non-negotiable 17 darkened
- * `text/on-data` globally because white failed AA on the 44% sage; this card
- * takes the darker 62% sage instead and puts the white back, scoped to itself
- * by redefining the three text tokens on its own element (see the stylesheet —
- * that is what makes it specificity-proof rather than a race with DataCard's
- * own rule). Hierarchy is carried by size and weight, exactly as the
- * non-negotiable says, so all three tokens resolve to the same white.
+ * ⚠️ THE OVERLINE SAYS "Symptoms", NOT A SYMPTOM. The board read "Redness", but
+ * a check-in records one severity for the skin as a whole; naming one symptom
+ * would claim a series LUX does not keep.
  *
- * ⚠️ MEASURE IT BEFORE YOU TRUST IT. `surface/data-deep` is translucent, so
- * what white actually sits on is the sage composited over the canvas gradient
- * AT THIS CARD'S POSITION — the measurement is in the stylesheet, and it is the
- * reason this is flagged rather than quietly shipped.
- *
- * ⚠️ THE GRIDLINES AND THE AREA FILL ARE NOT IN FIGMA EITHER. The frame draws
- * three y-axis numbers and a bare line, which reads as figures floating beside
- * a squiggle: the numbers name values that nothing on the plot lines up with.
- * Three rules at 10 / 5 / 0 give them something to be true about, and the
- * baseline is stronger than the two above it because zero is the axis and the
- * others are guides. The area under the line is the same white at 18% fading
- * out — it is what makes a two-pixel stroke read as a QUANTITY rather than a
- * path. Both are chart furniture the DS has no opinion about, because the DS
- * has no chart; raise them with the line chart itself.
- *
- * ⚠️ THE LINE STRETCHES, THE DOTS MUST NOT. The card is fluid (392 mobile, 616
- * desktop), so the plot is an SVG with `preserveAspectRatio="none"` — which
- * would also stretch a circle into an ellipse and thicken the stroke
- * unevenly. The stroke is protected with `vector-effect="non-scaling-stroke"`,
- * and the dots are NOT in the SVG at all: they are positioned elements, so they
- * stay round at every width. The desktop comp shows what happens otherwise —
- * its "circles" are exported at 13.33 x 8.
+ * The chart is hidden from assistive tech; the reading states the trend and a
+ * visually-hidden list gives every check-in and every product start.
  */
 export function SymptomTrend({
   checkIns,
+  today,
+  products,
   day,
   className,
 }: {
   checkIns: CheckIn[];
+  today: Date;
+  /** the routine, for the product-start marks — `ownedProducts()` */
+  products: readonly { name: string; addedOn: string }[];
   /**
    * Which day of the investigation today is — `Day 16`, a quiet pill at the
-   * title's right end.
-   *
-   * ⚠️ NOT IN FIGMA — asked for directly 15 Sep 2026 ("the day 16 pill
-   * should be on top right of the trend graph"). It was the calendar's, at
-   * its legend's right end, for an hour the same day; the count belongs with
-   * the chart whose x axis it measures. Hairline ring in this card's white
-   * ink, no fill; a hidden "of your investigation" for a screen reader.
+   * title's right end. Asked for directly 15 Sep 2026 ("the day 16 pill
+   * should be on top right of the trend graph"); kept through the redesign.
    */
   day?: number;
   className?: string;
 }) {
-  const summary = trendSummary(checkIns);
-  /* the area fill's gradient needs a document-unique id — two of these on one
-     page would otherwise both resolve to the first one's <defs> */
-  const fillId = useId();
+  const titleId = useId();
 
-  /* x is a plain percentage across the plot; the plot box is inset by the dot's
-     radius (see the stylesheet) so the first and last dots sit fully inside the
-     card rather than half over its padding. */
-  const points = checkIns.map((c, i) => ({
+  const days = trendDays(today);
+  const index = new Map(days.map((d, i) => [toIso(d), i]));
+  const shown = checkIns.filter((c) => index.has(c.date));
+  const reading = trendReading(shown);
+  const events = trendEvents(products, days);
+  const latest = events.at(-1);
+
+  /* 0..1 across the plot, the first day at 0 and today at 1 */
+  const xOf = (iso: string) => (index.get(iso) ?? 0) / (TREND_DAYS - 1);
+
+  const points = shown.map((c) => ({
     ...c,
-    x: checkIns.length > 1 ? (i / (checkIns.length - 1)) * 100 : 50,
-    y: BASELINE_Y - (c.severity / SEVERITY_MAX) * PLOT_SPAN,
+    x: xOf(c.date),
+    y: 1 - trendHeight(c.severity),
   }));
-
-  const labelled = axisLabelIndices(points.length);
+  const last = points.at(-1);
 
   return (
     <DataCard
       className={[styles.card, className].filter(Boolean).join(" ")}
-      aria-labelledby="trend-title"
+      aria-labelledby={titleId}
+      /* the entrance — see the motion block at the end of the module */
+      data-motion
     >
       <div className={styles.head}>
-        <h2 id="trend-title" className={`${styles.title} t-overline`}>
-          Symptom Trend
+        <h2 id={titleId} className={`${styles.title} t-overline`}>
+          Symptoms · last {TREND_DAYS} days
         </h2>
         {day !== undefined && (
           <span className={`${styles.dayPill} t-label-sm`}>
@@ -112,174 +108,153 @@ export function SymptomTrend({
         )}
       </div>
 
+      {reading && <p className={`${styles.reading} t-h5`}>{reading}</p>}
+
       {points.length === 0 ? (
-        /* ⚠️ NOT IN FIGMA — there is no empty variant of this card. The comp
-           only draws a populated chart, but a user who has started an
-           investigation and not yet checked in reaches this screen with an
-           empty series, and an axis with no line reads as broken. One line of
-           on-data-secondary body copy, the same treatment the summary gets. */
         <p className={`${styles.empty} t-body3`}>
-          No check-ins yet, your symptom trend appears once you have checked in
-          a few times.
+          No check-ins in the last two weeks, your symptom trend appears once you
+          have checked in a few times.
         </p>
       ) : (
         <>
-          <div className={styles.chart}>
-            <div className={styles.yAxis} aria-hidden="true">
-              <span className="t-caption">{SEVERITY_MAX}</span>
-              <span className="t-caption">{SEVERITY_MAX / 2}</span>
-              <span className="t-caption">0</span>
+          <div className={styles.chart} aria-hidden="true">
+            <div className={styles.bandLabels}>
+              {[...TREND_BANDS].reverse().map((b, i) => (
+                <span
+                  key={b.label}
+                  className="t-caption"
+                  style={{ "--i": i } as CSSProperties}
+                >
+                  {b.label}
+                </span>
+              ))}
             </div>
 
-            {/* The chart itself is decorative to assistive tech — the sentence
-                below states the trend, and the per-point figures follow it in a
-                visually-hidden list, which is far more use than a traversable
-                <svg>. */}
-            <div className={styles.canvas} aria-hidden="true">
-              <div className={styles.plot}>
-                <div className={styles.gridlines} />
-                {points.length > 1 && (
-                  <svg
-                    className={styles.line}
-                    viewBox="0 0 100 110"
-                    preserveAspectRatio="none"
-                    focusable="false"
-                    aria-hidden="true"
-                  >
-                    <defs>
-                      {/* ⚠️ `gradientUnits` STAYS THE DEFAULT (objectBoundingBox)
-                          so the fade follows the polygon's own box however wide
-                          the card gets — a userSpaceOnUse gradient would be
-                          stretched by preserveAspectRatio along with it. */}
-                      <linearGradient id={fillId} x1="0" y1="0" x2="0" y2="1">
-                        <stop offset="0%" stopColor="currentColor" stopOpacity="0.18" />
-                        <stop offset="100%" stopColor="currentColor" stopOpacity="0" />
-                      </linearGradient>
-                    </defs>
-                    {/* closed on the ZERO line (y=102), not on the viewBox floor
-                        (110) — the plot's bottom 8px is the y-axis label's half
-                        line box, not part of the scale, and filling into it
-                        would draw a quantity below zero */}
-                    <polygon
-                      points={`${points[0].x},${BASELINE_Y} ${points
-                        .map((p) => `${p.x},${p.y}`)
-                        .join(" ")} ${points[points.length - 1].x},${BASELINE_Y}`}
-                      fill={`url(#${fillId})`}
-                      stroke="none"
+            <div className={styles.plot}>
+              {latest && (
+                <span
+                  className={`${styles.eventPill} t-label-sm`}
+                  style={pillStyle(xOf(latest.date))}
+                >
+                  {latest.name} · {shortDate(latest.date)}
+                </span>
+              )}
+
+              <div className={styles.field}>
+                <div className={styles.bands}>
+                  <span style={{ "--i": 0 } as CSSProperties} />
+                  <span style={{ "--i": 1 } as CSSProperties} />
+                  <span style={{ "--i": 2 } as CSSProperties} />
+                </div>
+
+                <div className={styles.track}>
+                  {events.map((e) => (
+                    <span
+                      key={`${e.date}-${e.name}`}
+                      className={styles.eventLine}
+                      style={{ left: `${xOf(e.date) * 100}%` }}
                     />
-                    <polyline
-                      points={points.map((p) => `${p.x},${p.y}`).join(" ")}
-                      fill="none"
-                      stroke="currentColor"
-                      strokeWidth="2"
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                      vectorEffect="non-scaling-stroke"
+                  ))}
+
+                  {points.length > 1 && (
+                    <svg
+                      className={styles.line}
+                      viewBox="0 0 100 100"
+                      preserveAspectRatio="none"
+                      focusable="false"
+                      aria-hidden="true"
+                    >
+                      <path
+                        d={smoothPath(points.map((p) => [p.x * 100, p.y * 100]))}
+                        fill="none"
+                        stroke="currentColor"
+                        strokeWidth="2"
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                        vectorEffect="non-scaling-stroke"
+                      />
+                    </svg>
+                  )}
+
+                  {last && (
+                    <span
+                      className={styles.dot}
+                      style={{ left: `${last.x * 100}%`, top: `${last.y * 100}%` }}
                     />
-                  </svg>
-                )}
-                {points.map((p) => (
-                  <span
-                    key={p.date}
-                    className={styles.point}
-                    style={{ left: `${p.x}%`, top: `${p.y}px` }}
-                  />
-                ))}
+                  )}
+                </div>
               </div>
             </div>
           </div>
 
-          <p className={styles.xAxis} aria-hidden="true">
-            {points.map((p, i) =>
-              labelled.has(i) ? (
+          <div className={styles.days} aria-hidden="true">
+            <span className={`${styles.month} t-caption`}>{monthSpan(days)}</span>
+            <div className={styles.dayTrack}>
+              {days.map((d, i) => (
                 <span
-                  key={p.date}
-                  className={`${styles.xLabel} t-caption`}
-                  style={xLabelStyle(i, points.length, p.x)}
+                  key={toIso(d)}
+                  className={`${styles.day} t-caption`}
+                  data-today={sameDay(d, today) || undefined}
+                  style={
+                    { left: `${(i / (TREND_DAYS - 1)) * 100}%`, "--i": i } as CSSProperties
+                  }
                 >
-                  {shortDate(p.date)}
+                  {d.getDate()}
                 </span>
-              ) : null
-            )}
-          </p>
+              ))}
+            </div>
+          </div>
 
           <ul className="visually-hidden">
-            {points.map((p) => (
-              <li key={p.date}>
-                {shortDate(p.date)}: {p.severity} out of {SEVERITY_MAX}
+            {shown.map((c) => (
+              <li key={c.date}>
+                {shortDate(c.date)}: {c.severity} out of {SEVERITY_MAX},{" "}
+                {severityLabel(c.severity).toLowerCase()}
+              </li>
+            ))}
+            {events.map((e) => (
+              <li key={`${e.date}-${e.name}`}>
+                {e.name} added on {shortDate(e.date)}
               </li>
             ))}
           </ul>
         </>
       )}
-
-      {summary && <p className={`${styles.summary} t-body2`}>{summary}</p>}
     </DataCard>
   );
 }
 
-/**
- * ⚠️ THE AXIS LABELS AT MOST FIVE DATES, WHATEVER THE SERIES DOES — first,
- * last, and evenly spaced between. NOT IN FIGMA, because the comp has exactly
- * five points and never had to decide.
- *
- * The chart plots a point per check-in, and the seeded demo went from five
- * check-ins to eleven (see `DEMO_OFFSETS`) — a real fortnight of daily
- * check-ins is more like fifteen. A label per point does not survive that: at
- * 440 the plot is about 316 wide and "Aug 16" sets at roughly 38, so eleven
- * labels want 418 in 316 and `space-between` simply runs them into each other.
- * A date axis is read for its RANGE and its direction; it does not need to name
- * every point, and the per-point figures are in the visually-hidden list above
- * for anyone who does.
- *
- * Five is the comp's own count, and it is the mobile budget — 316 / 5 leaves
- * about 25 of air between labels. Desktop is 532 wide and could carry ten, but
- * the breakpoints have to be clones, so both get five.
- */
-const MAX_X_LABELS = 5;
-
-/* Where 0 and 10 land in the 110-tall plot — the y-axis labels are 16-tall boxes
-   spread top to bottom, so their centres sit at 8, 55 and 102. Named because
-   three things now depend on them: the point mapping, the area fill's closing
-   edge, and the gridlines in the stylesheet. ⚠️ CHANGE ONE AND CHANGE THE CSS. */
-const BASELINE_Y = 102;
-const PLOT_SPAN = 94;
-
-function axisLabelIndices(count: number): Set<number> {
-  if (count <= MAX_X_LABELS) {
-    return new Set(Array.from({ length: count }, (_, i) => i));
-  }
-
-  const step = (count - 1) / (MAX_X_LABELS - 1);
-  return new Set(
-    Array.from({ length: MAX_X_LABELS }, (_, i) => Math.round(i * step))
-  );
+/** A smooth line through the points, each segment eased with horizontal
+ *  control points so it never overshoots a band. */
+function smoothPath(pts: [number, number][]): string {
+  return pts
+    .map(([x, y], i) => {
+      if (i === 0) return `M${x} ${y}`;
+      const [x0, y0] = pts[i - 1];
+      const dx = (x - x0) / 2;
+      return `C${x0 + dx} ${y0} ${x - dx} ${y} ${x} ${y}`;
+    })
+    .join(" ");
 }
 
-/**
- * Each label is centred on its own dot, except the two ends.
- *
- * ⚠️ THIS USED TO BE `justify-content: space-between`, which aligned only
- * because every point was labelled — drop one and flex redistributes the rest,
- * so a label would sit over a dot it does not name. Positioning each one at the
- * SAME `x` the dot uses makes the alignment a fact rather than a coincidence.
- * The first and last are flushed to the plot's edges instead of centred, which
- * is what `space-between` did for them and what the comp draws; centring them
- * would hang half of each outside the card.
- */
-function xLabelStyle(
-  i: number,
-  count: number,
-  x: number
-): CSSProperties {
-  if (i === 0) return { left: 0 };
-  if (i === count - 1) return { right: 0 };
-  return { left: `${x}%`, transform: "translateX(-50%)" };
+/** The pill centres on its line, and holds to the plot's edge near either end
+ *  rather than hanging off the card. */
+function pillStyle(x: number): CSSProperties {
+  if (x < 0.25) return { left: 0 };
+  if (x > 0.75) return { right: 0 };
+  return { left: `${x * 100}%`, transform: "translateX(-50%)" };
 }
 
-/** "Aug 2" — the comp's x-axis format. */
+/** "Sep", or "Sep–Oct" when the fortnight crosses a month */
+function monthSpan(days: Date[]): string {
+  const month = (d: Date) => d.toLocaleDateString("en-US", { month: "short" });
+  const a = month(days[0]);
+  const b = month(days[days.length - 1]);
+  return a === b ? a : `${a}–${b}`;
+}
+
+/** "Sep 16" */
 function shortDate(iso: string): string {
   const d = fromIso(iso);
-  if (!d) return "";
-  return d.toLocaleDateString("en-US", { month: "short", day: "numeric" });
+  return d ? formatShort(d) : "";
 }

@@ -287,6 +287,12 @@ ul { margin: 0; padding: 0; list-style: none; }
 .cal-day.future { color: var(--color-on-surface-muted); }
 .legend { display: flex; gap: var(--space-lg); font-size: 12px; line-height: 16px; color: var(--color-on-surface-muted); }
 .legend span { display: inline-flex; align-items: center; gap: 6px; }
+/* the skin profile card — the pages round */
+.profile-card { max-width: 342px; display: flex; flex-direction: column; gap: var(--space-lg); padding: var(--space-gutter); border-radius: var(--rounded-panel); background: var(--color-panel); border: 1px solid var(--color-panel-edge); box-shadow: var(--shadow-panel); }
+.profile-tiles { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: var(--space-xl) var(--space-lg); margin: 0; }
+.profile-tiles div { display: flex; flex-flow: row wrap; gap: var(--space-xs); align-content: flex-start; }
+.profile-tiles dt { flex-basis: 100%; margin-bottom: var(--space-xs); }
+.profile-pill { margin: 0; display: inline-flex; align-items: center; min-height: 32px; padding: 0 var(--space-md); border-radius: var(--rounded-full); border: 1px solid var(--color-glass-edge); background: var(--color-glass-strong); box-shadow: var(--shadow-glass); }
 /* scores B */
 .scores { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: var(--space-sm); max-width: 342px; }
 .score-card { padding: var(--space-lg); display: flex; flex-direction: column; align-items: flex-start; gap: var(--space-md); border-radius: var(--rounded-2xl); background: var(--color-panel); border: 1px solid var(--color-glass-edge); box-shadow: var(--shadow-panel); }
@@ -494,7 +500,7 @@ ul { margin: 0; padding: 0; list-style: none; }
 <div class="stack" style="max-width: 342px">
 <h3 class="t-panel-label">Trend chart</h3>
 <div class="panel" style="display: flex; flex-direction: column; gap: var(--space-lg)">
-<p class="t-overline">Redness · last 14 days</p>
+<p class="t-overline">Symptoms · last 14 days</p>
 <p class="t-panel-label">From moderate to mild in 14 days</p>
 <div class="chart">
 <span class="event">New serum · Sep 16</span>
@@ -546,6 +552,18 @@ ul { margin: 0; padding: 0; list-style: none; }
 <span class="band-pill t-label-sm"><span class="dot" style="background: var(--color-success)"></span>Compatible</span>
 </li></ul>
 <span class="label">score-card · score-ring · score-band-pill</span>
+
+<h3 class="t-panel-label">Skin profile card</h3>
+<div class="profile-card">
+<p class="t-overline muted" style="margin:0">YOUR SKIN PROFILE</p>
+<dl class="profile-tiles">
+<div><dt class="t-body3 muted">Skin type</dt><dd class="profile-pill t-body3">Combination</dd></div>
+<div><dt class="t-body3 muted">Tendencies</dt><dd class="profile-pill t-body3">Sensitive</dd><dd class="profile-pill t-body3">Acne-prone</dd></div>
+<div><dt class="t-body3 muted">Known conditions</dt><dd class="profile-pill t-body3">None</dd></div>
+<div><dt class="t-body3 muted">Symptoms state</dt><dd class="profile-pill t-body3">Ongoing</dd></div>
+</dl>
+</div>
+<span class="label">panel · profile-pill — a READING: glass-strong at 32, where a control chip is 44</span>
 </section>
 
 <section aria-labelledby="dd"><h2 id="dd" class="t-page-title">Do's and Don'ts</h2>

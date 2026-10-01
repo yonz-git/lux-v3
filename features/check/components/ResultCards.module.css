@@ -163,10 +163,9 @@
   /* ⚠️ `surface/data-deep`, NOT `-data-strong` — BY EXPLICIT REQUEST. Sage at
      62% inside a sage card gave the block almost no edge against the card it
      sits in; this is the darker sage at the same alpha (see globals.css). */
-  background: var(--color-surface-data-deep);
-  box-shadow: var(--shadow-frosted-data);
-  -webkit-backdrop-filter: blur(var(--blur-card));
-  backdrop-filter: blur(var(--blur-card));
+  /* lux-v3: glass inside the panel, dark ink (the deep tier is gone) */
+  background: var(--color-glass-strong);
+  box-shadow: var(--shadow-glass);
 }
 
 /* ⚠️ 24 UNDER THE BLOCK, WHERE THE CARD'S OWN RHYTHM IS 16 — NOT IN FIGMA. The
@@ -204,7 +203,9 @@
    `sage/700` in Figma as a real surface role. */
 .emphasisTitle,
 .emphasisText {
-  color: var(--color-text-on-data-inverse);
+  /* ⚠️ SUPERSEDED, lux-v3: the block is glass, so the app's ink — the white
+     above never cleared AA and has nothing dark left to sit on */
+  color: var(--color-text-primary);
 }
 
 /* ⚠️ THE BADGE CARRIES THE BAND, NOT A NEUTRAL LABEL — NOT IN FIGMA. It states
@@ -415,4 +416,24 @@
   .emphasisText {
     max-width: 52ch;
   }
+}
+
+/* ============================================================================
+   THE ENTRANCE — 1 Oct 2026, asked for directly (MotionObserver.tsx). Like
+   21st.dev's donut legend: the first time a card is in view its list arrives
+   one entry at a time, sliding 12px in from the left, 80ms apart — the
+   ingredients of concern and the numbered next steps. The summary's figures
+   count up (`CountUp`).
+   ========================================================================== */
+.concernItem,
+.step {
+  transition:
+    opacity var(--duration-slow) var(--ease-standard) calc(150ms + var(--i, 0) * 80ms),
+    translate var(--duration-slow) var(--ease-standard) calc(150ms + var(--i, 0) * 80ms);
+}
+
+[data-motion]:not([data-inview]) .concernItem,
+[data-motion]:not([data-inview]) .step {
+  opacity: 0;
+  translate: -12px 0;
 }

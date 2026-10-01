@@ -396,25 +396,29 @@ export function CheckInPanel({
                     every other viewfinder in the app is: wiring getUserMedia
                     would make the prototype demand a camera permission to walk a
                     flow. See AGENTS.md, Camera shutter. */}
-                <button
-                  type="button"
-                  className={`${styles.extra} t-label`}
+                {/* ⚠️ THE `Add more products` BUTTON — asked for directly 1 Oct
+                    2026 ("use this button design"): the secondary `Button` at
+                    `md`, a glyph before its label, hugging it. They were two
+                    equal frosted tiles composed here. */}
+                <Button
+                  variant="secondary"
+                  size="md"
+                  icon={<NoteIcon />}
                   aria-pressed={note !== null}
                   onClick={() => setNote((prev) => (prev === null ? "" : null))}
                 >
-                  <NoteIcon />
                   Add a note
-                </button>
+                </Button>
 
-                <button
-                  type="button"
-                  className={`${styles.extra} t-label`}
+                <Button
+                  variant="secondary"
+                  size="md"
+                  icon={<CameraIcon />}
                   aria-pressed={photo}
                   onClick={() => setCamera(true)}
                 >
-                  <CameraIcon />
                   {photo ? "Retake photo" : "Take a photo"}
-                </button>
+                </Button>
               </div>
 
               <Collapse open={noteOpen}>

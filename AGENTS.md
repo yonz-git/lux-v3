@@ -953,10 +953,12 @@ type and every `nav=` prop. Do not "fix" the mismatch by renaming the id — see
     app ink on the deep tier is 3.67:1. Putting `text/on-data-inverse` on a
     `surface/data` card re-creates exactly the failure this rule exists to stop.
 
-    Four surfaces take the deep tier — `SymptomTrend`'s card, `ResultCards`'
-    emphasis block, `CheckBasket`'s rows, `AddProductMethodSheet`'s tiles. They
-    were four separate white-on-sage exceptions measuring 1.64–2.32:1; they are
-    now one declared tier measuring **3.42–3.77:1** depending on backdrop.
+    ⚠️ **IN lux-v3 NOTHING TAKES THE DEEP TIER ANY MORE (1 Oct 2026).** It
+    held four surfaces — `SymptomTrend`'s card, `ResultCards`' emphasis block,
+    `CheckBasket`'s rows, `AddProductMethodSheet`'s tiles — at 3.42–3.77:1 for
+    their white ink. The trend card became the 30% panel with Trend C; the
+    other three became GLASS with the app's dark ink in the pages round. The
+    tokens remain declared; the history below is why the tier existed.
 
     ⚠️ **IT STILL DOES NOT CLEAR AA, AND NO INK FIXES IT.** On the `surface/data`
     backdrop white is 3.71:1 and the app ink is 3.73:1 — the surface sits almost

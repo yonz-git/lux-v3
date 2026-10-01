@@ -1,12 +1,10 @@
 "use client";
 
-import { useEffect, useRef, useState } from "react";
+import { type CSSProperties, useEffect, useId, useRef, useState } from "react";
 import styles from "./StartInvestigation.module.css";
 import { QuestionScreen } from "./QuestionScreen";
-import { QuestionPanel } from "./QuestionPanel";
-import panel from "./QuestionPanel.module.css";
 import { Chip } from "@/components/ui/Chip";
-import { SmallButton } from "@/components/ui/SmallButton";
+import SegmentedToggle from "@/features/products/components/SegmentedToggle";
 import { TextField } from "@/components/ui/TextField";
 import { FaceDiagram, FACE_REGION_IDS } from "./FaceDiagram";
 import { Button } from "@/components/ui/Button";
@@ -111,10 +109,10 @@ import {
  *
  * ⚠️ lux-v3 (1 Oct 2026, the canvas boards): THE QUESTION LEADS AGAIN, IN ITS
  * PANEL, AND THE FACE CARD FOLLOWS IT. The panel holds the question, the
- * instruction, the symptom chips and the places row — `Mark where you notice
- * <symptom>` beside `Reset` and `Save`, two small pills where the products
- * tray's three-way pill was. `Reset all` takes the row while no symptom is
- * open. The picked symptom is the app's indigo chip, no longer the rose
+ * instruction and the symptom chips. ⚠️ `Save`, `Reset` and `Reset all` sit
+ * UNDER THE FACE CARD in one glass pill, v2's layout — asked for directly the
+ * same day, after the board's places row inside the panel was built. The
+ * picked symptom is the app's indigo chip, no longer the rose
  * `bg/symptom` (the canvas drew it indigo; the face's callouts keep the rose).
  * The typed description and `Take a photo` were not on the board and stay,
  * under the face card: they are answers, not decoration.
@@ -171,6 +169,7 @@ export function StartInvestigation() {
   const [placing, setPlacing] = useState<Symptom | null>(null);
   /* a new number each time a symptom opens, to shine the face's labels once */
   const [glint, setGlint] = useState(0);
+  const instructionId = useId();
   const chipsRef = useRef<HTMLDivElement>(null);
 
   const placingAreas = placing ? (answers.start?.[placing] ?? []) : [];
@@ -260,8 +259,8 @@ export function StartInvestigation() {
     setUndo(null);
     requestAnimationFrame(() =>
       resetRef.current
-        ?.querySelector<HTMLButtonElement>('[role="group"] button:last-child')
-        ?.focus({ preventScroll: true }),
+        ?.querySelectorAll<HTMLButtonElement>('[role="group"] button')
+        [2]?.focus({ preventScroll: true }),
     );
   };
 
@@ -341,97 +340,21 @@ export function StartInvestigation() {
   };
 
   return (
-    <QuestionScreen id="start">
-      <QuestionPanel
-        question="What is currently happening to your skin?"
-        hint="For each symptom, select the affected areas in the face diagram."
-      >
-        {/* the chips and the notice they can reveal are one block: the
-            notice brings its own 20 in as it opens (SafetyNotice's `.clip`),
-            so it must not also take a slot in the panel's gap while closed */}
-        <div>
-          <div
-            ref={chipsRef}
-            className={panel.chips}
-            role="group"
-            aria-label="What is currently happening to your skin?"
-          >
-            {SYMPTOMS.map((s) => (
-              <Chip
-                key={s}
-                label={s}
-                selected={placing === s || reported.includes(s)}
-                disabled={placing !== null && placing !== s}
-                onToggle={() => tapSymptom(s)}
-              />
-            ))}
-          </div>
+    <QuestionScreen id="start" gapBeforeContinue={48} tightTop>
+      {/* ⚠️ AN `<h2>`, NOT AN `<h1>` — the step's own title is the page's one
+          `<h1>`, rendered by `QuestionScreen` (visually hidden here). This is a
+          question WITHIN that step, so it is a level down. Marking both as
+          `<h1>` gave a screen reader two — on `skin-type`, three — peer page
+          titles with nothing saying the questions belong to the step. The
+          `t-h4-h3` class carries every visual property, so the tag change moves
+          nothing on screen. */}
+      <h2 className={`${styles.question} t-h4-h3`}>
+        What is currently happening to your skin?
+      </h2>
 
-          <SafetyNotice show={showSafetyNotice} />
-        </div>
-
-        {/* the places row — only once there is something for it to act on */}
-        {(placing || reported.length > 0 || undo) && (
-          <div ref={resetRef} className={styles.places}>
-            {/* always mounted with the row, so the announcement lands in an
-                existing region */}
-            <p className="visually-hidden" aria-live="polite">
-              {undo ? "Selections cleared" : ""}
-            </p>
-            {undo ? (
-              <div key={undo.id} className={styles.undo}>
-                <span className={`${styles.undoMessage} t-body3`}>
-                  Selections cleared
-                </span>
-                <SmallButton
-                  ref={undoRef}
-                  label="Undo"
-                  arrow={false}
-                  onClick={undoReset}
-                />
-              </div>
-            ) : (
-              <p className={`${styles.placesHint} t-body3`}>
-                {placing ? (
-                  <>
-                    Mark where you notice <b>{placing.toLowerCase()}</b>
-                  </>
-                ) : (
-                  "Tap a symptom to change its places"
-                )}
-              </p>
-            )}
-            {!undo && (
-              <div className={styles.placesActions} role="group" aria-label="Symptom places">
-                {placing ? (
-                  <>
-                    <SmallButton
-                      label="Reset"
-                      arrow={false}
-                      disabled={!placeMarked}
-                      onClick={resetSymptom}
-                    />
-                    <SmallButton
-                      label="Save"
-                      variant="primary"
-                      arrow={false}
-                      disabled={!placeMarked}
-                      onClick={finishSymptom}
-                    />
-                  </>
-                ) : (
-                  <SmallButton
-                    label="Reset all"
-                    arrow={false}
-                    disabled={nothingSelected}
-                    onClick={resetAll}
-                  />
-                )}
-              </div>
-            )}
-          </div>
-        )}
-      </QuestionPanel>
+      <p id={instructionId} className={`${styles.instruction} t-body3-body2`}>
+        For each symptom, select the affected areas in the face diagram.
+      </p>
 
       <div className={styles.diagram}>
         <FaceDiagram
@@ -451,7 +374,88 @@ export function StartInvestigation() {
         />
       </div>
 
-      <div className={styles.other}>
+      {/* ⚠️ THE SYMPTOM CHIPS SIT UNDER THE FACE, NOT UNDER THE QUESTION —
+          asked for directly 14 Sep 2026: the face card leads, and the chips
+          sit right above the `Save` / `Reset` / `Reset all` pill that acts on
+          them. `SafetyNotice` moves with them, because it reveals under the
+          chip grid (safety.ts). NOT IN FIGMA. */}
+      <div
+        ref={chipsRef}
+        className={styles.chips}
+        /* the chips arrive one by one (app/vidgen.css, "THE RISE ENTRANCE") */
+        data-motion="rise"
+        role="group"
+        aria-label="What is currently happening to your skin?"
+        aria-describedby={instructionId}
+      >
+        {SYMPTOMS.map((s) => (
+          <Chip
+            key={s}
+            label={s}
+            selected={placing === s || reported.includes(s)}
+            disabled={placing !== null && placing !== s}
+            onToggle={() => tapSymptom(s)}
+          />
+        ))}
+      </div>
+
+      <SafetyNotice show={showSafetyNotice} />
+
+      <div
+        ref={resetRef}
+        className={styles.reset}
+        data-motion="rise-self"
+        style={{ "--rise-delay": "200ms" } as CSSProperties}
+        data-undo={undo ? "" : undefined}
+      >
+        {/* always mounted, so the announcement lands in an existing region */}
+        <p className="visually-hidden" aria-live="polite">
+          {undo ? "Selections cleared" : ""}
+        </p>
+        {undo && (
+          <div key={undo.id} className={styles.undo}>
+            <span className={`${styles.undoMessage} t-label-sm`}>
+              Selections cleared
+            </span>
+            <button
+              ref={undoRef}
+              type="button"
+              className={`${styles.undoAction} t-label pressable`}
+              onClick={undoReset}
+            >
+              Undo
+            </button>
+          </div>
+        )}
+        {/* ⚠️ NOT IN FIGMA — ONE PILL, THREE COMMANDS, asked for directly 14
+            Sep 2026: `Save` / `Reset` used to open in their own segmented
+            pill under the chips, with `Reset all` a separate button down
+            here. They share the products tray's `SegmentedToggle` now, under
+            the face card: `Save` is the filled segment, and each command
+            fades while it has nothing to act on (`Save` and `Reset` until the
+            symptom being placed has a place, `Reset all` until anything is
+            selected). `actions` keeps them buttons in a group, not tabs.
+            ⚠️ `Save` was `Done` for an hour and was renamed, asked for
+            directly. The places are already stored as they are tapped (see
+            the note at the top); the label names the step the reader is
+            finishing, and what it does is unchanged. */}
+        <SegmentedToggle
+          actions
+          label="Symptom places"
+          className={styles.placesToggle}
+          options={["Save", "Reset", "Reset all"]}
+          disabled={[!placeMarked, !placeMarked, nothingSelected]}
+          onChange={(i) =>
+            i === 0 ? finishSymptom() : i === 1 ? resetSymptom() : resetAll()
+          }
+        />
+      </div>
+
+      <div
+        className={styles.other}
+        data-motion="rise-self"
+        style={{ "--rise-delay": "260ms" } as CSSProperties}
+      >
         {otherState === "editing" ? (
           <div className={styles.otherFieldWrap}>
             <TextField
@@ -530,6 +534,8 @@ export function StartInvestigation() {
         onClick={() => setPhotoOpen(true)}
         icon={<CameraIcon />}
         className={styles.takePhoto}
+        data-motion="rise-self"
+        style={{ "--rise-delay": "320ms" } as CSSProperties}
       >
         Take a photo
       </Button>

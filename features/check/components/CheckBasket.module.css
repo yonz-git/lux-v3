@@ -38,15 +38,13 @@
      to half (≈31%) the page shows through, and `saturate` keeps what shows
      through from going grey. The reduced-transparency fallback below still
      composites the full token, so that path is unchanged. */
-  background: color-mix(
-    in srgb,
-    var(--color-surface-data-strong) 50%,
-    transparent
-  );
-  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.12),
-    var(--shadow-frosted-row);
-  -webkit-backdrop-filter: blur(var(--blur-card)) saturate(1.4);
-  backdrop-filter: blur(var(--blur-card)) saturate(1.4);
+  /* lux-v3: the panel's glass, floating — a 30% frost, the panel edge and
+     rim, and the nav's soft drop (app/vidgen.css). The v2 sage is history. */
+  border: var(--border-width-hairline) solid var(--color-border-panel);
+  background: var(--color-panel);
+  box-shadow: var(--shadow-nav-vg);
+  -webkit-backdrop-filter: blur(16px);
+  backdrop-filter: blur(16px);
 
   color: var(--color-text-on-data);
   /* the label's shine paints from this, not from `color` — the surface's own
@@ -125,11 +123,7 @@
 
 @media (prefers-reduced-transparency: reduce) {
   .bar {
-    background: linear-gradient(
-        var(--color-surface-data-strong),
-        var(--color-surface-data-strong)
-      ),
-      var(--color-bg-canvas);
+    background: var(--color-panel);
     -webkit-backdrop-filter: none;
     backdrop-filter: none;
   }
@@ -188,8 +182,11 @@
      same swap `ResultCards`' emphasis block takes. A 62% sage row on the 44%
      sage tray is two steps of one hue with almost nothing between them; the
      darker sage separates the rows from the tray they sit on. */
-  background: var(--color-surface-data-deep);
-  box-shadow: var(--shadow-frosted-row);
+  /* lux-v3: GLASS ON THE SHEET, DARK INK — the deep-sage tier with white
+     ink (3.77:1, never AA) is gone; the row is the chips' material. */
+  border: var(--border-width-hairline) solid var(--color-border-glass);
+  background: var(--color-glass);
+  box-shadow: var(--shadow-glass);
 }
 
 .itemLabel {
@@ -210,8 +207,9 @@
 
      Named via `text/on-data-inverse` rather than a raw `#fff` so the
      surface-and-ink pairing stays greppable and the module does not reach into
-     the primitives block (non-negotiable 2). */
-  color: var(--color-text-on-data-inverse);
+     the primitives block (non-negotiable 2).
+     ⚠️ SUPERSEDED, lux-v3: the row is glass now and takes the app's ink. */
+  color: var(--color-text-primary);
 }
 
 /* A 20 glyph needs a 44 target; the negative margin keeps the target from
@@ -227,8 +225,8 @@
   margin: calc((var(--size-icon-sm) - var(--size-touch-target)) / 2);
   padding: 0;
   border-radius: var(--radius-full);
-  /* white by explicit request, matching the label it sits beside */
-  color: var(--color-text-on-data-inverse);
+  /* the label's ink (lux-v3) */
+  color: var(--color-icon-default);
   transition: opacity var(--duration-fast) var(--ease-hover);
 }
 

@@ -53,10 +53,11 @@
   color: var(--color-text-primary);
 }
 
-.sparkle {
-  color: var(--color-bg-brand);
-  /* sits on the first line's cap height, not its box top */
-  margin-top: 2px;
+/* the 26 orb centred on the first 22 line: 2 above it */
+.orb {
+  flex: none;
+  display: inline-flex;
+  margin-top: -2px;
 }
 
 .hint {

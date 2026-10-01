@@ -23,8 +23,20 @@
    it, so the text measure is a shade narrower than before — the same intent.
    Mobile is a 392 column and never reaches the cap, so the hug is what shows
    there: a short verdict gets a short bubble. */
+/* the orb at the bubble's tail corner, 12 apart; the bubble takes the rest */
+.speaker {
+  display: flex;
+  align-items: flex-start;
+  gap: var(--space-md); /* 12 */
+}
+
+.orb {
+  flex: none;
+}
+
 .bubble {
   --bubble-width: fit-content;
+  min-width: 0;
 }
 
 @media (min-width: 1024px) {
@@ -75,30 +87,23 @@
    the pill the nav and the search field share, and `bg/nav` is its opaque
    reduced-transparency counterpart. A token swap inside one family, not a new
    surface. */
+/* ⚠️ NO BOX ANY MORE — lux-v3 (Scores B, canvas, 1 Oct 2026). The compared
+   products were rows inside a frosted box; they are score cards now, each
+   its own panel, and a panel inside a frosted box is frost on frost. The
+   group is the overline, the grid and the blocks under it, on the canvas.
+   The ask, picker and re-run blocks already carry their own surfaces. */
 .group {
   display: flex;
   flex-direction: column;
-  gap: var(--space-sm); /* 8 — the same distance as the box's own padding */
-
-  border-radius: var(--radius-lg); /* 16 */
-  background: var(--color-surface-frost-nav);
-  box-shadow: var(--shadow-frosted-row);
-  -webkit-backdrop-filter: blur(var(--blur-card));
-  backdrop-filter: blur(var(--blur-card));
+  gap: var(--space-lg); /* 16 — overline to grid, as the board draws it */
 }
 
-/* the header keeps 476:2851's own geometry: 56 tall, padding 18, the label at
-   `H6` and `Edit` at `Label` on the right.
-   ⚠️ rule 9: fixed-height row, so min-height + no vertical padding rather than
-   padding a border would add to. It has no border and no fill now — `.group`
-   above is the surface. */
+/* the overline and `Edit`, level, over the grid */
 .compared {
   display: flex;
   align-items: center;
   justify-content: space-between;
   gap: var(--space-md);
-  min-height: 56px;
-  padding: 0 18px;
 }
 
 .comparedLabel {
@@ -130,27 +135,16 @@
   }
 }
 
-/* the box's contents — 16 in from three sides, with the header's gap above.
-   ⚠️ IT WAS 8 UNTIL 13 Sep 2026, changed on request ("give side paddings to
-   these boxes"). At 8 the rows ran almost to the box's edges and read as
-   filling it rather than sitting in it, 10px further out than the 18-inset
-   `Compared Products` label above them. The bottom moved with the sides so the
-   last row does not sit closer to the edge than the rows do to the sides.
-   ⚠️ THE CARDS' RADIUS IS NO LONGER CONCENTRIC (16 − 16 would be square). It
-   stayed 8 for a few hours and is 12 as of 13 Sep 2026, asked for directly —
-   PRODUCTS' compact cards' value, so a product row is one shape in both
-   sections. `.pendingRow` below takes it too. See `.card.compact` in
-   CompatCard.module.css. */
+/* the grid and the blocks under it, 8 apart */
 .panel {
   display: flex;
   flex-direction: column;
   gap: var(--space-sm); /* 8 */
-  padding: 0 var(--space-lg) var(--space-lg); /* 16 */
 }
 
 /* the "how long have you used it?" question grows in with `Collapse` — the
    8 above is declared on it, and only on it: a gap on `.panel` itself would
-   reach every compat card's own Collapse inside the list */
+   reach anything nested inside the list */
 .panel > :global(.collapse) {
   --collapse-gap: var(--space-sm);
 }
@@ -159,65 +153,18 @@
   margin: 0;
   padding: 0;
   list-style: none;
-  display: flex;
-  flex-direction: column;
-  gap: var(--space-sm); /* 8 — inside the box every gap is the box's own 8 */
-}
-
-/* a product added since the check ran — the compact card's geometry without the
-   disclosure, because there is nothing yet to disclose. `min-height` rather than
-   vertical padding (rule 9), matching the 52 the picker's rows take. */
-.pendingRow {
-  display: flex;
-  align-items: center;
+  /* two score cards to a row, 8 apart (Scores B) */
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
   gap: var(--space-sm);
-  min-height: 52px;
-  padding: var(--space-sm) var(--space-md);
-
-  /* 12 — the compact card's radius, which this row mirrors */
-  border-radius: var(--radius-md);
-  background: var(--color-bg-surface-frost);
-  box-shadow: var(--shadow-frosted-row);
 }
 
-.pendingName {
-  flex: 1;
-  min-width: 0;
-  color: var(--color-text-primary);
-}
-
-/* neutral, and deliberately not a band pill: this row HAS no band, and reusing
-   the pill treatment for "no result yet" would put a fourth thing in a
-   three-value scale */
-.pendingTag {
-  flex: none;
-}
-
-.pendingRemove {
-  flex: none;
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  width: var(--size-control-sm); /* 36 */
-  height: var(--size-control-sm);
-  padding: 0;
-  border-radius: var(--radius-full);
-  color: var(--color-icon-default);
-  transition: opacity var(--duration-fast) var(--ease-hover);
-}
-
-.pendingRemove:hover {
-  opacity: 0.7;
-}
-
-@media (hover: none) {
-  .pendingRemove:hover {
-    opacity: 1;
+/* the board drew a phone only; at desktop two cards to a row were 408 wide
+   around a 64 ring, so the row fits as many 180-wide cards as it can */
+@media (min-width: 1024px) {
+  .stack {
+    grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
   }
-}
-
-.pendingRemoveIcon {
-  --icon-size: var(--size-icon-sm); /* 20 */
 }
 
 /* --- the picker, and the question it can raise ------------------------------

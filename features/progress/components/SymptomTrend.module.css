@@ -1,97 +1,220 @@
-/* card · symptom trend — Figma 553:1239 / 554:1412.
+/* TREND C — see SymptomTrend.tsx. The card is `DataCard` (the 30% panel, the
+   app's dark ink); everything here is the chart inside it.
 
-   H5 title -> 16 (DataCard's gap) -> chart -> 16 -> x-axis -> 16 -> summary.
-   The chart row is a 20-wide y-axis, an 8 gap, then the plot filling the rest.
-   Everything is 110 tall. */
+   The chart is 184 tall: a 24 row for the event pill, 14 of lead-in where the
+   event line rises to meet it, then three 44 bands (132). Band names sit in a
+   64 column on the left; the plot runs to 6 short of the card's content edge,
+   and the days are inset 8 inside the plot so the first and last dots and
+   labels sit wholly inside it. */
 
-/* ⚠️ THE SURFACE AND THE INK ARE OVERRIDDEN BY REDEFINING TOKENS, NOT BY
-   RESTATING PROPERTIES — NOT IN FIGMA, BY EXPLICIT REQUEST.
-
-   `DataCard` writes `background: var(--color-surface-data)` and
-   `color: var(--color-text-on-data)` from its OWN module. Re-declaring
-   `background` here would be a single class against a single class, i.e. a
-   load-order race — the same trap non-negotiable 13 documents for the focus
-   ring, where a module's own shadow silently beat the global outline. Setting
-   the custom properties on this element instead is not a race at all: the two
-   rules touch different properties, and `var()` resolves against whatever the
-   element itself computes. It also carries the whole recipe with it — the
-   `prefers-reduced-transparency` fallback in DataCard composites
-   `--color-surface-data` over the canvas, so it picks the deep sage up for
-   free.
-
-   ⚠️ WHITE HERE IS AN EXCEPTION TO NON-NEGOTIABLE 17 AND IT DOES NOT MEET AA.
-   Measured on `/progress` at this card's own position rather than estimated:
-   `surface/data-deep` (`#4f838f @85%`) composites over the canvas where this
-   card actually sits to about rgb(98,145,155), where white lands near 3.5:1
-   against 4.5:1. That clears the 3:1 large-text bar for the H5 title and fails
-   it for the 12px axis ticks.
-
-   The three states this went through, because the numbers are the argument:
-
-     surface/data                        1.84:1
-     surface/data-deep at #538b8d @62%   2.56:1
-     surface/data-deep at #4f838f @85%   ~3.5:1
-
-   ⚠️ THE ALPHA IS WHY THIS HAS TO BE MEASURED IN PLACE. A translucent card takes
-   its contrast from whatever it is sitting on, so the same card reads
-   differently at the top and the bottom of a scrolling page. Only an opaque
-   fill would make the ratio a property of the token; `#407375` opaque was built
-   on 8 Sep 2026 and measured 5.35:1, and the current value was chosen over it.
-   See the measurement table on `--color-surface-data-deep` in globals.css.
-
-   ⚠️ AND THE DARK INK DOES NOT RESCUE IT EITHER — it lands within 0.1 of the
-   white on this fill, because the surface sits almost exactly where the two
-   inks cross over. Swapping the ink here would trade one failing value for
-   another; the surface is the only lever.
-
-   All three text tokens resolve to the same white on purpose. System B carries
-   hierarchy by size, weight and tracking (non-negotiable 17), and stepping the
-   secondary and muted tiers down in alpha would take the smallest text
-   furthest down. */
 .card {
-  /* ⚠️ `#4a6f78`, supplied directly 14 Sep 2026 — an opaque slate teal in place
-     of the deep tier (`surface/data-deep`, #4f838f @85%), this card only. It
-     was `#799fa6` for a moment, where the white ink measured ~2.9:1; on this
-     value it measures ~5.5:1, which clears AA. */
-  --color-surface-data: #4a6f78;
-  /* the grain (`::after`) paints between the fill and the chart */
-  position: relative;
-  isolation: isolate;
-  --color-text-on-data: var(--color-text-on-data-inverse);
-  --color-text-on-data-secondary: var(--color-text-on-data-inverse);
-  --color-text-on-data-muted: var(--color-text-on-data-inverse);
-
-  /* the two chart-furniture alphas, named so the gridline rule below reads as
-     a scale rather than as three magic numbers */
-  --trend-grid: rgba(255, 255, 255, 0.18);
-  --trend-baseline: rgba(255, 255, 255, 0.34);
+  --trend-label-col: 64px;
+  --trend-plot-end: 6px;
+  --trend-inset: var(--space-sm); /* 8 */
+  --trend-band: 44px;
+  --trend-lead: 14px;
+  --trend-pill-row: var(--space-2xl); /* 24 */
 }
 
-/* ⚠️ THE FACE CARD'S MOODY MESH, IN ITS TONES — asked for directly 14 Sep 2026
-   ("make it gradient kind of like the face diag bg", "same tones"). The five
-   layers are copied from `--face-card-halo` in FaceDiagram.module.css as they
-   stood that day: a slate-blue light from the top-right, a grey-blue glow at
-   the bottom-left, a faint bloom on the left edge, a violet-black pool in the
-   middle, a navy wash. They move independently of it from here.
-   ⚠️ THEN SUPPLIED DIRECTLY, later the same day: the middle pool much fainter
-   (`#0f061a87` → `#2e28351c`) and the base `#4a6f78` at 50% rather than opaque,
-   so the card is see-through over `DataCard`'s blur like the face card. Its
-   12px white ticks now take their contrast from the page behind too; on the
-   opaque base they measured ~5.5:1. The reduced-transparency rule below puts
-   the opaque base back.
-   ⚠️ AND REPLACED OUTRIGHT, supplied directly later still: its own mesh, no
-   longer the face card's — a deep teal shade in the bottom-right corner, a
-   faint rose light in the top-left, a slate teal pooled down the left, a pale
-   teal glow rising at the bottom-right, a slate light above the top-right,
-   all over `#005461` at 71%.
-   ⚠️ `background` IS RESTATED HERE, WHICH THE NOTE AT THE TOP OF THIS FILE
-   WARNS AGAINST — `.card.card` (0,2,0) is what makes it safe: it outranks
-   `DataCard`'s `.card` (0,1,0), including its reduced-transparency rule,
-   whatever order the modules load in.
-   ⚠️ 5% DARKER, asked for directly the same day: a black layer at 5% on top
-   of the supplied mesh (and of its reduced-transparency twin), so every stop
-   underneath stays as it was given. */
+.head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-md);
+}
+
+.title {
+  margin: 0;
+  color: var(--color-text-primary);
+}
+
+/* `Day 16` — a hairline pill in the card's own ink, no fill */
+.dayPill {
+  flex: none;
+  padding: var(--space-2xs) var(--space-md);
+  border-radius: var(--radius-full);
+  border: var(--border-width-hairline) solid var(--color-border-panel);
+  background: var(--color-glass);
+  color: var(--color-text-secondary);
+}
+
+.reading {
+  margin: 0;
+  color: var(--color-text-primary);
+}
+
+.empty {
+  margin: 0;
+  color: var(--color-text-secondary);
+}
+
+/* ---- the chart ---------------------------------------------------------- */
+
+.chart {
+  position: relative;
+  display: grid;
+  grid-template-columns: var(--trend-label-col) minmax(0, 1fr);
+  height: calc(var(--trend-pill-row) + var(--trend-lead) + var(--trend-band) * 3);
+}
+
+.bandLabels {
+  display: flex;
+  flex-direction: column;
+  padding-top: calc(var(--trend-pill-row) + var(--trend-lead));
+  color: var(--color-text-muted);
+}
+
+.bandLabels > span {
+  display: flex;
+  align-items: center;
+  height: var(--trend-band);
+}
+
+.plot {
+  position: relative;
+  margin-right: var(--trend-plot-end);
+}
+
+/* the most recent product start, named over its line */
+.eventPill {
+  position: absolute;
+  top: 0;
+  box-sizing: border-box;
+  max-width: 100%;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  padding: var(--space-xs) 10px;
+  border-radius: var(--radius-full);
+  border: var(--border-width-hairline) solid var(--color-border-glass);
+  background: var(--color-glass-strong);
+  box-shadow: var(--shadow-glass);
+  color: var(--color-text-primary);
+}
+
+.field {
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  height: calc(var(--trend-band) * 3);
+}
+
+/* three equal bands; the middle one a touch brighter so the eye can find
+   the edges without a rule */
+.bands {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  flex-direction: column;
+}
+
+.bands > span {
+  flex: 1;
+  background: rgb(255 255 255 / 0.12);
+}
+
+.bands > span:first-child {
+  border-radius: var(--radius-sm) var(--radius-sm) 0 0;
+}
+
+.bands > span:nth-child(2) {
+  background: rgb(255 255 255 / 0.32);
+}
+
+.bands > span:last-child {
+  border-radius: 0 0 var(--radius-sm) var(--radius-sm);
+}
+
+/* the days' own span inside the plot — the line, the dot and the event
+   lines all position against it */
+.track {
+  position: absolute;
+  inset: 0 var(--trend-inset);
+}
+
+.eventLine {
+  position: absolute;
+  top: calc(var(--trend-lead) * -1);
+  bottom: 0;
+  width: 0;
+  border-left: 1px dashed color-mix(in srgb, var(--color-bg-brand) 60%, transparent);
+}
+
+.line {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  overflow: visible;
+  color: var(--color-bg-brand);
+}
+
+/* the latest check-in — an indigo dot ringed in white */
+.dot {
+  position: absolute;
+  box-sizing: border-box;
+  width: 12px;
+  height: 12px;
+  border-radius: var(--radius-full);
+  border: 2px solid #fff;
+  background: var(--color-bg-brand);
+  transform: translate(-50%, -50%);
+}
+
+/* ---- every day, under the chart ------------------------------------------ */
+
+.days {
+  display: grid;
+  grid-template-columns: var(--trend-label-col) minmax(0, 1fr);
+  height: 16px;
+  color: var(--color-text-muted);
+  font-variant-numeric: tabular-nums;
+}
+
+.month {
+  line-height: 16px;
+}
+
+.dayTrack {
+  position: relative;
+  margin: 0 calc(var(--trend-plot-end) + var(--trend-inset)) 0 var(--trend-inset);
+}
+
+.day {
+  position: absolute;
+  top: 0;
+  transform: translateX(-50%);
+  white-space: nowrap;
+}
+
+.day[data-today] {
+  color: var(--color-bg-brand);
+  font-weight: var(--font-weight-semibold);
+}
+
+@media (prefers-reduced-transparency: reduce) {
+  .eventPill {
+    background: var(--color-bg-surface-frost);
+  }
+}
+
+/* ============================================================================
+   ⚠️ v2's BACKGROUND, TREND C's DESIGN — asked for directly 1 Oct 2026 ("keep
+   the design and use the bg color of v2"). The fill is v2's deep-teal mesh
+   (`#005461` at 71% under five radial lights, 5% darker, with the grain),
+   copied from lux-v2's SymptomTrend.module.css. Dark ink does not read on it,
+   so everything on the card turns WHITE, as it was in v2 (~5.5:1 on the
+   opaque base): the overline, the reading, the band and day labels, the line,
+   the dot's fill and the event marks. The bands become white tints over the
+   teal. `.card.card` (0,2,0) outranks DataCard's panel fill and its
+   reduced-transparency rule whatever order the modules load in.
+   ========================================================================== */
 .card.card {
+  position: relative;
+  isolation: isolate;
+  border-color: rgb(255 255 255 / 0.2);
+  box-shadow: inset 0 1px 0 rgb(255 255 255 / 0.25);
   background: linear-gradient(#0000000d, #0000000d),
     radial-gradient(45% 45% at 100% 100%, #00303c3d, #0000 70%),
     radial-gradient(60% 55% at 0 0, #d0b4b81f, #a0353500 70%),
@@ -99,9 +222,9 @@
     radial-gradient(90% 80% at 90% 105%, #60a8ba52, #0000 65%),
     radial-gradient(70% 60% at 80% -10%, #37617547, #0000 70%),
     #005461b5;
+  color: #fff;
 }
 
-/* non-negotiable 11: the same mesh over its base made opaque, nothing behind */
 @media (prefers-reduced-transparency: reduce) {
   .card.card {
     background: linear-gradient(#0000000d, #0000000d),
@@ -114,8 +237,6 @@
   }
 }
 
-/* the face card's grain too — the nav bar's noise tile, over the mesh and
-   under the chart */
 .card.card::after {
   content: "";
   position: absolute;
@@ -128,177 +249,151 @@
   background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='120' height='120'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='2'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
 }
 
-/* the title and the day pill on one line, the pill at the far end on the
-   title's baseline — see `day` in SymptomTrend.tsx (15 Sep 2026) */
-.head {
-  display: flex;
-  align-items: baseline;
-  justify-content: space-between;
-  gap: var(--space-lg); /* 16 */
+.card .title,
+.card .reading,
+.card .empty,
+.card .bandLabels,
+.card .days,
+.card .day[data-today] {
+  color: #fff;
 }
 
-/* `Day 16` — a hairline ring in the card's own white ink (`currentColor`), no
-   fill, `t-label-sm`, tabular figures; an inset shadow, not a border, so it
-   adds no height (non-negotiable 9). Moved here from the calendar's legend,
-   asked for directly 15 Sep 2026. */
-.dayPill {
-  flex: none;
-  padding: 3px 10px;
-  border-radius: var(--radius-full);
-  color: var(--color-text-on-data);
-  box-shadow: inset 0 0 0 var(--border-width-hairline) currentColor;
-  font-variant-numeric: tabular-nums;
-  white-space: nowrap;
+.card .bandLabels,
+.card .days {
+  color: rgb(255 255 255 / 0.8);
 }
 
-.title {
-  color: var(--color-text-on-data);
-  /* ⚠️ MEDIUM, `t-overline`'s own — it was Regular from 14 Sep 2026 (asked
-     for directly, over `t-h5`'s Medium) until 15 Sep 2026, when the title took
-     the other cards' overline "like this one" and the weight went with it */
-  /* ⚠️ ALL CAPS AT THE OTHER CARDS' TITLE SIZE, asked for directly 15 Sep
-     2026 ("capitalize", then "match the others titles size"): `t-overline`
-     (caps + 1.82 tracking) at 15 / 20, the size `Progress gallery` and
-     `Symptoms and location` take. It was `t-h5` 18 / 26 in sentence case.
-     The regular weight above stays. The source text stays `Symptom Trend`,
-     so a screen reader reads words rather than letters. */
-  font-size: 15px;
-  line-height: 20px;
+.card .dayPill,
+.card .eventPill {
+  border-color: rgb(255 255 255 / 0.35);
+  background: rgb(255 255 255 / 0.14);
+  color: #fff;
 }
 
-.chart {
-  display: flex;
-  align-items: flex-start;
-  gap: var(--space-sm); /* 8 */
+.card .bands > span {
+  background: rgb(255 255 255 / 0.06);
 }
 
-/* The three ticks are spread top to bottom, so their 16-tall boxes centre on
-   8 / 55 / 102 — which is the mapping the component plots against. */
-.yAxis {
-  display: flex;
-  flex-direction: column;
-  justify-content: space-between;
-  align-items: flex-end;
-  width: 20px;
-  height: 110px;
-  flex: none;
-  color: var(--color-text-on-data-muted);
-  /* the ticks are right-aligned into a fixed 20 and read as a scale, so the
-     figures have to be one width — see the note in globals.css */
-  font-variant-numeric: tabular-nums;
+.card .bands > span:nth-child(2) {
+  background: rgb(255 255 255 / 0.14);
 }
 
-/* ⚠️ THE 4px INLINE PADDING IS THE DOT'S RADIUS. The dots are centred on 0% and
-   100% of `.plot`, so without it half of the first and last would hang outside
-   the plot box. Padding the canvas and insetting the plot by the same 4 puts
-   both end dots fully inside, which is what the comp draws (its first point
-   centres at x=8 in a 324-wide canvas whose content starts at 4). */
-.canvas {
-  position: relative;
-  flex: 1;
-  min-width: 0;
-  height: 110px;
-  padding-inline: 4px;
+.card .line {
+  color: #fff;
 }
 
-.plot {
-  position: absolute;
-  inset: 0 4px;
+.card .dot {
+  border-color: #005461;
+  background: #fff;
 }
 
-/* ⚠️ THREE RULES AT 10 / 5 / 0, AND THE POSITIONS ARE THE COMPONENT'S OWN
-   CONSTANTS. `BASELINE_Y` is 102 and `PLOT_SPAN` 94, so 10 sits at 8, 5 at 55
-   and 0 at 102 — the same centres the y-axis labels' 16-tall boxes land on,
-   which is what makes a gridline line up with the number naming it. Change
-   either constant and change these three offsets with it.
-
-   ⚠️ ONE ELEMENT, THREE BACKGROUND IMAGES, NOT THREE DIVS AND NOT SVG LINES.
-   The plot's SVG is `preserveAspectRatio="none"`, so anything drawn inside it
-   is stretched horizontally; a background image is laid out by the box and
-   cannot be. `background-size: 100% 1px` keeps every rule exactly one device
-   pixel whatever the card is wide.
-
-   The baseline is the stronger of the two alphas because zero is the AXIS —
-   the line the quantity is measured from — while 10 and 5 are guides. */
-.gridlines {
-  position: absolute;
-  inset: 0;
-  background-image:
-    linear-gradient(var(--trend-grid), var(--trend-grid)),
-    linear-gradient(var(--trend-grid), var(--trend-grid)),
-    linear-gradient(var(--trend-baseline), var(--trend-baseline));
-  background-size: 100% 1px;
-  background-repeat: no-repeat;
-  background-position:
-    0 8px,
-    0 55px,
-    0 102px;
+.card .eventLine {
+  border-left-color: rgb(255 255 255 / 0.6);
 }
 
-/* preserveAspectRatio="none" on a 0 0 100 110 viewBox makes y map 1:1 to the
-   110px height while x stretches to whatever the card is wide — so the plotted
-   y values are literal pixels and x is a percentage. The stroke is kept at 2
-   by vector-effect on the polyline itself. */
+/* ============================================================================
+   THE ENTRANCE — 1 Oct 2026, asked for directly, after 21st.dev's line charts:
+   the chart builds itself the first time it comes into view
+   (`components/layout/MotionObserver.tsx` adds `data-inview`).
+
+     0ms     the bands sweep in from the left, 60 apart, the labels with them
+     240ms   the line draws left to right — a clip-path reveal, because the
+             path is stretched (`preserveAspectRatio="none"` + a non-scaling
+             stroke) and a dash-offset draw would run at the wrong rate
+     ~1.1s   the end dot settles in; the product-start line rises, its pill
+             follows; the day labels arrive left to right, 25 apart
+
+   No overshoot — LUX does not bounce. Individual `scale` / `translate`
+   properties, so the dot's and labels' own centring transforms are kept.
+   Reduced motion collapses every duration globally.
+   ========================================================================== */
+.bands > span,
+.bandLabels > span,
+.line,
+.dot,
+.eventLine,
+.eventPill,
+.day {
+  transition-timing-function: var(--ease-standard);
+}
+
+.bands > span {
+  transform-origin: left center;
+  transition-property: scale, opacity;
+  transition-duration: var(--duration-slower);
+  transition-delay: calc(var(--i, 0) * 60ms);
+}
+
+.card:not([data-inview]) .bands > span {
+  scale: 0 1;
+  opacity: 0;
+}
+
+.bandLabels > span {
+  transition-property: opacity, translate;
+  transition-duration: var(--duration-slow);
+  transition-delay: calc(var(--i, 0) * 60ms);
+}
+
+.card:not([data-inview]) .bandLabels > span {
+  opacity: 0;
+  translate: -6px 0;
+}
+
 .line {
-  display: block;
-  width: 100%;
-  height: 100%;
-  overflow: visible;
-  /* the trend line is WHITE on a data card — the handoff's rule, and true again
-     here because `.card` above puts `text/on-data` back to white on the deeper
-     sage. currentColor so the stroke, and the area fill's two gradient stops,
-     all follow the one token. */
-  color: var(--color-text-on-data);
-  /* the fill is a quantity under the line; the line is the reading. */
-  position: relative;
+  /* ⚠️ AN EXPLICIT inset(0), NOT THE DEFAULT `none` — `inset()` → `none`
+     cannot interpolate, so the line snapped on instead of drawing */
+  clip-path: inset(0 0 0 0);
+  transition-property: clip-path;
+  transition-duration: calc(var(--duration-slower) * 2); /* 960 */
+  transition-delay: 240ms;
 }
 
-.point {
-  position: absolute;
-  /* above the gridlines and the area fill — a dot half-hidden behind a rule
-     reads as a kink in the line rather than as a reported value */
-  z-index: 1;
-  width: 8px;
-  height: 8px;
-  /* left/top are the point's CENTRE, set inline from the data */
-  transform: translate(-50%, -50%);
-  border-radius: var(--radius-full);
-  background: var(--color-text-on-data);
+.card:not([data-inview]) .line {
+  clip-path: inset(0 100% 0 0);
 }
 
-/* ⚠️ POSITIONED, NOT SPACED — see `xLabelStyle`. The labels are a THINNED
-   subset of the points now (at most five, whatever the series length), and
-   `space-between` distributes whatever it is given: drop a label and the
-   remaining ones slide off the dots they name.
-
-   32 = the y-axis (20) plus the chart's gap (8) plus the plot's own 4 inset, so
-   `left: 0` here is x=0 in the plot rather than the edge of the card; 4 on the
-   right is the same inset at the other end. It was 28, which put every label 4
-   to the left of its point — invisible while the labels were only approximately
-   aligned anyway, and wrong now that they are placed on the values.
-
-   16 is the caption's own line box (12/16), the same box the y-axis ticks use,
-   so reserving it costs nothing and keeps the card's height off the content. */
-.xAxis {
-  position: relative;
-  height: 16px;
-  margin: 0 4px 0 32px;
-  color: var(--color-text-on-data-muted);
-  white-space: nowrap;
+.dot {
+  transition-property: scale, opacity;
+  transition-duration: var(--duration-slow);
+  transition-delay: 1100ms;
 }
 
-.xLabel {
-  position: absolute;
-  top: 0;
-  /* dates on one scale — "Aug 24" and "Sep 2" must not shift the label's
-     optical centre off the tick it is positioned against */
-  font-variant-numeric: tabular-nums;
+.card:not([data-inview]) .dot {
+  scale: 0.4;
+  opacity: 0;
 }
 
-.summary {
-  color: var(--color-text-on-data-secondary);
+.eventLine {
+  transform-origin: bottom center;
+  transition-property: scale, opacity;
+  transition-duration: var(--duration-slower);
+  transition-delay: 900ms;
 }
 
-.empty {
-  color: var(--color-text-on-data-secondary);
+.card:not([data-inview]) .eventLine {
+  scale: 1 0;
+  opacity: 0;
+}
+
+.eventPill {
+  transition-property: opacity, translate;
+  transition-duration: var(--duration-slow);
+  transition-delay: 1200ms;
+}
+
+.card:not([data-inview]) .eventPill {
+  opacity: 0;
+  translate: 0 4px;
+}
+
+.day {
+  transition-property: opacity, translate;
+  transition-duration: var(--duration-slow);
+  transition-delay: calc(300ms + var(--i, 0) * 25ms);
+}
+
+.card:not([data-inview]) .day {
+  opacity: 0;
+  translate: 0 4px;
 }

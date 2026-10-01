@@ -146,8 +146,12 @@
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  width: var(--size-round);
-  height: var(--size-round);
+  /* ⚠️ 44, NOT THE ROUND BUTTON'S 56 — asked for directly 1 Oct 2026
+     ("reduce the circle size of the x") on the progress gallery, the one
+     `dismiss="corner"` caller. 44 is the touch floor, so the circle is
+     still its own target. */
+  width: var(--size-touch-target);
+  height: var(--size-touch-target);
   padding: 0;
   border-radius: var(--radius-full);
   color: var(--color-text-primary);

@@ -2,6 +2,14 @@ import { useId } from "react";
 import styles from "./SkinProfileTiles.module.css";
 
 /**
+ * ⚠️ lux-v3 (1 Oct 2026): THE PANEL, A STANDARD OVERLINE, GLASS PILLS. The
+ * card is the 30% panel every card is now (the global `canvas-card`, see
+ * app/vidgen.css), the overline is `t-overline` at its own size with no rule
+ * under it — as on the trend card — and each answer is a read-only GLASS
+ * pill: `glass-strong`, a glass edge, the app's ink, 32 tall, so it stays
+ * smaller than the 44 chips that are controls. The v2 history below explains
+ * the shape (four tiles, a pill per answer), not the look.
+ *
  * ⚠️ NOT IN FIGMA — the skin profile as four tiles, under the skin-profile
  * strip on `/check`, asked for directly 14 Sep 2026. No frame draws it.
  *

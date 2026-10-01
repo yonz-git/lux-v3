@@ -32,6 +32,7 @@ export function Button({
   className,
   href,
   icon,
+  onPointerMove,
   ...rest
 }: ButtonHTMLAttributes<HTMLButtonElement> & {
   variant?: "primary" | "secondary";
@@ -53,10 +54,35 @@ export function Button({
     .filter(Boolean)
     .join(" ");
 
+  /* ⚠️ v2's HOVER ON THE INDIGO BUTTON, BACK 1 Oct 2026 — asked for directly
+     ("apply the button hover effect we had before on the indigo buttons").
+     Over the gradient's end-for-end reversal: a 1px edge light
+     (globals.css `.edge-light`), the specular rim, and a band of light
+     sweeping across the label (`.shine-on-hover`). Primary only; the glass
+     secondary keeps its plain hover.
+     ⚠️ THE RIM ORBITS ON ITS OWN NOW — asked for directly 1 Oct 2026 ("make
+     it go around slowly automatically just by hovering"). It followed the
+     pointer through `trackSpecular`; it now circles the pill once every 4.5s
+     for as long as the pointer rests on it (app/vidgen.css). */
+  const primary = variant === "primary";
+  const handlePointerMove = (e: React.PointerEvent<HTMLElement>) => {
+    onPointerMove?.(e as React.PointerEvent<HTMLButtonElement>);
+  };
+
   const content = (
     <>
+      {primary && (
+        <>
+          <span className="edge-light" aria-hidden="true" />
+          <span className="specular" aria-hidden="true" />
+        </>
+      )}
       {icon}
-      <span className={styles.label}>{children}</span>
+      <span
+        className={primary ? `${styles.label} shine-text shine-on-hover` : styles.label}
+      >
+        {children}
+      </span>
     </>
   );
 
@@ -64,14 +90,14 @@ export function Button({
      nothing, so it would stay focusable and still navigate */
   if (href && !rest.disabled) {
     return (
-      <Link href={href} className={cls} style={rest.style}>
+      <Link href={href} className={cls} style={rest.style} onPointerMove={handlePointerMove}>
         {content}
       </Link>
     );
   }
 
   return (
-    <button type="button" className={cls} {...rest}>
+    <button type="button" className={cls} onPointerMove={handlePointerMove} {...rest}>
       {content}
     </button>
   );

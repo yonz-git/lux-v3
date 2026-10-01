@@ -134,6 +134,25 @@ async function pass(send, applyOverride) {
     for (const route of ROUTES) {
       await send("Page.navigate", { url: BASE + route });
       await new Promise((r) => setTimeout(r, 700));
+      /* ⚠️ WAIT FOR THE STORE, OR THE PASS IS EMPTY. Until `data-store-ready`
+         lands on <html>, everything in `.screen` but the nav is
+         `visibility: hidden` (globals.css), and the probe skips hidden boxes —
+         so a page that never hydrates (Next's dev server refuses its scripts
+         to an origin it does not allow, e.g. 127.0.0.1 for a localhost
+         server) reports CLEAN while checking nothing. Poll, then refuse. */
+      let ready = false;
+      for (let i = 0; i < 40 && !ready; i++) {
+        const r = await send("Runtime.evaluate", {
+          expression: `document.documentElement.hasAttribute("data-store-ready")`,
+          returnByValue: true,
+        });
+        ready = r.result?.result?.value === true;
+        if (!ready) await new Promise((r) => setTimeout(r, 250));
+      }
+      if (!ready) {
+        console.error(`spacing: ${route} @${width} never hydrated — is BASE an allowed origin?`);
+        process.exit(2);
+      }
       if (applyOverride) {
         await send("Runtime.evaluate", {
           expression: `(() => { const s = document.createElement("style"); s.textContent = ${JSON.stringify(OVERRIDE)}; document.head.appendChild(s); })()`,

@@ -8,20 +8,20 @@
    by index would mix two schemes for no gain. */
 "use client";
 
-import { useEffect, useRef, useState } from "react";
+import { type CSSProperties, useEffect, useRef, useState } from "react";
 import Link from "next/link";
 import styles from "./CheckInCalendar.module.css";
 import { DataCard } from "@/components/ui/DataCard";
 import { ChevronLeftIcon, ChevronRightIcon } from "@/components/ui/icons";
 import type { CheckIn } from "@/features/progress/progress";
 import {
-  WEEKDAYS_SUNDAY,
-  WEEKDAY_NAMES_SUNDAY,
+  WEEKDAYS,
+  WEEKDAY_NAMES,
   addMonths,
   formatFull,
   formatMonth,
   fromIso,
-  monthGridSunday,
+  monthRecordGrid,
   sameDay,
   startOfMonth,
   toIso,
@@ -72,8 +72,8 @@ function defaultMonth(checkIns: CheckIn[], today: Date): Date {
  * all "composed from tokens on these screens rather than instanced". This is
  * the second hand-built calendar in the app; `DateField` is the other. They are
  * NOT the same component and must not be merged: that one is an interactive
- * Monday-first date PICKER with a roving tabstop, this one is a Sunday-first
- * read-only RECORD. See the note on `monthGridSunday`.
+ * Monday-first date PICKER with a roving tabstop, this one is a read-only
+ * RECORD — Monday-first too since lux-v3. See the note on `monthRecordGrid`.
  *
  * ⚠️ A CHECKED-IN DAY IS A LINK; EVERY OTHER DAY IS A PLAIN CELL. The handoff
  * places `Check-in detail` in the Progress section precisely because it is "a
@@ -160,14 +160,14 @@ export function CheckInCalendar({
   useEffect(() => {
     if (hydrated) drawn.current = checkedIn;
   });
-  const cells = monthGridSunday(view);
+  const cells = monthRecordGrid(view);
   const weeks = Array.from({ length: cells.length / 7 }, (_, i) =>
     cells.slice(i * 7, i * 7 + 7)
   );
   const monthLabel = formatMonth(view);
 
   return (
-    <DataCard className={className} aria-labelledby="calendar-title">
+    <DataCard className={className} aria-labelledby="calendar-title" data-motion>
       <div className={styles.header}>
         {/* aria-live so paging the month is announced — the grid below it
             changes wholesale and nothing else says which month you are on. */}
@@ -207,15 +207,15 @@ export function CheckInCalendar({
         </caption>
         <thead>
           <tr>
-            {WEEKDAYS_SUNDAY.map((initial, i) => (
+            {WEEKDAYS.map((initial, i) => (
               <th key={i} scope="col" className={styles.weekdayCell}>
                 <span className={`${styles.weekday} t-label-sm`} aria-hidden="true">
                   {initial}
                 </span>
-                {/* the initials repeat — S/T twice — so "S, M, T, W, T, F, S"
+                {/* the initials repeat — T/S twice — so "M, T, W, T, F, S, S"
                     read aloud identifies nothing */}
                 <span className="visually-hidden">
-                  {WEEKDAY_NAMES_SUNDAY[i]}
+                  {WEEKDAY_NAMES[i]}
                 </span>
               </th>
             ))}
@@ -226,12 +226,15 @@ export function CheckInCalendar({
             <tr key={w}>
               {week.map((date, d) => {
                 if (!date) return <td key={d} className={styles.cell} />;
+                /* the entrance's order, row by row (module, end) */
+                const order = { "--i": w * 7 + d } as CSSProperties;
 
                 const iso = toIso(date);
                 const isCheckedIn = checkedIn.has(iso);
                 const justChecked =
                   isCheckedIn && drawn.current !== null && !drawn.current.has(iso);
                 const isToday = sameDay(date, today);
+                const isFuture = date > today && !isToday;
 
                 /* the day's own number is the visible label, so the date and
                    its state carry the accessible name of the link */
@@ -249,11 +252,16 @@ export function CheckInCalendar({
                 );
 
                 return (
-                  <td key={d} className={styles.cell}>
+                  <td
+                    key={d}
+                    className={styles.cell}
+                    style={order}
+                    data-disc={isCheckedIn || undefined}
+                  >
                     {isCheckedIn ? (
                       <Link
                         href={`/progress/check-in/${iso}`}
-                        className={`${styles.day} t-label-sm pressable`}
+                        className={`${styles.day} t-label pressable`}
                         data-checked-in
                         data-just-checked={justChecked || undefined}
                         data-today={isToday || undefined}
@@ -262,8 +270,9 @@ export function CheckInCalendar({
                       </Link>
                     ) : (
                       <span
-                        className={`${styles.day} t-label-sm`}
+                        className={`${styles.day} t-body3`}
                         data-today={isToday || undefined}
+                        data-future={isFuture || undefined}
                       >
                         {label}
                       </span>
@@ -279,11 +288,11 @@ export function CheckInCalendar({
       <p className={styles.legend}>
         <span className={styles.legendItem}>
           <span className={styles.dot} data-checked-in />
-          <span className={`${styles.legendLabel} t-label-sm`}>Checked in</span>
+          <span className={`${styles.legendLabel} t-caption`}>Checked in</span>
         </span>
         <span className={styles.legendItem}>
           <span className={styles.dot} data-today />
-          <span className={`${styles.legendLabel} t-label-sm`}>Today</span>
+          <span className={`${styles.legendLabel} t-caption`}>Today</span>
         </span>
       </p>
     </DataCard>

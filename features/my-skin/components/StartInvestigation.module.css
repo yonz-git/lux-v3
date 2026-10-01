@@ -1,20 +1,179 @@
 /* 01 + 03b combined — Start investigation and Location, on the canvas board
    (lux-v3, 1 Oct 2026): the question panel (question, instruction, symptom
-   chips, safety notice, the places row), then the face card, then the typed
+   chips, safety notice), the face card, the save pill under it, then the typed
    description and `Take a photo`, 24 apart. The panel's own rules are
    QuestionPanel.module.css.
    ⚠️ THE DISCLAIMER CARD THAT OPENED THIS STACK IS GONE — cut in `f3edc75`
    while 01 and 03b were merged. Its recipe was not lost: `SafetyNotice` reuses
    it for the conditional notice under the chip grid. */
 
-/* the face card follows the question panel 24 below (canvas boards), and
-   the two "tell us more" controls follow the face at the same step */
-.diagram {
-  margin-top: var(--space-2xl); /* 24 */
+/* ⚠️ v2's FACE SECTION, RESTORED 1 Oct 2026 — asked for directly ("the face
+   diagram should have kept the old system"). The question and its
+   instruction on the page, the face card, the rose symptom chips under it,
+   the safety notice, then v2's segmented `Save` / `Reset` / `Reset all`
+   pill. The rules below are v2's, copied unchanged; the canvas board's
+   question panel over the chips is gone from this step. */
+
+/* ⚠️ CENTRED AT EVERY WIDTH, asked for directly 13 Sep 2026 — it was centred
+   on desktop only, which left the mobile title flush left over a centred chip
+   grid. */
+.question {
+  color: var(--color-text-primary);
+  text-align: center;
 }
 
+/* ⚠️ NOT IN FIGMA — THE STACK IS TWO-LEVEL NOW, NOT ONE FLAT GAP.
+   Figma mobile 476:2542 spaces the top-level blocks 60 apart (off the spacing
+   scale there too) and desktop 476:2670 uses 48. Both were applied as ONE gap
+   to every block, which put the stack's WIDEST interval INSIDE a single
+   question — the title and its own chips — and its NARROWEST, 20, at the
+   boundary BETWEEN the two questions this screen merges. Measured on the
+   rendered page: 60 / 20 / 60 / 16 mobile, 48 / 20 / 48 / 16 desktop. Proximity
+   was telling the user that the symptom chips and the face diagram were one
+   group and that the title belonged to nothing.
+   Two levels instead, so the merge reads as the two questions it is:
+     WITHIN a question   20
+     BETWEEN questions   40 mobile / 48 desktop
+   Desktop keeps the comp's 48 and mobile drops to 40 — more air where there is
+   more room, which is the way round the old pair had backwards. Desktop's total
+   inter-block height is unchanged at 132, so the card does not move; mobile
+   loses 40 of the 92px by which the screen overflowed its own 957 canvas. */
+.chips {
+  margin-top: var(--space-xl); /* 20 — the same question as the face card above it */
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  /* 10 is the Chip grid gap in Figma and is off the spacing scale there too */
+  gap: 10px;
+}
+
+/* ⚠️ NOT IN FIGMA — A PICKED SYMPTOM IS `bg/symptom` (#d3858a), NOT INDIGO,
+   asked for directly 14 Sep 2026: the colour the profile's symptom pills
+   already wear on PROGRESS and the recap, so a symptom looks like a symptom
+   wherever it appears. White label, as those pills have. The indigo stays for
+   what is selected on the face. `Chip`'s diagonal shade (`::before`) runs to
+   the same rose deepened 20% toward `text/primary` rather than to indigo.
+   ⚠️ WHITE ON IT IS THE PROFILE PILLS' KNOWN SHORTFALL, 2.8:1 — the same pair,
+   not a new one (see `bg/symptom` in globals.css); the app ink would be 4.9:1.
+   Written against `.chips button[data-selected="true"]` (0,2,1) to outrank
+   `Chip`'s `.chip[data-selected="true"]` (0,2,0), and on the hover rules so
+   `Chip`'s indigo hover border does not come back. Only this screen's symptom
+   row: every other selected `Chip` stays indigo. */
+.chips button[data-selected="true"] {
+  background: var(--color-bg-symptom);
+  color: var(--color-text-on-brand);
+  /* ⚠️ NO BORDER AT ALL, asked for directly 14 Sep 2026 — not a transparent
+     one. With the hairline merely transparent, `Chip`'s own indigo
+     `border-color` showed through whenever this rule's colour was off, and an
+     inset shadow is clipped to the PADDING box, so a transparent 1px ring would
+     sit outside the light below as a darker edge. The width goes to 0 and the
+     padding takes the pixel back (16 + 1), so the pill keeps `Chip`'s exact
+     box: `min-height` holds the 40 and the width is unchanged. */
+  border-width: 0;
+  padding: 0 calc(var(--space-lg) + var(--border-width-hairline));
+  /* ⚠️ A SOFT INNER LIGHT, tuned in DevTools and supplied directly the same
+     day: white at 38% (`#ffffff61`), 1px down and blurred 4px. It replaced a
+     crisp `inset 0 1px 0` edge. The hover rules below restate it, since
+     `Chip`'s hover shadow outranks this. */
+  box-shadow: inset 0 1px 4px #ffffff61;
+}
+
+.chips button[data-selected="true"]::before {
+  /* `Chip` insets the shade by the hairline to cover the border; with no
+     border it would hang 1px outside the pill */
+  inset: 0;
+  background: linear-gradient(
+    135deg,
+    transparent 35%,
+    color-mix(in srgb, var(--color-bg-symptom) 80%, var(--color-text-primary))
+      100%
+  );
+}
+
+/* ⚠️ NO HOVER ON THE SYMPTOM CHIPS — asked for directly 1 Oct 2026 ("remove
+   this hover effect"). `Chip`'s hover (0,3,0) brightened the glass over this
+   file's rose (0,2,1), so a picked symptom under the pointer turned white with
+   only its rose shade left at the right edge. Both states hold their resting
+   look under the pointer now: the rose stays rose, the frost stays frost and
+   its teal hairline stays teal. (0,4,1). */
+.chips button[data-selected="true"]:hover:not(:disabled) {
+  background: var(--color-bg-symptom);
+  box-shadow: inset 0 1px 4px #ffffff61;
+}
+
+/* ⚠️ AN UNSELECTED SYMPTOM IS FROSTED, asked for directly 14 Sep 2026: the
+   nav's `#dbeded` at 34% (`#dbeded57`) over a `blur/sm` backdrop blur, where
+   `Chip` draws an opaque `bg/frost-light-muted`. NOT IN FIGMA. (0,2,1) over
+   `.chip` (0,1,0); the hairline and the hover rose stay `Chip`'s and this
+   file's. The reduced-transparency fallback below is the opaque fill it
+   replaced. */
+/* ⚠️ AND IT CARRIES A SLIGHT SHADE, asked for directly 15 Sep 2026, "to match
+   the selected ones": the selected pill's 135deg darkening (`::before` above),
+   at half its strength — ink 10% where the selected shade mixes 20%. A
+   `background-image` on the pill rather than the fading `::before`, so it
+   drops out on select while the rose shade fades in over it. */
+.chips button[data-selected="false"] {
+  --chip-rest-shade: linear-gradient(
+    135deg,
+    transparent 35%,
+    color-mix(in srgb, var(--color-text-primary) 10%, transparent) 100%
+  );
+  background: var(--chip-rest-shade), #dbeded57;
+  /* ⚠️ THE HAIRLINE IS `surface/data-deep`'s TEAL, asked for directly 15 Sep
+     2026 from a supplied swatch, where `Chip` draws `border/chip`'s grey-green.
+     The hover rose below still replaces it. */
+  --chip-edge: var(--color-surface-data-deep);
+  -webkit-backdrop-filter: blur(var(--blur-sm));
+  backdrop-filter: blur(var(--blur-sm));
+}
+
+@media (prefers-reduced-transparency: reduce) {
+  .chips button[data-selected="false"] {
+    background: var(--chip-rest-shade), var(--color-bg-frost-light-muted);
+    -webkit-backdrop-filter: none;
+    backdrop-filter: none;
+  }
+}
+
+/* the unpicked chip's hover is gone too (see the note above) — it previewed
+   the rose in its hairline from 14 Sep 2026 */
+.chips button[data-selected="false"]:hover:not(:disabled) {
+  background: var(--chip-rest-shade), #dbeded57;
+  --chip-edge: var(--color-surface-data-deep);
+}
+
+@media (hover: none) {
+  .chips button[data-selected="true"]:hover:not(:disabled) {
+    box-shadow: inset 0 1px 4px #ffffff61;
+  }
+
+  .chips button[data-selected="false"]:hover:not(:disabled) {
+    --chip-edge: var(--color-surface-data-deep);
+  }
+}
+
+/* ⚠️ NOT IN FIGMA — THE INSTRUCTION UNDER THE QUESTION, asked for directly
+   14 Sep 2026. It says how the screen works now that places are marked one
+   symptom at a time (StartInvestigation.tsx). 12 under the title, the
+   title-to-body step every empty state already takes; the face card keeps 20
+   below it, so title, instruction, face and chips still read as one question. */
+.instruction {
+  margin: var(--space-md) 0 0;
+  color: var(--color-text-secondary);
+  text-align: center;
+}
+
+
+/* The two "tell us more" controls close the screen — a group boundary.
+   ⚠️ THE FACE DIAGRAM IS NOT ONE ANY MORE: with the chips moved under it (14
+   Sep 2026), it opens the question straight after the instruction, at the
+   within-question 20, where it used to start the second question at 40. */
 .other {
-  margin-top: var(--space-2xl); /* 24 */
+  margin-top: var(--space-4xl); /* 40 */
+}
+
+.diagram {
+  margin-top: var(--space-xl); /* 20 */
 }
 
 /* .other is the spacing wrapper for THREE states now — the collapsed button,
@@ -167,50 +326,255 @@
   color: var(--color-text-secondary);
 }
 
-/* the places row in the panel — `Mark where you notice <symptom>` beside
-   `Reset` and `Save` while a symptom is open, `Reset all` otherwise */
-.places {
+/* ⚠️ NOT IN FIGMA — THE `Save` / `Reset` / `Reset all` PILL under the face
+   card, asked for directly 14 Sep 2026 (see StartInvestigation.tsx). `md` (12)
+   under the card, so it reads as the card's own control rather than the next
+   question; the row centres it, since the pill's own `align-self: center` is
+   the tray's and does nothing across a row. */
+.reset {
+  position: relative;
+  z-index: 1; /* the undo floats over the pill, see AGENTS.md motion */
   display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: var(--space-sm);
-  min-height: var(--size-control-sm);
+  justify-content: center;
+  /* 20 under the chips (or the safety notice), the within-question step */
+  margin-top: var(--space-xl);
 }
 
-.placesHint {
-  margin: 0;
-  color: var(--color-text-secondary);
+/* ⚠️ THE PILL IS DRAWN AT 88% OF THE TRAY'S SIZE, asked for directly 14 Sep
+   2026 — "20% smaller" (0.8), then "10% bigger" than that (0.88), when it was
+   the two-option pill under the chips. `zoom` rather than new sizes because it
+   scales the label WITH its padding, its radius and its gap in one proportion
+   — the scaled label (16 → 14.1) is on no step of the type ramp. `zoom`, not
+   `transform`, so the layout box shrinks too. Only this caller: the tray and
+   the check-in record keep the full pill.
+   ⚠️ NOT IN FIGMA — A DROP SHADOW the tray's pill does not have:
+   `shadow/button`, with the track's own inward glow and top catch restated
+   before it, since `.toggle` draws those as a `box-shadow` too. Two classes
+   deep so it wins whichever module loads last; keep the insets in step with
+   `.toggle`. */
+/* ⚠️ RETUNED IN DEVTOOLS AND SUPPLIED DIRECTLY, 14 Sep 2026 — this caller
+   only; the tray and the check-in record keep `.toggle` as it is:
+     - no track fill (`#dbeded00`, the nav hue at 0), no backdrop blur and no
+       1px `border/glass` rim, so the pill sits on the page itself;
+     - the two insets are no longer white light: a grey `#64666942` glow
+       inward and a sage `#839ca530` shade under the top edge, so the track
+       reads as pressed into the page rather than lit on it.
+   The border is removed, not made transparent, as in DevTools, so the track
+   is 2px narrower and shorter than `.toggle`. */
+.reset > .placesToggle {
+  zoom: 0.88;
+  background: #dbeded00;
+  border: none;
+  -webkit-backdrop-filter: none;
+  backdrop-filter: none;
+  box-shadow:
+    inset 0 2px 12px #64666942,
+    inset 0 5px 8px #839ca530,
+    var(--shadow-button);
 }
 
-.placesHint b {
-  font-weight: var(--font-weight-medium);
-  color: var(--color-text-primary);
+/* ⚠️ A LIVE `Reset all` WEARS THE SECONDARY BUTTON'S COLOURS — NOT IN FIGMA,
+   asked for directly 14 Sep 2026 ("reset all button should have bg, use
+   secondary colors"). It was plain `text/secondary` ink on the track. It now
+   draws `SmallButton`'s secondary pill on the segment's own `::before`: the
+   `button/bg-secondary` gradient, `text/brand` ink, and the edge light at the
+   pale pills' strengths (`.edge` sets the indigo ones). No drop shadow and no
+   blur of its own, because the indigo `Save` pill beside it has neither. With
+   `Save` live as well, the track shows both: indigo for the symptom being
+   finished, secondary for the command that clears everything.
+   ⚠️ IT KEEPS ITS OWN PILL UNDER THE POINTER. The toggle moves its indigo pill
+   onto whichever segment is hovered; here the secondary gradient runs end for
+   end instead (non-negotiable 5), as `SmallButton`'s does. The hovered rules
+   sit one class above the toggle's (0,4,0) and (0,4,1). */
+/* ⚠️ BOTH LIVE RESETS ARE A TRANSPARENT BUTTON — 15 Sep 2026, asked for
+   directly, in three turns: `Reset all` lost its fill ("make this btn
+   transparent bg"), then for one turn lost its edge light too (a misreading —
+   "the transparent button disappeared"), and `Reset` takes the same button
+   the moment it becomes clickable ("add it to reset button also"). So a live
+   reset is the edge light's rim and glow around the words, in `text/brand`,
+   with no fill; the secondary pill fades in only under the pointer.
+   `:not(:first-child)` is `Reset` and `Reset all` — `Save` is the first
+   segment and keeps its indigo. A disabled reset matches nothing here and
+   stays the toggle's plain faded text. */
+.reset > .placesToggle button:not(:first-child):not(:disabled) {
+  color: var(--color-text-brand);
+  --shine-ink: var(--color-text-brand);
 }
 
-.placesActions {
-  display: flex;
-  flex: none;
-  gap: var(--space-group);
+.reset > .placesToggle button:not(:first-child):not(:disabled)::before {
+  opacity: 0;
+  --grad-start: var(--color-button-bg-secondary-start);
+  --grad-end: var(--color-button-bg-secondary-end);
 }
 
-/* `Reset all`'s undo takes the hint's place for 4s */
+/* the edge light at the pale pills' glow strengths — `.edge` sets the indigo
+   ones.
+   ⚠️ THE RING STILL SWEEPS, BUT NEVER DISAPPEARS — 16 Sep 2026, asked for
+   directly ("make these border shine more visible all around", then "not like
+   flat border … give gradient like before, the parts that were less visible
+   slightly more visible"). The default sweep falls to 0 between 40% and 60%,
+   so on these pale pills the ring vanished along the long edges.
+   ⚠️ IT IS THE SHARED `--edge-ring-all-round` NOW (globals.css), the same
+   day, when the gallery's photos and date pills took this ring ("reuse the
+   border we made for the reset button"). The values live there; this rule
+   only picks the ring, which is also why the two strengths are gone. */
+.reset > .placesToggle button:not(:first-child):not(:disabled) > :global(.edge-light) {
+  opacity: 1;
+  --edge-glow: 0.25;
+  --edge-catch: 0.35;
+  --edge-ring: var(--edge-ring-all-round);
+}
+
+@media (hover: hover) {
+  .reset > .placesToggle button:not(:first-child):not(:disabled):hover {
+    color: var(--color-text-brand);
+    --shine-ink: var(--color-text-brand);
+  }
+
+  /* the pill appears under the pointer rather than reversing — with no fill at
+     rest there is no gradient to run end for end */
+  .reset > .placesToggle button:not(:first-child):not(:disabled):hover::before {
+    opacity: 1;
+  }
+}
+
+/* ⚠️ AN INACTIVE `Save` KEEPS ITS INDIGO BUTTON, DIMMED — BUT ONLY WHILE
+   `Reset all` IS INACTIVE TOO, which is to say while nothing is selected.
+   Asked for directly 14 Sep 2026, to a supplied crop ("to this color i
+   meant"): `SegmentedToggle` drops a disabled primary segment's indigo pill
+   and edge light entirely, which left `Save` as loose faded text where the
+   button sits. Here the pill, its edge light and its white label all stay, and
+   the segment's own `opacity/disabled` (0.4) dims the whole button over the
+   track — the slate colour in the crop.
+   ⚠️ ONCE `Reset all` CAN BE PRESSED, A DISABLED `Save` IS PLAIN FADED TEXT
+   LIKE `Reset` — asked for directly later the same day, to a second crop: a
+   dimmed indigo beside the one live command pointed at the wrong button. The
+   `:has()` is that condition; without these three rules the toggle's own
+   disabled recipe applies.
+   ⚠️ IT WAS A FROSTED, THEN A NAV-FROST, THEN A PALE PILL FOR AN HOUR THE
+   SAME DAY; the crop settled it on the indigo.
+   ⚠️ THE GRADIENT ENDS ARE PINNED ON `::before`: `--grad-start` / `--grad-end`
+   are registered with `inherits: false` (globals.css), and
+   `.segment.selected:hover::before` would otherwise run a pill nobody can
+   press end for end under the pointer. The `:has()` only adds specificity, so
+   these still outrank `.segment.selected:disabled::before` (0,3,1), that
+   hover (0,3,1) and `.segment.selected:disabled > .edge` (0,4,0).
+   ⚠️ BELOW THE `Reset all` RULES ON PURPOSE: the two sets never match the
+   same button, but written first these tripped biome's descending-specificity
+   check. */
+.reset > .placesToggle:has(> button:last-child:disabled) button:first-child:disabled {
+  color: var(--color-text-on-brand);
+  --shine-ink: var(--color-text-on-brand);
+}
+
+.reset
+  > .placesToggle:has(> button:last-child:disabled)
+  button:first-child:disabled::before {
+  opacity: 1;
+  --grad-start: var(--color-gradient-brand-start);
+  --grad-end: var(--color-gradient-brand-end);
+}
+
+.reset
+  > .placesToggle:has(> button:last-child:disabled)
+  button:first-child:disabled
+  > :global(.edge-light) {
+  opacity: 1;
+}
+
+/* ⚠️ THE UNDO SITS ON THE PILL ITSELF — NOT IN FIGMA, asked for directly 14
+   Sep 2026 ("just over reset all, don't make the page move"). Absolutely
+   positioned and centred on the `Save` / `Reset` / `Reset all` pill, so it
+   takes no layout; floated in the 12 above, it covered the location chips.
+   Every command in the pill is disabled while the undo shows (nothing is
+   selected), so the pill steps out from under it rather than showing through
+   its frost. The frosted-nav pill recipe the app's `Snackbar` uses
+   (`surface/frost-nav`, the half-pixel white rim, `shadow/nav`), smaller, and
+   it rises 4px as it fades in on `duration/base`. */
+.reset[data-undo] > .placesToggle {
+  visibility: hidden;
+}
+
 .undo {
-  display: flex;
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  z-index: 1;
+  display: inline-flex;
   align-items: center;
-  justify-content: space-between;
   gap: var(--space-sm);
-  width: 100%;
-  transition: opacity var(--duration-base) var(--ease-standard);
+  padding: var(--space-xs) var(--space-xs) var(--space-xs) var(--space-lg);
+  border-radius: var(--radius-full);
+  border: 0.5px solid #ffffff54;
+  background: var(--color-surface-frost-nav);
+  box-shadow: var(--shadow-nav);
+  -webkit-backdrop-filter: blur(var(--blur-card)) saturate(160%);
+  backdrop-filter: blur(var(--blur-card)) saturate(160%);
+  white-space: nowrap;
+  transform: translate(-50%, -50%);
+  transition: opacity var(--duration-base) var(--ease-standard),
+    transform var(--duration-base) var(--ease-standard);
 }
 
 @starting-style {
   .undo {
     opacity: 0;
+    transform: translate(-50%, calc(-50% + 4px));
   }
 }
 
 .undoMessage {
   color: var(--color-text-secondary);
+}
+
+/* ⚠️ `Undo` WEARS THE SECONDARY BUTTON'S COLOURS — asked for directly 14 Sep
+   2026. It was a flat `bg/brand` indigo with `text/on-brand` ink. It now takes
+   `SmallButton`'s secondary recipe: the `button/bg-secondary` gradient, the
+   frost blur its translucent ends need, `shadow/button`, `text/brand` ink, and
+   the gradient run end for end on hover (non-negotiable 5). That is what the
+   app's `Snackbar` `Undo`, a `SmallButton`, already wears on the same frosted
+   pill. The 32 height and the `t-label` type stay this pill's. */
+.undoAction {
+  --grad-start: var(--color-button-bg-secondary-start);
+  --grad-end: var(--color-button-bg-secondary-end);
+  position: relative;
+  min-height: 32px;
+  padding: 0 var(--space-md);
+  border: 0;
+  border-radius: var(--radius-full);
+  background: linear-gradient(90deg, var(--grad-start) 0%, var(--grad-end) 100%);
+  box-shadow: var(--shadow-button);
+  -webkit-backdrop-filter: blur(var(--blur-card)) saturate(160%);
+  backdrop-filter: blur(var(--blur-card)) saturate(160%);
+  color: var(--color-text-brand);
+  cursor: pointer;
+  transition: --grad-start var(--duration-hover) var(--ease-hover),
+    --grad-end var(--duration-hover) var(--ease-hover);
+}
+
+.undoAction:hover {
+  --grad-start: var(--color-button-bg-secondary-end);
+  --grad-end: var(--color-button-bg-secondary-start);
+}
+
+@media (hover: none) {
+  .undoAction:hover {
+    --grad-start: var(--color-button-bg-secondary-start);
+    --grad-end: var(--color-button-bg-secondary-end);
+  }
+}
+
+/* the secondary ends turn opaque here (globals.css), so the blur goes too */
+@media (prefers-reduced-transparency: reduce) {
+  .undo,
+  .undoAction {
+    -webkit-backdrop-filter: none;
+    backdrop-filter: none;
+  }
+
+  .undo {
+    background: var(--color-bg-nav);
+  }
 }
 
 a.takePhoto,

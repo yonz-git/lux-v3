@@ -4,6 +4,7 @@ import "./globals.css";
 import "./vidgen.css";
 import { InvestigationProvider } from "@/lib/store/InvestigationProvider";
 import { RouteAnnouncer } from "@/components/layout/RouteAnnouncer";
+import { MotionObserver } from "@/components/layout/MotionObserver";
 import { SmoothScroll } from "@/components/layout/SmoothScroll";
 import { SnackbarProvider } from "@/components/layout/Snackbar";
 import { AppCanvas } from "@/components/layout/CanvasShader";
@@ -68,6 +69,7 @@ export default function RootLayout({
         {/* speaks each client-side navigation and moves focus into the new
             screen — the App Router provides neither. See the component. */}
         <RouteAnnouncer />
+        <MotionObserver />
         {/* eases the page's WHEEL scroll on every route — touch, keyboard and
             modals are left to the browser. See the component. */}
         <SmoothScroll />

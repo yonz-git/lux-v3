@@ -1,6 +1,6 @@
 "use client";
 
-import { useCallback, useEffect, useId, useRef, useState } from "react";
+import { useCallback, useEffect, useId, useRef, useState, type CSSProperties } from "react";
 import Link from "next/link";
 import styles from "./PhotoGallery.module.css";
 import { DataCard } from "@/components/ui/DataCard";
@@ -70,7 +70,7 @@ export function ProgressGallery({
   const titleId = useId();
 
   return (
-    <DataCard className={className} aria-labelledby={titleId}>
+    <DataCard className={className} aria-labelledby={titleId} data-motion>
       <div className={styles.cardHead}>
         <h2 id={titleId} className={`${styles.overline} t-overline`}>
           {TITLE}
@@ -89,8 +89,12 @@ export function ProgressGallery({
           aria-label={`Open ${TITLE.toLowerCase()}, ${photoCount(photos.length)}`}
           onClick={onOpen}
         >
-          {photos.slice(0, LATEST).map((p) => (
-            <span key={p.date} className={styles.thumb}>
+          {photos.slice(0, LATEST).map((p, i) => (
+            <span
+              key={p.date}
+              className={styles.thumb}
+              style={{ "--i": i } as CSSProperties}
+            >
               <CheckInPhotoArt seed={p.date} className={styles.art} />
             </span>
           ))}

@@ -1,153 +1,52 @@
-/* The skin profile as four tiles — NOT IN FIGMA, see SkinProfileTiles.tsx.
+/* The skin profile as four tiles — see SkinProfileTiles.tsx.
 
-   overline + its rule -> 12 -> four tiles, two a row, 6 apart. Height is
-   content. */
+   lux-v3 (1 Oct 2026): the panel (the global `canvas-card`, app/vidgen.css)
+   at DataCard's padding and radius, a `t-overline`, then four tiles two a row,
+   each a label over its glass pills. The v2 recipe (a 1.4rem card, an 18px
+   overline over a fading rule, outlined deep-teal pills) is in `git log -p`. */
 
 .card {
-  /* a stacking context of its own, so the ring and the grain below can sit at
-     `z-index: -1` — over the fill, under the words */
   position: relative;
-  isolation: isolate;
   display: flex;
   flex-direction: column;
-  /* ⚠️ NO GAP, AND 1.4rem (22.4) A SIDE — tuned by hand and supplied 14 Sep
-     2026. It was a 12 gap and the strip's 18 / 20; the overline's own 12
-     under its rule and the tiles' 12 top padding now carry the space
-     between them. ⚠️ 1.4rem is off the spacing scale and scales with the
-     root font size, unlike every `--space-*`; raise it if it stays. */
+  gap: var(--space-lg); /* 16 — DataCard's */
   width: 100%;
-  padding: 1.4rem;
-  border-radius: var(--radius-2xl); /* 24 — the strip's */
-
-  /* ⚠️ NO FILL, NO FROST, DARK INK — tuned by hand in DevTools and supplied,
-     14 Sep 2026 (the fourth pass). The card was white ink on a deep teal
-     glass: `#2c6e7a` at 76% under a five-layer mesh, over a desaturated
-     backdrop blur, at 3.6–5.3:1 for the white across its passes. The
-     background and both backdrop filters were switched off, which leaves
-     the card as bare canvas held by its shadows, edge ring and grain, and
-     the ink went dark. It was supplied as `#403838`, which is no LUX token
-     and sits off the app's indigo-grey hue, so the card binds the global
-     `text/primary` (`#2e2a3f`) instead (asked for: "if the font color is
-     wrong use the one that is global"). On bare canvas that is the app's
-     ordinary body ink, well clear of AA.
-     ⚠️ THE RIM IS AN INSET RING, NOT A `border` (the last shadow): it adds no
-     height (non-negotiable 9) and does not snap to a full pixel on a 1x
-     display. It is supplied fully transparent (`#1d1c2000`) and kept as the
-     slot to tune. */
+  padding: var(--space-gutter); /* 24 */
+  border-radius: var(--radius-panel); /* 28 */
   color: var(--color-text-primary);
-  /* ⚠️ NO TEXT SHADOW — removed 14 Sep 2026, asked for directly. From earlier
-     that day every word carried two dark-teal (`#14434c`) layers, a close
-     `0 1px 2px` at 45% and a `0 0 10px` haze at 35%, which read as depth
-     under white ink on the teal fill and as smudge under the dark ink on
-     bare canvas. */
-  /* ⚠️ NO BACKGROUND AND NO BACKDROP FILTER, 14 Sep 2026 — see the ink note
-     above. The mesh it replaced (a rose catch top-left, a teal haze from the
-     left, a pale pool low right, a light top-right and a deep corner, over
-     `#2c6e7ac2`, blurred and fully desaturated) went through five hand-tuned
-     passes that day; `git log -p` on this file has every value. */
-  /* ⚠️ THE SHADOW STACK, THE LIT EDGE RING (`::before`) AND THE 5% GRAIN
-     (`::after`) ARE THE GLOBAL `canvas-card` CLASS NOW — lifted to globals.css
-     14 Sep 2026, once PROGRESS's face and gallery cards and the profile
-     recap's blocks wore the same recipe. The TSX adds the class. The deeper
-     two-layer drop asked for that day ("add drop shadows to the profile box")
-     is in it unchanged. */
 }
 
-/* the strip's overline, in the card's ink — hierarchy by size and tracking,
-   not by a muted tier */
+@media (min-width: 1024px) {
+  .card {
+    padding: var(--space-panel); /* 32 */
+  }
+}
+
 .overline {
   margin: 0;
-  /* ⚠️ 18px, NOT `t-overline`'s 13 — asked for directly 14 Sep 2026, at 16 / 22,
-     then 20 / 26, then 18. The class keeps its weight, tracking and caps;
-     only the size and its line step up, to 18 / 24 (the 16's 1.375 ratio,
-     rounded down to a whole pixel). Off the type ramp: no Figma style has an
-     overline at 18, so raise one if it stays. */
-  /* ⚠️ 17 / 23 — 22 / 28 and then 20 / 26 for a turn each, stepped back down
-     2px at a time to 18 / 24, asked for directly 14 Sep 2026; then 1px
-     smaller, asked for directly 15 Sep 2026, the line following it; then 1px
-     smaller again, 16 / 22, asked for directly 16 Sep 2026 */
-  font-size: 16px;
-  line-height: 22px;
-  /* ⚠️ A GRADIENT RULE UNDER IT, IN THE INK — asked for directly 14 Sep 2026
-     from a supplied reference: a streak with a faint glow around it, ANCHORED
-     LEFT, strongest under the start of the heading and fading to nothing
-     toward the right. Two layers — a hairline over a 3px band of it at 25%
-     for the glow, fading out the same way. ⚠️ It was `effect/rim-highlight`
-     white while the card was dark teal glass; it is `currentColor` now, so
-     it is always the heading's own ink ("change the gradient border to the
-     font color"). Backgrounds, not a `border`, because a border cannot fade.
-     12 under the words; the card has no gap, so the 12 above the tiles'
-     text is the tiles' own top padding. */
-  padding-bottom: var(--space-md); /* 12 */
-  /* ⚠️ THINNER, 15 Sep 2026, asked for directly ("this border a bit
-     thinner"): the glow band 3px → 2px, with the hairline on its bottom pixel
-     rather than 1px up inside it — the rule now reads as one fine line with a
-     1px halo above it, where it read as a 2–3px bar. */
-  background:
-    linear-gradient(90deg, currentColor, transparent)
-      left bottom / 100% var(--border-width-hairline) no-repeat,
-    linear-gradient(
-        90deg,
-        color-mix(in srgb, currentColor 25%, transparent),
-        transparent 80%
-      )
-      left bottom / 100% 2px no-repeat;
+  color: var(--color-text-secondary);
 }
 
-/* ⚠️ TWO TILES A ROW AT EVERY WIDTH — asked for directly 14 Sep 2026, when
-   `Symptoms state` made it four. Before that it was three in a row, which
-   gave each tile 72 at 320 (`Acne-prone` broke at its hyphen), and then
-   stacked on mobile, which pushed `Start analysis` below the fold at 440.
-   `minmax(0, 1fr)` keeps a long answer from widening its column; it wraps
-   inside the tile instead. */
+/* two tiles a row at every width; `minmax(0, 1fr)` keeps a long answer from
+   widening its column — it wraps inside the tile instead */
 .tiles {
   display: grid;
   grid-template-columns: repeat(2, minmax(0, 1fr));
-  /* ⚠️ 6, OFF THE SCALE — the scale's 8 less 2, asked for directly 14 Sep
-     2026 */
-  gap: calc(var(--space-sm) - 2px); /* 6 */
-  /* ⚠️ 14 + the tile's 6 top = 20 under the overline's rule — asked for
-     directly 14 Sep 2026 ("more bottom space below border"); it was 6 + 6 = 12.
-     14 is off the scale: the tile's 6 is, and the sum lands on `space/xl`. */
-  margin: calc(var(--space-xl) - var(--space-md) / 2) 0 0; /* 14 */
+  gap: var(--space-xl) var(--space-lg); /* 20 / 16 */
+  margin: 0;
 }
 
-/* ⚠️ THE TILE IS DRAWN BY NOTHING NOW — spacing and a radius only. It went
-   through four looks on 14 Sep 2026, each tuned by hand or asked for
-   directly: transparent with a backdrop blur, sunken under an inset shadow,
-   flat 7% black, and now no fill at all, since the answers became pills.
-   The 7% black was what lifted the tile text to 4.80:1; with it gone the
-   labels sit on the card's own fill (see `.card`). The blur could never
-   show — the card's own `backdrop-filter` makes it the backdrop root.
-   ⚠️ LABEL OVER ANSWER, LEFT-ALIGNED, AT EVERY WIDTH — the strip's own pair,
-   asked for directly. It was centred for a while, and one line (label left,
-   answer right) on desktop for a turn; both are gone.
-   ⚠️ 8 A SIDE. The left was 8 plus 2, then 8 plus 4, for a turn each, and
-   came back to 8 by hand. */
-/* ⚠️ A WRAPPING ROW, NOT A COLUMN — 16 Sep 2026, when a set's members became
-   one pill each (see the TSX). The label takes the whole first line, and the
-   pills flow after it, 6 apart (the tiles' own gap) and wrapping when the
-   tile runs out: every pill row, the first included, sits the same 2 + 0.3rem
-   under the one above it.
+/* the label takes the first line and the pills flow after it, wrapping.
    ⚠️ `align-content: flex-start` IS LOAD-BEARING: the grid stretches a
-   one-pill tile to the height of a two-pill tile beside it, and a wrapping
-   flexbox's default shares that extra height between its lines, which pushed
-   `Not set` 20px down from its label. */
+   one-pill tile to its neighbour's height, and a wrapping flexbox would share
+   that height between its lines. */
 .tile {
   display: flex;
   flex-flow: row wrap;
   align-content: flex-start;
   align-items: flex-start;
-  gap: var(--space-2xs) calc(var(--space-sm) - 2px); /* 2 — the strip's label-to-value / 6 */
+  gap: var(--space-xs); /* 4 */
   min-width: 0;
-  /* ⚠️ 6 ON TOP, 4 UNDER THE ANSWER — asked for directly 14 Sep 2026, in
-     three turns: a row's pills sat 12 + 6 + 12 = 30 above the next row's
-     labels, then 4 + 6 + 12 = 22, then 4 + 6 + 0 = 10 ("too tight"), now
-     4 + 6 + 6 = 16 — half the 12 back. `.tiles`' margin makes up the rest of
-     the first row's 12 under the overline's rule. */
-  padding: calc(var(--space-md) / 2) var(--space-sm) var(--space-xs); /* 6 / 8 / 4 */
-  border-radius: var(--radius-xl); /* 20 */
-  background: none;
 }
 
 .tileLabel,
@@ -155,116 +54,32 @@
   margin: 0;
 }
 
-/* the label's own line, so the pills start under it */
 .tileLabel {
   flex-basis: 100%;
+  margin-bottom: var(--space-xs); /* 4 + the gap's 4 = 8 to the pills */
+  color: var(--color-text-muted);
 }
 
-/* ⚠️ THE ANSWER IS A FILLED FROSTED PILL, TUNED BY HAND AND SUPPLIED 14 Sep
-   2026: a lighter teal `#56848d` at 85% over a 7px blur, a hairline rim in
-   `border/glass` (the System B divider's white) and a faint light catching
-   the top inside, set in `t-body3` like its label. 4 / 14 / 6 padding — a
-   touch heavier at the bottom, for the optical centre — and 0.3rem (4.8)
-   below the label, on top of the tile's 2 gap. `align-self: flex-start`
-   hugs the words; `radius/full` is every LUX pill. No token for the fill,
-   the 7px or the 0.3rem; raise them.
-   ⚠️ IT WAS "NO FILL" FIRST, asked for directly, and it briefly carried a
-   blur with no fill — which, inside the card's backdrop root, sampled the
-   card's teal and read as an unintended darker chip. The fill is chosen now,
-   and the blur under it is part of the look rather than a way to see the
-   canvas: it still only ever sees the card.
-   ⚠️ WHITE ON THE PILL DOES NOT CLEAR AA. Hand-composited, pill over card
-   over each canvas ramp stop: 4.29:1 on the floor `#acc5cc` down to 4.16:1
-   on the lightest core `#ecf8f9`, for 14px text that needs 4.5:1. The fill
-   is lighter than the card it sits on, so it costs the answers contrast;
-   a pill at or below the card's own darkness would restore it. */
-/* ⚠️ OUTLINED, NOT FILLED — 24 Sep 2026, asked for directly: "static data
-   looks tappable … give data tags an outlined style and keep solid indigo for
-   actions only". The pill was solid `bg/brand` with white ink, which is the
-   `Check in today` button's own dark end and `Chip`'s selected state, so on
-   `/progress` four read-only answers sat beside a primary button wearing its
-   colour. An outline keeps the indigo as the app's one accent while saying
-   the pill is a READING, not a control.
-   ⚠️ THE RING IS AN INSET SHADOW, NOT A `border`: it adds no height, so the
-   4 / 14 / 6 padding is untouched and the pills sit where they did
-   (non-negotiable 9). At 45% the ring is visible without drawing as a
-   control's edge; the ink is the full token.
-   ⚠️ CONTRAST IMPROVES: `face-pill-selected-core` (#1c2b30) on the card's
-   bare canvas measures 13.47:1 on the lightest ramp stop (#ecf8f9) and 8.08:1
-   on the floor (#acc5cc), where the white-on-indigo pill sat at 4.16–4.29:1
-   against the 4.5:1 that 14px text needs. ⚠️ The glass's own
-   `face-pill-selected-deep` (#3e5963) was the other candidate and measures
-   4.13:1 on the floor — under AA for 14px, which is why the CORE is the one
-   bound here. No blur: there is no fill left to frost, which
-   also drops this component out of the reduced-transparency case below. */
+/* ⚠️ A READING, NOT A CONTROL: glass at 32, where every chip is 44 and the
+   selected chip is indigo. No hover, no press, no indigo. */
 .tileValue {
-  align-self: flex-start;
+  display: inline-flex;
+  align-items: center;
   max-width: 100%;
-  margin-top: 0.3rem;
-  /* ⚠️ THE FACE PILL'S DEEP CORE, NOT INDIGO AT ALL — 25 Sep 2026, asked for
-     directly ("use the active tone of this, the darkest") against a selected
-     region pill. It went `bg/brand` → `bg/brand-hover` → `indigo/900` → this
-     in four turns. `face-pill-selected-core` (#1c2b30, globals.css) is the
-     value every stop of that selected glass is deepened toward, so a read-only
-     answer now reads in the same family as a picked location and in NEITHER
-     of the action indigos. The ring below takes it at 45%, so the pill is one
-     colour at two strengths. */
-  color: var(--color-face-pill-selected-core);
-  /* ⚠️ 5.5 / 4.5, NOT 4 / 6 — 25 Sep 2026, asked about directly ("the top
-     space is less than the bottom"), and the eye was right: the 4 / 6 was
-     written for the optical centre of a FILLED pill, but `t-body3`'s 22 line
-     box already carries 4 of half-leading above the glyphs and 5 below
-     (14px text in a 22 line box, ascent 10 / descent 0.2 on a capitalised
-     word), so 4 / 6 measured 6 above the ink and 9 below. Half a pixel each
-     way from an even 5 / 5 lands both gaps on 7.5. The height is still 32,
-     so no row moves. */
-  padding: 5.5px 14px 4.5px;
+  min-height: 32px;
+  /* a one-word answer wider than its tile (`Combination` at 320 under the
+     1.4.12 spacing overrides) breaks inside the pill rather than spilling */
+  overflow-wrap: anywhere;
+  padding: 0 var(--space-md); /* 12 */
   border-radius: var(--radius-full);
-  /* ⚠️ A FROSTED FILL, SLIGHTLY BRIGHTER THAN THE CARD — 25 Sep 2026, asked
-     for directly ("give frosted bg that is slightly brighter"). The pill was
-     `background: none` from the outline pass. `surface/frost-light` is the
-     app's pale frost (`#f4feff` at 55%) and it is what every light frosted
-     surface here binds; over the card's bare canvas it lifts the pill about a
-     ramp stop without becoming a fill you could mistake for a control's.
-     The 8 blur is `blur-sm`, the face pills' own. The ink is unaffected
-     (9.89:1 or better over the lit pill), and the ring stays the mark that
-     says "readout". */
-  /* ⚠️ AND 60% OF THAT TOKEN, 25 Sep 2026 — asked for directly ("give more
-     transparency to these pills"): 55% → about 33% white over the card. The
-     multiple, not a new rgba, so a retune of the token still carries. */
-  background: color-mix(
-    in srgb,
-    var(--color-surface-frost-light) 60%,
-    transparent
-  );
-  -webkit-backdrop-filter: blur(var(--blur-sm));
-  backdrop-filter: blur(var(--blur-sm));
-  /* ⚠️ 1.5, NOT `border-width-hairline` — 25 Sep 2026: 1 → 1.5 → 2, each
-     asked for directly, then back half a pixel ("make it 0.5px thinner").
-     Written as the token + 0.5 so it follows a retune of the hairline; it is
-     still an inset shadow, so the extra half pixel costs no height. */
-  box-shadow: inset 0 0 0 calc(var(--border-width-hairline) + 0.5px)
-    color-mix(in srgb, var(--color-face-pill-selected-core) 45%, transparent);
+  border: var(--border-width-hairline) solid var(--color-border-glass);
+  background: var(--color-glass-strong);
+  box-shadow: var(--shadow-glass);
+  color: var(--color-text-primary);
 }
 
-/* `Started <date> · Day <n>` under the state's pill — see SkinProfileTiles.tsx.
-   In the card's white like the labels, not a dimmer tier: the labels already
-   sit under AA on this fill, and a muted white would only go further under.
-   6 under the pill (the tile's 2 gap + 4). */
-/* non-negotiable 11 — the card itself has no fill or frost any more, so it has
-   nothing to make opaque; only the grain goes. ⚠️ The PILLS are now the
-   translucent surface: with the card's backdrop root gone their 7px blur
-   sees the canvas. `#658e96` is `#56848dd9` composited over the darkened
-   canvas's mid stop (about `#b9c8cb`). (Until 14 Sep 2026 this block gave the
-   card an opaque `#538993`, which under the dark ink would read as dark on
-   dark.) */
-/* non-negotiable 11: the pill's frost goes opaque. `bg/frost-light` is
-   `surface/frost-light` made opaque — the same colour — and the card's grain
-   goes in `canvas-card`'s own reduced-transparency rule. */
 @media (prefers-reduced-transparency: reduce) {
   .tileValue {
-    background: var(--color-bg-frost-light);
-    -webkit-backdrop-filter: none;
-    backdrop-filter: none;
+    background: var(--color-glass-strong); /* opaque under this query */
   }
 }

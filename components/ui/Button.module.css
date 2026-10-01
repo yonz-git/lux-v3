@@ -34,8 +34,27 @@
     --grad-end var(--duration-hover) var(--ease-hover);
 }
 
+/* the label sits in its own element so the shine can cross the whole word */
 .label {
   display: inline-block;
+}
+
+/* v2's primary hover (see Button.tsx): the rim and shine read these.
+   The shine's ink is the label's own white; the specular streak is 3px with
+   a near-white core, its shoulders the pill's gradient ends 65% toward white;
+   the fixed edge light is only its 1px ring (no inner glow), lit stop 0.54. */
+.button:not(.secondary) {
+  --shine-ink: #fff;
+  --specular-width: 3px;
+  --specular-core: 90%;
+  --specular-a: color-mix(in oklab, #485780, white 65%);
+  --specular-b: color-mix(in oklab, #313560, white 65%);
+  --edge-ring-lit: 0.54;
+  --edge-ring-dim: 0.45;
+}
+
+.button:not(.secondary) :global(.edge-light) {
+  box-shadow: none;
 }
 
 .button:hover:not(:disabled) {

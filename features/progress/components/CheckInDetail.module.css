@@ -342,6 +342,8 @@
 }
 
 .removeIcon {
+  /* 20 box; the ✕ draws at 60% of it, 12 — the app-wide close size
+     (app/vidgen.css), which replaced the half-size asked for here first */
   width: var(--size-icon-sm); /* 20 */
   height: var(--size-icon-sm);
 }

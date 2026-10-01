@@ -613,6 +613,9 @@ export function FaceDiagram(props: FaceDiagramProps) {
     <div
       ref={cardRef}
       className={styles.card}
+      /* the entrance — the drawing, then the pills, then the callouts; see
+         "THE FACE ENTRANCE" in app/vidgen.css */
+      data-motion="face"
       onPointerDown={(e) => {
         touching.current = e.pointerType === "touch";
       }}
@@ -632,6 +635,7 @@ export function FaceDiagram(props: FaceDiagramProps) {
             lights only the lines. */}
         <span
           className={styles.form}
+          data-part="art"
           aria-hidden="true"
           style={
             {
@@ -677,6 +681,7 @@ export function FaceDiagram(props: FaceDiagramProps) {
                   <g key={`${c.symptom}-${r.id}`}>
                     <line
                       className={styles.leader}
+                      data-part="leader"
                       data-lit={lineLit(c, r) || undefined}
                       x1={pct(r.x)}
                       y1={pct(r.y)}
@@ -688,6 +693,7 @@ export function FaceDiagram(props: FaceDiagramProps) {
                     {r.id === NECK.id && (
                       <circle
                         className={styles.anchor}
+                        data-part="anchor"
                         data-lit={lineLit(c, r) || undefined}
                         cx={pct(r.x)}
                         cy={pct(r.y)}
@@ -702,6 +708,7 @@ export function FaceDiagram(props: FaceDiagramProps) {
               <span
                 key={c.symptom}
                 className={`${styles.symptom} t-label-sm`}
+                data-part="callout"
                 data-side={c.side}
                 data-lit={litCallouts.includes(c) || undefined}
                 style={{ top: pct(c.y) }}
@@ -715,11 +722,13 @@ export function FaceDiagram(props: FaceDiagramProps) {
             ))}
           </div>
         )}
-        {REGIONS.map((r) => {
+        {REGIONS.map((r, i) => {
           const position = {
             left: `${r.x * 100}%`,
             top: `${r.y * 100}%`,
-          };
+            /* the entrance's order (app/vidgen.css, "THE FACE ENTRANCE") */
+            "--i": i,
+          } as CSSProperties;
 
           /* The read-only pill is a `span`, not a disabled `button`. Disabled
              is a control the user cannot use yet; this is not a control at
@@ -730,6 +739,7 @@ export function FaceDiagram(props: FaceDiagramProps) {
               data-selected={selected.includes(r.id)}
               data-lit={litRegions.has(r.id) || undefined}
               className={`${styles.region} t-label-sm`}
+              data-part="region"
               style={position}
               data-tap-light
               onPointerEnter={enter({ region: r.id })}
@@ -748,6 +758,7 @@ export function FaceDiagram(props: FaceDiagramProps) {
               data-lit={litRegions.has(r.id) || undefined}
               disabled={disabled}
               className={`${styles.region} t-label-sm`}
+              data-part="region"
               style={position}
               onClick={() => props.onToggle(r.id)}
               onPointerEnter={enter({ region: r.id })}

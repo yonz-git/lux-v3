@@ -1,8 +1,12 @@
 /* ⚠️ lux-v3, 1 Oct 2026 — A DATA CARD IS VIDGEN'S PANEL. The frost box inside
-   the AI Assistant sheet (`.vg-panel` in app/vidgen.css): `surface/frost-light`
-   (#f4feff @55%), a 1px glass edge, a white inset rim, 12 blur, radius 28,
+   the AI Assistant sheet (`.vg-panel` in app/vidgen.css): `--color-panel`
+   (#f4feff @30%), a 1px panel edge, a white inset rim, 12 blur, radius 28,
    24 padding (32 on desktop — the reference's ~30). The sage `surface/data`
-   card described below is history; the ink stays the app's dark ink. */
+   card described below is history; the ink stays the app's dark ink.
+   ⚠️ 30%, NOT `surface/frost-light`'s 55% — the canvas review took the
+   question panels down ("too white and bright") and the Progress and Check
+   cards followed when their components were built, so one page never mixes
+   the two strengths. */
 
 /* The sage data card — SURFACE SYSTEM B. See DataCard.tsx for the full recipe
    and for why it is not the frosted-row recipe with a different fill. */
@@ -21,18 +25,10 @@
   border-radius: var(--radius-panel); /* 28 */
 
   /* ⚠️ NO BORDER. A data card has no stroke — see the doc comment. */
-  background: var(--color-surface-frost-light);
-  border: var(--border-width-hairline) solid var(--color-border-glass);
-  /* ⚠️ THE INSET IS `--shadow-frosted-row` — THE FACE DIAGRAM CARD'S OWN
-     SHADOW, NOT A NEW VALUE. Decided here, NOT IN FIGMA: `--shadow-frosted-data`
-     was a drop shadow alone, so a translucent sage card had nothing carrying
-     non-negotiable 11's "a translucent fill always needs its inner shadow" —
-     every other frosted surface in the app (`.frosted-row`, the face diagram's
-     own card) already does. Layering the existing token on top keeps the
-     drop shadow's outer lift and adds the same inset every other frosted
-     surface already carries, rather than inventing a second shadow value for
-     one more surface. */
-  box-shadow: var(--shadow-panel);
+  background: var(--color-panel);
+  border: var(--border-width-hairline) solid var(--color-border-panel);
+  /* the panel's white rim along the top — non-negotiable 11's inner light */
+  box-shadow: inset 0 1px 0 var(--color-rim-panel);
   -webkit-backdrop-filter: blur(12px);
   backdrop-filter: blur(12px);
 

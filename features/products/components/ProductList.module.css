@@ -24,25 +24,14 @@
   padding: calc(14px * 1.1) calc(18px * 1.1);
   text-align: left;
 
-  border-radius: var(--radius-lg);
-  /* ⚠️ THE PRODUCTS HUB'S CARD COLOUR, asked for directly 15 Sep 2026 ("change
-     the bg color like the products cards in product page"). A hub card is
-     `surface/frost-light` at 40% sitting on its group's `surface/frost-nav`
-     box; this row has no group under it, so it paints both layers itself —
-     the group's fill as the colour and the card's thin white as an image over
-     it — and lands on the same pale mint without depending on what is behind
-     it. It was `surface/frost-light` at full strength, which read grey here. */
-  background-color: var(--color-surface-frost-nav);
-  background-image: linear-gradient(
-    color-mix(in srgb, var(--color-surface-frost-light) 40%, transparent),
-    color-mix(in srgb, var(--color-surface-frost-light) 40%, transparent)
-  );
-  /* ⚠️ `shadow/frosted-row` at 15%, asked for directly 15 Sep 2026 ("match
-     inner shadows like on the products page") — the depth the PRODUCTS hub's
-     groups and cards took the same day. The token stays 10% (globals.css). */
-  box-shadow: inset 2px 4px 9px rgba(0, 0, 0, 0.15);
-  -webkit-backdrop-filter: blur(var(--blur-card));
-  backdrop-filter: blur(var(--blur-card));
+  /* lux-v3: the 30% panel at 24 (app/vidgen.css), as the PRODUCTS hub's
+     groups and the score cards. The v2 two-layer mint is in `git log -p`. */
+  border-radius: var(--radius-2xl); /* 24 */
+  border: var(--border-width-hairline) solid var(--color-border-panel);
+  background: var(--color-panel);
+  box-shadow: inset 0 1px 0 var(--color-rim-panel);
+  -webkit-backdrop-filter: blur(12px);
+  backdrop-filter: blur(12px);
 }
 
 /* ---- the expandable row -------------------------------------------------
@@ -140,11 +129,12 @@
   min-height: 52px;
   color: var(--color-text-primary);
 
-  border-radius: var(--radius-lg);
-  background: var(--color-surface-frost-light);
-  box-shadow: var(--shadow-frosted-row);
-  -webkit-backdrop-filter: blur(var(--blur-card));
-  backdrop-filter: blur(var(--blur-card));
+  border-radius: var(--radius-full); /* a control: the glass pill shape */
+  border: var(--border-width-hairline) solid var(--color-border-panel);
+  background: var(--color-panel);
+  box-shadow: inset 0 1px 0 var(--color-rim-panel);
+  -webkit-backdrop-filter: blur(12px);
+  backdrop-filter: blur(12px);
 }
 
 .plus {
@@ -161,10 +151,11 @@
   padding: var(--space-3xl) 0;
 
   border-radius: var(--radius-2xl);
-  background: var(--color-surface-frost-light);
-  box-shadow: var(--shadow-frosted-row);
-  -webkit-backdrop-filter: blur(var(--blur-card));
-  backdrop-filter: blur(var(--blur-card));
+  border: var(--border-width-hairline) solid var(--color-border-panel);
+  background: var(--color-panel);
+  box-shadow: inset 0 1px 0 var(--color-rim-panel);
+  -webkit-backdrop-filter: blur(12px);
+  backdrop-filter: blur(12px);
 }
 
 /* ⚠️ NOT IN FIGMA — the box as an empty category group opens it, inside that
@@ -190,7 +181,7 @@
   .row,
   .add,
   .empty {
-    background: var(--color-bg-surface-frost);
+    background: var(--color-panel);
     -webkit-backdrop-filter: none;
     backdrop-filter: none;
   }

@@ -89,20 +89,19 @@
    come from the global `canvas-card` class the TSX adds; see the note at the
    top. No border any more, so the padding is the plain 20 (24 on desktop). */
 .block {
-  padding: var(--space-xl); /* 20 */
-  border-radius: var(--radius-2xl);
+  /* lux-v3: the panel's padding and radius (DataCard's), as the surface is
+     the panel now (`canvas-card`, app/vidgen.css) */
+  padding: var(--space-gutter); /* 24 */
+  border-radius: var(--radius-panel); /* 28 */
 }
 
-/* ⚠️ 15 / 20 — `t-overline`'s 13 / 18 up 2px, PROGRESS's face and gallery
-   overlines (14 Sep 2026) */
+/* `t-overline` at its own size, as every card overline in lux-v3 */
 .blockLabel {
   /* ⚠️ 16 UNDER, NOT 12 — asked for directly 15 Sep 2026 ("more bottom
      padding, match the gallery card"): `DataCard`'s own 16 gap, which is what
      PROGRESS's gallery and face overlines sit on */
   margin: 0 0 var(--space-lg); /* 16 */
   color: var(--color-text-muted);
-  font-size: 15px;
-  line-height: 20px;
 }
 
 /* ---------------------------------------------------------------------------

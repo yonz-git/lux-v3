@@ -19,7 +19,7 @@
 .arrows {
   display: flex;
   align-items: center;
-  gap: var(--space-sm); /* 8 */
+  gap: var(--space-group); /* 4 */
 }
 
 /* The glyph is 20 in the comp, but a 20 tap target is not one. The button
@@ -27,17 +27,19 @@
    sides, exactly as HubScreen's back chevron does — the 26-tall header row must
    not grow to fit it. */
 .arrow {
+  /* lux-v3 (Calendar A, canvas): a 44 glass circle with the glyph in indigo */
   display: inline-flex;
   align-items: center;
   justify-content: center;
   width: var(--size-touch-target);
   height: var(--size-touch-target);
-  margin: calc((var(--size-icon-sm) - var(--size-touch-target)) / 2);
-  /* ⚠️ the UA button padding is 1px 6px, not zero (non-negotiable 13) */
   padding: 0;
   border-radius: var(--radius-full);
-  color: var(--color-icon-on-data);
-  transition: opacity var(--duration-fast) var(--ease-hover);
+  border: var(--border-width-hairline) solid var(--color-border-glass);
+  background-color: var(--color-glass);
+  box-shadow: var(--shadow-glass);
+  color: var(--color-bg-brand);
+  transition: background-color var(--duration-fast) var(--ease-hover);
 }
 
 .arrowIcon {
@@ -46,7 +48,7 @@
 }
 
 .arrow:hover {
-  opacity: 0.7;
+  background-color: var(--color-glass-strong);
 }
 
 @media (hover: none) {
@@ -91,24 +93,26 @@
 
 .weekday {
   display: block;
-  color: var(--color-text-on-data-muted);
+  color: var(--color-text-muted);
 }
 
 /* 4 above EVERY row, including the first — which is also the 4 the comp puts
    between the header row and week 1. With the 32 disc that makes each row 36
    and every gap 4, with no :first-child special case. */
 .cell {
-  height: 32px;
+  /* a 36 disc centred in a 40 row, 4 between rows (Calendar A) */
+  height: 44px;
   padding: var(--space-xs) 0 0;
   text-align: center;
+  vertical-align: middle;
 }
 
 .day {
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  width: 32px;
-  height: 32px;
+  width: 36px;
+  height: 36px;
   border-radius: var(--radius-full);
   /* ⚠️ LINING FIGURES, OR THE GRID WOBBLES. Figtree's default figures are
      proportional, so `1` is narrower than `0` and a 7-column month does not
@@ -118,7 +122,7 @@
   font-variant-numeric: tabular-nums;
   /* the unremarkable days sit back at 85% so the checked-in discs carry the
      card; on-data-muted would drop them below the weekday header */
-  color: var(--color-text-on-data-secondary);
+  color: var(--color-text-secondary);
 }
 
 /* the accent on a data card is indigo bg/brand — the handoff's rule for
@@ -136,25 +140,22 @@
   color: var(--color-text-on-brand);
 }
 
-/* ⚠️ NOT IN FIGMA — THE TODAY RING IS WHITE AT 15%, asked for directly 13 Sep
-   2026. At full white the ring was the brightest mark on the sage card, louder
-   than the indigo discs it exists to sit beside; today is context, the discs
-   are the record. `--today-ring` is shared with the legend key below so the
-   key keeps mirroring the day exactly. ⚠️ At 15% the ring is decorative, not
-   a contrast-bearing edge — "today" is also named in the legend, so the state
-   is not carried by this ring alone.
-   ⚠️ RAISED TO 50% ON 15 Sep 2026, asked for directly ("make this white circle
-   more visible") — at 15% the legend key all but vanished on the card. It is
-   still under full white, so the indigo discs stay the loudest mark, and the
-   day's ring rises with the key because the two share this variable. */
-.grid,
-.legend {
-  --today-ring: color-mix(in srgb, var(--color-text-on-data-inverse) 50%, transparent);
+/* a day still to come steps back to the muted ink (Calendar A) */
+.day[data-future] {
+  color: var(--color-text-muted);
 }
 
+/* ⚠️ TODAY IS AN INDIGO RING ON STRONGER GLASS, lux-v3 (Calendar A, canvas,
+   1 Oct 2026). It was a white ring at 15% then 50% on the sage card; on the
+   30% panel a white ring has nothing to stand against. Indigo is the one
+   colour that means "this one" here, and the legend names the ring too, so
+   the state is not carried by the ring alone. The key below draws the same. */
 .day[data-today] {
-  border: var(--border-width-thin) solid var(--today-ring); /* 1.5 */
-  color: var(--color-text-on-data);
+  /* today: the glass a step stronger, ringed and inked in indigo */
+  background: var(--color-glass-strong);
+  box-shadow: inset 0 0 0 var(--border-width-thin) var(--color-bg-brand); /* 1.5 */
+  color: var(--color-bg-brand);
+  font-weight: var(--font-weight-semibold);
 }
 
 /* ⚠️ CHECKED IN **AND** TODAY — a state that could not happen until the daily
@@ -169,10 +170,14 @@
    indigo disc. The day the user just recorded was the one day whose number you
    could not read.
 
-   Two attributes outrank one, so this restores the on-brand white the indigo
-   fill requires while `[data-today]`'s ring stays on top of it. The ring is
-   `border/glass`, i.e. white-ish, so it still reads against bg/brand. */
+   Two attributes outrank one, so this restores the indigo fill and the
+   on-brand white it requires, and swaps today's indigo ring for a white one
+   that still reads against bg/brand. */
 .day[data-today][data-checked-in] {
+  background: var(--color-bg-brand);
+  /* the indigo ring would vanish on the indigo disc — a white one inside it */
+  box-shadow: inset 0 0 0 var(--border-width-thin)
+    color-mix(in srgb, var(--color-text-on-brand) 60%, transparent);
   color: var(--color-text-on-brand);
 }
 
@@ -252,12 +257,36 @@
 }
 
 .dot[data-today] {
-  border: var(--border-width-thin) solid var(--today-ring);
+  box-shadow: inset 0 0 0 var(--border-width-thin) var(--color-bg-brand);
 }
 
 .legendLabel {
-  color: var(--color-text-on-data-muted);
+  color: var(--color-text-muted);
 }
 
 /* the `Day 16` pill that sat at the legend's right end for an hour on 15 Sep
    2026 is `SymptomTrend`'s now */
+
+/* ============================================================================
+   THE ENTRANCE — 1 Oct 2026, asked for directly (see MotionObserver.tsx).
+   The first time the card is in view the month fills in row by row: each day
+   fades up 6px, 12ms after the one before it, and a checked-in day's cell
+   also grows from 0.7 so the discs arrive as marks rather than as text.
+   On the CELL, not the `.day` — the disc carries its own hover and
+   just-checked-in landing transitions, which this must not override.
+   ========================================================================== */
+.cell {
+  transition-property: opacity, translate, scale;
+  transition-duration: var(--duration-slow);
+  transition-timing-function: var(--ease-standard);
+  transition-delay: calc(120ms + var(--i, 0) * 12ms);
+}
+
+[data-motion]:not([data-inview]) .cell {
+  opacity: 0;
+  translate: 0 6px;
+}
+
+[data-motion]:not([data-inview]) .cell[data-disc] {
+  scale: 0.7;
+}

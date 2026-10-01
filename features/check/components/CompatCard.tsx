@@ -1,178 +1,211 @@
 "use client";
 
-import { useId, useState } from "react";
+import { type CSSProperties, useState } from "react";
 import styles from "./CompatCard.module.css";
-import { Collapse } from "@/components/ui/Collapse";
-import { ChevronDownIcon, CloseIcon } from "@/components/ui/icons";
+import { Sheet } from "@/components/ui/Sheet";
+import { Tag } from "@/components/ui/Tag";
+import { CountUp } from "@/components/ui/CountUp";
+import { CloseIcon } from "@/components/ui/icons";
 import { BAND_LABEL, type CheckAnalysis } from "@/features/check/check";
-import { fullName } from "@/features/products/products";
-import { ProductThumb } from "@/features/products/components/ProductThumb";
+import { type CatalogProduct, fullName } from "@/features/products/products";
 
 /**
- * One `analysis/…` card on `Check results` — Figma 476:2857 (collapsed) and
- * 476:2864 (expanded).
+ * One product's score on `Check results` — SCORES B, lux-v3 (1 Oct 2026), picked
+ * on the design canvas ("Scores B — Rings"). The results lay these out two to a
+ * row: a 64 ring drawn to the score in its band's colour with the number in
+ * the middle, the product's name over its brand, and a pill naming the band.
  *
- * A frosted row that opens: header always, and on expand a compatibility bar, a
- * plain-language score line, the ingredients that cost it points, and the
- * recommendation.
+ * ⚠️ THE BAND IS NAMED IN WORDS ON EVERY CARD. `feedback/warning` and
+ * `feedback/error` share a hue and differ only in lightness, so "Risky" and
+ * "Avoid" are NOT distinguishable by colour — the pill's word is what separates
+ * them, and the ring and dot only repeat it. Compatible gets a pill too now: in
+ * a grid, the one card without a pill reads as missing one.
  *
- * ⚠️ THE PILL LIVES IN THE HEADER, NOT THE BODY — the handoff moved it there so
- * the band is readable whether the card is open or closed. That is not
- * cosmetic: `feedback/warning` and `feedback/error` share a hue and differ only
- * in lightness, so "Risky" and "Avoid" are NOT distinguishable by colour. The
- * pill's TEXT is what separates them.
+ * ⚠️ THE DETAIL OPENS IN A SHEET. It was an accordion row, which a grid cannot
+ * host — a card opening inside a two-column row pushes its neighbour down and
+ * leaves a hole beside itself. The whole card is the button; the bar, the
+ * ingredients that cost the score and the recommendation open over the screen
+ * in the app's one overlay, `Sheet`, and close back onto the grid. The board
+ * drew the card, not what tapping it does; this is decided here.
  *
- * ⚠️ A COMPATIBLE PRODUCT HAS NO PILL, AND THE ABSENCE IS THE SIGNAL — also the
- * handoff. Which means a screen reader would get nothing at all from the two
- * best rows, so every card states its band in the toggle's accessible name
- * regardless. The colour is never the only carrier.
- *
- * ⚠️ NOT `ProductAccordionCard`. That one is the PRODUCTS hub's, on a different
- * surface with a different header and no band. Two accordions, and the design
- * system still has neither — both are composed from the frosted card recipe.
- * See AGENTS.md.
- *
- * ⚠️ `compact` IS THE CARD AS IT RENDERS INSIDE THE COMPARED-PRODUCTS BOX —
- * NOT IN FIGMA. 476:2857 draws it as a card on the canvas, which is what it was
- * while the list hung under the header row as a sibling of it. The list is
- * inside the group's own surface now (see `CheckResults`), and the same rule
- * `ProductAccordionCard.compact` states applies here for the same reason: a
- * frosted fill on a frosted surface composites into one pale smear, and a
- * 16-radius card at full padding inside a 16-radius box reads as two surfaces
- * arguing. Padding steps 16/18 → 12, the radius 16 → 8 (concentric with the
- * box's 16 less its 8 inset), the border goes and the fill becomes
- * `bg/surface-frost`, frost-light's opaque counterpart. It is a PROP, not a
- * second component: the anatomy, the pill, the bar and the body are identical.
- *
- * ⚠️ `onRemove` IS THE EDIT MODE'S GLYPH, AND IT IS ON THE ROW RATHER THAN
- * INSIDE THE CARD. It replaces the `Edit` tray that used to list the same
- * products a second time in a modal sheet — see `CheckResults`.
- *
- * It sits beside the chevron, not under the recommendation where
- * `ProductAccordionCard` puts its `Remove`, and the difference is that this box
- * has an EDIT MODE and that card does not. A mode exists to surface its
- * destructive affordances: with the remove buried in the body, entering edit
- * mode changed nothing you could see, and taking a product out cost a tap to
- * open the row plus a tap to remove — on a row whose scores you did not want to
- * read. Passed only while the box is editing, so the resting list is exactly
- * the read-only accordion it was.
- *
- * ⚠️ IT IS A SIBLING OF THE TOGGLE, NOT A CHILD. A `<button>` may not contain
- * another one, so `.head` is the flex row and the `<h3>` takes the slack.
- *
- * ⚠️ ON A NARROW PHONE THE SCORE WRAPS UNDER THE NAME — NOT IN FIGMA, 16 Sep
- * 2026. The pill, the figure and the chevron take the header's second line,
- * right-aligned, whenever keeping them beside the name would leave it under 84
- * wide: at 320 it had 24, two or three letters a line, and 0 in edit mode.
- * Nothing moves at 440 or 1440. The numbers are on `.toggle` in the module.
+ * ⚠️ `onRemove` IS THE EDIT MODE'S GLYPH — passed only while the results box is
+ * editing (see `CheckResults`), so the resting grid has no destructive
+ * control on it. It is a SIBLING of the card's button, not a child: a
+ * `<button>` may not contain another.
  */
 export function CompatCard({
   analysis,
-  compact = false,
   onRemove,
+  index = 0,
 }: {
   analysis: CheckAnalysis;
-  /** rendered inside the compared-products box rather than on the canvas */
-  compact?: boolean;
+  /** the card's place in the grid — orders its entrance (module, end) */
+  index?: number;
   /** absent = the card cannot be removed, which is every read-only caller */
   onRemove?: () => void;
 }) {
   const [open, setOpen] = useState(false);
-  const bodyId = useId();
-
-  const { product, score, band, riskyIngredients, recommendation } = analysis;
+  const { product, score, band } = analysis;
   const name = fullName(product);
 
   return (
     <div
-      className={`${styles.card}${compact ? ` ${styles.compact}` : ""}`}
+      className={styles.card}
       data-band={band}
-      data-open={open || undefined}
+      style={{ "--i": index } as CSSProperties}
     >
-      <div className={styles.head}>
-        <h3 className={styles.heading}>
-          <button
-            type="button"
-            className={styles.toggle}
-            aria-expanded={open}
-            aria-controls={bodyId}
-            onClick={() => setOpen((o) => !o)}
-          >
-            {/* ⚠️ NOT IN FIGMA — the product drawn in front of its name, asked
-                for directly 13 Sep 2026. `ProductAccordionCard`'s own recipe:
-                the 36 thumb on the compact card, 48 otherwise, at the row's 12
-                gap. */}
-            <ProductThumb product={product} size={compact ? "sm" : "md"} />
-            <span className={`${styles.name} t-h6`}>{name}</span>
+      <button
+        type="button"
+        className={`${styles.open} pressable`}
+        aria-haspopup="dialog"
+        aria-label={`${name}, ${score}% compatible, ${BAND_LABEL[band]}. Show details`}
+        onClick={() => setOpen(true)}
+      >
+        <ScoreRing score={score} countDelay={200 + index * 90} />
+        <Names product={product} />
+        <span className={`${styles.band} t-label-sm`}>
+          <span className={styles.bandDot} aria-hidden="true" />
+          {BAND_LABEL[band]}
+        </span>
+      </button>
 
-            <span className={styles.score}>
-              {/* only Risky and Avoid draw a pill — compatible is the absence */}
-              {band !== "compatible" && (
-                <span className={`${styles.pill} t-label-sm`}>
-                  {BAND_LABEL[band]}
-                </span>
-              )}
-              <span className={`${styles.percent} t-h6`}>{score}%</span>
-              <ChevronDownIcon className={styles.chevron} />
-            </span>
+      {onRemove && <RemoveButton name={name} onRemove={onRemove} />}
 
-            {/* the band in words for everyone, including the rows with no pill */}
-            <span className="visually-hidden">
-              {score}% compatible, {BAND_LABEL[band]}
-            </span>
-          </button>
-        </h3>
+      <Sheet open={open} onClose={() => setOpen(false)} title={name}>
+        <CompatDetail analysis={analysis} />
+      </Sheet>
+    </div>
+  );
+}
 
-        {onRemove && (
-          <button
-            type="button"
-            className={styles.remove}
-            /* the glyph is the whole control, so the name has to carry both
-               the action and which product it acts on */
-            aria-label={`Remove ${name} from this analysis`}
-            onClick={onRemove}
-          >
-            <CloseIcon className={styles.removeIcon} />
-          </button>
-        )}
+/**
+ * A product added since the check ran — the card's shape with nothing scored.
+ *
+ * ⚠️ NOT A BUTTON, AND NO ARC. There is no detail to open and no number to
+ * draw, so the ring is its empty track and the pill slot holds the one true
+ * thing available: it is in the set, and the scores beside it do not include
+ * it. Neutral, deliberately not a band colour — "no result yet" is not a
+ * fourth value on a three-value scale.
+ */
+export function PendingCompatCard({
+  product,
+  onRemove,
+}: {
+  product: CatalogProduct;
+  onRemove?: () => void;
+}) {
+  return (
+    <div className={`${styles.card} ${styles.pending}`}>
+      <div className={styles.open}>
+        <ScoreRing />
+        <Names product={product} />
+        <Tag>Not analysed yet</Tag>
       </div>
 
-      {/* opens down and closes back up — `Collapse`, and "Dropdowns" in
-          globals.css. The 14 above the bar is the bar's own margin, inside the
-          panel, so this card sets no `--collapse-gap`. */}
-      <Collapse open={open}>
-        <div id={bodyId} className={styles.body}>
-          <div
-            className={styles.bar}
-            role="img"
-            aria-label={`${score}% compatible`}
-          >
-            <span className={styles.fill} style={{ width: `${score}%` }} />
-          </div>
+      {onRemove && <RemoveButton name={fullName(product)} onRemove={onRemove} />}
+    </div>
+  );
+}
 
-          <p className={`${styles.summary} t-body3`}>{score}% compatible</p>
+/* the ring: r 27, a 5 stroke, starting at 12 o'clock */
+const R = 27;
+const C = 2 * Math.PI * R;
 
-          {riskyIngredients.length > 0 && (
-            <>
-              <p className={`${styles.sectionLabel} t-label`}>
-                Risky ingredients
-              </p>
-              <ul className={styles.tags}>
-                {riskyIngredients.map((ingredient) => (
-                  <li key={ingredient} className={`${styles.tag} t-label-sm`}>
-                    {ingredient}
-                  </li>
-                ))}
-              </ul>
-            </>
-          )}
+function ScoreRing({ score, countDelay }: { score?: number; countDelay?: number }) {
+  return (
+    <span className={styles.ring} aria-hidden="true">
+      <svg viewBox="0 0 64 64" className={styles.ringSvg} aria-hidden="true" focusable="false">
+        <circle className={styles.track} cx="32" cy="32" r={R} />
+        {score !== undefined && (
+          <circle
+            className={styles.arc}
+            cx="32"
+            cy="32"
+            r={R}
+            strokeDasharray={`${(score / 100) * C} ${C}`}
+            /* the arc's own length, which the entrance draws it from */
+            style={{ "--arc": (score / 100) * C } as CSSProperties}
+          />
+        )}
+      </svg>
+      {score !== undefined && (
+        <span className={`${styles.score} t-h4`}>
+          {countDelay === undefined ? score : <CountUp value={score} delay={countDelay} />}
+        </span>
+      )}
+    </span>
+  );
+}
 
-          <div className={styles.recommendation}>
-            <p className={`${styles.recTitle} t-label`}>Recommendation</p>
-            <p className={`${styles.recBody} t-body3`}>{recommendation}</p>
-          </div>
-        </div>
-      </Collapse>
+function Names({ product }: { product: CatalogProduct }) {
+  return (
+    <span className={styles.names}>
+      <span className={`${styles.name} t-label`}>{product.name}</span>
+      <span className={`${styles.brand} t-caption`}>{product.brand}</span>
+    </span>
+  );
+}
+
+function RemoveButton({ name, onRemove }: { name: string; onRemove: () => void }) {
+  return (
+    <button
+      type="button"
+      className={styles.remove}
+      /* the glyph is the whole control, so the name has to carry both the
+         action and which product it acts on */
+      aria-label={`Remove ${name} from this analysis`}
+      onClick={onRemove}
+    >
+      <CloseIcon className={styles.removeIcon} />
+    </button>
+  );
+}
+
+/**
+ * What a card opens onto: the compatibility bar, the score in words, the
+ * ingredients that cost it points, and the recommendation — the body the
+ * accordion used to reveal, unchanged in content.
+ */
+function CompatDetail({ analysis }: { analysis: CheckAnalysis }) {
+  const { product, score, band, riskyIngredients, recommendation } = analysis;
+
+  return (
+    <div className={styles.detail} data-band={band}>
+      {/* the tray names nothing on screen (its title is its accessible name),
+          so the detail says which product it is about, ring and all */}
+      <div className={styles.detailHead}>
+        <ScoreRing score={score} />
+        <span className={styles.detailNames}>
+          <h2 className={`${styles.detailName} t-h5`}>{product.name}</h2>
+          <span className={`${styles.brand} t-caption`}>{product.brand}</span>
+        </span>
+      </div>
+
+      <div className={styles.bar} role="img" aria-label={`${score}% compatible`}>
+        <span className={styles.fill} style={{ width: `${score}%` }} />
+      </div>
+
+      <p className={`${styles.summary} t-body3`}>
+        {score}% compatible · {BAND_LABEL[band]}
+      </p>
+
+      {riskyIngredients.length > 0 && (
+        <>
+          <p className={`${styles.sectionLabel} t-label`}>Risky ingredients</p>
+          <ul className={styles.tags}>
+            {riskyIngredients.map((ingredient) => (
+              <li key={ingredient} className={`${styles.tag} t-label-sm`}>
+                {ingredient}
+              </li>
+            ))}
+          </ul>
+        </>
+      )}
+
+      <div className={styles.recommendation}>
+        <p className={`${styles.recTitle} t-label`}>Recommendation</p>
+        <p className={`${styles.recBody} t-body3`}>{recommendation}</p>
+      </div>
     </div>
   );
 }

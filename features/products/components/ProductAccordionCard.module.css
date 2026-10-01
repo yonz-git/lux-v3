@@ -22,14 +22,13 @@
      17.6 / 19.8 */
   padding: calc(var(--space-lg) * 1.1) calc(18px * 1.1);
 
-  border-radius: var(--radius-2xl);
-  background: var(--color-surface-frost-light);
-  /* ⚠️ `shadow/frosted-row` at 15%, asked for directly 15 Sep 2026 — it went
-     to 20% first and came back to 5% over the token's 10%; the token itself is
-     unchanged (globals.css) */
-  box-shadow: inset 2px 4px 9px rgba(0, 0, 0, 0.15);
-  -webkit-backdrop-filter: blur(var(--blur-card));
-  backdrop-filter: blur(var(--blur-card));
+  /* lux-v3: the 30% panel at the score cards' 24 radius (app/vidgen.css) */
+  border-radius: var(--radius-2xl); /* 24 */
+  border: var(--border-width-hairline) solid var(--color-border-panel);
+  background: var(--color-panel);
+  box-shadow: inset 0 1px 0 var(--color-rim-panel);
+  -webkit-backdrop-filter: blur(12px);
+  backdrop-filter: blur(12px);
 }
 
 .card > :global(.collapse) {
@@ -74,16 +73,20 @@
      card's own full-size recipe — so the product cards in PRODUCTS and CHECK
      read as one. The opaque-fill argument above is traded knowingly; the
      frosted-row shadow `.card` already carries is what keeps each edge. */
+  /* lux-v3: inside a panel, a card is glass — the chips' material, one step
+     in from the box around it — at 16, inside the box's 24 */
   border-radius: var(--radius-lg); /* 16 */
+  border-color: var(--color-border-glass);
+  box-shadow: var(--shadow-glass);
 
-  /* ⚠️ 40% OF `surface/frost-light`, asked for directly 15 Sep 2026 ("use the
+  /* (v2) ⚠️ 40% OF `surface/frost-light`, asked for directly 15 Sep 2026 ("use the
      /check/new card's bg"). The two cards ALREADY shared the same fill — the
      difference was the ground: `/check/new`'s row sits on the page card, this
      one on the group's much lighter `frost-nav` box, so the same 55% white
      composited near-white here. 40% of it (22% net) lands the card on the
      same grey-blue the check row reads as. Measured by eye against both
      screens, not by a token. */
-  background: color-mix(in srgb, var(--color-surface-frost-light) 40%, transparent);
+  background: var(--color-glass);
 }
 
 .card.compact > :global(.collapse) {
@@ -164,7 +167,7 @@
    catching up to it rather than a second recipe */
 @media (prefers-reduced-transparency: reduce) {
   .card {
-    background: var(--color-bg-surface-frost);
+    background: var(--color-panel);
     -webkit-backdrop-filter: none;
     backdrop-filter: none;
   }

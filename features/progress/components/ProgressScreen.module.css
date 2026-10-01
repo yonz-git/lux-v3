@@ -25,31 +25,9 @@
   margin-top: var(--space-lg); /* 16 */
 }
 
-/* ⚠️ THE SHEET'S FROST, NOT `DataCard`'s SAGE — 16 Sep 2026, asked for
-   directly ("use the same bg for the calendar"): `surface/data` mixed 10%
-   toward white at 30%, blurred and saturated — the recipe on `.tray` in
-   `components/ui/Sheet.module.css`. Keep the two in step. Doubled class so it
-   outranks `DataCard`'s single-class `.card` whatever the bundle order. */
-.calendar.calendar {
-  background: rgb(
-    from var(--color-surface-data) calc(r + (255 - r) * 0.1)
-      calc(g + (255 - g) * 0.1) calc(b + (255 - b) * 0.1) / 0.3
-  );
-  -webkit-backdrop-filter: blur(var(--blur-card)) saturate(1.4);
-  backdrop-filter: blur(var(--blur-card)) saturate(1.4);
-}
-
-/* non-negotiable 11 — the doubled rule above would otherwise outrank
-   `DataCard`'s own solid fallback */
-@media (prefers-reduced-transparency: reduce) {
-  .calendar.calendar {
-    background:
-      linear-gradient(var(--color-surface-data), var(--color-surface-data)),
-      var(--color-bg-canvas);
-    -webkit-backdrop-filter: none;
-    backdrop-filter: none;
-  }
-}
+/* lux-v3: the calendar is the 30% panel like every card on the page
+   (Calendar A, canvas). The sheet's sage frost it wore from 16 Sep 2026 made
+   it the one darker card in the column. */
 
 .trend {
   margin-top: var(--space-lg); /* 16 */
@@ -74,31 +52,14 @@
   display: none;
 }
 
-/* ⚠️ THE SKIN PROFILE CARD'S PADDING ON A PHONE, asked for directly 15 Sep
-   2026: `SkinProfileTiles`' 1.4rem (22.4) where `DataCard` gives 20. Doubled
-   to beat `DataCard`'s single class on specificity rather than load order.
-   Desktop keeps `DataCard`'s 24 — restated in the 1024 block below, since
-   this doubled rule would otherwise outrank that one too. */
-.faceCard.faceCard,
-.galleryDesktop.galleryDesktop,
-.galleryMobile.galleryMobile {
-  padding: 1.4rem;
-}
-
-/* ⚠️ THE FACE AND GALLERY CARDS ARE BARE CANVAS — asked for directly 14 Sep
-   2026 ("use same bg as skin profile for the box symptoms and location",
-   then "apply the profile bg to gallery box"). NOT IN FIGMA. The recipe was
-   copied here from `SkinProfileTiles` and is the global `canvas-card` class now
-   (globals.css), lifted the same day when the profile recap's blocks became
-   its third and fourth wearers. The TSX adds the class; padding, gap and
-   radius stay `DataCard`'s. */
+/* the face and gallery cards carry the global `canvas-card` class, which is
+   the 30% panel in lux-v3 (app/vidgen.css) — so they are DataCard's own
+   surface, padding and radius, like every other card on the page. The v2
+   1.4rem phone padding went with v2's bare-canvas look. */
 
 .faceLabel {
+  /* `t-overline` at its own size, as on the trend card (lux-v3) */
   color: var(--color-text-on-data-muted);
-  /* ⚠️ 15 / 20 — 2px up from `t-overline`'s 13 / 18, asked for directly
-     14 Sep 2026; weight, tracking and caps stay the class's */
-  font-size: 15px;
-  line-height: 20px;
 }
 
 /* ⚠️ `.face` AND `.otherNote*` WENT ON 15 Sep 2026: the 392 cap on the
@@ -203,13 +164,6 @@
     margin-top: 0;
   }
 
-  /* `DataCard`'s desktop 24, back over the phone's 1.4rem above */
-  .faceCard.faceCard,
-  .galleryDesktop.galleryDesktop,
-  .galleryMobile.galleryMobile {
-    padding: var(--space-2xl); /* 24 */
-  }
-
   /* ⚠️ THE ACTION STAYS UNDER THE CALENDAR, NOT IN FIGMA. The handoff puts
      `Check in today` in col-2 under the trend, away from the calendar; here it
      sits under the calendar of check-ins it adds to, rather than under a chart
@@ -290,5 +244,25 @@
 @media (min-width: 1024px) {
   .emptyCta {
     width: var(--width-action);
+  }
+}
+
+/* ⚠️ BIGGER HEADINGS ON DESKTOP — asked for directly 1 Oct 2026 ("use bigger
+   font for all the h2 on /progress of desktop"). Every card's `<h2>` steps
+   up one size at 1024+: the overlines 14 → 16 (`YOUR SKIN PROFILE`,
+   `SYMPTOMS AND LOCATION`, `PROGRESS GALLERY`, `SYMPTOMS · LAST 14 DAYS`) and
+   the calendar's month 18 → 20. The phone is untouched. (0,3,1) over the
+   global type classes. */
+@media (min-width: 1024px) {
+  .profileColumn h2:global(.t-overline),
+  .checkInColumn h2:global(.t-overline) {
+    font-size: 16px;
+    line-height: 22px;
+  }
+
+  .profileColumn h2:global(.t-h5),
+  .checkInColumn h2:global(.t-h5) {
+    font-size: 20px;
+    line-height: 26px;
   }
 }

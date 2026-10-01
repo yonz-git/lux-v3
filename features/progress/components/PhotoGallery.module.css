@@ -22,12 +22,7 @@
   color: var(--color-text-on-data-muted);
 }
 
-/* ⚠️ 15 / 20 — 2px up from `t-overline`'s 13 / 18, asked for directly 14 Sep
-   2026, matching `Symptoms and location` above it */
-.overline {
-  font-size: 15px;
-  line-height: 20px;
-}
+/* `t-overline` at its own size, matching every card overline (lux-v3) */
 
 .empty {
   margin: 0;
@@ -574,4 +569,40 @@
   .perViewDesktop {
     display: inline;
   }
+}
+
+/* ⚠️ THE GALLERY'S OWN HEADING IS BIGGER — asked for directly 1 Oct 2026
+   ("increase the font size of the heading here"): the overline at 18 / 24 in
+   the open gallery, where the card that opens it keeps the card size. Same
+   caps, weight and tracking. (0,2,0) over the global class. */
+.head > .overline {
+  font-size: 18px;
+  line-height: 24px;
+}
+
+/* ============================================================================
+   THE CARD'S ENTRANCE — 1 Oct 2026, asked for directly (MotionObserver.tsx).
+   The first time the card is in view its photos arrive left to right, 70
+   apart: each fades in and grows from 0.92, and the chevron follows the last.
+   `scale`, so the picture's own hover transform is untouched.
+   ========================================================================== */
+.thumb {
+  transition-property: opacity, scale;
+  transition-duration: var(--duration-slow);
+  transition-timing-function: var(--ease-standard);
+  transition-delay: calc(120ms + var(--i, 0) * 70ms);
+}
+
+/* the chevron keeps its hover nudge (`transform`, above) beside the entrance */
+.more {
+  transition:
+    transform var(--duration-base) var(--ease-hover),
+    opacity var(--duration-slow) var(--ease-standard) 400ms,
+    scale var(--duration-slow) var(--ease-standard) 400ms;
+}
+
+[data-motion]:not([data-inview]) .thumb,
+[data-motion]:not([data-inview]) .more {
+  opacity: 0;
+  scale: 0.92;
 }

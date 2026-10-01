@@ -442,8 +442,8 @@ Everything that sits on the canvas is made of white at low strength: `glass`
 `glass-edge` (55%) and a `glass-rim` highlight along the top. Boxes are
 `panel` (`#F4FEFF` at 30%, with a 45% `panel-edge` and a 60% `panel-rim`) and
 the `sheet` (lux-v2's sage tray at 30%). The panel was 55% until the canvas
-review called it "too white and bright"; the cards on Progress and Check still
-draw the 55% until they are redesigned. The nav is lighter still: a 10%
+review called it "too white and bright"; every card now draws 30% — the
+question panels, and `DataCard` on Progress and Check. The nav is lighter still: a 10%
 `nav-bar` with a 40% `nav-edge`, its circles `nav-item` at 12%. There is no
 opaque white fill anywhere.
 Text is `on-surface` `#2E2A3F`, with `on-surface-secondary` for chip labels
@@ -565,23 +565,47 @@ the nav is new.
 **Step progress (decided: lux-v2's).** A 4px `step-progress-track` at 80% of
 the column (400 on desktop) with a `primary` `step-progress-fill`; the fill
 grows from the step you came from.
-**Trend chart (decided).** In a `trend-chart` panel: an `overline`, a one-line
-reading in `panel-label`, then a smooth 2px `primary` line over three EQUAL
-`trend-band` stripes labelled Mild, Moderate, Severe; a dashed line and a
-`trend-event` pill mark when a product started; every day is labelled under
-the chart, today in `primary` SemiBold.
-**Calendar (decided).** A month grid in a `panel`: month name and two 44 glass
-arrows, weekday initials, `calendar-day-checked` indigo discs for check-ins,
+**Trend chart (built).** In a `trend-chart` panel: an `overline`
+("Symptoms · last 14 days"), a one-line reading in `panel-label` ("From
+moderate to mild in 10 days"), then a smooth 2px `primary` line over three
+EQUAL `trend-band` stripes labelled Mild, Moderate, Severe; a dashed line and a
+`trend-event` pill mark when a product started; every day of the 14 is
+labelled under the chart, today in `primary` SemiBold, the months named at the
+left. The x axis is the calendar, so a day without a check-in is a gap. The
+bands fold the check-in's five severity words into three — Clear and Mild,
+Moderate, Severe and Very severe — with edges at 3.5 and 6.5, so a dot's band
+is always the word its record uses.
+**Calendar (built).** A Monday-first month grid in a `panel` — the date
+picker's week, so the app has one: month name and two 44 glass arrows, weekday
+initials, `calendar-day-checked` indigo discs (each a link to its record),
 a 1.5px `primary` ring on `calendar-day-today`, plain `calendar-day` numbers
-otherwise; a legend names both marks.
-**Score cards (decided).** A 2×2 grid of `score-card`s: a 64px `score-ring`
-(band-coloured arc on a white track, the score in Light), the product name and
-brand, and a `score-band-pill` with a band-coloured dot and the band word.
+otherwise and muted ones for days still to come; a legend names both marks.
+**Score cards (built).** A grid of `score-card`s, two to a row under an
+`overline`: a 64px `score-ring` (band-coloured arc on a white track, the score
+in Light), the product name and brand, and a `score-band-pill` with a
+band-coloured dot and the band word — on every card, since Risky and Avoid
+differ only in lightness. The whole card is a button; its detail (the bar,
+the risky ingredients, the recommendation) opens in the `sheet`. A product not
+yet analysed is the same card with an empty ring and a `tag`.
 **Face diagram (kept from lux-v2).** The face card follows step 1's panel; a
 picked region is v2's teal glass (`#13758C` at 89%).
-**Not designed yet:** chat bubbles beyond Welcome's, the undo bar, the safety
-notice, the analysing state, product cards and the add-product tray, empty
-states. Design each here first, then build it.
+**The other pages (built, 1 Oct 2026 — the pages round).** The routes with no
+canvas board were moved onto this vocabulary, with no new shape:
+- every card is the `panel` — DataCard, the skin-profile card, the face and
+  gallery cards, the recap's blocks (`canvas-card` is the panel now), the
+  calendar (its sheet-sage override is gone);
+- every row that is a box is the `panel` at 24 — the Products hub's groups,
+  `/check/new`'s product rows, `/check/history`'s rows; a card inside one of
+  those boxes is `glass` at 16;
+- the skin profile's answers are read-only `glass` pills, 32 tall (a control
+  is 44), dark ink; card overlines are `overline` at its own size;
+- the deep-sage tier is gone: the add-product tiles, the basket rows and the
+  results' emphasis block are `glass` with dark ink; the basket bar is the
+  panel floating with the nav's shadow;
+- the check-in's answers are plain chips.
+Chat (bubbles, the check-in panel) stays v2's, as Welcome does.
+**Not designed yet:** the undo bar, the safety notice, the analysing state,
+the empty states — reskinned only by the tokens they already read.
 
 ## Do's and Don'ts
 

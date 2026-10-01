@@ -47,13 +47,26 @@
 /* ⚠️ THE ORIGINAL SAMPLE IS STILL IN THE SET, as the sixth — it is the picture
    the prototype shipped with, and dropping it for five newcomers would change
    every screenshot taken since 13 Sep for no reason. */
+/* ⚠️ UNSPLASH PHOTOGRAPHS, 1 Oct 2026 — asked for directly ("fetch images
+   from unsplash for the progress gallery"). Six free-licence photos (the
+   Unsplash License: free to use, no attribution required), cropped square at
+   1200 by Unsplash's own CDN and kept locally in `public/images/gallery` so
+   the prototype needs no network for them. Sources, in order:
+     photo-1730288951113-9cc087c14b83   freckles across cheeks and nose
+     photo-1710580889701-9fa8f2cd5927   skin texture, close
+     photo-1675773051474-55c4b7d2cf53   lower face, soft light
+     photo-1659531412263-bf2b9e1abf6f   pores and small moles, close
+     photo-1577052963861-4bfa6359cdfc   eyes closed, close
+     photo-1695990190064-e8ca2ca16af6   freckles, face in hands
+   The old `skin-samples` set (one of which rendered as a blank well) is no
+   longer read. */
 const SAMPLES = [
-  "/images/skin-samples/skin-01.jpg",
-  "/images/skin-samples/skin-02.jpg",
-  "/images/skin-samples/skin-03.jpg",
-  "/images/skin-samples/skin-04.jpg",
-  "/images/skin-samples/skin-05.jpg",
-  "/images/skin-sample.jpg",
+  "/images/gallery/gallery-01.jpg",
+  "/images/gallery/gallery-02.jpg",
+  "/images/gallery/gallery-03.jpg",
+  "/images/gallery/gallery-04.jpg",
+  "/images/gallery/gallery-05.jpg",
+  "/images/gallery/gallery-06.jpg",
 ];
 
 /** FNV-1a, 32-bit — stable across renders and platforms, unlike a bare sum. */

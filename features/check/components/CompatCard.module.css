@@ -1,189 +1,203 @@
-/* analysis/… — Figma 476:2857 collapsed, 476:2864 expanded.
+/* SCORES B — the score card and its detail. See CompatCard.tsx. */
 
-   Collapsed is 56 tall: 16 + a 24 header row + 16. Expanded keeps that header
-   and adds 14 -> bar(6) -> 8 -> summary -> 14 -> label -> 8 -> tags -> 14 ->
-   recommendation. */
-
-.card {
-  /* --band is the one colour that changes between the three states, so the
-     pill, the score and the bar fill all read from it and cannot drift apart. */
+/* the band's colour is the one thing that changes between the three states */
+.card,
+.detail {
   --band: var(--color-feedback-success);
   --band-subtle: var(--color-feedback-success-subtle);
-
-  width: 100%;
-  /* rule 12: Figma padding minus the border, so a one-line row lands on 56 and
-     a two-line one grows honestly */
-  padding: calc(var(--space-lg) - var(--border-width-hairline))
-    calc(18px - var(--border-width-hairline));
-
-  border: var(--border-width-hairline) solid var(--color-border-subtle);
-  border-radius: var(--radius-lg);
-  background: var(--color-surface-frost-light);
-  box-shadow: var(--shadow-frosted-row);
-  -webkit-backdrop-filter: blur(var(--blur-card));
-  backdrop-filter: blur(var(--blur-card));
 }
 
-/* ⚠️ NOT IN FIGMA — the card as it renders INSIDE the compared-products box.
-   Same anatomy one step down, and the reasoning is `ProductAccordionCard`'s,
-   which states it in full: `frost-light` on the group's `frost-nav` is a
-   frosted fill on a frosted surface, so the two translucencies composite into
-   one pale smear with no edge between the cards. `bg/surface-frost` is
-   frost-light's opaque counterpart and the blur goes with it, since the group
-   behind it has already blurred what is under both.
-
-   ⚠️ 12, asked for directly 13 Sep 2026 — the same value PRODUCTS' compact
-   cards took the same day, so a product row has one shape in both sections.
-   It was 8, concentric with the box while the box inset these by 8; the inset
-   is 16 now and concentricity no longer applies. See `.panel` in
-   CheckResults.module.css.
-
-   ⚠️ AND THE BORDER GOES, WHICH IS WHY THE PADDING STOPS SUBTRACTING IT. The
-   full-size card writes `calc(16px - hairline)` under rule 9 so a bordered box
-   lands on the design height; with no border there is nothing to subtract and
-   the value is the plain 12. */
-.card.compact {
-  padding: var(--space-md); /* 12 */
-
-  border: none;
-  /* ⚠️ SUPERSEDED 13 Sep 2026, asked for directly: the surface and radius of
-     `/check/new`'s product row (`ProductList`'s `.row`) — `surface/frost-light`,
-     the frosted-row shadow, the card blur and radius/lg — so the three product
-     cards in the app (that row, this, `ProductAccordionCard` compact) read as
-     one. It replaces a literal-hex diagonal; the frost-on-frost argument above
-     is traded knowingly, and the shadow is what keeps each card's edge. */
-  border-radius: var(--radius-lg); /* 16 */
-  /* ⚠️ THE PRODUCTS HUB'S CARD COLOUR, asked for directly 15 Sep 2026 ("use
-     same bg color as the product cards in products page"): `surface/frost-light`
-     at 40%, the fill `ProductAccordionCard`'s compact card took the same day.
-     Both sit in a frosted box, so the same thin white composites to the same
-     pale mint here. */
-  background: color-mix(in srgb, var(--color-surface-frost-light) 40%, transparent);
-  box-shadow: var(--shadow-frosted-row);
-  -webkit-backdrop-filter: blur(var(--blur-card));
-  backdrop-filter: blur(var(--blur-card));
-}
-
-.card[data-band="risky"] {
+.card[data-band="risky"],
+.detail[data-band="risky"] {
   --band: var(--color-feedback-warning);
   --band-subtle: var(--color-feedback-warning-subtle);
 }
 
-.card[data-band="avoid"] {
+.card[data-band="avoid"],
+.detail[data-band="avoid"] {
   --band: var(--color-feedback-error);
   --band-subtle: var(--color-feedback-error-subtle);
 }
 
-/* the toggle plus, in edit mode, the remove glyph beside it. A `<button>` may
-   not contain another, so the two are siblings and the heading takes the slack.
-   ⚠️ 8 rather than the row's own 12: the ✕ belongs to the row it closes, and at
-   12 it drifted far enough from the chevron to read as the box's control. */
-.head {
-  display: flex;
-  align-items: center;
-  gap: var(--space-sm);
+/* ---- the card ---------------------------------------------------------------
+   The panel at score-card size: 24 radius, 16 in, the ring, the names and the
+   pill 12 apart. The button IS the card, so the whole tile is the target. */
+
+.card {
+  position: relative;
+  height: 100%;
+  border-radius: var(--radius-2xl); /* 24 */
+  border: var(--border-width-hairline) solid var(--color-border-panel);
+  background: var(--color-panel);
+  box-shadow: inset 0 1px 0 var(--color-rim-panel);
+  -webkit-backdrop-filter: blur(12px);
+  backdrop-filter: blur(12px);
+  /* the hover, then the entrance (see the block at the end) */
+  transition:
+    background-color var(--duration-base) var(--ease-hover),
+    opacity var(--duration-slow) var(--ease-standard) calc(var(--i, 0) * 90ms),
+    translate var(--duration-slow) var(--ease-standard) calc(var(--i, 0) * 90ms);
 }
 
-/* the <h3> is structure for the outline, not a visual element */
-.heading {
-  flex: 1;
-  min-width: 0;
-  margin: 0;
-  font: inherit;
+.card:not(.pending):hover {
+  background-color: var(--color-glass-strong);
 }
 
-/* ⚠️ NOT IN FIGMA — ON A NARROW PHONE THE SCORE WRAPS UNDER THE NAME,
-   16 Sep 2026. WRAPPING BY BASIS, no media query — `SymptomLocation`'s idiom.
-   The name wants 84 and takes every pixel over that; when the thumb, the name's
-   84 and the score cannot share a line, the score takes the next one, pushed
-   right so the chevron and the figure stay in the column every other card
-   keeps.
+@media (hover: none) {
+  .card:not(.pending):hover {
+    background-color: var(--color-panel);
+  }
+}
 
-   ⚠️ THE NAME HAD 24 AT 320. The compact card's header is 216 there, and the
-   36 thumb with its 12 gap (13 Sep 2026) plus a Risky or Avoid score (129–132)
-   left the name two or three letters a line in a header 264 tall — and 0 wide
-   in edit mode, where the ✕ takes 44 more. `overflow-wrap: break-word` on
-   `body` hid it, since nothing spilled, until the WCAG 1.4.12 overrides
-   widened a glyph past the 11–14 left and `npm run spacing` failed. See "The
-   layout survives the user's own text spacing" in docs/decisions.md.
-
-   ⚠️ WHY 84. A Risky or Avoid name gets 94.1 or more at 390 and up and 81.7
-   or less at 375 and below — in edit mode, 88.1 or more at 428 and 76.7 or
-   less at 414 — so a list never splits between the two layouts at a common
-   phone width. 96 would, at 390, where Avoid's pill is 2.6 wider than
-   Risky's. 440's tightest name, Avoid in edit mode, is 100.1, so both comp
-   widths keep the one-line row with 16 of headroom. The compatible rows have
-   no pill and wrap only in edit mode, below 355.
-
-   8 between the two lines, not the row's 12: tighter than the card's own 12
-   padding, so the score reads as this name's rather than as a row between
-   cards. */
-.toggle {
+.open {
+  box-sizing: border-box;
   display: flex;
-  flex-wrap: wrap;
-  align-items: center;
-  justify-content: space-between;
-  gap: var(--space-sm) var(--space-md); /* 8 between lines / 12 */
+  flex-direction: column;
+  align-items: flex-start;
+  gap: var(--space-md); /* 12 */
   width: 100%;
-  /* ⚠️ the UA button padding is 1px 6px, not zero (non-negotiable 13) */
-  padding: 0;
+  height: 100%;
+  padding: var(--space-lg); /* 16 */
+  border-radius: inherit;
   text-align: left;
-  color: inherit;
-}
-
-.name {
-  /* the basis is the wrap threshold — see `.toggle`. With a zero basis the
-     name's hypothetical size is 0, so the line never breaks and the name is
-     what gives way instead of the score. */
-  flex: 1 1 84px;
-  min-width: 0;
   color: var(--color-text-primary);
 }
 
-.score {
-  display: inline-flex;
-  align-items: center;
-  gap: 10px;
+.ring {
+  position: relative;
   flex: none;
-  /* right-aligned when it is alone on the wrapped line; beside the name the
-     name's growth has already taken the slack and this resolves to 0 */
-  margin-inline-start: auto;
-  /* percentages stacked down a list of products read as a column, so the
-     figures take one width — 98% and 71% have to align on their own `%`.
-     See the note in globals.css. */
+  width: 64px;
+  height: 64px;
+}
+
+.ringSvg {
+  display: block;
+  width: 100%;
+  height: 100%;
+  transform: rotate(-90deg);
+}
+
+.track,
+.arc {
+  fill: none;
+  stroke-width: 5;
+}
+
+.track {
+  stroke: rgb(255 255 255 / 0.7);
+}
+
+.arc {
+  stroke: var(--band);
+  stroke-linecap: round;
+}
+
+.score {
+  position: absolute;
+  inset: 0;
+  display: grid;
+  place-items: center;
+  font-weight: var(--font-weight-light);
   font-variant-numeric: tabular-nums;
 }
 
-/* 26 tall: 5 + 16 + 5 */
-.pill {
-  padding: 5px 14px;
+/* the names take the slack, so the pills sit level along the cards' foot
+   whether a name runs to one line or two */
+.names {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2xs);
+  min-height: 54px;
+}
+
+.brand {
+  color: var(--color-text-muted);
+}
+
+.band {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  height: var(--space-2xl); /* 24 */
+  padding: 0 10px;
+  border-radius: var(--radius-full);
+  border: var(--border-width-hairline) solid var(--color-border-glass);
+  background: var(--color-glass-strong);
+}
+
+.bandDot {
+  width: 8px;
+  height: 8px;
   border-radius: var(--radius-full);
   background: var(--band);
-  color: var(--color-text-on-brand);
-  white-space: nowrap;
 }
 
-.percent {
-  color: var(--band);
-}
-
-.chevron {
-  width: var(--size-icon-sm); /* 20 */
-  height: var(--size-icon-sm);
+/* only while the results box is editing — a glass circle in the corner */
+.remove {
+  position: absolute;
+  top: var(--space-sm);
+  right: var(--space-sm);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: var(--size-control-sm); /* 36 */
+  height: var(--size-control-sm);
+  padding: 0;
+  border-radius: var(--radius-full);
+  border: var(--border-width-hairline) solid var(--color-border-glass);
+  background: var(--color-glass);
+  box-shadow: var(--shadow-glass);
   color: var(--color-icon-default);
-  transition: transform var(--duration-base) var(--ease-standard);
+  transition: background-color var(--duration-fast) var(--ease-hover);
 }
 
-.card[data-open] .chevron {
-  transform: rotate(180deg);
+.remove:hover {
+  background-color: var(--color-glass-strong);
+}
+
+@media (hover: none) {
+  .remove:hover {
+    background-color: var(--color-glass);
+  }
+}
+
+.removeIcon {
+  --icon-size: var(--size-icon-sm); /* 20 */
+}
+
+/* ---- the detail, in the sheet ----------------------------------------------- */
+
+.detail {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-md); /* 12 */
+}
+
+.detailHead {
+  display: flex;
+  align-items: center;
+  gap: var(--space-lg); /* 16 */
+  margin-bottom: var(--space-xs);
+}
+
+.detailNames {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2xs);
+  min-width: 0;
+}
+
+.detailName {
+  margin: 0;
+  color: var(--color-text-primary);
 }
 
 .bar {
   height: 6px;
-  margin-top: 14px;
   overflow: hidden;
   border-radius: var(--radius-full);
-  background: var(--color-surface-frost-light);
+  background: rgb(255 255 255 / 0.7);
 }
 
 .fill {
@@ -193,13 +207,9 @@
   background: var(--band);
 }
 
-.summary {
-  margin-top: var(--space-sm); /* 8 */
-  color: var(--color-text-secondary);
-}
-
+.summary,
 .sectionLabel {
-  margin-top: 14px;
+  margin: 0;
   color: var(--color-text-secondary);
 }
 
@@ -207,21 +217,13 @@
   display: flex;
   flex-wrap: wrap;
   gap: var(--space-sm); /* 8 */
-  margin: var(--space-sm) 0 0;
+  margin: 0;
   padding: 0;
   list-style: none;
 }
 
-/* 28 tall: 6 + 16 + 6. The subtle band tint behind the band colour — the one
-   place the -subtle feedback tokens are used.
-   ⚠️ A HAIRLINE IN THE TEXT'S OWN COLOUR — NOT IN FIGMA, asked for directly
-   16 Sep 2026 ("add border of the color of the text for those pills").
-   `currentColor`, so it is `--band` in all three bands and cannot drift from
-   the ink. Rule 9: the padding gives the hairline back, so the pill still
-   lands on 28 and its label does not move. */
 .tag {
-  padding: calc(6px - var(--border-width-hairline))
-    calc(var(--space-md) - var(--border-width-hairline)); /* 6 / 12 with the ring */
+  padding: calc(6px - var(--border-width-hairline)) var(--space-md);
   border: var(--border-width-hairline) solid currentColor;
   border-radius: var(--radius-full);
   background: var(--band-subtle);
@@ -229,30 +231,20 @@
   white-space: nowrap;
 }
 
-/* ⚠️ A NESTED BLOCK WITH NO BORDER. Every other frosted surface on this screen
-   carries a 1px border/subtle; this one is fill + inner shadow only, which is
-   what keeps it reading as part of the card rather than as another card.
-
-   ⚠️ NOT IN FIGMA — 16 RADIUS AND `bg/nav`, changed 13 Sep 2026, asked for
-   directly ("more border radius … bg color same as compared products box").
-   It was 12 on `surface/frost-light`, which on the opaque compact card read as
-   a white panel on a white card. The Compared Products box is
-   `surface/frost-nav`; this takes its OPAQUE counterpart `bg/nav` (#dbeded),
-   not the token itself — the card under it is already opaque, and frost-nav's
-   48% over it would barely tint it (the frost-on-frost rule, AGENTS.md). 16 is
-   the box's own radius. Both inks clear AA on #dbeded. */
 .recommendation {
   display: flex;
   flex-direction: column;
   gap: 6px;
-  margin-top: 14px;
   padding: 14px var(--space-lg); /* 14 / 16 */
   border-radius: var(--radius-lg); /* 16 */
-  /* ⚠️ FLAT AGAIN, 13 Sep 2026 — the diagonal that sat here was meant for the
-     CARD around this block, not the block; asked for directly. It moved to
-     `.card.compact` above. */
-  background: var(--color-bg-nav);
-  box-shadow: var(--shadow-frosted-row);
+  border: var(--border-width-hairline) solid var(--color-border-glass);
+  background: var(--color-glass);
+  box-shadow: var(--shadow-glass);
+}
+
+.recTitle,
+.recBody {
+  margin: 0;
 }
 
 .recTitle {
@@ -263,53 +255,50 @@
   color: var(--color-text-secondary);
 }
 
-/* ⚠️ ONLY RENDERED WHILE THE BOX IS EDITING — see CompatCard's own note for
-   why it is here rather than under the recommendation. `size/control-sm` (36)
-   is the tap target the app's other glyph-only buttons take; the glyph inside
-   it is `icon-sm`. It is `icon/default`, not `text/error`: it sits on every row
-   at once while edit mode is on, and eight red crosses down a list read as
-   eight warnings rather than as one available action. */
-.remove {
-  flex: none;
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  width: var(--size-control-sm); /* 36 */
-  height: var(--size-control-sm);
-  padding: 0;
-  border-radius: var(--radius-full);
-  color: var(--color-icon-default);
-  transition: opacity var(--duration-fast) var(--ease-hover);
-}
-
-.removeIcon {
-  --icon-size: var(--size-icon-sm); /* 20 */
-}
-
-.remove:hover {
-  opacity: 0.7;
-}
-
-@media (hover: none) {
-  .remove:hover {
-    opacity: 1;
-  }
-}
-
-/* `.recommendation` is not listed: `bg/nav` is already opaque, and swapping it
-   for `bg/surface-frost` here would lose the tint for exactly these users */
 @media (prefers-reduced-transparency: reduce) {
-  /* `.card.compact` named too — it is translucent now, and `.card` alone is
-     outranked by it */
-  .card,
-  .card.compact {
+  .card {
     background: var(--color-bg-surface-frost);
     -webkit-backdrop-filter: none;
     backdrop-filter: none;
   }
 
-  /* the track has to stay distinguishable from the card it sits on */
+  /* the track has to stay distinguishable from the surface it sits on */
   .bar {
     background: var(--color-border-subtle);
   }
+}
+
+/* ============================================================================
+   THE ENTRANCE — 1 Oct 2026, asked for directly, after 21st.dev's donut
+   chart: the first time the results grid is in view (`MotionObserver.tsx`
+   marks the `.panel` around it), each card rises 8px into place, 90ms after
+   the one before; its ring DRAWS from 12 o'clock to the score over 960ms
+   while the number counts up with it (`CountUp`); the band pill arrives as
+   the arc lands. The detail in the sheet is outside the panel and does not
+   animate. Reduced motion collapses every duration and `CountUp` skips.
+   ========================================================================== */
+[data-motion]:not([data-inview]) .card {
+  opacity: 0;
+  translate: 0 8px;
+}
+
+[data-motion] .arc {
+  stroke-dashoffset: 0;
+  transition: stroke-dashoffset calc(var(--duration-slower) * 2) var(--ease-standard)
+    calc(200ms + var(--i, 0) * 90ms);
+}
+
+[data-motion]:not([data-inview]) .arc {
+  stroke-dashoffset: var(--arc);
+}
+
+[data-motion] .band {
+  transition:
+    opacity var(--duration-slow) var(--ease-standard) calc(900ms + var(--i, 0) * 90ms),
+    translate var(--duration-slow) var(--ease-standard) calc(900ms + var(--i, 0) * 90ms);
+}
+
+[data-motion]:not([data-inview]) .band {
+  opacity: 0;
+  translate: 0 4px;
 }

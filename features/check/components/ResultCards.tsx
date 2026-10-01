@@ -1,6 +1,7 @@
-import { Fragment, type ReactNode } from "react";
+import { type CSSProperties, Fragment, type ReactNode } from "react";
 import styles from "./ResultCards.module.css";
 import { DataCard } from "@/components/ui/DataCard";
+import { CountUp } from "@/components/ui/CountUp";
 import { Tag } from "@/components/ui/Tag";
 import { ProductThumb } from "@/features/products/components/ProductThumb";
 import {
@@ -53,7 +54,11 @@ export function SummaryCard({
             <dt className={`${styles.statLabel} t-label-sm`}>{s.label}</dt>
             {/* Metric 2 — Light 40/44. The one place in either results screen
                 the Light weight is used, and the only one in the ramp. */}
-            <dd className={`${styles.statValue} t-metric2`}>{s.value}</dd>
+            {/* the figures count up the first time they are in view
+                (1 Oct 2026, asked for directly) — see `CountUp` */}
+            <dd className={`${styles.statValue} t-metric2`}>
+              {typeof s.value === "number" ? <CountUp value={s.value} /> : s.value}
+            </dd>
           </div>
         ))}
       </dl>
@@ -81,11 +86,15 @@ export function IngredientsCard({
   if (concerns.length === 0) return null;
 
   return (
-    <DataCard aria-label={label}>
+    <DataCard aria-label={label} data-motion>
       <p className={`${styles.sectionLabel} t-overline`}>{label}</p>
       <ul className={styles.concerns}>
         {concerns.map((c, i) => (
-          <li key={c.id} className={styles.concernItem}>
+          <li
+            key={c.id}
+            className={styles.concernItem}
+            style={{ "--i": i } as CSSProperties}
+          >
             {/* a 1px border/glass divider between entries, as on every data
                 card — see SkinProfile */}
             {i > 0 && <div className={styles.divider} />}
@@ -188,7 +197,7 @@ export function NextStepsCard({
   actions?: ReactNode;
 }) {
   return (
-    <DataCard aria-label={label}>
+    <DataCard aria-label={label} data-motion>
       <p className={`${styles.sectionLabel} t-overline`}>{label}</p>
 
       <div className={styles.emphasis} data-band={badgeBand}>
@@ -209,7 +218,11 @@ export function NextStepsCard({
       {steps && steps.length > 0 && (
         <ol className={styles.steps}>
           {steps.map((step, i) => (
-            <li key={step.id} className={styles.step}>
+            <li
+              key={step.id}
+              className={styles.step}
+              style={{ "--i": i } as CSSProperties}
+            >
               {/* ⚠️ aria-hidden, and the <ol> carries the semantics. A screen
                   reader already numbers a list item; reading the disc too
                   announces "1 1 Keep …". */}

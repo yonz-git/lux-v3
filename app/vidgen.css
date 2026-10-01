@@ -254,9 +254,12 @@
   font-size: 12px;
   line-height: 16px;
 }
+/* ⚠️ 14 / 20, NOT THE REFERENCE'S 12 — asked for directly 1 Oct 2026 ("use
+   bigger font for these") against the card overlines: `YOUR SKIN PROFILE`,
+   `SYMPTOMS · LAST 14 DAYS`, `SYMPTOMS AND LOCATION`, `PROGRESS GALLERY`. */
 .t-overline {
-  font-size: 12px;
-  line-height: 16px;
+  font-size: 14px;
+  line-height: 20px;
   font-weight: var(--font-weight-semibold, 600);
   letter-spacing: 0.12em;
 }
@@ -336,3 +339,200 @@
     backdrop-filter: none;
   }
 }
+
+/* ============================================================================
+   THE PAGES ROUND, 1 Oct 2026 — the routes with no canvas board, moved onto
+   the vocabulary the boards settled. Nothing here is a new shape: every card
+   is the 30% panel, every read-only pill is glass.
+   ========================================================================== */
+
+/* ⚠️ THE BARE-CANVAS CARD IS THE PANEL NOW. `canvas-card` (globals.css) was
+   v2's hand-tuned tint held up by five shadows and a grain; PROGRESS's face
+   and gallery cards, the recap's blocks and every `SkinProfileTiles` card
+   carry it. In lux-v3 a card is the panel — 30% frost, a glass edge, a rim,
+   12 blur — at DataCard's 24 radius, so the cards on `/progress` stop being
+   two materials side by side. Doubled class, as the original, and this file
+   loads last. The grain goes with the shadows. */
+.canvas-card.canvas-card {
+  background: var(--color-panel);
+  border: var(--border-width-hairline) solid var(--color-border-panel);
+  box-shadow: inset 0 1px 0 var(--color-rim-panel);
+  -webkit-backdrop-filter: blur(12px);
+  backdrop-filter: blur(12px);
+}
+
+.canvas-card.canvas-card::after {
+  display: none;
+}
+
+@media (prefers-reduced-transparency: reduce) {
+  .canvas-card.canvas-card {
+    background: var(--color-panel);
+    -webkit-backdrop-filter: none;
+    backdrop-filter: none;
+  }
+}
+
+/* ⚠️ THE ICONS ARE SMALLER, BY KIND — asked for directly 1 Oct 2026 ("reduce
+   the icon size for all the x and dropdown icons and other icon components",
+   then "the plus is fine here but the x are way too big"). Every ✕ and
+   chevron draws at 60% of the box its caller sized, every other small glyph
+   (search, camera, note, sparkle …) at 85%; the plus, the arrows and the nav
+   set are untouched. `scale`, not `transform` or a width: the layout box —
+   and so every row height and 44 target — stays exactly where it was, and it
+   composes with a caller's own `transform` (a chevron's open rotation). Tag
+   a new glyph with `kind` in icons.tsx to put it in a family. */
+svg[data-lux-icon="close"],
+svg[data-lux-icon="chevron"] {
+  scale: 0.6;
+}
+
+svg[data-lux-icon="glyph"] {
+  scale: 0.85;
+}
+
+/* ============================================================================
+   THE FACE ENTRANCE — 1 Oct 2026, asked for directly ("the face diagram …
+   appear with motions"). Every face card — step 1's, PROGRESS's, the recap's —
+   builds itself the first time it is in view (`MotionObserver.tsx`):
+
+     0ms     the drawing fades in and settles from 0.96
+     250ms   the region pills arrive one by one, 45 apart, from 0.85
+     700ms   the callout leaders draw out to their symptoms; the anchors and
+             the symptom pills follow
+
+   KEYFRAMES, AND HERE, NOT IN THE MODULE: the parts already carry their own
+   transitions (selection, hover, the callouts' draw on Save) and a keyframe
+   runs beside a transition without replacing it; a module would localise the
+   keyframe names. Keyed on `[data-inview]:not([data-settled])`, so a callout
+   drawn by `Save` later takes its own @starting-style draw, not this delay.
+   `backwards` holds each part hidden through its delay and lets go after.
+   ========================================================================== */
+@keyframes lux-face-art {
+  from {
+    opacity: 0;
+    scale: 0.96;
+  }
+}
+
+@keyframes lux-face-pop {
+  from {
+    opacity: 0;
+    scale: 0.85;
+  }
+}
+
+@keyframes lux-face-draw {
+  from {
+    stroke-dashoffset: 1;
+  }
+}
+
+@keyframes lux-face-fade {
+  from {
+    opacity: 0;
+  }
+}
+
+/* (0,5,0) — doubled attributes, so the hold outranks the parts' own
+   opacity rules (a read-only face dims unpicked pills at (0,4,0)) */
+[data-motion="face"][data-motion]:not([data-inview]) [data-part][data-part] {
+  opacity: 0;
+}
+
+[data-motion="face"][data-inview]:not([data-settled]) [data-part="art"] {
+  animation: lux-face-art var(--duration-slower) var(--ease-standard) backwards;
+}
+
+[data-motion="face"][data-inview]:not([data-settled]) [data-part="region"] {
+  animation: lux-face-pop var(--duration-slow) var(--ease-standard) backwards;
+  animation-delay: calc(250ms + var(--i, 0) * 45ms);
+}
+
+[data-motion="face"][data-inview]:not([data-settled]) [data-part="leader"] {
+  animation: lux-face-draw var(--duration-slower) var(--ease-standard) 700ms backwards;
+}
+
+[data-motion="face"][data-inview]:not([data-settled]) [data-part="anchor"] {
+  animation: lux-face-fade var(--duration-slow) var(--ease-standard) 800ms backwards;
+}
+
+[data-motion="face"][data-inview]:not([data-settled]) [data-part="callout"] {
+  animation: lux-face-pop var(--duration-slow) var(--ease-standard) 950ms backwards;
+}
+
+/* ============================================================================
+   THE PRIMARY BUTTON'S RIM LIGHT ORBITS — 1 Oct 2026, asked for directly
+   ("right now the shiny border goes around when I move the mouse … make it go
+   around slowly automatically just by hovering"). `.specular`'s two streaks
+   (globals.css) used to face the pointer via `trackSpecular`; on hover they
+   now circle the pill on their own, one turn every 4.5s, linear, for as long
+   as the pointer rests there. `--specular-angle` is a registered <angle>, so
+   it animates. The fade in and out is still `.specular`'s own opacity.
+   Reduced motion: the global rule runs one 0.01ms iteration, which ends where
+   it began, so the light simply sits still.
+   ========================================================================== */
+@keyframes lux-specular-orbit {
+  from {
+    --specular-angle: 0deg;
+  }
+  to {
+    --specular-angle: 360deg;
+  }
+}
+
+:is(a, button):hover:not(:disabled) > .specular {
+  animation: lux-specular-orbit 4.5s linear infinite;
+}
+
+/* ============================================================================
+   THE RISE ENTRANCE — 1 Oct 2026, asked for directly ("animate the elements
+   here too … make them appear with animation", on step 1). A reusable pair,
+   triggered once in view by `MotionObserver.tsx`:
+
+     data-motion="rise"        each CHILD fades up 10px and settles from 0.96,
+                               40ms after the one before (to the 12th)
+     data-motion="rise-self"   the element itself does, after `--rise-delay`
+
+   Keyframes, here and not in a module, so they run beside the controls' own
+   transitions (a chip's selection, a button's hover) without replacing them,
+   and keyed on `:not([data-settled])` so nothing re-plays once it has landed.
+   The hold is (0,3,0)+ so it outranks a disabled control's own opacity.
+   ========================================================================== */
+@keyframes lux-rise {
+  from {
+    opacity: 0;
+    translate: 0 10px;
+    scale: 0.96;
+  }
+}
+
+[data-motion="rise"][data-motion]:not([data-inview]) > * {
+  opacity: 0;
+}
+
+[data-motion="rise-self"][data-motion]:not([data-inview]) {
+  opacity: 0;
+}
+
+[data-motion="rise"][data-inview]:not([data-settled]) > * {
+  animation: lux-rise var(--duration-slow) var(--ease-standard) backwards;
+  animation-delay: calc(var(--rise-delay, 0ms) + var(--rise-i, 0) * 40ms);
+}
+
+[data-motion="rise-self"][data-inview]:not([data-settled]) {
+  animation: lux-rise var(--duration-slow) var(--ease-standard) backwards;
+  animation-delay: var(--rise-delay, 0ms);
+}
+
+[data-motion="rise"] > :nth-child(2) { --rise-i: 1; }
+[data-motion="rise"] > :nth-child(3) { --rise-i: 2; }
+[data-motion="rise"] > :nth-child(4) { --rise-i: 3; }
+[data-motion="rise"] > :nth-child(5) { --rise-i: 4; }
+[data-motion="rise"] > :nth-child(6) { --rise-i: 5; }
+[data-motion="rise"] > :nth-child(7) { --rise-i: 6; }
+[data-motion="rise"] > :nth-child(8) { --rise-i: 7; }
+[data-motion="rise"] > :nth-child(9) { --rise-i: 8; }
+[data-motion="rise"] > :nth-child(10) { --rise-i: 9; }
+[data-motion="rise"] > :nth-child(11) { --rise-i: 10; }
+[data-motion="rise"] > :nth-child(n + 12) { --rise-i: 11; }

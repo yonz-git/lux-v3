@@ -374,30 +374,99 @@ function demoChanges(i: number, severities: readonly number[]): string[] {
   return DEMO_PROFILE.symptoms.map((s) => `${prefix} ${s.toLowerCase()}`);
 }
 
+/* ---------------------------------------------------------------------------
+   TREND C — the chart on PROGRESS, lux-v3 (1 Oct 2026, picked on the design
+   canvas): three equal severity bands, a line through the check-ins over the
+   last fortnight with every day labelled, and a mark where a product started.
+   -------------------------------------------------------------------------- */
+
+/** The chart's window: today and the 13 days before it — the most days that
+ *  still label one by one on a phone ("it should show each day"). */
+export const TREND_DAYS = 14;
+
 /**
- * The line under the chart — "Trending: Improving — symptoms decreased 57%
- * since start".
+ * The chart's three bands, bottom to top, drawn as EQUAL stripes — asked for
+ * directly on the canvas ("mild moderate severe spacing should be equal").
  *
- * Computed from the series rather than hardcoded from the comp, whose own
- * numbers do not agree with its plotted points. Returns null while there is
- * nothing to compare against; one check-in is not a trend.
+ * ⚠️ FOLDED FROM `severityLabel`'s FIVE, SO A DOT'S BAND IS ALWAYS THE WORD THE
+ * CHECK-IN DETAIL USES FOR THAT DAY: Clear and Mild are the bottom band
+ * (0–3), Moderate the middle (4–6), Severe and Very severe the top (7–10). The
+ * edges sit at 3.5 and 6.5 so no whole-number severity lands on a line. The
+ * bands are equal on screen and unequal on the scale, so the y mapping is
+ * piecewise — see `trendHeight`.
  */
-export function trendSummary(checkIns: CheckIn[]): string | null {
+export const TREND_BANDS = [
+  { label: "Mild", from: 0, to: 3.5 },
+  { label: "Moderate", from: 3.5, to: 6.5 },
+  { label: "Severe", from: 6.5, to: SEVERITY_MAX },
+] as const;
+
+export type TrendBand = (typeof TREND_BANDS)[number]["label"];
+
+function bandIndex(severity: number): number {
+  const i = TREND_BANDS.findIndex((b) => severity <= b.to);
+  return i === -1 ? TREND_BANDS.length - 1 : i;
+}
+
+export function trendBand(severity: number): TrendBand {
+  return TREND_BANDS[bandIndex(severity)].label;
+}
+
+/** Where a severity sits on the chart: 0 at the floor, 1 at the top, each band
+ *  a third of the height. */
+export function trendHeight(severity: number): number {
+  const clamped = Math.min(Math.max(severity, 0), SEVERITY_MAX);
+  const i = bandIndex(clamped);
+  const band = TREND_BANDS[i];
+  return (i + (clamped - band.from) / (band.to - band.from)) / TREND_BANDS.length;
+}
+
+/** The window's days, oldest first, ending today. */
+export function trendDays(today: Date): Date[] {
+  return Array.from({ length: TREND_DAYS }, (_, i) =>
+    addDays(today, i - (TREND_DAYS - 1))
+  );
+}
+
+/**
+ * The one-line reading over the chart — "From moderate to mild in 10 days".
+ *
+ * ⚠️ IT REPLACES "Trending: Improving, symptoms decreased 89% since start",
+ * which put a percentage on a felt 0–10 scale and measured it from a day the
+ * chart no longer shows. The reading names the bands the line actually moved
+ * between, over the check-ins in the window. It says how the skin moved and
+ * nothing about why. Null while there is nothing to compare: one check-in is
+ * not a trend.
+ */
+export function trendReading(checkIns: CheckIn[]): string | null {
   if (checkIns.length < 2) return null;
 
-  const first = checkIns[0].severity;
-  const last = checkIns[checkIns.length - 1].severity;
-  if (first === 0) return null;
+  const first = checkIns[0];
+  const last = checkIns[checkIns.length - 1];
+  const from = fromIso(first.date);
+  const to = fromIso(last.date);
+  if (!from || !to) return null;
 
-  const change = Math.round(((first - last) / first) * 100);
+  const days = daysBetween(from, to) + 1;
+  const a = trendBand(first.severity).toLowerCase();
+  const b = trendBand(last.severity).toLowerCase();
 
-  if (change > 0) {
-    return `Trending: Improving, symptoms decreased ${change}% since start`;
-  }
-  if (change < 0) {
-    return `Trending: Worsening, symptoms increased ${-change}% since start`;
-  }
-  return "Trending: Steady, symptoms unchanged since start";
+  return a === b ? `Steady at ${a} over ${days} days` : `From ${a} to ${b} in ${days} days`;
+}
+
+/** A product that entered the routine inside the window — the chart's dashed
+ *  line. Read from `addedOn`, the one start date LUX keeps. */
+export type TrendEvent = { date: IsoDate; name: string };
+
+export function trendEvents(
+  products: readonly { name: string; addedOn: string }[],
+  days: readonly Date[]
+): TrendEvent[] {
+  const inWindow = new Set(days.map(toIso));
+  return products
+    .filter((p) => inWindow.has(p.addedOn))
+    .map((p) => ({ date: p.addedOn, name: p.name }))
+    .sort((x, y) => x.date.localeCompare(y.date));
 }
 
 /** "Last check-in: 3 days ago" — the caption under `Check in today`. */
