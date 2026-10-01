@@ -1,0 +1,568 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>LUX v3 design system</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Urbanist:wght@300;400;500;600;700&amp;display=swap" rel="stylesheet">
+<style>
+/* Generated from the YAML in docs/design.md — the source of truth. Edit the .md,
+   then regenerate or edit this mirror in the same change. */
+:root {
+  --color-primary: #313560;
+  --color-primary-start: #485780;
+  --color-primary-hover: #242750;
+  --color-primary-soft: #7980af;
+  --color-on-primary: #ffffff;
+  --color-canvas-start: #e2edf1;
+  --color-canvas-mid: #d3e4e7;
+  --color-canvas-end: #b1cad2;
+  --color-canvas-end-desktop: #bdd6dd;
+  --color-on-surface: #2e2a3f;
+  --color-on-surface-secondary: #4b4b57;
+  --color-on-surface-muted: #63636f;
+  --color-glass: rgba(255, 255, 255, 0.25);
+  --color-glass-strong: rgba(255, 255, 255, 0.40);
+  --color-glass-edge: rgba(255, 255, 255, 0.55);
+  --color-glass-rim: rgba(255, 255, 255, 0.80);
+  --color-panel: rgba(244, 254, 255, 0.55);
+  --color-panel-rim: rgba(255, 255, 255, 0.90);
+  --color-sheet: rgba(138, 176, 178, 0.30);
+  --color-data-deep: rgba(79, 131, 143, 0.85);
+  --color-progress-track: rgba(236, 248, 249, 0.80);
+  --color-outline: rgba(46, 42, 63, 0.18);
+  --color-success: #5f8a6e;
+  --color-success-ink: #46664f;
+  --color-warning: #c9918e;
+  --color-error: #c65953;
+  --color-symptom: #d3858a;
+  --type-headline-size: 36px;
+  --type-headline-weight: 300;
+  --type-headline-line: 44px;
+  --type-headline-tracking: -0.005em;
+  --type-headline-emphasis-size: 36px;
+  --type-headline-emphasis-weight: 700;
+  --type-headline-emphasis-line: 44px;
+  --type-headline-emphasis-tracking: -0.005em;
+  --type-kicker-size: 16px;
+  --type-kicker-weight: 400;
+  --type-kicker-line: 20px;
+  --type-kicker-tracking: normal;
+  --type-wordmark-size: 20px;
+  --type-wordmark-weight: 700;
+  --type-wordmark-line: 24px;
+  --type-wordmark-tracking: 0.005em;
+  --type-h2-size: 28px;
+  --type-h2-weight: 400;
+  --type-h2-line: 34px;
+  --type-h2-tracking: normal;
+  --type-page-title-size: 22px;
+  --type-page-title-weight: 400;
+  --type-page-title-line: 28px;
+  --type-page-title-tracking: normal;
+  --type-h4-size: 20px;
+  --type-h4-weight: 400;
+  --type-h4-line: 24px;
+  --type-h4-tracking: normal;
+  --type-panel-label-size: 18px;
+  --type-panel-label-weight: 400;
+  --type-panel-label-line: 22px;
+  --type-panel-label-tracking: normal;
+  --type-row-title-size: 16px;
+  --type-row-title-weight: 500;
+  --type-row-title-line: 20px;
+  --type-row-title-tracking: normal;
+  --type-body-lg-size: 18px;
+  --type-body-lg-weight: 400;
+  --type-body-lg-line: 24px;
+  --type-body-lg-tracking: normal;
+  --type-body-size: 16px;
+  --type-body-weight: 400;
+  --type-body-line: 22px;
+  --type-body-tracking: normal;
+  --type-body-sm-size: 14px;
+  --type-body-sm-weight: 400;
+  --type-body-sm-line: 20px;
+  --type-body-sm-tracking: normal;
+  --type-chip-size: 16px;
+  --type-chip-weight: 400;
+  --type-chip-line: 20px;
+  --type-chip-tracking: normal;
+  --type-label-size: 14px;
+  --type-label-weight: 500;
+  --type-label-line: 20px;
+  --type-label-tracking: normal;
+  --type-button-size: 15px;
+  --type-button-weight: 500;
+  --type-button-line: 20px;
+  --type-button-tracking: normal;
+  --type-button-sm-size: 14px;
+  --type-button-sm-weight: 500;
+  --type-button-sm-line: 20px;
+  --type-button-sm-tracking: normal;
+  --type-label-sm-size: 12px;
+  --type-label-sm-weight: 500;
+  --type-label-sm-line: 16px;
+  --type-label-sm-tracking: normal;
+  --type-caption-size: 12px;
+  --type-caption-weight: 400;
+  --type-caption-line: 16px;
+  --type-caption-tracking: normal;
+  --type-overline-size: 12px;
+  --type-overline-weight: 600;
+  --type-overline-line: 16px;
+  --type-overline-tracking: 0.12em;
+  --type-metric-lg-size: 56px;
+  --type-metric-lg-weight: 300;
+  --type-metric-lg-line: 60px;
+  --type-metric-lg-tracking: normal;
+  --type-metric-md-size: 40px;
+  --type-metric-md-weight: 300;
+  --type-metric-md-line: 40px;
+  --type-metric-md-tracking: normal;
+  --rounded-none: 0px;
+  --rounded-xs: 4px;
+  --rounded-sm: 8px;
+  --rounded-md: 12px;
+  --rounded-lg: 16px;
+  --rounded-xl: 20px;
+  --rounded-media: 22px;
+  --rounded-2xl: 24px;
+  --rounded-panel: 28px;
+  --rounded-3xl: 32px;
+  --rounded-sheet: 36px;
+  --rounded-sheet-foot: 44px;
+  --rounded-full: 999px;
+  --space-2xs: 2px;
+  --space-xs: 4px;
+  --space-sm: 8px;
+  --space-md: 12px;
+  --space-lg: 16px;
+  --space-xl: 20px;
+  --space-2xl: 24px;
+  --space-3xl: 32px;
+  --space-4xl: 40px;
+  --space-5xl: 48px;
+  --space-6xl: 64px;
+  --space-7xl: 80px;
+  --space-8xl: 96px;
+  --space-9xl: 120px;
+  --space-group: 4px;
+  --space-inset: 8px;
+  --space-gutter: 24px;
+  --space-panel: 32px;
+  --space-section: 48px;
+  --canvas: linear-gradient(165deg, var(--color-canvas-start) 0%, var(--color-canvas-mid) 50%, var(--color-canvas-end) 100%);
+  --gradient-primary: linear-gradient(90deg, var(--color-primary-start), var(--color-primary));
+  --gradient-primary-hover: linear-gradient(90deg, var(--color-primary), var(--color-primary-start));
+  --shadow-primary: 0 8px 18px rgba(49, 53, 96, 0.3), inset 0 1px 0 rgba(255, 255, 255, 0.25);
+  --shadow-glass: inset 0 1px 0 var(--color-glass-rim);
+  --shadow-panel: inset 0 1px 0 var(--color-panel-rim);
+  --shadow-sheet: inset 0 1px 0 rgba(255, 255, 255, 0.7), 0 14px 30px rgba(15, 10, 30, 0.35);
+}
+* { box-sizing: border-box; }
+body { margin: 0; font-family: "Urbanist", system-ui, sans-serif; color: var(--color-on-surface); background: var(--canvas) fixed; }
+code { font-family: ui-monospace, SFMono-Regular, Menlo, monospace; font-size: 12px; }
+button { font-family: inherit; }
+button:focus-visible, a:focus-visible { outline: 2px solid var(--color-primary); outline-offset: 2px; }
+.t-headline { font-size: var(--type-headline-size); font-weight: var(--type-headline-weight); line-height: var(--type-headline-line); letter-spacing: var(--type-headline-tracking); margin: 0; }
+.t-headline-emphasis { font-size: var(--type-headline-emphasis-size); font-weight: var(--type-headline-emphasis-weight); line-height: var(--type-headline-emphasis-line); letter-spacing: var(--type-headline-emphasis-tracking); margin: 0; }
+.t-kicker { font-size: var(--type-kicker-size); font-weight: var(--type-kicker-weight); line-height: var(--type-kicker-line); letter-spacing: var(--type-kicker-tracking); margin: 0; }
+.t-wordmark { font-size: var(--type-wordmark-size); font-weight: var(--type-wordmark-weight); line-height: var(--type-wordmark-line); letter-spacing: var(--type-wordmark-tracking); margin: 0; }
+.t-h2 { font-size: var(--type-h2-size); font-weight: var(--type-h2-weight); line-height: var(--type-h2-line); letter-spacing: var(--type-h2-tracking); margin: 0; }
+.t-page-title { font-size: var(--type-page-title-size); font-weight: var(--type-page-title-weight); line-height: var(--type-page-title-line); letter-spacing: var(--type-page-title-tracking); margin: 0; }
+.t-h4 { font-size: var(--type-h4-size); font-weight: var(--type-h4-weight); line-height: var(--type-h4-line); letter-spacing: var(--type-h4-tracking); margin: 0; }
+.t-panel-label { font-size: var(--type-panel-label-size); font-weight: var(--type-panel-label-weight); line-height: var(--type-panel-label-line); letter-spacing: var(--type-panel-label-tracking); margin: 0; }
+.t-row-title { font-size: var(--type-row-title-size); font-weight: var(--type-row-title-weight); line-height: var(--type-row-title-line); letter-spacing: var(--type-row-title-tracking); margin: 0; }
+.t-body-lg { font-size: var(--type-body-lg-size); font-weight: var(--type-body-lg-weight); line-height: var(--type-body-lg-line); letter-spacing: var(--type-body-lg-tracking); margin: 0; }
+.t-body { font-size: var(--type-body-size); font-weight: var(--type-body-weight); line-height: var(--type-body-line); letter-spacing: var(--type-body-tracking); margin: 0; }
+.t-body-sm { font-size: var(--type-body-sm-size); font-weight: var(--type-body-sm-weight); line-height: var(--type-body-sm-line); letter-spacing: var(--type-body-sm-tracking); margin: 0; }
+.t-chip { font-size: var(--type-chip-size); font-weight: var(--type-chip-weight); line-height: var(--type-chip-line); letter-spacing: var(--type-chip-tracking); margin: 0; }
+.t-label { font-size: var(--type-label-size); font-weight: var(--type-label-weight); line-height: var(--type-label-line); letter-spacing: var(--type-label-tracking); margin: 0; }
+.t-button { font-size: var(--type-button-size); font-weight: var(--type-button-weight); line-height: var(--type-button-line); letter-spacing: var(--type-button-tracking); margin: 0; }
+.t-button-sm { font-size: var(--type-button-sm-size); font-weight: var(--type-button-sm-weight); line-height: var(--type-button-sm-line); letter-spacing: var(--type-button-sm-tracking); margin: 0; }
+.t-label-sm { font-size: var(--type-label-sm-size); font-weight: var(--type-label-sm-weight); line-height: var(--type-label-sm-line); letter-spacing: var(--type-label-sm-tracking); margin: 0; }
+.t-caption { font-size: var(--type-caption-size); font-weight: var(--type-caption-weight); line-height: var(--type-caption-line); letter-spacing: var(--type-caption-tracking); margin: 0; }
+.t-overline { font-size: var(--type-overline-size); font-weight: var(--type-overline-weight); line-height: var(--type-overline-line); letter-spacing: var(--type-overline-tracking); margin: 0; }
+.t-metric-lg { font-size: var(--type-metric-lg-size); font-weight: var(--type-metric-lg-weight); line-height: var(--type-metric-lg-line); letter-spacing: var(--type-metric-lg-tracking); margin: 0; }
+.t-metric-md { font-size: var(--type-metric-md-size); font-weight: var(--type-metric-md-weight); line-height: var(--type-metric-md-line); letter-spacing: var(--type-metric-md-tracking); margin: 0; }
+.page { max-width: 1120px; margin: 0 auto; padding: var(--space-4xl) var(--space-gutter) var(--space-9xl); display: flex; flex-direction: column; gap: var(--space-6xl); }
+.page > header { display: flex; flex-direction: column; gap: var(--space-sm); }
+section { display: flex; flex-direction: column; gap: var(--space-xl); }
+section > h2 { border-bottom: 1px solid var(--color-glass-edge); padding-bottom: var(--space-sm); }
+.t-overline { text-transform: uppercase; }
+.group { margin: var(--space-sm) 0 0; color: var(--color-on-surface-muted); text-transform: uppercase; letter-spacing: 0.08em; }
+.meta, .muted { color: var(--color-on-surface-muted); }
+ul { margin: 0; padding: 0; list-style: none; }
+.swatches { display: grid; grid-template-columns: repeat(auto-fill, minmax(150px, 1fr)); gap: var(--space-lg); }
+.swatch { display: flex; flex-direction: column; gap: var(--space-xs); font-size: 12px; }
+.chip-fill { display: block; height: 64px; border-radius: var(--rounded-md); background: repeating-conic-gradient(rgba(46,42,63,0.06) 0 25%, transparent 0 50%) 0 0 / 12px 12px; overflow: hidden; box-shadow: inset 0 0 0 1px var(--color-glass-edge); }
+.chip-fill > span { display: flex; align-items: flex-end; height: 100%; padding: var(--space-sm); font-weight: 500; }
+.type-list li { display: grid; grid-template-columns: 200px 1fr; gap: var(--space-lg); align-items: baseline; padding: var(--space-sm) 0; }
+.spacing li { display: grid; grid-template-columns: 140px 70px 60px; align-items: center; gap: var(--space-md); font-size: 12px; }
+.bar { display: block; height: 12px; border-radius: var(--rounded-xs); background: var(--color-primary); }
+.radii { display: flex; flex-wrap: wrap; gap: var(--space-xl); }
+.radii li { display: flex; flex-direction: column; align-items: center; gap: var(--space-xs); font-size: 12px; }
+.rbox { width: 88px; height: 88px; background: var(--color-panel); border: 1px solid var(--color-glass-edge); box-shadow: var(--shadow-panel); }
+.row { display: flex; flex-wrap: wrap; align-items: center; gap: var(--space-md); }
+.stack { display: flex; flex-direction: column; gap: var(--space-sm); max-width: 360px; }
+.label { font-size: 12px; color: var(--color-on-surface-muted); }
+.cell { display: flex; flex-direction: column; gap: var(--space-sm); align-items: flex-start; }
+.grid2 { display: grid; grid-template-columns: repeat(auto-fit, minmax(340px, 1fr)); gap: var(--space-2xl); align-items: start; }
+/* elevation */
+.elev { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: var(--space-xl); }
+.elev > div { height: 120px; padding: var(--space-lg); font-size: 14px; }
+.glass { background: var(--color-glass); border: 1px solid var(--color-glass-edge); box-shadow: var(--shadow-glass); backdrop-filter: blur(10px); -webkit-backdrop-filter: blur(10px); }
+.panel { background: var(--color-panel); border: 1px solid var(--color-glass-edge); box-shadow: var(--shadow-panel); backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px); border-radius: var(--rounded-panel); padding: var(--space-gutter); }
+/* buttons */
+.btn { position: relative; display: inline-flex; align-items: center; justify-content: center; gap: var(--space-sm); height: 56px; padding: 0 var(--space-2xl); border-radius: var(--rounded-full); border: 1px solid transparent; font-size: var(--type-button-size); font-weight: var(--type-button-weight); line-height: var(--type-button-line); cursor: pointer; }
+.btn-primary { color: var(--color-on-primary); background: var(--gradient-primary) border-box; box-shadow: var(--shadow-primary); }
+.btn-primary:hover, .btn-primary.is-hover { background: var(--gradient-primary-hover) border-box; }
+.btn:disabled { opacity: 0.4; cursor: default; }
+.btn-secondary { color: var(--color-on-surface); background: var(--color-glass); border-color: var(--color-glass-edge); box-shadow: var(--shadow-glass); }
+.btn-secondary:hover, .btn-secondary.is-hover { background: var(--color-glass-strong); }
+.btn-small { height: 36px; padding: 0 var(--space-lg); gap: var(--space-xs); font-size: var(--type-button-sm-size); color: var(--color-on-surface); background: var(--color-glass); border-color: var(--color-glass-edge); box-shadow: var(--shadow-glass); }
+.btn-small svg { color: var(--color-primary); }
+.round { width: 56px; height: 56px; display: inline-grid; place-items: center; border-radius: 50%; border: 1px solid transparent; cursor: pointer; padding: 0; }
+.round.glass { color: var(--color-primary); }
+.round.primary { color: var(--color-on-primary); background: var(--gradient-primary); box-shadow: var(--shadow-primary); }
+.round.outline { color: var(--color-on-surface); background: transparent; border-color: var(--color-outline); }
+.round.back { width: 48px; height: 48px; }
+.round.sm { width: 44px; height: 44px; }
+/* chips + rows + tags + fields */
+.chip { display: inline-flex; align-items: center; gap: 9px; height: 56px; padding: 0 var(--space-xl); border-radius: var(--rounded-full); border: 1px solid var(--color-glass-edge); background: var(--color-glass); box-shadow: var(--shadow-glass); color: var(--color-on-surface-secondary); font-size: var(--type-chip-size); line-height: var(--type-chip-line); cursor: pointer; }
+.chip svg { color: var(--color-primary); }
+.chip:hover, .chip.is-hover { background: var(--color-glass-strong); }
+.chip[aria-checked="true"] { color: var(--color-on-primary); border-color: transparent; background: linear-gradient(135deg, var(--color-primary) 35%, var(--color-primary-hover) 100%); }
+.chip[aria-checked="true"] svg { color: var(--color-on-primary); }
+.opt { display: flex; align-items: center; justify-content: space-between; height: 56px; padding: 0 var(--space-xl); border-radius: var(--rounded-lg); border: 1px solid var(--color-glass-edge); background: var(--color-glass); box-shadow: var(--shadow-glass); font-size: var(--type-label-size); font-weight: var(--type-label-weight); color: var(--color-on-surface); cursor: pointer; width: 100%; }
+.opt .sel { width: 22px; height: 22px; border-radius: 50%; border: 1.4px solid #777e91; display: grid; place-items: center; }
+.opt[aria-checked="true"] { border-color: var(--color-primary); background: var(--color-glass-strong); }
+.opt[aria-checked="true"] .sel { border: 1.6px solid var(--color-primary); }
+.opt[aria-checked="true"] .sel::after { content: ""; width: 11px; height: 11px; border-radius: 50%; background: var(--color-primary); }
+.tag { display: inline-flex; align-items: center; height: 26px; padding: 0 var(--space-md); border-radius: var(--rounded-full); border: 1px solid var(--color-glass-edge); background: var(--color-glass); color: var(--color-on-surface-secondary); }
+.tag.brand { background: var(--color-primary); color: var(--color-on-primary); border-color: transparent; }
+.field { display: flex; align-items: center; gap: var(--space-md); height: 56px; padding: 0 var(--space-xl); border-radius: var(--rounded-full); border: 1px solid var(--color-glass-edge); background: var(--color-glass); box-shadow: var(--shadow-glass); }
+.field input { flex: 1; min-width: 0; height: 100%; border: 0; background: none; outline: none; font: inherit; font-size: var(--type-body-size); color: var(--color-on-surface); }
+.field input::placeholder { color: var(--color-on-surface-muted); }
+.field:focus-within { outline: 2px solid var(--color-primary); outline-offset: 2px; }
+.field svg { color: var(--color-primary); flex: none; }
+/* sheet */
+.sheet { max-width: 390px; padding: var(--space-xl) var(--space-inset) var(--space-inset); display: flex; flex-direction: column; gap: var(--space-lg); border-radius: var(--rounded-sheet) var(--rounded-sheet) var(--rounded-sheet-foot) var(--rounded-sheet-foot); background: var(--color-sheet); box-shadow: var(--shadow-sheet); backdrop-filter: blur(16px) saturate(1.4); -webkit-backdrop-filter: blur(16px) saturate(1.4); }
+.sheet-head { display: flex; align-items: center; justify-content: space-between; padding-left: var(--space-lg); }
+.sheet-title { display: flex; align-items: center; gap: var(--space-md); }
+.orb { width: 50px; height: 50px; border-radius: 50%; display: grid; place-items: center; font-size: 10px; color: var(--color-on-surface-muted); }
+.sheet .panel { padding: var(--space-panel) var(--space-gutter) var(--space-gutter); display: flex; flex-direction: column; gap: var(--space-xl); }
+.panel-label { display: flex; align-items: center; gap: 11px; }
+.panel-label svg { color: var(--color-primary); }
+.cluster { display: flex; flex-wrap: wrap; gap: var(--space-group); }
+/* nav B */
+.navbar { display: inline-flex; align-items: center; gap: var(--space-group); padding: 6px; border-radius: var(--rounded-full); border: 1px solid var(--color-glass-edge); background: var(--color-glass); box-shadow: var(--shadow-glass), 0 8px 24px rgba(46, 42, 63, 0.08); backdrop-filter: blur(16px); -webkit-backdrop-filter: blur(16px); }
+.nav-item { width: 56px; height: 56px; display: grid; place-items: center; border-radius: 50%; border: 1px solid var(--color-glass-edge); background: var(--color-glass); box-shadow: var(--shadow-glass); color: var(--color-primary); cursor: pointer; padding: 0; }
+.nav-item[aria-current="page"] { width: auto; display: inline-flex; gap: var(--space-sm); padding: 0 22px 0 18px; border-radius: var(--rounded-full); border-color: transparent; background: var(--gradient-primary); box-shadow: var(--shadow-primary); color: var(--color-on-primary); font-size: var(--type-label-size); font-weight: var(--type-label-weight); }
+/* progress v2 */
+.progress { width: 80%; max-width: 400px; margin: 0 auto; height: 4px; border-radius: var(--rounded-full); background: var(--color-progress-track); overflow: hidden; }
+.progress > span { display: block; height: 100%; width: 40%; border-radius: var(--rounded-full); background: var(--color-primary); }
+.flow-head { display: flex; align-items: center; justify-content: space-between; }
+/* trend C */
+.chart { position: relative; width: 292px; height: 184px; }
+.chart svg { position: absolute; left: 0; top: 24px; }
+.event { position: absolute; left: 95px; top: 0; padding: 4px 10px; border-radius: var(--rounded-full); background: var(--color-glass-strong); border: 1px solid var(--color-glass-edge); box-shadow: var(--shadow-glass); font-size: 12px; line-height: 16px; font-weight: 500; white-space: nowrap; }
+.days { position: relative; height: 16px; width: 292px; font-size: 12px; line-height: 16px; color: var(--color-on-surface-muted); font-variant-numeric: tabular-nums; }
+.days .day { position: absolute; top: 0; transform: translateX(-50%); }
+.days .today { color: var(--color-primary); font-weight: 600; }
+/* calendar A */
+.cal-head { display: flex; align-items: center; justify-content: space-between; }
+.cal { display: grid; grid-template-columns: repeat(7, minmax(0, 1fr)); row-gap: 4px; text-align: center; }
+.cal .wd { font-size: 12px; line-height: 16px; font-weight: 500; color: var(--color-on-surface-muted); padding-bottom: 4px; }
+.cal-cell { height: 40px; display: grid; place-items: center; }
+.cal-day { width: 36px; height: 36px; display: grid; place-items: center; border-radius: 50%; border: 0; padding: 0; background: transparent; font-size: 14px; line-height: 20px; color: var(--color-on-surface-secondary); font-variant-numeric: tabular-nums; }
+.cal-day.checked { background: var(--color-primary); color: var(--color-on-primary); font-weight: 500; cursor: pointer; }
+.cal-day.today { background: var(--color-glass-strong); box-shadow: inset 0 0 0 1.5px var(--color-primary); color: var(--color-primary); font-weight: 600; }
+.cal-day.future { color: var(--color-on-surface-muted); }
+.legend { display: flex; gap: var(--space-lg); font-size: 12px; line-height: 16px; color: var(--color-on-surface-muted); }
+.legend span { display: inline-flex; align-items: center; gap: 6px; }
+/* scores B */
+.scores { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: var(--space-sm); max-width: 342px; }
+.score-card { padding: var(--space-lg); display: flex; flex-direction: column; align-items: flex-start; gap: var(--space-md); border-radius: var(--rounded-2xl); background: var(--color-panel); border: 1px solid var(--color-glass-edge); box-shadow: var(--shadow-panel); }
+.ring { position: relative; width: 64px; height: 64px; }
+.ring svg { display: block; }
+.ring-num { position: absolute; inset: 0; display: grid; place-items: center; font-weight: 300; font-variant-numeric: tabular-nums; }
+.score-name { display: flex; flex-direction: column; gap: 2px; min-height: 54px; }
+.band-pill { display: inline-flex; align-items: center; gap: 6px; height: 24px; padding: 0 10px; border-radius: var(--rounded-full); background: var(--color-glass-strong); border: 1px solid var(--color-glass-edge); }
+.dot { width: 8px; height: 8px; border-radius: 50%; }
+/* do / don't */
+.dd { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: var(--space-2xl); }
+.dd ul { display: flex; flex-direction: column; gap: var(--space-md); }
+.dd li { display: flex; gap: var(--space-sm); font-size: 16px; line-height: 22px; }
+.dd .mark { flex: none; width: 22px; font-weight: 700; }
+.dd .do .mark { color: var(--color-success-ink); }
+.dd .dont .mark { color: var(--color-error); }
+@media (prefers-reduced-transparency: reduce) {
+  .glass, .chip, .opt, .field, .nav-item, .navbar, .btn-secondary, .btn-small { background: #eef3f5; backdrop-filter: none; -webkit-backdrop-filter: none; }
+  .panel { background: #eef6f7; backdrop-filter: none; }
+}
+</style>
+</head>
+<body>
+<main class="page">
+<header>
+<h1 class="t-headline">LUX v3 <b style="font-weight: 700; color: var(--color-primary)">design system</b></h1>
+<p class="t-body">Glass over a pale sage canvas, one indigo, Urbanist, round controls.</p>
+<p class="t-caption muted">The human-readable mirror of <code>docs/design.md</code>, which is the source of truth. Every value on this page is a CSS variable generated from its YAML.</p>
+</header>
+
+<section aria-labelledby="colors"><h2 id="colors" class="t-page-title">Colors</h2>
+<h3 class="t-label-sm group">Brand</h3><ul class="swatches"><li class="swatch"><span class="chip-fill"><span style="background: var(--color-primary); color: var(--color-on-primary)">Aa</span></span><code>primary</code><span class="meta">#313560</span></li><li class="swatch"><span class="chip-fill"><span style="background: var(--color-primary-start); color: var(--color-on-primary)">Aa</span></span><code>primary-start</code><span class="meta">#485780</span></li><li class="swatch"><span class="chip-fill"><span style="background: var(--color-primary-hover); color: var(--color-on-primary)">Aa</span></span><code>primary-hover</code><span class="meta">#242750</span></li><li class="swatch"><span class="chip-fill"><span style="background: var(--color-primary-soft); color: var(--color-on-primary)">Aa</span></span><code>primary-soft</code><span class="meta">#7980AF</span></li><li class="swatch"><span class="chip-fill"><span style="background: var(--color-on-primary); color: var(--color-on-surface)">Aa</span></span><code>on-primary</code><span class="meta">#FFFFFF</span></li></ul>
+<h3 class="t-label-sm group">Canvas</h3><ul class="swatches"><li class="swatch"><span class="chip-fill"><span style="background: var(--color-canvas-start); color: var(--color-on-surface)">Aa</span></span><code>canvas-start</code><span class="meta">#E2EDF1</span></li><li class="swatch"><span class="chip-fill"><span style="background: var(--color-canvas-mid); color: var(--color-on-surface)">Aa</span></span><code>canvas-mid</code><span class="meta">#D3E4E7</span></li><li class="swatch"><span class="chip-fill"><span style="background: var(--color-canvas-end); color: var(--color-on-surface)">Aa</span></span><code>canvas-end</code><span class="meta">#B1CAD2</span></li><li class="swatch"><span class="chip-fill"><span style="background: var(--color-canvas-end-desktop); color: var(--color-on-surface)">Aa</span></span><code>canvas-end-desktop</code><span class="meta">#BDD6DD</span></li></ul>
+<h3 class="t-label-sm group">Ink</h3><ul class="swatches"><li class="swatch"><span class="chip-fill"><span style="background: var(--color-on-surface); color: var(--color-on-primary)">Aa</span></span><code>on-surface</code><span class="meta">#2E2A3F</span></li><li class="swatch"><span class="chip-fill"><span style="background: var(--color-on-surface-secondary); color: var(--color-on-primary)">Aa</span></span><code>on-surface-secondary</code><span class="meta">#4B4B57</span></li><li class="swatch"><span class="chip-fill"><span style="background: var(--color-on-surface-muted); color: var(--color-on-primary)">Aa</span></span><code>on-surface-muted</code><span class="meta">#63636F</span></li></ul>
+<h3 class="t-label-sm group">Glass and surfaces</h3><ul class="swatches"><li class="swatch"><span class="chip-fill"><span style="background: var(--color-glass); color: var(--color-on-surface)">Aa</span></span><code>glass</code><span class="meta">#FFFFFF40</span></li><li class="swatch"><span class="chip-fill"><span style="background: var(--color-glass-strong); color: var(--color-on-surface)">Aa</span></span><code>glass-strong</code><span class="meta">#FFFFFF66</span></li><li class="swatch"><span class="chip-fill"><span style="background: var(--color-glass-edge); color: var(--color-on-surface)">Aa</span></span><code>glass-edge</code><span class="meta">#FFFFFF8C</span></li><li class="swatch"><span class="chip-fill"><span style="background: var(--color-glass-rim); color: var(--color-on-surface)">Aa</span></span><code>glass-rim</code><span class="meta">#FFFFFFCC</span></li><li class="swatch"><span class="chip-fill"><span style="background: var(--color-panel); color: var(--color-on-surface)">Aa</span></span><code>panel</code><span class="meta">#F4FEFF8C</span></li><li class="swatch"><span class="chip-fill"><span style="background: var(--color-panel-rim); color: var(--color-on-surface)">Aa</span></span><code>panel-rim</code><span class="meta">#FFFFFFE6</span></li><li class="swatch"><span class="chip-fill"><span style="background: var(--color-sheet); color: var(--color-on-surface)">Aa</span></span><code>sheet</code><span class="meta">#8AB0B24D</span></li><li class="swatch"><span class="chip-fill"><span style="background: var(--color-data-deep); color: var(--color-on-primary)">Aa</span></span><code>data-deep</code><span class="meta">#4F838FD9</span></li><li class="swatch"><span class="chip-fill"><span style="background: var(--color-progress-track); color: var(--color-on-surface)">Aa</span></span><code>progress-track</code><span class="meta">#ECF8F9CC</span></li><li class="swatch"><span class="chip-fill"><span style="background: var(--color-outline); color: var(--color-on-surface)">Aa</span></span><code>outline</code><span class="meta">#2E2A3F2E</span></li></ul>
+<h3 class="t-label-sm group">Status</h3><ul class="swatches"><li class="swatch"><span class="chip-fill"><span style="background: var(--color-success); color: var(--color-on-primary)">Aa</span></span><code>success</code><span class="meta">#5F8A6E</span></li><li class="swatch"><span class="chip-fill"><span style="background: var(--color-success-ink); color: var(--color-on-primary)">Aa</span></span><code>success-ink</code><span class="meta">#46664F</span></li><li class="swatch"><span class="chip-fill"><span style="background: var(--color-warning); color: var(--color-on-surface)">Aa</span></span><code>warning</code><span class="meta">#C9918E</span></li><li class="swatch"><span class="chip-fill"><span style="background: var(--color-error); color: var(--color-on-primary)">Aa</span></span><code>error</code><span class="meta">#C65953</span></li><li class="swatch"><span class="chip-fill"><span style="background: var(--color-symptom); color: var(--color-on-surface)">Aa</span></span><code>symptom</code><span class="meta">#D3858A</span></li></ul>
+</section>
+
+<section aria-labelledby="type"><h2 id="type" class="t-page-title">Typography — Urbanist</h2>
+<div class="panel" style="background: var(--canvas); max-width: 520px"><p class="t-kicker" style="color: var(--color-on-surface-secondary)">Welcome to</p><p class="t-headline">Your skin,<br><b class="t-headline-emphasis" style="color: var(--color-primary)">one day</b> at a time</p></div>
+<ul class="type-list"><li><span class="meta"><code>headline</code><br>36px / 44px · 300 · -0.005em</span><span class="t-headline">Your skin, one day at a time</span></li>
+<li><span class="meta"><code>headline-emphasis</code><br>36px / 44px · 700 · -0.005em</span><span class="t-headline-emphasis">one day</span></li>
+<li><span class="meta"><code>kicker</code><br>16px / 20px · 400</span><span class="t-kicker">Your skin, one day at a time</span></li>
+<li><span class="meta"><code>wordmark</code><br>20px / 24px · 700 · 0.005em</span><span class="t-wordmark">Your skin, one day at a time</span></li>
+<li><span class="meta"><code>h2</code><br>28px / 34px · 400</span><span class="t-h2">Your skin, one day at a time</span></li>
+<li><span class="meta"><code>page-title</code><br>22px / 28px · 400</span><span class="t-page-title">Your skin, one day at a time</span></li>
+<li><span class="meta"><code>h4</code><br>20px / 24px · 400</span><span class="t-h4">Your skin, one day at a time</span></li>
+<li><span class="meta"><code>panel-label</code><br>18px / 22px · 400</span><span class="t-panel-label">Your skin, one day at a time</span></li>
+<li><span class="meta"><code>row-title</code><br>16px / 20px · 500</span><span class="t-row-title">Your skin, one day at a time</span></li>
+<li><span class="meta"><code>body-lg</code><br>18px / 24px · 400</span><span class="t-body-lg">Your skin, one day at a time</span></li>
+<li><span class="meta"><code>body</code><br>16px / 22px · 400</span><span class="t-body">Your skin, one day at a time</span></li>
+<li><span class="meta"><code>body-sm</code><br>14px / 20px · 400</span><span class="t-body-sm">Your skin, one day at a time</span></li>
+<li><span class="meta"><code>chip</code><br>16px / 20px · 400</span><span class="t-chip">Your skin, one day at a time</span></li>
+<li><span class="meta"><code>label</code><br>14px / 20px · 500</span><span class="t-label">Your skin, one day at a time</span></li>
+<li><span class="meta"><code>button</code><br>15px / 20px · 500</span><span class="t-button">Your skin, one day at a time</span></li>
+<li><span class="meta"><code>button-sm</code><br>14px / 20px · 500</span><span class="t-button-sm">Your skin, one day at a time</span></li>
+<li><span class="meta"><code>label-sm</code><br>12px / 16px · 500</span><span class="t-label-sm">Your skin, one day at a time</span></li>
+<li><span class="meta"><code>caption</code><br>12px / 16px · 400</span><span class="t-caption">Your skin, one day at a time</span></li>
+<li><span class="meta"><code>overline</code><br>12px / 16px · 600 · 0.12em</span><span class="t-overline">REDNESS · LAST 14 DAYS</span></li>
+<li><span class="meta"><code>metric-lg</code><br>56px / 60px · 300</span><span class="t-metric-lg">3 / 10</span></li>
+<li><span class="meta"><code>metric-md</code><br>40px / 40px · 300</span><span class="t-metric-md">3 / 10</span></li></ul>
+</section>
+
+<section aria-labelledby="layout"><h2 id="layout" class="t-page-title">Spacing</h2>
+<p class="t-body-sm muted">The last five are the roles: group, inset, gutter, panel, section.</p>
+<ul class="spacing"><li><span class="bar" style="width: var(--space-2xs)"></span><code>2xs</code><span class="meta">2px</span></li>
+<li><span class="bar" style="width: var(--space-xs)"></span><code>xs</code><span class="meta">4px</span></li>
+<li><span class="bar" style="width: var(--space-sm)"></span><code>sm</code><span class="meta">8px</span></li>
+<li><span class="bar" style="width: var(--space-md)"></span><code>md</code><span class="meta">12px</span></li>
+<li><span class="bar" style="width: var(--space-lg)"></span><code>lg</code><span class="meta">16px</span></li>
+<li><span class="bar" style="width: var(--space-xl)"></span><code>xl</code><span class="meta">20px</span></li>
+<li><span class="bar" style="width: var(--space-2xl)"></span><code>2xl</code><span class="meta">24px</span></li>
+<li><span class="bar" style="width: var(--space-3xl)"></span><code>3xl</code><span class="meta">32px</span></li>
+<li><span class="bar" style="width: var(--space-4xl)"></span><code>4xl</code><span class="meta">40px</span></li>
+<li><span class="bar" style="width: var(--space-5xl)"></span><code>5xl</code><span class="meta">48px</span></li>
+<li><span class="bar" style="width: var(--space-6xl)"></span><code>6xl</code><span class="meta">64px</span></li>
+<li><span class="bar" style="width: var(--space-7xl)"></span><code>7xl</code><span class="meta">80px</span></li>
+<li><span class="bar" style="width: var(--space-8xl)"></span><code>8xl</code><span class="meta">96px</span></li>
+<li><span class="bar" style="width: var(--space-9xl)"></span><code>9xl</code><span class="meta">120px</span></li>
+<li><span class="bar" style="width: var(--space-group)"></span><code>group</code><span class="meta">4px</span></li>
+<li><span class="bar" style="width: var(--space-inset)"></span><code>inset</code><span class="meta">8px</span></li>
+<li><span class="bar" style="width: var(--space-gutter)"></span><code>gutter</code><span class="meta">24px</span></li>
+<li><span class="bar" style="width: var(--space-panel)"></span><code>panel</code><span class="meta">32px</span></li>
+<li><span class="bar" style="width: var(--space-section)"></span><code>section</code><span class="meta">48px</span></li></ul>
+</section>
+
+<section aria-labelledby="radius"><h2 id="radius" class="t-page-title">Radius</h2>
+<ul class="radii"><li><span class="rbox" style="border-radius: var(--rounded-none)"></span><code>none</code><span class="meta">0px</span></li>
+<li><span class="rbox" style="border-radius: var(--rounded-xs)"></span><code>xs</code><span class="meta">4px</span></li>
+<li><span class="rbox" style="border-radius: var(--rounded-sm)"></span><code>sm</code><span class="meta">8px</span></li>
+<li><span class="rbox" style="border-radius: var(--rounded-md)"></span><code>md</code><span class="meta">12px</span></li>
+<li><span class="rbox" style="border-radius: var(--rounded-lg)"></span><code>lg</code><span class="meta">16px</span></li>
+<li><span class="rbox" style="border-radius: var(--rounded-xl)"></span><code>xl</code><span class="meta">20px</span></li>
+<li><span class="rbox" style="border-radius: var(--rounded-media)"></span><code>media</code><span class="meta">22px</span></li>
+<li><span class="rbox" style="border-radius: var(--rounded-2xl)"></span><code>2xl</code><span class="meta">24px</span></li>
+<li><span class="rbox" style="border-radius: var(--rounded-panel)"></span><code>panel</code><span class="meta">28px</span></li>
+<li><span class="rbox" style="border-radius: var(--rounded-3xl)"></span><code>3xl</code><span class="meta">32px</span></li>
+<li><span class="rbox" style="border-radius: var(--rounded-sheet)"></span><code>sheet</code><span class="meta">36px</span></li>
+<li><span class="rbox" style="border-radius: var(--rounded-sheet-foot)"></span><code>sheet-foot</code><span class="meta">44px</span></li>
+<li><span class="rbox" style="border-radius: var(--rounded-full)"></span><code>full</code><span class="meta">999px</span></li></ul>
+</section>
+
+<section aria-labelledby="elevation"><h2 id="elevation" class="t-page-title">Elevation &amp; Depth</h2>
+<div class="elev">
+<div class="glass" style="border-radius: var(--rounded-2xl)"><strong>Glass</strong><br>white 25%, 1px edge, top highlight, 10px blur</div>
+<div class="panel"><strong>Panel</strong><br>frost 55%, 1px edge, top highlight, 12px blur</div>
+<div style="border-radius: var(--rounded-2xl); background: var(--gradient-primary); box-shadow: var(--shadow-primary); color: var(--color-on-primary)"><strong>Primary</strong><br>the one real drop shadow on a control</div>
+<div style="border-radius: var(--rounded-sheet) var(--rounded-sheet) var(--rounded-sheet-foot) var(--rounded-sheet-foot); background: var(--color-sheet); box-shadow: var(--shadow-sheet)"><strong>Sheet</strong><br>sage frost, the deepest shadow</div>
+</div>
+</section>
+
+<section aria-labelledby="components"><h2 id="components" class="t-page-title">Components</h2>
+
+<h3 class="t-panel-label">Buttons</h3>
+<div class="row">
+<div class="cell"><button type="button" class="btn btn-primary">Continue</button><span class="label">button-primary</span></div>
+<div class="cell"><button type="button" class="btn btn-primary is-hover">Continue</button><span class="label">button-primary-hover</span></div>
+<div class="cell"><button type="button" class="btn btn-primary" disabled>Continue</button><span class="label">button-primary-disabled</span></div>
+<div class="cell"><button type="button" class="btn btn-secondary">Not now</button><span class="label">button-secondary</span></div>
+<div class="cell"><button type="button" class="btn btn-secondary is-hover">Not now</button><span class="label">button-secondary-hover</span></div>
+<div class="cell"><button type="button" class="btn btn-small">Save &amp; exit →</button><span class="label">button-small</span></div>
+<div class="cell"><button type="button" class="btn btn-small"><svg width="20" height="20" viewBox="0 0 18 18" fill="none" stroke="currentColor" stroke-width="1.2" stroke-linejoin="round" aria-hidden="true"><rect x="2" y="5" width="14" height="11" rx="2"/><path d="M6 5V3.5A1.5 1.5 0 0 1 7.5 2h3A1.5 1.5 0 0 1 12 3.5V5"/><circle cx="9" cy="10.5" r="2.5"/></svg>Update photo</button><span class="label">button-small, with glyph</span></div>
+</div>
+
+<h3 class="t-panel-label">Round buttons</h3>
+<div class="row">
+<div class="cell"><button type="button" class="round glass" aria-label="Add a note"><svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" aria-hidden="true"><path d="M8 1.5v13M1.5 8h13"/></svg></button><span class="label">icon-button-glass</span></div>
+<div class="cell"><button type="button" class="round glass" aria-label="Take a photo"><svg width="20" height="20" viewBox="0 0 18 18" fill="none" stroke="currentColor" stroke-width="1.2" stroke-linejoin="round" aria-hidden="true"><rect x="2" y="5" width="14" height="11" rx="2"/><path d="M6 5V3.5A1.5 1.5 0 0 1 7.5 2h3A1.5 1.5 0 0 1 12 3.5V5"/><circle cx="9" cy="10.5" r="2.5"/></svg></button><span class="label">icon-button-glass</span></div>
+<div class="cell"><button type="button" class="round primary" aria-label="Continue"><svg width="16" height="14" viewBox="0 0 14 12" fill="none" stroke="currentColor" stroke-width="1.3" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M1 6h11.5M8 1.5 12.5 6 8 10.5"/></svg></button><span class="label">icon-button-primary</span></div>
+<div class="cell"><button type="button" class="round outline" aria-label="Back"><svg width="16" height="14" viewBox="0 0 14 12" fill="none" stroke="currentColor" stroke-width="1.3" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M13 6H1.5M6 1.5 1.5 6 6 10.5"/></svg></button><span class="label">icon-button-outline</span></div>
+<div class="cell"><button type="button" class="round glass back" aria-label="Back"><svg width="16" height="14" viewBox="0 0 14 12" fill="none" stroke="currentColor" stroke-width="1.3" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M13 6H1.5M6 1.5 1.5 6 6 10.5"/></svg></button><span class="label">back-button (48)</span></div>
+</div>
+
+<h3 class="t-panel-label">Chips</h3>
+<div class="row" role="radiogroup" aria-label="How is your skin doing today?">
+<div class="cell"><button type="button" role="radio" aria-checked="false" class="chip">About the same</button><span class="label">chip</span></div>
+<div class="cell"><button type="button" role="radio" aria-checked="false" class="chip is-hover">Slightly worse</button><span class="label">chip-hover</span></div>
+<div class="cell"><button type="button" role="radio" aria-checked="true" class="chip">Slightly better</button><span class="label">chip-selected</span></div>
+<div class="cell"><button type="button" role="radio" aria-checked="false" class="chip"><svg width="12" height="18" viewBox="0 0 12 18" fill="none" stroke="currentColor" stroke-width="1.3" aria-hidden="true"><rect x="1" y="1" width="10" height="16" rx="2"/></svg>With a glyph</button><span class="label">chip, leading glyph</span></div>
+</div>
+
+<h3 class="t-panel-label">Option rows, tags, fields</h3>
+<div class="grid2">
+<div class="stack" role="radiogroup" aria-label="Skin type">
+<button type="button" role="radio" aria-checked="false" class="opt">Dry<span class="sel"></span></button>
+<button type="button" role="radio" aria-checked="true" class="opt">Combination<span class="sel"></span></button>
+<span class="label">option-row · option-row-selected</span>
+</div>
+<div class="stack">
+<div class="row"><span class="tag t-label-sm">Neutral tag</span><span class="tag brand t-label-sm">Brand tag</span></div>
+<span class="label">tag · tag-brand</span>
+<label class="field"><input type="text" placeholder="Anything worth remembering about today" aria-label="Note"></label>
+<span class="label">text-field</span>
+<label class="field"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" aria-hidden="true"><circle cx="10.5" cy="10.5" r="6.5"/><path d="M15.5 15.5 20 20"/></svg><input type="search" placeholder="Search products" aria-label="Search products"></label>
+<span class="label">search-field</span>
+</div>
+</div>
+
+<h3 class="t-panel-label">Sheet and panel</h3>
+<div class="sheet" role="dialog" aria-label="Check in">
+<div class="sheet-head">
+<h4 class="t-page-title sheet-title"><span class="orb glass" aria-hidden="true">orb</span>Check in</h4>
+<button type="button" class="round glass" aria-label="Close"><svg width="14" height="14" viewBox="0 0 13 13" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" aria-hidden="true"><path d="M1.5 1.5l10 10M11.5 1.5l-10 10"/></svg></button>
+</div>
+<div class="panel">
+<p class="t-panel-label panel-label"><svg width="18" height="18" viewBox="0 0 18 18" fill="none" stroke="currentColor" stroke-width="1.2" stroke-linejoin="round" stroke-linecap="round" aria-hidden="true"><path d="M7 3.5c.5 2.8 1.7 4 4.5 4.5-2.8.5-4 1.7-4.5 4.5-.5-2.8-1.7-4-4.5-4.5 2.8-.5 4-1.7 4.5-4.5z"/><path d="M14 1.5v3M12.5 3h3M13.5 12l1.5 1.5M15 12l-1.5 1.5"/></svg>Daily check-in</p>
+<p class="t-body">How is your skin doing today?</p>
+<div class="cluster" role="radiogroup" aria-label="How is your skin doing today?">
+<button type="button" role="radio" aria-checked="false" class="chip">Much better</button>
+<button type="button" role="radio" aria-checked="true" class="chip">Slightly better</button>
+<button type="button" role="radio" aria-checked="false" class="chip">About the same</button>
+<button type="button" role="radio" aria-checked="false" class="chip">Slightly worse</button>
+<button type="button" role="radio" aria-checked="false" class="chip">Much worse</button>
+</div>
+<div class="cluster" style="margin-top: var(--space-2xl)">
+<button type="button" class="round glass" aria-label="Add a note"><svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" aria-hidden="true"><path d="M8 1.5v13M1.5 8h13"/></svg></button>
+<button type="button" class="round glass" aria-label="Take a photo"><svg width="20" height="20" viewBox="0 0 18 18" fill="none" stroke="currentColor" stroke-width="1.2" stroke-linejoin="round" aria-hidden="true"><rect x="2" y="5" width="14" height="11" rx="2"/><path d="M6 5V3.5A1.5 1.5 0 0 1 7.5 2h3A1.5 1.5 0 0 1 12 3.5V5"/><circle cx="9" cy="10.5" r="2.5"/></svg></button>
+<button type="button" class="round primary" aria-label="Save check-in"><svg width="16" height="14" viewBox="0 0 14 12" fill="none" stroke="currentColor" stroke-width="1.3" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M1 6h11.5M8 1.5 12.5 6 8 10.5"/></svg></button>
+</div>
+</div>
+</div>
+<span class="label">sheet · sheet-close · panel — the orb is the app's animated LUX orb; a placeholder here</span>
+
+<h3 class="t-panel-label">Bottom nav</h3>
+<div class="row">
+<nav class="navbar" aria-label="Main">
+<button type="button" class="nav-item" aria-label="My skin"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linejoin="round" aria-hidden="true"><path d="M7.54 22L7.52 19.39 6.59 17.75 5.91 15.3 5.4 14.87 4.32 11.55 4.23 10.42 4.69 10.01 5.11 10.28 5.53 6.77 6.16 5.26 6.92 4.23 9.35 2.55 10.83 2.1 12.18 2 13.59 2.2 14.93 2.7 17.13 4.33 17.88 5.43 18.43 6.77 18.85 10.27 19.39 10.04 19.77 10.62 18.58 14.82 18.05 15.3 17.37 17.75 16.44 19.38 16.42 22Z"/></svg></button>
+<button type="button" class="nav-item" aria-current="page"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 15.25L9 10.25L12.5 13.75L19.25 7"/><circle cx="19.25" cy="7" r="1.6" fill="currentColor" stroke="none"/></svg><span>Progress</span></button>
+<button type="button" class="nav-item" aria-label="Analysis"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" aria-hidden="true"><circle cx="9.25" cy="12" r="5.75"/><circle cx="14.75" cy="12" r="5.75"/></svg></button>
+<button type="button" class="nav-item" aria-label="Products"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M10.25 3.25h3.5v3.1c0 .5.21.98.58 1.31l1.42 1.28c.53.48.83 1.15.83 1.86v8.45a2 2 0 0 1-2 2h-5.16a2 2 0 0 1-2-2V10.8c0-.71.3-1.38.83-1.86l1.42-1.28c.37-.33.58-.81.58-1.31V3.25Z"/><path d="M8.25 13.75h7.5"/></svg></button>
+</nav>
+</div>
+<span class="label">nav-bar · nav-item · nav-item-active</span>
+
+<h3 class="t-panel-label">Step progress</h3>
+<div class="stack" style="max-width: 390px">
+<div class="flow-head"><button type="button" class="round glass back" aria-label="Back"><svg width="16" height="14" viewBox="0 0 14 12" fill="none" stroke="currentColor" stroke-width="1.3" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M13 6H1.5M6 1.5 1.5 6 6 10.5"/></svg></button><button type="button" class="btn btn-small">Save &amp; exit →</button></div>
+<div class="progress" role="progressbar" aria-label="Investigation progress" aria-valuemin="1" aria-valuemax="5" aria-valuenow="2" aria-valuetext="Step 2 of 5"><span></span></div>
+<p class="t-page-title">Skin type</p>
+</div>
+<span class="label">step-progress-track · step-progress-fill (lux-v2's bar, step 2 of 5)</span>
+
+<div class="grid2">
+<div class="stack" style="max-width: 342px">
+<h3 class="t-panel-label">Trend chart</h3>
+<div class="panel" style="display: flex; flex-direction: column; gap: var(--space-lg)">
+<p class="t-overline">Redness · last 14 days</p>
+<p class="t-panel-label">From moderate to mild in 14 days</p>
+<div class="chart">
+<span class="event">New serum · Sep 16</span>
+<svg width="292" height="160" viewBox="0 0 292 160" role="img" aria-label="Redness fell from 6 to 3; a new serum was started on September 16">
+<rect x="64" y="14" width="222" height="44" rx="8" fill="rgba(255,255,255,0.12)"/>
+<rect x="64" y="58" width="222" height="44" fill="rgba(255,255,255,0.32)"/>
+<rect x="64" y="102" width="222" height="44" rx="8" fill="rgba(255,255,255,0.12)"/>
+<text x="0" y="40" font-family="Urbanist, sans-serif" font-size="12" fill="#63636f">Severe</text>
+<text x="0" y="84" font-family="Urbanist, sans-serif" font-size="12" fill="#63636f">Moderate</text>
+<text x="0" y="128" font-family="Urbanist, sans-serif" font-size="12" fill="#63636f">Mild</text>
+<line x1="151.2" y1="0" x2="151.2" y2="146" stroke="#313560" stroke-opacity="0.6" stroke-dasharray="3 3"/>
+<path d="M72.0 72.7 C79.9 72.7 79.9 72.7 87.8 72.7 C95.8 72.7 95.8 58.0 103.7 58.0 C111.6 58.0 111.6 87.3 119.5 87.3 C127.5 87.3 127.5 87.3 135.4 87.3 C143.3 87.3 143.3 87.3 151.2 87.3 C159.2 87.3 159.2 102.0 167.1 102.0 C175.0 102.0 175.0 87.3 182.9 87.3 C190.8 87.3 190.8 102.0 198.8 102.0 C206.7 102.0 206.7 102.0 214.6 102.0 C222.5 102.0 222.5 113.0 230.5 113.0 C238.4 113.0 238.4 102.0 246.3 102.0 C254.2 102.0 254.2 113.0 262.2 113.0 C270.1 113.0 270.1 113.0 278.0 113.0" fill="none" stroke="#313560" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+<circle cx="278" cy="113" r="5" fill="#313560" stroke="#ffffff" stroke-width="2"/>
+</svg>
+</div>
+<div class="days" aria-hidden="true"><span style="position: absolute; left: 0">Sep</span><span class="day" style="left: 72.0px">11</span><span class="day" style="left: 87.8px">12</span><span class="day" style="left: 103.7px">13</span><span class="day" style="left: 119.5px">14</span><span class="day" style="left: 135.4px">15</span><span class="day" style="left: 151.2px">16</span><span class="day" style="left: 167.1px">17</span><span class="day" style="left: 182.9px">18</span><span class="day" style="left: 198.8px">19</span><span class="day" style="left: 214.6px">20</span><span class="day" style="left: 230.5px">21</span><span class="day" style="left: 246.3px">22</span><span class="day" style="left: 262.2px">23</span><span class="day today" style="left: 278.0px">24</span></div>
+</div>
+<span class="label">trend-chart · trend-band · trend-event</span>
+</div>
+
+<div class="stack" style="max-width: 342px">
+<h3 class="t-panel-label">Calendar</h3>
+<div class="panel" style="display: flex; flex-direction: column; gap: var(--space-lg)">
+<div class="cal-head"><p class="t-panel-label">September 2026</p><div class="cluster"><button type="button" class="round glass sm" aria-label="Previous month"><svg width="10" height="14" viewBox="0 0 5 7" fill="none" stroke="currentColor" stroke-width="0.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 .8 1.2 3.5 4 6.2"/></svg></button><button type="button" class="round glass sm" aria-label="Next month"><svg width="10" height="14" viewBox="0 0 5 7" fill="none" stroke="currentColor" stroke-width="0.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M1 .8l2.8 2.7L1 6.2"/></svg></button></div></div>
+<div class="cal"><span class="wd">M</span><span class="wd">T</span><span class="wd">W</span><span class="wd">T</span><span class="wd">F</span><span class="wd">S</span><span class="wd">S</span><span class="cal-cell"></span><span class="cal-cell"><span class="cal-day">1</span></span><span class="cal-cell"><button type="button" class="cal-day checked" aria-label="September 2, checked in">2</button></span><span class="cal-cell"><button type="button" class="cal-day checked" aria-label="September 3, checked in">3</button></span><span class="cal-cell"><span class="cal-day">4</span></span><span class="cal-cell"><button type="button" class="cal-day checked" aria-label="September 5, checked in">5</button></span><span class="cal-cell"><button type="button" class="cal-day checked" aria-label="September 6, checked in">6</button></span><span class="cal-cell"><span class="cal-day">7</span></span><span class="cal-cell"><button type="button" class="cal-day checked" aria-label="September 8, checked in">8</button></span><span class="cal-cell"><button type="button" class="cal-day checked" aria-label="September 9, checked in">9</button></span><span class="cal-cell"><button type="button" class="cal-day checked" aria-label="September 10, checked in">10</button></span><span class="cal-cell"><span class="cal-day">11</span></span><span class="cal-cell"><button type="button" class="cal-day checked" aria-label="September 12, checked in">12</button></span><span class="cal-cell"><button type="button" class="cal-day checked" aria-label="September 13, checked in">13</button></span><span class="cal-cell"><span class="cal-day">14</span></span><span class="cal-cell"><button type="button" class="cal-day checked" aria-label="September 15, checked in">15</button></span><span class="cal-cell"><button type="button" class="cal-day checked" aria-label="September 16, checked in">16</button></span><span class="cal-cell"><button type="button" class="cal-day checked" aria-label="September 17, checked in">17</button></span><span class="cal-cell"><span class="cal-day">18</span></span><span class="cal-cell"><button type="button" class="cal-day checked" aria-label="September 19, checked in">19</button></span><span class="cal-cell"><span class="cal-day">20</span></span><span class="cal-cell"><button type="button" class="cal-day checked" aria-label="September 21, checked in">21</button></span><span class="cal-cell"><button type="button" class="cal-day checked" aria-label="September 22, checked in">22</button></span><span class="cal-cell"><span class="cal-day">23</span></span><span class="cal-cell"><span class="cal-day today" aria-label="September 24, today">24</span></span><span class="cal-cell"><span class="cal-day future">25</span></span><span class="cal-cell"><span class="cal-day future">26</span></span><span class="cal-cell"><span class="cal-day future">27</span></span><span class="cal-cell"><span class="cal-day future">28</span></span><span class="cal-cell"><span class="cal-day future">29</span></span><span class="cal-cell"><span class="cal-day future">30</span></span><span class="cal-cell"></span><span class="cal-cell"></span><span class="cal-cell"></span><span class="cal-cell"></span></div>
+<div class="legend"><span><span class="dot" style="width: 10px; height: 10px; background: var(--color-primary)"></span>Checked in</span><span><span class="dot" style="width: 10px; height: 10px; box-shadow: inset 0 0 0 1.5px var(--color-primary)"></span>Today</span></div>
+</div>
+<span class="label">calendar-day · calendar-day-checked · calendar-day-today</span>
+</div>
+</div>
+
+<h3 class="t-panel-label">Score cards</h3>
+<p class="t-overline">Compatibility · 4 products</p>
+<ul class="scores"><li class="score-card">
+<span class="ring"><svg width="64" height="64" viewBox="0 0 64 64" aria-hidden="true"><circle cx="32" cy="32" r="27" fill="none" stroke="rgba(255,255,255,0.7)" stroke-width="5"/><circle cx="32" cy="32" r="27" fill="none" stroke="var(--color-error)" stroke-width="5" stroke-linecap="round" stroke-dasharray="69.6 169.6" transform="rotate(-90 32 32)"/></svg><span class="t-h4 ring-num">41</span></span>
+<span class="score-name"><span class="t-label">2% BHA Liquid Exfoliant</span><span class="t-caption muted">Paula&#x27;s Choice</span></span>
+<span class="band-pill t-label-sm"><span class="dot" style="background: var(--color-error)"></span>Avoid</span>
+</li><li class="score-card">
+<span class="ring"><svg width="64" height="64" viewBox="0 0 64 64" aria-hidden="true"><circle cx="32" cy="32" r="27" fill="none" stroke="rgba(255,255,255,0.7)" stroke-width="5"/><circle cx="32" cy="32" r="27" fill="none" stroke="var(--color-warning)" stroke-width="5" stroke-linecap="round" stroke-dasharray="108.6 169.6" transform="rotate(-90 32 32)"/></svg><span class="t-h4 ring-num">64</span></span>
+<span class="score-name"><span class="t-label">Retinol B3 Serum</span><span class="t-caption muted">La Roche-Posay</span></span>
+<span class="band-pill t-label-sm"><span class="dot" style="background: var(--color-warning)"></span>Risky</span>
+</li><li class="score-card">
+<span class="ring"><svg width="64" height="64" viewBox="0 0 64 64" aria-hidden="true"><circle cx="32" cy="32" r="27" fill="none" stroke="rgba(255,255,255,0.7)" stroke-width="5"/><circle cx="32" cy="32" r="27" fill="none" stroke="var(--color-success)" stroke-width="5" stroke-linecap="round" stroke-dasharray="145.9 169.6" transform="rotate(-90 32 32)"/></svg><span class="t-h4 ring-num">86</span></span>
+<span class="score-name"><span class="t-label">Niacinamide 10% + Zinc 1%</span><span class="t-caption muted">The Ordinary</span></span>
+<span class="band-pill t-label-sm"><span class="dot" style="background: var(--color-success)"></span>Compatible</span>
+</li><li class="score-card">
+<span class="ring"><svg width="64" height="64" viewBox="0 0 64 64" aria-hidden="true"><circle cx="32" cy="32" r="27" fill="none" stroke="rgba(255,255,255,0.7)" stroke-width="5"/><circle cx="32" cy="32" r="27" fill="none" stroke="var(--color-success)" stroke-width="5" stroke-linecap="round" stroke-dasharray="156.1 169.6" transform="rotate(-90 32 32)"/></svg><span class="t-h4 ring-num">92</span></span>
+<span class="score-name"><span class="t-label">Moisturizing Cream</span><span class="t-caption muted">CeraVe</span></span>
+<span class="band-pill t-label-sm"><span class="dot" style="background: var(--color-success)"></span>Compatible</span>
+</li></ul>
+<span class="label">score-card · score-ring · score-band-pill</span>
+</section>
+
+<section aria-labelledby="dd"><h2 id="dd" class="t-page-title">Do's and Don'ts</h2>
+<div class="dd">
+<ul class="do">
+<li><span class="mark">✓</span>Take every value from a token, a role or a component; a new look means a new token first.</li>
+<li><span class="mark">✓</span>Keep one primary action per screen, and make "selected" the primary colour every time.</li>
+<li><span class="mark">✓</span>Use glass for controls and panels for boxes, each with its edge and top highlight.</li>
+<li><span class="mark">✓</span>Pair every status colour with a word.</li>
+<li><span class="mark">✓</span>Give every control a target of at least 44 and a visible focus outline.</li>
+<li><span class="mark">✓</span>Check at 390/440 and 1440, and measure contrast on the real pixels.</li>
+</ul>
+<ul class="dont">
+<li><span class="mark">✗</span>No opaque white fill — not on a tag, a button, a card or a close button.</li>
+<li><span class="mark">✗</span>No gradients beyond the canvas and the primary; no glows, no dark ground.</li>
+<li><span class="mark">✗</span>No text below 12px, no weight outside the five loaded.</li>
+<li><span class="mark">✗</span>No glass on glass, no solid card on the canvas.</li>
+<li><span class="mark">✗</span>No inline icons on a screen and no width/height on an icon.</li>
+<li><span class="mark">✗</span>No percentage or score on the investigation analysis; scores are for compatibility checks only.</li>
+</ul>
+</div>
+</section>
+</main>
+</body>
+</html>

@@ -52,8 +52,10 @@ them, because that lives in three better places:
 3. **`docs/design.md`** — THE DESIGN SYSTEM TO BUILD FROM: the rules, the
    type ramp, colour, glass, spacing roles, sizes, icons, components and
    screen patterns. **Read it before building or restyling a screen.**
-   **`/styleguide`** renders the same system live — the place to SEE it before
-   changing it.
+   Its YAML front matter holds every token; **`docs/design.html`** is its
+   rendered mirror (open it in a browser) and the two change together.
+   **`/styleguide`** renders the real components live — the place to SEE them
+   before changing them.
 
 4. **`docs/product-brief.md`** — the 11 Aug product brief. It specifies the
    controlled vocabulary the product may and may not use, the safety branch and
