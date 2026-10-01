@@ -1079,7 +1079,7 @@ a patch here:
   mirrors and the two `@property` initial values — ⚠️ **a registered property
   takes no `var()`, so the initial values are hand-written and have to move with
   the tokens** or the previous colour flashes for a frame. Figma still holds the
-  sage; see `docs/figma-catchup.md` §2 and §6. ⚠️ **It also retires the rule that
+  sage; see `docs/archive/figma-catchup.md` §2 and §6. ⚠️ **It also retires the rule that
   `gradient/brand-indigo` is "for marks and accents only"** — the primary button
   is indigo now, and whether the two indigo gradients should be one value is an
   open question for Figma.
@@ -1347,7 +1347,7 @@ that component's module, which is also what keeps the list above honest.
 ⚠️ **FIGMA CANNOT EXPRESS THIS AS A VARIABLE** — it is an OpenType feature on the
 text style, so either the styles carrying a grid turn it on or the guide boards
 note that the build and the comps differ here. Logged in
-`docs/figma-catchup.md` §4.
+`docs/archive/figma-catchup.md` §4.
 
 ## Where a line breaks is the ramp's decision, not the screen's
 
@@ -1365,7 +1365,7 @@ fixed 440 or 1440, so it breaks a heading wherever that width happens to break
 it; the build breaks it at whatever width the reader's device is. Neither
 property moves a font-size, a line-height or a measured width — only where the
 break lands, which is the one typographic decision the comp was never in a
-position to make. Logged in `docs/figma-catchup.md`.
+position to make. Logged in `docs/archive/figma-catchup.md`.
 
 ⚠️ **IT WAS ALREADY BEING WRITTEN BY HAND, WHICH IS THE ARGUMENT FOR THE RAMP.**
 `HypothesisCard`, `Analysis` (twice) and `SkinProfileSummary` had each reached
@@ -1883,7 +1883,7 @@ which is what an en dash is for. The recap's own label uses the same comma —
 
 ⚠️ **FIGMA STILL HAS NEITHER FRAME.** This screen is already a prototype-only
 merge of 01 and 03b (see `StartInvestigation.tsx`), so the copy change rides
-along with the merge in `docs/figma-catchup.md` rather than being a new gap.
+along with the merge in `docs/archive/figma-catchup.md` rather than being a new gap.
 
 ### What this does NOT do
 
@@ -2286,7 +2286,7 @@ Three steps taken toward the merge, all small and all reversible:
   would put words in the user's mouth. It reads the raw answers and renders a
   real empty state. `features/my-skin/profile.ts` owns the derivation and every
   string on the screen; there is no Figma frame for any of it, so it is listed
-  in `docs/figma-catchup.md` § 5.
+  in `docs/archive/figma-catchup.md` § 5.
 - **Both analysing screens use the same pass list.** `components/ui/PassList`,
   with each section owning its own lines (`ANALYSIS_PASSES`, `CHECK_PASSES`).
   Six and five respectively, and they must NOT be reconciled: CHECK has no
@@ -2534,7 +2534,7 @@ against**, which no screen in LUX currently has a pattern for.
 **Nothing in Figma covers it** — page 06 has no analysis or result frames
 outside CHECK, and that is still true: the three screens were built here, under
 the "prototype leads on flow" rule, and every one of them carries a
-`⚠️ NOT IN FIGMA` comment. `docs/figma-catchup.md` is the work order.
+`⚠️ NOT IN FIGMA` comment. `docs/archive/figma-catchup.md` is the work order.
 
 ## The ingredient data — one source is wired, one is named and missing
 
@@ -2867,7 +2867,7 @@ imports it directly and takes its glyphs from `components/ui/icons`. The
 dependency was checked per EXPORT before deleting — `ChatScreen`,
 `SEEDED_CONVERSATION`, `ChatMessage`, `ChatAuthor`, `SendArrowIcon` — rather
 than inferred from the folder path, and the only outside mentions were a comment
-in `ChatPanel.module.css` and a line in `docs/figma-catchup.md`. Both are prose.
+in `ChatPanel.module.css` and a line in `docs/archive/figma-catchup.md`. Both are prose.
 
 ⚠️ **`SendArrowIcon` WENT WITH IT.** The send disc's glyph was one of the two the
 design system does not have (see below). If a conversation screen is ever built
@@ -2937,7 +2937,7 @@ screen fronts actually exists.
 
 ## Two things the build decided and Figma has not
 
-Both are in `docs/figma-catchup.md` §7f as work orders.
+Both are in `docs/archive/figma-catchup.md` §7f as work orders.
 
 - **The send disc is NOT gated on the field, and the first build had it wrong.**
   Every other primary action in the app is disabled until its step is answered,
@@ -2987,7 +2987,7 @@ Both are what the frame draws, and this file already has precedent for a value
 that is chosen rather than accidental — so neither was quietly darkened.
 ⚠️ **That precedent used to be `#a2b9bf`, which no longer exists**; it is now
 `surface/data-deep` `#4f838f @85%` (see the contrast list above). Both are
-logged in `docs/figma-catchup.md` §7e for a Figma decision.
+logged in `docs/archive/figma-catchup.md` §7e for a Figma decision.
 
 
 ## The entrance is an overlay on `/`, not a twentieth route (12 Sep 2026)

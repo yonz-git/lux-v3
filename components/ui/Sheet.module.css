@@ -1,3 +1,10 @@
+/* ⚠️ lux-v3, 1 Oct 2026 — THE TRAY HAS VIDGEN'S SHAPE ON v2'S FILL. The AI
+   Assistant's 36 top / 44 bottom corners, a white rim along the top and no
+   border, over lux-v2's own sage frost (`--surface-sheet`, kept when the
+   VidGen gradients were dropped the same day);
+   on a phone it floats 8 in from the screen's edges like the reference's
+   (`--space-inset`). The ✕ is a 56 glass circle. The sage `surface/data` tray and its notes below are history. */
+
 /* The modal tray.
    Mobile  (576:1376 `bottom-sheet`): full width, x=0, radius 28/28/0/0, docked
            to the bottom edge, padding 12/20/28/20, gap 20, children centred.
@@ -24,9 +31,9 @@
 .tray {
   position: fixed;
   z-index: var(--z-sheet);
-  left: 0;
-  right: 0;
-  bottom: 0;
+  left: var(--space-inset);
+  right: var(--space-inset);
+  bottom: var(--space-inset);
 
   display: flex;
   flex-direction: column;
@@ -47,7 +54,7 @@
   /* Figma's radius 28 is off the radius scale at both ends (2xl is 24, 3xl 32).
      Written as a literal rather than snapped to a token that would be quietly
      wrong — the same call `Chip`'s 10/16 padding gets. */
-  border-radius: 28px 28px 0 0;
+  border-radius: var(--radius-sheet) var(--radius-sheet) var(--radius-sheet-foot) var(--radius-sheet-foot);
   /* ⚠️ `surface/data`, NOT `-data-strong` — the tray read too dark. 44% of the
      same sage; the cards inside keep 62%, so the card-on-tray step the recipe
      depends on is the one that survived, just one token lighter underneath. */
@@ -57,21 +64,20 @@
      white, at 30% instead of its 44%; `saturate` on the blur keeps what shows
      through from going grey behind the thinner fill. The reduced-transparency
      fallback below still composites the full token. */
-  background: rgb(
-    from var(--color-surface-data) calc(r + (255 - r) * 0.1)
-      calc(g + (255 - g) * 0.1) calc(b + (255 - b) * 0.1) / 0.3
-  );
-  box-shadow: var(--shadow-sheet-mobile);
-  /* NOT optional: a translucent tray lets the nav underneath read straight
-     through without a blur */
+  background: var(--surface-sheet);
   -webkit-backdrop-filter: blur(var(--blur-card)) saturate(1.4);
   backdrop-filter: blur(var(--blur-card)) saturate(1.4);
+  color: var(--color-text-primary);
+  box-shadow: var(--shadow-sheet), 0 14px 30px rgb(15 10 30 / 0.35);
+  /* NOT optional: a translucent tray lets the nav underneath read straight
+     through without a blur */
+
 
   /* THE TRAY CAN EXPAND. AddProductMethodSheet grows this well past its
      original two-card content (a search field + results, a viewfinder, a
      confirm card). Docked to the bottom edge, so it has to cap its own height
      and scroll internally rather than push past the top of the viewport. */
-  max-height: calc(100dvh - var(--space-4xl));
+  max-height: calc(100dvh - var(--space-4xl) - var(--space-inset));
   overflow-y: auto;
   /* ⚠️ A SCROLL THAT STARTS IN THE TRAY STAYS IN THE TRAY — added 12 Sep 2026,
      alongside the page-level lock in `useModalDialog`. Without it, reaching the
@@ -110,7 +116,7 @@
   /* full WHITE `text/on-data`, not the 85% `on-data-secondary` — this is now
      the tray's only dismissal rather than one of two, and a de-emphasised
      label for the sole way out reads as disabled on a sage surface. */
-  color: var(--color-text-on-data);
+  color: var(--color-text-primary);
   border-radius: var(--radius-sm);
   transition: opacity var(--duration-fast) var(--ease-hover);
 }
@@ -134,17 +140,21 @@
    focus outline follows its round radius. */
 .close {
   position: absolute;
-  top: var(--space-xs); /* 4 */
-  right: var(--space-sm); /* 8 */
+  top: var(--space-xl); /* 20 — the reference's 22 */
+  right: var(--space-xl);
   z-index: 1;
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  width: var(--size-touch-target);
-  height: var(--size-touch-target);
+  width: var(--size-round);
+  height: var(--size-round);
   padding: 0;
   border-radius: var(--radius-full);
-  color: var(--color-text-on-data);
+  color: var(--color-text-primary);
+  /* glass, not the reference's opaque white — no white fills in lux-v3 */
+  background: var(--color-glass);
+  border: var(--border-width-hairline) solid var(--color-border-glass);
+  box-shadow: var(--shadow-glass);
   transition: opacity var(--duration-fast) var(--ease-hover);
 }
 
@@ -153,7 +163,7 @@
    caller, so the corner ✕ is that ✕. 16.8, written as the multiple, and ONLY
    the glyph: the 44 target round it keeps its size. */
 .closeIcon {
-  --icon-size: calc(var(--size-icon-md) * 0.7);
+  --icon-size: 14px; /* the reference's 13 */
 }
 
 .close:hover {
@@ -227,8 +237,8 @@
     width: 100%;
     max-width: var(--width-card-focus); /* 640 */
     padding: var(--space-5xl);
-    border-radius: var(--radius-3xl);
-    box-shadow: var(--shadow-sheet-desktop);
+    border-radius: var(--radius-sheet) var(--radius-sheet) var(--radius-sheet-foot) var(--radius-sheet-foot);
+    box-shadow: var(--shadow-sheet), 0 14px 30px rgb(15 10 30 / 0.35);
 
     /* ⚠️ THE PHONE TRAY'S SAGE ON DESKTOP TOO — 16 Sep 2026, asked for
        directly on `CheckBasket` ("use the left bg color"). From 12 Sep every
@@ -245,27 +255,16 @@
 
   /* 16 in from the dialog's corner, inside its 48 padding */
   .close {
-    top: var(--space-lg);
-    right: var(--space-lg);
+    top: var(--space-xl);
+    right: var(--space-xl);
   }
 }
 
 @media (prefers-reduced-transparency: reduce) {
   .tray {
-    /* ⚠️ THE DESIGN SYSTEM HAS NO OPAQUE SAGE. `surface/data-strong` is 62% and
-       there is no solid counterpart the way `bg/nav` is the solid counterpart to
-       `surface/frost-nav`. Without a blur a 62% modal shows the screen behind
-       it — which is the exact failure this fallback exists to prevent — so the
-       tray is composited: the same sage over `bg/canvas`, the opaque sage the
-       app already sits on. Two semantic tokens, no invented colour. A real
-       `surface/data-opaque` belongs in Figma. */
-    background:
-      linear-gradient(
-        var(--color-surface-data),
-        var(--color-surface-data)
-      ),
+    background: linear-gradient(var(--color-surface-data), var(--color-surface-data)),
       var(--color-bg-canvas);
-    -webkit-backdrop-filter: blur(7px);
-    backdrop-filter: blur(7px);
+    -webkit-backdrop-filter: none;
+    backdrop-filter: none;
   }
 }

@@ -1,3 +1,9 @@
+/* ⚠️ lux-v3, 1 Oct 2026 — A DATA CARD IS VIDGEN'S PANEL. The frost box inside
+   the AI Assistant sheet (`.vg-panel` in app/vidgen.css): `surface/frost-light`
+   (#f4feff @55%), a 1px glass edge, a white inset rim, 12 blur, radius 28,
+   24 padding (32 on desktop — the reference's ~30). The sage `surface/data`
+   card described below is history; the ink stays the app's dark ink. */
+
 /* The sage data card — SURFACE SYSTEM B. See DataCard.tsx for the full recipe
    and for why it is not the frosted-row recipe with a different fill. */
 
@@ -11,11 +17,12 @@
      cards are clones of the verified mobile ones, so nothing inside them steps
      up: card internals stay at the mobile type scale and only the page title,
      subtitle and AI bubble grow. */
-  padding: var(--space-xl); /* 20 */
-  border-radius: var(--radius-2xl); /* 24 */
+  padding: var(--space-gutter); /* 24 */
+  border-radius: var(--radius-panel); /* 28 */
 
   /* ⚠️ NO BORDER. A data card has no stroke — see the doc comment. */
-  background: var(--color-surface-data);
+  background: var(--color-surface-frost-light);
+  border: var(--border-width-hairline) solid var(--color-border-glass);
   /* ⚠️ THE INSET IS `--shadow-frosted-row` — THE FACE DIAGRAM CARD'S OWN
      SHADOW, NOT A NEW VALUE. Decided here, NOT IN FIGMA: `--shadow-frosted-data`
      was a drop shadow alone, so a translucent sage card had nothing carrying
@@ -25,9 +32,9 @@
      drop shadow's outer lift and adds the same inset every other frosted
      surface already carries, rather than inventing a second shadow value for
      one more surface. */
-  box-shadow: var(--shadow-frosted-data), var(--shadow-frosted-row);
-  -webkit-backdrop-filter: blur(var(--blur-card));
-  backdrop-filter: blur(var(--blur-card));
+  box-shadow: var(--shadow-panel);
+  -webkit-backdrop-filter: blur(12px);
+  backdrop-filter: blur(12px);
 
   /* the ink by default, so everything inside opts DOWN to on-data-secondary or
      on-data-muted rather than each value having to opt up */
@@ -36,7 +43,7 @@
 
 @media (min-width: 1024px) {
   .card {
-    padding: var(--space-2xl); /* 24 */
+    padding: var(--space-panel); /* 32 */
   }
 }
 
@@ -48,11 +55,7 @@
        text loses its contrast. Composited from the two semantic tokens the app
        already owns rather than inventing a colour: the same sage over
        bg/canvas. A real `surface/data-opaque` belongs in Figma. */
-    background: linear-gradient(
-        var(--color-surface-data),
-        var(--color-surface-data)
-      ),
-      var(--color-bg-canvas);
+    background: #eef6f7;
     -webkit-backdrop-filter: none;
     backdrop-filter: none;
   }

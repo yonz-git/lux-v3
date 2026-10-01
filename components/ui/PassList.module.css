@@ -1,5 +1,5 @@
 /* A list of named steps ticking off. ⚠️ NOT IN FIGMA — no frame draws one; both
-   analysing screens drew a bar. See `docs/figma-catchup.md`. */
+   analysing screens drew a bar. See `docs/archive/figma-catchup.md`. */
 
 /* ⚠️ `fit-content`, NOT `width: 100%` — THE BOX HUGS THE LINES OR THE BLOCK
    READS OFF-CENTRE. Both callers centre this list in a centred hero, and at

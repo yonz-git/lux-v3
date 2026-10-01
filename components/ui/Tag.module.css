@@ -1,30 +1,24 @@
-/* Tag — Figma 256:85. 26 tall, padding 5/12, radius/full. NO border, on
-   either variant — the app does not use border-width-hairline anywhere.
-
-     Neutral  fill #eef6f7, label text/secondary
-     Brand    fill bg/brand, label text/on-brand
-
-   ⚠️ Neutral's fill is bound to the PRIMITIVE `neutral/100` in Figma, which is
-   the one binding in this component that breaks the semantic-token rule. Here it
-   points at `bg/surface-frost`, the semantic token that resolves to exactly that
-   value — same pixel, correct layer. Worth repointing in Figma. */
-
+/* Tag — VidGen's Moodboard tag (`Silhouette`), 1 Oct 2026.
+     Neutral  glass with a glass edge, secondary ink — the reference's tag,
+              without its white card (no opaque white in lux-v3); 26 tall so a
+              tag stays smaller than a control
+     Brand    lux-v2's flat `bg/brand`, white label */
 .tag {
   display: inline-flex;
   align-items: center;
   justify-content: center;
   min-height: 26px;
   padding: 0 var(--space-md);
+  border: var(--border-width-hairline) solid transparent;
   border-radius: var(--radius-full);
   white-space: nowrap;
 }
-
 .tag[data-variant="neutral"] {
-  background: var(--color-bg-surface-frost);
+  background: var(--color-glass);
+  border-color: var(--color-border-glass);
   color: var(--color-text-secondary);
 }
-
 .tag[data-variant="brand"] {
   background: var(--color-bg-brand);
-  color: var(--color-text-on-brand);
+  color: #fff;
 }

@@ -34,24 +34,29 @@
    everything below it 20px down. The target still measures 44 — it simply
    overflows the row symmetrically instead of inflating it. */
 .back {
+  /* lux-v3: the Storyboard's back button — a VidGen glass circle with the
+     arrow, 48 (the reference's 26.7 × 1.745 = 46.6, on the control scale) */
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  width: var(--size-touch-target);
-  height: var(--size-touch-target);
-  margin: calc((var(--size-icon-md) - var(--size-touch-target)) / 2);
-  color: var(--color-icon-default);
+  flex: none;
+  width: var(--size-control-md);
+  height: var(--size-control-md);
+  color: var(--color-bg-brand);
+  background: var(--color-glass);
+  border: var(--border-width-hairline) solid var(--color-border-glass);
+  box-shadow: var(--shadow-glass);
   border-radius: var(--radius-full);
-  transition: opacity var(--duration-fast) var(--ease-hover);
+  transition: background-color var(--duration-fast) var(--ease-hover);
 }
 
 .back:hover {
-  opacity: 0.7;
+  background-color: var(--color-glass-strong);
 }
 
 @media (hover: none) {
   .back:hover {
-    opacity: 1;
+    background-color: var(--color-glass);
   }
 }
 

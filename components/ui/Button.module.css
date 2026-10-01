@@ -1,369 +1,98 @@
-/* Button — Figma component set 37:23. Figma and this file AGREE on the states;
-   the swap below was made in BOTH on 22 Aug 2026.
+/* Button — VidGen's two materials as a labelled pill. See Button.tsx.
 
-     Default    37:5    gradient/brand (⚠️ indigo here, still sage in Figma —
-                        see 1 below), label text/on-brand, no stroke
-     Hover      37:9    gradient/brand-hover — the SAME two ends, exchanged,
-                        at full strength
-     Disabled   37:13   the whole control at opacity/disabled (0.4)
-     Secondary  37:11   gradient/secondary #deeff3 -> #b7c6ca
-     Sec/Hover  749:3338 gradient/secondary-hover
-     Ghost      37:17   not implemented here — the component takes primary and
-                        secondary only
+   PRIMARY  lux-v2's `gradient/brand` (#485780 -> #313560, left to right) + `shadow/brand-vg`
+            (0 8 18 brand @30%, and a white rim inset along the top). White
+            label: 5.65:1 at the light end, 11.6:1 at the dark.
+   SECONDARY `glass` (white @25%) + 1px `border/glass` + the inset rim.
 
-   Hover and disabled traded treatments. A node fade dims the two drop shadows
-   along with the fill, so as a HOVER it landed on a pale, low-elevation picture
-   — which is what "unavailable" looks like, so the two states were converging.
-   The fade describes disabled and now belongs to it. The reasoning for each half
-   is on its own block below.
-
-   Consequence: state/disabled-bg, border/default on a DISABLED button and
-   text/muted as a button label are no longer part of this recipe.
-
-   ⚠️ TWO THINGS STILL DIFFER FROM FIGMA, both deliberate:
-
-     1. gradient/brand, BOTH STOPS — indigo since 8 Sep 2026. Figma holds the
-        sage #bbd3d9 -> #637073; globals.css declares #657792 -> #39386f on
-        :root, and a change has to land in three places: gradient/brand-*, the
-        button/bg-default-* mirrors this file reads, and the two --grad-*
-        @property initial-values, which take no var() and are hand-written.
-        A REASSIGNMENT, not a retune: the sage sat in LUX's ground family (hue
-        213-215, chroma 0.016-0.027) and read as a disabled steel pill; the
-        indigo runs hue 258 -> 282, chroma 0.047 -> 0.092, and its dark end is
-        bg/brand's value too: one indigo for the action and every selected mark.
-        The white label measures 4.56:1 at the left edge and 10.66:1 at the
-        right, AA across the whole sweep. The old note that #a2b9bf is a
-        CHOSEN value not to be improved is retired with the value. See the
-        block above those declarations in globals.css, non-negotiable 5 and
-        docs/figma-catchup.md §2 and §6 before touching either stop.
-     2. Secondary's 1px border/default. Figma keeps the stroke as the thing that
-        separates Secondary from Primary now that both carry gradients; this file
-        draws no border at all. UNRESOLVED — see .secondary below.
-
-   The Primary Hover and Disabled variant NAMES were swapped in Figma until
-   21 Aug 2026 and are now correct. Any older note saying "read the showcase, not
-   the variant names" is stale — the names and the showcase agree.
-
-   MOTION — board 04b (389:200): "LUX motion is calm. Nothing snaps."
-   The board assigns duration/fast (120ms) to hover, but the reversal cross-fades
-   two colours across the full width of the pill rather than nudging one value,
-   so it runs at duration/hover (400ms) — the same token the gradient reversal
-   uses everywhere else in the set.
-
-   The gradient endpoints run through the registered --grad-start / --grad-end
-   properties from globals.css because CSS cannot transition background-image:
-   swapping one linear-gradient() for another would snap. Registered <color>
-   properties interpolate, so the hover reversal cross-fades. */
+   Hover runs the gradient end for end — the registered `--grad-*` properties
+   in globals.css are what let it cross-fade instead of snapping. Pressed is
+   the 14% overlay, never a transform. Disabled is the whole control at 0.4. */
 
 .button {
-  --grad-start: var(--color-button-bg-default-start);
-  --grad-end: var(--color-button-bg-default-end);
-  /* The disabled fade. `opacity/disabled` in Figma — the same 0.4 that used to
-     be the hover treatment, now that hover no longer needs it. */
-  --button-disabled-opacity: var(--opacity-disabled);
-  /* How long the hover takes. */
-  --button-hover-duration: var(--duration-hover);
+  --grad-start: #485780;
+  --grad-end: #313560;
 
   position: relative;
   display: inline-flex;
   align-items: center;
   justify-content: center;
   gap: var(--space-sm);
-
-  /* ⚠️ THE DEFAULT IS THE `var()` FALLBACK, NOT A DECLARATION — the same shape
-     `--icon-size` and `--bubble-width` take, and it is load-bearing. Declaring
-     `--button-height: var(--size-control-lg)` on this rule would SHADOW any
-     value a caller set, since a local declaration beats an inherited one and a
-     caller's own class ties on specificity — the load-order trap
-     non-negotiable 13 records, in its custom-property costume. As a fallback
-     there is nothing to shadow: `size/control-lg` (62) is what every caller
-     that says nothing gets, and a caller that wants a shorter pill sets
-     `--button-height` and is simply the only declaration. */
-  min-height: var(--button-height, var(--size-control-lg));
-  padding: var(--space-md) var(--space-2xl);
+  min-height: var(--button-height, 56px);
+  padding: 0 var(--space-2xl);
+  border: var(--border-width-hairline) solid transparent;
   border-radius: var(--radius-full);
-
-  color: var(--color-button-label-default);
-  /* the shine (globals.css `.shine-text`) — the ink MUST be this label's own
-     token; the band is the default `effect/shine` lilac, which on a white
-     label reads as a tint passing over it */
-  --shine-ink: var(--color-button-label-default);
-  /* the specular rim's two streaks (globals.css `.specular`): this pill's own
-     gradient ends, 30% brighter — mixed toward white in OKLab so "brighter"
-     is a lightness step and not a wash toward grey */
-  --specular-a: color-mix(
-    in oklab,
-    var(--color-button-bg-default-start),
-    white 30%
-  );
-  --specular-b: color-mix(
-    in oklab,
-    var(--color-button-bg-default-end),
-    white 30%
-  );
-  /* the component can render as <a>; links carry an underline by default */
+  color: #fff;
   text-decoration: none;
-  background: linear-gradient(
-    90deg,
-    var(--grad-start) 0%,
-    var(--grad-end) 100%
-  );
-  box-shadow: var(--shadow-button);
-  opacity: 1;
-
-  /* Everything that changes between states is transitioned, so enabling the
-     button fades rather than snaps — "nothing snaps".
-     ⚠️ TWO CLOCKS — split 13 Sep 2026. The disabled fade is a STATE change and
-     runs on `duration/base` (200ms), with every selection and toggle in the
-     app; it had been riding the hover clock, so `Continue` took 400ms to come
-     up after a step's first answer. The label colour and the registered
-     --grad-* endpoints are the HOVER reversal and stay on
-     `--button-hover-duration` (`duration/hover`, 400ms — non-negotiable 5).
-     The endpoints go through registered properties because CSS cannot
-     interpolate background-image; registered <color> properties do. */
+  background: linear-gradient(90deg, var(--grad-start), var(--grad-end)) border-box;
+  box-shadow: var(--shadow-brand-vg);
+  cursor: pointer;
   transition:
     opacity var(--duration-base) var(--ease-standard),
-    color var(--button-hover-duration) var(--ease-hover),
-    border-color var(--button-hover-duration) var(--ease-hover),
-    --grad-start var(--button-hover-duration) var(--ease-hover),
-    --grad-end var(--button-hover-duration) var(--ease-hover);
+    background-color var(--duration-hover) var(--ease-hover),
+    --grad-start var(--duration-hover) var(--ease-hover),
+    --grad-end var(--duration-hover) var(--ease-hover);
 }
 
-/* ⚠️ NOT IN FIGMA — THE PRIMARY'S HOVER RIM IS LOUDER, 14 Sep 2026, asked for
-   directly: "more visible". On indigo the default 2px steel-blue streak with a
-   60%-white core sat too close to the fill. Primary only — `.secondary` is not
-   matched, so the pale pills keep the quieter rim they already read with.
-   Three moves, all through `.specular`'s own variables (globals.css):
-     width     2px → 3px
-     core      60% → 90% white, so the streak's centre is near-white
-     shoulders the pill's gradient ends 30% → 65% toward white */
-.button:not(.secondary) {
-  --specular-width: 3px;
-  --specular-core: 90%;
-  --specular-a: color-mix(
-    in oklab,
-    var(--color-button-bg-default-start),
-    white 65%
-  );
-  --specular-b: color-mix(
-    in oklab,
-    var(--color-button-bg-default-end),
-    white 65%
-  );
-  /* and a brighter FIXED edge light (globals.css `.edge-light`), 14 Sep 2026,
-     asked for directly: glow 0.25 → 0.4, top catch 0.35 → 0.55, ring
-     0.7 → 0.9 lit and 0.3 → 0.45 dim. ⚠️ The lit stop then came down 40%,
-     0.9 → 0.54, the same day — it drew a bright line down the pill's left end. */
-  --edge-ring-lit: 0.54;
-  --edge-ring-dim: 0.45;
-}
-
-/* ⚠️ NO INNER GLOW ON THE PRIMARY, 15 Sep 2026, asked for directly: the edge
-   light's two inset box-shadows (the glow and the top catch) are gone, and
-   only its 1px ring (`.edge-light::before`) stays. Secondary keeps both. */
-.button:not(.secondary) :global(.edge-light) {
-  box-shadow: none;
-}
-
-/* The label sits in its own element so the hover shine can target it without
-   touching the pill — `inline-block` so the shine's gradient spans the label
-   box and its band crosses the whole word. */
 .label {
   display: inline-block;
 }
 
-/* the pressed overlay — board 04b: state/pressed-overlay at 14%, and
-   "No scale transform — LUX does not bounce." */
+.button:hover:not(:disabled) {
+  --grad-start: #313560;
+  --grad-end: #485780;
+}
+
+/* pressed — board 04b's overlay, no transform */
 .button::after {
   content: "";
   position: absolute;
   inset: 0;
   border-radius: inherit;
-  background: var(--color-state-pressed-overlay);
+  background: var(--color-state-pressed-overlay, rgb(0 0 0 / 0.14));
   opacity: 0;
   pointer-events: none;
   transition: opacity var(--duration-fast) var(--ease-standard);
 }
 
-/* ---------------------------------------------------------------------------
-   HOVER — the gradient runs end for end. Settled 22 Aug 2026.
-
-   This REPLACES the 0.4 node fade that used to be State=Hover. The fade dimmed
-   the two drop shadows along with the fill, so hover landed on a pale,
-   low-elevation treatment — which is what "unavailable" looks like. Hover and
-   disabled were converging on the same picture. Reversing the gradient keeps
-   the control at full strength and full elevation, so it cannot be mistaken for
-   a button you can't press.
-
-   ⚠️ THIS ONLY WORKS BECAUSE OF THE --grad-* PLUMBING. CSS cannot interpolate
-   `background-image`, so swapping one `linear-gradient()` for another would
-   snap — and board 04b is explicit that nothing snaps. The endpoints are
-   registered <color> properties (globals.css), so swapping which token feeds
-   which end cross-fades the two colours through each other.
-   -------------------------------------------------------------------------- */
-.button:hover:not(:disabled) {
-  --grad-start: var(--color-button-bg-default-end);
-  --grad-end: var(--color-button-bg-default-start);
-}
-
-/* Pressed adds the overlay — board 04b: state/pressed-overlay at 14% and
-   "No scale transform — LUX does not bounce." The set has no State=Pressed
-   variant, so this follows the board rather than a variant. */
 .button:active:not(:disabled)::after {
   opacity: 1;
 }
 
-/* ---------------------------------------------------------------------------
-   DISABLED — the 0.4 node fade, inherited from the old hover. Settled
-   22 Aug 2026.
-
-   The fade moved here the moment hover stopped using it. It was disabled's
-   treatment until 18 Aug, when it was replaced by `state/disabled-bg` + a 1px
-   `border/default` + a `text/muted` label — for one stated reason: a 0.4 fade
-   was the HOVER treatment and having it mean two things was the drift. That
-   collision is gone, and a fade that dims the fill AND both drop shadows is the
-   most legible "not available" the system has.
-
-   One consequence worth knowing: this is a node-level fade, so it takes the
-   label and the shadows with it and nothing needs recolouring. `state/disabled-bg`,
-   `border/default` on a button and `text/muted` as a button label are no longer
-   part of the button recipe at all.
-   -------------------------------------------------------------------------- */
 .button:disabled {
-  opacity: var(--button-disabled-opacity);
-  cursor: not-allowed;
+  opacity: var(--opacity-disabled);
+  cursor: default;
 }
 
-/* a touch device has no hover; leaving the rules on makes the state stick after
-   a tap */
+.secondary {
+  color: var(--color-text-primary);
+  background: var(--color-glass);
+  border-color: var(--color-border-glass);
+  box-shadow: var(--shadow-glass);
+  -webkit-backdrop-filter: blur(10px);
+  backdrop-filter: blur(10px);
+}
+
+.secondary:hover:not(:disabled) {
+  background: var(--color-glass-strong);
+}
+
 @media (hover: none) {
   .button:hover:not(:disabled) {
-    --grad-start: var(--color-button-bg-default-start);
-    --grad-end: var(--color-button-bg-default-end);
+    --grad-start: #485780;
+    --grad-end: #313560;
   }
-}
-
-/* ---------------------------------------------------------------------------
-   Style=Secondary (37:11) — "No, search again", "Done", "View my products".
-
-     fill    gradient/secondary   #deeff3 -> #b7c6ca
-     label   text/primary         #2e2a3f
-     BOTH drop shadows, identical to Primary. Radius, padding and height too.
-
-   ⚠️ NO border here, and FIGMA SAYS THERE SHOULD BE ONE. This file has never
-   drawn one — "the app does not use border-width-hairline anywhere" was the
-   stated reason. But the 22 Aug pass that gave Secondary its gradient kept the
-   1px `border/default` deliberately: with both styles now on gradients, that
-   stroke is what separates Secondary from Primary, and it is NOT a disabled
-   marker. Unresolved — either add it here or drop it there, but the two should
-   not disagree.
-
-   ⚠️ SECONDARY WAS A FLAT WHITE UNTIL 22 AUG 2026. It now carries the gradient
-   `Small Button / Secondary` already used, so Secondary reads the same at both
-   sizes — and, more to the point, it has something to REVERSE on hover. Before
-   this it had no gradient and no Hover variant at all, so it was the one style
-   the button system could not express.
-   -------------------------------------------------------------------------- */
-.secondary {
-  --grad-start: var(--color-button-bg-secondary-start);
-  --grad-end: var(--color-button-bg-secondary-end);
-  color: var(--color-text-primary);
-  /* dark ink; the shine band is the default `effect/shine` lilac */
-  --shine-ink: var(--color-text-primary);
-  --specular-a: color-mix(
-    in oklab,
-    var(--color-button-bg-secondary-start),
-    white 30%
-  );
-  --specular-b: color-mix(
-    in oklab,
-    var(--color-button-bg-secondary-end),
-    white 30%
-  );
-  /* ⚠️ NOT IN FIGMA — the secondary endpoints are translucent as of
-     14 Sep 2026 (globals.css :root); the blur is what makes that frost */
-  -webkit-backdrop-filter: blur(var(--blur-card)) saturate(160%);
-  backdrop-filter: blur(var(--blur-card)) saturate(160%);
-}
-
-@media (prefers-reduced-transparency: reduce) {
-  .secondary {
-    -webkit-backdrop-filter: none;
-    backdrop-filter: none;
-  }
-}
-
-/* the same reversal Primary gets — the base .button:hover swaps the PRIMARY
-   endpoints, so Secondary has to name its own */
-.secondary:hover:not(:disabled) {
-  --grad-start: var(--color-button-bg-secondary-end);
-  --grad-end: var(--color-button-bg-secondary-start);
-}
-
-@media (hover: none) {
   .secondary:hover:not(:disabled) {
-    --grad-start: var(--color-button-bg-secondary-start);
-    --grad-end: var(--color-button-bg-secondary-end);
+    background: var(--color-glass);
   }
 }
-
-/* ⚠️ NO RIM AT REST ON THE SECONDARY — 16 Sep 2026, asked for directly ("on
-   default state remove this border on secondary buttons"). The edge light
-   (globals.css `.edge-light`) drew a 1px ring and a 1px top catch round the
-   pale pill, and on a frosted fill that pair reads as a border. Both go at
-   rest and come back under the pointer on the hover's own clock, so they
-   arrive with the gradient reversal and `.specular`'s streaks. The soft inner
-   glow stays — it is the frost's depth, not a line. `SmallButton` takes the
-   same rule; the primary keeps its ring.
-   ⚠️ `.button.secondary`, NOT `.secondary`: the two classes match the
-   primary's `.button:not(.secondary)` rule above one for one, so biome's
-   descending-specificity check stays quiet. The two never match one button. */
-.button.secondary :global(.edge-light) {
-  --edge-catch: 0;
-  transition: box-shadow var(--button-hover-duration) var(--ease-hover);
-}
-
-.button.secondary :global(.edge-light)::before {
-  opacity: 0;
-  transition: opacity var(--button-hover-duration) var(--ease-hover);
-}
-
-@media (hover: hover) {
-  /* `initial` drops the override, so the catch is the global default again */
-  .button.secondary:hover:not(:disabled) :global(.edge-light) {
-    --edge-catch: initial;
-  }
-
-  .button.secondary:hover:not(:disabled) :global(.edge-light)::before {
-    opacity: 1;
-  }
-}
-
-/* Ghost exists in the Figma set; add it when a screen needs one. Note that
-   Ghost's hover variant still references `bg/accent-mint`, a variable no longer
-   in 02 Color — resolve that in Figma first. */
 
 .full {
+  display: flex;
   width: 100%;
 }
 
-/* ---------------------------------------------------------------------------
-   `size="md"` — ⚠️ NOT IN FIGMA, added 13 Sep 2026, asked for directly. The
-   37:23 set has one height. Six callers had built a 48-tall secondary pill by
-   hand — `--button-height` plus a padding from their own module, behind an
-   element selector to out-rank the padding above — and every one of them kept
-   the 62's 17px label. Same type in a shorter pill reads as BIGGER type, so
-   `Take a photo` looked louder than the `Continue` under it.
-
-   The size owns all three now: height, padding and the label (`t-button-md`,
-   15/22, applied in Button.tsx). Declared after `.button` in the same file, so
-   it wins on source order that cannot change — no element selector needed.
-   The height still goes through `--button-height`'s fallback, so a caller can
-   set an off-scale one (`.rerunButton`'s 53) without shadowing anything.
-   Raise a `Size=Medium` variant in Figma; see docs/figma-catchup.md §4.
-   -------------------------------------------------------------------------- */
 .md {
   min-height: var(--button-height, var(--size-control-md));
   padding: 0 var(--space-xl);
 }
-

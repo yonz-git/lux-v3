@@ -1,3 +1,5 @@
+/* ⚠️ lux-v3, 1 Oct 2026 — the field is VidGen GLASS, the chips' material. */
+
 /* Hand-composed in Figma as `other-input` (02c/03a) and the 03c date field —
    the same frosted-row recipe as a selectable row, minus the selected border. */
 
@@ -10,7 +12,7 @@
   /* ⚠️ NO RESET FOR `input` IN globals.css (only `button` gets one), so the UA
      default border shows through the frosted recipe unless zeroed here —
      SearchField's `.input` does the same. */
-  border: 0;
+  border: var(--border-width-hairline) solid var(--color-border-glass);
   border-radius: var(--radius-lg);
   /* ⚠️ THE DATE PICKER'S FROST, asked for directly 14 Sep 2026 ("make the text
      fields frosty too"): a sage `#98b4b6` at 72%, a `#fff9` top light inside,
@@ -20,10 +22,10 @@
      and no token; the reduced-transparency fallback below is unchanged.
      ⚠️ The blur only reaches the page behind when no ancestor has its own
      `backdrop-filter` — see `.card::before` in QuestionScreen.module.css. */
-  background: #98b4b6b8;
-  box-shadow: inset 0 1px 0 #fff9, var(--shadow-frosted-row);
-  -webkit-backdrop-filter: blur(120px);
-  backdrop-filter: blur(120px);
+  background: var(--color-glass);
+  box-shadow: var(--shadow-glass);
+  -webkit-backdrop-filter: blur(10px);
+  backdrop-filter: blur(10px);
 
   color: var(--color-text-primary);
   font-family: inherit;

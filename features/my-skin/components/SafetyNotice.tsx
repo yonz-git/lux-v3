@@ -17,7 +17,7 @@ import { SAFETY_NOTICE } from "@/features/my-skin/safety";
  * `prefers-reduced-transparency` rule was still sitting in
  * `StartInvestigation.module.css` with nothing to match. So the block is the
  * comp's, and only the copy and the condition are decided here. Logged in
- * `docs/figma-catchup.md`; a real callout variant with an accent is the thing
+ * `docs/archive/figma-catchup.md`; a real callout variant with an accent is the thing
  * to raise in Figma.
  *
  * ⚠️ THE WRAPPER IS ALWAYS RENDERED AND THE NOTICE IS NOT. A live region has to

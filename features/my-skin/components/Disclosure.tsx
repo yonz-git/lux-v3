@@ -15,7 +15,7 @@ import { ChevronDownIcon } from "@/components/ui/icons";
  * app already had, built the same way for the same reason. Reusing its shape
  * rather than inventing a second one keeps the app to ONE opening gesture; if
  * an Accordion component is ever drawn, both callers change together. Raised in
- * `docs/figma-catchup.md`.
+ * `docs/archive/figma-catchup.md`.
  *
  * ⚠️ `useState` AND `aria-expanded`, NOT `<details>`. Same call
  * `ProductAccordionCard` makes: `<details>` cannot be styled consistently

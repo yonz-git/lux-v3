@@ -18,7 +18,7 @@ import type { Answers } from "@/lib/store/answers";
  * One hypothesis — § 07's result overview, with § 08's reasoning accordions
  * folded into it.
  *
- * ⚠️ NOT IN FIGMA. Listed in `docs/figma-catchup.md`.
+ * ⚠️ NOT IN FIGMA. Listed in `docs/archive/figma-catchup.md`.
  *
  * ⚠️ NO SCORE, NO BAR, NO PERCENTAGE. `CompatCard` renders `{score}%` with a
  * fill whose width equals it, and this card deliberately does the opposite: the

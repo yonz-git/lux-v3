@@ -4,7 +4,7 @@ import type { CSSProperties, ReactNode } from "react";
 import Link from "next/link";
 import styles from "./HubScreen.module.css";
 import { BottomNav, type NavSection } from "./BottomNav";
-import { ChevronLeftIcon } from "@/components/ui/icons";
+import { ArrowLeftIcon } from "@/components/ui/icons";
 
 /**
  * The shell every **hub** screen shares — the PRODUCTS hub (`My Products`,
@@ -146,7 +146,7 @@ export function HubScreen({
           <div className={styles.header}>
             {backHref ? (
               <Link href={backHref} className={`${styles.back} pressable`} aria-label="Back">
-                <ChevronLeftIcon />
+                <ArrowLeftIcon />
               </Link>
             ) : (
               <span />

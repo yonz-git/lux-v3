@@ -1,110 +1,49 @@
-/* Small Button / Secondary — Figma 225:60.
-   Fill is a linear gradient #deeff3 -> #b7c6ca (not a flat white), radius full,
-   padding 8/16, gap 6, and the same --shadow-button as the primary Button.
-
-   Hover: non-negotiable #4 lists Small Button / Secondary (225:61) under the
-   SAME "gradient runs end for end" rule as the large Button — not a label
-   recolour. Uses the same --grad-start/--grad-end plumbing (registered in
-   globals.css) so the reversal cross-fades instead of snapping, on
-   duration/hover (400ms) per the Motion note. */
+/* Small Button — VidGen glass at 36 tall. See SmallButton.tsx.
+   `glass` (white @50%) + 1px `border/glass` + the inset rim, radius full.
+   Hover lifts to `glass-strong`; pressed is the shared `pressable` overlay;
+   disabled is the whole control at 0.4. */
 
 .button {
-  --grad-start: var(--color-button-bg-secondary-start);
-  --grad-end: var(--color-button-bg-secondary-end);
-
+  position: relative;
   display: inline-flex;
   align-items: center;
   justify-content: center;
   gap: var(--space-xs);
-
   min-height: var(--size-control-sm);
-  padding: var(--space-sm) var(--space-lg);
+  padding: 0 var(--space-lg);
+  border: var(--border-width-hairline) solid var(--color-border-glass);
   border-radius: var(--radius-full);
-
-  color: var(--color-text-brand);
-  /* the hover shine's ink — this label's own token (see `.shine-text`) */
-  --shine-ink: var(--color-text-brand);
-  /* the specular rim's streaks: this pill's two gradient ends, 30% brighter */
-  --specular-a: color-mix(in oklab, var(--color-button-bg-secondary-start), white 30%);
-  --specular-b: color-mix(in oklab, var(--color-button-bg-secondary-end), white 30%);
-  background: linear-gradient(90deg, var(--grad-start) 0%, var(--grad-end) 100%);
-  /* immune to the border-box/padding-box gradient seam if this ever gains a
-     border in a non-disabled state — see the note in Button.module.css */
-  background-origin: border-box;
-  box-shadow: var(--shadow-button);
-  /* ⚠️ NOT IN FIGMA — the secondary endpoints are translucent as of
-     14 Sep 2026 (globals.css :root); the blur is what makes that frost */
-  -webkit-backdrop-filter: blur(var(--blur-card)) saturate(160%);
-  backdrop-filter: blur(var(--blur-card)) saturate(160%);
+  color: var(--color-text-primary);
+  background: var(--color-glass);
+  box-shadow: var(--shadow-glass);
+  -webkit-backdrop-filter: blur(10px);
+  backdrop-filter: blur(10px);
   text-decoration: none;
   white-space: nowrap;
-
-  transition: --grad-start var(--duration-hover) var(--ease-hover),
-    --grad-end var(--duration-hover) var(--ease-hover);
+  cursor: pointer;
+  transition: background-color var(--duration-fast) var(--ease-hover);
 }
 
 .button:hover:not(:disabled) {
-  --grad-start: var(--color-button-bg-secondary-end);
-  --grad-end: var(--color-button-bg-secondary-start);
+  background-color: var(--color-glass-strong);
 }
 
 @media (hover: none) {
   .button:hover:not(:disabled) {
-    --grad-start: var(--color-button-bg-secondary-start);
-    --grad-end: var(--color-button-bg-secondary-end);
+    background-color: var(--color-glass);
   }
 }
 
-/* ⚠️ NO RIM AT REST — 16 Sep 2026, asked for directly ("on default state
-   remove this border on secondary buttons"), the rule `Button`'s secondary
-   takes (see `.secondary :global(.edge-light)` there): the edge light's ring
-   and top catch read as a border on the pale pill, so both wait for the
-   pointer. The inner glow stays. */
-.button :global(.edge-light) {
-  --edge-catch: 0;
-  transition: box-shadow var(--duration-hover) var(--ease-hover);
-}
-
-.button :global(.edge-light)::before {
-  opacity: 0;
-  transition: opacity var(--duration-hover) var(--ease-hover);
-}
-
-@media (hover: hover) {
-  /* `initial` drops the override, so the catch is the global default again */
-  .button:hover:not(:disabled) :global(.edge-light) {
-    --edge-catch: initial;
-  }
-
-  .button:hover:not(:disabled) :global(.edge-light)::before {
-    opacity: 1;
-  }
-}
-
-/* Disabled — matching `Small Button / * / Disabled` (225:59 / 225:62) after the
-   22 Aug 2026 swap: the whole control at opacity/disabled (0.4), i.e. its own
-   Default faded. Nothing recoloured — a node fade takes the gradient, the label
-   and both drop shadows with it, which is why the state/disabled-bg +
-   border/default + text/muted recipe is gone from here too.
-   Nothing in the flow disables a small button yet; this exists so the first one
-   that does is already right. */
 .button:disabled {
   opacity: var(--opacity-disabled);
   cursor: not-allowed;
 }
 
-/* the fade must not fight the reversal */
-.button:disabled:hover {
-  --grad-start: var(--color-button-bg-secondary-start);
-  --grad-end: var(--color-button-bg-secondary-end);
-}
-
-/* ⚠️ NOT IN FIGMA — the optional leading glyph, added 13 Sep 2026. icon/sm (20)
-   through `--icon-size`, never a width/height (non-negotiable 14); the stroke
-   takes `currentColor`, so it wears the label's `text/brand` ink. */
+/* the glyph wears the brand indigo, the way VidGen's do on glass */
 .icon {
   display: inline-flex;
   flex: none;
+  color: var(--color-bg-brand);
   --icon-size: var(--size-icon-sm);
 }
 

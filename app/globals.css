@@ -230,7 +230,7 @@
 
      ⚠️ DECLARED HERE, NOT IN `tokens.css` — that file is generated from the
      Figma variables and Figma still holds `indigo/700`. Raise all three there;
-     see `docs/figma-catchup.md`. ⚠️ AND DO NOT REPOINT THE PRIMITIVE
+     see `docs/archive/figma-catchup.md`. ⚠️ AND DO NOT REPOINT THE PRIMITIVE
      `--color-indigo-700` INSTEAD: non-negotiable 2 forbids a component binding
      a primitive, and moving the ramp step would drag anything else aliasing it.
      ========================================================================== */
@@ -276,7 +276,7 @@
 
      ⚠️ DECLARED HERE, NOT IN `tokens.css` — that file is generated from the
      Figma variables and Figma still holds `rose/500` (#c9918e) and `red/500`
-     (#a86561). Raise both there; see `docs/figma-catchup.md`.
+     (#a86561). Raise both there; see `docs/archive/figma-catchup.md`.
 
      ⚠️ AND STILL DO NOT REPOINT THE PRIMITIVES `--color-rose-500` /
      `--color-red-500`, EVEN THOUGH EVERY ROLE THAT ALIASES THEM NOW MOVES.
@@ -332,7 +332,7 @@
      ⚠️ IT FAILED 1.4.3 BEFORE AND FAILS BY ~0.2 MORE NOW — a 14px label needs
      4.5:1 and the old red never reached it at any position on the gradient.
      A pre-existing failure widened, not a new one; logged with the band pills
-     in `docs/figma-catchup.md` § 2. ⚠️ Do not close it by exempting this one
+     in `docs/archive/figma-catchup.md` § 2. ⚠️ Do not close it by exempting this one
      token from the red: the fix is a DARKER red for all of them, or the Remove
      action stops carrying its meaning in colour — it is the only destructive
      control on these screens and the word already says what it does.
@@ -448,7 +448,7 @@
    ⚠️ DECLARED HERE, NOT IN `tokens.css`: that file is generated from the Figma
    variables, and Figma still holds the sage. **Raise it there** — both stops,
    the `button/bg-default-*` mirrors and `gradient/brand-hover`; see
-   `docs/figma-catchup.md` §2 and §6.
+   `docs/archive/figma-catchup.md` §2 and §6.
    ========================================================================== */
 
 :root {
@@ -764,7 +764,7 @@
    flow step moves together.
    ⚠️ FLOATING SURFACES ARE DELIBERATELY UNTOUCHED. `Sheet`'s desktop tray takes
    its own literal (`#edf8fb3d`) and never read this token; do not point it
-   here. Raise the new alpha in Figma; see `docs/figma-catchup.md`. */
+   here. Raise the new alpha in Figma; see `docs/archive/figma-catchup.md`. */
 :root {
   --color-surface-card-desktop: #edf8fb30;
 }
@@ -1115,8 +1115,10 @@ button {
    custom property, not `width`, so it feeds this rule instead of outranking
    it and a class still overrides it. */
 :where(svg[data-lux-icon]) {
-  width: var(--icon-size, var(--size-icon-md));
-  height: var(--icon-size, var(--size-icon-md));
+  /* `--icon-default` is the glyph's own VidGen size, set inline by icons.tsx;
+     a caller's `--icon-size` (on the svg or inherited) still wins over it */
+  width: var(--icon-size, var(--icon-default, var(--size-icon-md)));
+  height: var(--icon-size, var(--icon-default, var(--size-icon-md)));
   display: block;
   flex: none;
 }
@@ -1275,7 +1277,7 @@ main[tabindex="-1"]:focus-visible {
   font-weight: var(--font-weight-regular);
 }
 /* ⚠️ `Button size="md"`'s label, added 13 Sep 2026 — and it is Figma's own
-   `Button` style, Regular 15/22 (docs/design.md). `.t-button` above went to 17
+   `Button` style, Regular 15/22 (docs/archive/design-figma.md). `.t-button` above went to 17
    in f3edc75 with no note, and the 48-tall pill kept it, so a pill one control
    step SHORTER carried the same type and read as the bigger button of the two.
    Label steps down with height now: 17 / 15 / 14 over 62 / 48 / 36. A literal
@@ -1734,10 +1736,12 @@ main[tabindex="-1"]:focus-visible {
    behind it reads as washed-out, and some users disable transparency.
    ========================================================================== */
 
+/* lux-v3: the frosted row is VidGen's panel material — frost, glass edge, rim */
 .frosted-row {
   background: var(--color-surface-frost-light);
+  border: var(--border-width-hairline) solid var(--color-border-glass);
   border-radius: var(--radius-lg);
-  box-shadow: var(--shadow-frosted-row);
+  box-shadow: var(--shadow-panel);
   -webkit-backdrop-filter: blur(var(--blur-card));
   backdrop-filter: blur(var(--blur-card));
 }

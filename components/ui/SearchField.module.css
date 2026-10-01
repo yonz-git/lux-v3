@@ -1,3 +1,5 @@
+/* ⚠️ lux-v3, 1 Oct 2026 — the search pill is VidGen GLASS, 56 tall. */
+
 /* Search Field — Figma 248:70. 50 tall, padding 12/16, gap 12, radius/full,
    fill surface/frost-nav (#dde8eb @83%) + the frosted-row inner shadow.
 
@@ -12,12 +14,13 @@
   width: 100%;
   /* Figma is 50 tall with padding 12/16 — min-height owns the box so the input's
      own line box can never push it past 50 */
-  min-height: 50px;
+  min-height: var(--size-chip); /* 56, a VidGen control */
   padding: 0 var(--space-lg);
 
   border-radius: var(--radius-full);
-  background: var(--color-surface-frost-nav);
-  box-shadow: var(--shadow-frosted-row);
+  background: var(--color-glass);
+  border: var(--border-width-hairline) solid var(--color-border-glass);
+  box-shadow: var(--shadow-glass);
   -webkit-backdrop-filter: blur(var(--blur-card));
   backdrop-filter: blur(var(--blur-card));
 }

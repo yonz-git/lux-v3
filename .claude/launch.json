@@ -2,17 +2,10 @@
   "version": "0.0.1",
   "configurations": [
     {
-      "name": "lux-dark-proto",
+      "name": "lux-v3",
       "runtimeExecutable": "npm",
       "runtimeArgs": ["run", "dev"],
-      "port": 3001,
-      "autoPort": true
-    },
-    {
-      "name": "lux-web",
-      "runtimeExecutable": "npm",
-      "runtimeArgs": ["run", "dev"],
-      "port": 3000,
+      "port": 3030,
       "autoPort": true
     }
   ]

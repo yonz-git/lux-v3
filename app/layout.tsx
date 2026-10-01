@@ -1,6 +1,7 @@
 import type { Metadata, Viewport } from "next";
-import { Figtree } from "next/font/google";
+import { Urbanist } from "next/font/google";
 import "./globals.css";
+import "./vidgen.css";
 import { InvestigationProvider } from "@/lib/store/InvestigationProvider";
 import { RouteAnnouncer } from "@/components/layout/RouteAnnouncer";
 import { SmoothScroll } from "@/components/layout/SmoothScroll";
@@ -8,25 +9,16 @@ import { SnackbarProvider } from "@/components/layout/Snackbar";
 import { AppCanvas } from "@/components/layout/CanvasShader";
 
 /**
- * Figtree is the LUX typeface. Poppins was used early on and must not come back.
- * Only the three weights in the ramp are loaded: Light (Metric styles), Regular
- * (Body 1/2/3, Button, Button Small) and Medium (everything else). SemiBold and
- * Bold are deliberately absent — if text renders bold, that is drift.
+ * Urbanist is the lux-v3 typeface — the VidGen references' face, replacing
+ * Figtree (1 Oct 2026). All five weights the references use are loaded: Light
+ * for headlines and metrics, Regular for body and chips, Medium for labels and
+ * buttons, SemiBold for card titles, Bold for the wordmark and the emphasised
+ * words inside a light headline (`.t-headline b`).
  */
-const figtree = Figtree({
+const urbanist = Urbanist({
   subsets: ["latin"],
-  /* ⚠️ 600 IS LOADED FOR EXACTLY ONE CALLER — the selected bottom-nav label,
-     27 Sep 2026, asked for directly twice ("make the selected tab font
-     bolder", after it had already gone 400 -> 500). It is a DEVIATION from
-     non-negotiable 4, which holds the app to Light / Regular / Medium, and it
-     is recorded as the user's call rather than quietly generalised: nothing
-     else may reach for `--font-weight-semibold` without the same decision.
-     ⚠️ IT HAD TO BE ADDED HERE OR THE WEIGHT WOULD HAVE BEEN A LIE. Only the
-     weights listed are downloaded; `font-weight: 600` against a 300/400/500
-     family renders as 500 or as a synthesised faux-bold, neither of which is
-     the face Figtree draws. */
-  weight: ["300", "400", "500", "600"],
-  variable: "--font-figtree",
+  weight: ["300", "400", "500", "600", "700"],
+  variable: "--font-urbanist",
   display: "swap",
 });
 
@@ -59,7 +51,7 @@ export default function RootLayout({
   children: React.ReactNode;
 }) {
   return (
-    <html lang="en" className={figtree.variable}>
+    <html lang="en" className={urbanist.variable}>
       {/* The answer store wraps the WHOLE app, not just /investigation.
           The PRODUCTS hub (/products) reads the same products the add flow
           writes, and it is reached from the bottom nav rather than from inside

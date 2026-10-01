@@ -65,7 +65,7 @@ import { COPY, isEmpty, recap } from "@/features/my-skin/profile";
  * existing recipes rather than drawn new: the sage `DataCard` that `Analysis`
  * leads with, the frosted card the rest of the flow uses, the face diagram
  * from step 1 and the standard `Button`. Listed in
- * `docs/figma-catchup.md`.
+ * `docs/archive/figma-catchup.md`.
  *
  * ⚠️ ONE CARD PER ANSWER, NOT ONE CARD OF ROWS — REBUILT 7 Sep 2026, ASKED FOR
  * DIRECTLY. The first build was a single light card of `label: value` lines

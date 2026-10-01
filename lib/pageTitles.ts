@@ -59,6 +59,8 @@ const HUB_TITLES: Record<string, string> = {
      the user's own skin type, which is the rule every other entry in this file
      follows. */
   "/investigation/profile": "About your skin",
+  /* the design system rendered live — a dev tool, in no nav section */
+  "/styleguide": "Style guide",
   /* ⚠️ `/chat` USED TO BE HERE AND THE ROUTE IS GONE — 7 Sep 2026. It was the
      standalone conversation panel (270:96), prototype-only and in no nav
      section; `app/chat/page.tsx` was deleted, so a title for it would name a

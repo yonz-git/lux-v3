@@ -1,6 +1,6 @@
 import Link from "next/link";
 import styles from "./ScreenHeader.module.css";
-import { ChevronLeftIcon } from "@/components/ui/icons";
+import { ArrowLeftIcon } from "@/components/ui/icons";
 import { SmallButton } from "@/components/ui/SmallButton";
 
 /**
@@ -30,7 +30,7 @@ export function ScreenHeader({
   return (
     <div className={styles.row}>
       <Link href={backHref} className={`${styles.back} pressable`} aria-label="Back">
-        <ChevronLeftIcon />
+        <ArrowLeftIcon />
       </Link>
       <SmallButton label="Save & exit" href={saveHref} />
     </div>

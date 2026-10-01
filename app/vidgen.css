@@ -1,0 +1,286 @@
+/* ============================================================================
+   THE VIDGEN LAYER — lux-v3's design system, 1 Oct 2026.
+
+   Every value here is lifted from the two references:
+     ~/Claude/vidgen/index.html         (mobile: Welcome + AI Assistant)
+     ~/Claude/vidgen-studio/index.html  (desktop: Storyboard)
+   Imported after globals.css in app/layout.tsx, so where the two disagree this
+   file wins. It holds the type ramp, the spacing and size roles, the glass,
+   and the SHEET and PANEL recipes. The GRADIENTS are lux-v2's (see below).
+
+   ⚠️ SCALE. The mobile reference is a 436-wide comp rendered at 390 (×0.8945);
+   these are the 390 values — the ones on screen when the reference is opened —
+   rounded to whole pixels. The studio reference is authored on an 825 grid and
+   zoomed to the window; its values were multiplied by 1.745 (its zoom at 1440)
+   before being read, so a "6.95px" in that file is 12px here.
+   ========================================================================== */
+
+:root {
+  /* ---- glass — the material every VidGen control and box is made of ------- */
+  /* ⚠️ LOWERED from the reference's 50% / 72%, asked for directly 1 Oct 2026
+     ("lower the opacity — nowhere should we use such white"). Glass is a tint
+     over the canvas, never a white fill; no opaque white surface exists. */
+  --color-glass: rgb(255 255 255 / 0.25);         /* chip, round button      */
+  --color-glass-strong: rgb(255 255 255 / 0.4);   /* hover, selected row     */
+  --color-border-glass: rgb(255 255 255 / 0.55);  /* 1px edge on all glass   */
+  --color-rim: rgb(255 255 255 / 0.9);            /* inset top highlight     */
+  --color-rim-soft: rgb(255 255 255 / 0.8);       /* the chips' and fabs' rim */
+  /* the panel's fill is `surface/frost-light`, already rgba(244 254 255 / .55) */
+
+  /* ---- gradients: lux-v2's, NOT VidGen's ------------------------------- */
+  /* ⚠️ KEPT FROM v2, asked for directly 1 Oct 2026 ("the gradients are not
+     that good. keep the gradients of v2"). The reference's glow, lit sheet,
+     board and ink ground were tried and removed the same day. The gradients
+     in play are v2's own: `--gradient-canvas-*` (the ground), `--gradient-brand`
+     (#485780 -> #313560 at 90°, the primary action) and the sheet's sage frost
+     below. */
+  --surface-sheet: rgb(
+    from var(--color-surface-data) calc(r + (255 - r) * 0.1)
+      calc(g + (255 - g) * 0.1) calc(b + (255 - b) * 0.1) / 0.3
+  );
+
+  /* ---- shadows ------------------------------------------------------------ */
+  --shadow-brand-vg: 0 8px 18px rgb(49 53 96 / 0.3), inset 0 1px 0 rgb(255 255 255 / 0.25);
+  --shadow-float: 0 4px 14px rgb(46 42 63 / 0.1);      /* the white ✕ circle  */
+  --shadow-lift: 0 10px 24px rgb(46 42 63 / 0.16);     /* the image card      */
+  --shadow-sheet: inset 0 1px 0 rgb(255 255 255 / 0.7);
+  --shadow-glass: inset 0 1px 0 var(--color-rim-soft);
+  --shadow-panel: inset 0 1px 0 var(--color-rim);
+
+  /* ---- radius ------------------------------------------------------------- */
+  --radius-sheet: 36px;        /* top corners of the sheet                   */
+  --radius-sheet-foot: 44px;   /* bottom corners — follows the phone's 46    */
+  --radius-panel: 28px;        /* the frost panel inside the sheet           */
+  --radius-media: 22px;        /* the image card                             */
+
+  /* ---- spacing ROLES — every VidGen gap lands on an existing step ---------- */
+  --space-group: var(--space-xs);   /* 4 — between controls in one cluster   */
+  --space-inset: var(--space-sm);   /* 8 — sheet edge to the panel inside it */
+  --space-gutter: var(--space-2xl); /* 24 — screen edge; panel's side padding */
+  --space-panel: var(--space-3xl);  /* 32 — panel's top padding to its label  */
+  --space-section: var(--space-5xl);/* 48 — headline block to the next block  */
+
+  /* ---- control sizes ------------------------------------------------------ */
+  --size-round: 56px;          /* every round button: back, ✕, +, mic, send  */
+  --size-chip: 56px;           /* option chips (55 in the ref)               */
+  --size-tab: 56px;            /* pill tabs (57 in the ref)                  */
+  --size-slider: 64px;         /* slide-to-start track                       */
+  --size-pill: 36px;           /* the small time pill (17.7 × 1.745 ≈ 31, raised to the control floor) */
+}
+
+/* non-negotiable 11: no translucent surface without a solid fallback */
+@media (prefers-reduced-transparency: reduce) {
+  :root {
+    --color-glass: #f4f6f9;
+    --color-glass-strong: #f8fafb;
+  }
+}
+
+/* ============================================================================
+   TYPE RAMP — the existing class names, VidGen's sizes and weights.
+   The names stay because every screen already carries them.
+
+     headline   36/44 Light, emphasis Bold in brand   "Next-level AI video"
+     kicker     16/20 Regular, secondary              "Welcome to"
+     sheet title 22/28 Regular                        "AI Assistant"
+     panel label 18/22 Regular                        "Prompt"
+     body        16/22 Regular                        the prompt text
+     chip        16/20 Regular                        "9:16", "1080p"
+     tab/button  14/20 Medium                         "Featured", "Start"
+     wordmark    20/24 Bold                           "VidGen"
+   ========================================================================== */
+
+.t-display1,
+.t-display2,
+.t-h1,
+.t-headline {
+  font-size: 36px;
+  line-height: 44px;
+  font-weight: var(--font-weight-light);
+  letter-spacing: -0.005em;
+}
+.t-headline b,
+.t-headline strong {
+  font-weight: 700;
+  color: var(--color-bg-brand);
+}
+.t-kicker {
+  margin: 0;
+  font-size: 16px;
+  line-height: 20px;
+  font-weight: var(--font-weight-regular);
+  color: var(--color-text-secondary);
+}
+.t-headline {
+  margin: 0;
+  text-wrap: balance;
+}
+.t-brand {
+  margin: 0;
+  font-size: 20px;
+  line-height: 24px;
+  font-weight: 700;
+  letter-spacing: 0.005em;
+}
+
+.t-h2 {
+  font-size: 28px;
+  line-height: 34px;
+  font-weight: var(--font-weight-regular);
+}
+.t-h3,
+.t-h4-h3 {
+  font-size: 22px;
+  line-height: 28px;
+  font-weight: var(--font-weight-regular);
+}
+.t-h3-h2 {
+  font-size: 22px;
+  line-height: 28px;
+  font-weight: var(--font-weight-regular);
+}
+@media (min-width: 1024px) {
+  /* the Storyboard title: 13 × 1.745 ≈ 23, Medium */
+  .t-h3-h2 {
+    font-size: 24px;
+    line-height: 30px;
+    font-weight: var(--font-weight-medium);
+  }
+}
+.t-h4 {
+  font-size: 20px;
+  line-height: 24px;
+  font-weight: var(--font-weight-regular);
+}
+.t-h5 {
+  font-size: 18px;
+  line-height: 22px;
+  font-weight: var(--font-weight-regular);
+}
+.t-h6 {
+  font-size: 16px;
+  line-height: 20px;
+  font-weight: var(--font-weight-medium);
+}
+
+.t-body1 {
+  font-size: 18px;
+  line-height: 24px;
+}
+.t-body2,
+.t-body2-body1 {
+  font-size: 16px;
+  line-height: 22px;
+}
+.t-body3,
+.t-body3-body2 {
+  font-size: 14px;
+  line-height: 20px;
+}
+@media (min-width: 1024px) {
+  .t-body2-body1 {
+    font-size: 18px;
+    line-height: 24px;
+  }
+  .t-body3-body2 {
+    font-size: 16px;
+    line-height: 22px;
+  }
+}
+
+.t-label,
+.t-nav {
+  font-size: 14px;
+  line-height: 20px;
+  font-weight: var(--font-weight-medium);
+}
+@media (min-width: 1024px) {
+  .t-nav {
+    font-size: 14px;
+  }
+}
+.t-label-sm,
+.t-caption {
+  font-size: 12px;
+  line-height: 16px;
+}
+.t-overline {
+  font-size: 12px;
+  line-height: 16px;
+  font-weight: var(--font-weight-semibold, 600);
+  letter-spacing: 0.12em;
+}
+
+/* the chip label — VidGen's 16.5 Regular */
+.t-chip {
+  margin: 0;
+  font-size: 16px;
+  line-height: 20px;
+  font-weight: var(--font-weight-regular);
+}
+
+/* buttons — `Start` and the tabs are 14.3 Medium; the full-width pill takes
+   one step more so the flow's `Continue` still leads its screen */
+.t-button {
+  font-size: 15px;
+  line-height: 20px;
+  font-weight: var(--font-weight-medium);
+}
+.t-button-md,
+.t-button-sm {
+  font-size: 14px;
+  line-height: 20px;
+  font-weight: var(--font-weight-medium);
+}
+
+/* ============================================================================
+   THE TWO BOXES — `.vg-sheet` and `.vg-panel`, as classes so a component and
+   a one-off layout draw the same thing.
+
+   SHEET  the AI Assistant's shape — 36 top / 44 bottom, a white rim along
+          the top, no border — on lux-v2's sage frost (`--surface-sheet`, the
+          v2 tray's fill and blur). It holds a title row and a panel.
+   PANEL  the frost box inside it (and the Storyboard's description card):
+          `surface/frost-light`, a 1px glass edge, a white inset rim, 12 blur,
+          radius 28. Ink on it is the app's dark ink.
+   ========================================================================== */
+
+.vg-sheet {
+  border-radius: var(--radius-sheet) var(--radius-sheet) var(--radius-sheet-foot) var(--radius-sheet-foot);
+  background: var(--surface-sheet);
+  box-shadow: var(--shadow-sheet);
+  -webkit-backdrop-filter: blur(var(--blur-card)) saturate(1.4);
+  backdrop-filter: blur(var(--blur-card)) saturate(1.4);
+  color: var(--color-text-primary);
+}
+
+.vg-panel {
+  border-radius: var(--radius-panel);
+  background: var(--color-surface-frost-light);
+  border: var(--border-width-hairline) solid var(--color-border-glass);
+  box-shadow: var(--shadow-panel);
+  -webkit-backdrop-filter: blur(12px);
+  backdrop-filter: blur(12px);
+  color: var(--color-text-primary);
+}
+
+/* glass — the chip and round-button material, as a utility */
+.vg-glass {
+  background: var(--color-glass);
+  border: var(--border-width-hairline) solid var(--color-border-glass);
+  box-shadow: var(--shadow-glass);
+}
+
+@media (prefers-reduced-transparency: reduce) {
+  .vg-sheet {
+    background: linear-gradient(var(--color-surface-data), var(--color-surface-data)),
+      var(--color-bg-canvas);
+    -webkit-backdrop-filter: none;
+    backdrop-filter: none;
+  }
+  .vg-panel {
+    background: #eef6f7;
+    -webkit-backdrop-filter: none;
+    backdrop-filter: none;
+  }
+}

@@ -1,14 +1,15 @@
 /* ============================================================================
-   LUX design tokens
-   Generated from Figma file wIftBhzkn8E4wjZwgdH71n (9 variable collections).
-   Names match each variable's WEB code syntax 1:1, so a token in Figma and a
-   custom property here are the same thing.
+   LUX design tokens — HAND-OWNED since 1 Oct 2026.
+   This file was generated from Figma file wIftBhzkn8E4wjZwgdH71n until Figma
+   was retired; nothing generates it now, and it is the design system's source
+   of truth. Edit values here (or as overrides on `:root` in globals.css), never
+   on a screen. `/styleguide` renders every token.
 
    Light mode only. Figma defines a Dark mode but it has never been visually
    reviewed, so it is deliberately not emitted yet.
 
    Do NOT reference the 01 Primitives block from a component. Bind to the
-   semantic tokens underneath it, exactly as the Figma components do.
+   semantic tokens underneath it.
    ========================================================================== */
 
 :root {
@@ -219,7 +220,7 @@
   --width-content-max: 1280px;
 
   /* ---- 06 Typography ------------------------------------------------------ */
-  --font-family-sans: var(--font-figtree), "Figtree", system-ui, sans-serif;
+  --font-family-sans: var(--font-urbanist), "Urbanist", system-ui, sans-serif;
   --font-family-mono: ui-monospace, SFMono-Regular, Menlo, monospace;
   --font-weight-light: 300;
   --font-weight-regular: 400;

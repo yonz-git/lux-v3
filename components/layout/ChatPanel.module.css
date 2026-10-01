@@ -12,7 +12,7 @@
    used. None was "corrected" — Figma leads on pixels — but none should survive
    into a shipped screen either.
 
-   ⚠️ docs/figma-catchup.md LISTS NINE OFF-SCALE VALUES FOR THIS FRAME AND IS
+   ⚠️ docs/archive/figma-catchup.md LISTS NINE OFF-SCALE VALUES FOR THIS FRAME AND IS
    STALE. Six left with the controls that carried them (the timestamps' 6 gap
    and 10 text, the kebab's 18 glyph, the `Today` divider's 11 text and its
    #b5c8cc / #606d75 fills); the frame's off-scale 14 chevron was never
@@ -256,7 +256,7 @@
    "Mobile · 375" and nothing else in the file draws it, so rather than invent a
    1440 composition the panel keeps the size it was drawn at and centres. That
    is a decision to revisit the moment a desktop frame exists — noted in
-   docs/figma-catchup.md.
+   docs/archive/figma-catchup.md.
    -------------------------------------------------------------------------- */
 
 @media (min-width: 1024px) {

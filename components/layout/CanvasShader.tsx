@@ -15,7 +15,7 @@ import styles from "./CanvasShader.module.css";
  * directly ("use this as the main bg"): the `film` variant, 10% darker, with
  * the logo lift and the pointer light described on `FRAG_FILM`. Figma still
  * paints the static gradient, so it is owed a frame there — see
- * docs/figma-catchup.md.
+ * docs/archive/figma-catchup.md.
  *
  * ⚠️ IT WAS OPT-IN PER SCREEN UNTIL 12 Sep 2026, AND THIS COMMENT USED TO FORBID
  * WHAT HAPPENED NEXT. Welcome and `/check` each rendered their own canvas; it

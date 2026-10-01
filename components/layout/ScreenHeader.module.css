@@ -10,25 +10,28 @@
 }
 
 .back {
-  /* the icon is 24 in Figma, but the tap area must stay 44 at every breakpoint,
-     so the target is padded outwards rather than the glyph being scaled up */
+  /* lux-v3: the Storyboard's back button — a VidGen glass circle with the
+     arrow, 48 (the reference's 26.7 × 1.745 = 46.6, on the control scale) */
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  width: var(--size-touch-target);
-  height: var(--size-touch-target);
-  margin-left: calc((var(--size-icon-md) - var(--size-touch-target)) / 2);
-  color: var(--color-icon-default);
+  flex: none;
+  width: var(--size-control-md);
+  height: var(--size-control-md);
+  color: var(--color-bg-brand);
+  background: var(--color-glass);
+  border: var(--border-width-hairline) solid var(--color-border-glass);
+  box-shadow: var(--shadow-glass);
   border-radius: var(--radius-full);
-  transition: opacity var(--duration-fast) var(--ease-hover);
+  transition: background-color var(--duration-fast) var(--ease-hover);
 }
 
 .back:hover {
-  opacity: 0.7;
+  background-color: var(--color-glass-strong);
 }
 
 @media (hover: none) {
   .back:hover {
-    opacity: 1;
+    background-color: var(--color-glass);
   }
 }

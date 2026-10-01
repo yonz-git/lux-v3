@@ -11,18 +11,30 @@ This block is written and re-added by `next dev` — verify at `node_modules/nex
 # LUX — working rules for this repo
 
 LUX is an AI-guided skincare **investigation** web app. The design system —
-tokens, components, type, colour — is the source of truth and it lives in Figma.
+tokens, components, type, colour — is the source of truth and it lives IN THIS
+REPO: `app/tokens.css`, the overrides on `:root` in `app/globals.css`, and the
+components in `components/ui/` and `components/layout/`. `/styleguide` renders
+all of it live.
 
-**Figma file:** `wIftBhzkn8E4wjZwgdH71n` · **Screens page:** `06. Screen
-Designs` (`453:2252`). Each section has a `HANDOFF — *` annotation panel beside
-its mobile row documenting every recipe.
+⚠️ **FIGMA WAS RETIRED ON 1 Oct 2026, asked for directly.** Until then the file
+`wIftBhzkn8E4wjZwgdH71n` led on pixels and the code caught up; now nothing sits
+upstream of the code. The rule that replaced "match Figma to the pixel": **a new
+visual decision is a TOKEN or a COMPONENT change, never a one-off value on a
+screen.** If a screen needs a value the system does not have, add it to the
+system first and use it from there. Older comments that say `NOT IN FIGMA`,
+"raise this in Figma" or quote a Figma node id are history — they explain why
+something is the way it is, and they are NOT a to-do list. Do not write new
+ones. The Figma-side docs are in `docs/archive/`.
 
-**⚠️ THE PROTOTYPE LEADS ON FLOW, FIGMA LEADS ON PIXELS.** Every VISUAL decision
-— a component's size, radius, type, colour — must match Figma to the pixel, and
-inventing a treatment is drift. The SHAPE OF A FLOW — what the steps are, what
-order they run in, what each asks — gets decided here, in the thing that can
-actually be walked, and Figma catches up. Divergences carry a `⚠️ NOT IN FIGMA`
-comment naming what changed and why. Keep writing them.
+⚠️ **THIS REPO IS `lux-v3`, THE VIDGEN REDESIGN — FORKED FROM `lux-v2` ON 1 Oct
+2026.** `~/Claude/LUX/lux-v2` is the original prototype and stays as it was;
+nothing here should be pushed to its remote (this clone has none). The visual
+source is the two VidGen references at `~/Claude/vidgen/index.html` and
+`~/Claude/vidgen-studio/index.html`: their icons, buttons, sheet and panel
+recipes, gradients, Urbanist, type sizes and spacing replace LUX's.
+`docs/vidgen-components.md` is the inventory of what they cover and what still
+has to be designed. Until a section is restyled, the values in this file
+describe the lux-v2 look it was forked with.
 
 ## Where to find the reasoning
 
@@ -30,19 +42,15 @@ This file is the RULES. It deliberately does not carry the reasoning behind
 them, because that lives in three better places:
 
 1. **The component's own doc comment.** Every screen and component opens with a
-   30–50 line block explaining its Figma frame, its measurements and every
+   30–50 line block explaining where it came from, its measurements and every
    decided-here change. That is the authority for the file you are editing, and
    it cannot drift from the code it sits on. **Read it before you edit.**
 2. **`docs/decisions.md`** — the cross-cutting record: why PRODUCTS went from
    twelve screens to one, why CHECK's basket stopped being modal, the contrast
    measurements behind SURFACE SYSTEM B, and the list of things faked here
    because the design system has no component for them.
-3. **`docs/design.md`** — the Figma-side working guide: the component node ids
-   and their variant structures, all nine token collections, the text-style
-   ramp, the spacing and radius scales, and the `use_figma` gotchas. It is the
-   authority for anything this file does not answer. **Read it before building
-   a screen shape that does not already exist here** — it carries the
-   vocabulary this file assumes you already have.
+3. **`/styleguide`** — every token and component rendered live. It is what
+   Figma used to be for: the place to SEE the system before changing it.
 
 4. **`docs/product-brief.md`** — the 11 Aug product brief. It specifies the
    controlled vocabulary the product may and may not use, the safety branch and
@@ -51,15 +59,10 @@ them, because that lives in three better places:
    is not — see below. Read it before adding user-facing copy about a product's
    effect on skin, or before working on the investigation flow.
 
-`design.md` is the FIGMA side; this file is the CODE side. Where they disagree,
-the code is the truth about what SHIPPED and `design.md` is the truth about what
-FIGMA HOLDS — both can be right at once. `docs/figma-catchup.md` lists every gap
-between them and is the work order for closing them in Figma.
-
 **Read the matching section of `docs/decisions.md` before you change the flow,
 the surfaces or the copy of a nav section.** Those entries record decisions a
-comp will contradict, so "fixing" the code to match Figma is exactly how they
-get undone. For ordinary work — a bug, a style fix, a new component — the doc
+comp will contradict, so "fixing" the code to match an old comp is exactly how
+they get undone. For ordinary work — a bug, a style fix, a new component — the doc
 comment is enough.
 
 ## Where the code lives
@@ -165,6 +168,7 @@ Figma frame ids and each step's `isComplete` rule.
 | `/check/analyzing` | pushed view | `check` |
 | `/check/results` | pushed view | `check` |
 | `/check/history` | pushed view | `check` |
+| `/styleguide` | ⚠️ dev tool — the design system rendered live, not a screen | `none` |
 
 **⚠️ HUB vs FLOW — the header tells you which, and `HubScreen` vs
 `QuestionScreen` encodes it.** A screen is an investigation step if and only if
@@ -551,6 +555,20 @@ the answer being absent (deep links) rather than rendering an empty bubble.
 
 ## The vocabulary — what exists, so you don't invent one
 
+⚠️ **lux-v3: `app/vidgen.css` OVERRIDES THE TABLES BELOW.** It is imported after
+`globals.css` and holds VidGen's type sizes (headline 36/44 Light, page title
+22/28, body 16/22, chip 16/20, tab and button 14–15 Medium), the spacing roles
+(`--space-group` 4, `--space-inset` 8, `--space-gutter` 24, `--space-panel` 32,
+`--space-section` 48), control sizes (`--size-round` / `--size-chip` 56), the
+glass tokens (white at 25% / 40% — never an opaque white fill), and the
+`.vg-sheet` / `.vg-panel` / `.vg-glass` recipes. Gradients are lux-v2's (VidGen's were tried and dropped
+1 Oct 2026). The font is Urbanist, and
+SemiBold (600) and Bold (700) are in the ramp now — the wordmark and the
+emphasised words in a headline use them, which retires non-negotiable 4's
+Light/Regular/Medium-only rule. New components: `IconButton` (the round
+control). Icons are VidGen's glyphs (`components/ui/icons.tsx`). `/styleguide`
+shows all of it.
+
 Generated from `app/globals.css`, `app/tokens.css` and the components
 themselves. If a value here disagrees with the source, the source wins and this
 table is stale — say so rather than working around it.
@@ -736,12 +754,14 @@ localizes the `@keyframes` name and it resolves to nothing (motion section
 below). A module may safely set `animation-delay`, which carries no name.
 
 For anything not listed — the full 9 collections, the Figma node ids, the
-variant structures — read `docs/design.md`.
+variant structures — read `docs/archive/design-figma.md` (history: the
+Figma-era guide).
 
 ## Non-negotiables
 
-1. **`app/tokens.css` is generated from the Figma variables.** Treat it as
-   generated. Hand-authored overrides go on `:root` in `globals.css`.
+1. **`app/tokens.css` is the design system's primitive and semantic layer, and
+   it is hand-owned** (it was generated from Figma until 1 Oct 2026 — nothing
+   generates it now). Change a value there, not on a screen.
 2. **Never reference the `01 Primitives` block** (`--color-indigo-*`,
    `--color-sage-*`, …) from a component. Bind to the semantic tokens.
 3. **Every piece of text uses a `t-*` class** from `globals.css`, one per Figma
@@ -1168,7 +1188,8 @@ losing that race announces the screen the user just left.
   **regulatory** constraint, not a tone preference: an absolute claim needs
   substantiating and is the language that pushes a beauty app toward
   medical-device territory. See `docs/decisions.md`, "Claim language".
-- Compare against the Figma frame at 440 and at 1440.
+- Check it at 440 and at 1440, and against `/styleguide` if it uses a
+  component in a new way.
 - Check computed values in the browser rather than eyeballing a screenshot.
 - Keyboard: focus is visible on every interactive element, as an `outline`.
 - The route exports `metadata` from `lib/pageTitles.ts`.

@@ -53,7 +53,7 @@ import { addDays, toIso } from "@/lib/date";
  *
  * ⚠️ NOT IN FIGMA AT ALL. Page `06. Screen Designs` has no analysis frames
  * outside CHECK, so every measurement here is decided in the prototype and
- * listed in `docs/figma-catchup.md`.
+ * listed in `docs/archive/figma-catchup.md`.
  *
  * ⚠️ NOT A FLOW STEP. No progress track, no `Save & exit`, back chevron kept —
  * a pushed view, the standing `/check/results` has to `/check/new`.

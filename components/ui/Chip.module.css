@@ -1,214 +1,112 @@
-/* Chip — Figma 162:74. Padding 10/16, radius full, label `Label` (Medium 14/20).
-     Default  frost-light-muted fill + a 1px border/chip hairline
-     Selected bg/brand fill, text/on-brand label
+/* Chip — VidGen's option chip (`9:16`, `1080p`, `15s`), 1 Oct 2026.
 
-   ⚠️ THE DEFAULT FILL IS `bg/frost-light-muted`, NOT THE COMPONENT'S
-   `surface/frost-light` — DECIDED HERE, NOT IN FIGMA. `surface/frost-light` is
-   #f4feff, the brightest light value in the app, and at 55% on the frosted
-   question card the chip row read as white stickers: the loudest thing on 01,
-   above the title that states the question. The same near-white one step down
-   (#dbeded, the value declared in `globals.css` for the face-diagram region
-   pills) puts the row back under the title, and it makes the two pill groups on
-   this screen — the symptoms and the location chips inside `FaceDiagram`, which
-   are the same component — read as one family instead of two brightnesses.
-   Opaque, so there is no reduced-transparency fallback to keep. Raise
-   frost-light-muted in Figma as a real role; see the note on the token.
-   ⚠️ THE FACE CARD'S LOCATION CHIPS NO LONGER WEAR THIS FILL, as of 14 Sep
-   2026: unselected, they are glass like the region pills around them. That
-   override lives in `FaceDiagram.module.css`, not here — every other Chip in
-   the app, the symptom row above the face included, keeps this recipe. */
+   DEFAULT   glass: white @50%, 1px white @55% edge, the inset white @80% rim,
+             56 tall (`--size-chip`; 55 in the reference), 16 Regular label in
+             the app's secondary ink, a leading glyph in the brand indigo.
+   SELECTED  lux-v2's: flat `bg/brand` shading to `bg/brand-hover` at 135°,
+             white label and glyph.
+
+   Caller hooks that predate lux-v3 still work: `--chip-edge` recolours the
+   edge, `--chip-lift` is a second shadow slot, `--chip-disabled-opacity` and
+   `--chip-hit-inline` are unchanged. The 44 hit area is `::after`. */
 
 .chip {
+  --chip-edge: var(--color-border-glass);
+  --chip-lift: 0 0 #0000;
+
+  position: relative;
+  isolation: isolate;
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  position: relative;
-  /* the selected shade (`::before`, below) paints at z-index -1 — this keeps
-     it above the pill's own fill and under its label */
-  isolation: isolate;
-  /* The Chip is 40 tall in Figma (padding 10/16 around a Label 14/20). Both 10
-     and 40 are OFF the token scales — the component's padding is unbound in
-     Figma and the control scale only has 36/48/62. Written as literals rather
-     than snapped to a token that would be quietly wrong; see the session notes. */
-  min-height: 40px;
-  padding: 0 var(--space-lg);
-  border-radius: var(--radius-full);
-
-  color: var(--color-text-primary);
-  background: var(--color-bg-frost-light-muted);
-  /* ⚠️ A STROKE, WHICH THE FIGMA COMPONENT DOES NOT HAVE — see
-     `--color-border-chip` in `globals.css` for the measurements. With the fill
-     one step down from frost-light the pill has no edge of its own on a light
-     card, and the border is the only thing left to draw it. The height does not
-     move: `box-sizing: border-box` is global and the chip is sized by
-     `min-height`, so the 1px sits inside the 40 (non-negotiable 8b). */
-  /* ⚠️ THE 1.5px EDGE IS THE BORDER PLUS AN INSET RING — 26 Sep 2026, asked
-     for directly ("make these pill border 0.5px thicker"). Chrome FLOORS
-     `border-width` to whole pixels, so a 1.5px border rendered at 1 (measured:
-     `border-width: 1.5px` computes back as `1px`); an inset shadow takes
-     fractional widths, which is how the skin-profile pills got theirs. So the
-     border draws the OUTER 1px and the ring adds the remaining 0.5 inside it.
-     The box does not move: `box-sizing: border-box` and the 40 `min-height`
-     are unchanged and no caller's padding compensation moves.
-     ⚠️ THE BORDER WAS TRANSPARENT, WITH THE WHOLE 1.5 IN THE RING, AND THAT
-     DREW A PALE LINE AROUND THE EDGE — an inset shadow is clipped to the
-     PADDING box while the fill is clipped to the BORDER box, so the pill's own
-     background painted in the 1px band OUTSIDE the ring and read as a second,
-     lighter border over the real one (measured on step 1's frosted symptoms,
-     where the band was `#dbeded57` over the card). Asked for directly 26 Sep
-     2026: "fix the bg or white border that is going over the actual border".
-     ⚠️ KEEP `background-clip` AT ITS `border-box` DEFAULT. `--chip-edge` can
-     be translucent (`surface/data-deep` is 85%), so the border has to
-     composite over the chip's own fill exactly as the ring does, or the two
-     halves of one edge come out different shades.
-     ⚠️ A CALLER STILL RECOLOURS `--chip-edge`, WHICH IS NOW THE BORDER'S
-     COLOUR TOO — so an override needs no second declaration. `--chip-lift` is
-     the second shadow slot, because a hover that sets `box-shadow` wholesale
-     would otherwise wipe the ring. A caller that replaces `box-shadow`
-     outright drops the ring on purpose (the face card's glass pills, step 1's
-     selected symptom) and both restate the border themselves — transparent
-     and `border-width: 0` — at higher specificity. */
-  --chip-border: calc(var(--border-width-hairline) + 0.5px);
-  --chip-edge: var(--color-border-chip);
-  --chip-lift: 0 0 #0000;
+  gap: 9px; /* the reference's glyph-to-label gap */
+  min-height: var(--size-chip);
+  padding: 0 var(--space-xl);
   border: var(--border-width-hairline) solid var(--chip-edge);
-  box-shadow: inset 0 0 0
-      calc(var(--chip-border) - var(--border-width-hairline)) var(--chip-edge),
-    var(--chip-lift);
-
-  transition: background-color var(--duration-base) var(--ease-standard),
+  border-radius: var(--radius-full);
+  color: var(--color-text-secondary);
+  background: var(--color-glass);
+  box-shadow: var(--shadow-glass), var(--chip-lift);
+  -webkit-backdrop-filter: blur(10px);
+  backdrop-filter: blur(10px);
+  cursor: pointer;
+  transition:
+    background-color var(--duration-base) var(--ease-standard),
     color var(--duration-base) var(--ease-standard),
-    opacity var(--duration-base) var(--ease-standard),
-    /* ⚠️ `--chip-edge` is an unregistered custom property and does not
-       interpolate — without this the outer 1px would SNAP to the hover colour
-       while the inner 0.5 faded with the shadow */
-      border-color var(--duration-fast) var(--ease-standard),
-    box-shadow var(--duration-fast) var(--ease-standard);
+    border-color var(--duration-fast) var(--ease-standard),
+    box-shadow var(--duration-fast) var(--ease-standard),
+    opacity var(--duration-base) var(--ease-standard);
 }
 
-/* ⚠️ NOT IN FIGMA — A HOVER, asked for directly 13 Sep 2026 ("slight hover
-   effects on all the small pills"). The chip had none, so on desktop a pill
-   gave no sign it was a control until it was clicked. It borrowed the face
-   diagram's region pill hover as it was then — the same component family on
-   the same screen — at one step softer: the hairline firms to `border/default`
-   and the pill lifts on `--shadow-sm`. (The region pills are glass since
-   14 Sep 2026 and brighten on hover instead; this hover did not follow.) No fill change, so hover can never be mistaken for
-   selection. `duration/fast` for the lift, per board 04b's hover row.
-   ⚠️ THE HAIRLINE FIRMS TO THE SELECTED INDIGO, NOT `border/default`'s GREY —
-   16 Sep 2026, asked for directly ("change the border color on hover of the
-   buttons like on the left to the color of the buttons like on the right").
-   The edge previews the colour the pill turns when picked, which is what
-   step 1's symptom row already did with its rose (StartInvestigation); every
-   indigo `Chip` now does it from here. Still no fill change. */
+.icon {
+  display: inline-flex;
+  flex: none;
+  color: var(--color-bg-brand);
+  transition: color var(--duration-base) var(--ease-standard);
+}
+
+/* hover brightens the glass; it never looks like selection */
 .chip:hover:not(:disabled) {
-  --chip-edge: var(--color-bg-brand);
-  --chip-lift: var(--shadow-sm);
-}
-
-/* selected: the indigo keeps its own edge; only the lift answers the pointer */
-.chip[data-selected="true"]:hover:not(:disabled) {
-  --chip-edge: var(--color-bg-brand);
+  background-color: var(--color-glass-strong);
 }
 
 @media (hover: none) {
   .chip:hover:not(:disabled) {
-    --chip-edge: var(--color-border-chip);
-    --chip-lift: 0 0 #0000;
-  }
-
-  .chip[data-selected="true"]:hover:not(:disabled) {
-    --chip-edge: var(--color-bg-brand);
+    background-color: var(--color-glass);
   }
 }
 
-/* ⚠️ NOT IN FIGMA — DISABLED, added 14 Sep 2026 (see Chip.tsx). The Button's
-   recipe: the whole pill fades to `opacity/disabled`, so a selected pill fades
-   WITH its indigo rather than turning into a paler one, and the fade rides the
-   state clock (`duration/base`) like every selection. A caller whose disabled
-   pill has to stay at full strength sets `--chip-disabled-opacity` — the face
-   card does, for a marked place waiting on its next symptom. */
-.chip:disabled {
-  opacity: var(--chip-disabled-opacity, var(--opacity-disabled));
-  cursor: not-allowed;
-}
-
-/* The compact pill — the chat panel only, see Chip.tsx.
-
-   ⚠️ 32 IS EXACTLY 20% OFF THE 40; THE PADDING IS 25% OFF AND CANNOT BE 20%.
-   16 x 0.8 is 12.8 and the spacing scale runs 12 then 16, so `md` is the step
-   and 12.8 would be the app's first off-scale spacing value. The pill hugs its
-   label either way, so the extra 0.8 a side is not a shape anyone can see —
-   which is not true of a number that is on no scale.
-
-   The label drops with it, `Label` 14/20 to `Label Small` 12/16, set in
-   Chip.tsx so it stays a published text style rather than a font-size here. */
-.chip[data-size="compact"] {
-  min-height: 32px;
-  padding: 0 var(--space-md); /* 12 */
-}
-
-.chip[data-selected="true"] {
-  background: var(--color-bg-brand);
-  /* the selected pill is indigo on a light card and needs no help being seen;
-     a sage hairline on it would read as a rim rather than an edge, so the
-     ring is the fill's own colour and only holds the geometry */
-  --chip-edge: var(--color-bg-brand);
-  color: var(--color-text-on-brand);
-}
-
-/* ⚠️ NOT IN FIGMA — THE SELECTED PILL DARKENS TOWARD ITS LOWER RIGHT, asked
-   for directly 13 Sep 2026. A flat indigo pill beside the primary button's
-   indigo sweep read as a sticker; a diagonal shade gives it the same sense of
-   light. Flat `bg/brand` holds the top-left third, then it runs to
-   `bg/brand-hover` (#2c2a5f) — the darker sibling on the SAME hue, so it is a
-   shade and not a second colour. White on it only gets MORE contrast.
-
-   ⚠️ AN OVERLAY THAT FADES, NOT A `background-image` ON THE PILL. The fill
-   transitions on `duration/base`; a gradient image cannot interpolate and
-   would snap on while the colour was still fading in. It is inset by the
-   hairline so it covers the border too — otherwise the flat indigo border
-   would draw a lighter rim around the dark corner. ⚠️ THE HAIRLINE, NOT
-   `--chip-border`: the edge's fractional half is an inset ring now (top of
-   this file), so the border box is the pill and 1.5 hung 0.5px outside it. */
+/* selected — the brand gradient as an overlay that FADES in (a gradient
+   image cannot interpolate, an opacity can) */
 .chip::before {
   content: "";
   position: absolute;
   inset: calc(var(--border-width-hairline) * -1);
   z-index: -1;
   border-radius: inherit;
-  background: linear-gradient(
-    135deg,
-    transparent 35%,
-    var(--color-bg-brand-hover) 100%
-  );
+  background: linear-gradient(135deg, var(--color-bg-brand) 35%, var(--color-bg-brand-hover) 100%);
   opacity: 0;
   pointer-events: none;
   transition: opacity var(--duration-base) var(--ease-standard);
+}
+
+.chip[data-selected="true"] {
+  --chip-edge: transparent;
+  color: #fff;
 }
 
 .chip[data-selected="true"]::before {
   opacity: 1;
 }
 
-/* The hit area, which is bigger than the pill and always has been vertically:
-   44 around a chip drawn at 40 (or 32 compact), so the target meets the
-   touch-target minimum without the pill growing to meet it.
+.chip[data-selected="true"] .icon {
+  color: #fff;
+}
 
-   ⚠️ `--chip-hit-inline` EXTENDS IT SIDEWAYS TOO, AND THE CALLER SETS IT,
-   BECAUSE ONLY THE CALLER KNOWS ITS OWN GAP. Left at 0 the pill's own width is
-   the whole horizontal target, so the gap between two chips is dead space — a
-   click landing in it selects nothing and reads as a broken control. Measured
-   on the daily check-in: 2px to the right of `Much better` selected nothing at
-   all. Set it to HALF the row's gap and neighbouring targets meet exactly, so
-   every pixel of the row belongs to the nearest pill.
+.chip:disabled {
+  opacity: var(--chip-disabled-opacity, var(--opacity-disabled));
+  cursor: not-allowed;
+}
 
-   ⚠️ IT IS INVISIBLE AND MUST STAY THAT WAY. This changes what a click hits,
-   never what the eye sees — no fill, no border, no layout. The pill is still
-   drawn exactly where Figma draws it. Do not use it to fake a bigger chip. */
+/* the chat panel's chip — the composer row's scale */
+.chip[data-size="compact"] {
+  min-height: 36px;
+  padding: 0 var(--space-md);
+  gap: var(--space-xs);
+}
+
+/* the 44 hit area — invisible, never a bigger pill */
 .chip::after {
   content: "";
   position: absolute;
   inset: calc((var(--size-touch-target) - 100%) / -2)
     calc(var(--chip-hit-inline, 0px) * -1);
   min-height: var(--size-touch-target);
+}
+
+@media (prefers-reduced-transparency: reduce) {
+  .chip {
+    -webkit-backdrop-filter: none;
+    backdrop-filter: none;
+  }
 }

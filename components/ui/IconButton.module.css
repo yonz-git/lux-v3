@@ -1,0 +1,77 @@
+/* IconButton — VidGen's circles. Every value is the reference's own:
+   56 round; glass = white @50%, 1px white @55% edge, inset white @80% rim;
+   primary = lux-v2's brand gradient + `shadow/brand-vg`; outline = 1px ink
+   @18%, no fill; soft = #eeecf5 lilac. */
+
+.button {
+  position: relative;
+  display: inline-grid;
+  place-items: center;
+  flex: none;
+  width: var(--size-round);
+  height: var(--size-round);
+  padding: 0;
+  border: var(--border-width-hairline) solid transparent;
+  border-radius: 50%;
+  text-decoration: none;
+  cursor: pointer;
+  transition:
+    background-color var(--duration-fast) var(--ease-hover),
+    opacity var(--duration-base) var(--ease-standard);
+}
+
+.sm {
+  width: var(--size-touch-target);
+  height: var(--size-touch-target);
+}
+
+.glass {
+  color: var(--color-bg-brand);
+  background: var(--color-glass);
+  border-color: var(--color-border-glass);
+  box-shadow: var(--shadow-glass);
+  -webkit-backdrop-filter: blur(10px);
+  backdrop-filter: blur(10px);
+}
+
+.primary {
+  color: #fff;
+  background: var(--gradient-brand); /* lux-v2's */
+  box-shadow: var(--shadow-brand-vg);
+}
+
+.outline {
+  color: var(--color-text-primary);
+  background: transparent;
+  border-color: rgb(46 42 63 / 0.18);
+}
+
+.soft {
+  color: var(--color-bg-brand);
+  background: #eeecf5;
+}
+
+@media (hover: hover) {
+  .glass:hover:not(:disabled) {
+    background-color: var(--color-glass-strong);
+  }
+  .outline:hover:not(:disabled) {
+    background-color: var(--color-glass);
+  }
+  .primary:hover:not(:disabled),
+  .soft:hover:not(:disabled) {
+    filter: brightness(1.06);
+  }
+}
+
+.button:disabled {
+  opacity: var(--opacity-disabled);
+  cursor: default;
+}
+
+@media (prefers-reduced-transparency: reduce) {
+  .glass {
+    -webkit-backdrop-filter: none;
+    backdrop-filter: none;
+  }
+}

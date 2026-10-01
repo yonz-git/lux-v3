@@ -1,5 +1,6 @@
 "use client";
 
+import type { ReactNode } from "react";
 import styles from "./Chip.module.css";
 
 /**
@@ -58,6 +59,7 @@ export function Chip({
   control = "checkbox",
   size = "default",
   disabled = false,
+  icon,
   onToggle,
 }: {
   label: string;
@@ -74,6 +76,8 @@ export function Chip({
   size?: "default" | "compact";
   /** unavailable for now — see the note above */
   disabled?: boolean;
+  /** a leading glyph from `icons.tsx`, the way VidGen's option chips carry one */
+  icon?: ReactNode;
   onToggle: () => void;
 }) {
   return (
@@ -85,9 +89,14 @@ export function Chip({
       data-size={size === "compact" ? "compact" : undefined}
       disabled={disabled}
       /* still a `t-*` class either way — rule 3 holds for both sizes */
-      className={`${styles.chip} ${size === "compact" ? "t-label-sm" : "t-label"}`}
+      className={`${styles.chip} ${size === "compact" ? "t-label-sm" : "t-chip"}`}
       onClick={onToggle}
     >
+      {icon && (
+        <span className={styles.icon} aria-hidden="true">
+          {icon}
+        </span>
+      )}
       {label}
     </button>
   );

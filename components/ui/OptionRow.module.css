@@ -1,3 +1,7 @@
+/* ⚠️ lux-v3, 1 Oct 2026 — the row is VidGen GLASS (white @50%, glass edge,
+   inset rim); selected firms the edge to the brand indigo over glass-strong.
+   Older notes below about the aqua fill and inset shadow are history. */
+
 /* Radio row 162:86 / Checkbox row 465:463 — 56 tall, padding 17/18/17/20,
    radius/lg, surface/frost-light + the surface/frosted-row inner shadow.
    A frosted row without that inner shadow reads flat.
@@ -34,18 +38,18 @@
      Transparent by default keeps the unselected row exactly as it looks now,
      and `border-box` + `min-height` means the row still measures 56 (58 on
      desktop) with the stroke inside it, as rule 8b requires. */
-  border: var(--border-width-thin) solid transparent;
+  border: var(--border-width-hairline) solid var(--color-border-glass);
   /* ⚠️ `#edf8fb0f`, supplied directly 14 Sep 2026 for every option row in the
      app — a pale aqua at 6%, far thinner than `surface/frost-light`, so the
      row is mostly its blur, shadow and edge (it was `#f4feff12` for a turn).
      NOT IN FIGMA and no token; raise one if it stays. The
      reduced-transparency fallback below keeps its opaque frost. */
-  background: #edf8fb0f;
+  background: var(--color-glass);
 
   /* ⚠️ `shadow/frosted-row` at 15%, asked for directly 15 Sep 2026 — the same
      depth the step 1 `Other` row took the same day. The token stays 10%
      (globals.css) for everything else that reads it. */
-  box-shadow: inset 2px 4px 9px rgba(0, 0, 0, 0.15);
+  box-shadow: var(--shadow-glass);
   -webkit-backdrop-filter: blur(var(--blur-card));
   backdrop-filter: blur(var(--blur-card));
 
@@ -53,11 +57,12 @@
 }
 
 .row[data-selected="true"] {
-  border-color: var(--color-button-border-focused);
+  border-color: var(--color-bg-brand);
+  background: var(--color-glass-strong);
 }
 
 .row:hover[data-selected="false"] {
-  border-color: transparent;
+  border-color: var(--color-border-glass);
 }
 
 /* a tap fires :hover on a touch device and it STAYS fired until something else

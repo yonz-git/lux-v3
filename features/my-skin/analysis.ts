@@ -4,7 +4,7 @@
  * Source: `docs/product-brief.md` §§ 05–12, "Analysis model to communicate
  * through the UI". Nothing in Figma covers it — page `06. Screen Designs` has
  * no analysis frames outside CHECK — so every screen built on this module
- * carries a `⚠️ NOT IN FIGMA` comment and a line in `docs/figma-catchup.md`.
+ * carries a `⚠️ NOT IN FIGMA` comment and a line in `docs/archive/figma-catchup.md`.
  *
  * ⚠️ THIS IS NOT `features/check/check.ts` AND THE TWO MUST NOT CONVERGE. CHECK
  * asks "is this product right for my skin?" — prospective, one product at a
