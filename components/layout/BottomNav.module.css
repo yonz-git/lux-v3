@@ -6,17 +6,22 @@
            tall — `--size-nav-height`, which every `.screen` reservation reads.
    ITEM    a 56 glass circle (white @12%) with the section's glyph in indigo.
    ACTIVE  the brand gradient pill with the glyph and the word in white; it
-           takes `flex: 1` so the bar's slack goes to where you are.
+           sizes to its word.
 
-   The bar is fixed `--nav-inset-bottom` off the bottom. On mobile it spans the
-   screen 8 in from each side when a section is active and hugs its circles,
-   centred, when none is (`data-compact`). Desktop always hugs. */
+   The bar is fixed `--nav-inset-bottom` off the bottom and HUGS its items,
+   centred, at every width. ⚠️ It used to span the phone 8 in from each side
+   whenever a section was active, with the pill taking the slack; on 3 Oct 2026
+   that was cut, asked for directly ("it should be contained like in
+   desktop"), because at tablet and phone widths the pill stretched into a
+   long slab. `--nav-inset-inline` survives only as the floor it never
+   crosses on a narrow screen. */
 
 .nav {
   position: fixed;
   bottom: var(--nav-inset-bottom);
-  left: var(--nav-inset-inline);
-  right: var(--nav-inset-inline);
+  left: 50%;
+  transform: translateX(-50%);
+  max-width: calc(100% - 2 * var(--nav-inset-inline));
   z-index: var(--z-nav);
 
   box-sizing: border-box;
@@ -33,21 +38,6 @@
   box-shadow: var(--shadow-nav-vg);
   -webkit-backdrop-filter: blur(16px);
   backdrop-filter: blur(16px);
-}
-
-/* nothing is active — the bar hugs its four circles and centres */
-.nav[data-compact] {
-  left: 50%;
-  right: auto;
-  transform: translateX(-50%);
-}
-
-@media (min-width: 1024px) {
-  .nav {
-    left: 50%;
-    right: auto;
-    transform: translateX(-50%);
-  }
 }
 
 @media (prefers-reduced-transparency: reduce) {
@@ -86,9 +76,10 @@
   }
 }
 
-/* the section you are in — the primary action's gradient and lift */
+/* the section you are in — the primary action's gradient and lift. It sizes
+   to its word; the bar hugs, so there is no slack for it to take. */
 .item[data-active="true"] {
-  flex: 1 1 auto;
+  flex: none;
   width: auto;
   padding: 0 var(--space-xl) 0 var(--space-chip-inline);
   border-color: transparent;
@@ -101,6 +92,16 @@
   );
   box-shadow: var(--shadow-brand-vg);
   color: var(--color-text-on-brand);
+}
+
+/* ⚠️ THE 320 FLOOR: three circles, the bar's padding and `Products`' pill come
+   to 7 more than a 320 screen leaves inside the inset, so the pill poked out
+   of the bar. Below 360 its sides close to 12 each, which fits the longest
+   word with 1 to spare. Every wider phone keeps the full 18 / 20. */
+@media (max-width: 359px) {
+  .item[data-active="true"] {
+    padding: 0 var(--space-md);
+  }
 }
 
 .icon {

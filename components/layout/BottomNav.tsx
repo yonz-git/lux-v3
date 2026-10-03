@@ -39,14 +39,11 @@ import {
  * ⚠️ NAV B, THE ROUND-BUTTON BAR — lux-v3, 1 Oct 2026, picked on the design
  * canvas ("nav B"). Four 56 glass circles, icon only, in a thin glass bar.
  * The ACTIVE section is the one item that grows into a labelled indigo pill,
- * so the bar names where you are and nothing else. Two shapes fall out of
- * `active`, never a prop:
- *   a section is active -> the bar runs the width of the phone, 8 in from
- *                          each side, and the pill takes the slack
- *   `none` (Welcome)    -> the bar hugs its four circles, centred
- *                          ("undo the full width only when it's needed")
- * Desktop always hugs. Inactive labels are visually hidden, not dropped: each
- * circle is still named by its word.
+ * so the bar names where you are and nothing else. The bar hugs its items,
+ * centred, at every width. ⚠️ Until 3 Oct 2026 an active section stretched it
+ * the width of the phone with the pill taking the slack; that was cut, asked
+ * for directly ("it should be contained like in desktop"). Inactive labels
+ * are visually hidden, not dropped: each circle is still named by its word.
  *
  * ⚠️ ALL FOUR SECTIONS ARE LINKS. My skin, Progress, Check and Products each
  * have a landing, so every item is a real `next/link` carrying
@@ -104,7 +101,6 @@ export function BottomNav({
     <nav
       className={className ? `${styles.nav} ${className}` : styles.nav}
       style={style}
-      data-compact={active === "none" || undefined}
       aria-label="Sections"
     >
       {items.map(({ id, label, href, Icon }) => {
