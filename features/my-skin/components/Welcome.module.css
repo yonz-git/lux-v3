@@ -162,7 +162,7 @@
    button to 56 and the bubble's body to 16/22 — and both are put back here,
    on this screen only, so the orb, the reply and the action sit where v2 had
    them: the 62 `Button` (`--button-height` is its own hook) and the bubble at
-   v2's 16/26 (18/28 desktop). The face is Urbanist, as the whole app is. */
+   v2's 16/26 (18/28 desktop). The face is Figtree, as the whole app is (Urbanist from 1 to 4 Oct 2026). */
 .cta {
   --button-height: var(--size-control-lg); /* 62 */
   width: 100%;

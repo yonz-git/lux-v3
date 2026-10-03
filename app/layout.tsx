@@ -1,5 +1,5 @@
 import type { Metadata, Viewport } from "next";
-import { Urbanist } from "next/font/google";
+import { Figtree } from "next/font/google";
 import "./globals.css";
 import "./vidgen.css";
 import { InvestigationProvider } from "@/lib/store/InvestigationProvider";
@@ -10,16 +10,20 @@ import { SnackbarProvider } from "@/components/layout/Snackbar";
 import { AppCanvas } from "@/components/layout/CanvasShader";
 
 /**
- * Urbanist is the lux-v3 typeface — the VidGen references' face, replacing
- * Figtree (1 Oct 2026). All five weights the references use are loaded: Light
- * for headlines and metrics, Regular for body and chips, Medium for labels and
- * buttons, SemiBold for card titles, Bold for the wordmark and the emphasised
- * words inside a light headline (`.t-headline b`).
+ * ⚠️ FIGTREE AGAIN, 4 Oct 2026 — asked for directly ("switch to figtree")
+ * after a side-by-side on step 1 and Progress. Urbanist, the VidGen
+ * references' face, was the lux-v3 typeface from 1 Oct 2026; Figtree is
+ * lux-v2's and held up better at the 12px labels and in the date grids. The
+ * same five weights load: Light for headlines and metrics, Regular for body
+ * and chips, Medium for labels and buttons, SemiBold for card titles and the
+ * selected nav label, Bold for the emphasised words in a light headline.
+ * `--font-family-sans` points at it on `:root` in vidgen.css, since
+ * tokens.css is generated and still names Urbanist.
  */
-const urbanist = Urbanist({
+const figtree = Figtree({
   subsets: ["latin"],
   weight: ["300", "400", "500", "600", "700"],
-  variable: "--font-urbanist",
+  variable: "--font-figtree",
   display: "swap",
 });
 
@@ -52,7 +56,7 @@ export default function RootLayout({
   children: React.ReactNode;
 }) {
   return (
-    <html lang="en" className={urbanist.variable}>
+    <html lang="en" className={figtree.variable}>
       {/* The answer store wraps the WHOLE app, not just /investigation.
           The PRODUCTS hub (/products) reads the same products the add flow
           writes, and it is reached from the bottom nav rather than from inside

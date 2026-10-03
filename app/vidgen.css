@@ -16,6 +16,10 @@
    ========================================================================== */
 
 :root {
+  /* ---- type — Figtree, 4 Oct 2026 (see app/layout.tsx); tokens.css is
+     generated and still names Urbanist, so the face is re-pointed here ---- */
+  --font-family-sans: var(--font-figtree), "Figtree", system-ui, sans-serif;
+
   /* ---- glass — the material every VidGen control and box is made of ------- */
   /* ⚠️ LOWERED from the reference's 50% / 72%, asked for directly 1 Oct 2026
      ("lower the opacity — nowhere should we use such white"). Glass is a tint
