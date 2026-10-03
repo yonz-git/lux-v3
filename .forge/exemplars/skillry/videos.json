@@ -1,0 +1,766 @@
+[
+ {
+  "slug": "mattworkman-309357",
+  "cat": "Explainers",
+  "dur": "0:30",
+  "prompt": "The author shared part of the prompt.\n\nmessing around with Opus 5.5\n- HyperFrames staging, edit\n- JavaScript, ThreeJS,\n- fal GPT Image 2.5 and Seedance 2.5\n\nvery blah text design, I need a fal design skill/guideline ideally\nThree.js\nGLSL\nCanvas",
+  "v": [
+   "https://media.skillry.dev/opus-5-5/mattworkman-309357/original.mp4",
+   "https://media.skillry.dev/opus-5-5/mattworkman-309357/remake.mp4",
+   "https://skillry.dev/cdn-cgi/media/mode=video,width=640,audio=false/https://skillry.dev/skills/bs-creatormotion-type-title-takeover/media/preview.mp4?v=9949f878-8df2-4f22-9f3d-c30a8e74c32c",
+   "https://skillry.dev/cdn-cgi/media/mode=video,width=640,audio=false/https://skillry.dev/skills/bs-creatormotion-cards-action-checklist/media/preview.mp4?v=2c21a468-bccb-4756-81ac-218c3e1f63ec",
+   "https://skillry.dev/cdn-cgi/media/mode=video,width=640,audio=false/https://skillry.dev/skills/bs-manus2-0-style-launch-video/media/preview.mp4?v=ffb9afbd-dcc4-4383-a996-1404481f81da",
+   "https://skillry.dev/cdn-cgi/media/mode=video,width=640,audio=false/https://skillry.dev/skills/bs-hyperframes-velocity-sting/media/preview.mp4?v=e49b13db-fe75-4b4c-80d7-601c320be27a"
+  ]
+ },
+ {
+  "slug": "washow-cfo-175311",
+  "cat": "Motion graphics",
+  "dur": "0:37",
+  "prompt": "The author shared part of the prompt.\n\nclaude codeで動画作成が流行ってるけど、AI臭さがあるからどっかでみたことあるようなスタイリッシュな動画を作ってみた\nCMとしては使えるかな？\n\n使ったもの：Claude Code（Opus 5.5）／Gemini TTS／HyperFrames\nCanvas\nSVG",
+  "v": [
+   "https://media.skillry.dev/opus-5-5/washow-cfo-175311/original.mp4",
+   "https://media.skillry.dev/opus-5-5/washow-cfo-175311/remake.mp4",
+   "https://skillry.dev/cdn-cgi/media/mode=video,width=640,audio=false/https://skillry.dev/skills/bs-creatormotion-type-title-takeover/media/preview.mp4?v=9949f878-8df2-4f22-9f3d-c30a8e74c32c",
+   "https://skillry.dev/cdn-cgi/media/mode=video,width=640,audio=false/https://skillry.dev/skills/bs-creatormotion-cards-action-checklist/media/preview.mp4?v=2c21a468-bccb-4756-81ac-218c3e1f63ec",
+   "https://skillry.dev/cdn-cgi/media/mode=video,width=640,audio=false/https://skillry.dev/skills/bs-manus2-0-style-launch-video/media/preview.mp4?v=ffb9afbd-dcc4-4383-a996-1404481f81da",
+   "https://skillry.dev/cdn-cgi/media/mode=video,width=640,audio=false/https://skillry.dev/skills/bs-hyperframes-velocity-sting/media/preview.mp4?v=e49b13db-fe75-4b4c-80d7-601c320be27a"
+  ]
+ },
+ {
+  "slug": "timguignard-623571",
+  "cat": "Explainers",
+  "dur": "0:25",
+  "prompt": "The author shared part of the prompt.\n\nJust tested Claude Opus 5.5 with Hyperframes.\nOne prompt (also generated), the result is ok. Not crazy, but with a few more indications and a clear direction, it would probably get much nicer.\n\nThe video below is actually a screen record.\nSVG",
+  "v": [
+   "https://media.skillry.dev/opus-5-5/timguignard-623571/original.mp4",
+   "https://media.skillry.dev/opus-5-5/timguignard-623571/remake.mp4"
+  ]
+ },
+ {
+  "slug": "jesscaroline7-955094",
+  "cat": "Motion graphics",
+  "dur": "1:00",
+  "prompt": "The author shared part of the prompt.\n\nmotion reel do http://ondefica.app inspirada no @gabrielbuzziv e @condzxyz, segui o tutorial e prompt deles e fui aparando as arestas\n\n1. skill hyperframes\n\n2. mesmo prompt: \"make a dynamic motion graphics video that shows what an incredible motion designer you are, like it's your showreel for a résumé. go all out\"\n\n3. referencie a pasta do projeto. o que tinha nela fez a diferença:\n> app real: o Claude navegou no simulador do iOS e gravou as telas\n> dados reais: ele escreveu as queries, eu rodei no banco.\n> 3D: dioramas criados no ChatGPT 6 (Astra), animados pelo claude com Higgsfield\n> trilha no Suno + efeitos do Soundly\n\nmodelo: opus 5.5 (effort: max), plano Max 5x\nThree.js\nCanvas\nSVG\nGSAP",
+  "v": [
+   "https://media.skillry.dev/opus-5-5/jesscaroline7-955094/original.mp4",
+   "https://media.skillry.dev/opus-5-5/jesscaroline7-955094/remake.mp4"
+  ]
+ },
+ {
+  "slug": "joao-felixl-809438",
+  "cat": "Motion graphics",
+  "dur": "0:15",
+  "prompt": "The author shared part of the prompt.\n\nNão tava botando fé no hyperframes + opus 5.5 max effort, mas isso aqui ficou sensacional.\nSVG\nGSAP",
+  "v": [
+   "https://media.skillry.dev/opus-5-5/joao-felixl-809438/original.mp4",
+   "https://media.skillry.dev/opus-5-5/joao-felixl-809438/remake.mp4",
+   "https://skillry.dev/cdn-cgi/media/mode=video,width=640,audio=false/https://skillry.dev/skills/bs-creatormotion-type-title-takeover/media/preview.mp4?v=9949f878-8df2-4f22-9f3d-c30a8e74c32c",
+   "https://skillry.dev/cdn-cgi/media/mode=video,width=640,audio=false/https://skillry.dev/skills/bs-creatormotion-cards-action-checklist/media/preview.mp4?v=2c21a468-bccb-4756-81ac-218c3e1f63ec",
+   "https://skillry.dev/cdn-cgi/media/mode=video,width=640,audio=false/https://skillry.dev/skills/bs-manus2-0-style-launch-video/media/preview.mp4?v=ffb9afbd-dcc4-4383-a996-1404481f81da",
+   "https://skillry.dev/cdn-cgi/media/mode=video,width=640,audio=false/https://skillry.dev/skills/bs-hyperframes-velocity-sting/media/preview.mp4?v=e49b13db-fe75-4b4c-80d7-601c320be27a"
+  ]
+ },
+ {
+  "slug": "vince-builds-355650",
+  "cat": "Motion graphics",
+  "dur": "0:56",
+  "prompt": "The author shared part of the prompt.\n\nI didn't believe it but this was 100% Opus 5.5 Max, in 8h15 min.\n\nGave it access to DesignLoop, hyperframe skill, elevenlabs.\nCSS",
+  "v": [
+   "https://media.skillry.dev/opus-5-5/vince-builds-355650/original.mp4",
+   "https://media.skillry.dev/opus-5-5/vince-builds-355650/remake.mp4",
+   "https://skillry.dev/cdn-cgi/media/mode=video,width=640,audio=false/https://skillry.dev/skills/bs-creatormotion-type-title-takeover/media/preview.mp4?v=9949f878-8df2-4f22-9f3d-c30a8e74c32c",
+   "https://skillry.dev/cdn-cgi/media/mode=video,width=640,audio=false/https://skillry.dev/skills/bs-creatormotion-cards-action-checklist/media/preview.mp4?v=2c21a468-bccb-4756-81ac-218c3e1f63ec",
+   "https://skillry.dev/cdn-cgi/media/mode=video,width=640,audio=false/https://skillry.dev/skills/bs-manus2-0-style-launch-video/media/preview.mp4?v=ffb9afbd-dcc4-4383-a996-1404481f81da",
+   "https://skillry.dev/cdn-cgi/media/mode=video,width=640,audio=false/https://skillry.dev/skills/bs-hyperframes-velocity-sting/media/preview.mp4?v=e49b13db-fe75-4b4c-80d7-601c320be27a"
+  ]
+ },
+ {
+  "slug": "mappletour-334921",
+  "cat": "Games",
+  "dur": "0:32",
+  "prompt": "The author shared part of the prompt.\n\nOpus 5.5に「ド派手なPVを作って」と丸投げしたら、ほぼ任せきりで完成した😳\n世界ランク上位の実際のリプレイを撮影して、拍に合わせて「ギリギリ！」を重ねてくる。\n日英2本、一晩で。Claude×HyperFrames、世界変わった🔥\nhttps://biribiri-game.web.app\nCanvas\nPlayable",
+  "v": [
+   "https://media.skillry.dev/opus-5-5/mappletour-334921/original.mp4",
+   "https://media.skillry.dev/opus-5-5/mappletour-334921/remake.mp4"
+  ]
+ },
+ {
+  "slug": "thayto-dev-739735",
+  "cat": "Motion graphics",
+  "dur": "0:15",
+  "prompt": "The author shared part of the prompt.\n\nTUTORIAL do @gabrielbuzziv \n\n> o mais insano ta, é que isso gastou tipo 5% do limite de 5 horas\n\n1. instale a skill hyperframes\n\n2. prompt: \n\n\"make a dynamic 15-second motion graphics video that shows what an incredible motion designer you are, like it's your showreel for a résumé. go all out.\"\n\n3. no prompt referencia a pasta do seu projeto\n\n4. espera a mágica acontecer\n\nmodelo usado: opus 5.5 (effort: max)\nGSAP",
+  "v": [
+   "https://media.skillry.dev/opus-5-5/thayto-dev-739735/original.mp4",
+   "https://media.skillry.dev/opus-5-5/thayto-dev-739735/remake.mp4",
+   "https://skillry.dev/cdn-cgi/media/mode=video,width=640,audio=false/https://skillry.dev/skills/bs-creatormotion-type-title-takeover/media/preview.mp4?v=9949f878-8df2-4f22-9f3d-c30a8e74c32c",
+   "https://skillry.dev/cdn-cgi/media/mode=video,width=640,audio=false/https://skillry.dev/skills/bs-creatormotion-cards-action-checklist/media/preview.mp4?v=2c21a468-bccb-4756-81ac-218c3e1f63ec",
+   "https://skillry.dev/cdn-cgi/media/mode=video,width=640,audio=false/https://skillry.dev/skills/bs-manus2-0-style-launch-video/media/preview.mp4?v=ffb9afbd-dcc4-4383-a996-1404481f81da",
+   "https://skillry.dev/cdn-cgi/media/mode=video,width=640,audio=false/https://skillry.dev/skills/bs-hyperframes-velocity-sting/media/preview.mp4?v=e49b13db-fe75-4b4c-80d7-601c320be27a"
+  ]
+ },
+ {
+  "slug": "jayjohnsonai-117305",
+  "cat": "Motion graphics",
+  "dur": "0:15",
+  "prompt": "The author shared part of the prompt.\n\nAI video editing has been improving quite a bit. Claude made this in about 5 mins with the hyperframes skill. I used Opus 5.5 with effort on the highest (ultracode)\nGLSL\nCanvas\nSVG",
+  "v": [
+   "https://media.skillry.dev/opus-5-5/jayjohnsonai-117305/original.mp4",
+   "https://media.skillry.dev/opus-5-5/jayjohnsonai-117305/remake.mp4"
+  ]
+ },
+ {
+  "slug": "itsahmedharoon-544194",
+  "cat": "Explainers",
+  "dur": "0:41",
+  "prompt": "The author shared part of the prompt.\n\nJumping on the Claude Code + Hyperframe bandwagon.\n\nI made this intro completely zero-shot using Opus 5.5.\n\nClaude downloaded and ran an open-source model for text-to-speech, added the turbine sound at the start, layered in the other sound effects, and nailed the motion and visuals.\n\nThe accuracy of the whole thing is unreal. I’m in awe.\nSVG",
+  "v": [
+   "https://media.skillry.dev/opus-5-5/itsahmedharoon-544194/original.mp4",
+   "https://media.skillry.dev/opus-5-5/itsahmedharoon-544194/remake.mp4",
+   "https://skillry.dev/cdn-cgi/media/mode=video,width=640,audio=false/https://skillry.dev/skills/bs-creatormotion-type-title-takeover/media/preview.mp4?v=9949f878-8df2-4f22-9f3d-c30a8e74c32c",
+   "https://skillry.dev/cdn-cgi/media/mode=video,width=640,audio=false/https://skillry.dev/skills/bs-creatormotion-cards-action-checklist/media/preview.mp4?v=2c21a468-bccb-4756-81ac-218c3e1f63ec",
+   "https://skillry.dev/cdn-cgi/media/mode=video,width=640,audio=false/https://skillry.dev/skills/bs-manus2-0-style-launch-video/media/preview.mp4?v=ffb9afbd-dcc4-4383-a996-1404481f81da",
+   "https://skillry.dev/cdn-cgi/media/mode=video,width=640,audio=false/https://skillry.dev/skills/bs-hyperframes-velocity-sting/media/preview.mp4?v=e49b13db-fe75-4b4c-80d7-601c320be27a"
+  ]
+ },
+ {
+  "slug": "stokebuilder-356793",
+  "cat": "Explainers",
+  "dur": "0:16",
+  "prompt": "The author shared part of the prompt.\n\nI used Opus 5.5 to generate 50 podcast animations for extremely hard to visualize concepts like Jev for Legal.  Absolutely blown away. \n\nWe're about to see an explosion of visual podcasts, this entire medium is about to shift \n\nSharing my prompt below.\n\n【作者补充制作说明】\nGo through the entire [episode] cut and add full-screen animations and graphics wherever they help. Be aggressive and over-inclusive: 35–50 moments, at least 2 per chapter. The goal is to fill empty talking-head time, explain ideas, and create visual hooks.\n\nStyle. Pick an aesthetic that's genuinely interesting and very, very cool, built in JavaScript with HyperFrames and assembled in Tesseract. Inspiration (all JS, no image assets):\n\nhttps://x.com/Voxyz_ai/status/2102531681450119426: paper, typewriter-tape labels, hand-drawn marks\nhttps://x.com/donaldjewkes/status/2102801274173587569: halftone, manga and pixel print, kinetic data type\n\nStay inside the LegalQuants brand (read brands/legalquants/): charcoal, white and black only, Arial, and the supplied lockup top-right, static. Write a shared style bible and a component kit first, so every animation looks like the same show.\n\nMoments I definitely want:\n\n[LIST]\n\nRules\n\nWhenever anything goes full-screen (animation, screen share or still), one of us is in a corner picture-in-picture, bottom-right, following whoever is talking.\nNo punch-ins or zooming on the cameras. Keep each speaker relatively centered.\nCopy must be verbatim or faithful to what's said. Never invent facts, numbers or quotes.\nSync each animation's beats to the spoken words.\nKeep each graphic inside one uncut stretch of audio, and leave a few seconds of faces between graphics.\n\nProcess\n\nAn Opus 5.5 agent at extra-high effort finds every timestamp where an animation could fill space and hook the viewer, with a concept for each.\nOpus 5.5 at medium effort builds each animation.\nOpus 5.5 at extra-high effort judges each one once on brand consistency with the others, visual interest, relevance to the narrative and creative judgment.\nOnly cues the judge considers egregiously bad go back for a fix. No blanket redo loops.\nAssemble the full cut with PiP baked into every full-screen visual, and give me a folder of the individual animations.\nShow all\nCanvas\nSVG",
+  "v": [
+   "https://media.skillry.dev/opus-5-5/stokebuilder-356793/original.mp4",
+   "https://media.skillry.dev/opus-5-5/stokebuilder-356793/remake.mp4",
+   "https://skillry.dev/cdn-cgi/media/mode=video,width=640,audio=false/https://skillry.dev/skills/bs-creatormotion-type-title-takeover/media/preview.mp4?v=9949f878-8df2-4f22-9f3d-c30a8e74c32c",
+   "https://skillry.dev/cdn-cgi/media/mode=video,width=640,audio=false/https://skillry.dev/skills/bs-creatormotion-cards-action-checklist/media/preview.mp4?v=2c21a468-bccb-4756-81ac-218c3e1f63ec",
+   "https://skillry.dev/cdn-cgi/media/mode=video,width=640,audio=false/https://skillry.dev/skills/bs-manus2-0-style-launch-video/media/preview.mp4?v=ffb9afbd-dcc4-4383-a996-1404481f81da",
+   "https://skillry.dev/cdn-cgi/media/mode=video,width=640,audio=false/https://skillry.dev/skills/bs-hyperframes-velocity-sting/media/preview.mp4?v=e49b13db-fe75-4b4c-80d7-601c320be27a"
+  ]
+ },
+ {
+  "slug": "ik-builds-585923",
+  "cat": "Motion graphics",
+  "dur": "0:15",
+  "prompt": "The author shared part of the prompt.\n\nI WAS QUOTED $3000 FOR THIS!!!\n\nSo I asked Opus 5.5 (medium) to create a launch video using Motion Graphics for us.\n\nhere's the prompt that one-shots it:\n\n\"Create a 15s motion-graphics film explaining {{PRODUCT}}. HyperFrames + GSAP, no voiceover, no footage.\nStyle: paper-light canvas, marker notes that draw on, real physics, huge kinetic type,\nhard light/dark switches, a new idea every 1.5–2 s, a sound on every hit.\n\nCOPY: read {{POSITIONING_DOCS}} first. {{ONE_LINER}} For {{AUDIENCE}}. {{WHAT_IT_DOES}}\nName what the product learns, never the abstraction.\n\nRULES\n- No chrome (scrubber, timecode, fps, headers). No animator jargon on screen\n  (\"squash\", \"stagger\", \"easing\"...). Every word speaks to the buyer.\n- No invented results: no %, multipliers, customer names or figures.\n- Never use: {{BANNED_WORDS}}.\n- Logo: real mark {{LOGO_FILE}} + \"{{PRODUCT}}\" in {{WORDMARK_FONT}}; never a boxed logo file.\n\nCRAFT\n- Colours {{COLOR_CANVAS}} / {{COLOR_INK}} / {{COLOR_ACCENT_1}} / {{COLOR_ACCENT_2}}; notes in the\n  accents; dark mode = charcoal matching the palette.\n- Fonts {{BRAND_FONTS}}; Anton for kinetic type; Caveat handwriting via stroke-dashoffset.\n- Real easing, squash/stretch, stagger, overlap, onion skin, smear, follow-through. Check the\n  HyperFrames registry first. Set every from-state at t=0 (seek-safe); never cover an exit.\n  One primary move per transition; no generic push/slide/rotate-swing.\n- Music in sections: drums drop on the dark switch and while the ball is airborne, slam back\n  on the type and the logo. SFX: pops, pen scribbles, whooshes, logo sub-hit. CC0 or generated\n  only; log sources. Master -14 LUFS, -2 dBTP, re-measured after AAC encode.\"\nShow all\nCanvas\nSVG",
+  "v": [
+   "https://media.skillry.dev/opus-5-5/ik-builds-585923/original.mp4",
+   "https://media.skillry.dev/opus-5-5/ik-builds-585923/remake.mp4",
+   "https://skillry.dev/cdn-cgi/media/mode=video,width=640,audio=false/https://skillry.dev/skills/bs-creatormotion-type-title-takeover/media/preview.mp4?v=9949f878-8df2-4f22-9f3d-c30a8e74c32c",
+   "https://skillry.dev/cdn-cgi/media/mode=video,width=640,audio=false/https://skillry.dev/skills/bs-creatormotion-cards-action-checklist/media/preview.mp4?v=2c21a468-bccb-4756-81ac-218c3e1f63ec",
+   "https://skillry.dev/cdn-cgi/media/mode=video,width=640,audio=false/https://skillry.dev/skills/bs-manus2-0-style-launch-video/media/preview.mp4?v=ffb9afbd-dcc4-4383-a996-1404481f81da",
+   "https://skillry.dev/cdn-cgi/media/mode=video,width=640,audio=false/https://skillry.dev/skills/bs-hyperframes-velocity-sting/media/preview.mp4?v=e49b13db-fe75-4b4c-80d7-601c320be27a"
+  ]
+ },
+ {
+  "slug": "petert-540960",
+  "cat": "3D scenes",
+  "dur": "0:30",
+  "prompt": "The author shared part of the prompt.\n\nClaude Opus 5.5 + HyperFrames + Gemini Flash 3.8 + Three jsで、Meta VRの紹介動画作ったら変な感じになった\nThree.js\nGLSL",
+  "v": [
+   "https://media.skillry.dev/opus-5-5/petert-540960/original.mp4",
+   "https://media.skillry.dev/opus-5-5/petert-540960/remake.mp4"
+  ]
+ },
+ {
+  "slug": "petert-635793",
+  "cat": "3D scenes",
+  "dur": "0:24",
+  "prompt": "The author shared part of the prompt.\n\nClaude Opus 5.5 + HyperFrames + Gemini Flash 3.8 + Three jsで架空の飲料の広告動画作ってみたけど、なかなか良い\nThree.js\nGLSL\nCanvas",
+  "v": [
+   "https://media.skillry.dev/opus-5-5/petert-635793/original.mp4",
+   "https://media.skillry.dev/opus-5-5/petert-635793/remake.mp4"
+  ]
+ },
+ {
+  "slug": "petert-350098",
+  "cat": "Motion graphics",
+  "dur": "0:24",
+  "prompt": "The author shared part of the prompt.\n\nClaude Opus 5.5 + HyperFrames + Gemini Flash 3.8 + Three js で架空の家計簿サービスの動画作ってみたけど、なかなか良い\nThree.js\nCanvas\nSVG\nCSS",
+  "v": [
+   "https://media.skillry.dev/opus-5-5/petert-350098/original.mp4",
+   "https://media.skillry.dev/opus-5-5/petert-350098/remake.mp4"
+  ]
+ },
+ {
+  "slug": "pauloalonso-477996",
+  "cat": "Games",
+  "dur": "0:15",
+  "prompt": "The author shared part of the prompt.\n\nTestando o Opus 5.5 com a skill hyperframes que vi no post do @gabrielbuzziv \n\nSimplesmente inacreditável, a voz foi gerada localmente, se tivesse enviado pro ElevenLabs talvez teria ficado melhor, 9,8/10\nCanvas\nSVG\nPixel art",
+  "v": [
+   "https://media.skillry.dev/opus-5-5/pauloalonso-477996/original.mp4",
+   "https://media.skillry.dev/opus-5-5/pauloalonso-477996/remake.mp4"
+  ]
+ },
+ {
+  "slug": "danilowm-412022",
+  "cat": "Motion graphics",
+  "dur": "0:15",
+  "prompt": "The author shared part of the prompt.\n\nCursor usando o Opus 5.5 \ninstale a skill hyperframes via terminal depois rodei\n\"/hyperframes make a dynamic 15-second motion graphics video that shows what an incredible motion designer you are, like it's your showreel for a résumé. go all out.  use todo o contexto do projeto\"\nCanvas\nSVG\nCSS",
+  "v": [
+   "https://media.skillry.dev/opus-5-5/danilowm-412022/original.mp4",
+   "https://media.skillry.dev/opus-5-5/danilowm-412022/remake.mp4",
+   "https://skillry.dev/cdn-cgi/media/mode=video,width=640,audio=false/https://skillry.dev/skills/bs-creatormotion-type-title-takeover/media/preview.mp4?v=9949f878-8df2-4f22-9f3d-c30a8e74c32c",
+   "https://skillry.dev/cdn-cgi/media/mode=video,width=640,audio=false/https://skillry.dev/skills/bs-creatormotion-cards-action-checklist/media/preview.mp4?v=2c21a468-bccb-4756-81ac-218c3e1f63ec",
+   "https://skillry.dev/cdn-cgi/media/mode=video,width=640,audio=false/https://skillry.dev/skills/bs-manus2-0-style-launch-video/media/preview.mp4?v=ffb9afbd-dcc4-4383-a996-1404481f81da",
+   "https://skillry.dev/cdn-cgi/media/mode=video,width=640,audio=false/https://skillry.dev/skills/bs-hyperframes-velocity-sting/media/preview.mp4?v=e49b13db-fe75-4b4c-80d7-601c320be27a"
+  ]
+ },
+ {
+  "slug": "georgejimenez98-431559",
+  "cat": "Motion graphics",
+  "dur": "0:30",
+  "prompt": "The author shared part of the prompt.\n\nThis video was made with Opus 5.5, Hyperframes, ElevenLabs with Music, SFX and Voices Endpoints throught Fal AI. \n\nThis way of making videos is making me a little addicted to be honest hahaha. I still have to improve.\n\nCrealix Autopilot is live: set your format, style, schedule and channels once, and it plans, writes, voices and builds every video. Then again. And again.\n\nTry it free → https://crealix.ai/autopilot\nGSAP\nCSS",
+  "v": [
+   "https://media.skillry.dev/opus-5-5/georgejimenez98-431559/original.mp4",
+   "https://media.skillry.dev/opus-5-5/georgejimenez98-431559/remake.mp4",
+   "https://skillry.dev/cdn-cgi/media/mode=video,width=640,audio=false/https://skillry.dev/skills/bs-creatormotion-type-title-takeover/media/preview.mp4?v=9949f878-8df2-4f22-9f3d-c30a8e74c32c",
+   "https://skillry.dev/cdn-cgi/media/mode=video,width=640,audio=false/https://skillry.dev/skills/bs-creatormotion-cards-action-checklist/media/preview.mp4?v=2c21a468-bccb-4756-81ac-218c3e1f63ec",
+   "https://skillry.dev/cdn-cgi/media/mode=video,width=640,audio=false/https://skillry.dev/skills/bs-manus2-0-style-launch-video/media/preview.mp4?v=ffb9afbd-dcc4-4383-a996-1404481f81da",
+   "https://skillry.dev/cdn-cgi/media/mode=video,width=640,audio=false/https://skillry.dev/skills/bs-hyperframes-velocity-sting/media/preview.mp4?v=e49b13db-fe75-4b4c-80d7-601c320be27a"
+  ]
+ },
+ {
+  "slug": "majin-appsheet-693327",
+  "cat": "Motion graphics",
+  "dur": "0:10",
+  "prompt": "The author shared part of the prompt.\n\n流行ってることは一回試しとくマン。\n\nClaude Code（Opus 5.5）でモーショングラフィックスを作るのが面白いみたいなので、「シンまじん式のPV作って」と頼んだだけで、これが出てきた。\n\n動画生成AIはゼロ。\n・映像：HTML＋コードで1コマずつ描画（HyperFrames）\n・BGM：GeminiのLyriaで生成\n・効果音：拍を解析して、着地やハンコの瞬間に音ハメ\n\n自分がやったのは、スキルを入れて「おまかせ」って返事したくらい。\nしかもClaude自身は音が聴けないのに、波形を数値で解析して音ハメしてるのがヤバい。\n\n何なのもう…日々革命が起こりすぎて 頭ガンガンするわ\nCanvas\nSVG",
+  "v": [
+   "https://media.skillry.dev/opus-5-5/majin-appsheet-693327/original.mp4",
+   "https://media.skillry.dev/opus-5-5/majin-appsheet-693327/remake.mp4",
+   "https://skillry.dev/cdn-cgi/media/mode=video,width=640,audio=false/https://skillry.dev/skills/bs-creatormotion-type-title-takeover/media/preview.mp4?v=9949f878-8df2-4f22-9f3d-c30a8e74c32c",
+   "https://skillry.dev/cdn-cgi/media/mode=video,width=640,audio=false/https://skillry.dev/skills/bs-creatormotion-cards-action-checklist/media/preview.mp4?v=2c21a468-bccb-4756-81ac-218c3e1f63ec",
+   "https://skillry.dev/cdn-cgi/media/mode=video,width=640,audio=false/https://skillry.dev/skills/bs-manus2-0-style-launch-video/media/preview.mp4?v=ffb9afbd-dcc4-4383-a996-1404481f81da",
+   "https://skillry.dev/cdn-cgi/media/mode=video,width=640,audio=false/https://skillry.dev/skills/bs-hyperframes-velocity-sting/media/preview.mp4?v=e49b13db-fe75-4b4c-80d7-601c320be27a"
+  ]
+ },
+ {
+  "slug": "javi-llofriu-059888",
+  "cat": "Motion graphics",
+  "dur": "0:59",
+  "prompt": "The author shared part of the prompt.\n\n@gonahmias Le pedi un video para mostar un servicio de mi Agencia de IA (Opus 5.5 + Hyperframe) en 20 minutos tenía esto montado, coste un 20% del consumo de 5h del plan Max.\nSVG\nCSS",
+  "v": [
+   "https://media.skillry.dev/opus-5-5/javi-llofriu-059888/original.mp4",
+   "https://media.skillry.dev/opus-5-5/javi-llofriu-059888/remake.mp4"
+  ]
+ },
+ {
+  "slug": "jake11moran-825416",
+  "cat": "Motion graphics",
+  "dur": "0:53",
+  "prompt": "The author shared part of the prompt.\n\n/session-story\n\ncreated a skill for opus 5.5 using @HyperFrames_ - claude reads your local claude code history, finds what an average session with you looks like and animates it start to finish with your messages\n\ntry here: https://github.com/heygen-com/hyperframes-community-skills/tree/master/skills/session-story\nCanvas\nSVG",
+  "v": [
+   "https://media.skillry.dev/opus-5-5/jake11moran-825416/original.mp4",
+   "https://media.skillry.dev/opus-5-5/jake11moran-825416/remake.mp4",
+   "https://skillry.dev/cdn-cgi/media/mode=video,width=640,audio=false/https://skillry.dev/skills/bs-creatormotion-type-title-takeover/media/preview.mp4?v=9949f878-8df2-4f22-9f3d-c30a8e74c32c",
+   "https://skillry.dev/cdn-cgi/media/mode=video,width=640,audio=false/https://skillry.dev/skills/bs-creatormotion-cards-action-checklist/media/preview.mp4?v=2c21a468-bccb-4756-81ac-218c3e1f63ec",
+   "https://skillry.dev/cdn-cgi/media/mode=video,width=640,audio=false/https://skillry.dev/skills/bs-manus2-0-style-launch-video/media/preview.mp4?v=ffb9afbd-dcc4-4383-a996-1404481f81da",
+   "https://skillry.dev/cdn-cgi/media/mode=video,width=640,audio=false/https://skillry.dev/skills/bs-hyperframes-velocity-sting/media/preview.mp4?v=e49b13db-fe75-4b4c-80d7-601c320be27a"
+  ]
+ },
+ {
+  "slug": "georgejimenez98-427173",
+  "cat": "Motion graphics",
+  "dur": "0:32",
+  "prompt": "The author shared part of the prompt.\n\nI have to admit, this blew my mind.\n\nI saw people using Opus 5.5 + Remotion for launch videos, so I tried my own approach.\n\nOpus 5.5 Max + Hyperframes locally, with Fal AI for voices, music & SFX.\n\nNot perfect, but I loved the result.\n\nhttps://www.crealix.ai Autopilot is coming.\nSVG\nCSS",
+  "v": [
+   "https://media.skillry.dev/opus-5-5/georgejimenez98-427173/original.mp4",
+   "https://media.skillry.dev/opus-5-5/georgejimenez98-427173/remake.mp4"
+  ]
+ },
+ {
+  "slug": "pwntastickev-664257",
+  "cat": "3D scenes",
+  "dur": "0:25",
+  "prompt": "The author shared part of the prompt.\n\nExperimenting with our contact page where astra made the outside model. Decided to do a tour inside and have Opus 5.5 take a swing with some images to walk the client where to go. Used @HyperFrames_ to create the video. Im VERY impressed!\n#hyperframes #honeyraeaesthetics #opus5\nThree.js\nCanvas\nSVG",
+  "v": [
+   "https://media.skillry.dev/opus-5-5/pwntastickev-664257/original.mp4",
+   "https://media.skillry.dev/opus-5-5/pwntastickev-664257/remake.mp4",
+   "https://skillry.dev/cdn-cgi/media/mode=video,width=640,audio=false/https://skillry.dev/skills/bs-creatormotion-type-title-takeover/media/preview.mp4?v=9949f878-8df2-4f22-9f3d-c30a8e74c32c",
+   "https://skillry.dev/cdn-cgi/media/mode=video,width=640,audio=false/https://skillry.dev/skills/bs-creatormotion-cards-action-checklist/media/preview.mp4?v=2c21a468-bccb-4756-81ac-218c3e1f63ec",
+   "https://skillry.dev/cdn-cgi/media/mode=video,width=640,audio=false/https://skillry.dev/skills/bs-manus2-0-style-launch-video/media/preview.mp4?v=ffb9afbd-dcc4-4383-a996-1404481f81da",
+   "https://skillry.dev/cdn-cgi/media/mode=video,width=640,audio=false/https://skillry.dev/skills/bs-hyperframes-velocity-sting/media/preview.mp4?v=e49b13db-fe75-4b4c-80d7-601c320be27a"
+  ]
+ },
+ {
+  "slug": "henritoivar-445215",
+  "cat": "Explainers",
+  "dur": "0:43",
+  "prompt": "The author shared part of the prompt.\n\nOpus 5.5 is an absolute BEAST in creating videos.\n\nI am extremely shocked because my previous attempts with GPT-6 Astra and Grok 4.6 were quite underwhelming, far from production ready video.\n\nThe leap here is gigantic.\n\nThis is a ZERO shot video.\n\n【作者补充制作说明】\nWhy Opus 5.5 is so impressive is because it's is not a video generation model. It uses pure code to generate the sound effects, the music. All of the animations are done with CSS/HTML/JS, it doesn't use any video or image assets.\n\nThis is extremely useful for creating detailed explainer videos where you need very fine control over the infographics and consistent deterministic output.\n\nThe framework I used was hyperframes and narration is done by OpenAI text-to-speech.\nCanvas\nSVG\nGSAP",
+  "v": [
+   "https://media.skillry.dev/opus-5-5/henritoivar-445215/original.mp4",
+   "https://media.skillry.dev/opus-5-5/henritoivar-445215/remake.mp4",
+   "https://skillry.dev/cdn-cgi/media/mode=video,width=640,audio=false/https://skillry.dev/skills/bs-creatormotion-type-title-takeover/media/preview.mp4?v=9949f878-8df2-4f22-9f3d-c30a8e74c32c",
+   "https://skillry.dev/cdn-cgi/media/mode=video,width=640,audio=false/https://skillry.dev/skills/bs-creatormotion-cards-action-checklist/media/preview.mp4?v=2c21a468-bccb-4756-81ac-218c3e1f63ec",
+   "https://skillry.dev/cdn-cgi/media/mode=video,width=640,audio=false/https://skillry.dev/skills/bs-manus2-0-style-launch-video/media/preview.mp4?v=ffb9afbd-dcc4-4383-a996-1404481f81da",
+   "https://skillry.dev/cdn-cgi/media/mode=video,width=640,audio=false/https://skillry.dev/skills/bs-hyperframes-velocity-sting/media/preview.mp4?v=e49b13db-fe75-4b4c-80d7-601c320be27a"
+  ]
+ },
+ {
+  "slug": "shushant-l-619370",
+  "cat": "Motion graphics",
+  "dur": "0:35",
+  "prompt": "The author shared part of the prompt.\n\nCreated a launch video for my startup https://bestproductivityresources.com with Claude Opus 5.5 Medium in Claude Code with the Hyperframes by HeyGen skill.\nSVG\nGSAP",
+  "v": [
+   "https://media.skillry.dev/opus-5-5/shushant-l-619370/original.mp4",
+   "https://media.skillry.dev/opus-5-5/shushant-l-619370/remake.mp4"
+  ]
+ },
+ {
+  "slug": "papaneco-life-541187",
+  "cat": "Motion graphics",
+  "dur": "0:30",
+  "prompt": "The author shared part of the prompt.\n\nOpus5.5 解説 hyperframesチャレンジ２\nノリが良いのできた♪\nSVG",
+  "v": [
+   "https://media.skillry.dev/opus-5-5/papaneco-life-541187/original.mp4",
+   "https://media.skillry.dev/opus-5-5/papaneco-life-541187/remake.mp4"
+  ]
+ },
+ {
+  "slug": "papaneco-life-038225",
+  "cat": "Explainers",
+  "dur": "0:59",
+  "prompt": "The author shared part of the prompt.\n\nOpus5.5 で hyperframes チャレンジ。\n結構、形になってきたかな\nSVG",
+  "v": [
+   "https://media.skillry.dev/opus-5-5/papaneco-life-038225/original.mp4",
+   "https://media.skillry.dev/opus-5-5/papaneco-life-038225/remake.mp4",
+   "https://skillry.dev/cdn-cgi/media/mode=video,width=640,audio=false/https://skillry.dev/skills/bs-creatormotion-type-title-takeover/media/preview.mp4?v=9949f878-8df2-4f22-9f3d-c30a8e74c32c",
+   "https://skillry.dev/cdn-cgi/media/mode=video,width=640,audio=false/https://skillry.dev/skills/bs-creatormotion-cards-action-checklist/media/preview.mp4?v=2c21a468-bccb-4756-81ac-218c3e1f63ec",
+   "https://skillry.dev/cdn-cgi/media/mode=video,width=640,audio=false/https://skillry.dev/skills/bs-manus2-0-style-launch-video/media/preview.mp4?v=ffb9afbd-dcc4-4383-a996-1404481f81da",
+   "https://skillry.dev/cdn-cgi/media/mode=video,width=640,audio=false/https://skillry.dev/skills/bs-hyperframes-velocity-sting/media/preview.mp4?v=e49b13db-fe75-4b4c-80d7-601c320be27a"
+  ]
+ },
+ {
+  "slug": "jetbrains-754812",
+  "cat": "Motion graphics",
+  "dur": "0:35",
+  "prompt": "The author shared part of the prompt.\n\nThis product video was generated entirely by Claude Opus 5.5.\n\nOur colleague @kristel_tech gave it @HeyGen’s HyperFrames skills and pointed it at https://kotlinlang.org – out came this Kotlin promo.\n\nTry it in JetBrains Air or Junie.\nCanvas\nSVG",
+  "v": [
+   "https://media.skillry.dev/opus-5-5/jetbrains-754812/original.mp4",
+   "https://media.skillry.dev/opus-5-5/jetbrains-754812/remake.mp4",
+   "https://skillry.dev/cdn-cgi/media/mode=video,width=640,audio=false/https://skillry.dev/skills/bs-creatormotion-type-title-takeover/media/preview.mp4?v=9949f878-8df2-4f22-9f3d-c30a8e74c32c",
+   "https://skillry.dev/cdn-cgi/media/mode=video,width=640,audio=false/https://skillry.dev/skills/bs-creatormotion-cards-action-checklist/media/preview.mp4?v=2c21a468-bccb-4756-81ac-218c3e1f63ec",
+   "https://skillry.dev/cdn-cgi/media/mode=video,width=640,audio=false/https://skillry.dev/skills/bs-manus2-0-style-launch-video/media/preview.mp4?v=ffb9afbd-dcc4-4383-a996-1404481f81da",
+   "https://skillry.dev/cdn-cgi/media/mode=video,width=640,audio=false/https://skillry.dev/skills/bs-hyperframes-velocity-sting/media/preview.mp4?v=e49b13db-fe75-4b4c-80d7-601c320be27a"
+  ]
+ },
+ {
+  "slug": "l3d1c-632524",
+  "cat": "Motion graphics",
+  "dur": "0:34",
+  "prompt": "The author shared part of the prompt.\n\nI made a launch ad for @grouped_news in an hour with Opus 5.5 and Remotion, and I never opened a video editor. I added the voiceover and music with ElevenLabs.\n\nThe ad is a React app. It imports my site's CSS tokens and fonts, so it uses the same design system as the site.\n\nI didn't review it by watching renders. It rendered about 20 stills and tiled them into one contact sheet, so I could check a whole cut at a glance before rendering any video.\n\nCaptions are measured in the real font and shrink to fit the 9:16 safe zone, so nothing hides under TikTok's buttons. Every cut lands on a 120 BPM grid, which made the music easy to line up.\n\nIt's one codebase, so the 30s, 15s and 6s cuts in 16:9 and 9:16 are each a different list of scenes.\n\nMy part was saying what felt wrong.\nSVG",
+  "v": [
+   "https://media.skillry.dev/opus-5-5/l3d1c-632524/original.mp4",
+   "https://media.skillry.dev/opus-5-5/l3d1c-632524/remake.mp4"
+  ]
+ },
+ {
+  "slug": "tardigrade111-160686",
+  "cat": "Motion graphics",
+  "dur": "0:52",
+  "prompt": "The author shared part of the prompt.\n\nAmazing that this is possible now. I made this with Opus5.5. It controls blender, remotion, runway and veo to make this by itself 🤯\nThree.js\nSVG\nGSAP",
+  "v": [
+   "https://media.skillry.dev/opus-5-5/tardigrade111-160686/original.mp4",
+   "https://media.skillry.dev/opus-5-5/tardigrade111-160686/remake.mp4",
+   "https://skillry.dev/cdn-cgi/media/mode=video,width=640,audio=false/https://skillry.dev/skills/bs-creatormotion-type-title-takeover/media/preview.mp4?v=9949f878-8df2-4f22-9f3d-c30a8e74c32c",
+   "https://skillry.dev/cdn-cgi/media/mode=video,width=640,audio=false/https://skillry.dev/skills/bs-creatormotion-cards-action-checklist/media/preview.mp4?v=2c21a468-bccb-4756-81ac-218c3e1f63ec",
+   "https://skillry.dev/cdn-cgi/media/mode=video,width=640,audio=false/https://skillry.dev/skills/bs-manus2-0-style-launch-video/media/preview.mp4?v=ffb9afbd-dcc4-4383-a996-1404481f81da",
+   "https://skillry.dev/cdn-cgi/media/mode=video,width=640,audio=false/https://skillry.dev/skills/bs-hyperframes-velocity-sting/media/preview.mp4?v=e49b13db-fe75-4b4c-80d7-601c320be27a"
+  ]
+ },
+ {
+  "slug": "wustep-884086",
+  "cat": "Motion graphics",
+  "dur": "0:32",
+  "prompt": "The author shared part of the prompt.\n\nLast week, we launched column permissions!\n\nI’m not on Notion’s video team, but with the help of @claudeai, @bot, and @NotionHQ, I made a trailer over the weekend. (How I made it in 🧵)\n\n【作者补充制作说明】\n🎬 BEHIND THE SCENES:\n\nThis was built using @Remotion (React/TypeScript only!), with @claude’s opus 5.5 [xhigh], orchestrated with @bot, and managed in a Notion doc as a working canvas.\n\nIn total, this project took ~90 messages with my @bot over 2 days, which generated 33 video takes with Claude Code and cost ~$400 in Claude credits including all the other takes (API billing but should fit fine in the $100/mo plan)\n\nHere’s a Notion doc documenting the process (including many rejected candidates): https://notion.notion.site/column-permissions-trailer\nSVG",
+  "v": [
+   "https://media.skillry.dev/opus-5-5/wustep-884086/original.mp4",
+   "https://media.skillry.dev/opus-5-5/wustep-884086/remake.mp4",
+   "https://skillry.dev/cdn-cgi/media/mode=video,width=640,audio=false/https://skillry.dev/skills/bs-creatormotion-type-title-takeover/media/preview.mp4?v=9949f878-8df2-4f22-9f3d-c30a8e74c32c",
+   "https://skillry.dev/cdn-cgi/media/mode=video,width=640,audio=false/https://skillry.dev/skills/bs-creatormotion-cards-action-checklist/media/preview.mp4?v=2c21a468-bccb-4756-81ac-218c3e1f63ec",
+   "https://skillry.dev/cdn-cgi/media/mode=video,width=640,audio=false/https://skillry.dev/skills/bs-manus2-0-style-launch-video/media/preview.mp4?v=ffb9afbd-dcc4-4383-a996-1404481f81da",
+   "https://skillry.dev/cdn-cgi/media/mode=video,width=640,audio=false/https://skillry.dev/skills/bs-hyperframes-velocity-sting/media/preview.mp4?v=e49b13db-fe75-4b4c-80d7-601c320be27a"
+  ]
+ },
+ {
+  "slug": "apoorvjain25-309680",
+  "cat": "Motion graphics",
+  "dur": "0:51",
+  "prompt": "The author shared part of the prompt.\n\nClaude Opus 5.5 made this whole video in code. There was no editor, no After Effects and no stock music.\n\nThe motion graphics are Remotion code. Opus also wrote the music in Python, note by note, and the track reads the same beat file as the visuals. So every DM reply that lands on screen hits a blip in the music at the same frame.\n\nI picked the voice on ElevenLabs and approved the script. Opus did everything else.\n\nIt's a 51-second ad for Synclify's DM automation.\nSVG",
+  "v": [
+   "https://media.skillry.dev/opus-5-5/apoorvjain25-309680/original.mp4",
+   "https://media.skillry.dev/opus-5-5/apoorvjain25-309680/remake.mp4"
+  ]
+ },
+ {
+  "slug": "pranavclickks-254816",
+  "cat": "Motion graphics",
+  "dur": "0:44",
+  "prompt": "The author shared part of the prompt.\n\n@tibo_maker Wanna rate mine Tibo?\n\nOpus 5.5 + Remotion + My Custom Harness\nGSAP\nCSS",
+  "v": [
+   "https://media.skillry.dev/opus-5-5/pranavclickks-254816/original.mp4",
+   "https://media.skillry.dev/opus-5-5/pranavclickks-254816/remake.mp4",
+   "https://skillry.dev/cdn-cgi/media/mode=video,width=640,audio=false/https://skillry.dev/skills/bs-creatormotion-type-title-takeover/media/preview.mp4?v=9949f878-8df2-4f22-9f3d-c30a8e74c32c",
+   "https://skillry.dev/cdn-cgi/media/mode=video,width=640,audio=false/https://skillry.dev/skills/bs-creatormotion-cards-action-checklist/media/preview.mp4?v=2c21a468-bccb-4756-81ac-218c3e1f63ec",
+   "https://skillry.dev/cdn-cgi/media/mode=video,width=640,audio=false/https://skillry.dev/skills/bs-manus2-0-style-launch-video/media/preview.mp4?v=ffb9afbd-dcc4-4383-a996-1404481f81da",
+   "https://skillry.dev/cdn-cgi/media/mode=video,width=640,audio=false/https://skillry.dev/skills/bs-hyperframes-velocity-sting/media/preview.mp4?v=e49b13db-fe75-4b4c-80d7-601c320be27a"
+  ]
+ },
+ {
+  "slug": "rpa-dake-593915",
+  "cat": "Explainers",
+  "dur": "0:15",
+  "prompt": "The author shared part of the prompt.\n\nClaude Opus 5.5 に Remotion のコードを書かせて、検索の歴史を15秒の年表ムービーにしたら、めちゃくちゃアツい🔥\n\n・1996から2015まで、ネオン調の年号がspringで3D回転しながら叩きつけるように出る。\n・大学の研究から持株会社への再編まで、各年の出来事を線画のSVGで描き足していく。\n・最後は「検索から、すべてへ。」で締める\n\n歴史ものの勢いは、情報量より場面を叩きつける間で決まる。\nSVG",
+  "v": [
+   "https://media.skillry.dev/opus-5-5/rpa-dake-593915/original.mp4",
+   "https://media.skillry.dev/opus-5-5/rpa-dake-593915/remake.mp4"
+  ]
+ },
+ {
+  "slug": "devarshukani-341827",
+  "cat": "Motion graphics",
+  "dur": "0:22",
+  "prompt": "The author shared part of the prompt.\n\nI tied brag + remotion + opus 5.5 max and this oneshot launch teaser for https://lysa.legal/\nCanvas\nSVG\nGSAP",
+  "v": [
+   "https://media.skillry.dev/opus-5-5/devarshukani-341827/original.mp4",
+   "https://media.skillry.dev/opus-5-5/devarshukani-341827/remake.mp4",
+   "https://skillry.dev/cdn-cgi/media/mode=video,width=640,audio=false/https://skillry.dev/skills/bs-creatormotion-type-title-takeover/media/preview.mp4?v=9949f878-8df2-4f22-9f3d-c30a8e74c32c",
+   "https://skillry.dev/cdn-cgi/media/mode=video,width=640,audio=false/https://skillry.dev/skills/bs-creatormotion-cards-action-checklist/media/preview.mp4?v=2c21a468-bccb-4756-81ac-218c3e1f63ec",
+   "https://skillry.dev/cdn-cgi/media/mode=video,width=640,audio=false/https://skillry.dev/skills/bs-manus2-0-style-launch-video/media/preview.mp4?v=ffb9afbd-dcc4-4383-a996-1404481f81da",
+   "https://skillry.dev/cdn-cgi/media/mode=video,width=640,audio=false/https://skillry.dev/skills/bs-hyperframes-velocity-sting/media/preview.mp4?v=e49b13db-fe75-4b4c-80d7-601c320be27a"
+  ]
+ },
+ {
+  "slug": "zakisbuilding-495680",
+  "cat": "Motion graphics",
+  "dur": "0:15",
+  "prompt": "The author shared part of the prompt.\n\nOpus 5.5 is on STEROIDS\n\ngave Claude Code one prompt and it made this 15 second motion design video of my app. \n\nall React code with Remotion, I never opened After Effects\nCanvas",
+  "v": [
+   "https://media.skillry.dev/opus-5-5/zakisbuilding-495680/original.mp4",
+   "https://media.skillry.dev/opus-5-5/zakisbuilding-495680/remake.mp4"
+  ]
+ },
+ {
+  "slug": "aschapmann-724497",
+  "cat": "Motion graphics",
+  "dur": "0:30",
+  "prompt": "The author shared part of the prompt.\n\nI couldn't resist to do it one more time, this time for RedShip.. and it's waaaaay better!! \n\nIt took +1h for Opus 5.5 to do it. I used this prompt 👇\n\nsave it and try it for your SaaS: \n\n\"Act as a senior motion designer and build a 30-second launch video for [product] in Remotion, entirely in code so I can edit and re-render it: first read my landing page and codebase to pull the real story, copy, colors, font and logo file (trace the logo to SVG so it stays sharp and can be animated), then write the video as one story (why the market matters, why it's painful today, how [product] fixes it, what you get) in 4 to 5 scenes with one short title each, animate everything like a premium product film (kinetic typography word by word, spring easing, smooth camera pushes and pans, depth and glow, elements that build in on the beat instead of just appearing), keep each scene on screen long enough to read, add one soft sound effect for every element that appears and silence otherwise, and end on a memorable animated logo reveal with the tagline and URL, then render it, check the frames yourself and fix anything that overlaps, clips or feels rushed before showing me the result.\"\nShow all\nSVG\nGSAP\nCSS",
+  "v": [
+   "https://media.skillry.dev/opus-5-5/aschapmann-724497/original.mp4",
+   "https://media.skillry.dev/opus-5-5/aschapmann-724497/remake.mp4",
+   "https://skillry.dev/cdn-cgi/media/mode=video,width=640,audio=false/https://skillry.dev/skills/bs-creatormotion-type-title-takeover/media/preview.mp4?v=9949f878-8df2-4f22-9f3d-c30a8e74c32c",
+   "https://skillry.dev/cdn-cgi/media/mode=video,width=640,audio=false/https://skillry.dev/skills/bs-creatormotion-cards-action-checklist/media/preview.mp4?v=2c21a468-bccb-4756-81ac-218c3e1f63ec",
+   "https://skillry.dev/cdn-cgi/media/mode=video,width=640,audio=false/https://skillry.dev/skills/bs-manus2-0-style-launch-video/media/preview.mp4?v=ffb9afbd-dcc4-4383-a996-1404481f81da",
+   "https://skillry.dev/cdn-cgi/media/mode=video,width=640,audio=false/https://skillry.dev/skills/bs-hyperframes-velocity-sting/media/preview.mp4?v=e49b13db-fe75-4b4c-80d7-601c320be27a"
+  ]
+ },
+ {
+  "slug": "itsyashf-692347",
+  "cat": "Explainers",
+  "dur": "0:15",
+  "prompt": "The author shared part of the prompt.\n\nMade this small video for a linkedin post with Opus 5.5 + Remotion and 2 screenshots of reference\nCanvas\nSVG",
+  "v": [
+   "https://media.skillry.dev/opus-5-5/itsyashf-692347/original.mp4",
+   "https://media.skillry.dev/opus-5-5/itsyashf-692347/remake.mp4",
+   "https://skillry.dev/cdn-cgi/media/mode=video,width=640,audio=false/https://skillry.dev/skills/bs-creatormotion-type-title-takeover/media/preview.mp4?v=9949f878-8df2-4f22-9f3d-c30a8e74c32c",
+   "https://skillry.dev/cdn-cgi/media/mode=video,width=640,audio=false/https://skillry.dev/skills/bs-creatormotion-cards-action-checklist/media/preview.mp4?v=2c21a468-bccb-4756-81ac-218c3e1f63ec",
+   "https://skillry.dev/cdn-cgi/media/mode=video,width=640,audio=false/https://skillry.dev/skills/bs-manus2-0-style-launch-video/media/preview.mp4?v=ffb9afbd-dcc4-4383-a996-1404481f81da",
+   "https://skillry.dev/cdn-cgi/media/mode=video,width=640,audio=false/https://skillry.dev/skills/bs-hyperframes-velocity-sting/media/preview.mp4?v=e49b13db-fe75-4b4c-80d7-601c320be27a"
+  ]
+ },
+ {
+  "slug": "elliot-garreffa-446825",
+  "cat": "Motion graphics",
+  "dur": "0:39",
+  "prompt": "The author shared part of the prompt.\n\nalright opus 5.5 is pretty damn good at motion graphics\n\nour @Muse connector tracker is live and i gave opus our http://agentdiscoverability.com/track/muse url and our brand guidelines and let it cook\n\nthings i found improved the output\n-  references - give it 1 or 2 reference videos to go off\n- storyboard - its pretty good at defining the features to include but if you have specifics, list them out prior\n- video - use remotion as the main driver \n- and honestly, the prompt below. i didnt use it originally and then asked it to do a re-run with this prompt and the output was far better\n\n\"make this a dynamic motion graphics video that shows what an incredible motion designer you are, like it's your showreel for a résumé. go all out.\nCanvas\nSVG\nCSS",
+  "v": [
+   "https://media.skillry.dev/opus-5-5/elliot-garreffa-446825/original.mp4",
+   "https://media.skillry.dev/opus-5-5/elliot-garreffa-446825/remake.mp4",
+   "https://skillry.dev/cdn-cgi/media/mode=video,width=640,audio=false/https://skillry.dev/skills/bs-creatormotion-type-title-takeover/media/preview.mp4?v=9949f878-8df2-4f22-9f3d-c30a8e74c32c",
+   "https://skillry.dev/cdn-cgi/media/mode=video,width=640,audio=false/https://skillry.dev/skills/bs-creatormotion-cards-action-checklist/media/preview.mp4?v=2c21a468-bccb-4756-81ac-218c3e1f63ec",
+   "https://skillry.dev/cdn-cgi/media/mode=video,width=640,audio=false/https://skillry.dev/skills/bs-manus2-0-style-launch-video/media/preview.mp4?v=ffb9afbd-dcc4-4383-a996-1404481f81da",
+   "https://skillry.dev/cdn-cgi/media/mode=video,width=640,audio=false/https://skillry.dev/skills/bs-hyperframes-velocity-sting/media/preview.mp4?v=e49b13db-fe75-4b4c-80d7-601c320be27a"
+  ]
+ },
+ {
+  "slug": "dannyverkissen-101463",
+  "cat": "Motion graphics",
+  "dur": "0:46",
+  "prompt": "The author shared part of the prompt.\n\nI guess i had to step on the motion train as well. \nAsked Claude Opus 5.5 to create a motion video of @getMoveno \n\nAt first i had it create some new material for the website, which it did a great job for via remotion. Then I asked it to use that footage and create a motion video of it. Very very impressive to say the least.\nCSS",
+  "v": [
+   "https://media.skillry.dev/opus-5-5/dannyverkissen-101463/original.mp4",
+   "https://media.skillry.dev/opus-5-5/dannyverkissen-101463/remake.mp4",
+   "https://skillry.dev/cdn-cgi/media/mode=video,width=640,audio=false/https://skillry.dev/skills/bs-creatormotion-type-title-takeover/media/preview.mp4?v=9949f878-8df2-4f22-9f3d-c30a8e74c32c",
+   "https://skillry.dev/cdn-cgi/media/mode=video,width=640,audio=false/https://skillry.dev/skills/bs-creatormotion-cards-action-checklist/media/preview.mp4?v=2c21a468-bccb-4756-81ac-218c3e1f63ec",
+   "https://skillry.dev/cdn-cgi/media/mode=video,width=640,audio=false/https://skillry.dev/skills/bs-manus2-0-style-launch-video/media/preview.mp4?v=ffb9afbd-dcc4-4383-a996-1404481f81da",
+   "https://skillry.dev/cdn-cgi/media/mode=video,width=640,audio=false/https://skillry.dev/skills/bs-hyperframes-velocity-sting/media/preview.mp4?v=e49b13db-fe75-4b4c-80d7-601c320be27a"
+  ]
+ },
+ {
+  "slug": "theviableedge-869918",
+  "cat": "Motion graphics",
+  "dur": "0:15",
+  "prompt": "The author shared part of the prompt.\n\nGetting in on the Opus 5.5 motion graphics fun, truly impressive outcome for a fun one-shot experiment. \n\nIt used remotion (I also have hyperframe installed), which I think i'll try next. \n\nPrompt: \nmake a dynamic 15-second motion graphics video that shows what an incredible motion designer you are, and can be the hero asset for the course landing page.\nSVG",
+  "v": [
+   "https://media.skillry.dev/opus-5-5/theviableedge-869918/original.mp4",
+   "https://media.skillry.dev/opus-5-5/theviableedge-869918/remake.mp4",
+   "https://skillry.dev/cdn-cgi/media/mode=video,width=640,audio=false/https://skillry.dev/skills/bs-creatormotion-type-title-takeover/media/preview.mp4?v=9949f878-8df2-4f22-9f3d-c30a8e74c32c",
+   "https://skillry.dev/cdn-cgi/media/mode=video,width=640,audio=false/https://skillry.dev/skills/bs-creatormotion-cards-action-checklist/media/preview.mp4?v=2c21a468-bccb-4756-81ac-218c3e1f63ec",
+   "https://skillry.dev/cdn-cgi/media/mode=video,width=640,audio=false/https://skillry.dev/skills/bs-manus2-0-style-launch-video/media/preview.mp4?v=ffb9afbd-dcc4-4383-a996-1404481f81da",
+   "https://skillry.dev/cdn-cgi/media/mode=video,width=640,audio=false/https://skillry.dev/skills/bs-hyperframes-velocity-sting/media/preview.mp4?v=e49b13db-fe75-4b4c-80d7-601c320be27a"
+  ]
+ },
+ {
+  "slug": "chapi13-131449",
+  "cat": "Motion graphics",
+  "dur": "0:27",
+  "prompt": "The author shared part of the prompt.\n\nI didn't open After Effects once\nThis promo for my indie apps is 100% code: Claude Opus 5.5 + @remotion\n-10 apps, real screenshots\n-every cut synced to the beat\n-I reviewed it frame by frame with contact sheets and asked for changes in plain language\nPrivate, local-first apps 👇\nSVG\nCSS",
+  "v": [
+   "https://media.skillry.dev/opus-5-5/chapi13-131449/original.mp4",
+   "https://media.skillry.dev/opus-5-5/chapi13-131449/remake.mp4"
+  ]
+ },
+ {
+  "slug": "qinelke-271655",
+  "cat": "Motion graphics",
+  "dur": "0:30",
+  "prompt": "The author shared part of the prompt.\n\nMade this 30s motion-graphics promo for https://gmapsscraper.io with Opus 5.5\nIt read our site and wrote the script. \nThen it built every frame in code (Remotion), animated a talking sales guy with lip-sync, and rendered it.\n No After Effects. No designer.\n Is it worth $49/mo?\nSVG\nGSAP\nCSS",
+  "v": [
+   "https://media.skillry.dev/opus-5-5/qinelke-271655/original.mp4",
+   "https://media.skillry.dev/opus-5-5/qinelke-271655/remake.mp4",
+   "https://skillry.dev/cdn-cgi/media/mode=video,width=640,audio=false/https://skillry.dev/skills/bs-creatormotion-type-title-takeover/media/preview.mp4?v=9949f878-8df2-4f22-9f3d-c30a8e74c32c",
+   "https://skillry.dev/cdn-cgi/media/mode=video,width=640,audio=false/https://skillry.dev/skills/bs-creatormotion-cards-action-checklist/media/preview.mp4?v=2c21a468-bccb-4756-81ac-218c3e1f63ec",
+   "https://skillry.dev/cdn-cgi/media/mode=video,width=640,audio=false/https://skillry.dev/skills/bs-manus2-0-style-launch-video/media/preview.mp4?v=ffb9afbd-dcc4-4383-a996-1404481f81da",
+   "https://skillry.dev/cdn-cgi/media/mode=video,width=640,audio=false/https://skillry.dev/skills/bs-hyperframes-velocity-sting/media/preview.mp4?v=e49b13db-fe75-4b4c-80d7-601c320be27a"
+  ]
+ },
+ {
+  "slug": "genelab-999-088672",
+  "cat": "Motion graphics",
+  "dur": "0:15",
+  "prompt": "The author shared part of the prompt.\n\n話題の Opus 5.5 のモーショングラフィックス、原作プロンプトそのままで再現してみた。\n\nClaude Code + Remotion 公式プラグイン、effort は xhigh。\nプロンプト1発、途中の API 切断で continue を1回だけ。\n思考 約23分、レンダリング 約90秒。BGM もサンプルなしでコード生成。\nCanvas\nSVG",
+  "v": [
+   "https://media.skillry.dev/opus-5-5/genelab-999-088672/original.mp4",
+   "https://media.skillry.dev/opus-5-5/genelab-999-088672/remake.mp4",
+   "https://skillry.dev/cdn-cgi/media/mode=video,width=640,audio=false/https://skillry.dev/skills/bs-creatormotion-type-title-takeover/media/preview.mp4?v=9949f878-8df2-4f22-9f3d-c30a8e74c32c",
+   "https://skillry.dev/cdn-cgi/media/mode=video,width=640,audio=false/https://skillry.dev/skills/bs-creatormotion-cards-action-checklist/media/preview.mp4?v=2c21a468-bccb-4756-81ac-218c3e1f63ec",
+   "https://skillry.dev/cdn-cgi/media/mode=video,width=640,audio=false/https://skillry.dev/skills/bs-manus2-0-style-launch-video/media/preview.mp4?v=ffb9afbd-dcc4-4383-a996-1404481f81da",
+   "https://skillry.dev/cdn-cgi/media/mode=video,width=640,audio=false/https://skillry.dev/skills/bs-hyperframes-velocity-sting/media/preview.mp4?v=e49b13db-fe75-4b4c-80d7-601c320be27a"
+  ]
+ },
+ {
+  "slug": "inoue-aix-234322",
+  "cat": "Motion graphics",
+  "dur": "0:40",
+  "prompt": "The author shared part of the prompt.\n\nopus5.5 + Remotion + Gemini3.8 TTS\nたったの1時間でうちのプロダクトの広告動画2本できた・・・\n\nもう一生外注しないw\n外注したら10万円以上かかってたと思う\nSVG",
+  "v": [
+   "https://media.skillry.dev/opus-5-5/inoue-aix-234322/original.mp4",
+   "https://media.skillry.dev/opus-5-5/inoue-aix-234322/remake.mp4",
+   "https://skillry.dev/cdn-cgi/media/mode=video,width=640,audio=false/https://skillry.dev/skills/bs-creatormotion-type-title-takeover/media/preview.mp4?v=9949f878-8df2-4f22-9f3d-c30a8e74c32c",
+   "https://skillry.dev/cdn-cgi/media/mode=video,width=640,audio=false/https://skillry.dev/skills/bs-creatormotion-cards-action-checklist/media/preview.mp4?v=2c21a468-bccb-4756-81ac-218c3e1f63ec",
+   "https://skillry.dev/cdn-cgi/media/mode=video,width=640,audio=false/https://skillry.dev/skills/bs-manus2-0-style-launch-video/media/preview.mp4?v=ffb9afbd-dcc4-4383-a996-1404481f81da",
+   "https://skillry.dev/cdn-cgi/media/mode=video,width=640,audio=false/https://skillry.dev/skills/bs-hyperframes-velocity-sting/media/preview.mp4?v=e49b13db-fe75-4b4c-80d7-601c320be27a"
+  ]
+ },
+ {
+  "slug": "daniel-haida-636937",
+  "cat": "Motion graphics",
+  "dur": "0:14",
+  "prompt": "The author shared part of the prompt.\n\nclaude code (opus 5.5) made the product film for taxtello, my bookkeeping app\n\nevery frame is code: react + remotion, 0 after effects\nthe soundtrack is code too, synthesized in python from sine waves and noise\n\n1 prompt and 2 rounds of feedback\n\nfull prompt below, steal it ↓\n\nYou are the senior motion designer, product designer and Remotion engineer for Taxtello.\n\nYour task is to create a genuinely premium, Apple-level product film for Taxtello.\n\nThis is NOT a generic SaaS explainer.\nThis is NOT a feature walkthrough.\nThis is NOT a startup template animation.\n\nI want a maximum 15-second brand/product showreel that makes Taxtello look like a mature, expensive, beautifully designed financial product.\n\nThink:\n\nApple product launch film\n× premium fintech\n× editorial motion design\n× restrained Stripe-like product presentation\n× Taxtello's own visual identity\n\nThe desired reaction is:\n\n“Wait, this is a German bookkeeping app?”\n\nThe film should feel expensive.\n\n────────────────────────────────────\nREPO / SOURCE OF TRUTH\n────────────────────────────────────\n\nFirst inspect the real repositories before designing anything.\n\nMain product:\n  /taxtello/main\n\nExisting Remotion project:\n  /taxtello/beta-motion\n\nImportant real brand sources:\n\n  /taxtello/main/public/css/app/_00-tokens.css\n  /taxtello/main/docs/design/TOKENS.md\n  /taxtello/main/public/taxtello-wordmark.png\n  /taxtello/main/public/icons.svg\n\nExisting current product screenshots can be found under:\n\n  /taxtello/main/artifacts/smoke-ui-smoke/\n\nPrefer the newest valid screenshots/current source over stale artifacts.\n\nThere is already an existing 24-second Remotion hero animation in\n/taxtello/beta-motion.\n\nDO NOT replace it.\nDO NOT regress it.\nDO NOT force its current AI-connections storyline into this new film.\n\nCreate a new independent composition for this task, e.g.\n\n  TaxtelloShowreel15\n\nYou may reuse good infrastructure, fonts, rendering utilities, motion primitives,\neasing curves, asset loading and QA infrastructure from beta-motion where useful.\n\nBut creatively this should be a new film.\n\nBefore implementation, inspect the actual Taxtello UI and understand the product.\n\nDo not invent functionality that does not exist.\n\n────────────────────────────────────\nREAL TAXTELLO VISUAL LANGUAGE\n────────────────────────────────────\n\nUse the real design system.\n\nCore palette:\n\nBackground:\n  #0c0f1a\n\nElevated surfaces:\n  #111525\n  #131722\n  #1a2032\n\nPrimary brand gold:\n  #e8b84b\n\nGold highlight:\n  #f5d07a\n\nGold depth:\n  #9b6d18\n\nPrimary text:\n  #e8eaf2\n\nStrong warm white:\n  #f6f4eb\n\nSecondary text:\n  #8b93b5\n\nPositive:\n  #34d399\n\nNegative/error only where semantically necessary:\n  #f87171\n\nTypography:\n  Plus Jakarta Sans\n\nNumbers / financial values where appropriate:\n  JetBrains Mono\n\nUse the actual Taxtello wordmark and/or Taxtello mark.\nDo not redraw or approximate the logo.\n\nTaxtello's gold should feel like a precious accent, not a yellow UI flood.\n\nThink:\ndark metal\nwarm gold\nglass\nink\nprecision\nquiet confidence\n\nNOT:\ncyberpunk\ncrypto\nneon\ngaming\ngeneric AI purple\nrainbow gradients\n\n────────────────────────────────────\nCORE CREATIVE RULES\n────────────────────────────────────\n\nFollow these rules ruthlessly:\n\n1. ONE SHOT = ONE IDEA.\n\n2. Every scene needs room to breathe.\n\n3. The product UI is the hero.\n\n4. Do not plaster explanatory copy everywhere.\n\n5. Do not use hard cuts unless there is a deliberate reason.\n\n6. Prefer object-driven transitions:\n   a card becomes the next card,\n   a chart line becomes a connector,\n   a receipt becomes a booking,\n   a number becomes another interface element,\n   the camera moves through the product.\n\n7. Use premium easing.\n   No linear movement.\n\n8. Motion should overlap naturally.\n   Elements should not all start and stop at exactly the same frame.\n\n9. Use depth sparingly:\n   perspective,\n   soft parallax,\n   scale,\n   foreground/background separation,\n   controlled depth of field if achievable.\n\n10. NO effect exists simply because it looks cool.\n\n11. No particle spam.\n\n12. No fake glassmorphism everywhere.\n\n13. No excessive blur.\n\n14. No pointless 3D spinning cards.\n\n15. No constant zooming.\n\n16. No 20 different animation styles.\n\n17. No bouncing UI.\n\n18. No giant marketing paragraph.\n\n19. Do not imitate a particular Apple commercial shot-for-shot.\n    Capture the philosophy and production quality instead.\n\nThe visual confidence should come from restraint.\n\n────────────────────────────────────\nFORMAT\n────────────────────────────────────\n\nPrimary master:\n\n1920 × 1080\n60 fps\n16:9\nH.264\nmaximum duration: 15.0 seconds\n\nTarget runtime:\napproximately 14.0–15.0 seconds.\n\nIt must work as a social-media product reveal even without sound.\n\nIf practical AFTER the master is finished, also create a deliberately recomposed\nvertical/social variant.\n\nDo not merely crop the desktop composition.\n\nBut the desktop master is the priority.\n\n────────────────────────────────────\nSTORY / EMOTIONAL ARC\n────────────────────────────────────\n\nDo not make this a list of five features.\n\nIt should feel like one continuous thought:\n\nCHAOS → CONTROL → CLARITY → TAXTELLO\n\nThe first 1.5 seconds must already look premium.\n\nThe first meaningful product moment should happen by ~2 seconds.\n\nNo five-second logo intro.\n\nPossible narrative direction:\n\n“Everything about your business, finally in one place.”\n\nBut SHOW this instead of explaining it.\n\nI want approximately four visual ideas across the whole film.\n\nUse the strongest REAL Taxtello surfaces you find in the repository.\n\nStrong candidates include:\n\n• Finanzcockpit / Dashboard\n• Rechnungen\n• Belege\n• Bank / matching\n• Steuergesundheit / tax overview\n\nYou do NOT need to show all of them.\n\nChoose the visually strongest combination.\n\n────────────────────────────────────\nSUGGESTED 15-SECOND STORYBOARD\n────────────────────────────────────\n\nTreat this as a strong starting point, not a rigid template.\n\n0.00 – 1.20\n\nBLACK / NAVY.\n\nA tiny warm-gold glint appears.\n\nThe glint elegantly reveals either the Taxtello mark or a fragment of the\nwordmark.\n\nNo generic logo fade.\n\nThink machined precision.\n\nThe camera moves through or past the mark and the UI begins to emerge from it.\n\nVery little or no copy.\n\n─────────────────\n\n1.20 – 4.40\n\nFINANCIAL CONTROL.\n\nReveal the actual Taxtello Cockpit as a dimensional product surface.\n\nNot just a screenshot placed on screen.\n\nReconstruct/crop/layer it so individual interface regions can animate.\n\nThe hero financial number resolves crisply.\nThe chart draws in.\nSupporting metrics settle slightly later.\n\nUse subtle stagger.\n\nA single line of copy may appear, for example:\n\n  “Alles im Blick.”\n\nor another equally short German phrase if you find something more fitting.\n\nMaximum ~3–4 words.\n\nThe interface must remain recognizable as the real product.\n\n─────────────────\n\n4.40 – 7.50\n\nDOCUMENT / BOOKKEEPING TRANSFORMATION.\n\nUse a visual object from the previous scene as the transition.\n\nExample:\n\nA gold chart point expands into the corner of a receipt/card.\nThe camera follows it.\nA receipt/document enters.\nTaxtello identifies or organizes it.\nThe document snaps elegantly into its corresponding booking / financial record.\n\nUse magnetic alignment and precision.\n\nNo cheesy scanner laser.\n\nNo floating paper tornado.\n\nPossible micro-copy:\n\n  “Belege. Erledigt.”\n\nOnly if it improves the scene.\n\n─────────────────\n\n7.50 – 10.70\n\nMONEY / INVOICES.\n\nMorph or transition naturally into the real Rechnungen interface.\n\nUse one strong moment:\n\nan invoice status changes,\na payment resolves,\nan amount moves into place,\nor the overview assembles itself.\n\nNumbers should feel tactile and precise.\n\nUse JetBrains Mono where this matches the actual product.\n\nGold highlights the active state.\n\nGreen is used only for a genuinely positive semantic state.\n\nPotential copy:\n\n  “Geld. Im Griff.”\n\nAgain: optional and extremely short.\n\n─────────────────\n\n10.70 – 12.80\n\nTAX / CLARITY.\n\nTransition into the real Taxtello tax-health / financial guidance surface.\n\nDo not claim that Taxtello magically guarantees correct taxes.\n\nCommunicate visibility and control.\n\nExample:\n\nmultiple noisy signals collapse into one calm, structured tax overview.\n\nPotential copy:\n\n  “Steuern im Blick.”\n\nThis scene should feel calmer than the previous scene.\n\nThe rhythm briefly slows.\n\n─────────────────\n\n12.80 – 15.00\n\nBRAND PAYOFF.\n\nPull the camera outward.\n\nThe UI compresses or folds into one beautiful Taxtello product object / surface.\n\nDarkness returns around it.\n\nThe gold Taxtello wordmark resolves.\n\nOne short brand line underneath.\n\nExplore strong final lines such as:\n\n  “Dein Business. Klar.”\n\n  “Buchhaltung. Unter Kontrolle.”\n\n  “Einfach mehr Überblick.”\n\n  “Alles fürs Business. An einem Ort.”\n\nChoose based on the actual product positioning you find in the repo.\n\nDo not use a line simply because I suggested it.\n\nThe final frame must have enough stillness to register.\n\nEnd confidently.\n\nNo giant bouncing CTA.\n\n────────────────────────────────────\nTRANSITIONS\n────────────────────────────────────\n\nThis is one of the most important parts.\n\nI want transitions that make the viewer think:\n\n“Of course the next scene came from that.”\n\nGood:\n\nchart line → document edge\ngold pill → invoice button\nfinancial number → amount in invoice\ncard edge → next surface\ncamera push through interface element\nshared geometry\nmask reveal using actual product shapes\n\nBad:\n\ncrossfade\nrandom wipe\nspin transition\nglitch\nwhip-pan every two seconds\ngeneric SaaS slide-left\nzoom-blur spam\n\nDirect cuts are allowed only when a deliberate rhythmic impact benefits the film.\n\n────────────────────────────────────\nMOTION\n────────────────────────────────────\n\nMotion needs weight.\n\nUse curves comparable to:\n\ncubic-bezier(0.16, 1, 0.3, 1)\n\nwhere appropriate.\n\nDifferent elements should have subtly different arrival times.\n\nPrefer:\n\nanticipation\novershoot below ~2%\nsettling\nmotion continuation\nshared velocity between scenes\n\nAvoid cartoon springiness.\n\nCamera movement should feel like a high-end macro product shoot.\n\nImagine we are filming a physical premium object even though it is software.\n\n────────────────────────────────────\nLIGHTING / MATERIAL\n────────────────────────────────────\n\nUse extremely subtle environmental lighting.\n\nPossible treatments:\n\n• soft gold rim lighting\n• dark navy falloff\n• faint ambient bloom\n• soft specular highlight passing across a surface\n• restrained vignette\n• subtle grain if it materially helps\n\nKeep the interface crisp.\n\nDo NOT blur the product just to look cinematic.\n\nNo fake glossy reflections that destroy legibility.\n\n────────────────────────────────────\nTYPOGRAPHY\n────────────────────────────────────\n\nUse very little copy.\n\nNo sentence should compete with the product.\n\nHeadlines should generally fit on one line.\n\nUse Plus Jakarta Sans.\n\nStrong typography may occasionally scale very large and become a transition\ndevice itself.\n\nAvoid generic motion-graphics behavior where every word animates independently.\n\nTypography should move as designed objects.\n\n────────────────────────────────────\nSOUND / RHYTHM\n────────────────────────────────────\n\nDesign the motion as if it were cut to approximately 115–120 BPM:\npremium, kinetic, sophisticated, not frantic.\n\nImportant moments should land musically.\n\nSuggested sound language:\n\n• low soft impact for major reveal\n• restrained tactile UI clicks\n• subtle metallic/glass tonal tick\n• soft low-frequency movement during camera transitions\n• elegant resolved tone at the logo payoff\n\nAvoid:\n\n• huge cinematic trailer boom\n• EDM risers\n• loud whooshes everywhere\n• stock “tech interface” sounds\n• rap beat\n• aggressive bass\n\nIf there is no legally safe music/audio asset in the project, DO NOT pull\ncopyrighted audio from the internet.\n\nDeliver the visual master without copyrighted music and create a concise cue\nsheet describing where music/SFX should hit.\n\nIf suitable safe/local audio exists, use it.\n\n────────────────────────────────────\nREAL PRODUCT ONLY\n────────────────────────────────────\n\nThis is critical.\n\nInspect current main.\n\nDo not invent screens.\n\nDo not invent metrics that imply real customer data.\n\nUse clearly synthetic/demo-safe values if required.\n\nDo not accidentally expose any personal, test-user or production information.\n\nReuse the visual structure of the actual Taxtello UI.\n\nIf a screen needs to be motion-separated, recreate it faithfully in React from\nthe real design system instead of simply scaling a giant screenshot.\n\nThe result should still look unmistakably like Taxtello.\n\n────────────────────────────────────\nIMPLEMENTATION EXPECTATIONS\n────────────────────────────────────\n\nWork directly in:\n\n  /taxtello/beta-motion\n\nCreate the new composition alongside the existing one.\n\nKeep existing compositions working.\n\nStructure the new work cleanly.\n\nPrefer reusable primitives for:\n\n• camera surface\n• product frame\n• masked transitions\n• text reveals\n• UI region reveals\n• ambient lighting\n• shared-element transitions\n\nAvoid one 1,500-line component.\n\nUse deterministic Remotion animation driven by frame/time.\n\nNo setTimeout.\nNo nondeterministic animations.\n\nRespect 60 fps throughout.\n\nUse interpolation/spring/easing deliberately.\n\n────────────────────────────────────\nDO NOT STOP AFTER FIRST IMPLEMENTATION\n────────────────────────────────────\n\nThis is a visual task.\n\nYou MUST review the actual rendered output.\n\nRequired workflow:\n\n1. Inspect repository and real brand/product.\n\n2. Write a concise storyboard with:\n   - exact timestamps\n   - key visual\n   - transition logic\n   - copy\n   - intended emotional rhythm\n\n3. Implement it.\n\n4. Run typecheck / relevant checks.\n\n5. Render representative frames at roughly:\n   0.0 s\n   1.0 s\n   2.5 s\n   4.5 s\n   6.5 s\n   8.5 s\n   10.5 s\n   12.5 s\n   14.0 s\n   14.8 s\n\n6. VISUALLY INSPECT THOSE IMAGES.\n\nDo not merely confirm that rendering succeeded.\n\nAsk:\n\nDoes this look like an Apple-tier product film?\n\nDoes anything look like a template?\n\nIs there too much on screen?\n\nIs the product legible?\n\nAre transitions logically connected?\n\nDoes Taxtello gold feel premium?\n\nDoes every frame look composed?\n\n7. Fix visual weaknesses.\n\n8. Render the complete film.\n\n9. Inspect multiple exact decoded frames from the final MP4, not only browser\n   screenshots.\n\n10. Iterate again if necessary.\n\nDo not declare success because the code compiles.\n\nThe deliverable is the FILM.\n\n────────────────────────────────────\nQUALITY BAR\n────────────────────────────────────\n\nReject your own result if it feels like:\n\n• a SaaS template\n• a PowerPoint animation\n• a website screen recording\n• a generic Remotion demo\n• a crypto advertisement\n• an AI-generated promo template\n• five screenshots sliding around\n• excessive marketing copy\n\nEvery important frame should be good enough to use as a still advertisement.\n\nI would rather have:\n\n3 extraordinary visual moments\n\nthan\n\n10 mediocre feature animations.\n\n────────────────────────────────────\nFINAL DELIVERABLES\n────────────────────────────────────\n\nProvide:\n\n1. Final storyboard\n2. New Remotion composition source\n3. 1920×1080 / 60fps final MP4\n4. Poster/final frame\n5. Contact sheet with representative frames from the film\n6. Exact runtime\n7. List of real Taxtello assets/screens used\n8. Brief explanation of the motion language\n9. Any remaining visual compromises\n10. Commands to reproduce the render\n\nSave outputs in a clearly named directory such as:\n\n  /taxtello/beta-motion/out/showreel-15/\n\nDo not deploy anything.\nDo not modify production data.\nDo not merge anything.\n\nGo all out creatively, but exercise ruthless restraint.\n\nMake Taxtello look expensive.\nShow all\nCanvas\nSVG\nCSS",
+  "v": [
+   "https://media.skillry.dev/opus-5-5/daniel-haida-636937/original.mp4",
+   "https://media.skillry.dev/opus-5-5/daniel-haida-636937/remake.mp4",
+   "https://skillry.dev/cdn-cgi/media/mode=video,width=640,audio=false/https://skillry.dev/skills/bs-creatormotion-type-title-takeover/media/preview.mp4?v=9949f878-8df2-4f22-9f3d-c30a8e74c32c",
+   "https://skillry.dev/cdn-cgi/media/mode=video,width=640,audio=false/https://skillry.dev/skills/bs-creatormotion-cards-action-checklist/media/preview.mp4?v=2c21a468-bccb-4756-81ac-218c3e1f63ec",
+   "https://skillry.dev/cdn-cgi/media/mode=video,width=640,audio=false/https://skillry.dev/skills/bs-manus2-0-style-launch-video/media/preview.mp4?v=ffb9afbd-dcc4-4383-a996-1404481f81da",
+   "https://skillry.dev/cdn-cgi/media/mode=video,width=640,audio=false/https://skillry.dev/skills/bs-hyperframes-velocity-sting/media/preview.mp4?v=e49b13db-fe75-4b4c-80d7-601c320be27a"
+  ]
+ },
+ {
+  "slug": "pisajeski-168993",
+  "cat": "Motion graphics",
+  "dur": "1:00",
+  "prompt": "The author shared part of the prompt.\n\nI just one-shotted this video with Opus 5.5 and @Remotion for the new @agentaOS promo.\n\nUnbelievable what you can do these days.\nCanvas\nCSS",
+  "v": [
+   "https://media.skillry.dev/opus-5-5/pisajeski-168993/original.mp4",
+   "https://media.skillry.dev/opus-5-5/pisajeski-168993/remake.mp4",
+   "https://skillry.dev/cdn-cgi/media/mode=video,width=640,audio=false/https://skillry.dev/skills/bs-creatormotion-type-title-takeover/media/preview.mp4?v=9949f878-8df2-4f22-9f3d-c30a8e74c32c",
+   "https://skillry.dev/cdn-cgi/media/mode=video,width=640,audio=false/https://skillry.dev/skills/bs-creatormotion-cards-action-checklist/media/preview.mp4?v=2c21a468-bccb-4756-81ac-218c3e1f63ec",
+   "https://skillry.dev/cdn-cgi/media/mode=video,width=640,audio=false/https://skillry.dev/skills/bs-manus2-0-style-launch-video/media/preview.mp4?v=ffb9afbd-dcc4-4383-a996-1404481f81da",
+   "https://skillry.dev/cdn-cgi/media/mode=video,width=640,audio=false/https://skillry.dev/skills/bs-hyperframes-velocity-sting/media/preview.mp4?v=e49b13db-fe75-4b4c-80d7-601c320be27a"
+  ]
+ },
+ {
+  "slug": "dustindavis-644806",
+  "cat": "Motion graphics",
+  "dur": "0:30",
+  "prompt": "The author shared part of the prompt.\n\nI had to play along and see what kind of remotion video Claude Opus 5.5 could create for me. Amaze, amaze, amaze!\nCanvas\nSVG\nGSAP\nCSS",
+  "v": [
+   "https://media.skillry.dev/opus-5-5/dustindavis-644806/original.mp4",
+   "https://media.skillry.dev/opus-5-5/dustindavis-644806/remake.mp4",
+   "https://skillry.dev/cdn-cgi/media/mode=video,width=640,audio=false/https://skillry.dev/skills/bs-creatormotion-type-title-takeover/media/preview.mp4?v=9949f878-8df2-4f22-9f3d-c30a8e74c32c",
+   "https://skillry.dev/cdn-cgi/media/mode=video,width=640,audio=false/https://skillry.dev/skills/bs-creatormotion-cards-action-checklist/media/preview.mp4?v=2c21a468-bccb-4756-81ac-218c3e1f63ec",
+   "https://skillry.dev/cdn-cgi/media/mode=video,width=640,audio=false/https://skillry.dev/skills/bs-manus2-0-style-launch-video/media/preview.mp4?v=ffb9afbd-dcc4-4383-a996-1404481f81da",
+   "https://skillry.dev/cdn-cgi/media/mode=video,width=640,audio=false/https://skillry.dev/skills/bs-hyperframes-velocity-sting/media/preview.mp4?v=e49b13db-fe75-4b4c-80d7-601c320be27a"
+  ]
+ },
+ {
+  "slug": "signalz-jp-918002",
+  "cat": "Motion graphics",
+  "dur": "0:33",
+  "prompt": "The author shared part of the prompt.\n\nエディトリアル風。Opus\n\n【作者补充制作说明】\nOpus5.5で、Remotion+ElevenLabs(BGM)+ Gemini TTS(3.8)で作成。スクリーンショットもChromeにヘッドレスでアクセスして取得してくれる。ffmpegでYouTubeの基準への調整と検査して、YouTube Data APIでアップロードまで。至れり尽くせり。\nSVG",
+  "v": [
+   "https://media.skillry.dev/opus-5-5/signalz-jp-918002/original.mp4",
+   "https://media.skillry.dev/opus-5-5/signalz-jp-918002/remake.mp4"
+  ]
+ },
+ {
+  "slug": "djadkison-394122",
+  "cat": "Motion graphics",
+  "dur": "0:31",
+  "prompt": "The author shared part of the prompt.\n\nI was able to make this product motion video for https://getverde.ai using Opus 5.5 + Remotion. \n\nThis is insane. It was able to tell a story in less than 30 min.\nCanvas\nSVG",
+  "v": [
+   "https://media.skillry.dev/opus-5-5/djadkison-394122/original.mp4",
+   "https://media.skillry.dev/opus-5-5/djadkison-394122/remake.mp4",
+   "https://skillry.dev/cdn-cgi/media/mode=video,width=640,audio=false/https://skillry.dev/skills/bs-creatormotion-type-title-takeover/media/preview.mp4?v=9949f878-8df2-4f22-9f3d-c30a8e74c32c",
+   "https://skillry.dev/cdn-cgi/media/mode=video,width=640,audio=false/https://skillry.dev/skills/bs-creatormotion-cards-action-checklist/media/preview.mp4?v=2c21a468-bccb-4756-81ac-218c3e1f63ec",
+   "https://skillry.dev/cdn-cgi/media/mode=video,width=640,audio=false/https://skillry.dev/skills/bs-manus2-0-style-launch-video/media/preview.mp4?v=ffb9afbd-dcc4-4383-a996-1404481f81da",
+   "https://skillry.dev/cdn-cgi/media/mode=video,width=640,audio=false/https://skillry.dev/skills/bs-hyperframes-velocity-sting/media/preview.mp4?v=e49b13db-fe75-4b4c-80d7-601c320be27a"
+  ]
+ },
+ {
+  "slug": "mousszy-baby-014197",
+  "cat": "Motion graphics",
+  "dur": "0:15",
+  "prompt": "The author shared part of the prompt.\n\nComme tous le monde j'ai essayer le combo Opus 5.5 et remotion voilà le résultat en un prompt !\nCanvas",
+  "v": [
+   "https://media.skillry.dev/opus-5-5/mousszy-baby-014197/original.mp4",
+   "https://media.skillry.dev/opus-5-5/mousszy-baby-014197/remake.mp4",
+   "https://skillry.dev/cdn-cgi/media/mode=video,width=640,audio=false/https://skillry.dev/skills/bs-creatormotion-type-title-takeover/media/preview.mp4?v=9949f878-8df2-4f22-9f3d-c30a8e74c32c",
+   "https://skillry.dev/cdn-cgi/media/mode=video,width=640,audio=false/https://skillry.dev/skills/bs-creatormotion-cards-action-checklist/media/preview.mp4?v=2c21a468-bccb-4756-81ac-218c3e1f63ec",
+   "https://skillry.dev/cdn-cgi/media/mode=video,width=640,audio=false/https://skillry.dev/skills/bs-manus2-0-style-launch-video/media/preview.mp4?v=ffb9afbd-dcc4-4383-a996-1404481f81da",
+   "https://skillry.dev/cdn-cgi/media/mode=video,width=640,audio=false/https://skillry.dev/skills/bs-hyperframes-velocity-sting/media/preview.mp4?v=e49b13db-fe75-4b4c-80d7-601c320be27a"
+  ]
+ },
+ {
+  "slug": "fr-sorrentino-871017",
+  "cat": "Motion graphics",
+  "dur": "0:40",
+  "prompt": "The author shared part of the prompt.\n\n@rexan_wong Agree with all of this. Ours wasn't one prompt either: built with Claude Code (Opus 5.5 + Fable 5.1) and Remotion, storyboard first, one still per beat, then many rounds of notes. The watch photo and the app recordings are real, not drawn.\nCanvas\nSVG\nGSAP",
+  "v": [
+   "https://media.skillry.dev/opus-5-5/fr-sorrentino-871017/original.mp4",
+   "https://media.skillry.dev/opus-5-5/fr-sorrentino-871017/remake.mp4",
+   "https://skillry.dev/cdn-cgi/media/mode=video,width=640,audio=false/https://skillry.dev/skills/bs-creatormotion-type-title-takeover/media/preview.mp4?v=9949f878-8df2-4f22-9f3d-c30a8e74c32c",
+   "https://skillry.dev/cdn-cgi/media/mode=video,width=640,audio=false/https://skillry.dev/skills/bs-creatormotion-cards-action-checklist/media/preview.mp4?v=2c21a468-bccb-4756-81ac-218c3e1f63ec",
+   "https://skillry.dev/cdn-cgi/media/mode=video,width=640,audio=false/https://skillry.dev/skills/bs-manus2-0-style-launch-video/media/preview.mp4?v=ffb9afbd-dcc4-4383-a996-1404481f81da",
+   "https://skillry.dev/cdn-cgi/media/mode=video,width=640,audio=false/https://skillry.dev/skills/bs-hyperframes-velocity-sting/media/preview.mp4?v=e49b13db-fe75-4b4c-80d7-601c320be27a"
+  ]
+ },
+ {
+  "slug": "proanaliteg-458642",
+  "cat": "Motion graphics",
+  "dur": "0:35",
+  "prompt": "The author shared part of the prompt.\n\nTried the Remotion skill in Claude Code (Opus 5.5 xhigh) for fun. Mind-blowing: it built this promo on the first try - I spent longer picking four accent sounds and the music. It rebuilt our desktop app's UI in React straight from the XAML and design tokens. Zero screenshots.\nSVG",
+  "v": [
+   "https://media.skillry.dev/opus-5-5/proanaliteg-458642/original.mp4",
+   "https://media.skillry.dev/opus-5-5/proanaliteg-458642/remake.mp4",
+   "https://skillry.dev/cdn-cgi/media/mode=video,width=640,audio=false/https://skillry.dev/skills/bs-creatormotion-type-title-takeover/media/preview.mp4?v=9949f878-8df2-4f22-9f3d-c30a8e74c32c",
+   "https://skillry.dev/cdn-cgi/media/mode=video,width=640,audio=false/https://skillry.dev/skills/bs-creatormotion-cards-action-checklist/media/preview.mp4?v=2c21a468-bccb-4756-81ac-218c3e1f63ec",
+   "https://skillry.dev/cdn-cgi/media/mode=video,width=640,audio=false/https://skillry.dev/skills/bs-manus2-0-style-launch-video/media/preview.mp4?v=ffb9afbd-dcc4-4383-a996-1404481f81da",
+   "https://skillry.dev/cdn-cgi/media/mode=video,width=640,audio=false/https://skillry.dev/skills/bs-hyperframes-velocity-sting/media/preview.mp4?v=e49b13db-fe75-4b4c-80d7-601c320be27a"
+  ]
+ },
+ {
+  "slug": "kingokings-992769",
+  "cat": "Motion graphics",
+  "dur": "0:48",
+  "prompt": "The author shared part of the prompt.\n\nI thought the Opus 5.5 design posts were all jokes.\n\nThey're not. It's GOATed at design.\n\nI asked it to make a product showreel for Reactive Resume. It built this entire video in Remotion, in ONE prompt.\n\nThe setup:\n→ Opus 5.5, max effort\n→ Claude desktop app\n→ No skills, no templates, no design brief\n→ Just my project repo\n\nIt read the codebase, figured out what the product does, and decided what was worth showing.\n\nA launch video like this used to mean days in After Effects or paying a motion designer. Now a solo open-source maintainer can do it in an afternoon.\n\nFull prompt in the replies ⬇️\nCanvas\nSVG\nCSS",
+  "v": [
+   "https://media.skillry.dev/opus-5-5/kingokings-992769/original.mp4",
+   "https://media.skillry.dev/opus-5-5/kingokings-992769/remake.mp4",
+   "https://skillry.dev/cdn-cgi/media/mode=video,width=640,audio=false/https://skillry.dev/skills/bs-creatormotion-type-title-takeover/media/preview.mp4?v=9949f878-8df2-4f22-9f3d-c30a8e74c32c",
+   "https://skillry.dev/cdn-cgi/media/mode=video,width=640,audio=false/https://skillry.dev/skills/bs-creatormotion-cards-action-checklist/media/preview.mp4?v=2c21a468-bccb-4756-81ac-218c3e1f63ec",
+   "https://skillry.dev/cdn-cgi/media/mode=video,width=640,audio=false/https://skillry.dev/skills/bs-manus2-0-style-launch-video/media/preview.mp4?v=ffb9afbd-dcc4-4383-a996-1404481f81da",
+   "https://skillry.dev/cdn-cgi/media/mode=video,width=640,audio=false/https://skillry.dev/skills/bs-hyperframes-velocity-sting/media/preview.mp4?v=e49b13db-fe75-4b4c-80d7-601c320be27a"
+  ]
+ },
+ {
+  "slug": "dys-hay-749645",
+  "cat": "Motion graphics",
+  "dur": "0:15",
+  "prompt": "The author shared part of the prompt.\n\nHow far can Claude Opus 5.5 go in motion design? I tried. \n\n15 s on the Audi RS 6, 100% code (React/Remotion) with a synthesized V8 soundtrack. The cylinders flash in the real firing order, and the 0–100 timer runs in real time: 3.4 s.\n\nSpec piece, not affiliated with Audi.\nCanvas\nSVG",
+  "v": [
+   "https://media.skillry.dev/opus-5-5/dys-hay-749645/original.mp4",
+   "https://media.skillry.dev/opus-5-5/dys-hay-749645/remake.mp4",
+   "https://skillry.dev/cdn-cgi/media/mode=video,width=640,audio=false/https://skillry.dev/skills/bs-creatormotion-type-title-takeover/media/preview.mp4?v=9949f878-8df2-4f22-9f3d-c30a8e74c32c",
+   "https://skillry.dev/cdn-cgi/media/mode=video,width=640,audio=false/https://skillry.dev/skills/bs-creatormotion-cards-action-checklist/media/preview.mp4?v=2c21a468-bccb-4756-81ac-218c3e1f63ec",
+   "https://skillry.dev/cdn-cgi/media/mode=video,width=640,audio=false/https://skillry.dev/skills/bs-manus2-0-style-launch-video/media/preview.mp4?v=ffb9afbd-dcc4-4383-a996-1404481f81da",
+   "https://skillry.dev/cdn-cgi/media/mode=video,width=640,audio=false/https://skillry.dev/skills/bs-hyperframes-velocity-sting/media/preview.mp4?v=e49b13db-fe75-4b4c-80d7-601c320be27a"
+  ]
+ },
+ {
+  "slug": "ambiguous-ai-389509",
+  "cat": "3D scenes",
+  "dur": "0:15",
+  "prompt": "The author shared part of the prompt.\n\nOpus5.5 motion graphics\n改めてRemotionで色々できそう！\n#AIMotionDesign 02\nThree.js\nCanvas\nSVG",
+  "v": [
+   "https://media.skillry.dev/opus-5-5/ambiguous-ai-389509/original.mp4",
+   "https://media.skillry.dev/opus-5-5/ambiguous-ai-389509/remake.mp4"
+  ]
+ },
+ {
+  "slug": "heymrzak-349060",
+  "cat": "Motion graphics",
+  "dur": "0:30",
+  "prompt": "The author shared part of the prompt.\n\nthe introduction made with opus 5.5 + remotion\n\nintroducing @TryGofy — the live map of everything.\n\n#shipaton #BuildInPublic #gofy #gofyapp\nSVG\nGSAP",
+  "v": [
+   "https://media.skillry.dev/opus-5-5/heymrzak-349060/original.mp4",
+   "https://media.skillry.dev/opus-5-5/heymrzak-349060/remake.mp4",
+   "https://skillry.dev/cdn-cgi/media/mode=video,width=640,audio=false/https://skillry.dev/skills/bs-creatormotion-type-title-takeover/media/preview.mp4?v=9949f878-8df2-4f22-9f3d-c30a8e74c32c",
+   "https://skillry.dev/cdn-cgi/media/mode=video,width=640,audio=false/https://skillry.dev/skills/bs-creatormotion-cards-action-checklist/media/preview.mp4?v=2c21a468-bccb-4756-81ac-218c3e1f63ec",
+   "https://skillry.dev/cdn-cgi/media/mode=video,width=640,audio=false/https://skillry.dev/skills/bs-manus2-0-style-launch-video/media/preview.mp4?v=ffb9afbd-dcc4-4383-a996-1404481f81da",
+   "https://skillry.dev/cdn-cgi/media/mode=video,width=640,audio=false/https://skillry.dev/skills/bs-hyperframes-velocity-sting/media/preview.mp4?v=e49b13db-fe75-4b4c-80d7-601c320be27a"
+  ]
+ },
+ {
+  "slug": "ambiguous-ai-505873",
+  "cat": "Motion graphics",
+  "dur": "0:15",
+  "prompt": "The author shared part of the prompt.\n\nOpus5.5 motion graphics\nRemotionだと簡単に使いまわせるので便利！\n#AIMotionDesign\nGLSL\nCanvas",
+  "v": [
+   "https://media.skillry.dev/opus-5-5/ambiguous-ai-505873/original.mp4",
+   "https://media.skillry.dev/opus-5-5/ambiguous-ai-505873/remake.mp4",
+   "https://skillry.dev/cdn-cgi/media/mode=video,width=640,audio=false/https://skillry.dev/skills/bs-creatormotion-type-title-takeover/media/preview.mp4?v=9949f878-8df2-4f22-9f3d-c30a8e74c32c",
+   "https://skillry.dev/cdn-cgi/media/mode=video,width=640,audio=false/https://skillry.dev/skills/bs-creatormotion-cards-action-checklist/media/preview.mp4?v=2c21a468-bccb-4756-81ac-218c3e1f63ec",
+   "https://skillry.dev/cdn-cgi/media/mode=video,width=640,audio=false/https://skillry.dev/skills/bs-manus2-0-style-launch-video/media/preview.mp4?v=ffb9afbd-dcc4-4383-a996-1404481f81da",
+   "https://skillry.dev/cdn-cgi/media/mode=video,width=640,audio=false/https://skillry.dev/skills/bs-hyperframes-velocity-sting/media/preview.mp4?v=e49b13db-fe75-4b4c-80d7-601c320be27a"
+  ]
+ },
+ {
+  "slug": "lnkiai-544254",
+  "cat": "Motion graphics",
+  "dur": "0:32",
+  "prompt": "The author shared part of the prompt.\n\nClaude Opus 5.5が凄すぎる…！\nRemotion × three.jsでM3E Canvasの動画を作ってみた👇️\nThree.js\nSVG\nGSAP\nCSS",
+  "v": [
+   "https://media.skillry.dev/opus-5-5/lnkiai-544254/original.mp4",
+   "https://media.skillry.dev/opus-5-5/lnkiai-544254/remake.mp4",
+   "https://skillry.dev/cdn-cgi/media/mode=video,width=640,audio=false/https://skillry.dev/skills/bs-creatormotion-type-title-takeover/media/preview.mp4?v=9949f878-8df2-4f22-9f3d-c30a8e74c32c",
+   "https://skillry.dev/cdn-cgi/media/mode=video,width=640,audio=false/https://skillry.dev/skills/bs-creatormotion-cards-action-checklist/media/preview.mp4?v=2c21a468-bccb-4756-81ac-218c3e1f63ec",
+   "https://skillry.dev/cdn-cgi/media/mode=video,width=640,audio=false/https://skillry.dev/skills/bs-manus2-0-style-launch-video/media/preview.mp4?v=ffb9afbd-dcc4-4383-a996-1404481f81da",
+   "https://skillry.dev/cdn-cgi/media/mode=video,width=640,audio=false/https://skillry.dev/skills/bs-hyperframes-velocity-sting/media/preview.mp4?v=e49b13db-fe75-4b4c-80d7-601c320be27a"
+  ]
+ },
+ {
+  "slug": "tejasthange3-128242",
+  "cat": "Motion graphics",
+  "dur": "0:30",
+  "prompt": "The author shared part of the prompt.\n\nthis is INSANE!\n\nThe whole Twitter → 𝕏 story in 30 seconds, and I didn't touch a single keyframe.\n\nOpus 5.5 wrote every frame in Remotion and composed the soundtrack in code.\nCanvas\nSVG\nCSS",
+  "v": [
+   "https://media.skillry.dev/opus-5-5/tejasthange3-128242/original.mp4",
+   "https://media.skillry.dev/opus-5-5/tejasthange3-128242/remake.mp4",
+   "https://skillry.dev/cdn-cgi/media/mode=video,width=640,audio=false/https://skillry.dev/skills/bs-creatormotion-type-title-takeover/media/preview.mp4?v=9949f878-8df2-4f22-9f3d-c30a8e74c32c",
+   "https://skillry.dev/cdn-cgi/media/mode=video,width=640,audio=false/https://skillry.dev/skills/bs-creatormotion-cards-action-checklist/media/preview.mp4?v=2c21a468-bccb-4756-81ac-218c3e1f63ec",
+   "https://skillry.dev/cdn-cgi/media/mode=video,width=640,audio=false/https://skillry.dev/skills/bs-manus2-0-style-launch-video/media/preview.mp4?v=ffb9afbd-dcc4-4383-a996-1404481f81da",
+   "https://skillry.dev/cdn-cgi/media/mode=video,width=640,audio=false/https://skillry.dev/skills/bs-hyperframes-velocity-sting/media/preview.mp4?v=e49b13db-fe75-4b4c-80d7-601c320be27a"
+  ]
+ }
+]
