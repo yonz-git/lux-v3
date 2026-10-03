@@ -181,7 +181,7 @@ export function MyProducts() {
 
   if (products.length === 0) {
     return (
-      <HubScreen title="My Products" layout="plain" center tightTop>
+      <HubScreen title="Products in use" layout="plain" center tightTop>
         <div className={styles.empty}>
           <Orb animateIn />
           <h2 className="t-h4-h3">No products added yet</h2>
@@ -206,7 +206,7 @@ export function MyProducts() {
   return (
     <>
       <HubScreen
-        title="My Products"
+        title="Products in use"
         /* ⚠️ CENTRED, AND THE TOTAL MOVED INTO `RoutineSummary` — 3 Oct 2026,
            option G on the design canvas. The `N products added` subtitle went
            with it: the card's figure says the same thing, louder. */

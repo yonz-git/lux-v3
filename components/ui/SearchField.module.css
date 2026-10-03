@@ -90,6 +90,18 @@
   font-family: inherit;
 }
 
+/* ⚠️ (0,2,0), SO LOAD ORDER CANNOT LOSE IT — 4 Oct 2026, the inner input
+   drew the global indigo box (`:focus-visible`, globals.css) inside the pill
+   when it took focus in the add tray. `.input`'s `outline: none` and that
+   rule are both (0,1,0), so which won depended on which stylesheet the page
+   happened to load last, and on a route that loads the tray lazily the
+   global came second. The pill's own ring (`.field:focus-within`) is still
+   the indicator. */
+.input:focus,
+.input:focus-visible {
+  outline: none;
+}
+
 .input::placeholder {
   color: var(--color-text-muted);
 }

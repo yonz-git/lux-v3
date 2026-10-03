@@ -31,7 +31,7 @@ export const APP_NAME = "LUX";
    is the whole reason the route exists, so it is what the title says. */
 const HUB_TITLES: Record<string, string> = {
   "/": "Welcome",
-  "/products": "My products",
+  "/products": "Products in use",
   "/progress": "Progress",
   "/progress/empty": "Progress, no check-ins yet",
   "/progress/check-in": "Daily check-in",

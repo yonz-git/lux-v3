@@ -116,7 +116,8 @@ export function SkinProfileTiles({
       aria-labelledby={titleId}
     >
       <h2 id={titleId} className={`${styles.overline} t-overline`}>
-        Your skin profile
+        {/* "Your" cut 4 Oct 2026, asked for directly */}
+        Skin profile
       </h2>
       <dl className={styles.tiles}>
         {tiles.map(({ label, values }) => (
