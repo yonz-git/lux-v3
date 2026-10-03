@@ -48,6 +48,7 @@ import { ArrowLeftIcon } from "@/components/ui/icons";
 export function HubScreen({
   title,
   subtitle,
+  centerHeading,
   backHref,
   action,
   layout = "card",
@@ -61,6 +62,9 @@ export function HubScreen({
 }: {
   title?: string;
   subtitle?: string;
+  /** Centre the page title over the body (3 Oct 2026, My Products' routine
+   *  card, "My products should come to the center"). Alignment only. */
+  centerHeading?: boolean;
   /** a pushed view's back chevron; a landing has none */
   backHref?: string;
   /** the header row's right-hand slot */
@@ -126,7 +130,7 @@ export function HubScreen({
      Both classes are existing entries in the globals.css ramp — this is a swap
      between declared text styles, not a font-size written on a screen. */
   const heading = title ? (
-    <div className={styles.heading}>
+    <div className={styles.heading} data-center={centerHeading || undefined}>
       <h1 className="t-h4-h3">{title}</h1>
       {subtitle && <p className={`${styles.subtitle} t-body3-body2`}>{subtitle}</p>}
     </div>

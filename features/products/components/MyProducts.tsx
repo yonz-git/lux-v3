@@ -3,6 +3,7 @@
 import { useEffect, useRef, useState } from "react";
 import styles from "./MyProducts.module.css";
 import { HubScreen } from "@/components/layout/HubScreen";
+import { RoutineSummary } from "./RoutineSummary";
 import { Button } from "@/components/ui/Button";
 import { Orb } from "@/components/ui/Orb";
 import { ProductAccordionCard } from "./ProductAccordionCard";
@@ -17,6 +18,7 @@ import { ownedProducts, DEMO_PRODUCTS } from "@/lib/demo";
 import {
   BUCKETS,
   BUCKET_LIST_TITLE,
+  BUCKET_AGE,
   BUCKET_WINDOW,
   UNSORTED_BUCKET,
   countIn,
@@ -205,7 +207,10 @@ export function MyProducts() {
     <>
       <HubScreen
         title="My Products"
-        subtitle={`${products.length} product${products.length === 1 ? "" : "s"} added`}
+        /* ⚠️ CENTRED, AND THE TOTAL MOVED INTO `RoutineSummary` — 3 Oct 2026,
+           option G on the design canvas. The `N products added` subtitle went
+           with it: the card's figure says the same thing, louder. */
+        centerHeading
         layout="card"
         tightTop
         footer={
@@ -219,6 +224,8 @@ export function MyProducts() {
           <Button href="/check/new">Start analysis</Button>
         }
       >
+        <RoutineSummary products={products} />
+
         <ul className={styles.categories}>
           {categories.map((b) => (
             <li key={b.id}>
@@ -353,7 +360,21 @@ function CategoryGroup({
           <span className={`${styles.categoryName} t-h5`}>
             {BUCKET_LIST_TITLE[bucket]}
           </span>
-          <span className={`${styles.window} t-label-sm`}>
+          {/* ⚠️ THE WINDOW IS A PILL WITH AN AGE METER — 3 Oct 2026, picked
+              on the design canvas ("C · Pill with an age meter") after "the
+              4+ weeks text is so small it looks strange". Three rising bars,
+              lit by `BUCKET_AGE`, so the three rows read as one scale before
+              the words are read. Decorative: the label says it in words. */}
+          <span className={`${styles.window} t-label`}>
+            <span className={styles.meter} aria-hidden="true">
+              {[1, 2, 3].map((i) => (
+                <span
+                  key={i}
+                  className={styles.bar}
+                  data-lit={i <= BUCKET_AGE[bucket] || undefined}
+                />
+              ))}
+            </span>
             {BUCKET_WINDOW[bucket]}
           </span>
         </span>

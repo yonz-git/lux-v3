@@ -93,6 +93,25 @@ export const BUCKET_WINDOW: Record<BucketId, string> = {
   "not-sure": "unknown",
 };
 
+/** How many of the hub's three age bars a group lights — its window drawn as a
+ *  rising scale (3 Oct 2026, the "age meter" pill picked on the design
+ *  canvas). `not-sure` lights none: its age is the thing nobody knows. */
+export const BUCKET_AGE: Record<BucketId, 0 | 1 | 2 | 3> = {
+  "long-term": 3,
+  recent: 2,
+  "new-addition": 1,
+  "not-sure": 0,
+};
+
+/** A group's name in the routine card's key, after its count: "3 long term",
+ *  "1 new". Lower case because it finishes a phrase rather than heading a row. */
+export const BUCKET_KEY_LABEL: Record<BucketId, string> = {
+  "long-term": "long term",
+  recent: "recent",
+  "new-addition": "new",
+  "not-sure": "not sure",
+};
+
 /** The four durations the add-product tray asks about, once per product. */
 export const DURATIONS = [
   "4+ weeks",

@@ -1,0 +1,159 @@
+/* The routine card — see RoutineSummary.tsx. Padding and radius are
+   `DataCard`'s; the SURFACE is the progress chart's (SymptomTrend.module.css,
+   "v2's BACKGROUND"), copied, and everything on it is white. */
+
+.card {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-md);
+  /* the hub body sets no gap between its blocks; the list's own 16 between
+     groups, so the card reads as the first of them, set apart only by kind */
+  margin-bottom: var(--space-lg);
+}
+
+/* `.card.card` (0,2,0) outranks DataCard's panel fill and its
+   reduced-transparency rule whatever order the modules load in */
+.card.card {
+  position: relative;
+  isolation: isolate;
+  border-color: rgb(255 255 255 / 0.2);
+  box-shadow: inset 0 1px 0 rgb(255 255 255 / 0.25);
+  background: none;
+  color: #fff;
+}
+
+/* ⚠️ THE TEAL IS ON ITS OWN LAYER AT 85%, 3 Oct 2026, asked for directly
+   ("lower opacity to 0.7", the background only, then 0.85). The stack mixes opaque and
+   translucent stops, so no single alpha could thin it evenly; drawn on a
+   pseudo-element and faded as one, the whole fill goes to 85% while the
+   white ink, the pill and the bar above it stay at full strength. */
+.card.card::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: -2;
+  border-radius: inherit;
+  pointer-events: none;
+  opacity: 0.85;
+  background: linear-gradient(#0000000d, #0000000d),
+    radial-gradient(45% 45% at 100% 100%, #00303c3d, #0000 70%),
+    radial-gradient(60% 55% at 0 0, #d0b4b81f, #a0353500 70%),
+    radial-gradient(110% 90% at 0 35%, #567e88, #0000 60%),
+    radial-gradient(90% 80% at 90% 105%, #60a8ba52, #0000 65%),
+    radial-gradient(70% 60% at 80% -10%, #37617547, #0000 70%),
+    #005461b5;
+}
+
+@media (prefers-reduced-transparency: reduce) {
+  .card.card::before {
+    opacity: 1;
+    background: linear-gradient(#0000000d, #0000000d),
+      radial-gradient(45% 45% at 100% 100%, #00303c3d, #0000 70%),
+      radial-gradient(60% 55% at 0 0, #d0b4b81f, #a0353500 70%),
+      radial-gradient(110% 90% at 0 35%, #567e88, #0000 60%),
+      radial-gradient(90% 80% at 90% 105%, #60a8ba52, #0000 65%),
+      radial-gradient(70% 60% at 80% -10%, #37617547, #0000 70%),
+      #005461;
+  }
+}
+
+/* the grain, as on the chart */
+.card.card::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  border-radius: inherit;
+  pointer-events: none;
+  opacity: 0.08;
+  mix-blend-mode: overlay;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='120' height='120'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='2'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+}
+
+/* the overline left, the total's pill right, centred on one line */
+.top {
+  margin: 0;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-md);
+  flex-wrap: wrap;
+}
+
+.overline {
+  color: #fff;
+}
+
+/* the chart's own pill (`.dayPill` / `.eventPill` on teal), at the 28 the
+   age pills below use */
+.total {
+  display: inline-flex;
+  align-items: center;
+  box-sizing: border-box;
+  height: 28px;
+  padding: 0 var(--space-md);
+  border-radius: var(--radius-full);
+  border: var(--border-width-hairline) solid rgb(255 255 255 / 0.35);
+  background: rgb(255 255 255 / 0.14);
+  color: #fff;
+  white-space: nowrap;
+  font-variant-numeric: tabular-nums;
+}
+
+/* one 8 tall bar, a 3 gap between groups, each segment as wide as its count */
+.bar {
+  display: flex;
+  gap: 3px;
+  height: 8px;
+}
+
+.segment {
+  flex-basis: 0;
+  min-width: 8px;
+  border-radius: var(--radius-full);
+}
+
+/* oldest brightest — the shades the key's dots repeat */
+.segment[data-bucket="long-term"],
+.dot[data-bucket="long-term"] {
+  background: #fff;
+}
+
+.segment[data-bucket="recent"],
+.dot[data-bucket="recent"] {
+  background: rgb(255 255 255 / 0.6);
+}
+
+.segment[data-bucket="new-addition"],
+.dot[data-bucket="new-addition"] {
+  background: rgb(255 255 255 / 0.3);
+}
+
+.segment[data-bucket="not-sure"],
+.dot[data-bucket="not-sure"] {
+  background: rgb(255 255 255 / 0.1);
+  box-shadow: inset 0 0 0 1px rgb(255 255 255 / 0.45);
+}
+
+.key {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-xs) var(--space-lg);
+}
+
+.keyItem {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  color: rgb(255 255 255 / 0.85);
+}
+
+.dot {
+  flex: none;
+  width: 8px;
+  height: 8px;
+  border-radius: var(--radius-full);
+}

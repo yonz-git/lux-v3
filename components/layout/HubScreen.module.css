@@ -67,6 +67,11 @@
   color: var(--color-text-primary);
 }
 
+.heading[data-center] {
+  align-items: center;
+  text-align: center;
+}
+
 .subtitle {
   color: var(--color-text-secondary);
 }

@@ -78,7 +78,9 @@
 
   /* lux-v3: the 30% panel at the score cards' 24 radius (app/vidgen.css) */
   border-radius: var(--radius-2xl); /* 24 */
-  border: var(--border-width-hairline) solid var(--color-border-panel);
+  /* ⚠️ A FAINT 12% EDGE, NOT `border/panel`'s 45% — 3 Oct 2026, asked for
+     directly (set in the inspector and handed over) */
+  border: var(--border-width-hairline) solid #ffffff1f;
   background: var(--color-panel);
   box-shadow: inset 0 1px 0 var(--color-rim-panel);
   -webkit-backdrop-filter: blur(12px);
@@ -173,11 +175,57 @@
 
 /* ⚠️ THE WINDOW SITS UNDER THE NAME NOW (see `.copy`). It sat beside it while
    the row had to stay 56; the row is 112 as of 15 Sep 2026, so the second
-   line costs no height. */
+   line costs no height.
+   ⚠️ AND IT IS A GLASS PILL WITH AN AGE METER, 3 Oct 2026, picked on the design
+   canvas: muted `Label Small` text under the name "looked strange", so the
+   window is `Label` in the chips' glass at 28 tall, its ink one step up to
+   `text/secondary` now that it has a ground. A width-less flex item, so
+   `.copy`'s `align-items: flex-start` keeps it hugging its text. It sits 8
+   under the name (`.copy`'s 2 plus 6 of its own): a pill needs more air under
+   a heading than a bare line did. */
 .window {
   flex: none;
-  color: var(--color-text-muted);
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  box-sizing: border-box;
+  height: 28px;
+  margin-top: calc(var(--space-sm) - var(--space-2xs));
+  padding: 0 var(--space-md) 0 calc(var(--space-sm) + 1px);
+  border-radius: var(--radius-full);
+  border: var(--border-width-hairline) solid var(--color-border-glass);
+  background: var(--color-glass);
+  box-shadow: var(--shadow-glass);
+  color: var(--color-text-secondary);
   white-space: nowrap;
+}
+
+/* three bars rising 6 / 9 / 12, 4 wide, 2 apart, bottom-aligned; lit in the
+   brand indigo, unlit at 18% of it */
+.meter {
+  display: inline-flex;
+  align-items: flex-end;
+  gap: var(--space-2xs);
+  height: 12px;
+}
+
+.bar {
+  width: 4px;
+  height: 6px;
+  border-radius: 2px;
+  background: color-mix(in srgb, var(--color-bg-brand) 18%, transparent);
+}
+
+.bar:nth-child(2) {
+  height: 9px;
+}
+
+.bar:nth-child(3) {
+  height: 12px;
+}
+
+.bar[data-lit] {
+  background: var(--color-bg-brand);
 }
 
 /* ⚠️ NOT IN FIGMA — THE COUNT IS A DISC, 15 Sep 2026, asked for directly: the
