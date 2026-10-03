@@ -40,21 +40,51 @@
 }
 
 /* v2's primary hover (see Button.tsx): the rim and shine read these.
-   The shine's ink is the label's own white; the specular streak is 3px with
+   The shine's ink is the label's own white; the specular streak is 1.5px with
    a near-white core, its shoulders the pill's gradient ends 65% toward white;
    the fixed edge light is only its 1px ring (no inner glow), lit stop 0.54. */
 .button:not(.secondary) {
   --shine-ink: #fff;
-  --specular-width: 3px;
+  --specular-width: 1.5px; /* 3 until 3 Oct 2026 — "make the animated border on hover thinner" */
   --specular-core: 90%;
   --specular-a: color-mix(in oklab, #485780, white 65%);
   --specular-b: color-mix(in oklab, #313560, white 65%);
   --edge-ring-lit: 0.54;
   --edge-ring-dim: 0.45;
+  /* ⚠️ THE ALL-ROUND RING, 3 Oct 2026, asked for directly ("the border shine
+     breaks"). The default sweep falls to ZERO between 40% and 60%, and on a
+     wide pill that band covers most of the top and bottom edges, so the ring
+     read as two lit corners with gaps between them. The shared all-round
+     ring keeps that middle at 0.15, so it never vanishes. */
+  --edge-ring: var(--edge-ring-all-round);
 }
 
 .button:not(.secondary) :global(.edge-light) {
   box-shadow: none;
+}
+
+/* ⚠️ THE PRIMARY'S RING IS ITS OWN BORDER, NOT THE `.edge-light` OVERLAY —
+   3 Oct 2026, the real cause of "the border shine breaks" and of the speckled
+   pixels round the caps. The overlay was a second shape stacked on the
+   button: a 1px ring cut out of a span by two XOR'd masks, sitting 1px
+   inside a transparent border the fill painted indigo. Each of those layers
+   antialiased its own curve, so the cap edge was three half-covered pixels
+   on top of each other (dark fill, white ring, dark fill again), which read
+   as a broken, grainy rim. Now the ring is painted INTO the 1px border: the
+   fill on `padding-box`, the sweep on `border-box` over a second copy of
+   the fill, so there is one shape with one antialiased edge. The overlay's
+   ring is switched off, and the inset top rim with it, since it drew a
+   second line 1px under the ring. */
+.button:not(.secondary) {
+  background:
+    linear-gradient(90deg, var(--grad-start), var(--grad-end)) padding-box,
+    var(--edge-ring) border-box,
+    linear-gradient(90deg, var(--grad-start), var(--grad-end)) border-box;
+  box-shadow: 0 8px 18px rgb(49 53 96 / 0.3);
+}
+
+.button:not(.secondary) :global(.edge-light)::before {
+  display: none;
 }
 
 .button:hover:not(:disabled) {
@@ -114,4 +144,10 @@
 .md {
   min-height: var(--button-height, var(--size-control-md));
   padding: 0 var(--space-xl);
+}
+
+/* the hover rim rides the outer edge too, over the border ring above, rather
+   than 1px inside it (`.specular` is `inset: 0`, the padding box) */
+.button:not(.secondary) :global(.specular) {
+  inset: calc(-1 * var(--border-width-hairline));
 }
