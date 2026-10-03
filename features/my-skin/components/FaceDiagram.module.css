@@ -160,9 +160,9 @@
       #7ca0b400,
       #c4deec00 72%
     ),
-    radial-gradient(60% 45% at 8% 100%, #64798838, #6c939259 70%),
+    radial-gradient(60% 45% at 8% 100%, #51778738, #6c939259 70%),
     radial-gradient(45% 40% at 0% 40%, #6ea0c800, #6ea0c800 70%),
-    radial-gradient(70% 60% at 45% 52%, #1c252f9e, #06101a00 78%),
+    radial-gradient(70% 60% at 45% 52%, #122a369e, #06101a00 78%),
     linear-gradient(165deg, #34566824 0%, #26333e00 100%);
 
   /* ⚠️ THE BOTTOM IS DARKENED, asked for directly 14 Sep 2026: the lit
@@ -176,7 +176,34 @@
      above replaced in the same request. */
   --face-card-foot: linear-gradient(transparent 58%, #060e1617 100%);
 
-  background: var(--face-card-foot), var(--face-card-halo);
+  /* ⚠️ A MINT LIFT OVER EVERYTHING — 2 Oct 2026, asked for directly: the card
+     read "too grey and dead"; give it "a tiny bit of the greenish tone we have
+     for its face location and brighten up 10%". The tone is the region pills'
+     own glass — their mint base (#d3ffff) met with their sage rim (#d2d9c7),
+     nudged so green leads blue, since the pure base is cyan and over this
+     blue-grey stack it lifted without greening. Laid flat over the whole
+     stack at 12% (≈10% brighter on the dark core once the green's lower
+     luminance is paid for), so every pixel moves toward the pills without
+     retuning the mesh stops above. Topmost, so the foot is lifted too.
+     ⚠️ THEN "EVEN LESS GREY", asked for directly the same day: a more
+     saturated mint (#cdf5e1 → #bff0d8) at 20% rather than 12%, and the slate
+     shadow behind the face (#1c252f) turned toward that teal (#1a2c2b), so
+     the core stops reading as grey under the lift.
+     ⚠️ AND "LESS GREY" AGAIN: the mint richer still (#b2efcf) at 28%, the
+     core a deeper teal (#14332f), and the bottom-left glow's grey-blue start
+     (#647988) turned teal (#5a8a80).
+     ⚠️ THEN "SLIGHTLY BLUEISH", asked for directly the same day: every one of
+     those three nudged from green-teal toward aqua — the mint #b2efcf →
+     #b2eae2, the core #14332f → #143139, the glow #5a8a80 → #5a8790.
+     Strengths unchanged.
+     ⚠️ AND "SLIGHTLY MORE BLUEISH AND 10% DARKER", asked for directly the same
+     day: each of the three moved further toward blue, then × 0.9 — the lift
+     #b2eae2 → #98c7cf, the core #143139 → #122a36, the glow #5a8790 →
+     #517787. Strengths unchanged. */
+  --face-card-lift: linear-gradient(#98c7cf47, #98c7cf47);
+
+  background: var(--face-card-lift), var(--face-card-foot),
+    var(--face-card-halo);
   box-shadow: var(--shadow-frosted-row);
   -webkit-backdrop-filter: blur(var(--blur-card));
   backdrop-filter: blur(var(--blur-card));
@@ -200,6 +227,18 @@
   position: relative;
   width: 100%;
   aspect-ratio: 392 / 300;
+  /* ⚠️ LESS ROOM OVER THE CROWN — 2 Oct 2026, asked for directly ("reduce
+     the top space above the head"). The head sits 55 units down this box
+     (`.form`'s top: the 10 it was drawn at plus `FACE_DROP`'s 45), and the
+     card's own 12 of padding sits over that. The whole box rides 25 units up
+     into that air instead of the drop shrinking, so `.form`, `REGIONS` and
+     the neck reservation below all keep their numbers and nothing has to
+     move in step — the box's top 25 units are empty, and the card's
+     `overflow: hidden` is a long way above the crown. A margin percentage
+     resolves against WIDTH, which is the 392 this is written in.
+     ⚠️ THEN "A BIT MORE", the same day: 25 → 40 units, which leaves the
+     crown 15 units under the box's top plus the card's 12. */
+  margin-top: calc(-40 / 392 * 100%);
   /* ⚠️ ROOM FOR THE NECK, 14 Sep 2026, AND FOR THE LARGER, LOWER HEAD SINCE
      26 Sep 2026: the drawing hangs ~158 units below this box (see `.form` —
      the shoulder strokes end at box y≈448), and 152 of them are cleared here
@@ -209,12 +248,6 @@
      sit on the drawing. A margin percentage resolves against WIDTH, which is
      the 392 this is written in. */
   margin-bottom: calc(152 / 392 * 100%);
-  /* ⚠️ PULLED UP 28 UNITS INTO THE CARD'S TOP — asked for directly 1 Oct 2026
-     ("reduce this top space"): the head started ~52 below the card's edge,
-     against ~45 at the sides. A width percentage, like the margin above, so
-     the pills keep their places on the drawing. `.card` clips what rises
-     past its padding (only the drawing's faded halo). */
-  margin-top: calc(-28 / 392 * 100%);
   /* The 392x300 box used to end ~20% below the lowest pill, because the drawn
      face bottomed out at y=241 and nothing filled the rest; a -9% bottom margin
      pulled the chip row up into that dead air. The head now runs to y=290 of
