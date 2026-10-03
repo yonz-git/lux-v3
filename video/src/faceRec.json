@@ -1,0 +1,148 @@
+{
+ "scroll": 250,
+ "face": {
+  "x": 24,
+  "y": 80,
+  "w": 342,
+  "h": 404.2
+ },
+ "frames": 262,
+ "events": [
+  {
+   "frame": 0,
+   "label": "entrance"
+  },
+  {
+   "frame": 44,
+   "label": "symptom",
+   "text": "Redness",
+   "rect": {
+    "x": 48.1,
+    "y": 504.2,
+    "w": 96.1,
+    "h": 44
+   }
+  },
+  {
+   "frame": 68,
+   "label": "place",
+   "text": "Cheeks (L)",
+   "rect": {
+    "x": 77.9,
+    "y": 273.3,
+    "w": 66.8,
+    "h": 28.6
+   }
+  },
+  {
+   "frame": 80,
+   "label": "place",
+   "text": "Forehead",
+   "rect": {
+    "x": 167.9,
+    "y": 158.5,
+    "w": 60.7,
+    "h": 28.6
+   }
+  },
+  {
+   "frame": 92,
+   "label": "place",
+   "text": "Nose",
+   "rect": {
+    "x": 179,
+    "y": 273.3,
+    "w": 38.4,
+    "h": 28.6
+   }
+  },
+  {
+   "frame": 104,
+   "label": "place",
+   "text": "Cheeks (R)",
+   "rect": {
+    "x": 249.2,
+    "y": 273.3,
+    "w": 67.5,
+    "h": 28.6
+   }
+  },
+  {
+   "frame": 116,
+   "label": "save",
+   "text": "Save",
+   "rect": {
+    "x": 75.3,
+    "y": 680.6,
+    "w": 70,
+    "h": 36.3
+   }
+  },
+  {
+   "frame": 130,
+   "label": "symptom",
+   "text": "Itching",
+   "rect": {
+    "x": 152.1,
+    "y": 504.2,
+    "w": 84.3,
+    "h": 44
+   }
+  },
+  {
+   "frame": 154,
+   "label": "place",
+   "text": "Cheeks (L)",
+   "rect": {
+    "x": 77.9,
+    "y": 273.3,
+    "w": 66.8,
+    "h": 28.6
+   }
+  },
+  {
+   "frame": 166,
+   "label": "place",
+   "text": "Forehead",
+   "rect": {
+    "x": 167.9,
+    "y": 158.5,
+    "w": 60.7,
+    "h": 28.6
+   }
+  },
+  {
+   "frame": 178,
+   "label": "place",
+   "text": "Cheeks (R)",
+   "rect": {
+    "x": 249.2,
+    "y": 273.3,
+    "w": 67.5,
+    "h": 28.6
+   }
+  },
+  {
+   "frame": 190,
+   "label": "place",
+   "text": "Chin / jaw",
+   "rect": {
+    "x": 166,
+    "y": 364.5,
+    "w": 64.3,
+    "h": 28.6
+   }
+  },
+  {
+   "frame": 202,
+   "label": "save",
+   "text": "Save",
+   "rect": {
+    "x": 75.3,
+    "y": 680.6,
+    "w": 70,
+    "h": 36.3
+   }
+  }
+ ]
+}
