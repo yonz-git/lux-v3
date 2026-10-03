@@ -37,7 +37,7 @@ import { toggleMulti } from "@/lib/store/answers";
  * NOTHING starts selected — the Figma frames show options already chosen
  * because a comp has to show a filled-in state.
  */
-const SKIN_TYPES = ["Dry", "Combination", "Oily", "Normal or balanced", "Not sure"];
+const SKIN_TYPES = ["Dry", "Combination", "Oily", "Balanced", "Not sure"];
 const TENDENCIES = ["Sensitive", "Acne-prone"];
 const EXCLUSIVES = ["None", "Not sure"];
 

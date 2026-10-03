@@ -147,7 +147,20 @@ export function QuestionScreen({
                 other four hid the same `<h1>`; the question itself now sits in
                 each screen's panel as an `<h2>`. The string comes from the
                 step, so a new screen cannot forget it. */}
-            <h1 className={`${styles.title} t-h4-h3`}>{title}</h1>
+            {/* ⚠️ EXCEPT STEP 1, 3 Oct 2026, asked for directly (struck through
+                on the screen): `Create skin profile` sat over the question
+                that already says what the screen is. It stays as the page's
+                `<h1>` for screen readers, visually hidden, so the outline and
+                the route announcer are unchanged. */}
+            <h1
+              className={
+                id === "start"
+                  ? "visually-hidden"
+                  : `${styles.title} t-h4-h3`
+              }
+            >
+              {title}
+            </h1>
             {children}
           </div>
 

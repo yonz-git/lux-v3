@@ -8,6 +8,8 @@ import SegmentedToggle from "@/features/products/components/SegmentedToggle";
 import { TextField } from "@/components/ui/TextField";
 import { FaceDiagram, FACE_REGION_IDS } from "./FaceDiagram";
 import { Button } from "@/components/ui/Button";
+import { ChatBubble } from "@/components/ui/ChatBubble";
+import { Orb } from "@/components/ui/Orb";
 import {
   PlusIcon,
   CloseIcon,
@@ -352,9 +354,22 @@ export function StartInvestigation() {
         What is currently happening to your skin?
       </h2>
 
-      <p id={instructionId} className={`${styles.instruction} t-body3-body2`}>
-        For each symptom, select the affected areas in the face diagram.
-      </p>
+      {/* ⚠️ THE INSTRUCTION IS LUX TALKING NOW — 3 Oct 2026, asked for directly
+          ("this part is bugging me, how about a cute side chat bubble that
+          pops"). It was a centred line of secondary body copy under the
+          question. It is now a small orb with an AI bubble beside it, left
+          aligned over the face card, popping from its tail corner a beat
+          after the question lands (`.bubble-enter` with a delay). The id
+          stays on the words, so the face's `aria-describedby` still reads
+          them. */}
+      <div className={styles.coach}>
+        <Orb size="40px" className={styles.coachOrb} />
+        <ChatBubble from="ai" hug className={styles.coachBubble}>
+          <span id={instructionId}>
+            Pick a symptom, then tap where it shows on your face.
+          </span>
+        </ChatBubble>
+      </div>
 
       <div className={styles.diagram}>
         <FaceDiagram
