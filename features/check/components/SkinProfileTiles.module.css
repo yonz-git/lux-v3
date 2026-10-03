@@ -60,8 +60,8 @@
   color: var(--color-text-muted);
 }
 
-/* ⚠️ A READING, NOT A CONTROL: glass at 32, where every chip is 44 and the
-   selected chip is indigo. No hover, no press, no indigo. */
+/* ⚠️ A READING, NOT A CONTROL: 32 tall, where every chip is 44. No hover,
+   no press. */
 .tileValue {
   display: inline-flex;
   align-items: center;
@@ -72,14 +72,72 @@
   overflow-wrap: anywhere;
   padding: 0 var(--space-md); /* 12 */
   border-radius: var(--radius-full);
-  border: var(--border-width-hairline) solid var(--color-border-glass);
-  background: var(--color-glass-strong);
-  box-shadow: var(--shadow-glass);
-  color: var(--color-text-primary);
+  /* ⚠️ THE FACE DIAGRAM'S PICKED PILL, 4 Oct 2026, asked for directly ("try
+     the teal-green pills like in the face diagram"). Every value here is an
+     answer the user gave, which is what a lit region on the face is too, so
+     it takes that pill's recipe (`.region[data-selected="true"]` in
+     FaceDiagram.module.css): the deeper teal at 89% with a 1px backdrop
+     blur, the faint `#869ea626` hairline, a 5% white light along the top,
+     `shadow/sm` for its lift, the 20% diagonal shade to the lower right, and
+     white ink. Still a reading, not a control: no hover, no press. The shade
+     is a background layer here rather than the region's `::before`, since
+     nothing on this pill fades it in or out. */
+  border: var(--border-width-hairline) solid #869ea626;
+  background-color: #13758ce3;
+  background-origin: border-box;
+  background-image: linear-gradient(
+    135deg,
+    transparent 35%,
+    color-mix(in srgb, var(--color-face-pill-selected-deep) 20%, transparent)
+      100%
+  );
+  box-shadow: inset 0 1px 0 #ffffff0d, var(--shadow-sm);
+  -webkit-backdrop-filter: blur(1px);
+  backdrop-filter: blur(1px);
+  color: var(--color-text-on-brand);
 }
 
 @media (prefers-reduced-transparency: reduce) {
   .tileValue {
-    background: var(--color-glass-strong); /* opaque under this query */
+    background-color: #13758c;
+    -webkit-backdrop-filter: none;
+    backdrop-filter: none;
+  }
+}
+
+/* ⚠️ THE ROSE PILL — `Ongoing` under `Symptoms state` (see the .tsx). The face
+   diagram's symptom callout (`.symptom` in FaceDiagram.module.css): rose at
+   88% running to a darker 92% on the diagonal, a 28% white light along the
+   top, `shadow/sm`, frosted behind, white ink. Its rose hairline replaces the
+   teal one. */
+.tileValue[data-tone="symptom"] {
+  border-color: transparent;
+  background-color: transparent;
+  background-image: linear-gradient(
+    135deg,
+    color-mix(in srgb, var(--color-bg-symptom) 88%, transparent) 35%,
+    color-mix(
+        in srgb,
+        color-mix(in srgb, var(--color-bg-symptom) 80%, var(--color-text-primary))
+          92%,
+        transparent
+      )
+      100%
+  );
+  box-shadow: inset 0 1px 0 rgb(255 255 255 / 0.28), var(--shadow-sm);
+  -webkit-backdrop-filter: blur(var(--blur-sm)) saturate(140%);
+  backdrop-filter: blur(var(--blur-sm)) saturate(140%);
+}
+
+@media (prefers-reduced-transparency: reduce) {
+  .tileValue[data-tone="symptom"] {
+    background-image: linear-gradient(
+      135deg,
+      var(--color-bg-symptom) 35%,
+      color-mix(in srgb, var(--color-bg-symptom) 80%, var(--color-text-primary))
+        100%
+    );
+    -webkit-backdrop-filter: none;
+    backdrop-filter: none;
   }
 }

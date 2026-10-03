@@ -100,6 +100,13 @@ export function SkinProfileTiles({
     { label: "Known conditions", values: members(conditions) },
     { label: "Symptoms state", values: [symptomsState || NOT_SET] },
   ];
+  /* ⚠️ AN ONGOING EPISODE IS ROSE, 4 Oct 2026, asked for directly ("for
+     symptom, if it's ongoing, use pink pills like in the face diagram"). The
+     face's symptom callouts are the rose pill, so a state that says the
+     symptoms are still here wears their colour; every other value keeps the
+     teal of an answer given. */
+  const isActive = (label: string, value: string) =>
+    label === "Symptoms state" && value === "Ongoing";
 
   return (
     <section
@@ -116,7 +123,11 @@ export function SkinProfileTiles({
           <div key={label} className={styles.tile}>
             <dt className={`${styles.tileLabel} t-body3`}>{label}</dt>
             {values.map((value) => (
-              <dd key={value} className={`${styles.tileValue} t-body3`}>
+              <dd
+                key={value}
+                className={`${styles.tileValue} t-body3`}
+                data-tone={isActive(label, value) ? "symptom" : undefined}
+              >
                 {value}
               </dd>
             ))}
