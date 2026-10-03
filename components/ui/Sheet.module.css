@@ -1,6 +1,7 @@
 /* ⚠️ lux-v3, 1 Oct 2026 — THE TRAY HAS VIDGEN'S SHAPE ON v2'S FILL. The AI
-   Assistant's 36 top / 44 bottom corners, a white rim along the top and no
-   border, over lux-v2's own sage frost (`--surface-sheet`, kept when the
+   Assistant's 36 top / 44 bottom corners and no border (⚠️ the white rim
+   along the top went 3 Oct 2026, asked for directly: "remove the white
+   borders"), over lux-v2's own sage frost (`--surface-sheet`, kept when the
    VidGen gradients were dropped the same day);
    on a phone it floats 8 in from the screen's edges like the reference's
    (`--space-inset`). The ✕ is a 56 glass circle. The sage `surface/data` tray and its notes below are history. */
@@ -68,7 +69,7 @@
   -webkit-backdrop-filter: blur(var(--blur-card)) saturate(1.4);
   backdrop-filter: blur(var(--blur-card)) saturate(1.4);
   color: var(--color-text-primary);
-  box-shadow: var(--shadow-sheet), 0 14px 30px rgb(15 10 30 / 0.35);
+  box-shadow: 0 14px 30px rgb(15 10 30 / 0.35);
   /* NOT optional: a translucent tray lets the nav underneath read straight
      through without a blur */
 
@@ -242,7 +243,7 @@
     max-width: var(--width-card-focus); /* 640 */
     padding: var(--space-5xl);
     border-radius: var(--radius-sheet) var(--radius-sheet) var(--radius-sheet-foot) var(--radius-sheet-foot);
-    box-shadow: var(--shadow-sheet), 0 14px 30px rgb(15 10 30 / 0.35);
+    box-shadow: 0 14px 30px rgb(15 10 30 / 0.35);
 
     /* ⚠️ THE PHONE TRAY'S SAGE ON DESKTOP TOO — 16 Sep 2026, asked for
        directly on `CheckBasket` ("use the left bg color"). From 12 Sep every

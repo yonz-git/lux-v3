@@ -22,7 +22,7 @@
      over the canvas, never a white fill; no opaque white surface exists. */
   --color-glass: rgb(255 255 255 / 0.25);         /* chip, round button      */
   --color-glass-strong: rgb(255 255 255 / 0.4);   /* hover, selected row     */
-  --color-border-glass: rgb(255 255 255 / 0.55);  /* 1px edge on all glass   */
+  --color-border-glass: rgb(255 255 255 / 0.3);   /* 1px edge on all glass — 0.55 until 3 Oct 2026, asked for directly */
   --color-rim: rgb(255 255 255 / 0.9);            /* inset top highlight     */
   --color-rim-soft: rgb(255 255 255 / 0.8);       /* the chips' and fabs' rim */
   /* the panel's fill is `surface/frost-light`, already rgba(244 254 255 / .55) */

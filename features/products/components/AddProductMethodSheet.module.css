@@ -42,7 +42,11 @@
 
   /* lux-v3: a glass tile at 24 — the chips' material on the sheet's frost */
   border-radius: var(--radius-2xl); /* 24 */
-  border: var(--border-width-hairline) solid var(--color-border-glass);
+  /* ⚠️ A FAINT EDGE, NOT THE GLASS ONE — 3 Oct 2026, asked for directly:
+     the white `border/glass` (55%) and the white top rim (`--shadow-glass`)
+     went ("remove the white borders around"), then a 12% white hairline was
+     asked back. */
+  border: var(--border-width-hairline) solid #ffffff1f;
   /* (v2) ⚠️ `surface/data-deep`, NOT `-data-strong` — BY EXPLICIT REQUEST, and the
      same swap the basket sheet's rows and `ResultCards`' emphasis block take.
      A 62% sage card on the 44% sage tray is two steps of one hue with almost
@@ -50,7 +54,6 @@
      `#4f838f @85%` as of 8 Sep 2026, which is what lifts the white above from
      ~1.6:1 to 3.77:1 — better, still short of AA. See globals.css. */
   background: var(--color-glass);
-  box-shadow: var(--shadow-glass);
 
   transition: background-color var(--duration-fast) var(--ease-hover);
 }
