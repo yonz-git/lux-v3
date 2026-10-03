@@ -12,7 +12,12 @@ import { TextField } from "@/components/ui/TextField";
 import { Collapse } from "@/components/ui/Collapse";
 import { Sheet } from "@/components/ui/Sheet";
 import { CameraCapture } from "@/components/ui/CameraCapture";
-import { CameraIcon, NoteIcon } from "@/components/ui/icons";
+import {
+  CameraIcon,
+  CloseIcon,
+  NoteIcon,
+  SuccessCheckIcon,
+} from "@/components/ui/icons";
 import { useInvestigation } from "@/lib/store/InvestigationProvider";
 import { useToday } from "@/lib/useToday";
 import { useHeldWhileClosing } from "@/lib/useModalDialog";
@@ -39,7 +44,7 @@ import {
  *
  * A chat that builds itself one turn at a time as the user taps a pill:
  *
- *   AI   Hi! How is your skin doing today?
+ *   AI   How is your skin doing today?   ("Hi!" cut 4 Oct 2026: the header already says "Hi, I'm LUX")
  *        ( Much better · Slightly better · About the same · … )   one
  *   AI   That's good to hear! Any specific changes you've noticed?
  *        ( Less redness · Less itching · Less dryness · No change ) many
@@ -210,11 +215,31 @@ export function CheckInPanel({
      at a zero-height row. Reduced motion scrolls instantly, which is what the
      global duration collapse cannot do for a JS scroll. */
   const noteRef = useRef<HTMLInputElement>(null);
+  const notePenRef = useRef<HTMLButtonElement>(null);
   const noteOpen = note !== null;
+  /* ⚠️ ✓ AND ✕ IN THE FIELD, ✎ AND ✕ ONCE CONFIRMED — 4 Oct 2026, asked for
+     directly ("add a note is missing the check and x icons"). Step 1's
+     `Other` field's pattern (StartInvestigation.tsx), so the two free-text
+     answers in the app behave alike: ✓ or Enter keeps the note and shows it
+     as a row, ✕ or Esc drops it and closes the field, the pen reopens it. An
+     empty note has nothing to keep, so confirming it closes it. */
+  const [noteEditing, setNoteEditing] = useState(false);
+  const closeNote = () => {
+    setNoteEditing(false);
+    setNote(null);
+  };
+  const confirmNote = () => {
+    if (!note?.trim()) {
+      closeNote();
+      return;
+    }
+    setNoteEditing(false);
+    requestAnimationFrame(() => notePenRef.current?.focus());
+  };
   /* the text the field shows while it closes — `note` is already null then */
   const noteShown = useHeldWhileClosing(noteOpen, note ?? "");
   useEffect(() => {
-    if (!noteOpen) return;
+    if (!noteOpen || !noteEditing) return;
     const input = noteRef.current;
     if (!input) return;
     input.focus({ preventScroll: true });
@@ -222,7 +247,7 @@ export function CheckInPanel({
       input.scrollIntoView({ behavior: prefersReducedMotion() ? "auto" : "smooth", block: "nearest" });
     }, 200);
     return () => window.clearTimeout(timer);
-  }, [noteOpen]);
+  }, [noteOpen, noteEditing]);
 
   /* ⚠️ EVERY NEW TURN SCROLLS INTO VIEW TOO, asked for directly 16 Sep 2026 —
      the panel is a fixed-height surface with its own scroller (`ChatPanel`'s
@@ -323,7 +348,7 @@ export function CheckInPanel({
                 stops it being read twice. Here the <h1> is the panel's
                 visually-hidden "Daily Check-in" — a different string — so each
                 question exists only in its bubble and has to be announced. */}
-            <ChatBubble from="ai" size="compact">Hi! How is your skin doing today?</ChatBubble>
+            <ChatBubble from="ai" size="compact">How is your skin doing today?</ChatBubble>
 
             <div
               className={styles.options}
@@ -405,7 +430,14 @@ export function CheckInPanel({
                   size="md"
                   icon={<NoteIcon />}
                   aria-pressed={note !== null}
-                  onClick={() => setNote((prev) => (prev === null ? "" : null))}
+                  onClick={() => {
+                    if (note === null) {
+                      setNote("");
+                      setNoteEditing(true);
+                    } else {
+                      closeNote();
+                    }
+                  }}
                 >
                   Add a note
                 </Button>
@@ -422,13 +454,65 @@ export function CheckInPanel({
               </div>
 
               <Collapse open={noteOpen}>
-                <TextField
-                  ref={noteRef}
-                  value={noteShown}
-                  onChange={(e) => setNote(e.target.value)}
-                  placeholder="Anything worth remembering about today"
-                  aria-label="Your note"
-                />
+                {noteEditing || !noteShown.trim() ? (
+                  <div className={styles.noteFieldWrap}>
+                    <TextField
+                      ref={noteRef}
+                      value={noteShown}
+                      onChange={(e) => setNote(e.target.value)}
+                      onKeyDown={(e) => {
+                        if (e.key === "Enter") confirmNote();
+                        if (e.key === "Escape") closeNote();
+                      }}
+                      placeholder="Anything worth remembering about today"
+                      aria-label="Your note"
+                      style={{ paddingRight: 80 }}
+                    />
+                    <div className={styles.noteActions}>
+                      <button
+                        type="button"
+                        className={styles.noteAction}
+                        aria-label="Keep note"
+                        onClick={confirmNote}
+                      >
+                        <SuccessCheckIcon className={styles.noteCheckIcon} />
+                      </button>
+                      <button
+                        type="button"
+                        className={styles.noteAction}
+                        aria-label="Remove note"
+                        onClick={closeNote}
+                      >
+                        <CloseIcon className={styles.noteActionIcon} />
+                      </button>
+                    </div>
+                  </div>
+                ) : (
+                  <div className={styles.noteConfirmed}>
+                    <p className={`${styles.noteConfirmedText} t-body2`}>
+                      {noteShown}
+                    </p>
+                    <div className={styles.noteActions}>
+                      <button
+                        ref={notePenRef}
+                        type="button"
+                        className={styles.noteAction}
+                        aria-label="Edit note"
+                        onClick={() => setNoteEditing(true)}
+                      >
+                        <NoteIcon className={styles.noteActionIcon} />
+                      </button>
+                      <button
+                        type="button"
+                        className={styles.noteAction}
+                        aria-label="Remove note"
+                        onClick={closeNote}
+                      >
+                        <CloseIcon className={styles.noteActionIcon} />
+                      </button>
+                    </div>
+                  </div>
+                )}
               </Collapse>
 
               {photo && (

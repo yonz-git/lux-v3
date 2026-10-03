@@ -304,5 +304,7 @@
    here"). Its box is already the small 16, so the app-wide 60% for a ✕
    (app/vidgen.css) left it ~10. (0,2,1) over that rule's (0,1,1). */
 .close svg[data-lux-icon] {
-  scale: 1;
+  /* ⚠️ 15% SMALLER, 4 Oct 2026, asked for directly. The glyph only: the 44
+     touch target around it is unchanged. */
+  scale: 0.85;
 }

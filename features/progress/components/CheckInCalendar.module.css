@@ -111,9 +111,17 @@
   display: inline-flex;
   align-items: center;
   justify-content: center;
+  box-sizing: border-box;
   width: 36px;
   height: 36px;
   border-radius: var(--radius-full);
+  /* ⚠️ A REAL BORDER, TRANSPARENT UNTIL A STATE COLOURS IT — 4 Oct 2026, asked
+     for directly ("fix these to a normal circle border"). Today's ring was an
+     inset box-shadow at 1.5px, which the browser antialiases per edge rather
+     than snapping, so the ring rendered heavier along one side and lighter on
+     the other. A border is snapped to whole device pixels all the way round.
+     Every day carries it so the disc stays 36 in every state. */
+  border: var(--border-width-thin) solid transparent;
   /* ⚠️ LINING FIGURES, OR THE GRID WOBBLES. Figtree's default figures are
      proportional, so `1` is narrower than `0` and a 7-column month does not
      line up down its own columns — most visible on the 11/21 column against
@@ -153,7 +161,7 @@
 .day[data-today] {
   /* today: the glass a step stronger, ringed and inked in indigo */
   background: var(--color-glass-strong);
-  box-shadow: inset 0 0 0 var(--border-width-thin) var(--color-bg-brand); /* 1.5 */
+  border-color: var(--color-bg-brand); /* 1.5 */
   color: var(--color-bg-brand);
   font-weight: var(--font-weight-semibold);
 }
@@ -176,8 +184,7 @@
 .day[data-today][data-checked-in] {
   background: var(--color-bg-brand);
   /* the indigo ring would vanish on the indigo disc — a white one inside it */
-  box-shadow: inset 0 0 0 var(--border-width-thin)
-    color-mix(in srgb, var(--color-text-on-brand) 60%, transparent);
+  border-color: color-mix(in srgb, var(--color-text-on-brand) 60%, transparent);
   color: var(--color-text-on-brand);
 }
 
@@ -257,7 +264,8 @@
 }
 
 .dot[data-today] {
-  box-shadow: inset 0 0 0 var(--border-width-thin) var(--color-bg-brand);
+  box-sizing: border-box;
+  border: var(--border-width-thin) solid var(--color-bg-brand);
 }
 
 .legendLabel {

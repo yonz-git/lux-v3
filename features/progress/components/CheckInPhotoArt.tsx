@@ -44,20 +44,26 @@
  * hidden `figcaption` already names it.
  */
 
-/* ⚠️ THE ORIGINAL SAMPLE IS STILL IN THE SET, as the sixth — it is the picture
-   the prototype shipped with, and dropping it for five newcomers would change
-   every screenshot taken since 13 Sep for no reason. */
 /* ⚠️ UNSPLASH PHOTOGRAPHS, 1 Oct 2026 — asked for directly ("fetch images
-   from unsplash for the progress gallery"). Six free-licence photos (the
+   from unsplash for the progress gallery"). Free-licence photos (the
    Unsplash License: free to use, no attribution required), cropped square at
    1200 by Unsplash's own CDN and kept locally in `public/images/gallery` so
-   the prototype needs no network for them. Sources, in order:
-     photo-1730288951113-9cc087c14b83   freckles across cheeks and nose
+   the prototype needs no network for them.
+   ⚠️ SKIN, NOT PORTRAITS, AS OF 3 Oct 2026 — asked for directly ("don't use
+   this image, it's not skin related, look for pictures of skin", with two
+   close-ups as the reference). The four faces (freckled portrait, lit lower
+   face, closed eyes, face in hands) were swapped for close textures, which
+   also drops the original 13 Sep sample. Sources, in order:
+     photo-1541752857837-f8a0154fd092   freckled skin, close
      photo-1710580889701-9fa8f2cd5927   skin texture, close
-     photo-1675773051474-55c4b7d2cf53   lower face, soft light
+     photo-1723540634462-528708cc17aa   water drops on skin
      photo-1659531412263-bf2b9e1abf6f   pores and small moles, close
-     photo-1577052963861-4bfa6359cdfc   eyes closed, close
-     photo-1695990190064-e8ca2ca16af6   freckles, face in hands
+     photo-1771510581541-58a40280d8c7   dewy skin, close
+     (supplied by the user, 3 Oct 2026)  breakouts on a cheek, close; it
+                                        replaced the shoulder photo the same
+                                        day. Only 324 square and of unknown
+                                        source, so swap in a licensed,
+                                        larger copy before anything ships.
    The old `skin-samples` set (one of which rendered as a blank well) is no
    longer read. */
 const SAMPLES = [
