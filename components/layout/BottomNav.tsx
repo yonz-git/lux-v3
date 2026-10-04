@@ -1,6 +1,7 @@
 "use client";
 
 import Link from "next/link";
+import { useEffect, useLayoutEffect, useRef, useState } from "react";
 import styles from "./BottomNav.module.css";
 import {
   CheckIcon,
@@ -88,6 +89,33 @@ const items = [
   { id: "products", label: "Products", href: "/products", Icon: ProductsIcon },
 ] as const;
 
+/* ⚠️ THE PILL MORPHS BETWEEN SECTIONS — 4 Oct 2026, asked for directly ("can
+   you make an animated button for when it changes shape"). Every screen
+   renders its OWN BottomNav, so moving section is an unmount and a fresh
+   mount: there is no element that lives through the change for a CSS
+   transition to run on. So the nav remembers, at module scope (which does
+   survive a client-side navigation), which section was lit, and the next
+   nav plays the change from there with the Web
+   Animations API: the new section's item grows from a 56 circle to its pill
+   and its label fades in once the pill has room for it. ⚠️ The old pill does
+   NOT shrink back — it did for a first pass and was cut the same day ("we
+   don't need old shapes"); it is simply a circle on the new screen. The bar hugs its items, so
+   it resizes with them. `duration/slow` on `ease/standard`, the board's
+   values for a change of place. Reduced motion skips it, as does a first
+   load or a page outside the four sections.
+   ⚠️ IT PLAYS ON THE TAP, NOT ON THE NEXT PAGE — the same day, asked for
+   directly ("when the user taps the icon, it becomes that indigo button and
+   the text appears"). Waiting for the new screen to mount put the whole
+   route load between the tap and any answer to it. The tapped circle now
+   becomes the indigo pill at once (`tapped`), and `lastActive` is set to it
+   in the same breath, so the next screen's nav sees no change to replay. A
+   deep link or the browser's back button still gets the morph on mount. */
+let lastActive: NavSection | null = null;
+
+const prefersReducedMotion = () =>
+  typeof window !== "undefined" &&
+  window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+
 export function BottomNav({
   active = "none",
   className,
@@ -97,20 +125,62 @@ export function BottomNav({
   className?: string;
   style?: React.CSSProperties;
 }) {
+  const navRef = useRef<HTMLElement>(null);
+  /* the section the user just tapped, lit before its screen arrives */
+  const [tapped, setTapped] = useState<NavSection | null>(null);
+  const lit = tapped ?? active;
+  /* once the page says where we are, it is the truth again — a nav that
+     outlives a navigation must not keep showing an old tap */
+  useEffect(() => setTapped(null), [active]);
+
+  useLayoutEffect(() => {
+    const nav = navRef.current;
+    if (!nav) return;
+    const item = (id: NavSection | null) =>
+      id ? nav.querySelector<HTMLElement>(`[data-nav-id="${id}"]`) : null;
+    const now = item(lit);
+    const was = item(lastActive);
+    const from = lastActive;
+
+    lastActive = lit;
+
+    if (from === lit || from === null || prefersReducedMotion()) return;
+
+    const timing: KeyframeAnimationOptions = {
+      duration: 320,
+      easing: "cubic-bezier(0.2, 0, 0, 1)",
+    };
+    if (now) {
+      const circle = was?.offsetWidth ?? 56;
+      now.animate(
+        [{ width: `${circle}px` }, { width: `${now.offsetWidth}px` }],
+        timing,
+      );
+      now.querySelector("[data-nav-label]")?.animate(
+        [{ opacity: 0 }, { opacity: 1 }],
+        { ...timing, duration: 200, delay: 140, fill: "backwards" },
+      );
+    }
+  }, [lit]);
+
   return (
     <nav
+      ref={navRef}
       className={className ? `${styles.nav} ${className}` : styles.nav}
       style={style}
       aria-label="Sections"
     >
       {items.map(({ id, label, href, Icon }) => {
-        const isActive = active === id;
+        const isActive = lit === id;
         /* the active pill shows its word; a circle keeps it for the screen
            reader only */
         const content = (
           <>
             <Icon className={styles.icon} />
-            <span className={isActive ? `${styles.label} t-nav` : "visually-hidden"}>
+            <span
+              className={isActive ? `${styles.label} t-nav` : "visually-hidden"}
+              data-nav-label={isActive || undefined}
+            >
               {label}
             </span>
           </>
@@ -123,7 +193,14 @@ export function BottomNav({
               href={href}
               className={`${styles.item} pressable`}
               data-active={isActive}
-              aria-current={isActive ? "page" : undefined}
+              data-nav-id={id}
+              aria-current={active === id ? "page" : undefined}
+              onClick={(e) => {
+                /* a plain tap only: a modified click opens a new tab and
+                   leaves this screen where it is */
+                if (e.metaKey || e.ctrlKey || e.shiftKey || e.altKey) return;
+                if (id !== lit) setTapped(id);
+              }}
             >
               {content}
             </Link>
@@ -135,6 +212,7 @@ export function BottomNav({
             type="button"
             className={`${styles.item} pressable`}
             data-active={isActive}
+            data-nav-id={id}
             // no destination yet — see the note above
             onClick={() => {}}
           >

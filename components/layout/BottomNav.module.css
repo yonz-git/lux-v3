@@ -80,6 +80,11 @@
    to its word; the bar hugs, so there is no slack for it to take. */
 .item[data-active="true"] {
   flex: none;
+  /* while the pill grows out of a circle (the morph in BottomNav.tsx) its
+     word must not spill past the edge, and the glyph must stay put at the
+     left rather than centring a row wider than the pill */
+  overflow: hidden;
+  justify-content: safe center;
   width: auto;
   padding: 0 var(--space-xl) 0 var(--space-chip-inline);
   border-color: transparent;
