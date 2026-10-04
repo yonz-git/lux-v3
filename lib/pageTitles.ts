@@ -58,7 +58,7 @@ const HUB_TITLES: Record<string, string> = {
      The title is the KIND of page, not its content — "About your skin", never
      the user's own skin type, which is the rule every other entry in this file
      follows. */
-  "/investigation/profile": "About your skin",
+  "/investigation/profile": "What we know about your skin",
   /* the design system rendered live — a dev tool, in no nav section */
   "/styleguide": "Style guide",
   /* ⚠️ `/chat` USED TO BE HERE AND THE ROUTE IS GONE — 7 Sep 2026. It was the

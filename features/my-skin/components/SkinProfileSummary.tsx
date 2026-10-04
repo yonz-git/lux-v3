@@ -247,6 +247,7 @@ export function SkinProfileSummary({ now }: { now: number }) {
   return (
     <HubScreen
       title={COPY.headlineLabel}
+      centerHeading
       nav="my-skin"
       backHref="/investigation/timing"
       layout="card"

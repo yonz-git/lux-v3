@@ -3,28 +3,19 @@
 import { useEffect, useRef, useState } from "react";
 import styles from "./CheckInDetail.module.css";
 import { HubScreen } from "@/components/layout/HubScreen";
-import { Button } from "@/components/ui/Button";
 import { DataCard } from "@/components/ui/DataCard";
-import { SearchField } from "@/components/ui/SearchField";
 import { TextField } from "@/components/ui/TextField";
-import { Collapse } from "@/components/ui/Collapse";
 import { Tag } from "@/components/ui/Tag";
-import { CloseIcon, PlusIcon } from "@/components/ui/icons";
-import { AddProductMethodSheet } from "@/features/products/components/AddProductMethodSheet";
 import SegmentedToggle from "@/features/products/components/SegmentedToggle";
 import { ProductThumb } from "@/features/products/components/ProductThumb";
 import { CheckInPhotoArt } from "./CheckInPhotoArt";
 import { useInvestigation } from "@/lib/store/InvestigationProvider";
-import { useSnackbar } from "@/components/layout/Snackbar";
 import { useToday } from "@/lib/useToday";
-import { useHeldWhileClosing } from "@/lib/useModalDialog";
-import { ownedProducts } from "@/lib/demo";
 import { formatDay, fromIso } from "@/lib/date";
 import {
   BUCKET_LIST_TITLE,
   formatAdded,
   fullName,
-  searchProducts,
 } from "@/features/products/products";
 import {
   SEVERITY_MAX,
@@ -33,7 +24,6 @@ import {
   checkInsFor,
   dayNumber,
   editNote,
-  editProductsUsed,
   productsForCheckIn,
   progressView,
   severityLabel,
@@ -60,7 +50,14 @@ import {
  * photo are the `CheckIn` the chat wrote; the day number is computed from the
  * investigation's start. The screen states no fact it does not derive.
  *
- * ⚠️ EXCEPT THE PRODUCT LIST, WHICH THE SCREEN NOW WRITES — and it is the only
+ * ⚠️ THE PRODUCT LIST IS READ-ONLY AGAIN, AS OF 4 Oct 2026 — asked for
+ * directly ("the x options and add a product are irrelevant here, remove
+ * them"). The ✕ on each row, the `Add a product` search under the list and
+ * the products tray it opened are gone; the day shows what it shows. The
+ * reasoning below is what the editing stood on, kept so a return to it
+ * starts from it. `editProductsUsed` still exists in progress.ts, unused here.
+ *
+ * (was) ⚠️ EXCEPT THE PRODUCT LIST, WHICH THE SCREEN NOW WRITES — and it is the only
  * thing on the record that is editable, deliberately. The other four fields are
  * what you SAID on the day, and a record you can rewrite after the fact is not
  * a record; the product list was never something you said at all. It was
@@ -134,20 +131,10 @@ import {
  */
 export function CheckInDetail({ date, now }: { date: string; now: number }) {
   const { answers, setAnswer } = useInvestigation();
-  const { show } = useSnackbar();
   const view = progressView(answers, useToday(now));
   const day = fromIso(date);
   const records = checkInsFor(answers, view);
   const entry = day ? checkInOn(records, date) : null;
-
-  /* ⚠️ LOCAL, NOT IN THE STORE. `productQuery` and `checkQuery` are in there
-     because the tray and `/check/new` both have to survive a screen changing
-     under them — the tray is the one this screen opens, and sharing its key
-     would leave the tray opening on a panel of results for a search that
-     happened out here. A field that is emptied the moment it is used is not
-     state anything else needs. */
-  const [query, setQuery] = useState("");
-  const [addingManually, setAddingManually] = useState(false);
 
   /* ⚠️ THE DRAFT IS LOCAL AND THE STORE IS NOT WRITTEN UNTIL `Save`. An edit
      that wrote on every keystroke would rewrite the day's record once per
@@ -178,73 +165,6 @@ export function CheckInDetail({ date, now }: { date: string; now: number }) {
   const dayTag = day && dayN >= 1 ? `Day ${dayN}` : null;
 
   const products = entry ? productsForCheckIn(answers, entry) : [];
-
-  /* the library is the haystack, minus what the day already lists — a search
-     that keeps offering you a product already on the list is offering the one
-     thing tapping it cannot do */
-  const owned = ownedProducts(answers);
-  const listed = new Set(products.map((p) => p.id));
-  const searching = query.trim() !== "";
-  const matches = searchProducts(owned, query).filter((p) => !listed.has(p.id));
-  /* what the results panel shows while it closes — emptying the field is
-     what closes it, and that render has already lost the matches */
-  const resultsShown = useHeldWhileClosing(searching, { matches, query });
-
-  /** Every edit goes through the module's reducer — see `editProductsUsed` for
-   *  why the entry is resolved against the stored list rather than this one. */
-  function edit(change: (ids: string[]) => string[]) {
-    if (!entry) return;
-    setAnswer("checkIns", editProductsUsed(answers, entry, change));
-  }
-
-  /**
-   * ⚠️ TAKING A PRODUCT OFF A DAY IS UNDOABLE. `checkIns` persists forever, and
-   * the record being edited is often a SEEDED one — the first edit materialises
-   * the whole day into the store (see `editProductsUsed`), so a mis-tap here
-   * both drops a product and freezes the rest of the day's seeded values in
-   * place. Restoring the slice as it was undoes both halves of that; undoing the
-   * id list alone would leave the day materialised.
-   */
-  function removeProduct(id: string, name: string) {
-    const before = answers.checkIns;
-    edit((ids) => ids.filter((x) => x !== id));
-    show({
-      message: `Removed ${name} from this day`,
-      onAction: () => setAnswer("checkIns", before),
-    });
-  }
-
-  function addProduct(id: string) {
-    edit((ids) => (ids.includes(id) ? ids : [...ids, id]));
-    /* the field has done its job; leaving the query standing would leave a
-       panel open under it listing what you did not pick */
-    setQuery("");
-  }
-
-  /**
-   * The tray writes into `answers.products` itself, so what it added is
-   * whatever is in the library that was not there when it opened — the same
-   * before/after diff `/check/new` does.
-   *
-   * ⚠️ THE BASELINE IS `ownedProducts`, NOT THE RAW STORE, and it has to be on
-   * this screen: in the demo the raw key is absent, so a raw baseline would
-   * read every seeded product as "just added" and drop the whole library onto
-   * this one day. `base` is passed to the tray for the mirror-image reason —
-   * without it the first add would materialise the store as that single
-   * product and wipe the seeded library out from under the list.
-   */
-  function closeManualAdd(before: string[]) {
-    setAddingManually(false);
-    const added = ownedProducts(answers)
-      .filter((p) => !before.includes(p.id))
-      .map((p) => p.id);
-    if (added.length > 0) {
-      edit((ids) => [...ids, ...added.filter((id) => !ids.includes(id))]);
-    }
-    setQuery("");
-  }
-
-  const ownedIdsWhenOpened = owned.map((p) => p.id);
 
   function startEditingNote() {
     setNoteDraft(entry?.note ?? "");
@@ -557,17 +477,6 @@ export function CheckInDetail({ date, now }: { date: string; now: number }) {
                         Added {formatAdded(p.addedOn)}
                       </span>
                     </span>
-                    {/* ⚠️ THE NAME IS IN THE LABEL, NOT JUST THE ROW. Five
-                        buttons all reading "Remove" is five identical rows to
-                        anyone listening to them rather than looking at them. */}
-                    <button
-                      type="button"
-                      className={styles.remove}
-                      aria-label={`Remove ${fullName(p)} from this day`}
-                      onClick={() => removeProduct(p.id, fullName(p))}
-                    >
-                      <CloseIcon className={styles.removeIcon} />
-                    </button>
                   </li>
                 ))}
               </ul>
@@ -577,101 +486,8 @@ export function CheckInDetail({ date, now }: { date: string; now: number }) {
               </p>
             )}
 
-            {/* ⚠️ THE RESULTS ARE IN FLOW, NOT A FLOATING PANEL. Both the tray
-                and `/check/new` hang theirs off the pill; this list is INSIDE a
-                data card in a grid column, and an absolutely positioned panel
-                there would need its own stacking context on a card that sits
-                under the fixed nav. In flow the card simply grows, which is
-                what the tray's own dropdown does for the same reason — and
-                the list it pushes down is your own five rows, not a page. */}
-            <div className={styles.add}>
-              <SearchField
-                value={query}
-                onChange={setQuery}
-                placeholder="Add a product"
-                label="Add a product to this day"
-              />
-
-              {/* the panel below is not a live region and the field's own value
-                  says nothing about what matched, so the result of typing is
-                  announced here — the same line the tray and /check/new write */}
-              <p role="status" aria-live="polite" className="visually-hidden">
-                {!searching
-                  ? ""
-                  : `${matches.length} ${matches.length === 1 ? "product" : "products"} found`}
-              </p>
-
-              <Collapse open={searching}>
-                <div className={styles.results}>
-                  {/* ⚠️ NOT IN FIGMA — a small title over the well, asked for
-                      directly 15 Sep 2026: the field searches only what you
-                      already own, and the title says so before the rows do */}
-                  <h3 className={`${styles.resultsTitle} t-label-sm`}>
-                    Your products
-                  </h3>
-                  {resultsShown.matches.length > 0 ? (
-                    <ul className={styles.resultList}>
-                      {resultsShown.matches.map((p) => (
-                        <li key={p.id}>
-                          {/* the whole row is the control, the way the tray's
-                              dropdown rows are — a 44 target beside a name you
-                              have to aim at is the smaller half of the row */}
-                          <button
-                            type="button"
-                            className={styles.result}
-                            onClick={() => addProduct(p.id)}
-                          >
-                            <ProductThumb product={p} />
-                            <span className={styles.resultCopy}>
-                              {/* brand-led title, no size under it — 15 Sep 2026 */}
-                              <span className={`${styles.resultName} t-h6`}>
-                                {fullName(p)}
-                              </span>
-                            </span>
-                            <PlusIcon className={styles.plus} />
-                          </button>
-                        </li>
-                      ))}
-                    </ul>
-                  ) : (
-                    <p className={`${styles.resultNote} t-body3`}>
-                      Nothing in your products matches &ldquo;{resultsShown.query.trim()}
-                      &rdquo;.
-                    </p>
-                  )}
-
-                  {/* ⚠️ OFFERED WHENEVER THE FIELD HAS SOMETHING IN IT, not only
-                      when nothing matched. The library is small and the thing
-                      you are looking for is often simply not in it yet;
-                      revealing the way out only after a search that fails means
-                      typing a wrong name to find the right door. */}
-                  {/* ⚠️ NOT IN FIGMA — the secondary Button, asked for directly
-                      13 Sep 2026; it was a bordered white-label row reading
-                      "Add a product you don't own yet" */}
-                  <Button
-                    variant="secondary"
-                    size="md"
-                    className={styles.addNew}
-                    icon={<PlusIcon />}
-                    onClick={() => setAddingManually(true)}
-                  >
-                    Add a new product
-                  </Button>
-                </div>
-              </Collapse>
-            </div>
           </DataCard>
 
-          {/* ⚠️ THE PRODUCTS TRAY, ON A PROGRESS SCREEN — the same handover
-              `/check/new` makes, and for the same reason: the alternative is a
-              dead end where the product you used is not in the library and
-              nothing on the screen can put it there. It portals, so it costs
-              the grid above nothing. */}
-          <AddProductMethodSheet
-            open={addingManually}
-            onClose={() => closeManualAdd(ownedIdsWhenOpened)}
-            base={owned}
-          />
         </>
       )}
     </HubScreen>

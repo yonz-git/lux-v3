@@ -260,7 +260,10 @@ export const COPY = {
    * work to stop it repeating the page title. It no longer has to — the two
    * headings now say different things outright.
    */
-  headlineLabel: "About your skin",
+  /* ⚠️ "What we know about your skin" SINCE 4 Oct 2026, asked for directly,
+     and centred — it says the screen is the app's understanding so far, which
+     the analysis can only be as good as. The `<title>` follows it. */
+  headlineLabel: "What we know about your skin",
   /**
    * The sage card's own heading, rendered uppercase by `t-overline`.
    *
