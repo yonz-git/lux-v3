@@ -13,7 +13,7 @@ import { useInvestigation } from "@/lib/store/InvestigationProvider";
 import { useToday } from "@/lib/useToday";
 import { formatDay, fromIso } from "@/lib/date";
 import {
-  BUCKET_LIST_TITLE,
+  BUCKET_TAG,
   formatAdded,
   fullName,
 } from "@/features/products/products";
@@ -454,14 +454,15 @@ export function CheckInDetail({ date, now }: { date: string; now: number }) {
                       {/* ⚠️ NOT IN FIGMA — the product's group as a pill after
                           its name, asked for 13 Sep 2026. It is the user's own
                           answer to "how long have you used it?", labelled as
-                          the Products hub titles its rows, so the two screens
-                          cannot disagree about what a product is. */}
+                          the Products hub groups its rows, so the two screens
+                          cannot disagree about what a product is: the same
+                          groups, as one-word tags (`BUCKET_TAG`). */}
                       <span className={styles.productHead}>
                         <span className={`${styles.productName} t-h6`}>
                           {fullName(p)}
                         </span>
                         <Tag className={styles.productGroup}>
-                          {BUCKET_LIST_TITLE[p.bucket]}
+                          {BUCKET_TAG[p.bucket]}
                         </Tag>
                       </span>
                       {/* ⚠️ NOT THE COMP'S "Moisturizer · Applied Morning &

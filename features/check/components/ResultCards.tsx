@@ -70,8 +70,9 @@ export function SummaryCard({
  * `card · ingredients of concern` (549:1139) — the ingredient-major view.
  *
  * ⚠️ THE ACCENT BAR IS A SECOND CARRIER, NOT DECORATION. High likelihood is
- * `bg/brand`, moderate is `bg/brand-soft` — each bar carrying its own pill's
- * fill rather than the comp's warning/muted pair, see the CSS. But two weights
+ * the rose of `bg/symptom` at full strength, moderate the same rose as a
+ * tint (indigo until 5 Oct 2026) — each bar carrying its own pill's colour,
+ * see the CSS. But two weights
  * of one hue are only distinguishable if you can compare them, so the
  * likelihood is ALSO a Tag with words in it, and the entry's accessible name
  * says it too. Same rule the compatibility pills follow.
@@ -113,8 +114,11 @@ export function IngredientsCard({
                   {c.description}
                 </p>
                 <Tag
-                  variant={c.likelihood === "high" ? "brand" : "neutral"}
-                  className={styles.likelihood}
+                  className={`${styles.likelihood} ${
+                    c.likelihood === "high"
+                      ? styles.likelihoodHigh
+                      : styles.likelihoodModerate
+                  }`}
                 >
                   {LIKELIHOOD_LABEL[c.likelihood]}
                 </Tag>

@@ -84,6 +84,17 @@ export const BUCKET_LIST_TITLE: Record<BucketId, string> = {
   "not-sure": "Not sure",
 };
 
+/** the same groups as a TAG beside a product's name (the check-in record's
+ *  products list): one word each, since the tag sits next to the name it
+ *  describes and "products" or "addition" only repeats it (asked for
+ *  directly 5 Oct 2026). */
+export const BUCKET_TAG: Record<BucketId, string> = {
+  "long-term": "Long-term",
+  recent: "Recent",
+  "new-addition": "New",
+  "not-sure": "Not sure",
+};
+
 /** `Bucket.window`, keyed for lookup by id — the group headers on `Your
  *  products` show it beside the group name, the same pairing the hub uses. */
 export const BUCKET_WINDOW: Record<BucketId, string> = {

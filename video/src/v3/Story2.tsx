@@ -269,7 +269,7 @@ export const Story2: React.FC = () => {
       <Caption text="And **what to do next**, step by step" at={SCORE + 80} out={SCORE + 184} />
       <Caption text="Analyses **compatibility**" at={SCORE + 214} out={P7 - 8} top={COMPAT_CAP_TOP} />
       {/* over the row while it is the whole picture; up to the top as the graph comes in */}
-      <Caption text="Pause one product" at={P7 + 40} out={P9} top={lerp(R7_CAP_TOP, 64, e(f, P8 - 10, P8 + 16, 0, 1, EASE_IN_OUT))} />
+      <Caption text="Pause the **suspected** product" at={P7 + 40} out={P9} top={lerp(R7_CAP_TOP, 64, e(f, P8 - 10, P8 + 16, 0, 1, EASE_IN_OUT))} />
       <Caption text="then see **what changes**" at={P8 + 6} out={P9 + 2} top={64 + 65} />
 
       {/* ── 5 · the groups and their axis ── */}
@@ -739,7 +739,7 @@ const Up: React.FC<{ k: number; style: React.CSSProperties; children: React.Reac
   <div style={{ position: "absolute", opacity: k, translate: `0 ${(1 - k) * 12}px`, ...style }}>{children}</div>
 );
 
-const ScoreCard: React.FC<{ score: number; name: string; brand?: string; band: string; color: string; ring: number; bandK: number }> = ({ score, name, brand, band, color, ring, bandK }) => {
+const ScoreCard: React.FC<{ score: number; name: string; brand?: string; band: string; color: string; photo: string; ring: number; bandK: number }> = ({ score, name, brand, band, color, photo, ring, bandK }) => {
   const R = 52;
   const CIRC = 2 * Math.PI * R;
   return (
@@ -759,6 +759,9 @@ const ScoreCard: React.FC<{ score: number; name: string; brand?: string; band: s
         flexDirection: "column",
       }}
     >
+      {/* the ring and the product's picture side by side, as the app's score
+          card draws them since 5 Oct 2026 (ring 64, thumb 48, 12 apart, ×2) */}
+      <div style={{ display: "flex", alignItems: "center", gap: 24 }}>
       <div style={{ position: "relative", width: 128, height: 128 }}>
         <svg width={128} height={128} viewBox="0 0 128 128" style={{ position: "absolute", inset: 0 }}>
           <circle cx={64} cy={64} r={R} fill="none" stroke="rgba(255,255,255,0.7)" strokeWidth={9} />
@@ -767,6 +770,10 @@ const ScoreCard: React.FC<{ score: number; name: string; brand?: string; band: s
         <div style={{ position: "absolute", inset: 0, display: "flex", alignItems: "center", justifyContent: "center", fontSize: 46, fontWeight: 300, fontVariantNumeric: "tabular-nums" }}>
           {Math.round(score * ring)}
         </div>
+      </div>
+      <div style={{ position: "relative", width: 96, height: 96 }}>
+        <ProductTile photo={photo} size={96} style={{ left: 0, top: 0 }} />
+      </div>
       </div>
       <div style={{ fontSize: 30, fontWeight: 500, marginTop: 30 }}>{name}</div>
       {brand && <div style={{ fontSize: 22, fontWeight: 400, marginTop: 6, color: C.inkMuted }}>{brand}</div>}
@@ -796,9 +803,9 @@ const ScoreCard: React.FC<{ score: number; name: string; brand?: string; band: s
 
 const CARDS = [
   /* made up brands, like Serave (asked for 3 Oct 2026) */
-  { score: 45, name: "BHA Exfoliant", brand: "Clearwell", band: "Avoid", color: AVOID },
-  { score: 62, name: "Retinol B3 Serum", brand: "Lumen Lab", band: "Risky", color: RISKY },
-  { score: 71, name: "Foaming Cleanser", brand: "Serave", band: "Risky", color: RISKY },
+  { score: 45, name: "BHA Exfoliant", brand: "Clearwell", band: "Avoid", color: AVOID, photo: "bottle-milky" },
+  { score: 62, name: "Retinol B3 Serum", brand: "Lumen Lab", band: "Risky", color: RISKY, photo: "dropper-green" },
+  { score: 71, name: "Foaming Cleanser", brand: "Serave", band: "Risky", color: RISKY, photo: "bottle-brown" },
 ];
 const CARD_GAP = 24;
 const CARDS_X = W / 2 - (3 * 400 + 2 * CARD_GAP) / 2;

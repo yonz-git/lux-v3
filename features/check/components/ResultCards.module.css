@@ -74,8 +74,8 @@
    text/on-data-muted #354446, so every entry carried TWO colours for one
    judgement: a pink-red rule beside an indigo pill, a near-black rule beside a
    lilac one. The bar and the pill are the same statement, so they now say it in
-   the same colour — bg/brand for high, bg/brand-soft for moderate, exactly the
-   pair the pills already use.
+   the same colour — a deep rose for high and a light one for moderate since
+   5 Oct 2026 (bg/brand and bg/brand-soft before that), the pair the pills use.
 
    The two levels still differ by weight, which is what the bar was for; only
    the hue it borrows changed. And nothing is lost by dropping the warning hue:
@@ -89,11 +89,46 @@
   flex: none;
   width: 4px;
   border-radius: var(--radius-full);
-  background: var(--color-bg-brand-soft);
+  background: color-mix(in srgb, var(--color-bg-symptom) 55%, transparent);
 }
 
 .accent[data-likelihood="high"] {
-  background: var(--color-bg-brand);
+  background: color-mix(in srgb, var(--color-bg-symptom) 80%, var(--color-text-primary));
+}
+
+/* ⚠️ ROSE, NOT INDIGO, SINCE 5 Oct 2026 — asked for directly ("it makes more
+   sense to use reddish pinkish tones"). Indigo is LUX's selection and action
+   colour; a likelihood of irritation is a warning, and the app already says
+   "symptom" in one rose (`bg/symptom`, the face's callouts and the `Ongoing`
+   pill). High is that pill's recipe exactly, white ink on the rose gradient;
+   moderate is the same rose as a tint with the app's dark ink. The bars take
+   the same two weights. The words in the pill still carry the level, so the
+   two roses are never the only difference (non-negotiable 17). */
+.concernBody .likelihood[data-variant] {
+  border-color: transparent;
+}
+
+.concernBody .likelihoodHigh[data-variant] {
+  background-color: transparent;
+  background-image: linear-gradient(
+    135deg,
+    color-mix(in srgb, var(--color-bg-symptom) 88%, transparent) 35%,
+    color-mix(
+        in srgb,
+        color-mix(in srgb, var(--color-bg-symptom) 80%, var(--color-text-primary))
+          92%,
+        transparent
+      )
+      100%
+  );
+  box-shadow: inset 0 1px 0 rgb(255 255 255 / 0.28), var(--shadow-sm);
+  color: #fff;
+}
+
+.concernBody .likelihoodModerate[data-variant] {
+  background: color-mix(in srgb, var(--color-bg-symptom) 22%, transparent);
+  border-color: color-mix(in srgb, var(--color-bg-symptom) 45%, transparent);
+  color: var(--color-text-primary);
 }
 
 .concernBody {
@@ -107,19 +142,6 @@
 
 .concernName {
   color: var(--color-text-on-data);
-}
-
-/* ⚠️ THE MODERATE PILL IS FILLED, NOT FROSTED — NOT IN FIGMA. High likelihood
-   is `Tag/Brand` (bg/brand + white); moderate was `Tag/Neutral`, a frost pill
-   with dark text, so the pair read as "a badge" and "a different kind of
-   badge" rather than as two points on one scale. It takes `bg/brand-soft`
-   (indigo/300, declared in globals.css) with the same white label, so the two
-   differ only in weight — which is what the accent bar beside them already
-   says. Specificity is deliberate: Tag's own `.tag[data-variant]` rule is
-   0,2,0 and module load order between two CSS Modules is not guaranteed. */
-.concernBody .likelihood[data-variant="neutral"] {
-  background: var(--color-bg-brand-soft);
-  color: var(--color-text-on-data-inverse);
 }
 
 /* sits 2 under the name, inside the 8 gap — the comp pairs them tighter than

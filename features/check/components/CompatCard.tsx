@@ -8,6 +8,7 @@ import { CountUp } from "@/components/ui/CountUp";
 import { CloseIcon } from "@/components/ui/icons";
 import { BAND_LABEL, type CheckAnalysis } from "@/features/check/check";
 import { type CatalogProduct, fullName } from "@/features/products/products";
+import { ProductThumb } from "@/features/products/components/ProductThumb";
 
 /**
  * One product's score on `Check results` — SCORES B, lux-v3 (1 Oct 2026), picked
@@ -61,7 +62,10 @@ export function CompatCard({
         aria-label={`${name}, ${score}% compatible, ${BAND_LABEL[band]}. Show details`}
         onClick={() => setOpen(true)}
       >
-        <ScoreRing score={score} countDelay={200 + index * 90} />
+        <span className={styles.top}>
+          <ScoreRing score={score} countDelay={200 + index * 90} />
+          <ProductThumb product={product} />
+        </span>
         <Names product={product} />
         <span className={`${styles.band} t-label-sm`}>
           <span className={styles.bandDot} aria-hidden="true" />
@@ -97,7 +101,10 @@ export function PendingCompatCard({
   return (
     <div className={`${styles.card} ${styles.pending}`}>
       <div className={styles.open}>
-        <ScoreRing />
+        <span className={styles.top}>
+          <ScoreRing />
+          <ProductThumb product={product} />
+        </span>
         <Names product={product} />
         <Tag>Not analysed yet</Tag>
       </div>

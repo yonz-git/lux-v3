@@ -63,6 +63,15 @@
   color: var(--color-text-primary);
 }
 
+/* the ring and the product's own picture side by side (5 Oct 2026, asked
+   for: a score card named the product only in words). Beside the ring, not
+   at the card's far edge, so the remove button keeps its corner. */
+.top {
+  display: flex;
+  align-items: center;
+  gap: var(--space-md); /* 12 */
+}
+
 .ring {
   position: relative;
   flex: none;
