@@ -52,7 +52,7 @@ export const Ring: React.FC = () => {
         );
       })}
       <AbsoluteFill style={{ justifyContent: "center", alignItems: "center", flexDirection: "column", paddingTop: 20 }}>
-        <Headline text="You use five products." size={62} at={10} out={OUT[0]} />
+        <Headline text="You use five products" size={62} at={10} out={OUT[0]} />
         <Headline text="**Where** do you start?" size={62} at={24} out={OUT[0] + 4} />
       </AbsoluteFill>
     </AbsoluteFill>

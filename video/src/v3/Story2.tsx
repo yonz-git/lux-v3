@@ -2,9 +2,8 @@ import { AbsoluteFill, Easing, Img, interpolate, staticFile, useCurrentFrame } f
 import { LuxLogoMark, LuxLogoWord } from "../components/Logo";
 import { Orb } from "../components/Orb";
 import { Headline } from "../components/Type";
-import { Pulse } from "../scenes/Walkthrough";
 import { C, clamp, EASE_IN_OUT, EASE_OUT, FIGTREE } from "../theme";
-import { FiveTile, P5 } from "./Story";
+import { FiveTile, P5, Tap } from "./Story";
 
 /**
  * Next version, beats 5–9: TIMELINE → THE ONE → TAKE IT OUT → WATCH → CLOSE.
@@ -12,9 +11,10 @@ import { FiveTile, P5 } from "./Story";
  *
  * 5 · Your five come back as the familiar row and sort themselves into the
  *     app's three groups (its own labels), on a then → now axis.
- * 6 · The orb returns and points: the other three dim, the two the analysis
- *     names are ringed, lift out and land in the answer card's slots. The
- *     camera pushes into the card, then travels down to the evidence.
+ * 6 · The app's `Start analysis` button flies in under the groups and is
+ *     tapped; the analysing screen runs, then the results page (4 Oct 2026,
+ *     asked for: the orb used to point and explain before anything had been
+ *     analysed, which put the answer before the question).
  * 7 · The row re-forms; the new addition's name is struck through, it leaves
  *     the row as a paused ghost and the rest close the gap.
  * 8 · PROGRESS's symptom trend card, as the app draws it (SymptomTrend, the
@@ -36,11 +36,14 @@ const lerp = (a: number, b: number, t: number) => a + (b - a) * t;
 const P6 = P5 + 170;
 /* beat 6 ends on the Analysis tab's product check (the score lives there, never on the answer) */
 /* the orb's explanation holds this long before the two lift out */
-const DWELL = 84;
+const DWELL = 24;
 /* then the analysing screen plays (CHECK's /check/analyzing, asked for 3 Oct
    2026): the orb takes the centre and thinks while the passes tick, and only
    then does the answer arrive. Everything after it runs AN later. */
 const AN0 = P6 + DWELL + 78;
+/* the button: under the groups once they have lifted, tapped, then the analysing screen */
+const BTN_LIFT = 128;
+const BTN_TAP = P6 + 62;
 const AN = 170;
 const D2 = DWELL + AN;
 /* the answer card, its push in and the evidence were cut 3 Oct 2026 (asked
@@ -52,6 +55,12 @@ const P8 = P7 + 156;
 /* longer since the gallery joined the graph (3 Oct 2026) */
 const P9 = P8 + 165;
 export const NEXT_END = P9 + 200;
+
+/* two #rrggbb colours mixed in sRGB */
+const mix = (a: string, b: string, t: number) => {
+  const p = (h: string, i: number) => parseInt(h.slice(1 + 2 * i, 3 + 2 * i), 16);
+  return `rgb(${[0, 1, 2].map((i) => Math.round(p(a, i) + (p(b, i) - p(a, i)) * t)).join(",")})`;
+};
 
 const Caption: React.FC<{ text: string; at: number; out?: number; top?: number }> = ({ text, at, out, top = 64 }) => (
   <div style={{ position: "absolute", left: 0, right: 0, top, display: "flex", justifyContent: "center" }}>
@@ -71,6 +80,7 @@ const ROW_GAP = 26;
 /* beat 5's caption (65) + 60 + the three rows, centred as one block */
 const ROWS_CAP_TOP = Math.round((1080 - (65 + 60 + 3 * ROW_H + 2 * ROW_GAP)) / 2);
 const ROWS_TOP = ROWS_CAP_TOP + 125;
+const BTN = { w: 420, h: 92, y: ROWS_TOP + 3 * ROW_H + 2 * ROW_GAP - BTN_LIFT + 44 };
 /* centred (asked for 3 Oct 2026; it sat 110 left of centre until then).
    Beat 6's orb and bubble still fit to the right: the bubble ends at 1860 */
 const ROWS_X = W / 2 - ROW_W / 2;
@@ -157,12 +167,14 @@ export const Story2: React.FC = () => {
   const backIn = e(f, P5 + 12, P5 + 40, 0, 1, EASE_OUT);
   const sortT = (i: number) => e(f, P5 + 46 + i * 6, P5 + 86 + i * 6);
   const open5 = e(f, P5 + 100, P5 + 136);
-  const rowShift = OPEN_UP * (1 - open5);
+  const rowShift = OPEN_UP * (1 - open5) - BTN_LIFT * e(f, P6 + 6, P6 + 34, 0, 1, EASE_OUT);
   const rowsIn = (i: number) => e(f, P5 + 30 + i * 8, P5 + 58 + i * 8, 0, 1, EASE_OUT);
   const axisIn = e(f, P5 + 92, P5 + 122, 0, 1, EASE_OUT);
 
   /* ── 6 ── */
-  const dimRest = e(f, P6 + 30, P6 + 50);
+  const btnIn = e(f, P6 + 12, P6 + 38, 0, 1, EASE_OUT);
+  /* hover: the app's duration/hover (400 ms) as the fingertip comes over it */
+  const hov = e(f, BTN_TAP - 24, BTN_TAP - 12, 0, 1, (t) => t * t * (3 - 2 * t));
   const rowsOut = e(f, P6 + D2 + 64, P6 + D2 + 88);
   /* the analysing screen clears the rows; the results page follows it */
   const anDim = e(f, AN0, AN0 + 20);
@@ -205,8 +217,6 @@ export const Story2: React.FC = () => {
     if (f >= P6) {
       o *= 1 - anDim;
       if (!["dropper-green", "bottle-milky"].includes(p)) {
-        o *= 1 - 0.6 * dimRest;
-        filt = `blur(${dimRest * 3}px) grayscale(${dimRest * 0.6})`;
         o *= 1 - rowsOut;
         y += rowsOut * 30;
       }
@@ -241,48 +251,32 @@ export const Story2: React.FC = () => {
   };
 
   /* the orb: points in 6, draws the line in 8, becomes the mark in 9 */
-  const dropper = slotOf["dropper-green"];
-  const milky = slotOf["bottle-milky"];
   let orb: { x: number; y: number; size: number; o: number; think?: number } | null = null;
-  if (f >= P6 && f < P6 + D2 + 96) {
-    const a = e(f, P6, P6 + 34);
-    const b = e(f, P6 + 38, P6 + 56);
-    const out = e(f, P6 + D2 + 70, P6 + D2 + 92);
-    /* the analysing screen: to the centre, larger, thinking; then back */
-    const go = e(f, AN0, AN0 + 26);
-    /* it stays at the centre and leaves with the analysing screen */
+  /* only on the analysing screen now: it no longer points before the analysis */
+  if (f >= AN0 && f < AN0 + AN) {
     const back = e(f, AN0 + AN - 26, AN0 + AN - 6);
-    const toC = go;
-    /* it perches on the product's top right corner: the dropper, then the new addition */
-    const perchX = milky.x + SLOT / 2 + 4;
-    const x0 = lerp(lerp(1720, perchX, a), perchX, b);
-    const y0 = lerp(lerp(-80, dropper.y - 50, a), milky.y - 50, b);
-    orb = {
-      x: lerp(x0, AN_ORB.x, toC) + out * 300,
-      y: lerp(y0, AN_ORB.y, toC) - out * 420,
-      size: lerp(56, AN_ORB.size, toC),
-      o: e(f, P6, P6 + 16) * (1 - back),
-      think: e(f, AN0 + 16, AN0 + 30),
-    };
+    /* after the groups have cleared */
+    const k = e(f, AN0 + 20, AN0 + 36, 0, 1, EASE_OUT);
+    orb = { x: AN_ORB.x, y: AN_ORB.y, size: AN_ORB.size * (0.9 + 0.1 * k), o: k * (1 - back), think: e(f, AN0 + 16, AN0 + 30) };
   }
 
   return (
     <AbsoluteFill style={{ opacity: 1 - endFade }}>
       {/* ── captions ── */}
-      {/* on the same line as beat 5's caption, so the title never jumps (3 Oct 2026); it
-          leaves as the orb sets off for the analysing screen (4 Oct 2026, asked for) */}
-      <Caption text="LUX points to **what to pause** first." at={P6 + 6} out={AN0} top={ROWS_CAP_TOP} />
-      <Caption text="And **what to do next**, step by step." at={SCORE + 8} out={SCORE + 184} />
-      <Caption text="Thinking of adding something? **Check** it first." at={SCORE + 214} out={P7 - 8} top={COMPAT_CAP_TOP} />
+      {/* over the results page, where the pause card is (moved 4 Oct 2026: it
+          used to come before the analysis had run) */}
+      <Caption text="LUX points to **what to pause** first" at={SCORE + 8} out={SCORE + 66} />
+      <Caption text="And **what to do next**, step by step" at={SCORE + 80} out={SCORE + 184} />
+      <Caption text="Analyses **compatibility**" at={SCORE + 214} out={P7 - 8} top={COMPAT_CAP_TOP} />
       {/* over the row while it is the whole picture; up to the top as the graph comes in */}
-      <Caption text="Pause one product," at={P7 + 40} out={P9} top={lerp(R7_CAP_TOP, 64, e(f, P8 - 10, P8 + 16, 0, 1, EASE_IN_OUT))} />
-      <Caption text="then note **what happens**." at={P8 + 6} out={P9 + 2} top={64 + 65} />
+      <Caption text="Pause one product" at={P7 + 40} out={P9} top={lerp(R7_CAP_TOP, 64, e(f, P8 - 10, P8 + 16, 0, 1, EASE_IN_OUT))} />
+      <Caption text="then see **what changes**" at={P8 + 6} out={P9 + 2} top={64 + 65} />
 
       {/* ── 5 · the groups and their axis ── */}
       {f < P7 &&
         GROUPS.map((g, i) => {
           const k = rowsIn(i);
-          const dim = i === 0 ? dimRest : 0;
+          const dim = 0;
           return (
             <div
               key={g.label}
@@ -380,7 +374,9 @@ export const Story2: React.FC = () => {
                   width: 22,
                   height: 22,
                   borderRadius: "50%",
-                  background: i === 2 ? C.primary : C.glassStrong,
+                  /* all three filled (4 Oct 2026, asked for: hollow then / mid read
+                     as unanswered, not as earlier) */
+                  background: C.primary,
                   border: `3px solid ${C.primary}`,
                   scale: k,
                   opacity: k,
@@ -416,45 +412,57 @@ export const Story2: React.FC = () => {
         </div>
       )}
 
-      {/* ── 6 · the orb says why, in the app's AI bubble ── */}
-      {f >= P6 + 56 && f < P6 + D2 + 96 && (() => {
-        const k = e(f, P6 + 58, P6 + 74, 0, 1, EASE_OUT);
-        const out = e(f, P6 + DWELL + 60, P6 + DWELL + 78);
-        return (
+      {/* ── 6 · the app's Start analysis button: flies in, is tapped ── */}
+      {f >= P6 + 12 && f < AN0 + 24 && (
+        <>
           <div
             style={{
               position: "absolute",
-              /* right beside the product, on the box: it hangs from the orb
-                 on the product's corner, tail top left as the app's AI bubble
-                 has it, and only as wide as its lines (asked for 3 Oct 2026) */
-              left: milky.x + SLOT / 2 + 26,
-              top: milky.y - 44,
-              width: "fit-content",
-              maxWidth: 400,
-              boxSizing: "border-box",
-              padding: "16px 22px",
-              borderRadius: "1px 30px 30px 30px",
-              background: "#DBEDED",
-              boxShadow: "0 1px 2px rgba(44, 69, 70, 0.12), 0 12px 28px -12px rgba(44, 69, 70, 0.3)",
-              opacity: k * (1 - out),
-              translate: `${(1 - k) * -16}px ${-out * 20}px`,
-              transformOrigin: "0 0",
-              scale: 0.94 + 0.06 * k,
+              left: W / 2 - BTN.w / 2,
+              top: BTN.y + (1 - btnIn) * 120,
+              width: BTN.w,
+              height: BTN.h,
+              borderRadius: 999,
+              overflow: "hidden",
+              /* the app's primary (Button.module.css): #485780 → #313560, and its
+                 hover runs the gradient end for end as the fingertip arrives */
+              background: `linear-gradient(90deg, ${mix("#485780", "#313560", hov)}, ${mix("#313560", "#485780", hov)})`,
+              boxShadow: "inset 0 1.5px 0 rgba(255,255,255,0.28), 0 24px 40px -22px rgba(49,53,96,0.55)",
+              color: "#fff",
+              display: "flex",
+              alignItems: "center",
+              justifyContent: "center",
+              fontFamily: FIGTREE,
+              fontSize: 34,
+              fontWeight: 400,
+              opacity: btnIn * (1 - anDim),
+              filter: `blur(${(1 - btnIn) * 8}px)`,
             }}
           >
-            <Headline
-              text="**Salicylic Acid (BHA)** is your newest product, and it joined your routine around when the reaction started. Pause it first."
-              size={22}
-              style={{ textWrap: "pretty" }}
-              at={P6 + 64}
-              stagger={1}
-              align="left"
-              lineHeight={1.4}
-              weight={400}
-            />
+            Start analysis
           </div>
-        );
-      })()}
+          {/* the hover's specular rim: two 1.5px streaks circling the pill, one turn
+              every 4.5s (vidgen.css lux-specular-orbit), fading in with the hover */}
+          <div
+            style={{
+              position: "absolute",
+              left: W / 2 - BTN.w / 2 - 1.5,
+              top: BTN.y + (1 - btnIn) * 120 - 1.5,
+              width: BTN.w + 3,
+              height: BTN.h + 3,
+              borderRadius: 999,
+              padding: 1.5 * 1.6,
+              boxSizing: "border-box",
+              opacity: hov * (1 - anDim),
+              background: `conic-gradient(from ${-45 + ((f - (BTN_TAP - 24)) / 135) * 360 - 60}deg, transparent 0deg, #b3bccb 30deg, #a1b2d0 50deg, #f2f4f9 60deg, #a1b2d0 70deg, #b3bccb 90deg, transparent 120deg, transparent 180deg, #acb0c3 210deg, #a1b2d0 230deg, #f2f4f9 240deg, #a1b2d0 250deg, #acb0c3 270deg, transparent 300deg)`,
+              WebkitMask: "linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0)",
+              WebkitMaskComposite: "xor",
+              maskComposite: "exclude",
+            }}
+          />
+          <Tap f={f} at={BTN_TAP} x={W / 2 - BTN.w / 2} y={BTN.y} w={BTN.w} h={BTN.h} />
+        </>
+      )}
 
       {/* ── 6 · the results page, as the Analysis tab draws it: what to do next,
           then the camera travels down to the compatibility scores ── */}
@@ -577,14 +585,11 @@ export const Story2: React.FC = () => {
         })}
 
       {/* beat 5's caption, drawn after the five */}
-      <Caption text="Add what you use, and **when** you started it." at={P5 + 10} out={P6 - 12} top={ROWS_CAP_TOP - OPEN_UP * (1 - open5)} />
+      <Caption text="Add what you use, and **when** you started it" at={P5 + 10} out={P6 - 12} top={ROWS_CAP_TOP - OPEN_UP * (1 - open5)} />
 
       {/* ── 6 · the analysing screen, as /check/analyzing draws it ── */}
       {f >= AN0 && f < AN0 + AN && <Analysing t={f - AN0} />}
 
-      {/* the two the analysis names, ringed as the orb reaches them */}
-      <Pulse x={dropper.x} y={dropper.y} at={P6 + 34} r={70} f={f} />
-      <Pulse x={milky.x} y={milky.y} at={P6 + 54} r={70} f={f} />
 
       {/* ── 9 · the lockup, on its own ── */}
       {f >= P9 + 30 && (
@@ -606,7 +611,7 @@ export const Story2: React.FC = () => {
             <LuxLogoWord p="nextw" light={light} lightOpacity={lightO} />
           </div>
           <div style={{ position: "absolute", left: 84, right: 84, top: LOCKUP.y + LOCKUP_H + 70 }}>
-            <Headline text="Less in. Less **guessing**." size={59} at={P9 + 96} />
+            <Headline text="When **less** than more is the answer" size={41} at={P9 + 96} />
           </div>
         </>
       )}
@@ -676,7 +681,9 @@ const TrendCard: React.FC<{ t: number }> = ({ t }) => {
 /* narrower than the app's desktop panel (1646) and drawn larger, so its
    copy reads at video size */
 const RK = 0.93;
-const RP = { w: 1380, h: 874 };
+/* the steps breathe as the app spaces them: 20 between a title, its pair and
+   its reason (4 Oct 2026, asked for; they were 3 and 0 apart) */
+const RP = { w: 1380, h: 900 };
 const RIN = RP.w - 132;
 const RPOS = { x: W / 2 - (RP.w * RK) / 2, y: 170 };
 const TRAVEL = 760;
@@ -866,17 +873,17 @@ const ResultsPage: React.FC<{ t: number; out: number }> = ({ t, out }) => {
         {/* step 1: the pair, brought together */}
         <Disc n={1} k={ee(t, 70, 82)} x={89} y={475} />
         <Up k={ee(t, 74, 90)} style={{ ...title, left: 137, top: 449 }}>Keep BHA Exfoliant and Retinol B3 Serum on alternate nights</Up>
-        <ProductTile photo="bottle-milky" size={80} style={{ left: 137 - 40 * (1 - pair), top: 492, opacity: ee(t, 80, 92) }} />
-        <div style={{ position: "absolute", left: 233, top: 512, width: 32, textAlign: "center", fontSize: 30, color: C.ink, opacity: ee(t, 96, 106) }}>+</div>
-        <ProductTile photo="dropper-green" size={80} style={{ left: 265 + 40 * (1 - pair), top: 492, opacity: ee(t, 80, 92) }} />
-        <Up k={ee(t, 94, 110)} style={{ ...body, left: 137, top: 589 }}>
+        <ProductTile photo="bottle-milky" size={80} style={{ left: 137 - 40 * (1 - pair), top: 509, opacity: ee(t, 80, 92) }} />
+        <div style={{ position: "absolute", left: 217, top: 509, width: 48, height: 80, display: "flex", alignItems: "center", justifyContent: "center", fontSize: 30, lineHeight: 1, color: C.ink, opacity: ee(t, 96, 106) }}>+</div>
+        <ProductTile photo="dropper-green" size={80} style={{ left: 265 + 40 * (1 - pair), top: 509, opacity: ee(t, 80, 92) }} />
+        <Up k={ee(t, 94, 110)} style={{ ...body, left: 137, top: 609 }}>
           Salicylic Acid 2% and Retinol irritate in the same routine, so this pair settles itself while BHA Exfoliant is out, and matters again the day it comes back.
         </Up>
 
         {/* step 2 */}
-        <Disc n={2} k={ee(t, 120, 132)} x={89} y={739} />
-        <Up k={ee(t, 124, 140)} style={{ ...title, left: 137, top: 713 }}>Bring anything back one product at a time</Up>
-        <Up k={ee(t, 132, 148)} style={{ ...body, left: 137, top: 769 }}>Two at once and a reaction cannot be traced to either of them.</Up>
+        <Disc n={2} k={ee(t, 120, 132)} x={89} y={765} />
+        <Up k={ee(t, 124, 140)} style={{ ...title, left: 137, top: 739 }}>Bring anything back one product at a time</Up>
+        <Up k={ee(t, 132, 148)} style={{ ...body, left: 137, top: 789 }}>Two at once and a reaction cannot be traced to either of them.</Up>
       </div>
 
       {/* compatibility: the camera arrives, the cards rise and their rings draw */}

@@ -98,7 +98,7 @@ const onHero = (r: { x: number; y: number; w: number; h: number }) => ({ x: B.x 
 
 
 /** a fingertip on a control: settles, presses (the app's 14% ink), lifts with a ring */
-const Tap: React.FC<{ f: number; at: number; x: number; y: number; w: number; h: number }> = ({ f, at, x, y, w, h }) => {
+export const Tap: React.FC<{ f: number; at: number; x: number; y: number; w: number; h: number }> = ({ f, at, x, y, w, h }) => {
   /* short, so two taps 12 frames apart never show two fingertips */
   const show = e(f, at - 6, at - 1, 0, 1, EASE_OUT) * (1 - e(f, at + 4, at + 9));
   if (show <= 0) return null;
@@ -201,7 +201,7 @@ export const Story: React.FC = () => {
     <AbsoluteFill>
       {/* 3 — the line under the orb */}
       <div style={{ position: "absolute", left: 0, right: 0, top: 628, display: "flex", justifyContent: "center" }}>
-        <Headline text="LUX helps you **investigate**." size={59} at={LINE_IN} out={LINE_OUT} />
+        <Headline text="LUX helps you **investigate**" size={59} at={LINE_IN} out={LINE_OUT} />
       </div>
 
       {/* the phone, and the push through its screen */}
@@ -270,7 +270,7 @@ export const Story: React.FC = () => {
         </div>
       )}
 
-      <Caption text="Tap **where** it shows up." at={MAP_CAP} out={PROFILE - 10} />
+      <Caption text="Tap **where** it shows up" at={MAP_CAP} out={PROFILE - 10} />
 
       {/* the taps, on the recorded controls */}
       {f >= T0 - 10 && f < PROFILE && taps.filter((t) => t.label !== "save").map((t) => <Tap key={t.w} f={f} at={t.w} {...onHero(t.rect!)} />)}

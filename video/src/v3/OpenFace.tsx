@@ -76,8 +76,8 @@ export const OpenFace: React.FC = () => {
 };
 
 const LINES = [
-  { text: "Your skin flared up.", at: 8 },
-  { text: "They tell you to add another product.", at: 40 },
+  { text: "Your skin flared up", at: 8 },
+  { text: "They tell you to add **another product**", at: 40 },
   { text: "Do you **really** need it?", at: 78 },
 ];
 

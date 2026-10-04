@@ -287,12 +287,12 @@ export const TooMuch: React.FC = () => {
 
       {/* the three lines inside the ring, as the first intro drew them */}
       <AbsoluteFill style={{ justifyContent: "center", alignItems: "center", flexDirection: "column", paddingTop: 20 }}>
-        <Headline text="Your skin flared up." size={62} at={48} out={114} />
-        <Headline text="You use five products." size={62} at={62} out={116} />
+        <Headline text="Your skin flared up" size={62} at={48} out={114} />
+        <Headline text="You use five products" size={62} at={62} out={116} />
         <Headline text="**Where** do you start?" size={62} at={76} out={118} />
       </AbsoluteFill>
       <AbsoluteFill style={{ justifyContent: "center", alignItems: "center" }}>
-        <Headline text="Everyone tells you to **add** more." size={64} at={186} out={262} />
+        <Headline text="Everyone tells you to **add** more" size={64} at={186} out={262} />
       </AbsoluteFill>
     </AbsoluteFill>
   );
