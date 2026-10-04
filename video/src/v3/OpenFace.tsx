@@ -8,11 +8,12 @@ import { clamp, EASE_IN_OUT, EASE_OUT, FIGTREE } from "../theme";
  * back and dissolves as your five arrive in their ring.
  *
  * The three callouts animate in one by one: dot, line, then the lens growing
- * at its place, then its label. The photo underneath is a clean plate with
- * the callouts painted out; each lens is cut from the original photo.
+ * at its place, then its label.
  *
- * ⚠️ The photo is a reference image (Pinterest) with its headline and
- * callouts painted out (OpenCV inpaint). Same caveat as the face art: replace before public use.
+ * The photo is free (Unsplash License): photo-1664550510636-6fce76910951,
+ * cropped to the card from the 2400 wide original; each lens is cut from that
+ * original at twice the plate's resolution. It replaced, 4 Oct 2026, a
+ * Pinterest reference with its callouts painted out ("just use free images").
  */
 /* the photo holds this much longer for the three lines beside it (4 Oct 2026,
    asked for: "Your skin flared up. / They tell you to add another product. /
@@ -85,9 +86,9 @@ const LINES = [
 const K = CARD_H / 918;
 type Co = { label: string; cx: number; cy: number; r: number; dx: number; dy: number; ly: number; at: number };
 const CALLOUTS: Co[] = [
-  { label: "Redness", cx: 570, cy: 352, r: 80, dx: 409, dy: 343, ly: 455, at: 12 },
-  { label: "Itching", cx: 414, cy: 710, r: 79, dx: 342, dy: 543, ly: 812, at: 22 },
-  { label: "Dry skin", cx: 152, cy: 768, r: 79, dx: 234, dy: 636, ly: 872, at: 32 },
+  { label: "Redness", cx: 470, cy: 600, r: 80, dx: 360, dy: 560, ly: 703, at: 12 },
+  { label: "Itching", cx: 230, cy: 660, r: 79, dx: 270, dy: 540, ly: 762, at: 22 },
+  { label: "Dry skin", cx: 330, cy: 110, r: 79, dx: 230, dy: 170, ly: 212, at: 32 },
 ];
 
 const Callout: React.FC<{ c: Co; f: number }> = ({ c, f }) => {

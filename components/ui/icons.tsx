@@ -387,13 +387,16 @@ export function CheckIcon({ className }: IconProps) {
 /**
  * `My skin` — traced from `features/my-skin/assets/face-silhouette.svg`, the
  * head only, cut at the jaw (see `scripts/face-art.mjs`). The ears are the
- * read at 20px; do not simplify them away.
+ * read at 20px; do not simplify them away. Retraced 4 Oct 2026 when the head
+ * scan replaced the Pinterest head: smoothed, cut 60 frame rows under the
+ * chin, simplified to 29 points and mirrored from its right half, since the
+ * scan's jaw is not quite symmetric.
  */
 export function MySkinIcon({ className }: IconProps) {
   return (
     <Icon box="0 0 24 24" className={className}>
       <path
-        d="M7.54 22.0L7.52 19.39 6.59 17.75 5.91 15.3 5.4 14.87 4.32 11.55 4.23 10.42 4.69 10.01 5.11 10.28 5.53 6.77 6.16 5.26 6.92 4.23 9.35 2.55 10.83 2.1 12.18 2.0 13.59 2.2 14.93 2.7 17.13 4.33 17.88 5.43 18.43 6.77 18.85 10.27 19.39 10.04 19.77 10.62 18.58 14.82 18.05 15.3 17.37 17.75 16.44 19.38 16.42 22.0Z"
+        d="M8.49 22.0L8.63 20.24 8.42 19.13 6.88 15.75 5.62 14.69 4.86 12.72 4.93 11.09 5.19 10.6 5.65 10.38 5.76 6.69 6.43 4.99 7.53 3.71 8.89 2.69 10.15 2.17 12 2.0 13.85 2.17 15.11 2.69 16.47 3.71 17.57 4.99 18.24 6.69 18.35 10.38 18.81 10.6 19.07 11.09 19.14 12.72 18.38 14.69 17.12 15.75 15.58 19.13 15.37 20.24 15.51 22.0Z"
         {...ns}
       />
     </Icon>

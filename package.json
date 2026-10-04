@@ -10,7 +10,8 @@
     "typecheck": "tsc --noEmit",
     "vocab": "node scripts/vocab.mjs",
     "spacing": "node scripts/text-spacing.mjs",
-    "face": "node scripts/face-art.mjs"
+    "face": "node scripts/face-art.mjs",
+    "face:source": "python3 scripts/face-source.py"
   },
   "dependencies": {
     "@radix-ui/react-dialog": "^1.1.23",

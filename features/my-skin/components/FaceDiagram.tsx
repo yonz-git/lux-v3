@@ -33,31 +33,29 @@ import silhouette from "../assets/face-silhouette.svg";
  * 392x300 ratio in the comment above now belongs to the diagram illustration
  * alone — the card itself grows to fit the chip row under it.
  *
- * ⚠️ THE FACE IS A WIREFRAME TRACED FROM A SUPPLIED REFERENCE IMAGE — NOT IN
- * FIGMA, AND NOT OURS. It was a CSS terraced dome, then from 13 Sep 2026 a
- * contour drawing (a scanned head's iso-depth lines, asked for directly),
- * and since 26 Sep 2026 a quad-mesh head: the lines of a wireframe-head
- * image found on Pinterest (pin 305611524731014086) thinned to skeletons
- * and written as vector strokes by `scripts/face-art.mjs` (`npm run face`;
- * the provenance and the IP position are in its header). A procedural
- * head was built and reshaped against that reference first and did not
- * read as a real face; image generation was blocked on the account; the
- * decision to trace the reference itself was the product owner's, asked
- * for directly ("use the reference, trace it and wire it in"). ⚠️ Replace
- * the source with a generated or licensed head before this ships beyond
- * the prototype — the script takes any light-lines-on-black image.
+ * ⚠️ THE FACE IS A WIREFRAME TRACED FROM A FREE HEAD SCAN — NOT IN FIGMA.
+ * It was a CSS terraced dome, then from 13 Sep 2026 a contour drawing (a
+ * scanned head's iso-depth lines, asked for directly), then from 26 Sep a
+ * quad-mesh head traced from a wireframe image found on Pinterest. Since
+ * 4 Oct 2026 ("just use free images") it is Lee Perry-Smith's head scan
+ * (CC BY 3.0, `assets/source/CREDITS.md`), rendered as a curved grid by
+ * `scripts/face-source.py` and traced into vector strokes by
+ * `scripts/face-art.mjs` (`npm run face`); the registration is in its
+ * header. The scan's mouth sits closer to its eyes than the old head's, so
+ * the head is drawn a little smaller to keep the crown in the frame.
  *
  * The asset is white lines on transparency, each line's opacity the
  * source's own glow at that point — see `.art` for its footprint — and a
  * shine follows the pointer ACROSS THE LINES ONLY (`.shine`, masked by the
  * same image). The silhouette is the same image's non-background region
  * plus the neck column, so the shading it masks falls down the neck.
- * ⚠️ REGISTERED BY THE EYES AND THE LIPS, THEN DRAWN 5% LARGER (asked for
- * directly 26 Sep 2026): one uniform scale maps the image's eye row and
- * mouth line onto `REGIONS`' rows below, and the head is then enlarged
- * about the eye row, so the eyes sit 3 rows under their pill, the lips 15,
- * the nose tip 38 (this head's nose is longer than the landmark spacing)
- * — all still under their pills, which are ~100 rows tall. ⚠️ THE NECK AND
+ * ⚠️ REGISTERED BY THE EYES AND THE LIPS: one uniform scale maps the
+ * image's eye row and mouth line onto `REGIONS`' rows below. The scan is
+ * then drawn at 0.83 of that and dropped 20 rows (the old head was drawn
+ * 5% larger, asked for 26 Sep 2026; this one cannot be without losing its
+ * crown), so the eyes sit about 20 rows under their pill, the nose tip on
+ * its pill and the lips about 23 above theirs — all still under their
+ * pills, which are ~100 rows tall. ⚠️ THE NECK AND
  * THE SHOULDERS ARE DRAWN, NOT TRACED: the image is
  * cut at the chin, and they follow a second supplied line drawing (asked
  * for directly: "add the neck part like the image I attached"), measured

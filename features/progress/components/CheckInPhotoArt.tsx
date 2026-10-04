@@ -59,11 +59,13 @@
      photo-1723540634462-528708cc17aa   water drops on skin
      photo-1659531412263-bf2b9e1abf6f   pores and small moles, close
      photo-1771510581541-58a40280d8c7   dewy skin, close
-     (supplied by the user, 3 Oct 2026)  breakouts on a cheek, close; it
-                                        replaced the shoulder photo the same
-                                        day. Only 324 square and of unknown
-                                        source, so swap in a licensed,
-                                        larger copy before anything ships.
+     photo-1591973669966-52d2534d9087   breakouts on a cheek, close: a
+                                        640 square cut from the cheek of a
+                                        full portrait. It replaced, 4 Oct
+                                        2026, a 324 photo the user supplied
+                                        whose source was unknown ("just use
+                                        free images"), so every photo here
+                                        is now under the Unsplash License.
    The old `skin-samples` set (one of which rendered as a blank well) is no
    longer read. */
 const SAMPLES = [
