@@ -54,7 +54,11 @@ export function Timing() {
           <p className={`${styles.label} t-label`} id="status-label">
             Current status
           </p>
-          <div className={panel.chips} role="radiogroup" aria-labelledby="status-label">
+          <div
+            className={`${styles.status} ${panel.teal}`}
+            role="radiogroup"
+            aria-labelledby="status-label"
+          >
             {STATUS.map((o) => (
               <Chip
                 key={o}

@@ -6,9 +6,34 @@
   z-index: 1;
 }
 
+/* (0,2,0), so it wins over QuestionPanel's own `.panel` gap whichever module
+   loads last */
+.panel.panel {
+  /* ⚠️ 24 BETWEEN GROUPS, NOT THE PANEL'S 20 — 4 Oct 2026, asked for directly
+     ("this needs better spacing", by Apple's HIG). The HIG puts ~24pt round
+     elements without a bezel and ~12pt round bezeled ones; here the question,
+     the date and the status are three groups, so they stand 24 apart while
+     each label sits 12 above its own control (`.field`). Two to one is what
+     makes a label read as belonging to the control under it rather than to
+     the group above. */
+  gap: var(--space-2xl);
+}
+
 .field {
   display: flex;
   flex-direction: column;
+  gap: var(--space-md); /* 12 — label to its bezeled control, per the HIG */
+}
+
+/* ⚠️ THE STATUS PILLS ARE AN EVEN GRID, NOT A CENTRED WRAP — same request.
+   Under a left label and a full-width date field, a centred wrap left
+   `Getting worse` floating alone in the middle of its row. Equal columns
+   fill the panel to the date field's edges: two by two on a phone, one row
+   of four where the panel is wide enough. Each pill keeps `Chip`'s 44
+   height, so every target stays at the HIG's 44 x 44. */
+.status {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(128px, 1fr));
   gap: var(--space-sm);
 }
 

@@ -4,7 +4,6 @@ import { QuestionScreen } from "./QuestionScreen";
 import { QuestionPanel } from "./QuestionPanel";
 import panel from "./QuestionPanel.module.css";
 import { Chip } from "@/components/ui/Chip";
-import { OptionRow } from "@/components/ui/OptionRow";
 import { useInvestigation } from "@/lib/store/InvestigationProvider";
 import { toggleMulti } from "@/lib/store/answers";
 
@@ -25,9 +24,9 @@ import { toggleMulti } from "@/lib/store/answers";
  * Continue stays disabled until BOTH questions are answered.
  *
  * ⚠️ lux-v3 (1 Oct 2026, the canvas boards): each question is its own glass
- * panel. Skin type keeps its radio ROWS — five long, mutually exclusive
- * descriptions read best as a list. Tendencies became CHIPS, exclusives
- * included and still checkboxes: short labels, zero or more.
+ * panel. Tendencies became CHIPS, exclusives included and still checkboxes:
+ * short labels, zero or more. Skin type kept radio ROWS until 4 Oct 2026 and
+ * is radio CHIPS now — see the note on its group below.
  *
  * ⚠️ THE OPENING AI BUBBLE IS GONE — removed 6 Sep 2026, not yet reflected in
  * Figma. "Thanks for sharing that. Let me ask a few questions about your skin
@@ -38,7 +37,10 @@ import { toggleMulti } from "@/lib/store/answers";
  * because a comp has to show a filled-in state.
  */
 const SKIN_TYPES = ["Dry", "Combination", "Oily", "Balanced", "Not sure"];
-const TENDENCIES = ["Sensitive", "Acne-prone"];
+/* ⚠️ `Redness-prone` ADDED 4 Oct 2026, asked for directly: a lasting trait
+   (flushes easily), not a diagnosis (step 3) or what is happening now
+   (step 1). Like the other two, nothing in the analysis reads it yet. */
+const TENDENCIES = ["Sensitive", "Acne-prone", "Redness-prone"];
 const EXCLUSIVES = ["None", "Not sure"];
 
 export function SkinType() {
@@ -48,29 +50,42 @@ export function SkinType() {
 
   return (
     <QuestionScreen id="skin-type">
-      <QuestionPanel question="Which description fits your skin most often?">
+      {/* ⚠️ SHORTENED 4 Oct 2026, asked for directly: the product brief's
+          "Which description fits your skin most often?" wrapped to two lines
+          on a phone, and so did "Which best describes your skin?" (258 of the
+          239 a 375 phone leaves beside the orb). Same question; the brief
+          keeps the long wording. */}
+      <QuestionPanel question="What's your skin type?">
+        {/* ⚠️ PILLS, SINGLE CHOICE — 4 Oct 2026, asked for directly ("they
+            could be pills and only single choice"), so the two questions on
+            this screen read as one set. NOT IN FIGMA, and it widens the radio
+            `Chip`, which AGENTS.md scoped to the check-in's five-point scale:
+            a second caller, decided here. It keeps the contract that makes it
+            honest: `control="radio"` inside a real `radiogroup`, so a screen
+            reader still announces "radio button, 2 of 5", and picking one
+            replaces the last. Raise a single-select Chip in Figma. */}
         <div
-          className={panel.rows}
+          className={`${panel.chips} ${panel.teal}`}
           role="radiogroup"
-          aria-label="Which description fits your skin most often?"
+          aria-label="What's your skin type?"
         >
           {SKIN_TYPES.map((o) => (
-            <OptionRow
+            <Chip
               key={o}
               control="radio"
               label={o}
               selected={skinType === o}
-              onSelect={() => setAnswer("skin-type", o)}
+              onToggle={() => setAnswer("skin-type", o)}
             />
           ))}
         </div>
       </QuestionPanel>
 
-      <QuestionPanel question="Do any of these usually apply?">
+      <QuestionPanel question="Do any of these apply?">
         <div
-          className={panel.chips}
+          className={`${panel.chips} ${panel.teal}`}
           role="group"
-          aria-label="Do any of these usually apply?"
+          aria-label="Do any of these apply?"
         >
           {[...TENDENCIES, ...EXCLUSIVES].map((label) => (
             <Chip

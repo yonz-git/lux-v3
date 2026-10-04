@@ -71,7 +71,10 @@
      with no saturate. */
   /* ⚠️ 57%, NOT 72% — 15 points less, asked for directly 15 Sep 2026 with the
      blur below ("make it frosty, I think we did it already") */
-  background: #98b4b691;
+  /* ⚠️ 20% BRIGHTER, 4 Oct 2026, asked for directly ("the calendar feels
+     dark; I like the blur but brighten it up 20%"): the sage mixed 20% toward
+     white, #98b4b6 → #adc3c5, at the same 57%. The blur is untouched. */
+  background: #adc3c591;
   /* ⚠️ NO TOP LIGHT AND A REAL DROP SHADOW, asked for directly 15 Sep 2026
      ("remove the top border light and add drop shadow"): the `inset 0 1px 0
      #fff9` read as a white rim along the top edge, and `shadow/lg` alone was
