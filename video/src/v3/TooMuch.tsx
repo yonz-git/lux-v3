@@ -1,6 +1,6 @@
 import { AbsoluteFill, Img, interpolate, staticFile, useCurrentFrame } from "remotion";
 import { Headline } from "../components/Type";
-import { C, clamp, EASE_IN, EASE_IN_OUT, EASE_OUT, URBANIST } from "../theme";
+import { C, clamp, EASE_IN, EASE_IN_OUT, EASE_OUT, FIGTREE } from "../theme";
 
 /**
  * Next version, beats 1–2 (prototype): TOO MUCH → YOUR FIVE.
@@ -260,7 +260,7 @@ export const TooMuch: React.FC = () => {
               ) : (
                 <div
                   style={{
-                    fontFamily: URBANIST,
+                    fontFamily: FIGTREE,
                     fontWeight: 600,
                     fontSize: 17,
                     lineHeight: 1.12,

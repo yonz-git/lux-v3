@@ -77,12 +77,17 @@ const SCREEN_TOP = PY + 11;
    1196 px source, so never upscaled */
 /* it stops under the chips: the Save / Reset / Reset all bar is cropped out
    (3 Oct 2026, asked for) so the face and chips get the room */
-const REG = { x: 12, y: 70, w: 366, h: 598 };
+const REG = { x: 12, y: 201, w: 366, h: 598 };
 const A = { x: SCREEN_LEFT + REG.x * PS, y: SCREEN_TOP + REG.y * PS, w: REG.w * PS };
 const HERO_H = 890;
 const HERO_W = HERO_H * (REG.w / REG.h);
 const B = { x: W / 2 - HERO_W / 2, y: 160, w: HERO_W };
-const FACE_MID = { x: SCREEN_LEFT + (REC.face.x + REC.face.w / 2) * PS, y: SCREEN_TOP + (REC.face.y + REC.face.h / 2) * PS };
+/* the step's coach row (the chat orb and its bubble), measured in the take and
+   hidden from it: the film's orb flies into the orb's place and the bubble
+   comes out of it (4 Oct 2026, asked for), from a still of the same screen */
+const COACH = REC.coach;
+const ORB_SPOT = { x: SCREEN_LEFT + (COACH.orb.x + COACH.orb.w / 2) * PS, y: SCREEN_TOP + (COACH.orb.y + COACH.orb.h / 2) * PS };
+const COACH_BOX = { x: 24, y: 100, w: 342, h: 86, split: 74 }; /* = the crop in public/app/face/coach.png */
 
 /* a recorded rect (screen px) as a film rect on the hero */
 const kH = HERO_W / REG.w;
@@ -170,11 +175,14 @@ export const Story: React.FC = () => {
   /* ── 3 · the orb answers; the five go into the phone ── */
   const grow = e(f, ORB_IN, ORB_IN + 28, 0, 1, EASE_OUT);
   const dive = e(f, DIVE[0], DIVE[1]);
-  const orbX = lerp(W / 2, FACE_MID.x, dive);
+  const orbX = lerp(W / 2, ORB_SPOT.x, dive);
   /* orb and line form one block, centred on the frame (orb 200, gap 40, line 65) */
-  const orbY = lerp(488, FACE_MID.y, dive);
-  const orbSize = 200 * lerp(1, 0.12, dive);
-  const orbO = grow * (1 - e(f, DIVE[1] - 20, DIVE[1]));
+  const orbY = lerp(488, ORB_SPOT.y + e(f, RISE[0], RISE[1], 1, 0, EASE_OUT) * 1020, dive);
+  const orbSize = lerp(200, COACH.orb.w * PS, dive);
+  /* it hands over to the app's own orb as it lands */
+  const land = e(f, DIVE[1] - 2, DIVE[1] + 8);
+  const orbO = grow * (1 - land);
+  const bubble = e(f, DIVE[1] + 4, DIVE[1] + 22, 0, 1, EASE_OUT);
 
   const rise = e(f, RISE[0], RISE[1], 1, 0, EASE_OUT);
   const push = e(f, PUSH[0], PUSH[1]);
@@ -206,6 +214,30 @@ export const Story: React.FC = () => {
           }}
         >
           <Phone x={PX} y={PY + rise * 1020} scale={PS} screens={[{ src: recSrc(rec), height: 844, opacity: 1 }]} />
+          {/* the coach row: the app's orb as the film's lands, then its bubble */}
+          {[0, 1].map((part) => {
+            const x0 = part ? COACH_BOX.split : COACH_BOX.x;
+            const w = part ? COACH_BOX.x + COACH_BOX.w - COACH_BOX.split : COACH_BOX.split - COACH_BOX.x;
+            const o = part ? bubble : land;
+            if (o <= 0) return null;
+            return (
+              <div
+                key={part}
+                style={{
+                  position: "absolute",
+                  left: SCREEN_LEFT + x0 * PS,
+                  top: SCREEN_TOP + rise * 1020 + COACH_BOX.y * PS,
+                  width: w * PS,
+                  height: COACH_BOX.h * PS,
+                  overflow: "hidden",
+                  opacity: o,
+                  clipPath: part ? `inset(0 ${(1 - o) * 100}% 0 0)` : undefined,
+                }}
+              >
+                <Img src={staticFile("app/face/coach.png")} style={{ position: "absolute", left: (COACH_BOX.x - x0) * PS, top: 0, width: COACH_BOX.w * PS, height: COACH_BOX.h * PS }} />
+              </div>
+            );
+          })}
         </AbsoluteFill>
       )}
 

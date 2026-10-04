@@ -1,5 +1,5 @@
 import { interpolate, useCurrentFrame } from "remotion";
-import { C, clamp, EASE_IN, EASE_OUT, URBANIST } from "../theme";
+import { C, clamp, EASE_IN, EASE_OUT, FIGTREE } from "../theme";
 
 type Word = { text: string; bold: boolean; glue: boolean; br: boolean };
 
@@ -29,7 +29,7 @@ function parse(text: string): Word[] {
 }
 
 /**
- * The lux-v3 `headline` pattern at film size: Urbanist Light in dark ink with
+ * The lux-v3 `headline` pattern at film size: Figtree Light in dark ink with
  * the key words Bold in primary. Each word resolves from blur and a short rise
  * (the motionsites reference), 70ms apart; `out` dissolves it the same way.
  */
@@ -51,7 +51,7 @@ export const Headline: React.FC<{
   return (
     <div
       style={{
-        fontFamily: URBANIST,
+        fontFamily: FIGTREE,
         fontSize: size,
         fontWeight: weight,
         lineHeight,
@@ -104,7 +104,7 @@ export const Kicker: React.FC<{ text: string; at: number; out?: number; size?: n
   return (
     <div
       style={{
-        fontFamily: URBANIST,
+        fontFamily: FIGTREE,
         fontSize: size,
         fontWeight: 600,
         letterSpacing: "0.16em",

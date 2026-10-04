@@ -1,6 +1,6 @@
 import { AbsoluteFill, Img, interpolate, staticFile, useCurrentFrame } from "remotion";
 import { Headline } from "../components/Type";
-import { clamp, EASE_IN_OUT, EASE_OUT, URBANIST } from "../theme";
+import { clamp, EASE_IN_OUT, EASE_OUT, FIGTREE } from "../theme";
 
 /**
  * Beat 1's opening shot: the skin itself, before any product shows up.
@@ -14,21 +14,25 @@ import { clamp, EASE_IN_OUT, EASE_OUT, URBANIST } from "../theme";
  * ⚠️ The photo is a reference image (Pinterest) with its headline and
  * callouts painted out (OpenCV inpaint). Same caveat as the face art: replace before public use.
  */
-export const OPEN_LEN = 96;
+/* the photo holds this much longer for the three lines beside it (4 Oct 2026,
+   asked for: "Your skin flared up. / They tell you to add another product. /
+   Do you really need it?"); everything after the opener moves with it */
+const HOLD = 72;
+export const OPEN_LEN = 96 + HOLD;
 /** film frame where TooMuch takes over */
-export const OPEN_HANDOFF = 80;
+export const OPEN_HANDOFF = 80 + HOLD;
 
 const CARD_H = 860;
 const CARD_W = Math.round((CARD_H * 735) / 918);
 const GAP = 90;
-const LINE_W = 500;
+const LINE_W = 600;
 const LEFT = (1920 - (CARD_W + GAP + LINE_W)) / 2;
 
 export const OpenFace: React.FC = () => {
   const f = useCurrentFrame();
   const enter = interpolate(f, [0, 16], [0, 1], { ...clamp, easing: EASE_OUT });
-  const go = interpolate(f, [56, 84], [0, 1], { ...clamp, easing: EASE_IN_OUT });
-  const fade = interpolate(f, [62, 84], [1, 0], clamp);
+  const go = interpolate(f, [56 + HOLD, 84 + HOLD], [0, 1], { ...clamp, easing: EASE_IN_OUT });
+  const fade = interpolate(f, [62 + HOLD, 84 + HOLD], [1, 0], clamp);
   if (f >= OPEN_LEN) return null;
 
   /* the card's centre glides from the left column to the frame's centre,
@@ -36,7 +40,7 @@ export const OpenFace: React.FC = () => {
   const cx0 = LEFT + CARD_W / 2;
   const cx = cx0 + (960 - cx0) * go * 0.35;
   const s = (1 - 0.18 * go) * (0.97 + 0.03 * enter);
-  const push = 1 + 0.06 * interpolate(f, [0, 80], [0, 1], clamp);
+  const push = 1 + 0.06 * interpolate(f, [0, 80 + HOLD], [0, 1], clamp);
 
   return (
     <AbsoluteFill>
@@ -62,12 +66,20 @@ export const OpenFace: React.FC = () => {
           ))}
         </div>
       </div>
-      <div style={{ position: "absolute", left: LEFT + CARD_W + GAP, top: 0, height: 1080, width: LINE_W, display: "flex", alignItems: "center" }}>
-        <Headline text="Your skin flared up." size={64} at={8} out={56} align="left" width={LINE_W} />
+      <div style={{ position: "absolute", left: LEFT + CARD_W + GAP, top: 0, height: 1080, width: LINE_W, display: "flex", flexDirection: "column", justifyContent: "center", gap: 36 }}>
+        {LINES.map((l) => (
+          <Headline key={l.text} text={l.text} size={56} at={l.at} out={52 + HOLD} align="left" width={LINE_W} />
+        ))}
       </div>
     </AbsoluteFill>
   );
 };
+
+const LINES = [
+  { text: "Your skin flared up.", at: 8 },
+  { text: "They tell you to add another product.", at: 40 },
+  { text: "Do you **really** need it?", at: 78 },
+];
 
 /* in the photo's own pixels (735 × 918) */
 const K = CARD_H / 918;
@@ -141,7 +153,7 @@ const Callout: React.FC<{ c: Co; f: number }> = ({ c, f }) => {
           width: 200,
           top: (c.ly - 13) * K + (1 - label) * 8,
           textAlign: "center",
-          fontFamily: URBANIST,
+          fontFamily: FIGTREE,
           fontWeight: 500,
           fontSize: 21 * K,
           color: "white",

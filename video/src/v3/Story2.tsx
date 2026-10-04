@@ -3,7 +3,7 @@ import { LuxLogoMark, LuxLogoWord } from "../components/Logo";
 import { Orb } from "../components/Orb";
 import { Headline } from "../components/Type";
 import { Pulse } from "../scenes/Walkthrough";
-import { C, clamp, EASE_IN_OUT, EASE_OUT, URBANIST } from "../theme";
+import { C, clamp, EASE_IN_OUT, EASE_OUT, FIGTREE } from "../theme";
 import { FiveTile, P5 } from "./Story";
 
 /**
@@ -61,9 +61,9 @@ const Caption: React.FC<{ text: string; at: number; out?: number; top?: number }
 
 /* ── 5 · the three groups, the app's own words ── */
 const GROUPS = [
-  { label: "Long-term products", sub: "4+ weeks", items: ["jar-olive", "pump-milky"] },
-  { label: "Recent", sub: "1–4 weeks", items: ["bottle-brown", "dropper-green"] },
-  { label: "New addition", sub: "< 1 week", items: ["bottle-milky"] },
+  { label: "Long-term products", sub: "4+ weeks", age: 3, items: ["jar-olive", "pump-milky"] },
+  { label: "Recent", sub: "1–4 weeks", age: 2, items: ["bottle-brown", "dropper-green"] },
+  { label: "New addition", sub: "< 1 week", age: 1, items: ["bottle-milky"] },
 ];
 const ROW_W = 860;
 const ROW_H = 150;
@@ -96,7 +96,10 @@ const OPEN_UP = 49;
 const BACK_Y = ROWS_CAP_TOP - OPEN_UP + 65 + 24 + 55;
 
 /* ── 7–8 · the row again; the paused one leaves it ── */
-const R7 = { size: 160, gap: 44, y: 470 };
+/* the row sits low enough that it and its caption are one block centred on the
+   frame (4 Oct 2026, asked for: the caption sat at the top, the row mid frame) */
+const R7 = { size: 160, gap: 44, y: 580 };
+const R7_CAP_TOP = R7.y - R7.size / 2 - 200;
 const r7x = (i: number) => W / 2 + (i - 2) * (R7.size + R7.gap);
 const PAUSED = "bottle-milky";
 const FOUR = ORDER.filter((p) => p !== PAUSED);
@@ -266,11 +269,13 @@ export const Story2: React.FC = () => {
   return (
     <AbsoluteFill style={{ opacity: 1 - endFade }}>
       {/* ── captions ── */}
-      {/* on the same line as beat 5's caption, so the title never jumps (3 Oct 2026) */}
-      <Caption text="LUX points to **what to pause** first." at={P6 + 6} out={SCORE - 6} top={ROWS_CAP_TOP} />
+      {/* on the same line as beat 5's caption, so the title never jumps (3 Oct 2026); it
+          leaves as the orb sets off for the analysing screen (4 Oct 2026, asked for) */}
+      <Caption text="LUX points to **what to pause** first." at={P6 + 6} out={AN0} top={ROWS_CAP_TOP} />
       <Caption text="And **what to do next**, step by step." at={SCORE + 8} out={SCORE + 184} />
-      <Caption text="Thinking of adding something? **Check** it first." at={SCORE + 214} out={P7 - 8} />
-      <Caption text="Pause one product," at={P7 + 40} out={P9} />
+      <Caption text="Thinking of adding something? **Check** it first." at={SCORE + 214} out={P7 - 8} top={COMPAT_CAP_TOP} />
+      {/* over the row while it is the whole picture; up to the top as the graph comes in */}
+      <Caption text="Pause one product," at={P7 + 40} out={P9} top={lerp(R7_CAP_TOP, 64, e(f, P8 - 10, P8 + 16, 0, 1, EASE_IN_OUT))} />
       <Caption text="then note **what happens**." at={P8 + 6} out={P9 + 2} top={64 + 65} />
 
       {/* ── 5 · the groups and their axis ── */}
@@ -296,13 +301,39 @@ export const Story2: React.FC = () => {
                 backdropFilter: "blur(16px)",
                 display: "flex",
                 alignItems: "center",
-                fontFamily: URBANIST,
+                fontFamily: FIGTREE,
                 opacity: k * (1 - 0.5 * dim) * (1 - rowsOut) * (1 - anDim),
               }}
             >
               <div>
                 <div style={{ fontSize: 44, fontWeight: 400, color: C.ink, lineHeight: 1.1 }}>{g.label}</div>
-                <div style={{ fontSize: 30, color: C.inkMuted, marginTop: 6 }}>{g.sub}</div>
+                {/* the window as the app draws it since 3 Oct 2026: a glass pill
+                    with a three-bar age meter (MyProducts' `.window`, ×2.2) */}
+                <div
+                  style={{
+                    display: "inline-flex",
+                    alignItems: "center",
+                    gap: 13,
+                    height: 54,
+                    marginTop: 12,
+                    padding: "0 26px 0 20px",
+                    borderRadius: 999,
+                    border: `1.5px solid ${C.panelEdge}`,
+                    background: C.glass,
+                    boxShadow: `inset 0 1.5px 0 ${C.panelRim}`,
+                    fontSize: 28,
+                    fontWeight: 500,
+                    color: "#4b4b57",
+                    whiteSpace: "nowrap",
+                  }}
+                >
+                  <span style={{ display: "inline-flex", alignItems: "flex-end", gap: 4, height: 26 }}>
+                    {[1, 2, 3].map((b) => (
+                      <span key={b} style={{ width: 9, height: [13, 20, 26][b - 1], borderRadius: 4, background: b <= g.age ? "#39386f" : "rgba(57, 56, 111, 0.18)" }} />
+                    ))}
+                  </span>
+                  {g.sub}
+                </div>
               </div>
               <div
                 style={{
@@ -369,7 +400,7 @@ export const Story2: React.FC = () => {
                   position: "absolute",
                   right: W - AXIS_X + 28,
                   top: l.y - 20,
-                  fontFamily: URBANIST,
+                  fontFamily: FIGTREE,
                   fontSize: 32,
                   lineHeight: "40px",
                   fontWeight: l.bold ? 700 : 300,
@@ -479,7 +510,7 @@ export const Story2: React.FC = () => {
                 width: 400,
                 top: R7.y + R7.size / 2 + 22,
                 textAlign: "center",
-                fontFamily: URBANIST,
+                fontFamily: FIGTREE,
                 fontSize: 32,
                 fontWeight: 500,
                 color: lerp(0, 1, strike) > 0.5 ? C.inkMuted : C.ink,
@@ -521,7 +552,7 @@ export const Story2: React.FC = () => {
               display: "flex",
               alignItems: "center",
               justifyContent: "center",
-              fontFamily: URBANIST,
+              fontFamily: FIGTREE,
               fontWeight: 600,
               fontSize: 26,
               letterSpacing: "0.04em",
@@ -609,7 +640,7 @@ const TrendCard: React.FC<{ t: number }> = ({ t }) => {
         borderRadius: 24,
         background: "linear-gradient(160deg, rgba(76,128,139,0.96), rgba(46,106,115,0.97))",
         boxShadow: "inset 0 1px 0 rgba(255,255,255,0.22), 0 30px 60px -30px rgba(30,60,66,0.55)",
-        fontFamily: URBANIST,
+        fontFamily: FIGTREE,
         color: white,
       }}
     >
@@ -715,7 +746,7 @@ const ScoreCard: React.FC<{ score: number; name: string; brand?: string; band: s
         background: C.panel,
         border: `1.5px solid ${C.panelEdge}`,
         boxShadow: `inset 0 1.5px 0 ${C.panelRim}, 0 40px 70px -34px rgba(44, 69, 70, 0.4)`,
-        fontFamily: URBANIST,
+        fontFamily: FIGTREE,
         color: C.ink,
         display: "flex",
         flexDirection: "column",
@@ -764,7 +795,10 @@ const CARDS = [
 ];
 const CARD_GAP = 24;
 const CARDS_X = W / 2 - (3 * 400 + 2 * CARD_GAP) / 2;
-const COMPAT_Y = 340;
+/* the caption and the three cards as one block centred on the frame (4 Oct 2026,
+   asked for: the caption sat at the top with the cards well below it) */
+const COMPAT_CAP_TOP = 205;
+const COMPAT_Y = COMPAT_CAP_TOP + 175;
 
 const ResultsPage: React.FC<{ t: number; out: number }> = ({ t, out }) => {
   const panelIn = ee(t, 6, 30);
@@ -777,7 +811,7 @@ const ResultsPage: React.FC<{ t: number; out: number }> = ({ t, out }) => {
   const border = ee(t, 18, 52, EASE_IN_OUT);
   const pill = ee(t, 44, 58);
   return (
-    <AbsoluteFill style={{ opacity: 1 - out, fontFamily: URBANIST }}>
+    <AbsoluteFill style={{ opacity: 1 - out, fontFamily: FIGTREE }}>
       {/* what to do next */}
       <div
         style={{
@@ -898,7 +932,7 @@ const Analysing: React.FC<{ t: number }> = ({ t }) => {
   const out = interpolate(t, [AN - 26, AN - 6], [0, 1], clamp);
   const done = Math.floor((t - 44) / AN_STEP);
   return (
-    <AbsoluteFill style={{ opacity: inn * (1 - out), fontFamily: URBANIST }}>
+    <AbsoluteFill style={{ opacity: inn * (1 - out), fontFamily: FIGTREE }}>
       <div style={{ position: "absolute", left: 0, right: 0, top: 548, textAlign: "center", fontSize: 46, fontWeight: 500, color: C.ink, translate: `0 ${(1 - inn) * 12}px` }}>
         LUX is analysing…
       </div>
@@ -945,7 +979,7 @@ const GalleryCard: React.FC<{ t: number }> = ({ t }) => {
         background: "rgba(214, 232, 236, 0.82)",
         border: `1px solid ${C.panelEdge}`,
         boxShadow: `inset 0 1px 0 ${C.panelRim}, 0 30px 60px -30px rgba(44, 69, 70, 0.4)`,
-        fontFamily: URBANIST,
+        fontFamily: FIGTREE,
         color: C.ink,
       }}
     >

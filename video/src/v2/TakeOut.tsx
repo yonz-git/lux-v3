@@ -1,7 +1,7 @@
 import { AbsoluteFill, Img, interpolate, staticFile, useCurrentFrame } from "remotion";
 import { Caption, Pulse } from "../scenes/Walkthrough";
 import { TILES } from "../scenes/Hook";
-import { C, clamp, EASE_IN, EASE_IN_OUT, EASE_OUT, URBANIST } from "../theme";
+import { C, clamp, EASE_IN, EASE_IN_OUT, EASE_OUT, FIGTREE } from "../theme";
 
 export const TAKEOUT_LEN = 216;
 
@@ -80,7 +80,7 @@ export const TakeOut: React.FC = () => {
           borderRadius: 22,
           display: "flex",
           alignItems: "center",
-          fontFamily: URBANIST,
+          fontFamily: FIGTREE,
           fontWeight: 600,
           fontSize: 26,
           letterSpacing: "0.04em",
@@ -108,7 +108,7 @@ export const TakeOut: React.FC = () => {
                 display: "flex",
                 alignItems: "center",
                 justifyContent: "center",
-                fontFamily: URBANIST,
+                fontFamily: FIGTREE,
                 fontSize: 26,
                 fontWeight: 500,
                 border: `1.5px solid ${filled > 0.5 ? "transparent" : C.glassEdge}`,

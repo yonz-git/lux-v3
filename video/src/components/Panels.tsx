@@ -1,5 +1,5 @@
 import { Img, interpolate, staticFile, useCurrentFrame } from "remotion";
-import { C, clamp, EASE_OUT, URBANIST } from "../theme";
+import { C, clamp, EASE_OUT, FIGTREE } from "../theme";
 import { Headline } from "./Type";
 
 /**
@@ -24,7 +24,7 @@ export const Panel: React.FC<{ width: number; children: React.ReactNode; style?:
       border: `1.5px solid ${C.panelEdge}`,
       boxShadow: `inset 0 1.5px 0 ${C.panelRim}, 0 40px 70px -34px rgba(44, 69, 70, 0.4)`,
       backdropFilter: "blur(18px)",
-      fontFamily: URBANIST,
+      fontFamily: FIGTREE,
       color: C.ink,
       ...style,
     }}

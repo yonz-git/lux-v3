@@ -3,7 +3,7 @@ import { Card, track, type Key } from "../components/Card";
 import { EvidenceCard, ProfileCard, VerdictCard } from "../components/Panels";
 import { Phone, SCREEN_W, type ScreenLayer } from "../components/Phone";
 import { Headline } from "../components/Type";
-import { C, clamp, EASE_IN_OUT, EASE_OUT, URBANIST } from "../theme";
+import { C, clamp, EASE_IN_OUT, EASE_OUT, FIGTREE } from "../theme";
 import { useLayout } from "../layout";
 import M from "../measure.json";
 import SC from "../screens.json";
@@ -448,7 +448,7 @@ export const Walkthrough: React.FC = () => {
                     position: "absolute",
                     right: W - AXIS_X + 26,
                     top: l.y - 19,
-                    fontFamily: URBANIST,
+                    fontFamily: FIGTREE,
                     fontSize: 31,
                     lineHeight: "38px",
                     fontWeight: l.bold ? 700 : 300,
