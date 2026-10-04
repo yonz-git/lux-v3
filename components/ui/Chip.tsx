@@ -58,6 +58,7 @@ export function Chip({
   selected,
   control = "checkbox",
   size = "default",
+  tone = "brand",
   disabled = false,
   icon,
   onToggle,
@@ -74,6 +75,12 @@ export function Chip({
    * note above, and raise it in Figma before reusing it.
    */
   size?: "default" | "compact";
+  /**
+   * The SELECTED fill. `brand` is the indigo every chip had; `teal` is the
+   * face diagram's picked-region pill, which the investigation questions and
+   * the check-in take (4 Oct 2026, asked for directly — "green pills").
+   */
+  tone?: "brand" | "teal";
   /** unavailable for now — see the note above */
   disabled?: boolean;
   /** a leading glyph from `icons.tsx`, the way VidGen's option chips carry one */
@@ -87,6 +94,7 @@ export function Chip({
       aria-checked={selected}
       data-selected={selected}
       data-size={size === "compact" ? "compact" : undefined}
+      data-tone={tone === "teal" ? "teal" : undefined}
       disabled={disabled}
       /* still a `t-*` class either way — rule 3 holds for both sizes */
       className={`${styles.chip} ${size === "compact" ? "t-label-sm" : "t-chip"}`}

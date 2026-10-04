@@ -38,7 +38,10 @@ export function QuestionPanel({
               ("apply the small orb for all those icons"): LUX asking the
               question, as the orb speaks the check-in and the results */}
           <span className={styles.orb} aria-hidden="true">
-            <Orb size="26px" />
+            {/* ⚠️ THE CHAT'S ORB, SHRUNK — 4 Oct 2026, asked for directly
+                ("replace all the small orbs with the one in chat"): the same
+                `animateIn halo` the check-in's 50 avatar wears, at 26 */}
+            <Orb size="26px" animateIn halo />
           </span>
           {question}
         </h2>

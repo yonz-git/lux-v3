@@ -65,12 +65,13 @@ export function SkinType() {
             reader still announces "radio button, 2 of 5", and picking one
             replaces the last. Raise a single-select Chip in Figma. */}
         <div
-          className={`${panel.chips} ${panel.teal}`}
+          className={panel.chips}
           role="radiogroup"
           aria-label="What's your skin type?"
         >
           {SKIN_TYPES.map((o) => (
             <Chip
+              tone="teal"
               key={o}
               control="radio"
               label={o}
@@ -83,12 +84,13 @@ export function SkinType() {
 
       <QuestionPanel question="Do any of these apply?">
         <div
-          className={`${panel.chips} ${panel.teal}`}
+          className={panel.chips}
           role="group"
           aria-label="Do any of these apply?"
         >
           {[...TENDENCIES, ...EXCLUSIVES].map((label) => (
             <Chip
+              tone="teal"
               key={label}
               label={label}
               selected={tendencies.includes(label)}

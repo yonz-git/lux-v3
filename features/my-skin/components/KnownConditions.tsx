@@ -41,12 +41,13 @@ export function KnownConditions() {
           already says what kind. */}
       <QuestionPanel question="Any diagnosed conditions?">
         <div
-          className={`${panel.chips} ${panel.teal}`}
+          className={panel.chips}
           role="group"
           aria-label="Any diagnosed conditions?"
         >
           {CONDITIONS.map((label) => (
             <Chip
+              tone="teal"
               key={label}
               label={label}
               selected={selected.includes(label)}

@@ -202,7 +202,10 @@
 }
 
 .diagram {
-  margin-top: var(--space-xl); /* 20 */
+  /* ⚠️ 32, NOT 20, under LUX's bubble — 4 Oct 2026, asked for directly
+     ("give a bit more space here"): the bubble is a voice, the face card is
+     the thing to act on, and 20 sat them together as one block */
+  margin-top: var(--space-3xl);
 }
 
 /* .other is the spacing wrapper for THREE states now — the collapsed button,

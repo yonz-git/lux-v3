@@ -363,7 +363,8 @@ export function StartInvestigation() {
           stays on the words, so the face's `aria-describedby` still reads
           them. */}
       <div className={styles.coach}>
-        <Orb size="40px" className={styles.coachOrb} />
+        {/* the chat's orb (`animateIn halo`, as ChatPanel's 50), at 40 */}
+        <Orb size="40px" animateIn halo className={styles.coachOrb} />
         <ChatBubble from="ai" hug className={styles.coachBubble}>
           <span id={instructionId}>
             Pick a symptom, then tap where it shows on your face.

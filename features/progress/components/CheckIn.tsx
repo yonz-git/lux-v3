@@ -326,7 +326,11 @@ export function CheckInPanel({
                 stops it being read twice. Here the <h1> is the panel's
                 visually-hidden "Daily Check-in" — a different string — so each
                 question exists only in its bubble and has to be announced. */}
-            <ChatBubble from="ai" size="compact">How is your skin doing today?</ChatBubble>
+            {/* every bubble here HUGS its longest line — 4 Oct 2026, asked for
+                directly ("trim the unnecessary space in the bubble"): a wrapped
+                bubble otherwise keeps the full column width, leaving a gap
+                after its shorter lines. See `hug` on ChatBubble. */}
+            <ChatBubble from="ai" size="compact" hug>How is your skin doing today?</ChatBubble>
 
             <div
               className={styles.options}
@@ -339,6 +343,7 @@ export function CheckInPanel({
                   key={label}
                   control="radio"
                   size="compact"
+                  tone="teal"
                   label={label}
                   selected={trend === label}
                   onToggle={() => pickTrend(label)}
@@ -350,7 +355,7 @@ export function CheckInPanel({
           {/* ---- turn 2 — what specifically changed ------------------------- */}
           {choice && (
             <div className={styles.turn} ref={turn2Ref}>
-              <ChatBubble from="ai" size="compact">
+              <ChatBubble from="ai" size="compact" hug>
                   {changeReply(choice.direction)}
                 </ChatBubble>
 
@@ -365,6 +370,7 @@ export function CheckInPanel({
                     <Chip
                       key={label}
                       size="compact"
+                      tone="teal"
                       label={label}
                       selected={changes.includes(label)}
                       /* `No change` is an EXCLUSIVE option, so toggleMulti
@@ -386,7 +392,7 @@ export function CheckInPanel({
           {/* ---- turn 3 — optional note and photo --------------------------- */}
           <Collapse open={askedExtras}>
             <div className={styles.turn} ref={turn3Ref}>
-              <ChatBubble from="ai" size="compact">
+              <ChatBubble from="ai" size="compact" hug>
                 Would you like to add any notes or take a photo?
               </ChatBubble>
 
