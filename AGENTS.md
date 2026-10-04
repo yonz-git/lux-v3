@@ -178,7 +178,9 @@ Figma frame ids and each step's `isComplete` rule.
 
 **⚠️ HUB vs FLOW — the header tells you which, and `HubScreen` vs
 `QuestionScreen` encodes it.** A screen is an investigation step if and only if
-it carries BOTH a progress track AND `Save & exit`. Hub screens carry neither,
+it carries a progress track. ⚠️ It used to be "a track AND `Save & exit`";
+`Save & exit` was removed on 4 Oct 2026, asked for directly, and the rest of
+this file's mentions of it describe what it was. Hub screens carry neither,
 and a hub LANDING has no back chevron either (nothing to go back to). A pushed
 view keeps the back chevron and still has no track. Nothing outside
 `/investigation/*` is a flow step — CHECK and PROGRESS have no `StepId`.

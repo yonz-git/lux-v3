@@ -1,11 +1,10 @@
 import Link from "next/link";
 import styles from "./ScreenHeader.module.css";
 import { ArrowLeftIcon } from "@/components/ui/icons";
-import { SmallButton } from "@/components/ui/SmallButton";
 
 /**
  * The onboarding header — the order is fixed and is enforced by QuestionScreen:
- *   1. this row: back chevron LEFT, `Save & exit` RIGHT
+ *   1. this row: the back chevron, LEFT
  *   2. a 12px spacer
  *   3. the step-progress track
  *   4. a spacer, then the content
@@ -17,22 +16,19 @@ import { SmallButton } from "@/components/ui/SmallButton";
  * footer holds exactly one primary action, and top-left back matches the
  * platform gesture.
  *
- * `Save & exit`, not `Skip` — the investigation is resumable, so the escape
- * hatch saves rather than discards.
+ * ⚠️ `Save & exit` IS GONE, 4 Oct 2026 — asked for directly ("remove save and
+ * exit"). It sat at the right of this row on every flow step. It promised a
+ * resumability the app does not have (answers last a day in one browser, see
+ * AGENTS.md "PERSISTENCE"), and every step already keeps its answers as they
+ * are given, so leaving by the nav loses nothing it would have saved. A flow
+ * step is now told from a hub by its progress track alone.
  */
-export function ScreenHeader({
-  backHref,
-  saveHref = "/",
-}: {
-  backHref: string;
-  saveHref?: string;
-}) {
+export function ScreenHeader({ backHref }: { backHref: string }) {
   return (
     <div className={styles.row}>
       <Link href={backHref} className={`${styles.back} pressable`} aria-label="Back">
         <ArrowLeftIcon />
       </Link>
-      <SmallButton label="Save & exit" href={saveHref} />
     </div>
   );
 }

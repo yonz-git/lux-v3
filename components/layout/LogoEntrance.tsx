@@ -67,7 +67,7 @@ import styles from "./LogoEntrance.module.css";
  *
  * ⚠️ IT PLAYS ONCE PER PAGE LOAD — and until 13 Sep 2026 it played on every
  * mount of `/`, on the claim that nothing navigates back here. Two things do:
- * `Save & exit` on every flow step (`ScreenHeader`'s `saveHref` defaults to
+ * `Save & exit` on every flow step (removed 4 Oct 2026; `ScreenHeader`'s `saveHref` defaulted to
  * `/`) and Back on step 1 (`prevHref`). Each return replayed the three-second
  * lockup and held Welcome's CTA until ~4.8s. `played` (module state) survives
  * client-side navigation and resets on reload, so a cold start still gets
