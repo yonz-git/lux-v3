@@ -1,16 +1,21 @@
 /**
  * The face artwork generator — `npm run face`.
  *
- * THE FACE DIAGRAM'S TWO ASSETS ARE TRACED FROM A FREE HEAD SCAN.
+ * ⚠️ THE FACE DIAGRAM'S TWO ASSETS ARE TRACED FROM A SUPPLIED REFERENCE IMAGE.
  * `features/my-skin/assets/face-art.svg` (the head as a wireframe) and
  * `face-silhouette.svg` (its outline, the mask for the card's shading) both
  * come out of this file, and nothing else edits them. The source is
- * `assets/source/head-wire.png`, rendered by `scripts/face-source.py` from
- * Lee Perry-Smith's head scan (CC BY 3.0, `assets/source/CREDITS.md`) as a
- * curved grid of light lines on black. ⚠️ UNTIL 4 Oct 2026 THE SOURCE WAS A
- * WIREFRAME HEAD FOUND ON PINTEREST; it was replaced, asked for directly
- * ("just use free images"), and the pipeline below did not change — any
- * light-lines-on-black image works; only the three measured landmarks do.
+ * `assets/source/face-reference.png`: the brightest channel of a wireframe
+ * head image found on Pinterest (pin 305611524731014086 — a glowing blue
+ * quad-mesh head on black, front view), converted once with PIL on 26 Sep
+ * 2026. ⚠️ IT IS SOMEONE ELSE'S ARTWORK. A procedural head was built and
+ * reshaped against it first and did not read as a real face; image
+ * generation was blocked on the account (Gemini credits, Weave link); the
+ * decision to trace the reference itself was the product owner's, asked for
+ * directly ("use the reference, trace it and wire it in"). Replace the
+ * source with a generated or licensed head before anything ships beyond
+ * the prototype — the pipeline below is the same for any light-lines-on-
+ * black image; only the three measured landmarks change.
  *
  * What this does: registers the image to the diagram's frame, thresholds
  * its lines, THINS every stroke to a one-pixel skeleton (Zhang–Suen),
@@ -25,13 +30,15 @@
  * region pill on the drawing's landmarks in the 670×980 frame (row r lands
  * at box y = 10 + r·280/830, see `.form` in FaceDiagram.module.css): eyes
  * 382, lips 631, centre x 335. `SOURCE` holds those rows measured on the
- * image; one uniform scale (1.008) maps them. ⚠️ THE SCAN'S MOUTH SITS
- * CLOSER TO ITS EYES, relative to its crown, than the pills' spacing, so at
- * that scale the crown leaves the frame. It is drawn at 0.835 (`ENLARGE`
- * 0.828) and dropped 20 rows (`DROP`), which splits the difference: the
- * eyes land about 20 below their pill, the nose tip on its pill, the lips
- * about 23 above theirs, the crown at the frame top. Every pill still sits
- * on its feature — a pill is ~100 frame rows tall.
+ * image; one uniform scale (0.844) maps them. ⚠️ THE HEAD IS THEN DRAWN 5%
+ * LARGER THAN THAT (`ENLARGE`, asked for directly 26 Sep 2026): the scale
+ * is 0.886, taken about the eye row and dropped 3 rows (`DROP`) so the
+ * crown clears the frame top. The eyes land at 385, 3 below their pill;
+ * the lips at 646, 15 below theirs; the nose tip at 545, 38 below its pill
+ * at 507 (this head's nose is longer, relative to eyes and lips, than the
+ * landmark spacing, and the enlargement stretches it further); the chin at
+ * 803. Every pill still sits on its feature — a pill is ~100 frame rows
+ * tall.
  *
  * ⚠️ THE NECK IS DRAWN, NOT TRACED. The image is cut at the chin. The neck
  * and the shoulders come from a SECOND supplied reference — a clean line
@@ -72,21 +79,19 @@ const SS = 2;
 /** the pills' landmarks in the frame (FaceDiagram.tsx) */
 const FRAME = { eyes: 382, lips: 631, cx: 335 };
 /** the same landmarks measured on the source image, in its pixels */
-const SOURCE = { eyes: 510, lips: 757, cx: 428, width: 856, height: 976 };
+const SOURCE = { eyes: 460, lips: 755, cx: 410, width: 856, height: 976 };
 /** ⚠️ drawn 5% larger than the registration gives, about the eye row (asked
     for directly 26 Sep 2026), and dropped `DROP` rows so the crown clears the
     frame top — see the header for where the landmarks land */
-const ENLARGE = 0.828;
-const DROP = 20;
+const ENLARGE = 1.05;
+const DROP = 3;
 
 /* ---------------------------------------------------------------- neck */
 
 /** the neck's half-width in frame px: 0.92 of the lips' width, the ratio in
     the reference line drawing (neck 330 wide over lips 180), on this head's
-    traced mouth (~200 wide after the enlargement). ⚠️ 140 since the head
-    scan replaced the Pinterest head (4 Oct 2026): this head is drawn about
-    three quarters as wide, and at 180 the neck hung off the ears */
-const NECK_HALF = 140;
+    traced mouth (~200 wide after the enlargement) */
+const NECK_HALF = 180;
 /** the left neck side and shoulder, from the second reference: x from the
     neck's centre and y below the chin, both in neck half-widths (165 px
     there). It runs straight down from the jaw, bows out gently, then sweeps
@@ -723,7 +728,7 @@ const args = process.argv.slice(2);
 const previewAt = args.includes("--preview") ? args[args.indexOf("--preview") + 1] : null;
 const assets = resolve(dirname(new URL(import.meta.url).pathname), "../features/my-skin/assets");
 
-const src = readGrayPng(resolve(assets, "source/head-wire.png"));
+const src = readGrayPng(resolve(assets, "source/face-reference.png"));
 if (src.width !== SOURCE.width || src.height !== SOURCE.height) throw new Error(`the source is ${src.width}x${src.height}, not the measured ${SOURCE.width}x${SOURCE.height}`);
 
 console.time("trace");
