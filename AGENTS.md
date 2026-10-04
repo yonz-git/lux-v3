@@ -95,7 +95,8 @@ folder path. **Do not add a fifth section**: four folders, four nav items. See
 ```
 app/                 routes only — every page.tsx is a thin shell
 components/ui/       the design system: Button, SmallButton, Chip, OptionRow,
-                     Tag, TextField, DateField, SearchField, ChatBubble, Sheet,
+                     Tag, TextField, ConfirmField, DateField, SearchField,
+                     ChatBubble, Sheet,
                      Collapse, DataCard, Orb, CameraCapture, icons
 components/layout/   app chrome: BottomNav, HubScreen, ScreenHeader,
                      RouteAnnouncer, Snackbar
@@ -198,8 +199,10 @@ back onto the numbers it just changed. `/progress/check-in` still exists,
 unchanged, for deep links and for the analysis's "pause and check in" push.
 ⚠️ **BOTH RENDER `CheckInPanel`** — the conversation is written once and the
 only thing that varies is the way out (`closeHref` + push, or `onClose` +
-close). Do not fork it. The focus trap, Escape and focus restoration come from
-`lib/useModalDialog.ts`, shared with `Sheet`; the scrim deliberately does NOT
+close). Do not fork it. The focus trap, Escape, the scroll lock and hiding the
+page from assistive tech come from Radix Dialog (`@radix-ui/react-dialog`, 4 Oct
+2026), shared with `Sheet`, with `useDialogFocus` in `lib/useModalDialog.ts`
+restoring LUX's own focus landing and return; the scrim deliberately does NOT
 close this one, because the store holds no partial check-in.
 
 ⚠️ **THE SELFIE SHUTTER ONLY EVER CAPTURES — IT USED TO TOGGLE, AND ITS OWN
@@ -1076,8 +1079,10 @@ differently.
 | Chip | pill | zero or more, short labels | `role="checkbox"` |
 | Chip (radio) | pill | exactly one, SHORT ORDINAL SCALE only | `role="radio"` |
 
-⚠️ **THE RADIO CHIP BENDS THIS TABLE AND IS SCOPED ON PURPOSE.** It exists for
-ONE case — the daily check-in's five-point scale — and the caller MUST supply a
+⚠️ **THE RADIO CHIP BENDS THIS TABLE AND IS SCOPED ON PURPOSE.** It existed for
+ONE case — the daily check-in's five-point scale — and has a SECOND since 4 Oct
+2026, asked for directly: step 2's skin type, five short exclusive answers
+beside the tendency chips. The caller MUST supply a
 real `role="radiogroup"`. Do not reach for it to make an ordinary multi-select
 tidier. **Raise a single-select Chip variant in Figma** rather than widening it.
 

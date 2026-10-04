@@ -55,7 +55,8 @@ import { useEffect } from "react";
  *   - `prefers-reduced-motion`. The global duration collapse in `globals.css`
  *     cannot reach a JS scroll, so this checks the query itself, live.
  *   - Ctrl/Cmd + wheel (zoom) and a mainly horizontal wheel.
- *   - A locked page. `useModalDialog` sets `overflow: hidden` on `html` while a
+ *   - A locked page. Radix Dialog (under `Sheet` and the check-in overlay) sets
+ *     `overflow: hidden` on `body` while a
  *     modal is up, and a JS scroll would go straight through that lock. ⚠️ The
  *     lock is the DOCUMENT's: the tray above it is a scroller of its own and
  *     still glides, which is the case this was widened for.

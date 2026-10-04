@@ -81,7 +81,7 @@
   max-height: calc(100dvh - var(--space-4xl) - var(--space-inset));
   overflow-y: auto;
   /* ⚠️ A SCROLL THAT STARTS IN THE TRAY STAYS IN THE TRAY — added 12 Sep 2026,
-     alongside the page-level lock in `useModalDialog`. Without it, reaching the
+     alongside the page-level lock Radix Dialog holds. Without it, reaching the
      end of a long results list hands the rest of the gesture to the document
      and the SCREEN BEHIND THE MODAL scrolls — on touch, in one unbroken drag,
      which is where it is most obvious. `ChatPanel`'s body has carried this

@@ -1,10 +1,10 @@
 "use client";
 
 import { useEffect, useRef } from "react";
-import { createPortal } from "react-dom";
+import * as Dialog from "@radix-ui/react-dialog";
 import styles from "./Sheet.module.css";
 import { CloseIcon } from "./icons";
-import { useDialogPresence, useModalDialog, useMounted } from "@/lib/useModalDialog";
+import { useDialogFocus, useDialogPresence } from "@/lib/useModalDialog";
 
 /**
  * The modal tray — Figma `04 — Add product · method sheet` (576:1376) on mobile
@@ -27,6 +27,14 @@ import { useDialogPresence, useModalDialog, useMounted } from "@/lib/useModalDia
  *
  * The design system has no Bottom Sheet with a blur and no scrim token, so this
  * is composed from the recipe rather than instanced. See AGENTS.md.
+ *
+ * ⚠️ RADIX DIALOG IS UNDERNEATH, AS OF 4 Oct 2026 — asked for directly. The
+ * scrim is `Dialog.Overlay`, the tray `Dialog.Content`, the portal
+ * `Dialog.Portal`: Radix runs the focus trap, Escape, the press on the scrim,
+ * the page's scroll lock and hiding the rest of the page from assistive tech.
+ * Every pixel is still this file's and the CSS's — Radix ships no styles.
+ * `forceMount` keeps both nodes up for the exit, which `useDialogPresence`
+ * times; see `lib/useModalDialog.ts` for the two focus behaviours put back.
  *
  * ⚠️ IT RENDERS IN A PORTAL ON `document.body`, AND IT HAS TO. `position:
  * fixed` is relative to the viewport only while no ancestor establishes a
@@ -89,30 +97,14 @@ export function Sheet({
   dismiss?: "label" | "corner";
 }) {
   const trayRef = useRef<HTMLDivElement>(null);
-  const mounted = useMounted();
 
-  /* Escape, the focus trap and the return of focus to whatever opened the tray
-     — `lib/useModalDialog.ts` owns all three, and owns the note explaining why
-     `onClose` is read through a ref rather than depended on. PROGRESS's
-     check-in overlay is the second caller. */
   /* ⚠️ `present` OUTLIVES `open` BY THE LENGTH OF THE EXIT — see
      `useDialogPresence`. The tray used to leave in one frame after a 320ms
-     entrance. Every behaviour still keys off `open`: the dialog stops BEING
-     modal the moment the user closes it, and only its painting lingers. */
+     entrance. Every behaviour still keys off `open`: Radix stops treating the
+     dialog as modal the moment the user closes it, and only its painting
+     lingers. */
   const { present, leaving } = useDialogPresence(open);
-
-  /* Escape, the focus trap and the return of focus to whatever opened the tray
-     — `lib/useModalDialog.ts` owns all three, and owns the note explaining why
-     `onClose` is read through a ref rather than depended on. PROGRESS's
-     check-in overlay is the second caller.
-     ⚠️ ARMED ON `open && present`, NOT `open` — 17 Sep 2026. `present` lags
-     `open` by one render (it is set in an effect), so on the render where
-     `open` flips the tray is not in the DOM yet and the hook's `focus()` found
-     a null ref: every Sheet left focus on its opener, and a screen reader never
-     heard the dialog open. Measured on all four Sheets and the check-in
-     overlay. The `&&` keeps the closing edge on `open` — the trap disarms and
-     focus returns the moment the user closes, before the exit has played. */
-  useModalDialog(open && present, onClose, trayRef);
+  const focus = useDialogFocus(open, trayRef);
 
   /* The drag writes the tray's transform inline, frame by frame — state would
      re-render the whole tray on every pointermove. */
@@ -167,36 +159,44 @@ export function Sheet({
     }
   }
 
-  if (!present || !mounted) return null;
+  if (!present) return null;
 
-  return createPortal(
-    <>
-      {/* `state/pressed-overlay` at 14% is the only darkening token LUX has, and
-          it is weak for a modal. Flagged in the handoff panel rather than
-          invented around — a real scrim token belongs in Figma. */}
-      <div
-        className={styles.scrim}
-        data-tray="scrim"
-        data-state={leaving ? "leaving" : undefined}
-        /* a scrim on its way out must not take a second dismissal */
-        onClick={leaving ? undefined : onClose}
-        aria-hidden="true"
-      />
-      <div
-        ref={trayRef}
-        className={className ? `${styles.tray} ${className}` : styles.tray}
-        data-tray="tray"
-        data-state={leaving ? "leaving" : undefined}
-        /* ⚠️ `inert` WHILE LEAVING, NOT JUST UNCLICKABLE. The dialog is already
-           closed as far as focus and assistive tech are concerned — focus has
-           gone back to the opener — so a fading copy of it must not be
-           reachable by pointer, Tab or a screen reader for those 200ms. */
-        inert={leaving}
-        role="dialog"
-        aria-modal="true"
-        aria-label={title}
-        tabIndex={-1}
-      >
+  return (
+    <Dialog.Root open={open} onOpenChange={(next) => !next && onClose()}>
+      <Dialog.Portal forceMount>
+        {/* `state/pressed-overlay` at 14% is the only darkening token LUX has,
+            and it is weak for a modal. Flagged in the handoff panel rather than
+            invented around — a real scrim token belongs in Figma. A press on it
+            closes the tray through Radix's outside press. */}
+        <Dialog.Overlay
+          forceMount
+          className={styles.scrim}
+          data-tray="scrim"
+          /* overrides Radix's own `data-state="open"`/`"closed"`: the CSS keys
+             the exit off `leaving` */
+          data-state={leaving ? "leaving" : undefined}
+        />
+        <Dialog.Content
+          forceMount
+          ref={trayRef}
+          className={className ? `${styles.tray} ${className}` : styles.tray}
+          data-tray="tray"
+          data-state={leaving ? "leaving" : undefined}
+          /* ⚠️ `inert` WHILE LEAVING, NOT JUST UNCLICKABLE. The dialog is already
+             closed as far as focus and assistive tech are concerned — focus has
+             gone back to the opener — so a fading copy of it must not be
+             reachable by pointer, Tab or a screen reader for those 200ms. */
+          inert={leaving}
+          aria-describedby={undefined}
+          tabIndex={-1}
+          {...focus}
+          /* a field that owns its Escape (ConfirmField's ✕) keeps it: the
+             dialog does not close under it */
+          onEscapeKeyDown={(e) => {
+            if ((e.target as HTMLElement | null)?.closest?.("[data-own-escape]"))
+              e.preventDefault();
+          }}
+        >
         {/* mobile only — the desktop dialog has no grabber. Pull it down to
             close; see the doc comment. */}
         <span
@@ -207,6 +207,12 @@ export function Sheet({
           onPointerUp={onGrabEnd}
           onPointerCancel={onGrabEnd}
         />
+        {/* the dialog's name, as `aria-label` gave it before — a span, so it
+            adds no heading to the outline, and AFTER the grabber, which a
+            tablet rule in globals.css finds as the tray's first child */}
+        <Dialog.Title asChild>
+          <span className="visually-hidden">{title}</span>
+        </Dialog.Title>
         {/* the tray's one way out, on every view — see the doc comment. A
             corner ✕ comes FIRST in the DOM, so Tab reaches the exit before
             the content, as it would reach a header's close. */}
@@ -226,8 +232,8 @@ export function Sheet({
             {dismissLabel}
           </button>
         )}
-      </div>
-    </>,
-    document.body,
+        </Dialog.Content>
+      </Dialog.Portal>
+    </Dialog.Root>
   );
 }

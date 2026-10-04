@@ -391,6 +391,14 @@ wrap and the return of focus to whatever opened the dialog were `Sheet`'s, in
 simply BE a `Sheet` — and a second copy of a focus trap drifts apart the first
 time one of them is fixed. `Sheet` is unchanged in behaviour; it calls the hook.
 
+**⚠️ AND SINCE 4 Oct 2026 BOTH ARE RADIX DIALOG UNDERNEATH** — asked for
+directly. The hand-built trap, Escape listener and `overflow: hidden` lock were
+replaced by `@radix-ui/react-dialog` (FocusScope, DismissableLayer,
+RemoveScroll), which also `aria-hidden`s the page behind, something the hook
+never did. Radix ships no styles, so nothing on screen moved; `forceMount`
+plus `useDialogPresence` keep the exit, and `useDialogFocus` keeps focus
+landing on the dialog itself and returning to the opener the moment it closes.
+
 **⚠️ IT IS A PROGRESS SCREEN, THOUGH THE FRAME'S NAV SAYS `Check`.** The handoff
 assigns `Check-in chat` to the CHECK section and the frame lights that tab.
 Not taken, for two reasons: `Check — start` offers only "Start a check" and

@@ -1,10 +1,10 @@
 "use client";
 
 import { useRef } from "react";
-import { createPortal } from "react-dom";
+import * as Dialog from "@radix-ui/react-dialog";
 import styles from "./CheckInOverlay.module.css";
 import { CheckInPanel } from "./CheckIn";
-import { useDialogPresence, useModalDialog, useMounted } from "@/lib/useModalDialog";
+import { useDialogFocus, useDialogPresence } from "@/lib/useModalDialog";
 
 /**
  * The daily check-in opened OVER `/progress`, rather than navigated to.
@@ -34,6 +34,11 @@ import { useDialogPresence, useModalDialog, useMounted } from "@/lib/useModalDia
  * note field and the photo capture on the screen instead of behind a route. The
  * X and Escape are the ways out, both deliberate.
  *
+ * ⚠️ RADIX DIALOG IS UNDERNEATH, AS OF 4 Oct 2026, AS IT IS UNDER `Sheet` —
+ * the focus trap, Escape, the scroll lock and hiding the page from assistive
+ * tech are Radix's. The scrim rule above is kept by refusing Radix's outside
+ * press (`onPointerDownOutside` / `onInteractOutside`).
+ *
  * ⚠️ IT PORTALS TO `document.body` FOR THE REASON `Sheet` DOES. `position:
  * fixed` is viewport-relative only while no ancestor establishes a containing
  * block, and PROGRESS is a wall of frosted `DataCard`s — a `backdrop-filter`
@@ -52,7 +57,6 @@ export function CheckInOverlay({
   onClose: () => void;
 }) {
   const overlayRef = useRef<HTMLDivElement>(null);
-  const mounted = useMounted();
 
   /* ⚠️ THE OVERLAY USED TO ARRIVE AND LEAVE WITH NO MOTION OF ITS OWN, and the
      contents made that read worse rather than better: `ChatPanel` carries
@@ -61,45 +65,55 @@ export function CheckInOverlay({
      single frame for all of it. The panel is the object here — it fades as one,
      and it leaves the same way it came. See `useDialogPresence`. */
   const { present, leaving } = useDialogPresence(open);
+  const focus = useDialogFocus(open, overlayRef);
 
-  /* Escape, the focus trap, and focus returning to `Check in today` on close —
-     `lib/useModalDialog.ts`, shared with `Sheet`. ⚠️ Armed on `open && present`
-     for the reason `Sheet` gives: `present` lags `open` by a render, and the
-     hook's `focus()` ran against a null ref. */
-  useModalDialog(open && present, onClose, overlayRef);
+  if (!present) return null;
 
-  if (!present || !mounted) return null;
+  /* the scrim does not close it — see the doc comment */
+  const keepOpen = (e: Event) => e.preventDefault();
 
-  return createPortal(
-    <>
-      <div
-        className={styles.scrim}
-        data-state={leaving ? "leaving" : undefined}
-        aria-hidden="true"
-      />
-      <div
-        ref={overlayRef}
-        className={styles.overlay}
-        data-state={leaving ? "leaving" : undefined}
-        /* closed for focus and assistive tech already — see `Sheet` */
-        inert={leaving}
-        role="dialog"
-        aria-modal="true"
-        aria-label="Daily check-in"
-        tabIndex={-1}
-      >
-        <CheckInPanel
-          now={now}
-          onClose={onClose}
-          onSubmitted={onClose}
-          /* ⚠️ AN `<h2>`, NOT THE ROUTE'S `<h1>` — `/progress` owns the page
-             heading and is still the page. The dialog is named by
-             `aria-label`; this keeps the heading outline honest for anyone
-             walking it. */
-          heading={<h2 className="visually-hidden">Daily Check-in</h2>}
+  return (
+    <Dialog.Root open={open} onOpenChange={(next) => !next && onClose()}>
+      <Dialog.Portal forceMount>
+        <Dialog.Overlay
+          forceMount
+          className={styles.scrim}
+          data-state={leaving ? "leaving" : undefined}
         />
-      </div>
-    </>,
-    document.body,
+        <Dialog.Content
+          forceMount
+          ref={overlayRef}
+          className={styles.overlay}
+          data-state={leaving ? "leaving" : undefined}
+          /* closed for focus and assistive tech already — see `Sheet` */
+          inert={leaving}
+          aria-describedby={undefined}
+          tabIndex={-1}
+          onPointerDownOutside={keepOpen}
+          onInteractOutside={keepOpen}
+          /* a field that owns its Escape (ConfirmField's ✕) keeps it: the
+             dialog does not close under it */
+          onEscapeKeyDown={(e) => {
+            if ((e.target as HTMLElement | null)?.closest?.("[data-own-escape]"))
+              e.preventDefault();
+          }}
+          {...focus}
+        >
+          <CheckInPanel
+            now={now}
+            onClose={onClose}
+            onSubmitted={onClose}
+            /* ⚠️ AN `<h2>`, NOT THE ROUTE'S `<h1>` — `/progress` owns the page
+               heading and is still the page. It is also the dialog's name now
+               (`Dialog.Title`), where `aria-label` used to give it. */
+            heading={
+              <Dialog.Title asChild>
+                <h2 className="visually-hidden">Daily check-in</h2>
+              </Dialog.Title>
+            }
+          />
+        </Dialog.Content>
+      </Dialog.Portal>
+    </Dialog.Root>
   );
 }
