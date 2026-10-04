@@ -1,0 +1,85 @@
+/* ConfirmField — see ConfirmField.tsx. The recipe is step 1's `Other` field's
+   (StartInvestigation.module.css, `.otherFieldWrap` onward): 20 frosted
+   circles over the field's right end, and a glass row once the text is kept. */
+.fieldWrap {
+  position: relative;
+}
+
+.actions {
+  display: flex;
+  flex: none;
+  gap: var(--space-sm);
+}
+
+.fieldWrap .actions {
+  position: absolute;
+  top: 50%;
+  right: 10px;
+  transform: translateY(-50%);
+}
+
+.action {
+  display: inline-flex;
+  flex: none;
+  align-items: center;
+  justify-content: center;
+  width: 20px;
+  height: 20px;
+  border: var(--border-width-hairline) solid var(--color-border-subtle);
+  border-radius: var(--radius-full);
+  background: var(--color-bg-field-action);
+  color: var(--color-text-muted);
+  transition:
+    color var(--duration-fast) var(--ease-hover),
+    border-color var(--duration-fast) var(--ease-hover);
+}
+
+.action:hover {
+  border-color: color-mix(
+    in srgb,
+    var(--color-border-chip) 40%,
+    var(--color-bg-field-action)
+  );
+  color: var(--color-text-secondary);
+}
+
+@media (hover: none) {
+  .action:hover {
+    border-color: var(--color-border-subtle);
+    color: var(--color-text-muted);
+  }
+}
+
+.actionIcon {
+  width: calc(24px * 20 / 36);
+  height: calc(24px * 20 / 36);
+}
+
+.checkIcon {
+  width: 16px;
+  height: 16px;
+  transform: translate(0.86px, 1.14px);
+}
+
+.confirmed {
+  display: flex;
+  align-items: center;
+  gap: var(--space-sm);
+  width: 100%;
+  box-sizing: border-box;
+  min-height: var(--size-field);
+  padding: var(--space-md) 10px var(--space-md) 18px;
+  border-radius: var(--radius-full);
+  border: var(--border-width-hairline) solid var(--color-border-glass);
+  background: var(--color-glass);
+  box-shadow: var(--shadow-glass);
+  -webkit-backdrop-filter: blur(var(--blur-card));
+  backdrop-filter: blur(var(--blur-card));
+}
+
+.text {
+  flex: 1;
+  min-width: 0;
+  margin: 0;
+  color: var(--color-text-primary);
+}

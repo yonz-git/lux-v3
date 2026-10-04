@@ -1,8 +1,7 @@
 "use client";
 
-import { useEffect, useRef } from "react";
-import { TextField } from "@/components/ui/TextField";
 import { Collapse } from "@/components/ui/Collapse";
+import { ConfirmField } from "@/components/ui/ConfirmField";
 
 /**
  * The free-text field an `Other` answer reveals — Figma's `other-block`, "input
@@ -15,37 +14,37 @@ import { Collapse } from "@/components/ui/Collapse";
  *
  * When Other is checked the text is REQUIRED: an unfilled "Other" is not an
  * answer, so the step's isComplete rule refuses it and Continue stays disabled.
+ *
+ * ⚠️ IT KEEPS OR DROPS ITS WORDS WITH ✓ AND ✕, AS OF 4 Oct 2026 — asked for
+ * directly; it is `ConfirmField`. ✕ (or Esc) is `onRemove`, which the caller
+ * makes untick `Other` and clear the words: a field you throw away should
+ * take its chip with it, or the step is left asking for text again.
  */
 export function OtherField({
   open,
   value,
   onChange,
+  onRemove,
   placeholder,
 }: {
   open: boolean;
   value: string;
   onChange: (v: string) => void;
+  onRemove: () => void;
   placeholder: string;
 }) {
-  const inputRef = useRef<HTMLInputElement>(null);
-  const wasOpen = useRef(open);
-
-  // focus the field the moment it appears, so ticking "Other" lands the caret
-  // where the user has to type next rather than making them reach for it
-  useEffect(() => {
-    if (open && !wasOpen.current) inputRef.current?.focus();
-    wasOpen.current = open;
-  }, [open]);
-
   return (
     <Collapse open={open}>
-      <TextField
-        ref={inputRef}
-        value={value}
-        placeholder={placeholder}
-        aria-label={placeholder}
-        onChange={(e) => onChange(e.target.value)}
-      />
+      {open && (
+        <ConfirmField
+          value={value}
+          onChange={onChange}
+          onRemove={onRemove}
+          placeholder={placeholder}
+          label={placeholder}
+          noun="condition"
+        />
+      )}
     </Collapse>
   );
 }

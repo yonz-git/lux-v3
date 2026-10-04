@@ -35,11 +35,15 @@ export function KnownConditions() {
 
   return (
     <QuestionScreen id="conditions">
-      <QuestionPanel question="Do you have any diagnosed skin conditions?">
+      {/* ⚠️ SHORTENED 4 Oct 2026, asked for directly with step 2's: "Do you
+          have any diagnosed skin conditions?" wrapped beside the orb on a
+          phone, and a wrapped question will not centre. The page title
+          already says what kind. */}
+      <QuestionPanel question="Any diagnosed conditions?">
         <div
-          className={panel.chips}
+          className={`${panel.chips} ${panel.teal}`}
           role="group"
-          aria-label="Do you have any diagnosed skin conditions?"
+          aria-label="Any diagnosed conditions?"
         >
           {CONDITIONS.map((label) => (
             <Chip
@@ -54,6 +58,12 @@ export function KnownConditions() {
           open={selected.includes("Other")}
           value={other}
           onChange={(v) => setAnswer("conditionsOther", v)}
+          onRemove={() => {
+            setAnswer("conditionsOther", undefined);
+            setAnswer("conditions", (prev) =>
+              (prev ?? []).filter((c) => c !== "Other"),
+            );
+          }}
           placeholder="Type the condition"
         />
       </QuestionPanel>

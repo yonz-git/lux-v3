@@ -8,16 +8,11 @@ import { ChatPanel } from "@/components/layout/ChatPanel";
 import { ChatBubble } from "@/components/ui/ChatBubble";
 import { Chip } from "@/components/ui/Chip";
 import { Button } from "@/components/ui/Button";
-import { TextField } from "@/components/ui/TextField";
 import { Collapse } from "@/components/ui/Collapse";
 import { Sheet } from "@/components/ui/Sheet";
 import { CameraCapture } from "@/components/ui/CameraCapture";
-import {
-  CameraIcon,
-  CloseIcon,
-  NoteIcon,
-  SuccessCheckIcon,
-} from "@/components/ui/icons";
+import { CameraIcon, NoteIcon } from "@/components/ui/icons";
+import { ConfirmField } from "@/components/ui/ConfirmField";
 import { useInvestigation } from "@/lib/store/InvestigationProvider";
 import { useToday } from "@/lib/useToday";
 import { useHeldWhileClosing } from "@/lib/useModalDialog";
@@ -215,39 +210,22 @@ export function CheckInPanel({
      at a zero-height row. Reduced motion scrolls instantly, which is what the
      global duration collapse cannot do for a JS scroll. */
   const noteRef = useRef<HTMLInputElement>(null);
-  const notePenRef = useRef<HTMLButtonElement>(null);
   const noteOpen = note !== null;
-  /* ⚠️ ✓ AND ✕ IN THE FIELD, ✎ AND ✕ ONCE CONFIRMED — 4 Oct 2026, asked for
-     directly ("add a note is missing the check and x icons"). Step 1's
-     `Other` field's pattern (StartInvestigation.tsx), so the two free-text
-     answers in the app behave alike: ✓ or Enter keeps the note and shows it
-     as a row, ✕ or Esc drops it and closes the field, the pen reopens it. An
-     empty note has nothing to keep, so confirming it closes it. */
-  const [noteEditing, setNoteEditing] = useState(false);
-  const closeNote = () => {
-    setNoteEditing(false);
-    setNote(null);
-  };
-  const confirmNote = () => {
-    if (!note?.trim()) {
-      closeNote();
-      return;
-    }
-    setNoteEditing(false);
-    requestAnimationFrame(() => notePenRef.current?.focus());
-  };
+  /* ⚠️ ✓ AND ✕ IN THE FIELD, ✎ AND ✕ ONCE KEPT — 4 Oct 2026, asked for
+     directly. `ConfirmField` (components/ui) since the same day, when step 3's
+     `Other` field became its third caller. ✕ or Esc closes the note. */
+  const closeNote = () => setNote(null);
   /* the text the field shows while it closes — `note` is already null then */
   const noteShown = useHeldWhileClosing(noteOpen, note ?? "");
   useEffect(() => {
-    if (!noteOpen || !noteEditing) return;
+    if (!noteOpen) return;
     const input = noteRef.current;
     if (!input) return;
-    input.focus({ preventScroll: true });
     const timer = window.setTimeout(() => {
       input.scrollIntoView({ behavior: prefersReducedMotion() ? "auto" : "smooth", block: "nearest" });
     }, 200);
     return () => window.clearTimeout(timer);
-  }, [noteOpen, noteEditing]);
+  }, [noteOpen]);
 
   /* ⚠️ EVERY NEW TURN SCROLLS INTO VIEW TOO, asked for directly 16 Sep 2026 —
      the panel is a fixed-height surface with its own scroller (`ChatPanel`'s
@@ -433,7 +411,6 @@ export function CheckInPanel({
                   onClick={() => {
                     if (note === null) {
                       setNote("");
-                      setNoteEditing(true);
                     } else {
                       closeNote();
                     }
@@ -454,64 +431,16 @@ export function CheckInPanel({
               </div>
 
               <Collapse open={noteOpen}>
-                {noteEditing || !noteShown.trim() ? (
-                  <div className={styles.noteFieldWrap}>
-                    <TextField
-                      ref={noteRef}
-                      value={noteShown}
-                      onChange={(e) => setNote(e.target.value)}
-                      onKeyDown={(e) => {
-                        if (e.key === "Enter") confirmNote();
-                        if (e.key === "Escape") closeNote();
-                      }}
-                      placeholder="Anything worth remembering about today"
-                      aria-label="Your note"
-                      style={{ paddingRight: 80 }}
-                    />
-                    <div className={styles.noteActions}>
-                      <button
-                        type="button"
-                        className={styles.noteAction}
-                        aria-label="Keep note"
-                        onClick={confirmNote}
-                      >
-                        <SuccessCheckIcon className={styles.noteCheckIcon} />
-                      </button>
-                      <button
-                        type="button"
-                        className={styles.noteAction}
-                        aria-label="Remove note"
-                        onClick={closeNote}
-                      >
-                        <CloseIcon className={styles.noteActionIcon} />
-                      </button>
-                    </div>
-                  </div>
-                ) : (
-                  <div className={styles.noteConfirmed}>
-                    <p className={`${styles.noteConfirmedText} t-body2`}>
-                      {noteShown}
-                    </p>
-                    <div className={styles.noteActions}>
-                      <button
-                        ref={notePenRef}
-                        type="button"
-                        className={styles.noteAction}
-                        aria-label="Edit note"
-                        onClick={() => setNoteEditing(true)}
-                      >
-                        <NoteIcon className={styles.noteActionIcon} />
-                      </button>
-                      <button
-                        type="button"
-                        className={styles.noteAction}
-                        aria-label="Remove note"
-                        onClick={closeNote}
-                      >
-                        <CloseIcon className={styles.noteActionIcon} />
-                      </button>
-                    </div>
-                  </div>
+                {noteOpen && (
+                  <ConfirmField
+                    inputRef={noteRef}
+                    value={noteShown}
+                    onChange={(v) => setNote(v)}
+                    onRemove={closeNote}
+                    placeholder="Anything worth remembering about today"
+                    label="Your note"
+                    noun="note"
+                  />
                 )}
               </Collapse>
 
