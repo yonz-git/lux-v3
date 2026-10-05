@@ -294,61 +294,11 @@ export function CheckResults({ now }: { now: number }) {
         />
       </div>
 
-      {/* 3 — the cause */}
-      {concerns.length > 0 && (
-        <div className={styles.block}>
-          <IngredientsCard concerns={concerns} />
-        </div>
-      )}
-
-      {/* 4 — the action.
-
-          ⚠️ IT ALWAYS RENDERS, INCLUDING WHEN EVERYTHING IS FINE. It used to be
-          hidden unless something was wrong, which meant the most common result —
-          two compatible products — produced a screen that answered "so what do I
-          do?" with silence, and made the whole reorder pointless in the good
-          case. A clean result is a RESULT: it deserves saying out loud, plus the
-          one piece of advice that still applies (introduce things one at a time,
-          or you cannot trace a reaction). "Nothing is wrong" and "we have
-          nothing to tell you" look identical on screen otherwise. */}
-      <div className={styles.block}>
-        <NextStepsCard
-          /* ⚠️ THE PRODUCT IS DRAWN, NOT JUST NAMED — NOT IN FIGMA. 549:1163
-             draws the emphasis block as text alone, because the comps had no
-             product imagery to place; every other screen that names one of the
-             user's products shows it (see `ProductArt`). It is also the one
-             product in the check the user has to act on, and the numbered
-             steps below now carry thumbs, so leaving the block text-only made
-             the loudest block the only one without the picture. */
-          art={
-            primary ? <ProductThumb product={primary.product} /> : undefined
-          }
-          /* ⚠️ THE TITLE IS THE ACTION IN THE AVOID BAND. "Take care with:" is
-             a diagnosis, and it is the right words for Risky — the product
-             stays in the routine and is used carefully. For Avoid it is not
-             what the card means: the advice is to stop, and the steps below
-             are written assuming the product is out. */
-          title={
-            primary
-              ? band === "avoid"
-                ? `Pause ${fullName(primary.product)}`
-                : `Take care with: ${fullName(primary.product)}`
-              : "No conflicts found"
-          }
-          badge={primary ? BAND_LABEL[band] : undefined}
-          badgeBand={primary ? band : undefined}
-          description={
-            primary
-              ? band === "avoid"
-                ? `It contains ${primary.ingredient.name}, the biggest problem for your skin profile in this set. Leave it out for two weeks and see whether the flare settles.`
-                : `This product contains ${primary.ingredient.name}, which is the biggest problem for your skin profile in this set.`
-              : "These can be used in the same routine."
-          }
-          steps={advice}
-        />
-      </div>
-
-      {/* 5 — the detail: ONE box, header + contents. See the note above. */}
+      {/* 3 — the detail: ONE box, header + contents. See the note above.
+          ⚠️ RIGHT UNDER THE NUMBERS SINCE 5 Oct 2026, asked for directly: it
+          was last, under the action. The scores are what "Products checked"
+          just counted, so they follow the count; the ingredients below then
+          say why each one scored as it did. */}
       <div className={styles.block}>
         <div className={styles.group}>
           <div className={styles.compared}>
@@ -572,6 +522,61 @@ export function CheckResults({ now }: { now: number }) {
           </div>
         </div>
       </div>
+
+      {/* 4 — the cause */}
+      {concerns.length > 0 && (
+        <div className={styles.block}>
+          <IngredientsCard concerns={concerns} />
+        </div>
+      )}
+
+      {/* 5 — the action.
+
+          ⚠️ IT ALWAYS RENDERS, INCLUDING WHEN EVERYTHING IS FINE. It used to be
+          hidden unless something was wrong, which meant the most common result —
+          two compatible products — produced a screen that answered "so what do I
+          do?" with silence, and made the whole reorder pointless in the good
+          case. A clean result is a RESULT: it deserves saying out loud, plus the
+          one piece of advice that still applies (introduce things one at a time,
+          or you cannot trace a reaction). "Nothing is wrong" and "we have
+          nothing to tell you" look identical on screen otherwise. */}
+      <div className={styles.block}>
+        <NextStepsCard
+          /* ⚠️ THE PRODUCT IS DRAWN, NOT JUST NAMED — NOT IN FIGMA. 549:1163
+             draws the emphasis block as text alone, because the comps had no
+             product imagery to place; every other screen that names one of the
+             user's products shows it (see `ProductArt`). It is also the one
+             product in the check the user has to act on, and the numbered
+             steps below now carry thumbs, so leaving the block text-only made
+             the loudest block the only one without the picture. */
+          art={
+            primary ? <ProductThumb product={primary.product} /> : undefined
+          }
+          /* ⚠️ THE TITLE IS THE ACTION IN THE AVOID BAND. "Take care with:" is
+             a diagnosis, and it is the right words for Risky — the product
+             stays in the routine and is used carefully. For Avoid it is not
+             what the card means: the advice is to stop, and the steps below
+             are written assuming the product is out. */
+          title={
+            primary
+              ? band === "avoid"
+                ? `Pause ${fullName(primary.product)}`
+                : `Take care with: ${fullName(primary.product)}`
+              : "No conflicts found"
+          }
+          badge={primary ? BAND_LABEL[band] : undefined}
+          badgeBand={primary ? band : undefined}
+          description={
+            primary
+              ? band === "avoid"
+                ? `It contains ${primary.ingredient.name}, the biggest problem for your skin profile in this set. Leave it out for two weeks and see whether the flare settles.`
+                : `This product contains ${primary.ingredient.name}, which is the biggest problem for your skin profile in this set.`
+              : "These can be used in the same routine."
+          }
+          steps={advice}
+        />
+      </div>
+
 
       {/* ⚠️ RE-RUNNING WRITES A NEW CHECK, IT DOES NOT MUTATE THIS ONE. A check
           happened at a point in time and appears in the history under that

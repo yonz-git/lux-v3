@@ -193,11 +193,28 @@
      until you type; at an even 12 the field sat tight under the title and read
      as a caption to it. The extra 8 is the only asymmetry in the box and it is
      doing the work a heading margin usually does. */
-  padding: var(--space-xl) var(--space-md) var(--space-md);
+  padding: var(--space-xl) var(--space-xl) var(--space-lg);
 
-  border-radius: var(--radius-sm);
-  background: var(--color-bg-surface-frost);
-  box-shadow: var(--shadow-frosted-row);
+  /* ⚠️ THE CARDS' GLASS, NOT AN OPAQUE FROST ROW, SINCE 5 Oct 2026 — asked
+     for directly ("more rounded like other boxes and less opacity of the
+     white"). It was radius/sm on `bg/surface-frost`, a near-white slab under
+     a grid of 24-radius glass cards. It takes `CompatCard`'s recipe now: 24,
+     the panel fill and hairline, the rim light and the blur; the sides move
+     to 20 so the bigger corner has room. */
+  border-radius: var(--radius-2xl); /* 24 */
+  border: var(--border-width-hairline) solid var(--color-border-panel);
+  background: var(--color-panel);
+  box-shadow: inset 0 1px 0 var(--color-rim-panel);
+  -webkit-backdrop-filter: blur(12px);
+  backdrop-filter: blur(12px);
+}
+
+@media (prefers-reduced-transparency: reduce) {
+  .picker {
+    background: var(--color-bg-surface-frost);
+    -webkit-backdrop-filter: none;
+    backdrop-filter: none;
+  }
 }
 
 .pickerHead {
