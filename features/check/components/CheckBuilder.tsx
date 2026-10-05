@@ -247,7 +247,8 @@ export function CheckBuilder({ now }: { now: number }) {
           through an investigation". A `?from=` would have to survive the tray,
           the search and a reload; an answer already in the store does not. */}
       <HubScreen
-        title="Add your products"
+        title="Analyse product compatibility"
+        centerHeading
         nav="check"
         backHref={answers.timing?.date ? "/investigation/timing" : "/check"}
         layout="card"

@@ -249,6 +249,7 @@ export function CheckResults({ now }: { now: number }) {
   return (
     <HubScreen
       title="Analysis results"
+      centerHeading
       nav="check"
       backHref="/check"
       layout="card"
