@@ -139,7 +139,9 @@
       color-mix(in srgb, var(--color-face-pill-selected-deep) 20%, transparent)
         100%
     ),
-    #13758ce3;
+    /* #106a7f since 29 Oct 2026, with the face pills: white on #13758c at
+       89% is ~4.46:1 on the light canvas */
+    #106a7fe3;
 }
 
 @media (prefers-reduced-transparency: reduce) {
@@ -150,6 +152,6 @@
         color-mix(in srgb, var(--color-face-pill-selected-deep) 20%, transparent)
           100%
       ),
-      #13758c;
+      #106a7f;
   }
 }
