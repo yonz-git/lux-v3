@@ -27,7 +27,18 @@
 .speaker {
   display: flex;
   align-items: flex-start;
+  /* ⚠️ CENTRED AS A PAIR, 29 Oct 2026, asked for directly ("center this"): the
+     orb and the verdict bubble sit in the middle of the column under the
+     centred title, as step 1's coach does, rather than hugging the left */
+  justify-content: center;
   gap: var(--space-md); /* 12 */
+}
+
+/* the bubble's row hugs its bubble, so the pair has a width to centre */
+.speaker > :last-child {
+  flex: 0 1 auto;
+  width: auto;
+  min-width: 0;
 }
 
 .orb {
