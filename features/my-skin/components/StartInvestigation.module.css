@@ -101,6 +101,28 @@
   box-shadow: inset 0 1px 4px #ffffff61;
 }
 
+/* ⚠️ A MARKED SYMPTOM THAT IS NOT THE ONE BEING PLACED IS MUTED — 29 Oct
+   2026, usability testing: with `Save` gone nothing said which symptom the
+   face was taking taps for. The lit chip alone keeps the full `bg/symptom`
+   fill; the others step back to a tint of it under rose ink and a rose ring,
+   still plainly chosen. `Chip` sets `data-muted` (Chip.tsx). (0,3,1) over the
+   fill above, and the hover rule restated at (0,5,1) because the one above
+   would put the full rose back under the pointer. */
+.chips button[data-selected="true"][data-muted] {
+  background: color-mix(in srgb, var(--color-bg-symptom) 16%, #dbeded57);
+  color: color-mix(in srgb, var(--color-bg-symptom) 75%, var(--color-text-primary));
+  box-shadow: inset 0 0 0 1px color-mix(in srgb, var(--color-bg-symptom) 45%, transparent);
+}
+
+.chips button[data-selected="true"][data-muted]::before {
+  opacity: 0;
+}
+
+.chips button[data-selected="true"][data-muted]:hover:not(:disabled) {
+  background: color-mix(in srgb, var(--color-bg-symptom) 16%, #dbeded57);
+  box-shadow: inset 0 0 0 1px color-mix(in srgb, var(--color-bg-symptom) 45%, transparent);
+}
+
 /* ⚠️ AN UNSELECTED SYMPTOM IS FROSTED, asked for directly 14 Sep 2026: the
    nav's `#dbeded` at 34% (`#dbeded57`) over a `blur/sm` backdrop blur, where
    `Chip` draws an opaque `bg/frost-light-muted`. NOT IN FIGMA. (0,2,1) over
@@ -425,15 +447,15 @@
    the moment it becomes clickable ("add it to reset button also"). So a live
    reset is the edge light's rim and glow around the words, in `text/brand`,
    with no fill; the secondary pill fades in only under the pointer.
-   `:not(:first-child)` is `Reset` and `Reset all` — `Save` is the first
-   segment and keeps its indigo. A disabled reset matches nothing here and
+   The pill's one segment is `Reset all` (`Save` and `Reset` were removed, 29
+   Oct 2026). A disabled reset matches nothing here and
    stays the toggle's plain faded text. */
-.reset > .placesToggle button:not(:first-child):not(:disabled) {
+.reset > .placesToggle button:not(:disabled) {
   color: var(--color-text-brand);
   --shine-ink: var(--color-text-brand);
 }
 
-.reset > .placesToggle button:not(:first-child):not(:disabled)::before {
+.reset > .placesToggle button:not(:disabled)::before {
   opacity: 0;
   --grad-start: var(--color-button-bg-secondary-start);
   --grad-end: var(--color-button-bg-secondary-end);
@@ -450,7 +472,7 @@
    day, when the gallery's photos and date pills took this ring ("reuse the
    border we made for the reset button"). The values live there; this rule
    only picks the ring, which is also why the two strengths are gone. */
-.reset > .placesToggle button:not(:first-child):not(:disabled) > :global(.edge-light) {
+.reset > .placesToggle button:not(:disabled) > :global(.edge-light) {
   opacity: 1;
   --edge-glow: 0.25;
   --edge-catch: 0.35;
@@ -458,60 +480,16 @@
 }
 
 @media (hover: hover) {
-  .reset > .placesToggle button:not(:first-child):not(:disabled):hover {
+  .reset > .placesToggle button:not(:disabled):hover {
     color: var(--color-text-brand);
     --shine-ink: var(--color-text-brand);
   }
 
   /* the pill appears under the pointer rather than reversing — with no fill at
      rest there is no gradient to run end for end */
-  .reset > .placesToggle button:not(:first-child):not(:disabled):hover::before {
+  .reset > .placesToggle button:not(:disabled):hover::before {
     opacity: 1;
   }
-}
-
-/* ⚠️ AN INACTIVE `Save` KEEPS ITS INDIGO BUTTON, DIMMED — BUT ONLY WHILE
-   `Reset all` IS INACTIVE TOO, which is to say while nothing is selected.
-   Asked for directly 14 Sep 2026, to a supplied crop ("to this color i
-   meant"): `SegmentedToggle` drops a disabled primary segment's indigo pill
-   and edge light entirely, which left `Save` as loose faded text where the
-   button sits. Here the pill, its edge light and its white label all stay, and
-   the segment's own `opacity/disabled` (0.4) dims the whole button over the
-   track — the slate colour in the crop.
-   ⚠️ ONCE `Reset all` CAN BE PRESSED, A DISABLED `Save` IS PLAIN FADED TEXT
-   LIKE `Reset` — asked for directly later the same day, to a second crop: a
-   dimmed indigo beside the one live command pointed at the wrong button. The
-   `:has()` is that condition; without these three rules the toggle's own
-   disabled recipe applies.
-   ⚠️ IT WAS A FROSTED, THEN A NAV-FROST, THEN A PALE PILL FOR AN HOUR THE
-   SAME DAY; the crop settled it on the indigo.
-   ⚠️ THE GRADIENT ENDS ARE PINNED ON `::before`: `--grad-start` / `--grad-end`
-   are registered with `inherits: false` (globals.css), and
-   `.segment.selected:hover::before` would otherwise run a pill nobody can
-   press end for end under the pointer. The `:has()` only adds specificity, so
-   these still outrank `.segment.selected:disabled::before` (0,3,1), that
-   hover (0,3,1) and `.segment.selected:disabled > .edge` (0,4,0).
-   ⚠️ BELOW THE `Reset all` RULES ON PURPOSE: the two sets never match the
-   same button, but written first these tripped biome's descending-specificity
-   check. */
-.reset > .placesToggle:has(> button:last-child:disabled) button:first-child:disabled {
-  color: var(--color-text-on-brand);
-  --shine-ink: var(--color-text-on-brand);
-}
-
-.reset
-  > .placesToggle:has(> button:last-child:disabled)
-  button:first-child:disabled::before {
-  opacity: 1;
-  --grad-start: var(--color-gradient-brand-start);
-  --grad-end: var(--color-gradient-brand-end);
-}
-
-.reset
-  > .placesToggle:has(> button:last-child:disabled)
-  button:first-child:disabled
-  > :global(.edge-light) {
-  opacity: 1;
 }
 
 /* ⚠️ THE UNDO SITS ON THE PILL ITSELF — NOT IN FIGMA, asked for directly 14

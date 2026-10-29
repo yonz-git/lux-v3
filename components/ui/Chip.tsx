@@ -50,6 +50,13 @@ import styles from "./Chip.module.css";
  * not, on a real `disabled` attribute so the pill leaves the tab order. Raise it
  * in Figma alongside the size and radio variants above.
  *
+ * ⚠️ `muted` IS NOT IN FIGMA EITHER — added 29 Oct 2026 after usability
+ * testing on step 1, asked for directly: with `Save` gone, nothing said WHICH
+ * symptom the face was taking taps for. A selected chip that is not the one
+ * being worked on is `muted`: the indigo drops to a tint with indigo ink and
+ * edge, so the lit chip alone wears the full fill. Still `aria-checked`; it
+ * is a change of emphasis, not of state.
+ *
  * Chips suit short labels (symptoms). For long ones such as "Perioral
  * dermatitis" use a Checkbox row instead.
  */
@@ -60,6 +67,7 @@ export function Chip({
   size = "default",
   tone = "brand",
   disabled = false,
+  muted = false,
   icon,
   onToggle,
 }: {
@@ -83,6 +91,8 @@ export function Chip({
   tone?: "brand" | "teal";
   /** unavailable for now — see the note above */
   disabled?: boolean;
+  /** selected, but not the chip being worked on — see the note above */
+  muted?: boolean;
   /** a leading glyph from `icons.tsx`, the way VidGen's option chips carry one */
   icon?: ReactNode;
   onToggle: () => void;
@@ -95,6 +105,7 @@ export function Chip({
       data-selected={selected}
       data-size={size === "compact" ? "compact" : undefined}
       data-tone={tone === "teal" ? "teal" : undefined}
+      data-muted={selected && muted ? "" : undefined}
       disabled={disabled}
       /* still a `t-*` class either way — rule 3 holds for both sizes */
       className={`${styles.chip} ${size === "compact" ? "t-label-sm" : "t-chip"}`}

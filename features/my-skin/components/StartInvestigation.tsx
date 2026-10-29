@@ -76,12 +76,14 @@ import {
  *
  *   idle      every symptom chip is available; the face shows every place
  *             marked so far, and the rest wait at `opacity/disabled`
- *   placing   the picked chip is lit and EVERY OTHER CHIP IS DISABLED; every
- *             region label shines once, together, and the face takes taps for
- *             this symptom alone; `Save` and `Reset` wake in the pill under
- *             the face card at the first place marked
- *   Save      back to idle, with the symptom still selected
- *   Reset     the symptom's places cleared, the symptom still being placed
+ *   placing   the picked chip is lit; every region label shines once,
+ *             together, and the face takes taps for this symptom alone.
+ *             Picking another chip moves the placing to it
+ *
+ * ⚠️ `Save` AND `Reset` WERE REMOVED AFTER USABILITY TESTING, 29 Oct 2026. A
+ * symptom is saved the moment it has a place and unsaved by tapping its lit
+ * chip again; `Reset all` is the only button left. Chips are never disabled
+ * while another symptom is placed.
  *
  * ⚠️ PLACES ARE WRITTEN AS THEY ARE TAPPED, NOT ON `Save`. `Save` only closes
  * the symptom, so nothing marked is lost to a Continue, a Back or a reload
@@ -93,11 +95,8 @@ import {
  *
  * ⚠️ TWO TAPS THE REQUEST DID NOT SPECIFY, DECIDED HERE: tapping the chip being
  * placed DESELECTS it and its places, which is what tapping a lit chip always
- * meant; tapping a chip that is already done REOPENS it, so its places can be
- * changed without starting it again. `Reset` was asked for and its meaning was
- * decided here: it clears the places and KEEPS the symptom open, as though its
- * chip had just been picked with nothing marked — the lit chip already removes the symptom, so a
- * second control doing the same would say nothing new. `Whole face`, `Neck`
+ * meant; tapping a chip that is already marked REOPENS it, so its places can be
+ * changed without starting it again. `Whole face`, `Neck`
  * and `Other` are places of a symptom like any region. The typed description under the card stays ONE
  * sentence for the screen.
  *
@@ -183,6 +182,10 @@ export function StartInvestigation() {
     placing ? [...reported, placing] : reported,
   );
 
+  /* ⚠️ NO `Save`, NO `Reset` — usability testing, 29 Oct 2026. Every tap is
+     already written as it happens, so a symptom is saved the moment it has a
+     place and unsaved by tapping it again. Picking another chip just moves
+     the placing to it; the one left behind keeps its places. */
   const tapSymptom = (s: Symptom) => {
     if (placing === s) {
       // the lit chip, tapped again: deselect it, places and all
@@ -190,35 +193,9 @@ export function StartInvestigation() {
       setPlacing(null);
       return;
     }
-    // a new symptom, or one already done — either way, place it
+    // a new symptom, or one already marked — either way, place it
     setPlacing(s);
     setGlint((n) => n + 1);
-  };
-
-  /* ⚠️ `preventScroll`: `Save` and `Reset` sit under the face card now, a
-     screen below the chips, and a plain `focus()` scrolled the page up to them */
-  const focusChip = (s: Symptom) =>
-    requestAnimationFrame(() =>
-      chipsRef.current
-        ?.querySelectorAll("button")
-        [SYMPTOMS.indexOf(s)]?.focus({ preventScroll: true }),
-    );
-
-  const finishSymptom = () => {
-    const s = placing;
-    setPlacing(null);
-    /* `Save` closes under the pointer, so hand focus back to the chip it
-       finished rather than dropping it on the page */
-    if (s) focusChip(s);
-  };
-
-  /* clears the places and keeps the symptom open. The pill closes with the
-     last place, under the pointer, so focus goes to the still-lit chip. */
-  const resetSymptom = () => {
-    const s = placing;
-    if (!s) return;
-    setAnswer("start", (prev) => withAreas(prev, s, []));
-    focusChip(s);
   };
 
   /* ⚠️ `Reset all` — NOT IN FIGMA, asked for directly 14 Sep 2026. Clears
@@ -239,13 +216,9 @@ export function StartInvestigation() {
     placing: Symptom | null;
   } | null>(null);
   const undoRef = useRef<HTMLButtonElement>(null);
-  /* the row, not the button: `SegmentedToggle` takes no ref, and `Reset all`
-     is its third button */
+  /* the row, not the button: `SegmentedToggle` takes no ref */
   const resetRef = useRef<HTMLDivElement>(null);
   const nothingSelected = placing === null && reported.length === 0;
-  /* `Save` and `Reset` act on the symptom being placed, and only once it has
-     a place — the moment the old pill used to open */
-  const placeMarked = placing !== null && placingAreas.length > 0;
 
   const resetAll = () => {
     setUndo({ id: Date.now(), start: answers.start, placing });
@@ -261,8 +234,8 @@ export function StartInvestigation() {
     setUndo(null);
     requestAnimationFrame(() =>
       resetRef.current
-        ?.querySelectorAll<HTMLButtonElement>('[role="group"] button')
-        [2]?.focus({ preventScroll: true }),
+        ?.querySelector<HTMLButtonElement>('[role="group"] button')
+        ?.focus({ preventScroll: true }),
     );
   };
 
@@ -409,7 +382,9 @@ export function StartInvestigation() {
             key={s}
             label={s}
             selected={placing === s || reported.includes(s)}
-            disabled={placing !== null && placing !== s}
+            /* the lit chip is the one the face is taking taps for; the rest
+               that are marked step back, so it is clear which is on */
+            muted={placing !== s}
             onToggle={() => tapSymptom(s)}
           />
         ))}
@@ -443,27 +418,19 @@ export function StartInvestigation() {
             </button>
           </div>
         )}
-        {/* ⚠️ NOT IN FIGMA — ONE PILL, THREE COMMANDS, asked for directly 14
-            Sep 2026: `Save` / `Reset` used to open in their own segmented
-            pill under the chips, with `Reset all` a separate button down
-            here. They share the products tray's `SegmentedToggle` now, under
-            the face card: `Save` is the filled segment, and each command
-            fades while it has nothing to act on (`Save` and `Reset` until the
-            symptom being placed has a place, `Reset all` until anything is
-            selected). `actions` keeps them buttons in a group, not tabs.
-            ⚠️ `Save` was `Done` for an hour and was renamed, asked for
-            directly. The places are already stored as they are tapped (see
-            the note at the top); the label names the step the reader is
-            finishing, and what it does is unchanged. */}
+        {/* `Reset all` is the pill's one command now: `Save` and `Reset` went
+            in usability testing (see `tapSymptom`). It keeps the products
+            tray's `SegmentedToggle` so the look is unchanged, with no segment
+            selected (`selectedIndex={-1}`) and fading until anything is
+            selected. */}
         <SegmentedToggle
           actions
           label="Symptom places"
           className={styles.placesToggle}
-          options={["Save", "Reset", "Reset all"]}
-          disabled={[!placeMarked, !placeMarked, nothingSelected]}
-          onChange={(i) =>
-            i === 0 ? finishSymptom() : i === 1 ? resetSymptom() : resetAll()
-          }
+          options={["Reset all"]}
+          selectedIndex={-1}
+          disabled={[nothingSelected]}
+          onChange={resetAll}
         />
       </div>
 

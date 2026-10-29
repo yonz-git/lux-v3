@@ -87,6 +87,25 @@
   color: #fff;
 }
 
+/* ⚠️ MUTED — SELECTED, NOT THE ONE BEING WORKED ON (29 Oct 2026, see
+   Chip.tsx). The indigo fill fades out of the overlay and leaves a tint of it
+   under indigo ink and edge, so it still reads as chosen and the full fill
+   marks the active chip alone. The ink is `text/brand`, which holds contrast
+   on the tint where the white label would not. */
+.chip[data-selected="true"][data-muted] {
+  --chip-edge: color-mix(in srgb, var(--color-bg-brand) 45%, transparent);
+  color: var(--color-text-brand);
+  background-color: color-mix(in srgb, var(--color-bg-brand) 14%, var(--color-glass));
+}
+
+.chip[data-selected="true"][data-muted]::before {
+  opacity: 0;
+}
+
+.chip[data-selected="true"][data-muted] .icon {
+  color: var(--color-bg-brand);
+}
+
 .chip:disabled {
   opacity: var(--chip-disabled-opacity, var(--opacity-disabled));
   cursor: not-allowed;
