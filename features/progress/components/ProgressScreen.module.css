@@ -90,7 +90,8 @@
 .lastCheckIn,
 .lastCheckInDesktop {
   margin-top: var(--space-sm); /* 8 */
-  color: var(--color-text-secondary);
+  /* primary, not secondary: it sits on bare canvas, where secondary is 4.23:1 */
+  color: var(--color-text-primary);
   text-align: center;
 }
 

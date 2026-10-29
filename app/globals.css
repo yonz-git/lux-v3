@@ -305,8 +305,11 @@
      Figma-decision list either way. ⚠️ Do not "fix" either by putting the app
      ink on the fill — `HypothesisCard` does that deliberately and the note on
      its `--band-ink` is why it cannot be lifted here. */
-  --color-feedback-error: #c65953;
-  --color-feedback-warning: #d47873;
+  /* ⚠️ 29 Oct 2026: DARKER, AS THE NOTE ABOVE SAID THE FIX WOULD BE. Avoid
+     #82302b (white 8.7:1, and 4.8:1 as `text/error` on frost at the bottom of
+     the gradient), Risky #c24e47 (white 4.7:1). Still one hue, two rungs. */
+  --color-feedback-error: #82302b;
+  --color-feedback-warning: #c24e47;
 
   /* text/error + text/warning + border/error — THE SAME TWO VALUES, ASKED FOR
      8 Sep 2026, A TURN AFTER THE BANDS.
@@ -343,9 +346,9 @@
      `red/100`) did NOT move — nothing asked them to, they are near-neutral
      either way, and `CompatCard`'s tinted tag is the only thing reading
      them. */
-  --color-text-error: #c65953;
-  --color-text-warning: #d47873;
-  --color-border-error: #c65953;
+  --color-text-error: #82302b;
+  --color-text-warning: #c24e47;
+  --color-border-error: #82302b;
 
   /* bg/frost-light-muted — ⚠️ DECLARED HERE, NOT IN `tokens.css`, and NOT IN
      FIGMA. It was the face-diagram region pills' OPAQUE fill (the old dome's
@@ -541,7 +544,10 @@
    ========================================================================== */
 
 :root {
-  --color-text-muted: #63636f;
+  /* ⚠️ #575763 SINCE 29 Oct 2026 — #63636f measured 4.12–4.34:1 on the
+     calendar, the profile tiles' labels and CompatCard's brand line by
+     `npm run contrast`. 4.95:1 on the darkest of those surfaces. */
+  --color-text-muted: #575763;
 }
 
 /* ==========================================================================
@@ -594,7 +600,10 @@
    step 1's SELECTED symptom chips (`StartInvestigation.module.css`), also
    white. White on it measures 2.8:1, short of AA; the app ink would be 4.9:1. */
 :root {
-  --color-bg-symptom: #d3858a;
+  /* ⚠️ #b44148 SINCE 29 Oct 2026 (was #d3858a): white on the callouts, the
+     `Ongoing` pill and `High likelihood` measured 2.5–2.8:1; this clears
+     4.5:1 at the recipe's 88% stop on the lightest canvas (`npm run contrast`). */
+  --color-bg-symptom: #b44148;
 }
 
 /* ⚠️ NOT IN FIGMA — `bg/field-action`, THE FILL OF A TEXT FIELD'S ROUND ✓ / ✎ /

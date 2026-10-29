@@ -968,9 +968,10 @@
      `StartInvestigation.module.css` is `inset 0 1px 0`: a crisp light along
      the top only. */
   --region-glass-wash: 0 0 #6a292900;
-  /* ⚠️ `#13758ce3`, supplied directly 14 Sep 2026 — a deeper, bluer teal at
-     89% (was `#4f93a2d9`, and `#37707dd9` before that) */
-  background-color: #13758ce3;
+  /* ⚠️ `#106a7fe3` since 29 Oct 2026, one step deeper than the `#13758ce3`
+     supplied directly 14 Sep 2026, so the profile tiles that copy this pill
+     clear 4.5:1 with white (was `#4f93a2d9`, and `#37707dd9` before that) */
+  background-color: #106a7fe3;
   -webkit-backdrop-filter: blur(1px);
   backdrop-filter: blur(1px);
   border-color: #869ea626;
@@ -1152,7 +1153,8 @@
 }
 
 .diagram[data-readonly="true"] .region[data-selected="false"] {
-  opacity: 0.55;
+  /* 0.9 since 29 Oct 2026: at 0.55 the labels read 2.4–2.7:1 */
+  opacity: 0.9;
   box-shadow: none;
 }
 
@@ -1225,7 +1227,7 @@
         100%
     )
     border-box,
-    #13758ce3; /* follows the region pills' fill (was `#4f93a2d9`) */
+    #106a7fe3; /* follows the region pills' fill (was `#4f93a2d9`) */
   -webkit-backdrop-filter: blur(1px);
   backdrop-filter: blur(1px);
   /* the selected region pill's hairline and lit top edge, so the recap's pill

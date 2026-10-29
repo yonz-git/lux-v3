@@ -10,6 +10,7 @@
     "typecheck": "tsc --noEmit",
     "vocab": "node scripts/vocab.mjs",
     "spacing": "node scripts/text-spacing.mjs",
+    "contrast": "node scripts/contrast.mjs",
     "face": "node scripts/face-art.mjs"
   },
   "dependencies": {

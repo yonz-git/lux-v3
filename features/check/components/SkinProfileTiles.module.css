@@ -83,7 +83,8 @@
      is a background layer here rather than the region's `::before`, since
      nothing on this pill fades it in or out. */
   border: var(--border-width-hairline) solid #869ea626;
-  background-color: #13758ce3;
+  /* #106a7f since 29 Oct 2026: #13758c at 89% gave white 4.43–4.49:1 */
+  background-color: #106a7fe3;
   background-origin: border-box;
   background-image: linear-gradient(
     135deg,
@@ -99,7 +100,7 @@
 
 @media (prefers-reduced-transparency: reduce) {
   .tileValue {
-    background-color: #13758c;
+    background-color: #106a7f;
     -webkit-backdrop-filter: none;
     backdrop-filter: none;
   }

@@ -221,7 +221,8 @@
     radial-gradient(110% 90% at 0 35%, #567e88, #0000 60%),
     radial-gradient(90% 80% at 90% 105%, #60a8ba52, #0000 65%),
     radial-gradient(70% 60% at 80% -10%, #37617547, #0000 70%),
-    #005461b5;
+    /* opaque since 29 Oct 2026: at 71% the white labels read 3.6–4.1:1 */
+    #005461;
   color: #fff;
 }
 
@@ -260,13 +261,14 @@
 
 .card .bandLabels,
 .card .days {
-  color: rgb(255 255 255 / 0.8);
+  /* 0.9 since 29 Oct 2026: `Severe` read 4.3:1 at 0.8 */
+  color: rgb(255 255 255 / 0.9);
 }
 
 .card .dayPill,
 .card .eventPill {
   border-color: rgb(255 255 255 / 0.35);
-  background: rgb(255 255 255 / 0.14);
+  background: rgb(255 255 255 / 0.08);
   color: #fff;
 }
 
