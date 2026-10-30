@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from "react";
 import styles from "./SymptomSummary.module.css";
+import faceStyles from "./FaceDiagram.module.css";
 import { Collapse } from "@/components/ui/Collapse";
 import { FACE_REGION_IDS } from "./FaceDiagram";
 import { SYMPTOMS, type Symptom } from "@/features/my-skin/safety";
@@ -90,7 +91,7 @@ function Row({ symptom, places }: { symptom: Symptom; places: string[] }) {
           {shown.map(({ item, leaving }) => (
             <li
               key={item}
-              className={`${styles.place} t-label-sm`}
+              className={`${styles.place} ${faceStyles.placePill} t-label-sm`}
               data-leaving={leaving || undefined}
             >
               {item}

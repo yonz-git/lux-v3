@@ -936,7 +936,7 @@
   /* the deep teal's last composite, kept for PROGRESS's gallery pills — see
      the note above and `.date`/`.day` in PhotoGallery.module.css */
   --color-bg-photo-pill: #5c7178;
-  --size-nav-height: 58.5px;
+  --size-nav-height: 3.6562rem; /* 58.5px */
 }
 
 :root {
@@ -1587,7 +1587,7 @@ main[tabindex="-1"]:focus-visible {
    Welcome's 338 and the check-in panel's 340 are already narrower and are
    deliberately not callers. */
 :root {
-  --width-action: 376px;
+  --width-action: 23.5rem; /* 376px */
   --width-action-mobile: var(--size-nav-width-mobile);
 }
 

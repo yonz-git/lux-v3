@@ -52,29 +52,32 @@
   --shadow-panel: inset 0 1px 0 var(--color-rim);
 
   /* ---- radius ------------------------------------------------------------- */
-  --radius-sheet: 36px;        /* top corners of the sheet                   */
-  --radius-sheet-foot: 44px;   /* bottom corners — follows the phone's 46    */
-  --radius-panel: 28px;        /* the frost panel inside the sheet           */
-  --radius-media: 22px;        /* the image card                             */
+  --radius-sheet: 2.25rem;        /* top corners of the sheet                   */
+  --radius-sheet-foot: 2.75rem;   /* bottom corners — follows the phone's 46    */
+  --radius-panel: 1.75rem;        /* the frost panel inside the sheet           */
+  --radius-media: 1.375rem;        /* the image card                             */
 
   /* ---- spacing ROLES — every VidGen gap lands on an existing step ---------- */
   --space-group: var(--space-xs);   /* 4 — between controls in one cluster   */
+  /* 4 — between pills in a row: chips, tags, place pills. One value app-wide,
+     30 Oct 2026, asked for directly (step 1's symptom chips set it) */
+  --space-pill-gap: var(--space-xs);
   --space-inset: var(--space-sm);   /* 8 — sheet edge to the panel inside it */
   --space-gutter: var(--space-2xl); /* 24 — screen edge; panel's side padding */
   --space-panel: var(--space-3xl);  /* 32 — panel's top padding to its label  */
   --space-section: var(--space-5xl);/* 48 — headline block to the next block  */
 
   /* ---- control sizes ------------------------------------------------------ */
-  --size-round: 56px;          /* every round button: back, ✕, +, mic, send  */
+  --size-round: 3.5rem;          /* every round button: back, ✕, +, mic, send  */
   /* ⚠️ 44, NOT THE REFERENCE'S 55 — asked for directly on the canvas, 1 Oct
      2026 ("adjust those pills' height again. less height"). 44 is the touch
      floor, so the chip IS its hit area. A field stays 56 (`--size-field`). */
-  --size-chip: 44px;
-  --space-chip-inline: 18px;   /* the 44 chip's side padding, off-scale      */
-  --size-field: 56px;          /* text and search fields, the radio rows     */
-  --size-tab: 56px;            /* pill tabs (57 in the ref)                  */
-  --size-slider: 64px;         /* slide-to-start track                       */
-  --size-pill: 36px;           /* the small time pill (17.7 × 1.745 ≈ 31, raised to the control floor) */
+  --size-chip: 2.75rem; /* 44px */
+  --space-chip-inline: 1.125rem;   /* the 44 chip's side padding, off-scale      */
+  --size-field: 3.5rem;          /* text and search fields, the radio rows     */
+  --size-tab: 3.5rem;            /* pill tabs (57 in the ref)                  */
+  --size-slider: 4rem;         /* slide-to-start track                       */
+  --size-pill: 2.25rem;           /* the small time pill (17.7 × 1.745 ≈ 31, raised to the control floor) */
 }
 
 /* non-negotiable 11: no translucent surface without a solid fallback */
@@ -99,7 +102,7 @@
 
   /* the bar is 56 circles in 6 of padding and a 1px edge: 70 tall. Every
      `.screen` reservation reads these two, so they move together. */
-  --size-nav-height: 70px;
+  --size-nav-height: 4.375rem; /* 70px */
   --nav-inset-bottom: var(--space-lg);
   --nav-inset-inline: var(--space-sm); /* "50% less side paddings": 16 -> 8 */
 }
@@ -144,12 +147,29 @@
      wordmark    20/24 Bold                           "VidGen"
    ========================================================================== */
 
+/* ⚠️ REM AND FLUID, 31 Oct 2026 — asked for directly ("use a responsive rem
+   system rather than px", then "tokens + fluid type"). Every size is rem, so
+   the whole ramp follows the reader's own browser text size. Line height is a
+   unitless ratio of the size — each role keeps the ratio its px pair had at
+   its mobile size — so it follows the font when the font moves.
+   FLUID ROLES grow with the viewport between 375 and 1440 wide, through
+   `clamp(min, rem + vw, max)`: the min is the old mobile size and the max the
+   old desktop size, so nothing lands outside what was already designed. They
+   are the headline, `t-h2`, and the three `-a-b` pairs that used to STEP at
+   1024 (`t-h3-h2`, `t-body2-body1`, `t-body3-body2`) — they now slide
+   instead of jumping. Both clamp ends are rem, so a reader's larger text
+   setting still enlarges them (WCAG 1.4.4).
+   FIXED ROLES stay one size: labels, chips, buttons, the nav, overlines,
+   captions — they size controls whose geometry is measured — and every page
+   title, `t-h4-h3`, which stays 22 at every width ("for all the pages", 15 Sep
+   2026). */
+
 .t-display1,
 .t-display2,
 .t-h1,
 .t-headline {
-  font-size: 36px;
-  line-height: 44px;
+  font-size: clamp(2.25rem, 2.0739rem + 0.7512vw, 2.75rem); /* 36 → 44 */
+  line-height: 1.2222;
   font-weight: var(--font-weight-light);
   letter-spacing: -0.005em;
 }
@@ -160,8 +180,8 @@
 }
 .t-kicker {
   margin: 0;
-  font-size: 16px;
-  line-height: 20px;
+  font-size: 1rem; /* 16 */
+  line-height: 1.25;
   font-weight: var(--font-weight-regular);
   color: var(--color-text-secondary);
 }
@@ -171,99 +191,89 @@
 }
 .t-brand {
   margin: 0;
-  font-size: 20px;
-  line-height: 24px;
+  font-size: 1.25rem; /* 20 */
+  line-height: 1.2;
   font-weight: 700;
   letter-spacing: 0.005em;
 }
 
 .t-h2 {
-  font-size: 28px;
-  line-height: 34px;
+  font-size: clamp(1.75rem, 1.662rem + 0.3756vw, 2rem); /* 28 → 32 */
+  line-height: 1.2143;
   font-weight: var(--font-weight-regular);
 }
 .t-h3,
 .t-h4-h3 {
-  font-size: 22px;
-  line-height: 28px;
+  font-size: 1.375rem; /* 22 */
+  line-height: 1.2727;
   font-weight: var(--font-weight-regular);
 }
 .t-h3-h2 {
-  font-size: 22px;
-  line-height: 28px;
+  font-size: clamp(1.375rem, 1.331rem + 0.1878vw, 1.5rem); /* 22 → 24 */
+  line-height: 1.2727;
   font-weight: var(--font-weight-regular);
 }
 @media (min-width: 1024px) {
-  /* the Storyboard title: 13 × 1.745 ≈ 23, Medium */
+  /* the Storyboard title: 13 × 1.745 ≈ 23, Medium — the size slides now, the
+     weight still steps */
   .t-h3-h2 {
-    font-size: 24px;
-    line-height: 30px;
     font-weight: var(--font-weight-medium);
   }
 }
 .t-h4 {
-  font-size: 20px;
-  line-height: 24px;
+  font-size: 1.25rem; /* 20 */
+  line-height: 1.2;
   font-weight: var(--font-weight-regular);
 }
 .t-h5 {
-  font-size: 18px;
-  line-height: 22px;
+  font-size: 1.125rem; /* 18 */
+  line-height: 1.2222;
   font-weight: var(--font-weight-regular);
 }
 .t-h6 {
-  font-size: 16px;
-  line-height: 20px;
+  font-size: 1rem; /* 16 */
+  line-height: 1.25;
   font-weight: var(--font-weight-medium);
 }
 
 .t-body1 {
-  font-size: 18px;
-  line-height: 24px;
+  font-size: 1.125rem; /* 18 */
+  line-height: 1.3333;
 }
-.t-body2,
+.t-body2 {
+  font-size: 1rem; /* 16 */
+  line-height: 1.375;
+}
 .t-body2-body1 {
-  font-size: 16px;
-  line-height: 22px;
+  font-size: clamp(1rem, 0.956rem + 0.1878vw, 1.125rem); /* 16 → 18 */
+  line-height: 1.375;
 }
-.t-body3,
+.t-body3 {
+  font-size: 0.875rem; /* 14 */
+  line-height: 1.4286;
+}
 .t-body3-body2 {
-  font-size: 14px;
-  line-height: 20px;
-}
-@media (min-width: 1024px) {
-  .t-body2-body1 {
-    font-size: 18px;
-    line-height: 24px;
-  }
-  .t-body3-body2 {
-    font-size: 16px;
-    line-height: 22px;
-  }
+  font-size: clamp(0.875rem, 0.831rem + 0.1878vw, 1rem); /* 14 → 16 */
+  line-height: 1.4286;
 }
 
 .t-label,
 .t-nav {
-  font-size: 14px;
-  line-height: 20px;
+  font-size: 0.875rem; /* 14 */
+  line-height: 1.4286;
   font-weight: var(--font-weight-medium);
-}
-@media (min-width: 1024px) {
-  .t-nav {
-    font-size: 14px;
-  }
 }
 .t-label-sm,
 .t-caption {
-  font-size: 12px;
-  line-height: 16px;
+  font-size: 0.75rem; /* 12 */
+  line-height: 1.3333;
 }
 /* ⚠️ 14 / 20, NOT THE REFERENCE'S 12 — asked for directly 1 Oct 2026 ("use
    bigger font for these") against the card overlines: `YOUR SKIN PROFILE`,
    `SYMPTOMS · LAST 14 DAYS`, `SYMPTOMS AND LOCATION`, `PROGRESS GALLERY`. */
 .t-overline {
-  font-size: 14px;
-  line-height: 20px;
+  font-size: 0.875rem; /* 14 */
+  line-height: 1.4286;
   font-weight: var(--font-weight-semibold, 600);
   letter-spacing: 0.12em;
 }
@@ -271,22 +281,22 @@
 /* the chip label — VidGen's 16.5 Regular */
 .t-chip {
   margin: 0;
-  font-size: 16px;
-  line-height: 20px;
+  font-size: 1rem; /* 16 */
+  line-height: 1.25;
   font-weight: var(--font-weight-regular);
 }
 
 /* buttons — `Start` and the tabs are 14.3 Medium; the full-width pill takes
    one step more so the flow's `Continue` still leads its screen */
 .t-button {
-  font-size: 15px;
-  line-height: 20px;
+  font-size: 0.9375rem; /* 15 */
+  line-height: 1.3333;
   font-weight: var(--font-weight-medium);
 }
 .t-button-md,
 .t-button-sm {
-  font-size: 14px;
-  line-height: 20px;
+  font-size: 0.875rem; /* 14 */
+  line-height: 1.4286;
   font-weight: var(--font-weight-medium);
 }
 

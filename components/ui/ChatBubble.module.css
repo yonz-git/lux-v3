@@ -46,7 +46,7 @@
        12/20/14/20 and 12/9/12/9  the two 00 Welcome bubbles; the desktop one's
        9px side padding is clearly a mistake.
      Flagged in Figma rather than reproduced here. */
-  padding: 14px 18px;
+  padding: 0.875rem 1.125rem;
 
   border-radius: var(--radius-bubble);
   box-shadow: var(--shadow-chat-bubble);
@@ -116,7 +116,7 @@
        22 is kept here because it is what the nine GETTING STARTED desktop frames
        were verified against, and 4px of side padding on a full-width bubble does
        not move anything. Resolve it in Figma rather than forking the component. */
-    padding: 14px 22px;
+    padding: 0.875rem 1.375rem;
   }
 
   /* ⚠️ THE COMPACT BUBBLE DOES NOT TAKE THE DESKTOP STEP-UP. The 22 exists

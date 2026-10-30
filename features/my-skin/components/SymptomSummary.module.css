@@ -62,13 +62,13 @@
   flex-wrap: wrap;
   margin: 0;
   /* the dot's 8 and its gap's 8, so the pills start under the name */
-  padding: 0 0 0 calc(8px + var(--space-sm));
+  padding: 0 0 0 calc(0.5rem + var(--space-sm));
   list-style: none;
 }
 
 /* ⚠️ A PLACE IS A GLASS PILL, 28 TALL — the face's own region pill height and
    the HIG's floor for a control. Spaced by margin, not `gap`, so a pill that
-   leaves can close its own 8 as it fades; `max-width` is the room it takes up,
+   leaves can close its own gap as it fades; `max-width` is the room it takes up,
    long enough for the widest label. Enters from `@starting-style`, leaves on
    `data-leaving`, both on `--duration-move` and `--ease-in-out`. */
 .place {
@@ -77,12 +77,12 @@
   box-sizing: border-box;
   min-height: 28px;
   max-width: 14em;
-  margin: 0 var(--space-sm) var(--space-sm) 0;
+  margin: 0 var(--space-pill-gap) var(--space-pill-gap) 0;
   padding: 0 var(--space-md); /* 12 */
-  border: var(--border-width-hairline) solid var(--color-border-glass);
-  border-radius: var(--radius-full);
-  background: var(--color-glass-strong);
-  color: var(--color-text-primary);
+  /* fill, rim, ink and shade are the face's lit pill — `.placePill` in
+     FaceDiagram.module.css, 30 Oct 2026, asked for directly. This rule keeps
+     only the size, the spacing and the enter/leave motion. */
+  position: relative;
   white-space: nowrap;
   overflow: hidden;
   opacity: 1;
@@ -112,10 +112,10 @@
   border-width: 0;
 }
 
-/* the last row of pills carries 8 under it from the pill margins; the row's
+/* the last row of pills carries the pill gap under it from the pill margins; the row's
    own 12 sits below that, so take the pills' bottom back */
 .places {
-  margin-bottom: calc(var(--space-sm) * -1);
+  margin-bottom: calc(var(--space-pill-gap) * -1);
 }
 
 /* ⚠️ THE SAME WIDTH AS THE FACE CARD ABOVE IT, AND ON ITS CENTRE LINE — from

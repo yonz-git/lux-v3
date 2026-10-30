@@ -60,7 +60,7 @@
    sharing would mean a component whose only job is a background colour. */
 .pill {
   flex: none;
-  padding: 5px 14px;
+  padding: 0.3125rem 0.875rem;
   border-radius: var(--radius-full);
   color: var(--color-text-on-brand);
   white-space: nowrap;

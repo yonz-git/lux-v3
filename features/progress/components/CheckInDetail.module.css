@@ -64,7 +64,7 @@
 .tags {
   display: flex;
   flex-wrap: wrap;
-  gap: var(--space-sm); /* 8 */
+  gap: var(--space-pill-gap); /* the app's one pill gap, 30 Oct 2026 */
   margin: 0;
   padding: 0;
   list-style: none;
@@ -74,7 +74,7 @@
    13 Sep 2026; these were `Tag`s. 28 tall: 6 + 16 + 6, warning-subtle behind
    `feedback/warning`. */
 .tag {
-  padding: 6px var(--space-md); /* 6 / 12 */
+  padding: 0.375rem var(--space-md); /* 6 / 12 */
   border-radius: var(--radius-full);
   background: var(--color-feedback-warning-subtle);
   color: var(--color-feedback-warning);
@@ -264,7 +264,7 @@
   /* ⚠️ 16, NOT 12, BETWEEN THE THUMB AND THE WORDS — 4 Oct 2026, asked for
      directly ("give a bit of space here") */
   gap: var(--space-lg);
-  padding: 10px 0;
+  padding: 0.625rem 0;
 }
 
 .product + .product {

@@ -22,7 +22,7 @@
 .chips {
   display: flex;
   flex-wrap: wrap;
-  gap: var(--space-sm); /* 8, as the step screens */
+  gap: var(--space-pill-gap); /* the app's one pill gap, 30 Oct 2026 */
 }
 
 /* a field `Other` opens grows in with `Collapse`; the group's 8 is declared on

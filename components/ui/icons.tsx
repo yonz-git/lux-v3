@@ -218,6 +218,21 @@ export function TrashIcon({ className }: IconProps) {
   );
 }
 
+/**
+ * A counter-clockwise arrow — reset, step 1's face card. ⚠️ NOT A VIDGEN
+ * GLYPH (the references never reset anything); it is the near-universal
+ * "start over" mark (SF Symbols `arrow.counterclockwise`, Lucide
+ * `rotate-ccw`), drawn to the set's weight.
+ */
+export function ResetIcon({ className }: IconProps) {
+  return (
+    <Icon kind="glyph" box="0 0 24 24" size={20} className={className}>
+      <path d="M3 12a9 9 0 1 0 9-9 9.75 9.75 0 0 0-6.74 2.74L3 8" {...ns} />
+      <path d="M3 3v5h5" {...ns} />
+    </Icon>
+  );
+}
+
 /** The four corner marks before the Storyboard's `Image` label. */
 export function FrameIcon({ className }: IconProps) {
   return (

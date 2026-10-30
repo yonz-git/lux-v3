@@ -50,7 +50,7 @@
      real content started 37px down. See `.grabber` for the other half of that.
      The back-chevron header this also used to pay for is gone — `Cancel` at
      the foot of the tray replaced it. */
-  padding: var(--space-sm) var(--space-xl) 28px;
+  padding: var(--space-sm) var(--space-xl) 1.75rem;
 
   /* Figma's radius 28 is off the radius scale at both ends (2xl is 24, 3xl 32).
      Written as a literal rather than snapped to a token that would be quietly

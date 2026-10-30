@@ -68,7 +68,7 @@
   width: 100%;
   box-sizing: border-box;
   min-height: var(--size-field);
-  padding: var(--space-md) 10px var(--space-md) 18px;
+  padding: var(--space-md) 0.625rem var(--space-md) 1.125rem;
   border-radius: var(--radius-full);
   border: var(--border-width-hairline) solid var(--color-border-glass);
   background: var(--color-glass);

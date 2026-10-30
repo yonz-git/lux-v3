@@ -47,7 +47,7 @@
   justify-content: center;
   /* ⚠️ 4, HALF THE 8 BEFORE IT — 30 Oct 2026, asked for directly ("half the
      gap size between pills"); it was 10 until the same day */
-  gap: var(--space-xs);
+  gap: var(--space-pill-gap);
   /* ⚠️ NEVER WIDER THAN THE FACE CARD UNDER IT — asked for directly the same
      day ("fit all the pills within this width"). The card is the column on a
      phone and is capped at 480 from 1024 (`.diagram` below), so the row
@@ -281,7 +281,7 @@
    one-line button does not need, and its controls sit 10 from the edge, where
    they sit inside the field */
 .otherConfirmed {
-  padding: var(--space-md) 10px var(--space-md) 18px;
+  padding: var(--space-md) 0.625rem var(--space-md) 1.125rem;
 }
 
 .otherConfirmedText {
@@ -398,141 +398,45 @@
   color: var(--color-text-secondary);
 }
 
-/* ⚠️ NOT IN FIGMA — THE `Save` / `Reset` / `Reset all` PILL under the face
-   card, asked for directly 14 Sep 2026 (see StartInvestigation.tsx). `md` (12)
-   under the card, so it reads as the card's own control rather than the next
-   question; the row centres it, since the pill's own `align-self: center` is
-   the tray's and does nothing across a row. */
+/* ⚠️ RESET IS A ↺ IN THE FACE CARD'S TOP-RIGHT CORNER — 30 Oct 2026, asked
+   for directly. It was a `Reset all` pill (the products tray's
+   `SegmentedToggle`) centred under the card; with `Save` and `Reset` gone it
+   was a one-word pill doing an icon's job, away from the thing it clears.
+   `FaceDiagram`'s `corner` slot places it. It fades out, rather than sitting
+   disabled, while nothing is selected — including while its undo shows. */
 .reset {
   position: relative;
-  z-index: 1; /* the undo floats over the pill, see AGENTS.md motion */
   display: flex;
-  justify-content: center;
-  /* 20 under the chips (or the safety notice), the within-question step */
-  margin-top: var(--space-xl);
+  align-items: center;
 }
 
-/* ⚠️ THE PILL IS DRAWN AT 88% OF THE TRAY'S SIZE, asked for directly 14 Sep
-   2026 — "20% smaller" (0.8), then "10% bigger" than that (0.88), when it was
-   the two-option pill under the chips. `zoom` rather than new sizes because it
-   scales the label WITH its padding, its radius and its gap in one proportion
-   — the scaled label (16 → 14.1) is on no step of the type ramp. `zoom`, not
-   `transform`, so the layout box shrinks too. Only this caller: the tray and
-   the check-in record keep the full pill.
-   ⚠️ NOT IN FIGMA — A DROP SHADOW the tray's pill does not have:
-   `shadow/button`, with the track's own inward glow and top catch restated
-   before it, since `.toggle` draws those as a `box-shadow` too. Two classes
-   deep so it wins whichever module loads last; keep the insets in step with
-   `.toggle`. */
-/* ⚠️ RETUNED IN DEVTOOLS AND SUPPLIED DIRECTLY, 14 Sep 2026 — this caller
-   only; the tray and the check-in record keep `.toggle` as it is:
-     - no track fill (`#dbeded00`, the nav hue at 0), no backdrop blur and no
-       1px `border/glass` rim, so the pill sits on the page itself;
-     - the two insets are no longer white light: a grey `#64666942` glow
-       inward and a sage `#839ca530` shade under the top edge, so the track
-       reads as pressed into the page rather than lit on it.
-   The border is removed, not made transparent, as in DevTools, so the track
-   is 2px narrower and shorter than `.toggle`. */
-.reset > .placesToggle {
-  zoom: 0.88;
-  background: #dbeded00;
-  border: none;
-  -webkit-backdrop-filter: none;
-  backdrop-filter: none;
-  box-shadow:
-    inset 0 2px 12px #64666942,
-    inset 0 5px 8px #839ca530,
-    var(--shadow-button);
+/* two classes deep, to win over `IconButton`'s own transition and its 0.4
+   disabled fade whichever module loads last */
+.reset .resetButton {
+  transition:
+    opacity var(--duration-fade) var(--ease-in-out),
+    visibility 0s linear 0s,
+    background-color var(--duration-fast) var(--ease-hover);
 }
 
-/* ⚠️ A LIVE `Reset all` WEARS THE SECONDARY BUTTON'S COLOURS — NOT IN FIGMA,
-   asked for directly 14 Sep 2026 ("reset all button should have bg, use
-   secondary colors"). It was plain `text/secondary` ink on the track. It now
-   draws `SmallButton`'s secondary pill on the segment's own `::before`: the
-   `button/bg-secondary` gradient, `text/brand` ink, and the edge light at the
-   pale pills' strengths (`.edge` sets the indigo ones). No drop shadow and no
-   blur of its own, because the indigo `Save` pill beside it has neither. With
-   `Save` live as well, the track shows both: indigo for the symptom being
-   finished, secondary for the command that clears everything.
-   ⚠️ IT KEEPS ITS OWN PILL UNDER THE POINTER. The toggle moves its indigo pill
-   onto whichever segment is hovered; here the secondary gradient runs end for
-   end instead (non-negotiable 5), as `SmallButton`'s does. The hovered rules
-   sit one class above the toggle's (0,4,0) and (0,4,1). */
-/* ⚠️ BOTH LIVE RESETS ARE A TRANSPARENT BUTTON — 15 Sep 2026, asked for
-   directly, in three turns: `Reset all` lost its fill ("make this btn
-   transparent bg"), then for one turn lost its edge light too (a misreading —
-   "the transparent button disappeared"), and `Reset` takes the same button
-   the moment it becomes clickable ("add it to reset button also"). So a live
-   reset is the edge light's rim and glow around the words, in `text/brand`,
-   with no fill; the secondary pill fades in only under the pointer.
-   The pill's one segment is `Reset all` (`Save` and `Reset` were removed, 29
-   Oct 2026). A disabled reset matches nothing here and
-   stays the toggle's plain faded text.
-   ⚠️ `[type="button"]` IS SPECIFICITY, NOT A FILTER (30 Oct 2026). These were
-   `:not(:first-child):not(:disabled)`, and `:not(:first-child)` was worth a
-   class; with `Save` gone the one button IS the first child, so it went, and
-   the toggle's own hover rule (0,4,1) tied these and won on source order,
-   turning the pill indigo under the pointer. The attribute puts the point
-   back so `Reset all` hovers as it did. */
-.reset > .placesToggle button[type="button"]:not(:disabled) {
-  color: var(--color-text-brand);
-  --shine-ink: var(--color-text-brand);
-}
-
-.reset > .placesToggle button[type="button"]:not(:disabled)::before {
+.reset .resetButton:disabled {
   opacity: 0;
-  --grad-start: var(--color-button-bg-secondary-start);
-  --grad-end: var(--color-button-bg-secondary-end);
-}
-
-/* the edge light at the pale pills' glow strengths — `.edge` sets the indigo
-   ones.
-   ⚠️ THE RING STILL SWEEPS, BUT NEVER DISAPPEARS — 16 Sep 2026, asked for
-   directly ("make these border shine more visible all around", then "not like
-   flat border … give gradient like before, the parts that were less visible
-   slightly more visible"). The default sweep falls to 0 between 40% and 60%,
-   so on these pale pills the ring vanished along the long edges.
-   ⚠️ IT IS THE SHARED `--edge-ring-all-round` NOW (globals.css), the same
-   day, when the gallery's photos and date pills took this ring ("reuse the
-   border we made for the reset button"). The values live there; this rule
-   only picks the ring, which is also why the two strengths are gone. */
-.reset > .placesToggle button[type="button"]:not(:disabled) > :global(.edge-light) {
-  opacity: 1;
-  --edge-glow: 0.25;
-  --edge-catch: 0.35;
-  --edge-ring: var(--edge-ring-all-round);
-}
-
-@media (hover: hover) {
-  .reset > .placesToggle button[type="button"]:not(:disabled):hover {
-    color: var(--color-text-brand);
-    --shine-ink: var(--color-text-brand);
-  }
-
-  /* the pill appears under the pointer rather than reversing — with no fill at
-     rest there is no gradient to run end for end */
-  .reset > .placesToggle button[type="button"]:not(:disabled):hover::before {
-    opacity: 1;
-  }
-}
-
-/* ⚠️ THE UNDO SITS ON THE PILL ITSELF — NOT IN FIGMA, asked for directly 14
-   Sep 2026 ("just over reset all, don't make the page move"). Absolutely
-   positioned and centred on the `Save` / `Reset` / `Reset all` pill, so it
-   takes no layout; floated in the 12 above, it covered the location chips.
-   Every command in the pill is disabled while the undo shows (nothing is
-   selected), so the pill steps out from under it rather than showing through
-   its frost. The frosted-nav pill recipe the app's `Snackbar` uses
-   (`surface/frost-nav`, the half-pixel white rim, `shadow/nav`), smaller, and
-   it rises 4px as it fades in on `duration/base`. */
-.reset[data-undo] > .placesToggle {
   visibility: hidden;
+  transition:
+    opacity var(--duration-fade) var(--ease-in-out),
+    visibility 0s linear var(--duration-fade);
 }
 
+/* ⚠️ THE UNDO SITS WHERE THE ↺ WAS — asked for directly 14 Sep 2026 ("don't
+   make the page move"), moved into the corner with it 30 Oct 2026. Absolutely
+   positioned and right-aligned on the button, so it takes no layout and
+   grows leftward over the card. The frosted-nav pill recipe the app's
+   `Snackbar` uses (`surface/frost-nav`, the half-pixel white rim,
+   `shadow/nav`), smaller, and it rises 4px as it fades in. */
 .undo {
   position: absolute;
   top: 50%;
-  left: 50%;
+  right: 0;
   z-index: 1;
   display: inline-flex;
   align-items: center;
@@ -545,15 +449,15 @@
   -webkit-backdrop-filter: blur(var(--blur-card)) saturate(160%);
   backdrop-filter: blur(var(--blur-card)) saturate(160%);
   white-space: nowrap;
-  transform: translate(-50%, -50%);
-  transition: opacity var(--duration-base) var(--ease-standard),
-    transform var(--duration-base) var(--ease-standard);
+  transform: translateY(-50%);
+  transition: opacity var(--duration-fade) var(--ease-in-out),
+    transform var(--duration-fade) var(--ease-in-out);
 }
 
 @starting-style {
   .undo {
     opacity: 0;
-    transform: translate(-50%, calc(-50% + 4px));
+    transform: translateY(calc(-50% + 4px));
   }
 }
 

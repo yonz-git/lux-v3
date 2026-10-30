@@ -477,11 +477,19 @@ nothing smaller, ever.
 In code each style is a `t-*` class (`t-headline`, `t-h4-h3`, `t-body2`,
 `t-chip`…); a screen never writes a font-size. Headings balance their lines
 and prose avoids orphans automatically.
+**Units (31 Oct 2026):** every size is rem (16px = 1rem), so the whole ramp
+follows the reader's browser text size, and every line height is a unitless
+ratio of its size. The px pairs above are the sizes at the default 16px root.
+Five roles are FLUID — they slide between 375 and 1440 wide with
+`clamp(min, rem + vw, max)`: `headline` 36 → 44, `t-h2` 28 → 32, `t-h3-h2`
+22 → 24, `t-body2-body1` 16 → 18, `t-body3-body2` 14 → 16. Every other role,
+page titles included, stays one size.
 
 ## Layout
 
 The spacing scale runs 2 · 4 · 8 · 12 · 16 · 20 · 24 · 32 · 40 · 48 · 64 · 80 ·
-96 · 120. Reach for the five roles first; they are the gaps the references
+96 · 120, written in rem (0.125rem … 7.5rem) so spacing grows with the
+reader's text size. Pills in a row sit `--space-pill-gap` (4) apart, app-wide. Reach for the five roles first; they are the gaps the references
 actually use: `group` (4) between controls in one cluster, `inset` (8) from a
 sheet's edge to the panel inside it and from the screen edge to a floating
 sheet, `gutter` (24) for screen side margins and a panel's side padding,

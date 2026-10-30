@@ -122,11 +122,11 @@
      name pressed against both edges. 14 is what keeps a ONE-line row on 56:
      the tallest thing in it is the 28 thumb stack, and 28 + 14 + 14 = 56, so
      the comp height is untouched and only a wrapped row grows (to 76). */
-  padding: 14px 18px;
+  padding: 0.875rem 1.125rem;
   /* ⚠️ THE LEFT IS 20% MORE, asked for directly 15 Sep 2026: 18 → 21.6 (it
      was 10%, 19.8, for a turn), so the name sits further in than the chevron
      does from the right */
-  padding-left: calc(18px * 1.2);
+  padding-left: calc(1.125rem * 1.2);
   text-align: left;
 
   /* no fill of its own — `.group` above is the surface. The radius stays so
@@ -187,7 +187,7 @@
   flex: none;
   display: inline-flex;
   align-items: center;
-  gap: 6px;
+  gap: 0.375rem;
   box-sizing: border-box;
   height: 28px;
   margin-top: calc(var(--space-sm) - var(--space-2xs));
@@ -315,7 +315,7 @@
 .panel {
   display: flex;
   flex-direction: column;
-  padding: 0 calc(18px * 1.2) calc(18px * 1.2);
+  padding: 0 calc(1.125rem * 1.2) calc(1.125rem * 1.2);
 }
 
 /* 8 between cards, not the list's 12 — inside the box every gap is the box's

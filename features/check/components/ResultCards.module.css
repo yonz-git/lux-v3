@@ -380,7 +380,7 @@
   flex: none;
   width: 10px;
   height: 10px;
-  margin-top: 7px;
+  margin-top: 0.4375rem;
   border-radius: var(--radius-full);
   border: var(--border-width-thin) solid var(--color-border-glass);
 }

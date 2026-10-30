@@ -374,7 +374,7 @@
    it (the first render, 15 Sep 2026), which is why the pill stays at all. */
 .date,
 .day {
-  padding: 2px 8px;
+  padding: 2px 0.5rem;
   border-radius: var(--radius-full);
   background: color-mix(
     in srgb,
@@ -576,8 +576,8 @@
    the open gallery, where the card that opens it keeps the card size. Same
    caps, weight and tracking. (0,2,0) over the global class. */
 .head > .overline {
-  font-size: 18px;
-  line-height: 24px;
+  font-size: 1.125rem; /* 18 */
+  line-height: 1.3333;
 }
 
 /* ============================================================================

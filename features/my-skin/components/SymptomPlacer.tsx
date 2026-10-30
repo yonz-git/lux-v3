@@ -7,7 +7,7 @@ import { type CSSProperties, useEffect, useRef, useState } from "react";
    restating a hundred lines of chip, pill and undo recipes in a second module. */
 import styles from "./StartInvestigation.module.css";
 import { Chip } from "@/components/ui/Chip";
-import SegmentedToggle from "@/features/products/components/SegmentedToggle";
+import { IconButton } from "@/components/ui/IconButton";
 import { TextField } from "@/components/ui/TextField";
 import { FaceDiagram, FACE_REGION_IDS } from "./FaceDiagram";
 import {
@@ -15,6 +15,7 @@ import {
   CloseIcon,
   NoteIcon,
   SuccessCheckIcon,
+  ResetIcon,
 } from "@/components/ui/icons";
 import { SafetyNotice } from "./SafetyNotice";
 import { SymptomSummary } from "./SymptomSummary";
@@ -33,7 +34,7 @@ import {
 
 const LOCATION_CHIPS = ["Whole face", "Neck", "Other"];
 
-/* how long `Reset all`'s undo stays — the `Snackbar`'s 4s hold */
+/* how long the reset's undo stays — the `Snackbar`'s 4s hold */
 const UNDO_MS = 4000;
 
 /* ⚠️ AND ITS COPY ASKS ABOUT A PLACE, AS OF 8 Sep 2026. The field read
@@ -63,7 +64,8 @@ const UNDO_MS = 4000;
 
 /**
  * The symptom and place controls — the face card, the symptom chips, the safety
- * notice, `Reset all` and the typed `Other` description. Step 1 and the profile
+ * notice, the ↺ reset in the face card's corner and the typed `Other`
+ * description. Step 1 and the profile
  * recap's `Edit` both draw it, so an answer is changed with the same controls
  * that gave it. Everything about how it behaves is in `StartInvestigation.tsx`'s
  * doc comment; it writes to the store as it is tapped.
@@ -73,7 +75,7 @@ export function SymptomPlacer({
   summary = false,
 }: {
   describedBy?: string;
-  /** the running list of symptoms and places, under `Reset all` — step 1's */
+  /** the running list of symptoms and places, under the face card — step 1's */
   summary?: boolean;
 }) {
   const { answers, setAnswer } = useInvestigation();
@@ -114,13 +116,16 @@ export function SymptomPlacer({
   /* ⚠️ `Reset all` — NOT IN FIGMA, asked for directly 14 Sep 2026. Clears
      every symptom and every place and closes the one being placed. The typed
      `Other` description is NOT a selection and stays; it has its own ✕. The
-     button disables as it empties.
+     button fades out as it empties.
+     ⚠️ IT IS A ↺ IN THE FACE CARD'S TOP-RIGHT CORNER as of 30 Oct 2026, asked
+     for directly — it was a `Reset all` pill under the card. Its accessible
+     name keeps the words.
      ⚠️ AND IT IS UNDOABLE, asked for directly the same day — a snapshot undo,
      like `Remove` on a product: `start` and the symptom being placed are
      captured before the clear and handed back.
      ⚠️ THE UNDO SITS ON THE BUTTON, NOT IN THE APP'S `Snackbar` — asked for
      directly: the page must not move. It is absolutely positioned on
-     `Reset all`, so it takes no layout, and focus goes to
+     the ↺, so it takes no layout, and focus goes to
      its `Undo` with `preventScroll` rather than up to the chips, which
      scrolled the screen. It holds for `UNDO_MS`, the snackbar's own window. */
   const [undo, setUndo] = useState<{
@@ -129,7 +134,7 @@ export function SymptomPlacer({
     placing: Symptom | null;
   } | null>(null);
   const undoRef = useRef<HTMLButtonElement>(null);
-  /* the row, not the button: `SegmentedToggle` takes no ref */
+  /* the corner, not the button: `IconButton` takes no ref */
   const resetRef = useRef<HTMLDivElement>(null);
   const nothingSelected = placing === null && reported.length === 0;
 
@@ -147,7 +152,7 @@ export function SymptomPlacer({
     setUndo(null);
     requestAnimationFrame(() =>
       resetRef.current
-        ?.querySelector<HTMLButtonElement>('[role="group"] button')
+        ?.querySelector<HTMLButtonElement>("button")
         ?.focus({ preventScroll: true }),
     );
   };
@@ -232,8 +237,7 @@ export function SymptomPlacer({
     <>
       {/* ⚠️ THE SYMPTOM CHIPS SIT UNDER THE FACE, NOT UNDER THE QUESTION —
           asked for directly 14 Sep 2026: the face card leads, and the chips
-          sit right above the `Save` / `Reset` / `Reset all` pill that acts on
-          them. `SafetyNotice` moves with them, because it reveals under the
+          sit right above the face card that acts on them. `SafetyNotice` moves with them, because it reveals under the
           chip grid (safety.ts). NOT IN FIGMA. */}
       <div
         ref={chipsRef}
@@ -274,48 +278,42 @@ export function SymptomPlacer({
              mount on `Save` and draw in then, not unseen under the fade. */
           callouts={placing ? withAreas(answers.start, placing, []) : answers.start}
           calloutsHidden={placing !== null}
-        />
-      </div>
-
-      <div
-        ref={resetRef}
-        className={styles.reset}
-        data-motion="rise-self"
-        style={{ "--rise-delay": "200ms" } as CSSProperties}
-        data-undo={undo ? "" : undefined}
-      >
-        {/* always mounted, so the announcement lands in an existing region */}
-        <p className="visually-hidden" aria-live="polite">
-          {undo ? "Selections cleared" : ""}
-        </p>
-        {undo && (
-          <div key={undo.id} className={styles.undo}>
-            <span className={`${styles.undoMessage} t-label-sm`}>
-              Selections cleared
-            </span>
-            <button
-              ref={undoRef}
-              type="button"
-              className={`${styles.undoAction} t-label pressable`}
-              onClick={undoReset}
+          corner={
+            <div
+              ref={resetRef}
+              className={styles.reset}
+              data-undo={undo ? "" : undefined}
             >
-              Undo
-            </button>
-          </div>
-        )}
-        {/* `Reset all` is the pill's one command now: `Save` and `Reset` went
-            in usability testing (see `tapSymptom`). It keeps the products
-            tray's `SegmentedToggle` so the look is unchanged, with no segment
-            selected (`selectedIndex={-1}`) and fading until anything is
-            selected. */}
-        <SegmentedToggle
-          actions
-          label="Symptom places"
-          className={styles.placesToggle}
-          options={["Reset all"]}
-          selectedIndex={-1}
-          disabled={[nothingSelected]}
-          onChange={resetAll}
+              {/* always mounted, so the announcement lands in an existing region */}
+              <p className="visually-hidden" aria-live="polite">
+                {undo ? "Selections cleared" : ""}
+              </p>
+              {undo && (
+                <div key={undo.id} className={styles.undo}>
+                  <span className={`${styles.undoMessage} t-label-sm`}>
+                    Selections cleared
+                  </span>
+                  <button
+                    ref={undoRef}
+                    type="button"
+                    className={`${styles.undoAction} t-label pressable`}
+                    onClick={undoReset}
+                  >
+                    Undo
+                  </button>
+                </div>
+              )}
+              <IconButton
+                size="sm"
+                label="Reset all selections"
+                className={styles.resetButton}
+                disabled={nothingSelected}
+                onClick={resetAll}
+              >
+                <ResetIcon />
+              </IconButton>
+            </div>
+          }
         />
       </div>
 

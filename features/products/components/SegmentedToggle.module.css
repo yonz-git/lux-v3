@@ -12,8 +12,8 @@
 
 .toggle {
   display: flex;
-  gap: 4px;
-  padding: 5px;
+  gap: 0.25rem;
+  padding: 0.3125rem;
   border-radius: var(--radius-full);
   background: var(--color-surface-frost-nav);
   /* ⚠️ THE HAIRLINE AND THE LIT RING BELOW AT 80% OF THEIR OPACITY, asked for
@@ -74,7 +74,7 @@
 
 .segment {
   position: relative;
-  padding: 11px 22px;
+  padding: 0.6875rem 1.375rem;
   border-radius: var(--radius-full);
   border: none;
   background: transparent;

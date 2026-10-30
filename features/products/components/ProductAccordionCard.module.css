@@ -20,7 +20,7 @@
   gap: var(--space-lg); /* 16 — see above */
   /* ⚠️ 10% MORE, asked for directly 15 Sep 2026 ("make it breathe more"):
      17.6 / 19.8 */
-  padding: calc(var(--space-lg) * 1.1) calc(18px * 1.1);
+  padding: calc(var(--space-lg) * 1.1) calc(1.125rem * 1.1);
 
   /* lux-v3: the 30% panel at the score cards' 24 radius (app/vidgen.css) */
   border-radius: var(--radius-2xl); /* 24 */

@@ -579,6 +579,18 @@ Light/Regular/Medium-only rule. New components: `IconButton` (the round
 control). Icons are VidGen's glyphs (`components/ui/icons.tsx`). `/styleguide`
 shows all of it.
 
+⚠️ **EVERY SIZE TOKEN IS REM AS OF 31 Oct 2026 — asked for directly.**
+Spacing, radius, type, line height, tracking, control/icon sizes and card
+widths in `tokens.css`, `vidgen.css` and `globals.css` are rem (16px = 1rem),
+each with its px value in a comment; the px numbers in this file are those
+values at the default root. **Borders, hairlines, shadows, blur and
+breakpoints stay px** — a 1px rule must stay 1px. Line heights in the
+`vidgen.css` ramp are unitless ratios. Five type roles are fluid
+(`clamp(rem, rem + vw, rem)` from 375 to 1440): the headline, `t-h2`,
+`t-h3-h2`, `t-body2-body1`, `t-body3-body2` — the old 1024 steps of the three
+pairs now slide. **Write new values in rem or a token, never px**, except the
+kinds above. `docs/design.md` → Typography has the ranges.
+
 Generated from `app/globals.css`, `app/tokens.css` and the components
 themselves. If a value here disagrees with the source, the source wins and this
 table is stale — say so rather than working around it.

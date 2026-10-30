@@ -6,6 +6,7 @@ import {
   useState,
   type CSSProperties,
   type PointerEvent as ReactPointerEvent,
+  type ReactNode,
 } from "react";
 import styles from "./FaceDiagram.module.css";
 import { Chip } from "@/components/ui/Chip";
@@ -448,6 +449,8 @@ type FaceDiagramProps = CalloutProps &
         disabled?: boolean;
         /** a new number shines every region's label once — see the note above */
         glint?: number;
+        /** a control pinned to the card's top-right corner — step 1's reset */
+        corner?: ReactNode;
       }
     | {
         readOnly: true;
@@ -841,6 +844,9 @@ export function FaceDiagram(props: FaceDiagramProps) {
             ))}
           </div>
         )}
+      {props.readOnly !== true && props.corner && (
+        <div className={styles.corner}>{props.corner}</div>
+      )}
     </div>
   );
 }

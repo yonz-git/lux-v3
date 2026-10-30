@@ -257,13 +257,13 @@
 @media (min-width: 1024px) {
   .profileColumn h2:global(.t-overline),
   .checkInColumn h2:global(.t-overline) {
-    font-size: 16px;
-    line-height: 22px;
+    font-size: 1rem; /* 16 */
+    line-height: 1.375;
   }
 
   .profileColumn h2:global(.t-h5),
   .checkInColumn h2:global(.t-h5) {
-    font-size: 20px;
-    line-height: 26px;
+    font-size: 1.25rem; /* 20 */
+    line-height: 1.3;
   }
 }
