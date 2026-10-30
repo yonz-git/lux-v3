@@ -5,7 +5,7 @@ import Link from "next/link";
 import styles from "./SmallButton.module.css";
 
 type Props = {
-  label: string;
+  label: ReactNode;
   /** `primary` is the flat indigo pill — a small action that commits, such as
    *  step 1's `Save` (canvas boards, 1 Oct 2026). Glass by default. */
   variant?: "glass" | "primary";

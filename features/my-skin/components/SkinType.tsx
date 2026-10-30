@@ -36,12 +36,12 @@ import { toggleMulti } from "@/lib/store/answers";
  * NOTHING starts selected — the Figma frames show options already chosen
  * because a comp has to show a filled-in state.
  */
-const SKIN_TYPES = ["Dry", "Combination", "Oily", "Balanced", "Not sure"];
+export const SKIN_TYPES = ["Dry", "Combination", "Oily", "Balanced", "Not sure"];
 /* ⚠️ `Redness-prone` ADDED 4 Oct 2026, asked for directly: a lasting trait
    (flushes easily), not a diagnosis (step 3) or what is happening now
    (step 1). Like the other two, nothing in the analysis reads it yet. */
-const TENDENCIES = ["Sensitive", "Acne-prone", "Redness-prone"];
-const EXCLUSIVES = ["None", "Not sure"];
+export const TENDENCIES = ["Sensitive", "Acne-prone", "Redness-prone"];
+export const EXCLUSIVES = ["None", "Not sure"];
 
 export function SkinType() {
   const { answers, setAnswer } = useInvestigation();

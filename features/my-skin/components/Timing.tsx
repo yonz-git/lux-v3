@@ -27,7 +27,7 @@ import { useInvestigation } from "@/lib/store/InvestigationProvider";
  * Both fields are required, so Continue stays disabled until the date and the
  * status are answered.
  */
-const STATUS = ["Ongoing", "Improving", "Resolved", "Getting worse"];
+export const STATUS = ["Ongoing", "Improving", "Resolved", "Getting worse"];
 
 export function Timing() {
   const { answers, setAnswer } = useInvestigation();

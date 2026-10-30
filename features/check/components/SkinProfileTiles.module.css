@@ -22,6 +22,15 @@
   }
 }
 
+/* the overline and, on the recap only, its `Edit` at the far end. The 36 button
+   is the row's height when present; without it the row is the overline's. */
+.head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-md);
+}
+
 .overline {
   margin: 0;
   color: var(--color-text-secondary);

@@ -592,6 +592,20 @@
   --ease-hover: cubic-bezier(0.25, 0.1, 0.25, 1);
 }
 
+/* ⚠️ THE SMOOTH MOTION RECIPE — 29 Oct 2026, asked for directly, from
+   `~/.claude/taste.md`: everything that changes animates on a smooth, premium
+   EASE IN-OUT, never a snappy curve; a move takes about 0.4 to 0.6s, a fade
+   0.3 to 0.4s. The tokens above (`duration/base` 200, `ease/standard`) are the
+   app's quicker house motion and stay what they are for the controls that use
+   them; a surface that opts in (`<Collapse smooth>`, the label swap on the
+   profile recap's `Edit` / `Done`) takes these. `ease/in-out` is
+   ease-in-out-cubic: it leaves slowly, travels, and arrives slowly. */
+:root {
+  --ease-in-out: cubic-bezier(0.65, 0, 0.35, 1);
+  --duration-move: 500ms;
+  --duration-fade: 350ms;
+}
+
 /* ⚠️ NOT IN FIGMA — `bg/symptom`, THE PROFILE SYMPTOM PILL FILL, asked for
    directly 13 Sep 2026. Those pills wore `feedback/warning` (#c9918e); they now
    take their own value so the Risky band keeps its own. Callers: PROGRESS's
@@ -3115,6 +3129,16 @@ main[tabindex="-1"]:focus-visible {
     grid-template-rows var(--duration-base) var(--ease-standard),
     margin-top var(--duration-base) var(--ease-standard),
     opacity var(--duration-base) var(--ease-standard);
+}
+
+/* ⚠️ `<Collapse smooth>` — the slow recipe (see `--ease-in-out` above). An
+   attribute, not a custom property, so a Collapse nested inside a smooth one
+   keeps its own 200ms: its exit timer is 200 and would unmount it mid-fade. */
+.collapse[data-smooth] {
+  transition:
+    grid-template-rows var(--duration-move) var(--ease-in-out),
+    margin-top var(--duration-move) var(--ease-in-out),
+    opacity var(--duration-fade) var(--ease-in-out);
 }
 
 @starting-style {

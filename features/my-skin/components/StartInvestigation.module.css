@@ -39,13 +39,30 @@
    inter-block height is unchanged at 132, so the card does not move; mobile
    loses 40 of the 92px by which the screen overflowed its own 957 canvas. */
 .chips {
-  margin-top: var(--space-xl); /* 20 — the same question as the face card above it */
+  /* ⚠️ 32 UNDER LUX's BUBBLE — the chips lead the screen now (30 Oct 2026,
+     asked for directly), taking the 32 the face card had there */
+  margin-top: var(--space-3xl);
   display: flex;
   flex-wrap: wrap;
   justify-content: center;
-  /* 10 is the Chip grid gap in Figma and is off the spacing scale there too */
-  gap: 10px;
+  /* ⚠️ 4, HALF THE 8 BEFORE IT — 30 Oct 2026, asked for directly ("half the
+     gap size between pills"); it was 10 until the same day */
+  gap: var(--space-xs);
+  /* ⚠️ NEVER WIDER THAN THE FACE CARD UNDER IT — asked for directly the same
+     day ("fit all the pills within this width"). The card is the column on a
+     phone and is capped at 480 from 1024 (`.diagram` below), so the row
+     takes the same cap and wraps inside it rather than running past the
+     card's edges. */
+  width: 100%;
+  margin-inline: auto;
 }
+
+@media (min-width: 1024px) {
+  .chips {
+    max-width: 480px;
+  }
+}
+
 
 /* ⚠️ NOT IN FIGMA — A PICKED SYMPTOM IS `bg/symptom` (#d3858a), NOT INDIGO,
    asked for directly 14 Sep 2026: the colour the profile's symptom pills
@@ -224,10 +241,11 @@
 }
 
 .diagram {
-  /* ⚠️ 32, NOT 20, under LUX's bubble — 4 Oct 2026, asked for directly
-     ("give a bit more space here"): the bubble is a voice, the face card is
-     the thing to act on, and 20 sat them together as one block */
-  margin-top: var(--space-3xl);
+  /* ⚠️ 20 UNDER THE CHIPS, 30 Oct 2026 — the face card follows the chips now.
+     It was 32 under LUX's bubble (4 Oct 2026, "give a bit more space here"):
+     the bubble is a voice and the thing to act on sits apart from it; that 32
+     moved to the chips, which took the place under the bubble. */
+  margin-top: var(--space-xl);
 }
 
 /* .other is the spacing wrapper for THREE states now — the collapsed button,
@@ -449,13 +467,19 @@
    with no fill; the secondary pill fades in only under the pointer.
    The pill's one segment is `Reset all` (`Save` and `Reset` were removed, 29
    Oct 2026). A disabled reset matches nothing here and
-   stays the toggle's plain faded text. */
-.reset > .placesToggle button:not(:disabled) {
+   stays the toggle's plain faded text.
+   ⚠️ `[type="button"]` IS SPECIFICITY, NOT A FILTER (30 Oct 2026). These were
+   `:not(:first-child):not(:disabled)`, and `:not(:first-child)` was worth a
+   class; with `Save` gone the one button IS the first child, so it went, and
+   the toggle's own hover rule (0,4,1) tied these and won on source order,
+   turning the pill indigo under the pointer. The attribute puts the point
+   back so `Reset all` hovers as it did. */
+.reset > .placesToggle button[type="button"]:not(:disabled) {
   color: var(--color-text-brand);
   --shine-ink: var(--color-text-brand);
 }
 
-.reset > .placesToggle button:not(:disabled)::before {
+.reset > .placesToggle button[type="button"]:not(:disabled)::before {
   opacity: 0;
   --grad-start: var(--color-button-bg-secondary-start);
   --grad-end: var(--color-button-bg-secondary-end);
@@ -472,7 +496,7 @@
    day, when the gallery's photos and date pills took this ring ("reuse the
    border we made for the reset button"). The values live there; this rule
    only picks the ring, which is also why the two strengths are gone. */
-.reset > .placesToggle button:not(:disabled) > :global(.edge-light) {
+.reset > .placesToggle button[type="button"]:not(:disabled) > :global(.edge-light) {
   opacity: 1;
   --edge-glow: 0.25;
   --edge-catch: 0.35;
@@ -480,14 +504,14 @@
 }
 
 @media (hover: hover) {
-  .reset > .placesToggle button:not(:disabled):hover {
+  .reset > .placesToggle button[type="button"]:not(:disabled):hover {
     color: var(--color-text-brand);
     --shine-ink: var(--color-text-brand);
   }
 
   /* the pill appears under the pointer rather than reversing — with no fill at
      rest there is no gradient to run end for end */
-  .reset > .placesToggle button:not(:disabled):hover::before {
+  .reset > .placesToggle button[type="button"]:not(:disabled):hover::before {
     opacity: 1;
   }
 }

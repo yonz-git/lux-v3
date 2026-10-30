@@ -95,12 +95,43 @@
   border-radius: var(--radius-panel); /* 28 */
 }
 
+/* the overline and its `Edit` / `Done` at the far end */
+.blockHead {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-md);
+  margin: 0 0 var(--space-lg); /* 16 — what the overline carried alone */
+}
+
+/* the controls an `Edit` opens under the location block's overline — step 1's
+   own, so their first margin (the face card's 32 under the bubble) goes */
+.editLocation {
+  display: flex;
+  flex-direction: column;
+}
+
+.editLocation > :first-child {
+  margin-top: 0;
+}
+
+.editField {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-sm);
+  margin-top: var(--space-2xl); /* 24 under `Other` */
+}
+
+.editLabel {
+  color: var(--color-text-secondary);
+}
+
 /* `t-overline` at its own size, as every card overline in lux-v3 */
 .blockLabel {
   /* ⚠️ 16 UNDER, NOT 12 — asked for directly 15 Sep 2026 ("more bottom
      padding, match the gallery card"): `DataCard`'s own 16 gap, which is what
      PROGRESS's gallery and face overlines sit on */
-  margin: 0 0 var(--space-lg); /* 16 */
+  margin: 0;
   color: var(--color-text-muted);
 }
 
@@ -425,4 +456,22 @@
     max-width: 520px;
     text-align: center;
   }
+}
+
+/* `Edit` / `Done` on one button: both words in one grid cell, the live one
+   opaque. On `--duration-fade` and `--ease-in-out`, `taste.md`'s smooth recipe;
+   the global reduced-motion rule collapses it. */
+.swapLabel {
+  display: inline-grid;
+  justify-items: center;
+}
+
+.swapLabel > span {
+  grid-area: 1 / 1;
+  opacity: 0;
+  transition: opacity var(--duration-fade) var(--ease-in-out);
+}
+
+.swapLabel > span[data-on] {
+  opacity: 1;
 }
