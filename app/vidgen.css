@@ -50,6 +50,12 @@
      14 Sep 2026. The indigo pills drew a crisp 1px white line instead, which
      read as a hard rim. One token, so the two cannot drift again. */
   --shadow-pill-light: inset 0 1px 4px #ffffff61;
+  /* ⚠️ A WELL PRESSED INTO THE SURFACE — 31 Oct 2026, supplied directly as a
+     reference's two inner shadows: white at 64% from the lower right
+     (-33, -33, blur 46) over `#0d2750` at 16% from the upper left (28, 28,
+     blur 54), no fill. For a recessed box that holds nothing yet. */
+  --shadow-inset-well: inset -33px -33px 46px rgb(255 255 255 / 0.64),
+    inset 28px 28px 54px rgb(13 39 80 / 0.16);
   --shadow-brand-vg: 0 8px 18px rgb(49 53 96 / 0.3), var(--shadow-pill-light);
   --shadow-float: 0 4px 14px rgb(46 42 63 / 0.1);      /* the white ✕ circle  */
   --shadow-lift: 0 10px 24px rgb(46 42 63 / 0.16);     /* the image card      */

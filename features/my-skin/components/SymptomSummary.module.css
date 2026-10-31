@@ -61,8 +61,10 @@
   display: flex;
   flex-wrap: wrap;
   margin: 0;
-  /* the dot's 8 and its gap's 8, so the pills start under the name */
-  padding: 0 0 0 calc(0.5rem + var(--space-sm));
+  /* ⚠️ FLUSH LEFT WITH THE OVERLINE AND THE DOT — 31 Oct 2026, asked for
+     directly ("align left the pills"). They were indented the dot's 8 and its
+     8 gap, to start under the symptom's name. */
+  padding: 0;
   list-style: none;
 }
 

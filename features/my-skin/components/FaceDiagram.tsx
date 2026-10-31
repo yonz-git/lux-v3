@@ -714,13 +714,16 @@ export function FaceDiagram(props: FaceDiagramProps) {
                 data-part="callout"
                 data-side={c.side}
                 data-lit={litCallouts.includes(c) || undefined}
-                style={{ top: pct(c.y) }}
+                /* `--cy`, not `top`: CSS rounds it to a whole pixel */
+                style={{ "--cy": c.y } as CSSProperties}
                 data-tap-light
                 onPointerEnter={enter({ symptom: c.symptom })}
                 onPointerLeave={leave}
                 onClick={tap({ symptom: c.symptom })}
               >
-                {c.symptom}
+                {/* the label is its own block so `text-box` can trim it to
+                    cap height — see `.symptomLabel` */}
+                <span className={styles.symptomLabel}>{c.symptom}</span>
               </span>
             ))}
           </div>
