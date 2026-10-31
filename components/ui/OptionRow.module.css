@@ -53,7 +53,13 @@
   -webkit-backdrop-filter: blur(var(--blur-card));
   backdrop-filter: blur(var(--blur-card));
 
-  transition: border-color var(--duration-base) var(--ease-standard);
+  /* ⚠️ HOVER LIGHTENS THE GLASS — 31 Oct 2026, asked for directly ("smooth
+     lightening up hover effect"). The fill eases to the selected row's
+     glass-strong on the house fade and ease in-out, so it brightens rather
+     than snaps. */
+  transition:
+    border-color var(--duration-base) var(--ease-standard),
+    background-color var(--duration-fade) var(--ease-in-out);
 }
 
 .row[data-selected="true"] {
@@ -63,6 +69,7 @@
 
 .row:hover[data-selected="false"] {
   border-color: var(--color-border-glass);
+  background-color: var(--color-glass-strong);
 }
 
 /* a tap fires :hover on a touch device and it STAYS fired until something else
@@ -72,6 +79,7 @@
 @media (hover: none) {
   .row:hover[data-selected="false"] {
     border-color: transparent;
+    background-color: var(--color-glass);
   }
 }
 
