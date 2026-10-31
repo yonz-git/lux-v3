@@ -12,7 +12,7 @@ import { TextField } from "@/components/ui/TextField";
 import { FaceDiagram, FACE_REGION_IDS } from "./FaceDiagram";
 import {
   PlusIcon,
-  CloseIcon,
+  CloseSmallIcon,
   NoteIcon,
   SuccessCheckIcon,
   ResetIcon,
@@ -356,7 +356,7 @@ export function SymptomPlacer({
                 aria-label="Remove description"
                 onClick={closeOther}
               >
-                <CloseIcon className={styles.otherActionIcon} />
+                <CloseSmallIcon className={styles.otherActionRing} />
               </button>
             </div>
           </div>
@@ -379,7 +379,7 @@ export function SymptomPlacer({
                 aria-label="Remove description"
                 onClick={closeOther}
               >
-                <CloseIcon className={styles.otherActionIcon} />
+                <CloseSmallIcon className={styles.otherActionRing} />
               </button>
             </div>
           </div>

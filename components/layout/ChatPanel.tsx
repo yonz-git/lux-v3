@@ -4,7 +4,7 @@ import type { ReactNode } from "react";
 import Link from "next/link";
 import styles from "./ChatPanel.module.css";
 import { Orb } from "@/components/ui/Orb";
-import { CloseIcon } from "@/components/ui/icons";
+import { CloseSmallIcon } from "@/components/ui/icons";
 
 /**
  * The conversation panel — Figma `chat-page / mobile` (270:96).
@@ -117,7 +117,9 @@ export function ChatPanel({
             className={`${styles.headerButton} ${styles.close}`}
             aria-label={closeLabel}
           >
-            <CloseIcon />
+            <span className={styles.closeDisc}>
+              <CloseSmallIcon className={styles.closeGlyph} />
+            </span>
           </button>
         ) : (
           <Link
@@ -125,7 +127,9 @@ export function ChatPanel({
             className={`${styles.headerButton} ${styles.close}`}
             aria-label={closeLabel}
           >
-            <CloseIcon />
+            <span className={styles.closeDisc}>
+              <CloseSmallIcon className={styles.closeGlyph} />
+            </span>
           </Link>
         )}
       </div>

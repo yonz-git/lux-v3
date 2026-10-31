@@ -2,7 +2,7 @@
 
 import { useEffect, useRef, useState, type RefObject } from "react";
 import { TextField } from "./TextField";
-import { CloseIcon, NoteIcon, SuccessCheckIcon } from "./icons";
+import { CloseSmallIcon, NoteIcon, SuccessCheckIcon } from "./icons";
 import styles from "./ConfirmField.module.css";
 
 /**
@@ -90,7 +90,7 @@ export function ConfirmField({
             aria-label={`Remove ${noun}`}
             onClick={onRemove}
           >
-            <CloseIcon className={styles.actionIcon} />
+            <CloseSmallIcon className={styles.actionRing} />
           </button>
         </div>
       </div>
@@ -127,7 +127,7 @@ export function ConfirmField({
           aria-label={`Remove ${noun}`}
           onClick={onRemove}
         >
-          <CloseIcon className={styles.actionIcon} />
+          <CloseSmallIcon className={styles.actionRing} />
         </button>
       </div>
     </div>

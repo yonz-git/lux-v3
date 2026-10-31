@@ -456,3 +456,25 @@ button.trayAction.trayActionSmall {
   width: auto;
   align-self: center;
 }
+
+/* ⚠️ ROOM FOR THE CORNER ✕ — 31 Oct 2026, with `dismiss="corner"`. The ✕ is
+   a 20 circle pinned 20 down and 20 in, and this tray's views open with
+   full-width rows, so the first row sat under it. The view right after the ✕
+   drops so its top lands `space/md` below the circle, where its 44 tap area
+   ends: on a phone the content starts 37 down (8 padding, the grabber, its 4
+   and the 20 gap), on desktop at the dialog's 48 padding. */
+.cornerRoom > [aria-label="Close"] + * {
+  margin-top: calc(
+    var(--size-icon-sm) + var(--space-md) - var(--space-sm) - var(--space-xs) -
+      5px
+  ); /* 15 */
+}
+
+@media (min-width: 1024px) {
+  .cornerRoom > [aria-label="Close"] + * {
+    margin-top: calc(
+      var(--space-xl) + var(--size-icon-sm) + var(--space-md) -
+        var(--space-5xl)
+    ); /* 4 */
+  }
+}

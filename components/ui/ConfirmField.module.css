@@ -25,29 +25,40 @@
   justify-content: center;
   width: 20px;
   height: 20px;
-  border: var(--border-width-hairline) solid var(--color-border-subtle);
+  /* the reset button's glass — see `.otherAction` in
+     StartInvestigation.module.css */
+  border: var(--border-width-hairline) solid var(--color-border-glass);
   border-radius: var(--radius-full);
-  background: var(--color-bg-field-action);
-  color: var(--color-text-muted);
-  transition:
-    color var(--duration-fast) var(--ease-hover),
-    border-color var(--duration-fast) var(--ease-hover);
+  background-color: var(--color-glass);
+  box-shadow: var(--shadow-glass);
+  -webkit-backdrop-filter: blur(10px);
+  backdrop-filter: blur(10px);
+  color: var(--color-bg-brand);
+  transition: background-color var(--duration-fast) var(--ease-hover);
 }
 
 .action:hover {
-  border-color: color-mix(
-    in srgb,
-    var(--color-border-chip) 40%,
-    var(--color-bg-field-action)
-  );
-  color: var(--color-text-secondary);
+  background-color: var(--color-glass-strong);
 }
 
 @media (hover: none) {
   .action:hover {
-    border-color: var(--color-border-subtle);
-    color: var(--color-text-muted);
+    background-color: var(--color-glass);
   }
+}
+
+@media (prefers-reduced-transparency: reduce) {
+  .action {
+    -webkit-backdrop-filter: none;
+    backdrop-filter: none;
+  }
+}
+
+/* the ✕ keeps the size it had inside its ring: drawn in a 1024/896 box */
+.action svg.actionRing {
+  flex: none;
+  width: calc(var(--size-icon-sm) * 1024 / 896); /* 22.9 */
+  height: calc(var(--size-icon-sm) * 1024 / 896);
 }
 
 .actionIcon {

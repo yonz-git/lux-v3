@@ -300,11 +300,52 @@
   }
 }
 
-/* ⚠️ FULL SIZE — asked for directly 1 Oct 2026 ("the x button too small
-   here"). Its box is already the small 16, so the app-wide 60% for a ✕
-   (app/vidgen.css) left it ~10. (0,2,1) over that rule's (0,1,1). */
-.close svg[data-lux-icon] {
-  /* ⚠️ 15% SMALLER, 4 Oct 2026, asked for directly. The glyph only: the 44
-     touch target around it is unchanged. */
-  scale: 0.85;
+/* ⚠️ THE APP'S SMALL GLASS ✕ — 31 Oct 2026, asked for directly ("use the x
+   icon component we just edited"). The same 20 disc the `Other` field, the
+   `ConfirmField` and a tray's corner close with: the reset button's glass
+   (white @25%, the glass edge, its rim light and blur) round
+   `CloseSmallIcon` in `bg/brand`. It was a bare stroked `CloseIcon` at 16,
+   scaled 0.85. The disc is centred in the 44 target where the 16 glyph was,
+   so the ✕'s centre has not moved; it overhangs that 16 of layout room by 2
+   a side. */
+.closeDisc {
+  display: inline-flex;
+  flex: none;
+  align-items: center;
+  justify-content: center;
+  width: var(--size-icon-sm); /* 20 */
+  height: var(--size-icon-sm);
+  box-sizing: border-box;
+  border: var(--border-width-hairline) solid var(--color-border-glass);
+  border-radius: var(--radius-full);
+  background-color: var(--color-glass);
+  box-shadow: var(--shadow-glass);
+  -webkit-backdrop-filter: blur(10px);
+  backdrop-filter: blur(10px);
+  color: var(--color-bg-brand);
+  transition: background-color var(--duration-fast) var(--ease-hover);
+}
+
+/* the ✕ at the fields' size: drawn in a 1024/896 box */
+.closeDisc svg.closeGlyph {
+  flex: none;
+  width: calc(var(--size-icon-sm) * 1024 / 896);
+  height: calc(var(--size-icon-sm) * 1024 / 896);
+}
+
+.close:hover .closeDisc {
+  background-color: var(--color-glass-strong);
+}
+
+@media (hover: none) {
+  .close:hover .closeDisc {
+    background-color: var(--color-glass);
+  }
+}
+
+@media (prefers-reduced-transparency: reduce) {
+  .closeDisc {
+    -webkit-backdrop-filter: none;
+    backdrop-filter: none;
+  }
 }

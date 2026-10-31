@@ -212,7 +212,12 @@ export function AddProductMethodSheet({
               : "Confirm product";
 
   return (
-    <Sheet open={open} onClose={resetAndClose} title={title}>
+    /* ✕ in the corner, not `Done` at the foot — 31 Oct 2026, asked for
+       directly; every view of this tray */
+    <Sheet open={open} onClose={resetAndClose} title={title}
+      dismiss="corner"
+      className={styles.cornerRoom}
+    >
       {view === "method" && (
         <MethodView
           onSearch={() => setView("search")}

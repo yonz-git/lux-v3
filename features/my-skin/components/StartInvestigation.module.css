@@ -332,9 +332,8 @@
    apart, which is WCAG 2.5.8's spacing exception for a 20px target.
    ⚠️ NOT IN FIGMA — THE FILL IS `bg/field-action` `#c0d5da`, asked for directly
    14 Sep 2026, where it was `surface/frost-light`: a frost circle on the
-   field's own frost barely separated from it. Opaque, so it needs no
-   reduced-transparency fallback; the `text/muted` glyph measures 3.9:1 on it,
-   clear of the 3:1 a control's graphic needs. */
+   field's own frost barely separated from it. ⚠️ Superseded 31 Oct 2026 by
+   the reset button's glass — see the rule below. */
 .otherAction {
   display: inline-flex;
   flex: none;
@@ -343,36 +342,44 @@
   width: 20px;
   height: 20px;
 
-  border: var(--border-width-hairline) solid var(--color-border-subtle);
+  /* ⚠️ THE RESET BUTTON'S GLASS — 31 Oct 2026, asked for directly ("remove
+     the circle border and use the same design as the reset icon but the
+     sizes stay the same"): `IconButton`'s `glass` variant at this 20 —
+     white @25% with the glass edge, its rim light and blur, the glyph in
+     `bg/brand` — where it was an opaque `bg/field-action` disc with a dark
+     rim. ✓, ✎ and ✕ all wear it, so the ✕ draws no ring of its own. */
+  border: var(--border-width-hairline) solid var(--color-border-glass);
   border-radius: var(--radius-full);
-  background: var(--color-bg-field-action);
-  color: var(--color-text-muted);
-
-  transition:
-    color var(--duration-fast) var(--ease-hover),
-    border-color var(--duration-fast) var(--ease-hover);
+  background-color: var(--color-glass);
+  box-shadow: var(--shadow-glass);
+  -webkit-backdrop-filter: blur(10px);
+  backdrop-filter: blur(10px);
+  color: var(--color-bg-brand);
+  transition: background-color var(--duration-fast) var(--ease-hover);
 }
 
-/* hover darkens the rim and the glyph, subtly — asked for directly 14 Sep 2026.
-   ⚠️ NOT `border/default`: the resting `border/subtle` rim is LIGHTER than the
-   fill, and `border/default` (#cbcdd4) lands on the fill's own lightness, so
-   the rim dissolves rather than darkens. The chip rim mixed 40% into the fill
-   (#9eb7bb) stays on the fill's hue and reads a shade deeper. The glyph takes
-   one step, `text/muted` → `text/secondary`. */
 .otherAction:hover {
-  border-color: color-mix(
-    in srgb,
-    var(--color-border-chip) 40%,
-    var(--color-bg-field-action)
-  );
-  color: var(--color-text-secondary);
+  background-color: var(--color-glass-strong);
 }
 
 @media (hover: none) {
   .otherAction:hover {
-    border-color: var(--color-border-subtle);
-    color: var(--color-text-muted);
+    background-color: var(--color-glass);
   }
+}
+
+@media (prefers-reduced-transparency: reduce) {
+  .otherAction {
+    -webkit-backdrop-filter: none;
+    backdrop-filter: none;
+  }
+}
+
+/* the ✕ keeps the size it had inside its ring: drawn in a 1024/896 box */
+.otherAction svg.otherActionRing {
+  flex: none;
+  width: calc(var(--size-icon-sm) * 1024 / 896); /* 22.9 */
+  height: calc(var(--size-icon-sm) * 1024 / 896);
 }
 
 /* icon scaled down by the same ratio as the button itself, 20/36 of the

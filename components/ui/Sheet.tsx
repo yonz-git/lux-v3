@@ -3,7 +3,7 @@
 import { useEffect, useRef } from "react";
 import * as Dialog from "@radix-ui/react-dialog";
 import styles from "./Sheet.module.css";
-import { CloseIcon } from "./icons";
+import { CloseSmallIcon } from "./icons";
 import { useDialogFocus, useDialogPresence } from "@/lib/useModalDialog";
 
 /**
@@ -219,11 +219,11 @@ export function Sheet({
         {dismiss === "corner" && (
           <button
             type="button"
-            className={`${styles.close} pressable`}
+            className={`${styles.close} tap-target pressable`}
             aria-label="Close"
             onClick={onClose}
           >
-            <CloseIcon className={styles.closeIcon} />
+            <CloseSmallIcon className={styles.closeIcon} />
           </button>
         )}
         {children}

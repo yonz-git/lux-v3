@@ -168,6 +168,22 @@ export function CloseIcon({ className }: IconProps) {
   );
 }
 
+/**
+ * The small dismiss's ✕ — the `Other` field's and `ConfirmField`'s, and a
+ * tray's corner. ⚠️ NOT A VIDGEN GLYPH: the ✕ of a circled ✕ supplied
+ * directly 31 Oct 2026, its ring dropped the same day ("remove the circle
+ * border"); the button's glass circle is the ring now. A filled shape on the
+ * box's centre, so it centres in its button by construction, where the
+ * stroked `CloseIcon` sat off the pixel grid under its 0.6 scale.
+ */
+export function CloseSmallIcon({ className }: IconProps) {
+  return (
+    <Icon box="0 0 1024 1024" size={20} fill className={className}>
+      <path d="m466.8 512l-90.5-90.5a32 32 0 0 1 45.2-45.2l90.5 90.5l90.5-90.5a32 32 0 1 1 45.2 45.2L557.2 512l90.5 90.5a32 32 0 1 1-45.2 45.2L512 557.2l-90.5 90.5a32 32 0 0 1-45.2-45.2z" />
+    </Icon>
+  );
+}
+
 /** The bell — VidGen Assistant's notifications button. */
 export function BellIcon({ className }: IconProps) {
   return (
@@ -220,15 +236,14 @@ export function TrashIcon({ className }: IconProps) {
 
 /**
  * A counter-clockwise arrow — reset, step 1's face card. ⚠️ NOT A VIDGEN
- * GLYPH (the references never reset anything); it is the near-universal
- * "start over" mark (SF Symbols `arrow.counterclockwise`, Lucide
- * `rotate-ccw`), drawn to the set's weight.
+ * GLYPH (the references never reset anything). The path was supplied
+ * directly 31 Oct 2026, replacing a Lucide `rotate-ccw`. ⚠️ IT KEEPS THE
+ * SUPPLIED 2 STROKE, asked for directly — the one glyph off the set's 1.4.
  */
 export function ResetIcon({ className }: IconProps) {
   return (
     <Icon kind="glyph" box="0 0 24 24" size={20} className={className}>
-      <path d="M3 12a9 9 0 1 0 9-9 9.75 9.75 0 0 0-6.74 2.74L3 8" {...ns} />
-      <path d="M3 3v5h5" {...ns} />
+      <path d="M4.252 4v5H9M5.07 8a8 8 0 1 1-.818 6" strokeWidth={2} {...ns} />
     </Icon>
   );
 }
