@@ -36,39 +36,7 @@
   pointer-events: none;
   /* 1 since 29 Oct 2026: at 0.85 over a 71% base the white ink read 3.2–3.8:1 */
   opacity: 1;
-  background: linear-gradient(#0000000d, #0000000d),
-    radial-gradient(45% 45% at 100% 100%, #00303c3d, #0000 70%),
-    radial-gradient(60% 55% at 0 0, #d0b4b81f, #a0353500 70%),
-    radial-gradient(110% 90% at 0 35%, #567e88, #0000 60%),
-    radial-gradient(90% 80% at 90% 105%, #60a8ba52, #0000 65%),
-    radial-gradient(70% 60% at 80% -10%, #37617547, #0000 70%),
-    var(--color-bg-routine);
-}
-
-@media (prefers-reduced-transparency: reduce) {
-  .card.card::before {
-    opacity: 1;
-    background: linear-gradient(#0000000d, #0000000d),
-      radial-gradient(45% 45% at 100% 100%, #00303c3d, #0000 70%),
-      radial-gradient(60% 55% at 0 0, #d0b4b81f, #a0353500 70%),
-      radial-gradient(110% 90% at 0 35%, #567e88, #0000 60%),
-      radial-gradient(90% 80% at 90% 105%, #60a8ba52, #0000 65%),
-      radial-gradient(70% 60% at 80% -10%, #37617547, #0000 70%),
-      var(--color-bg-routine);
-  }
-}
-
-/* the grain, as on the chart */
-.card.card::after {
-  content: "";
-  position: absolute;
-  inset: 0;
-  z-index: -1;
-  border-radius: inherit;
-  pointer-events: none;
-  opacity: 0.08;
-  mix-blend-mode: overlay;
-  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='120' height='120'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='2'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+  background: var(--gradient-routine);
 }
 
 /* the overline left, the total's pill right, centred on one line */

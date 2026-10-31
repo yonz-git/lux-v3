@@ -40,7 +40,7 @@ export function RoutineSummary({ products }: { products: SavedProduct[] }) {
   );
 
   return (
-    <DataCard className={styles.card} aria-labelledby="routine-total">
+    <DataCard className={`${styles.card} grain`} aria-labelledby="routine-total">
       <p className={styles.top}>
         <span className={`${styles.overline} t-overline`}>In your routine</span>
         <span id="routine-total" className={`${styles.total} t-label`}>

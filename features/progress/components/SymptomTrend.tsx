@@ -91,7 +91,7 @@ export function SymptomTrend({
 
   return (
     <DataCard
-      className={[styles.card, className].filter(Boolean).join(" ")}
+      className={[styles.card, "grain", className].filter(Boolean).join(" ")}
       aria-labelledby={titleId}
       /* the entrance — see the motion block at the end of the module */
       data-motion

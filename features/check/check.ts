@@ -553,17 +553,6 @@ export const ELIMINATION_WEEKS = 4;
 
 export type ScheduleNode = { week: number; date: Date; note?: string };
 
-export function eliminationSchedule(from: Date): ScheduleNode[] {
-  const at = (days: number) =>
-    new Date(from.getFullYear(), from.getMonth(), from.getDate() + days);
-
-  return [
-    { week: 1, date: at(7), note: "First check-in: note any changes" },
-    { week: 2, date: at(14) },
-    { week: ELIMINATION_WEEKS, date: at(28), note: "Final assessment" },
-  ];
-}
-
 /** "Aug 18, 2026" — the schedule's date format. */
 export function formatScheduleDate(d: Date): string {
   return d.toLocaleDateString("en-US", {

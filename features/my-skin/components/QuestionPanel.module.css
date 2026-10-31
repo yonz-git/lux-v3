@@ -88,13 +88,6 @@
   gap: var(--space-pill-gap);
 }
 
-/* the answer rows — a column, 8 apart */
-.rows {
-  display: flex;
-  flex-direction: column;
-  gap: var(--space-sm);
-}
-
 /* a field an answer opens (`Other`) grows in with `Collapse`; the panel's 20
    is declared on it, as globals.css asks */
 .panel > :global(.collapse) {

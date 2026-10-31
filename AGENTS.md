@@ -131,7 +131,7 @@ lib/                 date.ts, demo.ts, pageTitles.ts, actives.ts
 
 | Component | Props |
 | --- | --- |
-| `Button` | `variant?: "primary" \| "secondary"`, `size?: "lg" \| "md"`, `width?: "hug" \| "full" \| "action"`, `href?`, `icon?` |
+| `Button` | `variant?: "primary" \| "secondary"`, `size?: "lg" \| "md" \| "sm"` (56/48/42), `width?: "hug" \| "full" \| "action"`, `href?`, `icon?` |
 | `IconButton` | `label`, `variant?: "glass" \| "primary" \| "outline" \| "soft"`, `size?: "lg" \| "md" \| "sm" \| "xs"` (56/48/44/20), `href?`, `ref?` |
 | `SmallButton` | `label`, `arrow?`, `href?`, `className?` |
 | `EditToggle` | Edit/Save toggle |

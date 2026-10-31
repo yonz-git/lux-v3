@@ -3174,3 +3174,19 @@ svg[data-lux-icon="glyph"] {
 [data-motion="rise"] > :nth-child(10) { --rise-i: 9; }
 [data-motion="rise"] > :nth-child(11) { --rise-i: 10; }
 [data-motion="rise"] > :nth-child(n + 12) { --rise-i: 11; }
+
+
+/* The film grain on the deep teal cards (routine, symptom trend) and the face
+   diagram: fractal noise at 8%, overlaid. On `::after`, under the content, so
+   the card must be `position: relative` and isolate its stacking. */
+.grain::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  border-radius: inherit;
+  pointer-events: none;
+  opacity: 0.08;
+  mix-blend-mode: overlay;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='120' height='120'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='2'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+}

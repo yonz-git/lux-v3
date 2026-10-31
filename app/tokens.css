@@ -109,6 +109,15 @@
   --color-bg-brand-hover: #242750;
   /* the routine card's dark teal base; the products hub's count badge too */
   --color-bg-routine: #005461;
+  /* the routine card and the symptom trend card: five soft lights over the
+     dark teal, 5% darker overall */
+  --gradient-routine: linear-gradient(#0000000d, #0000000d),
+    radial-gradient(45% 45% at 100% 100%, #00303c3d, #0000 70%),
+    radial-gradient(60% 55% at 0 0, #d0b4b81f, #a0353500 70%),
+    radial-gradient(110% 90% at 0 35%, #567e88, #0000 60%),
+    radial-gradient(90% 80% at 90% 105%, #60a8ba52, #0000 65%),
+    radial-gradient(70% 60% at 80% -10%, #37617547, #0000 70%),
+    var(--color-bg-routine);
   /* ⚠️ A DIRECT VALUE, NOT `var(--color-blue-50)`. Changed to #dbeded on
      22 Aug 2026. It pairs with --color-bg-bubble-user (#cadfdf) on the same
      hue — both G == B — differing only in lightness, so the two are held the

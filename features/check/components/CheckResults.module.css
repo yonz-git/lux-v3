@@ -310,10 +310,6 @@
   white-space: nowrap;
 }
 
-.pickMeta {
-  color: var(--color-text-muted);
-}
-
 .pickPlus {
   flex: none;
   --icon-size: var(--size-icon-sm); /* 20 */
@@ -357,78 +353,9 @@
   margin-top: var(--space-sm);
 }
 
-/* the question's actions — ONE segmented pill, the same frosted-glass +
-   gradient-segment recipe as `SegmentedToggle` (the add-product tray's own
-   "Add product" / "Search again"), asked for directly so the two places the
-   app asks "keep this or not" read as one design.
-   ⚠️ NOT A TOGGLE: `askConfirm` and `decline` are two distinct actions, not
-   two states of one control — plain buttons, neither carries `role="tab"`.
-   `askConfirm` sits LEFT, the way the tray's own confirm segment does. */
+/* the `SegmentedToggle` under the question: 6 more air above it */
 .askActions {
-  display: flex;
-  gap: 0.25rem;
-  padding: 0.3125rem;
   margin-top: 0.375rem;
-  align-self: center;
-
-  border-radius: var(--radius-full);
-  background: var(--color-surface-frost-nav);
-  border: 1px solid var(--color-border-glass);
-  -webkit-backdrop-filter: blur(16px);
-  backdrop-filter: blur(16px);
-}
-
-@media (prefers-reduced-transparency: reduce) {
-  .askActions {
-    background: var(--color-bg-nav);
-    -webkit-backdrop-filter: none;
-    backdrop-filter: none;
-  }
-}
-
-/* the confirm segment — filled, like `SegmentedToggle`'s selected segment.
-   Buttons: one rule for every style (non-negotiable 5) — hover runs the
-   gradient end for end at full strength via the same registered --grad-start /
-   --grad-end properties (globals.css), disabled fades to `opacity/disabled`. */
-.askConfirm {
-  --grad-start: var(--color-gradient-brand-start);
-  --grad-end: var(--color-gradient-brand-end);
-
-  /* the anchor for its `.edge-light` span (globals.css), added 14 Sep 2026,
-     at the primary `Button`'s brighter strengths since this is indigo too */
-  position: relative;
-  --edge-glow: 0.4;
-  --edge-catch: 0.55;
-  --edge-ring-lit: 0.54;
-  --edge-ring-dim: 0.45;
-  flex: none;
-  padding: 0.6875rem 1.375rem;
-  border: none;
-  border-radius: var(--radius-full);
-  background: linear-gradient(90deg, var(--grad-start) 0%, var(--grad-end) 100%);
-  color: var(--color-text-on-brand);
-  /* ⚠️ NOT IN FIGMA — the label shines on hover (globals.css `.shine-text`),
-     asked for directly 13 Sep 2026: "same as add buttons", i.e. `SmallButton`'s
-     gradient reversal plus its label glint, and NOT `Button`'s specular rim.
-     The ink MUST be this label's own token. Kept in step with
-     `SegmentedToggle`, whose recipe this block copies. */
-  --shine-ink: var(--color-text-on-brand);
-  transition:
-    opacity var(--duration-hover) var(--ease-standard),
-    --grad-start var(--duration-hover) var(--ease-hover),
-    --grad-end var(--duration-hover) var(--ease-hover);
-}
-
-@media (hover: hover) {
-  .askConfirm:hover:not(:disabled) {
-    --grad-start: var(--color-gradient-brand-end);
-    --grad-end: var(--color-gradient-brand-start);
-  }
-}
-
-.askConfirm:disabled {
-  opacity: var(--opacity-disabled);
-  cursor: not-allowed;
 }
 
 /* The re-run block, revealed by the first removal. `reveal-quick` is not used
@@ -474,34 +401,6 @@
    a shorter Button size in Figma and this becomes a token. */
 .rerunButton {
   --button-height: 53px;
-}
-
-/* the decline segment — unfilled, `SegmentedToggle`'s unselected segment.
-   ⚠️ IT WAS `.undo` AND IS THE ONLY CALLER LEFT — the re-run block's `Undo` is
-   gone, so the name now describes what it does rather than the control it was
-   shared with. */
-.decline {
-  flex: none;
-  padding: 0.6875rem 1.375rem;
-  border: none;
-  border-radius: var(--radius-full);
-  background: transparent;
-  color: var(--color-text-secondary);
-  /* the hover shine's ink — see `.askConfirm` */
-  --shine-ink: var(--color-text-secondary);
-  transition: background-color var(--duration-fast) var(--ease-hover);
-}
-
-@media (hover: hover) {
-  .decline:hover {
-    background: var(--color-state-hover-overlay);
-  }
-}
-
-@media (hover: none) {
-  .decline:hover {
-    background: transparent;
-  }
 }
 
 @media (prefers-reduced-transparency: reduce) {

@@ -282,4 +282,3 @@ export const LEGACY_START_OTHER_KEY = "lux-start-other-description";
  */
 export const LEGACY_FLOW_V1_KEY = "lux.flow.v1";
 
-export type AnswerKey = keyof Answers & StepId;

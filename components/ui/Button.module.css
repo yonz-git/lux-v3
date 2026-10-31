@@ -19,7 +19,10 @@
   justify-content: center;
   gap: var(--space-sm);
   min-height: var(--button-height, 56px);
-  padding: 0 var(--space-2xl);
+  /* each size sets `--button-pad-x`; the borderless indigo adds the hairline
+     back below, so both variants keep the same box */
+  --button-pad-x: var(--space-2xl);
+  padding: 0 var(--button-pad-x);
   border: var(--border-width-hairline) solid transparent;
   border-radius: var(--radius-full);
   color: #fff;
@@ -85,18 +88,11 @@
    is unchanged. */
 .button:not(.secondary) {
   border-width: 0;
-  padding-inline: calc(var(--space-2xl) + var(--border-width-hairline));
+  padding-inline: calc(var(--button-pad-x) + var(--border-width-hairline));
   background: linear-gradient(90deg, var(--grad-start), var(--grad-end));
   box-shadow: var(--shadow-brand-pill);
 }
 
-.button.md:not(.secondary) {
-  padding-inline: calc(var(--space-xl) + var(--border-width-hairline));
-}
-
-.button.sm:not(.secondary) {
-  padding-inline: var(--space-button-sm-inline);
-}
 
 .button:not(.secondary) :global(.edge-light)::before {
   display: none;
@@ -173,14 +169,17 @@
 
 .md {
   min-height: var(--button-height, var(--size-control-md));
-  padding: 0 var(--space-xl);
+  --button-pad-x: var(--space-xl);
 }
 
 /* the segmented toggle's pill, so a lone `Add product` matches the one in
    the tray's `Add product` / `Search again` */
 .sm {
   min-height: var(--button-height, var(--size-button-sm));
-  padding: 0 var(--space-button-sm-inline);
+  /* 22 to the label on the indigo, the segment's own padding */
+  --button-pad-x: calc(
+    var(--space-button-sm-inline) - var(--border-width-hairline)
+  );
 }
 
 /* the hover rim rides the outer edge: with no border the padding box IS the

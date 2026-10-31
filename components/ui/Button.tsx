@@ -61,8 +61,7 @@ export function Button({
   const cls = [
     styles.button,
     variant === "secondary" && styles.secondary,
-    size === "md" && styles.md,
-    size === "sm" && styles.sm,
+    size !== "lg" && styles[size],
     width === "full" && styles.full,
     width === "action" && styles.action,
     size === "lg" ? "t-button" : "t-button-md",

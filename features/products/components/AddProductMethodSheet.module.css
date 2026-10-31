@@ -233,13 +233,6 @@
   overflow: hidden;
 }
 
-.resultMeta {
-  color: var(--color-text-muted);
-  overflow: hidden;
-  text-overflow: ellipsis;
-  white-space: nowrap;
-}
-
 /* "Searching…" / "No products match …" — the panel's own one-line states.
    `EmptyBox` would be a second frosted card inside a frosted panel. */
 .dropdownNote {
@@ -314,30 +307,6 @@
 .confirmLabel {
   color: var(--color-text-on-data-secondary);
   text-align: center;
-}
-
-.confirmAnswers {
-  display: flex;
-  gap: var(--space-md);
-}
-
-.confirmAnswer {
-  flex: 1;
-  min-width: 0;
-}
-
-/* ⚠️ THE PAIR SHARES THE APP'S ACTION COLUMN ON DESKTOP, for the reason
-   `.trayAction` states below: every primary action in the app measures
-   `--width-action` centred, and stretched across the 544 of tray content these
-   two were the last buttons that did not. The token goes on the ROW, not on
-   each button — the two of them together are the one action slot, so they
-   split 376 with the row's own 12 gap between them and stay flush with the
-   `Add product` button the duration stage puts in the same place. */
-@media (min-width: 1024px) {
-  .confirmAnswers {
-    width: var(--width-action);
-    align-self: center;
-  }
 }
 
 /* --- added products (not in Figma — see the ConfirmView doc comment) -------

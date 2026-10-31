@@ -615,7 +615,7 @@ export function FaceDiagram(props: FaceDiagramProps) {
   return (
     <div
       ref={cardRef}
-      className={styles.card}
+      className={`${styles.card} grain`}
       /* the entrance — the drawing, then the pills, then the callouts; see
          "THE FACE ENTRANCE" in app/globals.css */
       data-motion="face"

@@ -44,6 +44,7 @@ import {
   type SavedProduct,
 } from "@/features/products/products";
 import { useCheckSearch } from "@/features/check/useCheckSearch";
+import SegmentedToggle from "@/features/products/components/SegmentedToggle";
 
 /**
  * `Check results` (476:2841) at `/check/results`.
@@ -410,41 +411,22 @@ export function CheckResults({ now }: { now: number }) {
                   ))}
                 </div>
 
-                {/* ⚠️ THE PAIR IS ONE SEGMENTED PILL, THE SAME DESIGN AS THE
-                    ADD-PRODUCT TRAY'S `SegmentedToggle` — asked for directly so
-                    the two places the app asks "keep this or not" look like one
-                    decision. NOT an actual toggle, though: `Add to my products`
-                    and `Not now` are two distinct actions rather than two states
-                    of one control, so both render as plain buttons and neither
-                    carries `role="tab"`. The confirm sits LEFT, the way the
-                    tray's own "Add product" segment does.
-
-                    ⚠️ THE CONFIRM IS DISABLED UNTIL THE QUESTION IS ANSWERED,
-                    for the reason `Continue` is on every flow step: there is no
-                    group to file the product under until it is. */}
-                <div className={styles.askActions}>
-                  <button
-                    type="button"
-                    className={`${styles.askConfirm} t-label`}
-                    disabled={!askedDuration}
-                    onClick={() =>
-                      askedDuration && keepUsing(askingShown, askedDuration)
-                    }
-                  >
-                    {/* the label shines on hover, the way `SmallButton`'s
-                        does — a direct child, so `.shine-on-hover` reaches it */}
-                    {/* the fixed rim light, globals.css `.edge-light` */}
-                    <span className="edge-light" aria-hidden="true" />
-                    <span className="shine-text shine-on-hover">Add to my products</span>
-                  </button>
-                  <button
-                    type="button"
-                    className={`${styles.decline} t-label tap-target`}
-                    onClick={() => setAsking(null)}
-                  >
-                    <span className="shine-text shine-on-hover">Not now</span>
-                  </button>
-                </div>
+                {/* the tray's own `SegmentedToggle`, as two actions, so the
+                    two places the app asks "keep this or not" are one design.
+                    The confirm sits LEFT and stays disabled until the question
+                    is answered: there is no group to file the product under
+                    until it is. */}
+                <SegmentedToggle
+                  actions
+                  label="Keep this product"
+                  options={["Add to my products", "Not now"]}
+                  disabled={[!askedDuration, false]}
+                  className={styles.askActions}
+                  onChange={(i) => {
+                    if (i === 1) setAsking(null);
+                    else if (askedDuration) keepUsing(askingShown, askedDuration);
+                  }}
+                />
               </div>
             )}
             </Collapse>

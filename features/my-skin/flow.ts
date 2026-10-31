@@ -195,16 +195,6 @@ export const STEPS: Step[] = [
 ];
 
 /**
- * The PRODUCTS screens that are NOT investigation steps — hub views reached
- * from the bottom nav, with no progress track and no `Save & exit`. Listed here
- * only so the Figma frame ids stay next to the flow they belong to.
- */
-export const PRODUCT_HUB_SCREENS = {
-  hub: { href: "/products", figma: { mobile: "579:1574", desktop: "583:1863" }, filled: { mobile: "579:1607", desktop: "583:1889" } },
-  bucketList: { href: "/products/long-term", figma: { mobile: "581:1593", desktop: "583:1924" } },
-} as const;
-
-/**
  * A ticked "Other" with an empty field is not an answer, so it must not unlock
  * Continue. Steps where "Other" is absent are unaffected.
  */
