@@ -1,6 +1,6 @@
-import Link from "next/link";
 import styles from "./ScreenHeader.module.css";
 import { ArrowLeftIcon } from "@/components/ui/icons";
+import { IconButton } from "@/components/ui/IconButton";
 
 /**
  * The onboarding header — the order is fixed and is enforced by QuestionScreen:
@@ -26,9 +26,10 @@ import { ArrowLeftIcon } from "@/components/ui/icons";
 export function ScreenHeader({ backHref }: { backHref: string }) {
   return (
     <div className={styles.row}>
-      <Link href={backHref} className={`${styles.back} pressable`} aria-label="Back">
+      {/* `IconButton` glass at 48 — the app's one back button (31 Oct 2026) */}
+      <IconButton size="md" href={backHref} label="Back">
         <ArrowLeftIcon />
-      </Link>
+      </IconButton>
     </div>
   );
 }

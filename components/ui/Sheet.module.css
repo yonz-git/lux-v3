@@ -135,57 +135,15 @@
 /* ⚠️ THE CORNER ✕ — `dismiss="corner"`, added 15 Sep 2026 (see Sheet.tsx),
    pinned to the tray's top-right: the tray is `position: fixed`, so it is the
    containing block and the ✕ sits in its padding rather than in the centred
-   column.
-   ⚠️ IT IS THE FIELDS' SMALL ✕ AS OF 31 Oct 2026, asked for directly ("just
-   use the same x component"): the 20 circle the `Other, describe where` field
-   and `ConfirmField` clear with. It was a 44 glass circle of its own. The 44
-   target stays, drawn by `.tap-target` round the smaller circle
-   (Sheet.tsx). */
-.close {
+   column. ⚠️ IT IS `IconButton size="xs"` AS OF 31 Oct 2026 — the app's one
+   small glass ✕ (asked for directly: "buttons that use the same design should
+   be using reusable components with variants"); only its place is set here.
+   Two classes deep, over `IconButton`'s own `position: relative`. */
+.tray > .close {
   position: absolute;
   top: var(--space-xl); /* 20 */
   right: var(--space-xl);
   z-index: 1;
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  width: var(--size-icon-sm); /* 20, the fields' circle */
-  height: var(--size-icon-sm);
-  padding: 0;
-  /* the reset button's glass, as the fields' ✕ — see `.otherAction` in
-     StartInvestigation.module.css */
-  border: var(--border-width-hairline) solid var(--color-border-glass);
-  border-radius: var(--radius-full);
-  background-color: var(--color-glass);
-  box-shadow: var(--shadow-glass);
-  -webkit-backdrop-filter: blur(10px);
-  backdrop-filter: blur(10px);
-  color: var(--color-bg-brand);
-  transition: background-color var(--duration-fast) var(--ease-hover);
-}
-
-/* the ✕ keeps the size it had inside its ring: drawn in a 1024/896 box */
-.close svg.closeIcon {
-  flex: none;
-  width: calc(var(--size-icon-sm) * 1024 / 896); /* 22.9 */
-  height: calc(var(--size-icon-sm) * 1024 / 896);
-}
-
-.close:hover {
-  background-color: var(--color-glass-strong);
-}
-
-@media (hover: none) {
-  .close:hover {
-    background-color: var(--color-glass);
-  }
-}
-
-@media (prefers-reduced-transparency: reduce) {
-  .close {
-    -webkit-backdrop-filter: none;
-    backdrop-filter: none;
-  }
 }
 
 /* 40x5, border/glass, fully rounded */

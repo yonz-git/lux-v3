@@ -435,16 +435,8 @@
    ⚠️ CAPPED AT THE NAV PILL'S 380 ON MOBILE TOO, 13 Sep 2026 — asked for
    directly; see `--width-action-mobile` in globals.css. */
 .trayAction {
-  width: 100%;
-  max-width: var(--width-action-mobile);
+  /* width is `Button`'s `width="action"` (31 Oct 2026) */
   align-self: center;
-}
-
-@media (min-width: 1024px) {
-  .trayAction {
-    width: var(--width-action);
-    align-self: center;
-  }
 }
 
 /* ⚠️ NOT IN FIGMA — `Add product` on the duration stage is the secondary
@@ -453,7 +445,6 @@
    2026. `button.` + two classes outranks the shared rule above whatever the
    bundle order; the height and padding are `Button`'s own now. */
 button.trayAction.trayActionSmall {
-  width: auto;
   align-self: center;
 }
 

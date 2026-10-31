@@ -22,59 +22,13 @@
   gap: var(--space-group); /* 4 */
 }
 
-/* The glyph is 20 in the comp, but a 20 tap target is not one. The button
-   measures 44 and absorbs the difference with a negative margin on all four
-   sides, exactly as HubScreen's back chevron does — the 26-tall header row must
-   not grow to fit it. */
-.arrow {
-  /* lux-v3 (Calendar A, canvas): a 44 glass circle with the glyph in indigo */
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  width: var(--size-touch-target);
-  height: var(--size-touch-target);
-  padding: 0;
-  border-radius: var(--radius-full);
-  border: var(--border-width-hairline) solid var(--color-border-glass);
-  background-color: var(--color-glass);
-  box-shadow: var(--shadow-glass);
-  color: var(--color-bg-brand);
-  transition: background-color var(--duration-fast) var(--ease-hover);
-}
-
+/* ⚠️ THE ARROWS ARE `IconButton` (glass, `sm` 44) AS OF 31 Oct 2026, asked for
+   directly ("same problem here" — the glass rim's top crescent). They were a
+   hand-written copy of that circle, so the fix made there never reached
+   them; the copy and its hover and disabled rules went with the change. */
 .arrowIcon {
   width: var(--size-icon-sm); /* 20 */
   height: var(--size-icon-sm);
-}
-
-.arrow:hover {
-  background-color: var(--color-glass-strong);
-}
-
-@media (hover: none) {
-  .arrow:hover {
-    opacity: 1;
-  }
-}
-
-/* ⚠️ ONLY › EVER TAKES THIS, and it takes the DS's disabled recipe rather than
-   one of its own: the whole control at opacity/disabled (non-negotiable 5),
-   nothing recoloured. See the component for why forward paging clamps at
-   today's month and backward paging does not.
-
-   Written AFTER `.arrow:hover` on purpose. `:hover` still MATCHES a disabled
-   button — it is the click that is swallowed, not the pointer — and the two
-   selectors are the same specificity, so at any earlier position the 0.7 hover
-   would repaint a disabled arrow to look live under the cursor. The guard
-   below covers the same collision for the pointer that is already resting on
-   the arrow when it goes disabled. */
-.arrow:disabled {
-  opacity: var(--opacity-disabled);
-  cursor: not-allowed;
-}
-
-.arrow:disabled:hover {
-  opacity: var(--opacity-disabled);
 }
 
 /* table-layout: fixed is what makes the seven columns equal (352/7 = 50.2857 in

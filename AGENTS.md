@@ -686,7 +686,8 @@ needs one that is not here, that is a gap to raise in Figma — see
 
 | Component | Props |
 | --- | --- |
-| `Button` | `variant?: "primary" \| "secondary"`, `size?: "lg" \| "md"`, `fullWidth?`, `href?`, `icon?` + button attrs |
+| `Button` | `variant?: "primary" \| "secondary"`, `size?: "lg" \| "md"`, `width?: "hug" \| "full" \| "action"` (`action` = a screen's main CTA: 100% up to 380, 376 from 1024; `fullWidth?` is the old `full`), `href?`, `icon?` + button attrs |
+| `IconButton` | `label` (required, the accessible name), `variant?: "glass" \| "primary" \| "outline" \| "soft"`, `size?: "lg" \| "md" \| "sm" \| "xs"` (56 / 48 back / 44 / 20 field ✓✎✕ + corner ✕, 44 tap), `href?`, `ref?` + button attrs |
 | `SmallButton` | `label`, `arrow?`, `href?`, `className?` + button attrs |
 | `Chip` | `label`, `selected`, `control?: "checkbox" \| "radio"`, `onToggle` |
 | `OptionRow` | `control: "radio" \| "checkbox"`, `label`, `selected`, `onSelect` |
@@ -700,6 +701,8 @@ needs one that is not here, that is a gap to raise in Figma — see
 | `DataCard` | `as?`, `className?`, `children?` |
 | `CameraCapture` | `captured`, `title`, `helper`, `onCapture` |
 | `Orb` | `size?`, `className?`, `animateIn?`, `thinking?` |
+
+⚠️ **A control that looks like one of these IS one of these, with a variant** (31 Oct 2026, asked for directly). Never restate a button's circle, glass, gradient or width in a screen module; add a size or variant to the component instead.
 
 `Button` and `SmallButton` apply their own type class. `Chip`'s `control` changes
 the ARIA role and nothing visual — read the selection-controls contract below

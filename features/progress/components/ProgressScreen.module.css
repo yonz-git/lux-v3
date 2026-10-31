@@ -62,6 +62,18 @@
   color: var(--color-text-on-data-muted);
 }
 
+/* the overline and its `Edit` / `Save` on one row — the recap's `.blockHead` */
+.faceHead {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-md);
+}
+
+.faceHead > .faceLabel {
+  margin: 0;
+}
+
 /* ⚠️ `.face` AND `.otherNote*` WENT ON 15 Sep 2026: the 392 cap on the
    diagram, its centring and the typed `Other` line all live in
    `SymptomLocation.module.css` now, where the face sits beside its list. */
@@ -77,12 +89,11 @@
    the focus ring (non-negotiable 11). Owning the width outright means there is
    nothing to lose a specificity race against. */
 .cta {
-  width: 100%;
+  /* width is `Button`'s `width="action"` (31 Oct 2026) */
   /* ⚠️ the nav pill's 380 on a phone, asked for directly 13 Sep 2026 — see
      `--width-action-mobile`. This copy sits in `HubScreen`'s stretching
      `.body`, not its footer, so it needs its own cap and `align-self`; the
      desktop copy is `.ctaDesktop` and is untouched. */
-  max-width: var(--width-action-mobile);
   align-self: center;
   margin-top: var(--space-2xl); /* 24 */
 }
@@ -138,10 +149,8 @@
 
   .ctaDesktop.ctaDesktop {
     display: flex;
-    width: var(--width-action);
     /* col-2 is narrower than 376 below ~1100 now that the columns share the
        width (see `gridColumns` in the TSX); the button follows it down */
-    max-width: 100%;
     margin-top: var(--space-2xl); /* 24 */
   }
 
@@ -237,15 +246,8 @@
    (`--width-action-mobile`); the comp narrows it on desktop rather than
    letting it span the whole 640 block */
 .emptyCta {
-  width: 100%;
-  max-width: var(--width-action-mobile);
+  /* width is `Button`'s `width="action"` (31 Oct 2026) */
   margin-top: var(--space-3xl); /* 32 */
-}
-
-@media (min-width: 1024px) {
-  .emptyCta {
-    width: var(--width-action);
-  }
 }
 
 /* ⚠️ BIGGER HEADINGS ON DESKTOP — asked for directly 1 Oct 2026 ("use bigger

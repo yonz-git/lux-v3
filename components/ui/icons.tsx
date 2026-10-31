@@ -77,10 +77,16 @@ const ns = { vectorEffect: "non-scaling-stroke" as const };
    NAVIGATION AND DIRECTION
    --------------------------------------------------------------------------- */
 
-/** The back button's arrow — VidGen Welcome `.back`. */
+/**
+ * The back button's arrow — VidGen Welcome `.back`.
+ * ⚠️ THE BOX STARTS AT 0.25, NOT 0 — 31 Oct 2026, from an 8× capture: the ink
+ * runs 1.5 → 13 across a 14 box, so its middle sat at 7.25 and the arrow drew
+ * 0.25 right of its button's centre. Shifting the box puts the ink's middle
+ * on the box's.
+ */
 export function ArrowLeftIcon({ className }: IconProps) {
   return (
-    <Icon box="0 0 14 12" size={16} className={className}>
+    <Icon box="0.25 0 14 12" size={16} className={className}>
       <path d="M13 6H1.5M6 1.5 1.5 6 6 10.5" {...ns} />
     </Icon>
   );
@@ -105,10 +111,13 @@ export function DoubleChevronIcon({ className }: IconProps) {
   );
 }
 
-/* The chevrons are the Storyboard's `.nav` pair, extended to a down twin. */
+/* The chevrons are the Storyboard's `.nav` pair, extended to a down twin.
+   ⚠️ ← AND → SIT 0.1 OFF THEIR BOX'S ORIGIN — 31 Oct 2026, from an 8× capture:
+   the ‹ ink spans 1.2 → 4 and the › 1 → 3.8 of a 5 box, so each drew ~0.3 off
+   its button's centre. Shifting the box puts the ink's middle on it. */
 export function ChevronLeftIcon({ className }: IconProps) {
   return (
-    <Icon kind="chevron" box="0 0 5 7" size={16} className={className}>
+    <Icon kind="chevron" box="0.1 0 5 7" size={16} className={className}>
       <path d="M4 .8 1.2 3.5 4 6.2" {...ns} />
     </Icon>
   );
@@ -116,7 +125,7 @@ export function ChevronLeftIcon({ className }: IconProps) {
 
 export function ChevronRightIcon({ className }: IconProps) {
   return (
-    <Icon kind="chevron" box="0 0 5 7" size={16} className={className}>
+    <Icon kind="chevron" box="-0.1 0 5 7" size={16} className={className}>
       <path d="M1 .8l2.8 2.7L1 6.2" {...ns} />
     </Icon>
   );
@@ -175,10 +184,15 @@ export function CloseIcon({ className }: IconProps) {
  * border"); the button's glass circle is the ring now. A filled shape on the
  * box's centre, so it centres in its button by construction, where the
  * stroked `CloseIcon` sat off the pixel grid under its 0.6 scale.
+ * ⚠️ THE BOX IS CROPPED TO 512 ROUND THE ✕ AND DRAWN AT 12 — 31 Oct 2026. It
+ * was the full 1024 box drawn at 22.9 so the ✕ kept its size, which
+ * overflowed the 18 inside a 20 disc and started on a fractional pixel: an
+ * 8× capture showed the ✕ ~0.8 low and right. 12 is even, so in an 18
+ * content box it sits 3 in on every side, on whole pixels; no caller sizes it.
  */
 export function CloseSmallIcon({ className }: IconProps) {
   return (
-    <Icon box="0 0 1024 1024" size={20} fill className={className}>
+    <Icon box="256 256 512 512" size={12} fill className={className}>
       <path d="m466.8 512l-90.5-90.5a32 32 0 0 1 45.2-45.2l90.5 90.5l90.5-90.5a32 32 0 1 1 45.2 45.2L557.2 512l90.5 90.5a32 32 0 1 1-45.2 45.2L512 557.2l-90.5 90.5a32 32 0 0 1-45.2-45.2z" />
     </Icon>
   );

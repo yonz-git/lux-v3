@@ -44,7 +44,13 @@
   );
 
   /* ---- shadows ------------------------------------------------------------ */
-  --shadow-brand-vg: 0 8px 18px rgb(49 53 96 / 0.3), inset 0 1px 0 rgb(255 255 255 / 0.25);
+  /* ⚠️ THE PILL'S SOFT TOP LIGHT — 31 Oct 2026, asked for directly ("make the
+     edges of the indigo buttons smooth like those red pills"). White at 38%,
+     1px down and blurred 4px: the red symptom pill's light, tuned in DevTools
+     14 Sep 2026. The indigo pills drew a crisp 1px white line instead, which
+     read as a hard rim. One token, so the two cannot drift again. */
+  --shadow-pill-light: inset 0 1px 4px #ffffff61;
+  --shadow-brand-vg: 0 8px 18px rgb(49 53 96 / 0.3), var(--shadow-pill-light);
   --shadow-float: 0 4px 14px rgb(46 42 63 / 0.1);      /* the white ✕ circle  */
   --shadow-lift: 0 10px 24px rgb(46 42 63 / 0.16);     /* the image card      */
   --shadow-sheet: inset 0 1px 0 rgb(255 255 255 / 0.7);

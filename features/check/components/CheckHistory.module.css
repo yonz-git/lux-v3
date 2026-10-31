@@ -101,15 +101,8 @@
 }
 
 .emptyCta {
-  width: 100%;
-  max-width: var(--width-action-mobile); /* the nav pill's 380 */
+  /* width is `Button`'s `width="action"` (31 Oct 2026) */
   margin-top: var(--space-3xl); /* + the 16 gap = 48 */
-}
-
-@media (min-width: 1024px) {
-  .emptyCta {
-    width: var(--width-action);
-  }
 }
 
 @media (prefers-reduced-transparency: reduce) {

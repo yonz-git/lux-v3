@@ -12,6 +12,7 @@ import { type CSSProperties, useEffect, useRef, useState } from "react";
 import Link from "next/link";
 import styles from "./CheckInCalendar.module.css";
 import { DataCard } from "@/components/ui/DataCard";
+import { IconButton } from "@/components/ui/IconButton";
 import { ChevronLeftIcon, ChevronRightIcon } from "@/components/ui/icons";
 import type { CheckIn } from "@/features/progress/progress";
 import {
@@ -179,23 +180,23 @@ export function CheckInCalendar({
           {monthLabel}
         </h2>
         <div className={styles.arrows}>
-          <button
-            type="button"
-            className={styles.arrow}
-            aria-label={`Previous month, ${formatMonth(addMonths(view, -1))}`}
+          {/* the app's 44 glass circle — `IconButton`, not a copy of it
+              (31 Oct 2026) */}
+          <IconButton
+            size="sm"
+            label={`Previous month, ${formatMonth(addMonths(view, -1))}`}
             onClick={() => setView((v) => addMonths(v, -1))}
           >
             <ChevronLeftIcon className={styles.arrowIcon} />
-          </button>
-          <button
-            type="button"
-            className={styles.arrow}
+          </IconButton>
+          <IconButton
+            size="sm"
             disabled={atLatestMonth}
-            aria-label={`Next month, ${formatMonth(addMonths(view, 1))}`}
+            label={`Next month, ${formatMonth(addMonths(view, 1))}`}
             onClick={() => setView((v) => addMonths(v, 1))}
           >
             <ChevronRightIcon className={styles.arrowIcon} />
-          </button>
+          </IconButton>
         </div>
       </div>
 

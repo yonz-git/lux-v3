@@ -75,12 +75,23 @@
    the fill, so there is one shape with one antialiased edge. The overlay's
    ring is switched off, and the inset top rim with it, since it drew a
    second line 1px under the ring. */
+/* ⚠️ NO RING AT REST, AND NO BORDER — 31 Oct 2026, asked for directly ("make
+   the edges of the indigo buttons smooth like those red pills"). The white
+   ring painted into the border above read as a hard edge beside the red
+   symptom pill, which has no border at all and only a soft light inside its
+   top (`--shadow-pill-light`, now part of `--shadow-brand-vg`). The border
+   goes to 0 so nothing sits outside that light, and the padding takes the
+   pixel back so the pill keeps its box. The orbiting hover rim (`.specular`)
+   is unchanged. */
 .button:not(.secondary) {
-  background:
-    linear-gradient(90deg, var(--grad-start), var(--grad-end)) padding-box,
-    var(--edge-ring) border-box,
-    linear-gradient(90deg, var(--grad-start), var(--grad-end)) border-box;
-  box-shadow: 0 8px 18px rgb(49 53 96 / 0.3);
+  border-width: 0;
+  padding-inline: calc(var(--space-2xl) + var(--border-width-hairline));
+  background: linear-gradient(90deg, var(--grad-start), var(--grad-end));
+  box-shadow: var(--shadow-brand-vg);
+}
+
+.button.md:not(.secondary) {
+  padding-inline: calc(var(--space-xl) + var(--border-width-hairline));
 }
 
 .button:not(.secondary) :global(.edge-light)::before {
@@ -141,13 +152,26 @@
   width: 100%;
 }
 
+/* a screen's one main action — `width="action"` (Button.tsx): full width up
+   to the nav pill's 380 on a phone, `--width-action` (376) from 1024, never
+   wider than its column. It was this rule, copied into ten screens. */
+.action {
+  display: flex;
+  width: 100%;
+  max-width: var(--width-action-mobile); /* 380 */
+}
+
+@media (min-width: 1024px) {
+  .action {
+    max-width: var(--width-action); /* 376 */
+  }
+}
+
 .md {
   min-height: var(--button-height, var(--size-control-md));
   padding: 0 var(--space-xl);
 }
 
-/* the hover rim rides the outer edge too, over the border ring above, rather
-   than 1px inside it (`.specular` is `inset: 0`, the padding box) */
-.button:not(.secondary) :global(.specular) {
-  inset: calc(-1 * var(--border-width-hairline));
-}
+/* the hover rim rides the outer edge: with no border the padding box IS the
+   edge, so `.specular`'s own `inset: 0` is right (it was pushed out 1px over
+   the border ring until 31 Oct 2026) */

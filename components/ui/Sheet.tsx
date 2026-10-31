@@ -4,6 +4,7 @@ import { useEffect, useRef } from "react";
 import * as Dialog from "@radix-ui/react-dialog";
 import styles from "./Sheet.module.css";
 import { CloseSmallIcon } from "./icons";
+import { IconButton } from "./IconButton";
 import { useDialogFocus, useDialogPresence } from "@/lib/useModalDialog";
 
 /**
@@ -217,14 +218,14 @@ export function Sheet({
             corner ✕ comes FIRST in the DOM, so Tab reaches the exit before
             the content, as it would reach a header's close. */}
         {dismiss === "corner" && (
-          <button
-            type="button"
-            className={`${styles.close} tap-target pressable`}
-            aria-label="Close"
+          <IconButton
+            size="xs"
+            label="Close"
+            className={styles.close}
             onClick={onClose}
           >
-            <CloseSmallIcon className={styles.closeIcon} />
-          </button>
+            <CloseSmallIcon />
+          </IconButton>
         )}
         {children}
         {dismiss === "label" && (

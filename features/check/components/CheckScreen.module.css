@@ -142,8 +142,7 @@
 /* + the 16 gap = the comp's 48. Capped at the nav pill's 380 on mobile —
    see `--width-action-mobile` in globals.css. */
 .cta {
-  width: 100%;
-  max-width: var(--width-action-mobile);
+  /* width is `Button`'s `width="action"` (31 Oct 2026) */
   margin-top: var(--space-3xl); /* 32 */
 }
 
@@ -197,12 +196,8 @@
 
 /* ⚠️ RESOLVED. This used to read "376 on desktop, not the 280 `Progress — empty`
    uses ... worth resolving in Figma", and it has been: every primary action in
-   the app is now `--width-action`, which is this 376. See globals.css. */
-@media (min-width: 1024px) {
-  .cta {
-    width: var(--width-action);
-  }
-}
+   the app is now `--width-action`, which is this 376 — and as of 31 Oct 2026
+   it is `Button`'s `width="action"`, not a rule here. */
 
 /* `link · View previous checks` — Body 3 in text/brand, centred, no underline
    until it is interacted with. A text link is right here: it is the secondary

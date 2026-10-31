@@ -19,6 +19,17 @@ import styles from "./Button.module.css";
  * `Start` is 14.3 Medium, and the full-size pill takes one step more so a
  * flow's `Continue` still leads its screen.
  *
+ * ⚠️ WIDTH IS A VARIANT, NOT A SCREEN'S RULE — 31 Oct 2026, asked for
+ * directly after `/products`' empty state drew its CTA across the whole 640
+ * column while `/check`'s stopped at 380 ("we need to use components system
+ * so the designs are consistent"). Each screen was setting the width in its
+ * own module.
+ *   width="hug"     the label's own width (the default)
+ *   width="full"    fills its box (`fullWidth` still means this)
+ *   width="action"  a screen's one main action: full width up to the nav
+ *                   pill's 380 on a phone and `--width-action` (376) from
+ *                   1024, never wider than its column
+ *
  * The references draw no labelled full-width button: the primary is the circle
  * and the slide-to-start. A flow step needs a worded `Continue`, so this is
  * the pill those two would make, from their own recipes. Round buttons are
@@ -29,6 +40,7 @@ export function Button({
   variant = "primary",
   size = "lg",
   fullWidth,
+  width = fullWidth ? "full" : "hug",
   className,
   href,
   icon,
@@ -37,7 +49,9 @@ export function Button({
 }: ButtonHTMLAttributes<HTMLButtonElement> & {
   variant?: "primary" | "secondary";
   size?: "lg" | "md";
+  /** @deprecated — `width="full"` */
   fullWidth?: boolean;
+  width?: "hug" | "full" | "action";
   /** render as a link when the action is navigation, so it behaves like one */
   href?: string;
   /** optional leading glyph from `icons.tsx` */
@@ -47,7 +61,8 @@ export function Button({
     styles.button,
     variant === "secondary" && styles.secondary,
     size === "md" && styles.md,
-    fullWidth && styles.full,
+    width === "full" && styles.full,
+    width === "action" && styles.action,
     size === "md" ? "t-button-md" : "t-button",
     className,
   ]

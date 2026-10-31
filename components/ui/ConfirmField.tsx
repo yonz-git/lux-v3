@@ -3,6 +3,7 @@
 import { useEffect, useRef, useState, type RefObject } from "react";
 import { TextField } from "./TextField";
 import { CloseSmallIcon, NoteIcon, SuccessCheckIcon } from "./icons";
+import { IconButton } from "./IconButton";
 import styles from "./ConfirmField.module.css";
 
 /**
@@ -75,23 +76,21 @@ export function ConfirmField({
       <div className={styles.confirmed}>
         <p className={`${styles.text} t-body2`}>{value}</p>
         <div className={styles.actions}>
-          <button
+          <IconButton
             ref={penRef}
-            type="button"
-            className={styles.action}
-            aria-label={`Edit ${noun}`}
+            size="xs"
+            label={`Edit ${noun}`}
             onClick={() => setEditing(true)}
           >
             <NoteIcon className={styles.actionIcon} />
-          </button>
-          <button
-            type="button"
-            className={styles.action}
-            aria-label={`Remove ${noun}`}
+          </IconButton>
+          <IconButton
+            size="xs"
+            label={`Remove ${noun}`}
             onClick={onRemove}
           >
-            <CloseSmallIcon className={styles.actionRing} />
-          </button>
+            <CloseSmallIcon />
+          </IconButton>
         </div>
       </div>
     );
@@ -113,22 +112,20 @@ export function ConfirmField({
         }}
       />
       <div className={styles.actions}>
-        <button
-          type="button"
-          className={styles.action}
-          aria-label={`Keep ${noun}`}
+        <IconButton
+          size="xs"
+          label={`Keep ${noun}`}
           onClick={confirm}
         >
           <SuccessCheckIcon className={styles.checkIcon} />
-        </button>
-        <button
-          type="button"
-          className={styles.action}
-          aria-label={`Remove ${noun}`}
+        </IconButton>
+        <IconButton
+          size="xs"
+          label={`Remove ${noun}`}
           onClick={onRemove}
         >
-          <CloseSmallIcon className={styles.actionRing} />
-        </button>
+          <CloseSmallIcon />
+        </IconButton>
       </div>
     </div>
   );

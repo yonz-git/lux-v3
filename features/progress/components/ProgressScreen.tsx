@@ -7,6 +7,9 @@ import { Button } from "@/components/ui/Button";
 import { DataCard } from "@/components/ui/DataCard";
 import { Orb } from "@/components/ui/Orb";
 import { SymptomLocation } from "@/features/my-skin/components/SymptomLocation";
+import { LocationEditor } from "@/features/my-skin/components/LocationEditor";
+import { EditToggle } from "@/components/ui/EditToggle";
+import { Collapse } from "@/components/ui/Collapse";
 import { COPY } from "@/features/my-skin/profile";
 import { SkinProfileTiles } from "@/features/check/components/SkinProfileTiles";
 import { InvestigationRecord } from "./InvestigationRecord";
@@ -90,6 +93,10 @@ export function ProgressScreen({ now }: { now: number }) {
      the analysis's "pause and check in" — see `CheckInOverlay`. */
   const [checkingIn, setCheckingIn] = useState(false);
   const [galleryOpen, setGalleryOpen] = useState(false);
+  /* ⚠️ THE FACE CARD EDITS IN PLACE — 31 Oct 2026, asked for directly ("add
+     this function to the face diagram sections on progress page"): the
+     recap's `Edit` / `Save` and its editor, the same two components. */
+  const [editLocation, setEditLocation] = useState(false);
   const view = progressView(answers, useToday(now));
   const { start, today, skinType, tendencies, conditions, status } = view;
   const checkIns = checkInsFor(answers, view);
@@ -173,9 +180,16 @@ export function ProgressScreen({ now }: { now: number }) {
           className={`${styles.faceCard} canvas-card`}
           aria-labelledby="progress-face"
         >
-          <h2 id="progress-face" className={`${styles.faceLabel} t-overline`}>
-            {COPY.locationLabel}
-          </h2>
+          <div className={styles.faceHead}>
+            <h2 id="progress-face" className={`${styles.faceLabel} t-overline`}>
+              {COPY.locationLabel}
+            </h2>
+            <EditToggle
+              editing={editLocation}
+              subject="symptoms and location"
+              onClick={() => setEditLocation((v) => !v)}
+            />
+          </div>
           {/* ⚠️ THE FACE BESIDE ITS LIST — `SymptomLocation`, 15 Sep 2026,
               asked for directly ("move the diagram to left and display the
               list on right"). It holds the read-only diagram with its callouts
@@ -187,13 +201,18 @@ export function ProgressScreen({ now }: { now: number }) {
               is still gone: the list IS the spoken answer, and the diagram's
               own hidden list is switched off inside the component so nothing
               says the pairing twice. */}
-          <SymptomLocation
-            places={places}
-            faceRegions={face.faceRegions}
-            otherLocations={face.otherLocations}
-            otherNote={otherNote}
-            started={formatLong(start)}
-          />
+          <Collapse smooth open={!editLocation}>
+            <SymptomLocation
+              places={places}
+              faceRegions={face.faceRegions}
+              otherLocations={face.otherLocations}
+              otherNote={otherNote}
+              started={formatLong(start)}
+            />
+          </Collapse>
+          <Collapse smooth open={editLocation}>
+            <LocationEditor idPrefix="progress" />
+          </Collapse>
         </DataCard>
 
         {/* desktop's copy: col-1, under the face */}
@@ -239,7 +258,7 @@ export function ProgressScreen({ now }: { now: number }) {
           today={today}
         />
 
-        <Button className={styles.ctaDesktop} onClick={() => setCheckingIn(true)}>
+        <Button width="action" className={styles.ctaDesktop} onClick={() => setCheckingIn(true)}>
           Check in today
         </Button>
 
@@ -250,7 +269,7 @@ export function ProgressScreen({ now }: { now: number }) {
         )}
       </div>
 
-      <Button className={styles.cta} onClick={() => setCheckingIn(true)}>
+      <Button width="action" className={styles.cta} onClick={() => setCheckingIn(true)}>
         Check in today
       </Button>
 
@@ -306,7 +325,7 @@ export function ProgressEmpty() {
         <p className={`${styles.emptyText} t-body3-body2`}>
           Start an investigation to track your skin&rsquo;s progress over time.
         </p>
-        <Button href="/investigation/start" className={styles.emptyCta}>
+        <Button width="action" href="/investigation/start" className={styles.emptyCta}>
           Create skin profile
         </Button>
       </div>

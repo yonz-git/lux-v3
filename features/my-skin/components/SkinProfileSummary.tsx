@@ -6,11 +6,11 @@ import { HubScreen } from "@/components/layout/HubScreen";
 import { Button } from "@/components/ui/Button";
 import { Orb } from "@/components/ui/Orb";
 import { SmallButton } from "@/components/ui/SmallButton";
+import { EditToggle } from "@/components/ui/EditToggle";
 import { SymptomLocation } from "./SymptomLocation";
-import { SymptomPlacer } from "./SymptomPlacer";
+import { LocationEditor } from "./LocationEditor";
 import { ProfileEditor } from "./ProfileEditor";
 import { Collapse } from "@/components/ui/Collapse";
-import { DateField } from "@/components/ui/DateField";
 import { SelfieSheet } from "./SelfieSheet";
 /* ⚠️ ACROSS SECTIONS, WHICH THE PLACEMENT RULE ALLOWS AND THIS IS THE THIRD
    CASE OF. `CheckInPhotoArt` draws the capture in a PROGRESS check-in record;
@@ -171,13 +171,13 @@ import { COPY, isEmpty, recap } from "@/features/my-skin/profile";
  * a today.
  */
 export function SkinProfileSummary({ now }: { now: number }) {
-  const { answers, setAnswer } = useInvestigation();
+  const { answers } = useInvestigation();
   const [photoOpen, setPhotoOpen] = useState(false);
   /* ⚠️ EACH SECTION EDITS IN PLACE — 29 Oct 2026, usability testing: the recap
      read the answers back and offered no way to change one. `Edit` swaps a
-     section's read-back for the controls that gave the answer, `Done` swaps it
-     back; nothing is saved on `Done`, every tap writes to the store as step 1
-     does. No new page. The location section stays drawn once it has been
+     section's read-back for the controls that gave the answer, `Save` swaps
+     it back (`Done` until 31 Oct 2026); nothing waits for `Save`, every tap
+     writes to the store as step 1 does — see `EditToggle`. No new page. The location section stays drawn once it has been
      opened, so clearing every symptom there cannot make it vanish under the
      reader's hand. */
   const [editProfile, setEditProfile] = useState(false);
@@ -225,7 +225,7 @@ export function SkinProfileSummary({ now }: { now: number }) {
           <Orb animateIn />
           <p className={`${styles.emptyTitle} t-h4-h3`}>{COPY.emptyTitle}</p>
           <p className={`${styles.emptyBody} t-body3-body2`}>{COPY.emptyBody}</p>
-          <Button href="/investigation/start" className={styles.emptyCta}>
+          <Button width="action" href="/investigation/start" className={styles.emptyCta}>
             {COPY.emptyCta}
           </Button>
         </div>
@@ -285,7 +285,7 @@ export function SkinProfileSummary({ now }: { now: number }) {
             conditions={profile.conditions}
             symptomsState={timeline?.status}
             action={
-              <EditButton
+              <EditToggle
                 editing={false}
                 subject="skin profile"
                 onClick={() => setEditProfile(true)}
@@ -298,7 +298,7 @@ export function SkinProfileSummary({ now }: { now: number }) {
             label="Skin profile"
             id="profile-edit"
             action={
-              <EditButton
+              <EditToggle
                 editing
                 subject="skin profile"
                 onClick={() => setEditProfile(false)}
@@ -328,7 +328,7 @@ export function SkinProfileSummary({ now }: { now: number }) {
                   label={COPY.locationLabel}
                   id="profile-location"
                   action={
-                    <EditButton
+                    <EditToggle
                       editing={editLocation}
                       subject="symptoms and location"
                       onClick={() => {
@@ -374,27 +374,7 @@ export function SkinProfileSummary({ now }: { now: number }) {
                     />
                   </Collapse>
                   <Collapse smooth open={editLocation}>
-                    <div className={styles.editLocation}>
-                      <SymptomPlacer />
-                      <div className={styles.editField}>
-                        <label
-                          className={`${styles.editLabel} t-label`}
-                          htmlFor="profile-start-date"
-                        >
-                          Started on
-                        </label>
-                        <DateField
-                          id="profile-start-date"
-                          value={answers.timing?.date}
-                          onChange={(date) =>
-                            setAnswer("timing", (prev) => ({
-                              ...(prev ?? {}),
-                              date,
-                            }))
-                          }
-                        />
-                      </div>
-                    </div>
+                    <LocationEditor idPrefix="profile" />
                   </Collapse>
                 </Block>
               )}
@@ -478,7 +458,7 @@ function Block({
 }: {
   label: string;
   id: string;
-  /** the section's `Edit` / `Done`, at the overline's end */
+  /** the section's `Edit` / `Save` (`EditToggle`), at the overline's end */
   action?: React.ReactNode;
   children: React.ReactNode;
 }) {
@@ -492,38 +472,6 @@ function Block({
       </div>
       {children}
     </section>
-  );
-}
-
-/* `Edit` opens a section's controls in place and `Done` closes them. The same
-   `SmallButton` the photo block's `Update photo` is, without its arrow — it
-   opens a panel, it does not go anywhere. */
-function EditButton({
-  editing,
-  subject,
-  onClick,
-}: {
-  editing: boolean;
-  subject: string;
-  onClick: () => void;
-}) {
-  return (
-    <SmallButton
-      /* ⚠️ THE LABEL CROSSFADES, 29 Oct 2026 — `Edit` and `Done` are stacked in
-         one grid cell and trade opacity on the smooth recipe, so the swap does
-         not snap and the pill keeps one width. The `aria-label` below is what a
-         screen reader hears; the visible words are hidden from it. */
-      label={
-        <span className={styles.swapLabel} aria-hidden="true">
-          <span data-on={!editing || undefined}>Edit</span>
-          <span data-on={editing || undefined}>Done</span>
-        </span>
-      }
-      arrow={false}
-      aria-label={editing ? `Done editing ${subject}` : `Edit ${subject}`}
-      aria-expanded={editing}
-      onClick={onClick}
-    />
   );
 }
 

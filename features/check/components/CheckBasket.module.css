@@ -293,14 +293,7 @@
    is `--width-action-mobile`, the nav pill's width, like every other action in
    the app on a phone; the 376 it used to be is the desktop value. */
 .submit {
-  width: 100%;
-  max-width: var(--width-action-mobile);
-}
-
-@media (min-width: 1024px) {
-  .submit {
-    max-width: var(--width-action);
-  }
+  /* width is `Button`'s `width="action"` (31 Oct 2026) */
 }
 
 /* sits directly under the disabled CTA, so the reason is next to the control it

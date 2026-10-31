@@ -1,4 +1,4 @@
-import type { ButtonHTMLAttributes, ReactNode } from "react";
+import type { ButtonHTMLAttributes, ReactNode, Ref } from "react";
 import Link from "next/link";
 import styles from "./IconButton.module.css";
 
@@ -16,6 +16,15 @@ import styles from "./IconButton.module.css";
  * `label` is REQUIRED and becomes the accessible name: a glyph alone says
  * nothing to a screen reader. `size="sm"` is 44, the HIG floor, for rows
  * where 56 is too much; 56 is the default because every VidGen circle is.
+ *
+ * ⚠️ TWO MORE SIZES, 31 Oct 2026 — asked for directly ("buttons that use the
+ * same design should be using reusable components with variants"):
+ *   md  48 — the back button (`ScreenHeader`, `HubScreen`)
+ *   xs  20 — the small ✓ / ✎ / ✕ inside a field, a tray's corner ✕ and the
+ *       chat panel's ✕. The disc is 20; `.tap-target` keeps the hit area at
+ *       44 round it. Pair it with `CloseSmallIcon` (12) or a 16 glyph.
+ * Every one of those was a copy of this circle in a screen's own module, and
+ * a fix to one never reached the rest.
  */
 export function IconButton({
   label,
@@ -29,13 +38,18 @@ export function IconButton({
   label: string;
   children: ReactNode;
   variant?: "glass" | "primary" | "outline" | "soft";
-  size?: "lg" | "sm";
+  size?: "lg" | "md" | "sm" | "xs";
   href?: string;
+  /** React 19 passes `ref` as a prop; it lands on the <button> */
+  ref?: Ref<HTMLButtonElement>;
 }) {
   const cls = [
     styles.button,
     styles[variant],
     size === "sm" && styles.sm,
+    size === "md" && styles.md,
+    size === "xs" && styles.xs,
+    size === "xs" && "tap-target",
     "pressable",
     className,
   ]

@@ -491,7 +491,7 @@ function ScanView({
           : "Take photo of the front instead"}
       </button>
 
-      <Button
+      <Button width="action"
         className={styles.trayAction}
         disabled={!captured}
         onClick={onContinue}

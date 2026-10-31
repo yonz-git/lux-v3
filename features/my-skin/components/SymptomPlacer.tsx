@@ -342,45 +342,41 @@ export function SymptomPlacer({
               }}
             />
             <div className={styles.otherActions}>
-              <button
-                type="button"
-                className={styles.otherAction}
-                aria-label="Confirm description"
+              <IconButton
+                size="xs"
+                label="Confirm description"
                 onClick={confirmOther}
               >
                 <SuccessCheckIcon className={styles.otherCheckIcon} />
-              </button>
-              <button
-                type="button"
-                className={styles.otherAction}
-                aria-label="Remove description"
+              </IconButton>
+              <IconButton
+                size="xs"
+                label="Remove description"
                 onClick={closeOther}
               >
-                <CloseSmallIcon className={styles.otherActionRing} />
-              </button>
+                <CloseSmallIcon />
+              </IconButton>
             </div>
           </div>
         ) : otherState === "confirmed" ? (
           <div className={styles.otherConfirmed}>
             <p className={`${styles.otherConfirmedText} t-body2`}>{otherText}</p>
             <div className={styles.otherActions}>
-              <button
+              <IconButton
                 ref={penRef}
-                type="button"
-                className={styles.otherAction}
-                aria-label="Edit description"
+                size="xs"
+                label="Edit description"
                 onClick={openOther}
               >
                 <NoteIcon className={styles.otherActionIcon} />
-              </button>
-              <button
-                type="button"
-                className={styles.otherAction}
-                aria-label="Remove description"
+              </IconButton>
+              <IconButton
+                size="xs"
+                label="Remove description"
                 onClick={closeOther}
               >
-                <CloseSmallIcon className={styles.otherActionRing} />
-              </button>
+                <CloseSmallIcon />
+              </IconButton>
             </div>
           </div>
         ) : (

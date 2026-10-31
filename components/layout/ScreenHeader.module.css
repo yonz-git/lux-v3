@@ -9,29 +9,7 @@
   min-height: var(--size-control-sm);
 }
 
-.back {
-  /* lux-v3: the Storyboard's back button — a VidGen glass circle with the
-     arrow, 48 (the reference's 26.7 × 1.745 = 46.6, on the control scale) */
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  flex: none;
-  width: var(--size-control-md);
-  height: var(--size-control-md);
-  color: var(--color-bg-brand);
-  background: var(--color-glass);
-  border: var(--border-width-hairline) solid var(--color-border-glass);
-  box-shadow: var(--shadow-glass);
-  border-radius: var(--radius-full);
-  transition: background-color var(--duration-fast) var(--ease-hover);
-}
-
-.back:hover {
-  background-color: var(--color-glass-strong);
-}
-
-@media (hover: none) {
-  .back:hover {
-    background-color: var(--color-glass);
-  }
-}
+/* ⚠️ THE BACK BUTTON IS `IconButton size="md"` (glass, 48) AS OF 31 Oct 2026,
+   asked for directly ("buttons that use the same design should be using
+   reusable components with variants"). Its circle was written out here and
+   again in `HubScreen`; the copies went. */

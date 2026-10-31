@@ -1,10 +1,10 @@
 "use client";
 
 import type { ReactNode } from "react";
-import Link from "next/link";
 import styles from "./ChatPanel.module.css";
 import { Orb } from "@/components/ui/Orb";
 import { CloseSmallIcon } from "@/components/ui/icons";
+import { IconButton } from "@/components/ui/IconButton";
 
 /**
  * The conversation panel — Figma `chat-page / mobile` (270:96).
@@ -111,26 +111,23 @@ export function ChatPanel({
         </div>
 
         {onClose ? (
-          <button
-            type="button"
+          <IconButton
+            size="xs"
+            label={closeLabel}
+            className={styles.close}
             onClick={onClose}
-            className={`${styles.headerButton} ${styles.close}`}
-            aria-label={closeLabel}
           >
-            <span className={styles.closeDisc}>
-              <CloseSmallIcon className={styles.closeGlyph} />
-            </span>
-          </button>
+            <CloseSmallIcon />
+          </IconButton>
         ) : (
-          <Link
+          <IconButton
+            size="xs"
+            label={closeLabel}
+            className={styles.close}
             href={closeHref ?? "/"}
-            className={`${styles.headerButton} ${styles.close}`}
-            aria-label={closeLabel}
           >
-            <span className={styles.closeDisc}>
-              <CloseSmallIcon className={styles.closeGlyph} />
-            </span>
-          </Link>
+            <CloseSmallIcon />
+          </IconButton>
         )}
       </div>
 

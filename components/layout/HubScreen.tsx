@@ -1,10 +1,10 @@
 "use client";
 
 import type { CSSProperties, ReactNode } from "react";
-import Link from "next/link";
 import styles from "./HubScreen.module.css";
 import { BottomNav, type NavSection } from "./BottomNav";
 import { ArrowLeftIcon } from "@/components/ui/icons";
+import { IconButton } from "@/components/ui/IconButton";
 
 /**
  * The shell every **hub** screen shares — the PRODUCTS hub (`My Products`,
@@ -149,9 +149,10 @@ export function HubScreen({
         {hasHeader && (
           <div className={styles.header}>
             {backHref ? (
-              <Link href={backHref} className={`${styles.back} pressable`} aria-label="Back">
+              /* `IconButton` glass at 48 — the app's one back button */
+              <IconButton size="md" href={backHref} label="Back">
                 <ArrowLeftIcon />
-              </Link>
+              </IconButton>
             ) : (
               <span />
             )}

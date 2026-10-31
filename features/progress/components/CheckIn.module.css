@@ -137,12 +137,6 @@
    width at both breakpoints while the panel was 375 wide; at the nav's 598 that
    stretched it to 558, a slab wider than anything else on the dashboard. */
 .submit {
-  width: 100%;
-}
-
-@media (min-width: 1024px) {
-  .submit {
-    width: var(--width-action); /* 376 */
-    align-self: center;
-  }
+  /* width is `Button`'s `width="action"` (31 Oct 2026) */
+  align-self: center;
 }

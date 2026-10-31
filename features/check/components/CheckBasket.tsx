@@ -260,7 +260,7 @@ export function CheckBasketSheet({
 
       <div className={styles.divider} />
 
-      <Button
+      <Button width="action"
         className={styles.submit}
         disabled={!enough}
         onClick={onSubmit}

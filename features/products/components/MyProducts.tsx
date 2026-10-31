@@ -181,7 +181,15 @@ export function MyProducts() {
 
   if (products.length === 0) {
     return (
-      <HubScreen title="Products in use" layout="plain" center tightTop>
+      /* the title centred as the populated list centres it — 31 Oct 2026,
+         asked for directly */
+      <HubScreen
+        title="Products in use"
+        centerHeading
+        layout="plain"
+        center
+        tightTop
+      >
         <div className={styles.empty}>
           <Orb animateIn />
           <h2 className="t-h4-h3">No products added yet</h2>
@@ -189,6 +197,7 @@ export function MyProducts() {
             Add products you use to check skin compatibility.
           </p>
           <Button
+            width="action"
             className={styles.emptyCta}
             onClick={() => setSheetOpen(true)}
           >

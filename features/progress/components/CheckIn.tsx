@@ -303,7 +303,7 @@ export function CheckInPanel({
              ungated because `opacity/disabled` at 0.4 erases a sage gradient on
              a sage panel; this is a `Button`, which fades to a still-visible
              control, so the app's ordinary rule applies. */
-          <Button
+          <Button width="action"
             className={styles.submit}
             disabled={!canSubmit}
             onClick={submit}

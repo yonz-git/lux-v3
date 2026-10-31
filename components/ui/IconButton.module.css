@@ -25,11 +25,28 @@
   height: var(--size-touch-target);
 }
 
+.md {
+  width: var(--size-control-md); /* 48 */
+  height: var(--size-control-md);
+}
+
+/* the 20 disc; its 44 target is `.tap-target` (IconButton.tsx) */
+.xs {
+  width: var(--size-icon-sm); /* 20 */
+  height: var(--size-icon-sm);
+}
+
 .glass {
   color: var(--color-bg-brand);
   background: var(--color-glass);
   border-color: var(--color-border-glass);
-  box-shadow: var(--shadow-glass);
+  /* ⚠️ FILL INSIDE THE RIM, AND NO RIM LIGHT — 31 Oct 2026, asked for
+     directly after an 8× capture of the small ✕ ("do the same for these"):
+     the fill ran under the glass edge (`border-box` clip), and
+     `shadow/glass` drew a 1px white crescent inside the top of the rim, so
+     the ring read thicker at the top and the disc looked shifted. */
+  background-clip: padding-box;
+  box-shadow: none;
   -webkit-backdrop-filter: blur(10px);
   backdrop-filter: blur(10px);
 }
