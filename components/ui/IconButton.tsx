@@ -3,7 +3,7 @@ import Link from "next/link";
 import styles from "./IconButton.module.css";
 
 /**
- * IconButton — VidGen's round control, the most-used control in both
+ * IconButton — the reference's round control, the most-used control in both
  * references (1 Oct 2026). A 56 circle holding one glyph from `icons.tsx`.
  *
  *   glass    white @50% + glass edge + rim, brand-indigo glyph — `+`, mic,
@@ -15,7 +15,7 @@ import styles from "./IconButton.module.css";
  *
  * `label` is REQUIRED and becomes the accessible name: a glyph alone says
  * nothing to a screen reader. `size="sm"` is 44, the HIG floor, for rows
- * where 56 is too much; 56 is the default because every VidGen circle is.
+ * where 56 is too much; 56 is the default because every circle is.
  *
  * ⚠️ TWO MORE SIZES, 31 Oct 2026 — asked for directly ("buttons that use the
  * same design should be using reusable components with variants"):

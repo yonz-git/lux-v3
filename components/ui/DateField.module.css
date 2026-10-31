@@ -22,7 +22,7 @@
   justify-content: space-between;
   gap: var(--space-md);
   width: 100%;
-  /* lux-v3 (1 Oct 2026, the canvas boards): a VidGen glass field — 56, a
+  /* lux-v3 (1 Oct 2026, the canvas boards): a glass field — 56, a
      pill, the chips' own glass and rim. It was v2's 52 rounded row on an
      inset shadow. */
   min-height: var(--size-field);

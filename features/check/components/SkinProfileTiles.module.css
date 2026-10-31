@@ -1,6 +1,6 @@
 /* The skin profile as four tiles — see SkinProfileTiles.tsx.
 
-   lux-v3 (1 Oct 2026): the panel (the global `canvas-card`, app/vidgen.css)
+   lux-v3 (1 Oct 2026): the panel (the global `canvas-card`, app/globals.css)
    at DataCard's padding and radius, a `t-overline`, then four tiles two a row,
    each a label over its glass pills. The v2 recipe (a 1.4rem card, an 18px
    overline over a fading rule, outlined deep-teal pills) is in `git log -p`. */

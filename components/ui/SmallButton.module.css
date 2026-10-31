@@ -1,4 +1,4 @@
-/* Small Button — VidGen glass at 36 tall. See SmallButton.tsx.
+/* Small Button — glass at 36 tall. See SmallButton.tsx.
    `glass` (white @50%) + 1px `border/glass` + the inset rim, radius full.
    Hover lifts to `glass-strong`; pressed is the shared `pressable` overlay;
    disabled is the whole control at 0.4. */
@@ -56,7 +56,7 @@
   cursor: not-allowed;
 }
 
-/* the glyph wears the brand indigo, the way VidGen's do on glass */
+/* the glyph wears the brand indigo, the way the reference's do on glass */
 .icon {
   display: inline-flex;
   flex: none;

@@ -19,7 +19,7 @@ Date: 2 Oct 2026
    - Canvas gradient `#E2EDF1` → `#D3E4E7` → `#B1CAD2` at 165°.
    - Primary `#313560`, with the primary gradient from `#485780`.
    - Glass/panel recipes. No opaque white, no glows, no dark ground.
-   - Type: **Urbanist only**. Headlines are Light with the key words Bold in primary, the system's own `headline` / `headline-emphasis` pattern.
+   - Type: **Figtree only**. Headlines are Light with the key words Bold in primary, the system's own `headline` / `headline-emphasis` pattern.
    - The real orb and wordmark.
 5. [MUST] **One thread.** The walkthrough follows ONE user's investigation in order (map symptoms → profile → products → analysis → tracking). It isn't a feature list.
 6. **Motion has a job.** Each move either:
@@ -45,7 +45,7 @@ R was skipped: the user said "go" and is asleep. These are Claude's recommended 
 - ★ **The belief that stops the audience acting:** "pretty AI-made UI is cheap; can this person think and ship?" So the video must show reasoning (the controlled verdict, "evidence for / against") and real builtness, not just glass. ASSUMED.
 - **Voiceover?** No. Captions carry it, because feeds autoplay muted. ASSUMED.
 - **Device frame?** A minimal rounded phone silhouette in panel glass rather than a photoreal iPhone, which keeps it on-brand and readable. ASSUMED.
-- ★ **Accent face?** None. The grader caught that lux-v3 is Urbanist-only and already has an editorial pattern (Light headline + Bold primary key words), which does the motionsites mixed-type job on-system.
+- ★ **Accent face?** None. The grader caught that lux-v3 is Figtree-only and already has an editorial pattern (Light headline + Bold primary key words), which does the motionsites mixed-type job on-system.
 - **Name a tagline?** Use the product's own language: "Find what your skin is reacting to." ASSUMED. Check it against vocab: "reacting to" is a question the user investigates, not a claim.
 
 ## Grader round 1 (fresh context)

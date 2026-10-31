@@ -90,7 +90,7 @@
    top. No border any more, so the padding is the plain 20 (24 on desktop). */
 .block {
   /* lux-v3: the panel's padding and radius (DataCard's), as the surface is
-     the panel now (`canvas-card`, app/vidgen.css) */
+     the panel now (`canvas-card`, app/globals.css) */
   padding: var(--space-gutter); /* 24 */
   border-radius: var(--radius-panel); /* 28 */
 }

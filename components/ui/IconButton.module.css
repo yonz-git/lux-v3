@@ -1,6 +1,6 @@
-/* IconButton — VidGen's circles. Every value is the reference's own:
+/* IconButton — the reference's circles. Every value is the reference's own:
    56 round; glass = white @50%, 1px white @55% edge, inset white @80% rim;
-   primary = lux-v2's brand gradient + `shadow/brand-vg`; outline = 1px ink
+   primary = lux-v2's brand gradient + `shadow/brand-pill`; outline = 1px ink
    @18%, no fill; soft = #eeecf5 lilac. */
 
 .button {
@@ -54,7 +54,7 @@
 .primary {
   color: #fff;
   background: var(--gradient-brand); /* lux-v2's */
-  box-shadow: var(--shadow-brand-vg);
+  box-shadow: var(--shadow-brand-pill);
 }
 
 .outline {

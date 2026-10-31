@@ -1,8 +1,7 @@
 import { Easing } from "remotion";
 import { loadFont } from "@remotion/google-fonts/Figtree";
 
-/* lux-v3's one typeface — Figtree since 4 Oct 2026, when the app went back to
-   it (app/layout.tsx); it was Urbanist before. */
+/* lux-v3's one typeface — Figtree (app/layout.tsx). */
 export const { fontFamily: FIGTREE } = loadFont("normal", {
   weights: ["300", "400", "500", "600", "700"],
   subsets: ["latin"],

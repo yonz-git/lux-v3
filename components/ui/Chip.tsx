@@ -93,7 +93,7 @@ export function Chip({
   disabled?: boolean;
   /** selected, but not the chip being worked on — see the note above */
   muted?: boolean;
-  /** a leading glyph from `icons.tsx`, the way VidGen's option chips carry one */
+  /** a leading glyph from `icons.tsx`, the way the reference's option chips carry one */
   icon?: ReactNode;
   onToggle: () => void;
 }) {

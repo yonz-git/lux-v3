@@ -1,7 +1,7 @@
-# VidGen redesign — component inventory
+# lux-v3 redesign — component inventory
 
 Written 1 Oct 2026, before any design work, to answer one question: **what in
-LUX do the VidGen references already show, and what has to be designed from
+LUX do the references already show, and what has to be designed from
 scratch?**
 
 References:
@@ -17,7 +17,7 @@ area is NOT in them.
 
 ## The look, in one paragraph
 
-Urbanist, set light, with **bold emphasis words inside a light headline**
+The face (Figtree here; the references use Urbanist) set light, with **bold emphasis words inside a light headline**
 ("Next-level **AI video** creation"). Two grounds: the pale sage canvas, and a
 deep indigo (`#1f1830`) that light glass sheets sit on. Big frosted panels with
 very round corners (28–46) and no borders — edges come from a white rim and a
@@ -27,7 +27,7 @@ icon. Colour is quiet — indigo, lilac and sage, with one soft lilac glow.
 
 ## Decisions (status 1 Oct 2026)
 
-1. **Typeface — decided: Urbanist.**
+1. **Typeface — decided: Figtree** (the references draw Urbanist; 4 Oct 2026).
 2. **Dark screens — decided: none.** The references' dark indigo ground was
    tried and dropped with their gradients; lux-v2's canvas stays.
 3. **Primary action — decided: a labelled indigo pill** (`Button`, 56 tall)

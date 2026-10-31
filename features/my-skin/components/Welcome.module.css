@@ -158,11 +158,11 @@
 
 /* ⚠️ lux-v3 KEEPS v2's WELCOME, asked for directly on the canvas, 1 Oct 2026
    ("the welcome page design doesn't work. we will keep the v2 version just
-   replace the nav bar"). The VidGen layer re-sized two things under it — the
+   replace the nav bar"). The v3 restyle re-sized two things under it — the
    button to 56 and the bubble's body to 16/22 — and both are put back here,
    on this screen only, so the orb, the reply and the action sit where v2 had
    them: the 62 `Button` (`--button-height` is its own hook) and the bubble at
-   v2's 16/26 (18/28 desktop). The face is Figtree, as the whole app is (Urbanist from 1 to 4 Oct 2026). */
+   v2's 16/26 (18/28 desktop). The face is Figtree, as the whole app is. */
 .cta {
   --button-height: var(--size-control-lg); /* 62 */
   width: 100%;

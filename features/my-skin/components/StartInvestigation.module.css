@@ -90,7 +90,7 @@
   padding: 0 calc(var(--space-lg) + var(--border-width-hairline));
   /* ⚠️ A SOFT INNER LIGHT, tuned in DevTools and supplied directly the same
      day: white at 38% (`#ffffff61`), 1px down and blurred 4px. It replaced a
-     crisp `inset 0 1px 0` edge. It is `--shadow-pill-light` (vidgen.css) since
+     crisp `inset 0 1px 0` edge. It is `--shadow-pill-light` (tokens.css) since
      31 Oct 2026, the indigo pills' light too. The hover rules below restate it, since
      `Chip`'s hover shadow outranks this. */
   box-shadow: var(--shadow-pill-light);

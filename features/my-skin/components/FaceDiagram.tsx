@@ -617,7 +617,7 @@ export function FaceDiagram(props: FaceDiagramProps) {
       ref={cardRef}
       className={styles.card}
       /* the entrance — the drawing, then the pills, then the callouts; see
-         "THE FACE ENTRANCE" in app/vidgen.css */
+         "THE FACE ENTRANCE" in app/globals.css */
       data-motion="face"
       onPointerDown={(e) => {
         touching.current = e.pointerType === "touch";
@@ -732,7 +732,7 @@ export function FaceDiagram(props: FaceDiagramProps) {
           const position = {
             left: `${r.x * 100}%`,
             top: `${r.y * 100}%`,
-            /* the entrance's order (app/vidgen.css, "THE FACE ENTRANCE") */
+            /* the entrance's order (app/globals.css, "THE FACE ENTRANCE") */
             "--i": i,
           } as CSSProperties;
 

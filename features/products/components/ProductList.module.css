@@ -24,7 +24,7 @@
   padding: calc(0.875rem * 1.1) calc(1.125rem * 1.1);
   text-align: left;
 
-  /* lux-v3: the 30% panel at 24 (app/vidgen.css), as the PRODUCTS hub's
+  /* lux-v3: the 30% panel at 24 (app/globals.css), as the PRODUCTS hub's
      groups and the score cards. The v2 two-layer mint is in `git log -p`. */
   border-radius: var(--radius-2xl); /* 24 */
   border: var(--border-width-hairline) solid var(--color-border-panel);

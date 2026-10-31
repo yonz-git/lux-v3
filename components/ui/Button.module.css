@@ -1,6 +1,6 @@
-/* Button — VidGen's two materials as a labelled pill. See Button.tsx.
+/* Button — the reference's two materials as a labelled pill. See Button.tsx.
 
-   PRIMARY  lux-v2's `gradient/brand` (#485780 -> #313560, left to right) + `shadow/brand-vg`
+   PRIMARY  lux-v2's `gradient/brand` (#485780 -> #313560, left to right) + `shadow/brand-pill`
             (0 8 18 brand @30%, and a white rim inset along the top). White
             label: 5.65:1 at the light end, 11.6:1 at the dark.
    SECONDARY `glass` (white @25%) + 1px `border/glass` + the inset rim.
@@ -25,7 +25,7 @@
   color: #fff;
   text-decoration: none;
   background: linear-gradient(90deg, var(--grad-start), var(--grad-end)) border-box;
-  box-shadow: var(--shadow-brand-vg);
+  box-shadow: var(--shadow-brand-pill);
   cursor: pointer;
   transition:
     opacity var(--duration-base) var(--ease-standard),
@@ -79,7 +79,7 @@
    the edges of the indigo buttons smooth like those red pills"). The white
    ring painted into the border above read as a hard edge beside the red
    symptom pill, which has no border at all and only a soft light inside its
-   top (`--shadow-pill-light`, now part of `--shadow-brand-vg`). The border
+   top (`--shadow-pill-light`, now part of `--shadow-brand-pill`). The border
    goes to 0 so nothing sits outside that light, and the padding takes the
    pixel back so the pill keeps its box. The orbiting hover rim (`.specular`)
    is unchanged. */
@@ -87,7 +87,7 @@
   border-width: 0;
   padding-inline: calc(var(--space-2xl) + var(--border-width-hairline));
   background: linear-gradient(90deg, var(--grad-start), var(--grad-end));
-  box-shadow: var(--shadow-brand-vg);
+  box-shadow: var(--shadow-brand-pill);
 }
 
 .button.md:not(.secondary) {

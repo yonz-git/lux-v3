@@ -242,7 +242,7 @@ export function SymptomPlacer({
       <div
         ref={chipsRef}
         className={styles.chips}
-        /* the chips arrive one by one (app/vidgen.css, "THE RISE ENTRANCE") */
+        /* the chips arrive one by one (app/globals.css, "THE RISE ENTRANCE") */
         data-motion="rise"
         role="group"
         aria-label="What is currently happening to your skin?"

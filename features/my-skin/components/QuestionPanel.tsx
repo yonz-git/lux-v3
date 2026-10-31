@@ -7,7 +7,7 @@ import { Orb } from "@/components/ui/Orb";
 
 /**
  * One investigation question in its glass panel — lux-v3, 1 Oct 2026, from the
- * canvas boards ("First pages"). The panel is `.vg-panel` (app/vidgen.css):
+ * canvas boards ("First pages"). The panel is `.panel` (app/globals.css):
  * 30% frost, 28 radius, padded 32 / 24 / 24. The question is the panel's
  * `<h2>`, asked in LUX's own bubble beside the chat's orb, with an
  * optional hint under it; the answers follow 20 below.
@@ -31,7 +31,7 @@ export function QuestionPanel({
   return (
     <section
       aria-labelledby={id}
-      className={className ? `vg-panel ${styles.panel} ${className}` : `vg-panel ${styles.panel}`}
+      className={className ? `panel ${styles.panel} ${className}` : `panel ${styles.panel}`}
     >
       <div className={styles.head}>
         {/* ⚠️ THE QUESTION IS LUX'S BUBBLE, NOT A HEADING LINE — 29 Oct 2026,

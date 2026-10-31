@@ -20,14 +20,14 @@ type Props = {
 } & Omit<ButtonHTMLAttributes<HTMLButtonElement>, "className">;
 
 /**
- * Small Button — VidGen's glass pill at control height (36): the Storyboard's
+ * Small Button — the reference's glass pill at control height (36): the Storyboard's
  * time pill (`00:00`) and the chips' material, holding a worded action such as
  * `Save & exit` or `Update photo`. Label `t-button-sm` (14 Medium) in the
- * app's ink; a leading icon takes the brand indigo, the way every VidGen glyph
+ * app's ink; a leading icon takes the brand indigo, the way every glyph
  * on glass does. The trailing arrow is part of the component; `arrow={false}`
  * hides it.
  *
- * `specular` is still accepted so existing callers compile; VidGen has no
+ * `specular` is still accepted so existing callers compile; the reference has no
  * pointer-tracking rim and nothing is drawn for it.
  */
 export function SmallButton({

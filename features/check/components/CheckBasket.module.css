@@ -39,10 +39,10 @@
      through from going grey. The reduced-transparency fallback below still
      composites the full token, so that path is unchanged. */
   /* lux-v3: the panel's glass, floating — a 30% frost, the panel edge and
-     rim, and the nav's soft drop (app/vidgen.css). The v2 sage is history. */
+     rim, and the nav's soft drop (app/globals.css). The v2 sage is history. */
   border: var(--border-width-hairline) solid var(--color-border-panel);
   background: var(--color-panel);
-  box-shadow: var(--shadow-nav-vg);
+  box-shadow: var(--shadow-nav-bar);
   -webkit-backdrop-filter: blur(16px);
   backdrop-filter: blur(16px);
 

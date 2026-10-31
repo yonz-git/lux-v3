@@ -19,7 +19,7 @@
     calc(18px - var(--border-width-hairline));
   text-align: left;
 
-  /* lux-v3: the 30% panel at the score cards' 24 radius (app/vidgen.css) */
+  /* lux-v3: the 30% panel at the score cards' 24 radius (app/globals.css) */
   border-radius: var(--radius-2xl); /* 24 */
   border: var(--border-width-hairline) solid var(--color-border-panel);
   background: var(--color-panel);

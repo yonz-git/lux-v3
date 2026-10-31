@@ -2,15 +2,15 @@ Next.js 16. Check `node_modules/next/dist/docs/` before using a Next API.
 
 # LUX — rules
 
-LUX: AI-guided skincare investigation web app. This repo is `lux-v3`, the VidGen redesign. Never touch `~/Claude/LUX/lux-v2`.
+LUX: AI-guided skincare investigation web app. This repo is `lux-v3`, the redesign. Never touch `~/Claude/LUX/lux-v2`.
 
 ## Source of truth
 
-- Design system lives in code: `app/tokens.css`, `app/globals.css`, `app/vidgen.css` (loads last, wins), `components/ui/`, `components/layout/`.
+- Design system lives in code: `app/tokens.css` (every value, declared once), `app/globals.css` (every rule), `components/ui/`, `components/layout/`.
 - `/styleguide` renders it live.
 - Figma is retired. Don't reference it.
 - New visual decision = token or component change. Never a one-off value on a screen.
-- Visual refs: `~/Claude/vidgen/index.html`, `~/Claude/vidgen-studio/index.html`. Inventory: `docs/vidgen-components.md`.
+- Visual refs: `~/Claude/vidgen/index.html`, `~/Claude/vidgen-studio/index.html`. Inventory: `docs/component-inventory.md`.
 
 ## Read first
 
@@ -118,7 +118,7 @@ lib/                 date.ts, demo.ts, pageTitles.ts, actives.ts
 - Sizes are rem (16px = 1rem). Borders, hairlines, shadows, blur, breakpoints stay px.
 - Write new values as a token or rem, never px (except the kinds above).
 - Line heights: unitless ratios.
-- Font: Urbanist. Values: `vidgen.css`, `tokens.css`, `docs/design.md`.
+- Font: Figtree. Values: `tokens.css`, `docs/design.md`.
 - Every text uses a `t-*` class. No ad-hoc `font-size`.
 - `t-a-b` = a on mobile, b on desktop. Fluid: headline, `t-h2`, `t-h3-h2`, `t-body2-body1`, `t-body3-body2`.
 - Every page `<h1>` is `t-h4-h3`.

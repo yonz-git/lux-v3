@@ -35,7 +35,7 @@
   border-radius: var(--radius-full);
   border: var(--border-width-hairline) solid var(--color-border-nav);
   background: var(--color-nav-bar);
-  box-shadow: var(--shadow-nav-vg);
+  box-shadow: var(--shadow-nav-bar);
   -webkit-backdrop-filter: blur(16px);
   backdrop-filter: blur(16px);
 }
@@ -99,7 +99,7 @@
     var(--color-gradient-brand-start),
     var(--color-gradient-brand-end)
   );
-  box-shadow: var(--shadow-brand-vg);
+  box-shadow: var(--shadow-brand-pill);
   color: var(--color-text-on-brand);
 }
 
