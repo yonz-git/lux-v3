@@ -412,7 +412,7 @@ function CategoryGroup({
                 </Button>
               }
             >
-              No products in this list yet
+              No products yet
             </EmptyBox>
           ) : (
             <ul className={styles.stack}>
