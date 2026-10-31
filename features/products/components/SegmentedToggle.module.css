@@ -84,7 +84,9 @@
   align-items: center;
   justify-content: center;
   white-space: nowrap;
-  padding: 0.6875rem 1.375rem;
+  /* `Button size="sm"` reads the same two tokens */
+  min-height: var(--size-button-sm);
+  padding: 0 var(--space-button-sm-inline);
   border-radius: var(--radius-full);
   border: none;
   background: transparent;

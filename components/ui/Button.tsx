@@ -14,7 +14,8 @@ import styles from "./Button.module.css";
  *              chips' and round buttons' material
  *
  * `size="lg"` (default) is 56 tall, the height of every control;
- * `size="md"` is 48 for denser rows. A caller can still set `--button-height`.
+ * `size="md"` is 48 for denser rows; `size="sm"` is 42, the segmented
+ * toggle's pill, for an action inside a panel such as `Add product`. A caller can still set `--button-height`.
  * The label is `t-button` (15 Medium) / `t-button-md` (14 Medium) — the reference's
  * `Start` is 14.3 Medium, and the full-size pill takes one step more so a
  * flow's `Continue` still leads its screen.
@@ -48,7 +49,7 @@ export function Button({
   ...rest
 }: ButtonHTMLAttributes<HTMLButtonElement> & {
   variant?: "primary" | "secondary";
-  size?: "lg" | "md";
+  size?: "lg" | "md" | "sm";
   /** @deprecated — `width="full"` */
   fullWidth?: boolean;
   width?: "hug" | "full" | "action";
@@ -61,9 +62,10 @@ export function Button({
     styles.button,
     variant === "secondary" && styles.secondary,
     size === "md" && styles.md,
+    size === "sm" && styles.sm,
     width === "full" && styles.full,
     width === "action" && styles.action,
-    size === "md" ? "t-button-md" : "t-button",
+    size === "lg" ? "t-button" : "t-button-md",
     className,
   ]
     .filter(Boolean)

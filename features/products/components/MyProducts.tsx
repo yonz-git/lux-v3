@@ -407,7 +407,7 @@ function CategoryGroup({
             <EmptyBox
               compact
               action={
-                <Button size="md" onClick={onAdd}>
+                <Button size="sm" onClick={onAdd}>
                   Add product
                 </Button>
               }

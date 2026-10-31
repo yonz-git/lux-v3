@@ -622,10 +622,10 @@ function ConfirmView({
           {/* the tray's own primary action. Disabled until the question is
               answered, for the same reason Continue is on every step: there is
               no group to file the product under until it is. */}
-          {/* the indigo primary at `size="md"`, matching the empty group's
-              `Add product` (asked for directly 31 Oct 2026) */}
+          {/* the indigo primary at `size="sm"`, the same `Add product` as the
+              verify stage's toggle (asked for directly 31 Oct 2026) */}
           <Button
-            size="md"
+            size="sm"
             className={`${styles.trayAction} ${styles.trayActionSmall}`}
             disabled={!draft.duration}
             onClick={onAdd}

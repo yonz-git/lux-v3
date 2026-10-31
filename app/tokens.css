@@ -410,6 +410,9 @@
   --size-touch-target: 2.75rem; /* 44px */
   --size-control-sm: 2.25rem; /* 36px */
   --size-control-md: 3rem; /* 48px */
+  /* the segmented toggle's pill and `Button size="sm"`: one indigo `Add product` */
+  --size-button-sm: 2.625rem; /* 42px */
+  --space-button-sm-inline: 1.375rem; /* 22px */
   --size-control-lg: 3.875rem; /* 62px */
   /* the bar is 56 circles in 6 of padding and a 1px edge: 70 tall. Every
      `.screen` reservation reads these two, so they move together. */

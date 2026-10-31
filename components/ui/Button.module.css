@@ -94,6 +94,10 @@
   padding-inline: calc(var(--space-xl) + var(--border-width-hairline));
 }
 
+.button.sm:not(.secondary) {
+  padding-inline: var(--space-button-sm-inline);
+}
+
 .button:not(.secondary) :global(.edge-light)::before {
   display: none;
 }
@@ -170,6 +174,13 @@
 .md {
   min-height: var(--button-height, var(--size-control-md));
   padding: 0 var(--space-xl);
+}
+
+/* the segmented toggle's pill, so a lone `Add product` matches the one in
+   the tray's `Add product` / `Search again` */
+.sm {
+  min-height: var(--button-height, var(--size-button-sm));
+  padding: 0 var(--space-button-sm-inline);
 }
 
 /* the hover rim rides the outer edge: with no border the padding box IS the
