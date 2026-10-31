@@ -107,6 +107,8 @@
      notes above still quote the old values. */
   --color-bg-brand: #313560;
   --color-bg-brand-hover: #242750;
+  /* the routine card's dark teal base; the products hub's count badge too */
+  --color-bg-routine: #005461;
   /* ⚠️ A DIRECT VALUE, NOT `var(--color-blue-50)`. Changed to #dbeded on
      22 Aug 2026. It pairs with --color-bg-bubble-user (#cadfdf) on the same
      hue — both G == B — differing only in lightness, so the two are held the

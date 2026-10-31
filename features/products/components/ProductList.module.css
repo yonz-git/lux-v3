@@ -167,12 +167,11 @@
 .empty.emptyCompact {
   padding: var(--space-xl) 0; /* 20 */
   border-radius: var(--radius-md); /* 12 */
-  /* ⚠️ NO FILL, NO RIM — A WELL, 31 Oct 2026, asked for directly ("remove
-     this white bg and use the inner shadow property"): the group's own glass
-     shows through, pressed in by `--shadow-inset-well`. */
+  /* ⚠️ NO FILL, NO RIM — the group's own glass shows through, pressed in by
+     the frosted-row inner shadow (asked for directly 31 Oct 2026). */
   border-color: transparent;
   background: none;
-  box-shadow: var(--shadow-inset-well);
+  box-shadow: var(--shadow-frosted-row);
   -webkit-backdrop-filter: none;
   backdrop-filter: none;
 }

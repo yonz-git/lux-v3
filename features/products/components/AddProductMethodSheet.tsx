@@ -16,7 +16,7 @@ import { ProductThumb } from "./ProductThumb";
 import { useInvestigation } from "@/lib/store/InvestigationProvider";
 import { useSnackbar } from "@/components/layout/Snackbar";
 import { DROP_EXIT_MS, useDialogPresence, useHeldWhileClosing } from "@/lib/useModalDialog";
-import { SearchIcon, CameraIcon, ChevronRightIcon, CloseIcon, PlusIcon } from "@/components/ui/icons";
+import { SearchIcon, CameraIcon, ChevronRightIcon, CloseIcon } from "@/components/ui/icons";
 import {
   BUCKET_LIST_TITLE,
   DURATIONS,
@@ -622,12 +622,10 @@ function ConfirmView({
           {/* the tray's own primary action. Disabled until the question is
               answered, for the same reason Continue is on every step: there is
               no group to file the product under until it is. */}
-          {/* ⚠️ NOT IN FIGMA — the small secondary pill, asked for directly
-              13 Sep 2026; it was the full primary `Button` */}
+          {/* the indigo primary at `size="md"`, matching the empty group's
+              `Add product` (asked for directly 31 Oct 2026) */}
           <Button
-            variant="secondary"
             size="md"
-            icon={<PlusIcon />}
             className={`${styles.trayAction} ${styles.trayActionSmall}`}
             disabled={!draft.duration}
             onClick={onAdd}

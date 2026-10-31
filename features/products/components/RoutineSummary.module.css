@@ -42,7 +42,7 @@
     radial-gradient(110% 90% at 0 35%, #567e88, #0000 60%),
     radial-gradient(90% 80% at 90% 105%, #60a8ba52, #0000 65%),
     radial-gradient(70% 60% at 80% -10%, #37617547, #0000 70%),
-    #005461;
+    var(--color-bg-routine);
 }
 
 @media (prefers-reduced-transparency: reduce) {
@@ -54,7 +54,7 @@
       radial-gradient(110% 90% at 0 35%, #567e88, #0000 60%),
       radial-gradient(90% 80% at 90% 105%, #60a8ba52, #0000 65%),
       radial-gradient(70% 60% at 80% -10%, #37617547, #0000 70%),
-      #005461;
+      var(--color-bg-routine);
   }
 }
 

@@ -249,6 +249,7 @@ export function MyProducts() {
                  the store minus that product, and from then on the list is
                  theirs — including when they empty it. */
                 onRemove={(id) => removeProduct(id)}
+                onAdd={() => setSheetOpen(true)}
               />
             </li>
           ))}
@@ -308,10 +309,12 @@ function CategoryGroup({
   bucket,
   products,
   onRemove,
+  onAdd,
 }: {
   bucket: BucketId;
   products: SavedProduct[];
   onRemove: (id: string) => void;
+  onAdd: () => void;
 }) {
   const [open, setOpen] = useState(false);
   const panelId = `bucket-${bucket}`;
@@ -401,7 +404,16 @@ function CategoryGroup({
       <Collapse open={open}>
         <div id={panelId} className={styles.panel}>
           {n === 0 ? (
-            <EmptyBox compact>No products in this list yet</EmptyBox>
+            <EmptyBox
+              compact
+              action={
+                <Button size="md" onClick={onAdd}>
+                  Add product
+                </Button>
+              }
+            >
+              No products in this list yet
+            </EmptyBox>
           ) : (
             <ul className={styles.stack}>
               {products.map((p) => (

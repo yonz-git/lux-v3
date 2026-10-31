@@ -253,9 +253,9 @@
   height: calc(28px * 0.9);
   padding: 0 var(--space-xs);
   border-radius: var(--radius-full);
-  /* the skin profile card's answer pill (SkinProfileTiles.module.css
-     `.tileValue`): `bg/brand` solid, `text/on-brand` white */
-  background: var(--color-bg-brand);
+  /* the routine card's dark teal, so the counts read as part of the summary
+     above (asked for directly 31 Oct 2026); white ink */
+  background: var(--color-bg-routine);
   color: var(--color-text-on-brand);
 }
 
@@ -347,5 +347,53 @@
     background: var(--color-panel);
     -webkit-backdrop-filter: none;
     backdrop-filter: none;
+  }
+}
+
+/* ⚠️ BELOW DESKTOP THE DECK MOVES TO THE SECOND LINE — 31 Oct 2026, asked
+   for directly. Beside the name, the 66 deck plus count and chevron left
+   `Long-term products` 138 at 375, so it wrapped to three lines and the weeks
+   pill ran under the thumbs. Here the name takes the whole first line up to
+   the count, and the deck sits right-aligned opposite the pill. `.copy`
+   dissolves (`display: contents`) so its two children join the grid. */
+@media (max-width: 1023.98px) {
+  .category {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) auto auto;
+    grid-template-areas:
+      "name count chevron"
+      "meta meta  meta";
+    align-items: center;
+    column-gap: var(--space-md);
+    row-gap: var(--space-sm);
+  }
+
+  .copy {
+    display: contents;
+  }
+
+  .categoryName {
+    grid-area: name;
+  }
+
+  /* the pill and the deck share one full-width cell, so the deck's width
+     never widens the count and chevron columns above it */
+  .window {
+    grid-area: meta;
+    justify-self: start;
+    margin-top: 0;
+  }
+
+  .preview {
+    grid-area: meta;
+    justify-self: end;
+  }
+
+  .count {
+    grid-area: count;
+  }
+
+  .chevron {
+    grid-area: chevron;
   }
 }

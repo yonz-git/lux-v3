@@ -69,7 +69,7 @@ export default function SegmentedToggle({
           type="button"
           role={actions ? undefined : "tab"}
           aria-selected={actions ? undefined : selectedIndex === i}
-          className={`${s.segment} ${selectedIndex === i ? s.selected : ""}`}
+          className={`${s.segment} ${selectedIndex === i ? s.selected : ""} t-button-md`}
           disabled={actions ? disabled?.[i] : undefined}
           onClick={() => onChange?.(i)}
         >

@@ -439,11 +439,10 @@
   align-self: center;
 }
 
-/* ⚠️ NOT IN FIGMA — `Add product` on the duration stage is the secondary
-   `Button` at `size="md"` (48) with a plus, hugging its label and centred at
-   both breakpoints: step 1's `Take a photo` recipe, asked for directly 13 Sep
-   2026. `button.` + two classes outranks the shared rule above whatever the
-   bundle order; the height and padding are `Button`'s own now. */
+/* `Add product` on the duration stage is the primary `Button` at
+   `size="md"` (48), hugging its label and centred at both breakpoints.
+   `button.` + two classes outranks the shared rule above whatever the bundle
+   order; the height and padding are `Button`'s own. */
 button.trayAction.trayActionSmall {
   align-self: center;
 }
