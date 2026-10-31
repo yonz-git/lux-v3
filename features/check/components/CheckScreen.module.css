@@ -124,7 +124,7 @@
 
 @media (min-width: 1024px) {
   .heroChat {
-    gap: 23px;
+    gap: 1.4375rem;
   }
 
   /* ⚠️ THE CTA's WIDTH IS NOW THE CEILING, NOT THE WIDTH — changed 13 Sep 2026,
@@ -142,8 +142,7 @@
 /* + the 16 gap = the comp's 48. Capped at the nav pill's 380 on mobile —
    see `--width-action-mobile` in globals.css. */
 .cta {
-  width: 100%;
-  max-width: var(--width-action-mobile);
+  /* width is `Button`'s `width="action"` (31 Oct 2026) */
   margin-top: var(--space-3xl); /* 32 */
 }
 
@@ -168,9 +167,9 @@
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: 13px; /* Welcome's, off the scale there too */
+  gap: 0.8125rem; /* Welcome's, off the scale there too */
   width: 100%;
-  margin-top: clamp(0px, 17vh - var(--space-4xl), 123px);
+  margin-top: clamp(0px, 17vh - var(--space-4xl), 7.6875rem);
   margin-bottom: calc(var(--line-height-3xs) - var(--line-height-xs)); /* -6 */
 }
 
@@ -191,18 +190,14 @@
 
 @media (min-width: 1024px) {
   .actions {
-    margin-top: calc(100px - var(--line-height-md)); /* 72 */
+    margin-top: calc(6.25rem - var(--line-height-md)); /* 72 */
   }
 }
 
 /* ⚠️ RESOLVED. This used to read "376 on desktop, not the 280 `Progress — empty`
    uses ... worth resolving in Figma", and it has been: every primary action in
-   the app is now `--width-action`, which is this 376. See globals.css. */
-@media (min-width: 1024px) {
-  .cta {
-    width: var(--width-action);
-  }
-}
+   the app is now `--width-action`, which is this 376 — and as of 31 Oct 2026
+   it is `Button`'s `width="action"`, not a rule here. */
 
 /* `link · View previous checks` — Body 3 in text/brand, centred, no underline
    until it is interacted with. A text link is right here: it is the secondary

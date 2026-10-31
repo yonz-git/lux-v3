@@ -115,12 +115,12 @@
   color: var(--color-icon-primary, var(--color-text-primary));
 }
 
-/* ---- VidGen demos --------------------------------------------------------- */
+/* ---- demos --------------------------------------------------------- */
 
 .hero {
   display: flex;
   flex-direction: column;
-  gap: 10px; /* the reference's kicker-to-headline gap */
+  gap: 0.625rem; /* the reference's kicker-to-headline gap */
   padding: var(--space-gutter);
   border-radius: var(--radius-panel);
 }
@@ -177,7 +177,7 @@
 .panelLabel {
   display: flex;
   align-items: center;
-  gap: 11px; /* the reference's icon-to-label gap */
+  gap: 0.6875rem; /* the reference's icon-to-label gap */
 }
 
 .panelLabel svg {

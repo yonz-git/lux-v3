@@ -442,7 +442,7 @@ export const Story2: React.FC = () => {
             Start analysis
           </div>
           {/* the hover's specular rim: two 1.5px streaks circling the pill, one turn
-              every 4.5s (vidgen.css lux-specular-orbit), fading in with the hover */}
+              every 4.5s (globals.css lux-specular-orbit), fading in with the hover */}
           <div
             style={{
               position: "absolute",

@@ -1,5 +1,5 @@
-/* ⚠️ lux-v3, 1 Oct 2026 — A DATA CARD IS VIDGEN'S PANEL. The frost box inside
-   the AI Assistant sheet (`.vg-panel` in app/vidgen.css): `--color-panel`
+/* ⚠️ lux-v3, 1 Oct 2026 — A DATA CARD IS THE REFERENCE'S PANEL. The frost box inside
+   the AI Assistant sheet (`.panel` in app/globals.css): `--color-panel`
    (#f4feff @30%), a 1px panel edge, a white inset rim, 12 blur, radius 28,
    24 padding (32 on desktop — the reference's ~30). The sage `surface/data`
    card described below is history; the ink stays the app's dark ink.

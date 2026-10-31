@@ -19,7 +19,7 @@
     calc(18px - var(--border-width-hairline));
   text-align: left;
 
-  /* lux-v3: the 30% panel at the score cards' 24 radius (app/vidgen.css) */
+  /* lux-v3: the 30% panel at the score cards' 24 radius (app/globals.css) */
   border-radius: var(--radius-2xl); /* 24 */
   border: var(--border-width-hairline) solid var(--color-border-panel);
   background: var(--color-panel);
@@ -60,7 +60,7 @@
    sharing would mean a component whose only job is a background colour. */
 .pill {
   flex: none;
-  padding: 5px 14px;
+  padding: 0.3125rem 0.875rem;
   border-radius: var(--radius-full);
   color: var(--color-text-on-brand);
   white-space: nowrap;
@@ -101,15 +101,8 @@
 }
 
 .emptyCta {
-  width: 100%;
-  max-width: var(--width-action-mobile); /* the nav pill's 380 */
+  /* width is `Button`'s `width="action"` (31 Oct 2026) */
   margin-top: var(--space-3xl); /* + the 16 gap = 48 */
-}
-
-@media (min-width: 1024px) {
-  .emptyCta {
-    width: var(--width-action);
-  }
 }
 
 @media (prefers-reduced-transparency: reduce) {

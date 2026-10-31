@@ -1,0 +1,16 @@
+/* `Edit` and `Save` share one grid cell and crossfade, so the pill keeps one
+   width and the swap does not snap. */
+.swap {
+  display: inline-grid;
+  justify-items: center;
+}
+
+.swap > span {
+  grid-area: 1 / 1;
+  opacity: 0;
+  transition: opacity var(--duration-fade) var(--ease-in-out);
+}
+
+.swap > span[data-on] {
+  opacity: 1;
+}

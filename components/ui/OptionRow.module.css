@@ -25,7 +25,7 @@
      and min-height defines the box — the row is centred, so it renders
      identically and stays exactly 56 with the border inside. */
   min-height: 56px;
-  padding: 0 18px 0 20px;
+  padding: 0 1.125rem 0 1.25rem;
   text-align: left;
 
   border-radius: var(--radius-lg);
@@ -53,7 +53,13 @@
   -webkit-backdrop-filter: blur(var(--blur-card));
   backdrop-filter: blur(var(--blur-card));
 
-  transition: border-color var(--duration-base) var(--ease-standard);
+  /* ⚠️ HOVER LIGHTENS THE GLASS — 31 Oct 2026, asked for directly ("smooth
+     lightening up hover effect"). The fill eases to the selected row's
+     glass-strong on the house fade and ease in-out, so it brightens rather
+     than snaps. */
+  transition:
+    border-color var(--duration-base) var(--ease-standard),
+    background-color var(--duration-fade) var(--ease-in-out);
 }
 
 .row[data-selected="true"] {
@@ -63,6 +69,7 @@
 
 .row:hover[data-selected="false"] {
   border-color: var(--color-border-glass);
+  background-color: var(--color-glass-strong);
 }
 
 /* a tap fires :hover on a touch device and it STAYS fired until something else
@@ -72,6 +79,7 @@
 @media (hover: none) {
   .row:hover[data-selected="false"] {
     border-color: transparent;
+    background-color: var(--color-glass);
   }
 }
 
@@ -84,7 +92,7 @@
      (Medium 16/24). */
   .label {
     font-size: var(--font-size-sm);
-    line-height: 24px;
+    line-height: 1.5; /* 24 on 16 */
   }
 
   /* ⚠️ AND THAT MAKES THE ROW 58, NOT 56. design.md and the component notes both

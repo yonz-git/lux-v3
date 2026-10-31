@@ -1,10 +1,10 @@
 /**
- * The lux-v3 icon set — VIDGEN'S GLYPHS, 1 Oct 2026.
+ * The lux-v3 icon set — THE REFERENCE GLYPHS, 1 Oct 2026.
  *
- * Every path below that has a VidGen counterpart is copied from
+ * Every path below that has a reference counterpart is copied from
  * ~/Claude/vidgen/index.html or ~/Claude/vidgen-studio/index.html with its own
  * viewBox, so the drawing is the reference's and not a redraw by eye. The few
- * LUX needs that VidGen never draws (search, the success tick, the note pencil,
+ * LUX needs that the reference never draws (search, the success tick, the note pencil,
  * the four nav marks) are kept and drawn to the same weight.
  *
  * ⚠️ ONE STROKE AT EVERY SIZE. Each line uses `vectorEffect="non-scaling-stroke"`
@@ -14,7 +14,7 @@
  *
  * ⚠️ NO `width` / `height` HERE. Size comes from `:where(svg[data-lux-icon])`
  * in globals.css; a glyph whose reference size is not `md` (24) sets
- * `--icon-default` inline — the size it is drawn at in VidGen — and a caller's
+ * `--icon-default` inline — the size it is drawn at in the reference — and a caller's
  * `--icon-size` or any class still overrides it (non-negotiable 14).
  */
 
@@ -34,12 +34,12 @@ function Icon({
 }: {
   box: string;
   /**
-   * Which size family the glyph belongs to — `vidgen.css` scales by it:
+   * Which size family the glyph belongs to — `globals.css` scales by it:
    * `close` and `chevron` draw at 60% of their box, `glyph` at 85%, and an
    * unset kind (plus, minus, arrows, the nav set) at full size.
    */
   kind?: "close" | "chevron" | "glyph";
-  /** the size VidGen draws it at; omitted = `--size-icon-md` (24) */
+  /** the size the reference draws it at; omitted = `--size-icon-md` (24) */
   size?: number;
   className?: string;
   fill?: boolean;
@@ -77,16 +77,22 @@ const ns = { vectorEffect: "non-scaling-stroke" as const };
    NAVIGATION AND DIRECTION
    --------------------------------------------------------------------------- */
 
-/** The back button's arrow — VidGen Welcome `.back`. */
+/**
+ * The back button's arrow — the reference Welcome `.back`.
+ * ⚠️ THE BOX STARTS AT 0.25, NOT 0 — 31 Oct 2026, from an 8× capture: the ink
+ * runs 1.5 → 13 across a 14 box, so its middle sat at 7.25 and the arrow drew
+ * 0.25 right of its button's centre. Shifting the box puts the ink's middle
+ * on the box's.
+ */
 export function ArrowLeftIcon({ className }: IconProps) {
   return (
-    <Icon box="0 0 14 12" size={16} className={className}>
+    <Icon box="0.25 0 14 12" size={16} className={className}>
       <path d="M13 6H1.5M6 1.5 1.5 6 6 10.5" {...ns} />
     </Icon>
   );
 }
 
-/** The slide-to-start knob's arrow — VidGen Welcome `.knob`. */
+/** The slide-to-start knob's arrow — the reference Welcome `.knob`. */
 export function ArrowRightIcon({ className }: IconProps) {
   return (
     <Icon box="0 0 14 12" size={16} className={className}>
@@ -105,10 +111,13 @@ export function DoubleChevronIcon({ className }: IconProps) {
   );
 }
 
-/* The chevrons are the Storyboard's `.nav` pair, extended to a down twin. */
+/* The chevrons are the Storyboard's `.nav` pair, extended to a down twin.
+   ⚠️ ← AND → SIT 0.1 OFF THEIR BOX'S ORIGIN — 31 Oct 2026, from an 8× capture:
+   the ‹ ink spans 1.2 → 4 and the › 1 → 3.8 of a 5 box, so each drew ~0.3 off
+   its button's centre. Shifting the box puts the ink's middle on it. */
 export function ChevronLeftIcon({ className }: IconProps) {
   return (
-    <Icon kind="chevron" box="0 0 5 7" size={16} className={className}>
+    <Icon kind="chevron" box="0.1 0 5 7" size={16} className={className}>
       <path d="M4 .8 1.2 3.5 4 6.2" {...ns} />
     </Icon>
   );
@@ -116,7 +125,7 @@ export function ChevronLeftIcon({ className }: IconProps) {
 
 export function ChevronRightIcon({ className }: IconProps) {
   return (
-    <Icon kind="chevron" box="0 0 5 7" size={16} className={className}>
+    <Icon kind="chevron" box="-0.1 0 5 7" size={16} className={className}>
       <path d="M1 .8l2.8 2.7L1 6.2" {...ns} />
     </Icon>
   );
@@ -130,7 +139,7 @@ export function ChevronDownIcon({ className }: IconProps) {
   );
 }
 
-/** The hamburger — VidGen Assistant. */
+/** The hamburger — the reference Assistant. */
 export function MenuIcon({ className }: IconProps) {
   return (
     <Icon kind="glyph" box="0 0 20 14" size={20} className={className}>
@@ -168,7 +177,28 @@ export function CloseIcon({ className }: IconProps) {
   );
 }
 
-/** The bell — VidGen Assistant's notifications button. */
+/**
+ * The small dismiss's ✕ — the `Other` field's and `ConfirmField`'s, and a
+ * tray's corner. ⚠️ NOT A REFERENCE GLYPH: the ✕ of a circled ✕ supplied
+ * directly 31 Oct 2026, its ring dropped the same day ("remove the circle
+ * border"); the button's glass circle is the ring now. A filled shape on the
+ * box's centre, so it centres in its button by construction, where the
+ * stroked `CloseIcon` sat off the pixel grid under its 0.6 scale.
+ * ⚠️ THE BOX IS CROPPED TO 512 ROUND THE ✕ AND DRAWN AT 12 — 31 Oct 2026. It
+ * was the full 1024 box drawn at 22.9 so the ✕ kept its size, which
+ * overflowed the 18 inside a 20 disc and started on a fractional pixel: an
+ * 8× capture showed the ✕ ~0.8 low and right. 12 is even, so in an 18
+ * content box it sits 3 in on every side, on whole pixels; no caller sizes it.
+ */
+export function CloseSmallIcon({ className }: IconProps) {
+  return (
+    <Icon box="256 256 512 512" size={12} fill className={className}>
+      <path d="m466.8 512l-90.5-90.5a32 32 0 0 1 45.2-45.2l90.5 90.5l90.5-90.5a32 32 0 1 1 45.2 45.2L557.2 512l90.5 90.5a32 32 0 1 1-45.2 45.2L512 557.2l-90.5 90.5a32 32 0 0 1-45.2-45.2z" />
+    </Icon>
+  );
+}
+
+/** The bell — the reference Assistant's notifications button. */
 export function BellIcon({ className }: IconProps) {
   return (
     <Icon kind="glyph" box="0 0 22 22" size={22} className={className}>
@@ -218,6 +248,20 @@ export function TrashIcon({ className }: IconProps) {
   );
 }
 
+/**
+ * A counter-clockwise arrow — reset, step 1's face card. ⚠️ NOT A REFERENCE
+ * GLYPH (the references never reset anything). The path was supplied
+ * directly 31 Oct 2026, replacing a Lucide `rotate-ccw`. ⚠️ IT KEEPS THE
+ * SUPPLIED 2 STROKE, asked for directly — the one glyph off the set's 1.4.
+ */
+export function ResetIcon({ className }: IconProps) {
+  return (
+    <Icon kind="glyph" box="0 0 24 24" size={20} className={className}>
+      <path d="M4.252 4v5H9M5.07 8a8 8 0 1 1-.818 6" strokeWidth={2} {...ns} />
+    </Icon>
+  );
+}
+
 /** The four corner marks before the Storyboard's `Image` label. */
 export function FrameIcon({ className }: IconProps) {
   return (
@@ -228,7 +272,7 @@ export function FrameIcon({ className }: IconProps) {
 }
 
 /**
- * A pencil, for the check-in's "Add a note". ⚠️ NOT A VIDGEN GLYPH — the
+ * A pencil, for the check-in's "Add a note". ⚠️ NOT A REFERENCE GLYPH — the
  * references have no pencil (`ExpandIcon` is what they label Edit, and a
  * diagonal arrow does not say "write"). Drawn to the set's weight.
  */
@@ -241,7 +285,7 @@ export function NoteIcon({ className }: IconProps) {
   );
 }
 
-/** ⚠️ NOT A VIDGEN GLYPH — the references have no search. */
+/** ⚠️ NOT A REFERENCE GLYPH — the references have no search. */
 export function SearchIcon({ className }: IconProps) {
   return (
     <Icon kind="glyph" box="0 0 24 24" size={20} className={className}>
@@ -352,7 +396,7 @@ export function InfoIcon({ className }: IconProps) {
 }
 
 /* ---------------------------------------------------------------------------
-   LUX-ONLY GLYPHS — no VidGen counterpart, kept and re-weighted
+   LUX-ONLY GLYPHS — no reference counterpart, kept and re-weighted
    --------------------------------------------------------------------------- */
 
 /** The success tick (product added). */

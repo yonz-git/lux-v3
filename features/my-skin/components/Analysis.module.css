@@ -83,7 +83,7 @@
 .confirmChips {
   display: flex;
   flex-wrap: wrap;
-  gap: 10px; /* the Chip grid gap, off the spacing scale in Figma too */
+  gap: 0.625rem; /* the Chip grid gap, off the spacing scale in Figma too */
 }
 
 /* ---- the hypotheses ---------------------------------------------------- */
@@ -102,7 +102,7 @@
   flex-direction: column;
   gap: var(--space-sm);
   margin-bottom: var(--space-2xl);
-  padding: var(--space-lg) 18px;
+  padding: var(--space-lg) 1.125rem;
 
   border-radius: var(--radius-lg);
   border-left: 3px solid var(--color-feedback-success);

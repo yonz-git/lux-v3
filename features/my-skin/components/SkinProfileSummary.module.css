@@ -90,17 +90,28 @@
    top. No border any more, so the padding is the plain 20 (24 on desktop). */
 .block {
   /* lux-v3: the panel's padding and radius (DataCard's), as the surface is
-     the panel now (`canvas-card`, app/vidgen.css) */
+     the panel now (`canvas-card`, app/globals.css) */
   padding: var(--space-gutter); /* 24 */
   border-radius: var(--radius-panel); /* 28 */
 }
+
+/* the overline and its `Edit` / `Done` at the far end */
+.blockHead {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-md);
+  margin: 0 0 var(--space-lg); /* 16 — what the overline carried alone */
+}
+
+/* the location editor's own spacing is `LocationEditor.module.css` (31 Oct 2026) */
 
 /* `t-overline` at its own size, as every card overline in lux-v3 */
 .blockLabel {
   /* ⚠️ 16 UNDER, NOT 12 — asked for directly 15 Sep 2026 ("more bottom
      padding, match the gallery card"): `DataCard`'s own 16 gap, which is what
      PROGRESS's gallery and face overlines sit on */
-  margin: 0 0 var(--space-lg); /* 16 */
+  margin: 0;
   color: var(--color-text-muted);
 }
 
@@ -316,15 +327,8 @@
 /* full width of the 392 column on mobile; 280 on desktop rather than spanning
    the whole 640 block — the same pair `ProgressScreen`'s `.emptyCta` uses */
 .emptyCta {
-  width: 100%;
-  max-width: var(--width-action-mobile); /* the nav pill's 380 */
+  /* width is `Button`'s `width="action"` (31 Oct 2026) */
   margin-top: var(--space-3xl); /* 32 */
-}
-
-@media (min-width: 1024px) {
-  .emptyCta {
-    width: var(--width-action);
-  }
 }
 
 /* ---------------------------------------------------------------------------
@@ -426,3 +430,5 @@
     text-align: center;
   }
 }
+
+/* the `Edit` / `Save` crossfade is `EditToggle.module.css` (31 Oct 2026) */

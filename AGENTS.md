@@ -1,1237 +1,216 @@
-<!-- BEGIN:nextjs-agent-rules -->
+Next.js 16. Check `node_modules/next/dist/docs/` before using a Next API.
 
-# This is NOT the Next.js you know
+# LUX — rules
 
-This version has breaking changes — APIs, conventions, and file structure may all differ from your training data. Read the relevant guide in `node_modules/next/dist/docs/` (resolved from this file's directory; in monorepos the `next` package may not be visible from the repo root) before writing any code. Heed deprecation notices.
+LUX: AI-guided skincare investigation web app. This repo is `lux-v3`, the redesign. Never touch `~/Claude/LUX/lux-v2`.
 
-This block is written and re-added by `next dev` — verify at `node_modules/next/dist/server/lib/generate-agent-files.js`. Removing it from a diff only re-creates the uncommitted change; committing it with your work keeps the tree clean.
+## Source of truth
 
-<!-- END:nextjs-agent-rules -->
+- Design system lives in code: `app/tokens.css` (every value, declared once), `app/globals.css` (every rule), `components/ui/`, `components/layout/`.
+- `/styleguide` renders it live.
+- Figma is retired. Don't reference it.
+- New visual decision = token or component change. Never a one-off value on a screen.
+- Visual refs: `~/Claude/vidgen/index.html`, `~/Claude/vidgen-studio/index.html`. Inventory: `docs/component-inventory.md`.
 
-# LUX — working rules for this repo
+## Read first
 
-LUX is an AI-guided skincare **investigation** web app. The design system —
-tokens, components, type, colour — is the source of truth and it lives IN THIS
-REPO: `app/tokens.css`, the overrides on `:root` in `app/globals.css`, and the
-components in `components/ui/` and `components/layout/`. `/styleguide` renders
-all of it live.
+- Editing a file → its doc comment.
+- Building or restyling a screen → `docs/design.md`.
+- Changing a section's flow, surfaces or copy → `docs/decisions.md`.
+- Copy about a product's effect on skin, or the investigation flow → `docs/product-brief.md`.
 
-⚠️ **FIGMA WAS RETIRED ON 1 Oct 2026, asked for directly.** Until then the file
-`wIftBhzkn8E4wjZwgdH71n` led on pixels and the code caught up; now nothing sits
-upstream of the code. The rule that replaced "match Figma to the pixel": **a new
-visual decision is a TOKEN or a COMPONENT change, never a one-off value on a
-screen.** If a screen needs a value the system does not have, add it to the
-system first and use it from there. Older comments that say `NOT IN FIGMA`,
-"raise this in Figma" or quote a Figma node id are history — they explain why
-something is the way it is, and they are NOT a to-do list. Do not write new
-ones. The Figma-side docs are in `docs/archive/`.
-
-⚠️ **THIS REPO IS `lux-v3`, THE VIDGEN REDESIGN — FORKED FROM `lux-v2` ON 1 Oct
-2026.** `~/Claude/LUX/lux-v2` is the original prototype and stays as it was;
-nothing here should be pushed to its remote (this clone has none). The visual
-source is the two VidGen references at `~/Claude/vidgen/index.html` and
-`~/Claude/vidgen-studio/index.html`: their icons, buttons, sheet and panel
-recipes, gradients, Urbanist, type sizes and spacing replace LUX's.
-`docs/vidgen-components.md` is the inventory of what they cover and what still
-has to be designed. Until a section is restyled, the values in this file
-describe the lux-v2 look it was forked with.
-
-## Where to find the reasoning
-
-This file is the RULES. It deliberately does not carry the reasoning behind
-them, because that lives in three better places:
-
-1. **The component's own doc comment.** Every screen and component opens with a
-   30–50 line block explaining where it came from, its measurements and every
-   decided-here change. That is the authority for the file you are editing, and
-   it cannot drift from the code it sits on. **Read it before you edit.**
-2. **`docs/decisions.md`** — the cross-cutting record: why PRODUCTS went from
-   twelve screens to one, why CHECK's basket stopped being modal, the contrast
-   measurements behind SURFACE SYSTEM B, and the list of things faked here
-   because the design system has no component for them.
-3. **`docs/design.md`** — THE DESIGN SYSTEM TO BUILD FROM: the rules, the
-   type ramp, colour, glass, spacing roles, sizes, icons, components and
-   screen patterns. **Read it before building or restyling a screen.**
-   Its YAML front matter holds every token; **`docs/design.html`** is its
-   rendered mirror (open it in a browser) and the two change together.
-   **`/styleguide`** renders the real components live — the place to SEE them
-   before changing them.
-
-4. **`docs/product-brief.md`** — the 11 Aug product brief. It specifies the
-   controlled vocabulary the product may and may not use, the safety branch and
-   the analysis flow. **§§ 05–12 are built now** (`features/my-skin/analysis.ts`
-   and the three routes under `/investigation`); the safety branch deliberately
-   is not — see below. Read it before adding user-facing copy about a product's
-   effect on skin, or before working on the investigation flow.
-
-**Read the matching section of `docs/decisions.md` before you change the flow,
-the surfaces or the copy of a nav section.** Those entries record decisions a
-comp will contradict, so "fixing" the code to match an old comp is exactly how
-they get undone. For ordinary work — a bug, a style fix, a new component — the doc
-comment is enough.
-
-## Where the code lives
-
-**One folder per nav section.** `features/<section>/` holds that section's
-screens AND its data module. The four folders are named for the four nav items.
-
-⚠️ **THERE IS NO FIFTH FOLDER ANY MORE, AND `features/chat/` IS THE REASON THE
-RULE IS WORDED THAT WAY.** It existed from 4 Sep 2026 — the standalone
-conversation panel from Figma `chat-page / mobile` (270:96), filed on its own
-because a screen belonging to no section should say so, under the standing
-terms "it gets a section or it gets deleted; it does not quietly become another
-section's". **On 7 Sep 2026 that resolved in favour of deleted:** the route
-`/chat` went first, which left the folder unreachable with nothing outside it
-importing it, and the folder followed.
-
-⚠️ **DELETING IT DID NOT TOUCH THE DAILY CHECK-IN, AND COULD NOT HAVE.** The
-shared chat chrome is `components/layout/ChatPanel.tsx` and always was;
-`CheckInPanel` reaches it directly and takes its glyphs from
-`components/ui/icons`. Nothing in the check-in chain ever imported
-`features/chat/` — verified per export before the delete, not assumed from the
-folder path. **Do not add a fifth section**: four folders, four nav items. See
-`docs/decisions.md`.
+## Code layout
 
 ```
-app/                 routes only — every page.tsx is a thin shell
-components/ui/       the design system: Button, SmallButton, Chip, OptionRow,
-                     Tag, TextField, ConfirmField, DateField, SearchField,
-                     ChatBubble, Sheet,
-                     Collapse, DataCard, Orb, CameraCapture, icons
-components/layout/   app chrome: BottomNav, HubScreen, ScreenHeader,
-                     RouteAnnouncer, Snackbar
-features/my-skin/    flow.ts + safety.ts + analysis.ts, the investigation steps,
-                     QuestionScreen, StepProgress, SelfieSheet, FaceDiagram, and
-                     the three analysis screens (EvidenceCheck, Analyzing,
-                     Findings + HypothesisCard, PriorityList, Disclosure)
-features/products/   products.ts, openBeautyFacts.ts, the two search hooks,
-                     the product list/card/details/art components, the add tray
-features/progress/   progress.ts + ProgressScreen, CheckIn, CheckInDetail,
-                     CheckInCalendar, CheckInPhotoArt, SymptomTrend, SkinProfile
-features/check/      check.ts + the check screens, CompatCard, ResultCards,
-                     CheckBasket, SkinProfileStrip
-lib/store/           answers.ts + InvestigationProvider.tsx
-lib/                 date.ts  demo.ts  pageTitles.ts  actives.ts
+app/                 routes only, thin page.tsx shells
+components/ui/       design system components + icons
+components/layout/   app chrome: BottomNav, HubScreen, ScreenHeader, RouteAnnouncer, Snackbar
+features/my-skin/    flow.ts, safety.ts, analysis.ts, profile.ts, steps, FaceDiagram
+features/products/   products.ts, search hooks, list/card/details, add tray
+features/progress/   progress.ts, ProgressScreen, check-in, calendar, trend
+features/check/      check.ts, check screens, CompatCard, ResultCards, CheckBasket
+lib/store/           answers.ts, persistence.ts, InvestigationProvider.tsx
+lib/                 date.ts, demo.ts, pageTitles.ts, actives.ts
 ```
 
-**The rule for placing a new file:** it goes in `features/<section>/` unless two
-different sections already use it. `components/ui/` is for things with no
-opinion about what they contain; `components/layout/` is for the frame around a
-screen. A component used by exactly one section is that section's, however
-generic it looks.
+- Four sections, four folders. No fifth.
+- New file goes in `features/<section>/` unless two sections use it.
+- `components/ui/`: no opinion on content. `components/layout/`: frame around a screen. Neither imports a feature.
+- Sections may import each other.
+- `features/<section>/*.ts` own data and derived values. Screens don't recompute.
+- `QuestionScreen`, `StepProgress` live in `my-skin` (they read `flow.ts`).
+- `lib/actives.ts` is shared by analysis and CHECK. CHECK's `SCORING` stays in `check.ts`.
+- `lib/pageTitles.ts` is the one shared module allowed to import a feature.
 
-Four placement facts that look like mistakes and are not:
-
-- **`QuestionScreen` and `StepProgress` live under `my-skin`, not `layout/`.**
-  They read `flow.ts`, so they can only ever wrap an investigation step.
-  `HubScreen` takes no flow dependency and stays in `layout/`.
-- **The store is not `my-skin`'s.** `Answers` carries slices owned by all four
-  sections and imports a type from each, so it sits in `lib/store/` beside the
-  provider that serves it.
-- **Sections may import each other, and two do.** CHECK reads PRODUCTS;
-  PRODUCTS reads `my-skin`'s `QuestionScreen` because step 5 is a flow step.
-  What must NOT happen is `components/ui/` or `components/layout/` importing a
-  feature — those are the layer underneath. `lib/pageTitles.ts` is the one
-  shared module that imports a feature, because it is a route registry.
-- **`features/<section>/*.ts`** (`flow.ts`, `safety.ts`, `analysis.ts`,
-  `products.ts`, `progress.ts`, `check.ts`) own the data and the derived values.
-  A screen states nothing it could compute from one of these.
-- **`lib/actives.ts` IS SHARED, AND ONLY BECAUSE TWO SECTIONS USE IT.** It was
-  `check.ts`'s until `my-skin`'s analysis needed the same ingredient
-  vocabulary — the names, what each does to skin, the INCI patterns, the
-  conflict pairs. CHECK's PENALTIES did not move: they stay in `check.ts` as
-  `SCORING`, where the analysis cannot reach them.
-
-## The route map
-
-Nineteen routes, all in a nav section. ⚠️ **It was eighteen between 7 Sep 2026
-and the skin-profile recap landing later the same day.** `/chat` —
-prototype-only and in no section — was deleted, along with the `features/chat/`
-folder behind it, taking the count from nineteen to eighteen; then
-`/investigation/profile` took it back to nineteen. The two are unrelated: one
-was a screen belonging to no section, the other belongs to `my-skin`.
-`features/my-skin/flow.ts` owns the step order, the 1-based track position, the
-Figma frame ids and each step's `isComplete` rule.
+## Routes
 
 | Route | Kind | Nav |
-| ----- | ---- | --- |
+| --- | --- | --- |
 | `/` | welcome | `none` |
-| `/investigation/start` | flow step 1/5 · also the `my-skin` landing | `my-skin` |
-| `/investigation/skin-type` | flow step 2/5 | `my-skin` |
-| `/investigation/conditions` | flow step 3/5 | `my-skin` |
-| `/investigation/timing` | flow step 4/5 — ⚠️ continues to `/investigation/profile`, not to step 5 | `my-skin` |
-| `/investigation/profile` | pushed view — ⚠️ NOT a step: the recap of steps 1–4 | `my-skin` |
-| `/investigation/products` | flow step 5/5 — ⚠️ the one flow screen lighting `products`, and no longer the only way through | `products` |
-| `/investigation/analysis` | pushed view — ⚠️ NOT a step: the retrospective analysis | `my-skin` |
-| `/products` | hub landing | `products` |
-| `/progress` | hub landing — **the default**, opens populated | `progress` |
-| `/progress/empty` | ⚠️ prototype-only empty state | `progress` |
-| `/progress/check-in` | pushed view — the daily check-in chat | `progress` |
-| `/progress/check-in/[date]` | pushed view — ⚠️ the app's ONE dynamic route | `progress` |
-| `/check` | hub landing — **the default**. ⚠️ Titled `Analysis`; the id and the route are still `check` | `check` |
-| `/check/no-profile` | ⚠️ prototype-only empty state | `check` |
-| `/check/new` | pushed view — build the check | `check` |
-| `/check/analyzing` | pushed view | `check` |
-| `/check/results` | pushed view | `check` |
-| `/check/history` | pushed view | `check` |
-| `/styleguide` | ⚠️ dev tool — the design system rendered live, not a screen | `none` |
+| `/investigation/start` | step 1/5 | `my-skin` |
+| `/investigation/skin-type` | step 2/5 | `my-skin` |
+| `/investigation/conditions` | step 3/5 | `my-skin` |
+| `/investigation/timing` | step 4/5 → `/investigation/profile` | `my-skin` |
+| `/investigation/profile` | pushed, recap of steps 1–4 | `my-skin` |
+| `/investigation/products` | step 5/5 | `products` |
+| `/investigation/analysis` | pushed, retrospective analysis | `my-skin` |
+| `/products` | hub | `products` |
+| `/progress` | hub, default, populated | `progress` |
+| `/progress/empty` | prototype empty state | `progress` |
+| `/progress/check-in` | pushed, check-in chat | `progress` |
+| `/progress/check-in/[date]` | pushed, only dynamic route | `progress` |
+| `/check` | hub, default, titled `Analysis` | `check` |
+| `/check/no-profile` | prototype empty state | `check` |
+| `/check/new` | pushed, build a check | `check` |
+| `/check/analyzing` | pushed | `check` |
+| `/check/results` | pushed | `check` |
+| `/check/history` | pushed | `check` |
+| `/styleguide` | dev tool | `none` |
 
-**⚠️ HUB vs FLOW — the header tells you which, and `HubScreen` vs
-`QuestionScreen` encodes it.** A screen is an investigation step if and only if
-it carries a progress track. ⚠️ It used to be "a track AND `Save & exit`";
-`Save & exit` was removed on 4 Oct 2026, asked for directly, and the rest of
-this file's mentions of it describe what it was. Hub screens carry neither,
-and a hub LANDING has no back chevron either (nothing to go back to). A pushed
-view keeps the back chevron and still has no track. Nothing outside
-`/investigation/*` is a flow step — CHECK and PROGRESS have no `StepId`.
+- Flow step = has a progress track. Hub landing: no track, no back. Pushed view: back, no track.
+- `TOTAL_STEPS` = 5. Profile and analysis are not steps. Don't add them to `STEPS`.
+- Nav id `check` is labelled `Analysis`. Don't rename the id.
+- Overlays (`Sheet`, not routes): selfie capture, products add tray, progress photo gallery.
+- Daily check-in: modal on `/progress` and route `/progress/check-in`. Both render `CheckInPanel`. Don't fork. Scrim doesn't close it.
+- Dialogs use Radix Dialog + `useDialogFocus` (`lib/useModalDialog.ts`).
 
-**Three overlays are not routes:** the selfie capture off step 1, the products
-add tray and PROGRESS's photo gallery. All three are `Sheet` overlays,
-deliberately. See `docs/decisions.md`. The gallery arrived 14 Sep 2026: it opens
-from the `Progress gallery` card's photos (the card that replaced PROGRESS's
-`Your skin profile` card the same day), and each of its tiles links to a
-check-in record, which is a route
-(`features/progress/components/PhotoGallery.tsx`).
+### my-skin
 
-⚠️ **AND ONE MORE OVERLAY IS ALSO A ROUTE — THE DAILY CHECK-IN, FROM 6 Sep 2026.**
-`Check in today` on `/progress` no longer navigates: it opens the same
-conversation as a modal `ChatPanel` over the dashboard
-(`features/progress/components/CheckInOverlay.tsx`), and submitting it closes
-back onto the numbers it just changed. `/progress/check-in` still exists,
-unchanged, for deep links and for the analysis's "pause and check in" push.
-⚠️ **BOTH RENDER `CheckInPanel`** — the conversation is written once and the
-only thing that varies is the way out (`closeHref` + push, or `onClose` +
-close). Do not fork it. The focus trap, Escape, the scroll lock and hiding the
-page from assistive tech come from Radix Dialog (`@radix-ui/react-dialog`, 4 Oct
-2026), shared with `Sheet`, with `useDialogFocus` in `lib/useModalDialog.ts`
-restoring LUX's own focus landing and return; the scrim deliberately does NOT
-close this one, because the store holds no partial check-in.
+- Step 1 picks places one symptom at a time. `start` is `Partial<Record<Symptom, string[]>>`. Write via `withAreas`; read via `symptomsOf` / `areasOf`.
+- Typed `Other` is `answers.locationOther`.
+- Selfie shutter only captures, never deletes. Each capture writes a new id.
+- Safety: `Swelling` / `Rash` show `SafetyNotice`. It doesn't interrupt or gate Continue. Don't add a triage redirect. Rule in `safety.ts`.
+- Profile recap reads raw answers, not `skinProfile()`. It's `force-dynamic`. Copy in `profile.ts`. Labels name their subject.
+- A multi-select renders as a set (pills), never a comma list.
 
-⚠️ **THE SELFIE SHUTTER ONLY EVER CAPTURES — IT USED TO TOGGLE, AND ITS OWN
-LABEL ALREADY SAID OTHERWISE.** `SelfieSheet`'s shutter wrote `undefined` when a
-photo existed, so the second tap of a "retake" DELETED the capture and a third
-made a new one, while the control announced `Retake photo` and the helper said
-"tap the shutter again to retake". It survived on step 1, where the photo is
-optional; it was destructive from the recap, where `Update photo` opened the
-tray over a photo block that then vanished behind it. **A shutter is not a
-delete button.** ⚠️ **There is now no way to remove a capture** — there never
-was a labelled one, and if the product wants one it is an explicit
-`Remove photo` action, not a second meaning loaded onto the shutter.
-⚠️ **Each capture writes a NEW id**, never the literal `"captured"`: nothing
-compares the value, and the recap seeds the drawn photograph on it.
+### Analysis
 
-⚠️ **STEP 1 CARRIES A SAFETY NOTICE, AND THE BRIEF'S INTERRUPT IS DELIBERATELY
-NOT BUILT — read this before touching step 1.** The product brief requires the
-flow to INTERRUPT and show urgent-care guidance on nine clinical triggers
-(swelling of lips/tongue/throat, breathing difficulty, major eye involvement, a
-widespread rash, severe pain, extensive blistering, infection signs, rapidly
-worsening symptoms). What ships instead: ticking **`Swelling`** or **`Rash`** —
-the only two of those step 1 collects — reveals `SafetyNotice` under the chip
-grid, saying LUX cannot judge how serious a reaction is and to see a doctor or
-pharmacist if it is severe. **It does not interrupt the flow and does not gate
-`Continue`**, because asking the other seven triggers and then deciding whether
-the answers are serious is the app performing a triage it is not qualified to
-perform. `features/my-skin/safety.ts` owns the rule, the trigger set and the
-copy. ⚠️ **Do not "finish" this by adding a redirect to the existing
-condition** — the branch cannot fire honestly on two ambiguous chips, and
-reinstating it is a product decision about whether LUX triages at all. Two
-things stay open: no locale-appropriate emergency number, and
-`/progress/check-in` records worsening and escalates nothing. See
-"⚠️ SAFETY" in `docs/decisions.md`.
+- Model and every string in `analysis.ts`.
+- One route. The wait is a state. Don't split into a wizard.
+- No score, bar or percentage. Confidence is a word.
+- Refuses only on: no flare date, or nothing new + nothing readable. Don't add completeness gates.
+- `unclear` → `unresolved-timeline` gap with the confirmation strip, no `href`.
+- Reads `ownedProducts()`, not `answers.products`.
+- Analysis and CHECK must not converge.
 
-⚠️ **NEITHER IS `/investigation/profile`, AND IT IS THE SAME RULE.** It is the
-recap of what steps 1–4 collected, and its one action, `Add your products`,
-continues to step 5. No progress track and no `Save & exit`, so by the rule
-above it is not a step and `TOTAL_STEPS` is still 5. `features/my-skin/profile.ts` owns the
-derivation and every string on it.
+## State
 
-⚠️ **ONE BLOCK PER ANSWER, DRAWN AS WHAT THE ANSWER IS — it was a card of
-`label: value` rows for a few hours on 7 Sep 2026 and that is not what shipped.**
-Every answer below the card gets its own light block that says its own name.
-⚠️ **THE SAGE CARD IS EVERYTHING TRUE BETWEEN EPISODES, AND THE LIGHT BLOCKS
-ARE THE EPISODE — that is the screen's one split and the surface systems carry
-it.** In the card, under a `YOUR SKIN PROFILE` overline: skin type and
-tendencies as two labelled columns pushed to opposite edges, then **known skin
-conditions as a full-width row under them** (a row, not a third column — it has
-the longest label and its value can be a typed sentence). Values at **17px
-(`t-button`, the ramp's only declared 17 — never a font-size on a screen)**.
-⚠️ **Both multi-selects in the card were JOINED with commas until 16 Sep 2026;
-each member is its own pill now** — the card is `SkinProfileTiles` on every
-screen, and "2 conditions should be 2 pills" was asked for directly. No divider
-and no dates. ⚠️ **It carried both for
-about an hour on 7 Sep 2026** — a supplied comp gave it a `border/glass` rule
-with `Current: <symptoms> on <places>` and `Started <date> · Day <n>` under it —
-**and both were cut the same day, asked for directly.** ⚠️ **The overline was
-cut too and then asked back**: it repeats the h1 24px above it, which is what
-got "From your answers" deleted, and the word that earns it is **"Your"** — the
-h1 names the page, the overline names what is in the card. The gap under it is
-`DataCard`'s own 16, not the comp's looser one; the card's internal rhythm is
-the component's recipe. The card holds what is true BETWEEN
-episodes; everything about the episode is drawn as itself in the blocks below.
-⚠️ **The start date lives in the symptoms' state block**, under the status,
-because a date under a skin type is a date and a date under the state is the
-age of that state. ⚠️ **That block was `What you noticed` until 13 Sep 2026**,
-with the symptom pills in it; it was renamed `Current state` and the pills
-removed, asked for directly. ⚠️ **On 14 Sep 2026 the pills landed on the face
-diagram as callouts** — a pill per symptom at the face's edge with a line to
-each of its places, the pairing step 1 has kept since that day — **and the
-block became `Symptom state` / `Symptoms state`**, the noun following how many
-symptoms were reported (`COPY.currentLabel`), both asked for directly.
-⚠️ **The joined tendencies WERE the one exception to the set rule below** (the
-unrendered `SkinProfileStrip` still makes that trade); since 16 Sep 2026 there
-is none on screen.
+- Controls start empty. Nothing pre-selected.
+- Readouts (`/progress`, `/check`) open populated via `skinProfile()` in `lib/demo.ts`.
+- Continue is gated by the step's `isComplete` in `flow.ts`. `QuestionScreen` owns the button.
+- Read with `useInvestigation()`.
 
-A multi-select is a SET, never a sentence with commas in it. ⚠️ **No `Tag`s are left on the recap as of 14 Sep 2026**: the
-symptoms are the face's callouts and the other locations are chips inside the
-face card (below), so the tag list and its chip-dressed `.pill` class were
-deleted. The recap has exactly one control — `Update photo`, a `SmallButton`
-with the secondary gradient and 36 height. The location answer is
-**step 1's own face diagram in a read-only mode** — the coordinates ARE that
-answer, and "Cheeks (L), Chin / jaw" is the coordinates thrown away. ⚠️ **The
-non-face chips ("Neck", "Whole face", "Other") are `Tag`s INSIDE that card**,
-in the row step 1's own chips already use, drawn as step 1's chips rather than
-as the light blocks' tags (see the selected-`Chip` note below; the region pills
-beside them are glass since 14 Sep 2026) — they are the same answer as
-"Cheeks (L)", given in the same tap, and the only reason they have no
-coordinate is that the neck is not on the face. ⚠️ **The card renders even with
-nothing picked on the face**, which is what "Neck" alone looks like: seven
-dimmed pills and one lit chip is the honest reading of *not there, here*.
-⚠️ **The non-face chips are drawn as step 1's SELECTED `Chip`** — 40 tall,
-`Label`, indigo `bg/brand` on `text/on-brand` — because the recap only ever
-shows the ones that were picked. That is the same rule the regions follow, and
-drawing them as the pale unselected pill said the opposite of what the answer
-was. They are `span`s with a local class, not `Chip`s (a control) or `Tag`s (26
-tall, `Label Small` — a different pill).
+| Slice | Lifetime | List |
+| --- | --- | --- |
+| `products`, `checks`, `checkIns`, `savedFinding` | forever | `PERSISTED_KEYS` |
+| steps 1–4 answers | 24h sliding | `FLOW_KEYS` |
+| drafts, baskets, search, `evidence`, `scan`, `viewingCheck` | tab only, never written | — |
 
-⚠️ **AND THE TYPED `Other` IS SHOWN, AS OF 8 Sep 2026 — IT USED NOT TO BE, AND
-THE RECAP WAS NOT THE BUG.** Step 1's `Other – describe in detail` field wrote
-to a localStorage key of its own, outside the store, so nothing could read it
-and the recap drew the lit `Other` chip with none of the words. It is
-`answers.locationOther` now — a `FLOW_KEYS` answer like every other, expiring
-with them — and it renders under the diagram as a `Meta` pair,
-`Other, in your words` over the sentence. ⚠️ **The face steps down from 392 to
-300 when that note exists and the two share a wrapping flex row**, asked for
-directly — the diagram is one of two answers in the block then, not the block,
-so it gives up the width and the words take it: side by side on desktop (~776
-of block), stacked at 440 (~352). No media query; the flex bases
-(`300 + 16 + 190`) decide it. ⚠️ **300 is a FLOOR** — below it the diagram's
-percentage-positioned pills, whose labels are a fixed 14, start covering each
-other (7/6px of drawn overlap at 300–392, 11/10 at 280). ⚠️ **The field and the `Other` chip are still
-independent** — either can exist without the other, and the location block
-renders for either. ⚠️ **A typed description UNLOCKED Continue on its own from
-8 Sep 2026, and no longer does as of 14 Sep 2026** — see the next paragraph. A
-ticked `Other` with an empty field is still a complete answer here, unlike step
-3's `otherIsFilled`, because this field is collapsed behind a button.
+- Keys: `lux.records.v2`, `lux.flow.v2` (envelope `{ savedAt, answers }`).
+- Expiry checked on read. Future stamp = stale.
+- Hydrate in an effect. Gate writes on `hydrated` state, not a ref.
+- Not resumable. No UI that promises resume.
+- Toggles use the updater form: `setAnswer(key, (prev) => …)`.
+- Screens echo earlier answers. Guard for missing ones.
 
-⚠️ **STEP 1 ASKS FOR THE PLACES ONE SYMPTOM AT A TIME, AS OF 14 Sep 2026 —
-asked for directly, NOT IN FIGMA.** Picking a symptom disables every other
-symptom chip, shines the face's region labels once, and lets the face take taps
-for that symptom alone; a `Save` / `Reset` pill — the products tray's
-`SegmentedToggle` — opens under the chips from the first place marked. `Save`
-closes the symptom (the places are already stored); `Reset` clears its places and keeps it open. Between symptoms the face shows every place marked and waits,
-disabled. ⚠️ **`start` IS A MAP NOW, `Partial<Record<Symptom, string[]>>`, AND
-`location` IS GONE.** `symptomsOf` is the list, `areasOf` is the union every
-older reader wanted, and `withAreas` is the only writer and never stores an
-empty list — so `isComplete` for step 1 is "a symptom exists", a typed
-description no longer unlocks Continue by itself (a place with no pill is that
-symptom's `Other` chip), and the flow key is `lux.flow.v2`. The recap and
-PROGRESS draw that pairing as callouts on their read-only faces (14 Sep 2026),
-over the union lit as the face's pills. ⚠️ **The typed description is confirmed with ✓
-(or Enter) and reopened with a pen**, and one restored from the store arrives
-confirmed. `StartInvestigation.tsx` carries the reasoning.
+## Tokens and type
 
-⚠️ **THE SELFIE IS A BLOCK WITH THE PICTURE IN IT, AND IT WAS A LINE OF TEXT
-TWICE FIRST.** `Photo added` sat under the symptom pills, then on the face card;
-both merely stated that a capture exists, and a recap of a photograph should BE
-the photograph. It is now its own block: `CheckInDetail`'s well
-(`surface/data-strong`, `radius/lg`, capped at 392 like the face) holding
-`CheckInPhotoArt`, with an `Update photo` `SmallButton` under it that opens the
-same `SelfieSheet` step 1 uses. ⚠️ **That button is the ONE control on this
-screen** — everything else reads an answer back, this one can change it, because
-a photo is the answer a reader is most likely to want to redo. The art is seeded
-on the capture's own id (`answers.selfie`, which is why `ProfileRecap.photo` is
-a string and not a `boolean`), so a retake visibly changes the picture — the
-only feedback available in a prototype whose viewfinder cannot show what a
-camera sees. ⚠️ **Step 4 has no block at all** — it was a
-two-node timeline rail, and for an hour it was also the sage card's lower half;
-both were cut on 7 Sep 2026, asked for directly. All of it is now the
-symptoms' state block — the status as the block's own value (no second label
-repeating the heading), then `Started on` over `<date> · Day <n>`. A date is
-only the AGE of something when it sits under the something. ⚠️ **They were running lines of
-`t-body3` until 8 Sep 2026** and now take the sage card's label-over-value shape
-(muted `t-body3` label, 2, value at `t-button`) with THIS surface's ink —
-`text/muted` over `text/primary`, never the card's `text/on-data*`. The colon
-went with the change: a label on its own line is already separated from its
-value. ⚠️ **The block renders whenever step 4 has a status or a dated
-start**, even with nothing from step 1, or the answer would have nowhere to
-appear — and not otherwise, since it no longer holds the symptoms. ⚠️ **The generic "From your answers" heading
-is gone**: it named a card holding five different kinds of thing, which is the
-heading a block gets when nobody has decided what the block is.
+- Sizes are rem (16px = 1rem). Borders, hairlines, shadows, blur, breakpoints stay px.
+- Write new values as a token or rem, never px (except the kinds above).
+- Line heights: unitless ratios.
+- Font: Figtree. Values: `tokens.css`, `docs/design.md`.
+- Every text uses a `t-*` class. No ad-hoc `font-size`.
+- `t-a-b` = a on mobile, b on desktop. Fluid: headline, `t-h2`, `t-h3-h2`, `t-body2-body1`, `t-body3-body2`.
+- Every page `<h1>` is `t-h4-h3`.
+- Headings `text-wrap: balance`, prose `pretty`, controls neither. No `text-wrap` in modules.
+- Bind semantic colour tokens. Never primitives (`--color-indigo-*` …).
+- Digits that stack: `tabular-nums`, by role.
+- Never carry meaning by colour alone. Green text = `text/success-ink`.
 
-⚠️ **THE SPACING BETWEEN THOSE BLOCKS IS THE GROUPING — IT WAS A UNIFORM 16
-UNTIL 7 Sep 2026 AND THAT SAID THE WRONG THING.** Four identical cards at one
-interval is four peers. The symptoms' state and `Symptoms and location` (`Where you noticed it` until 14 Sep 2026) are readings
-of ONE episode; `Known conditions` was true before it started. The episode closes to **12** — tighter
-than the cards' own 20 padding, which is what makes three cards read as one
-group — the standing fact sits **24** from it, the sage statement **32** above,
-and the hand-off **40** below. ⚠️ **No heading was added to name the group**:
-that is what proximity is for, and a label naming a group is what this screen
-deleted once already. ⚠️ **On desktop the recap FILLS THE CARD at 824, and this
-file said 640 for a day** — the narrower `width/card-focus` column was tried and
-reverted the same day it landed, because the CARD does not narrow with the
-blocks: it traded a loose block for 184px of dead card down the right of the
-whole screen. The density that column was for is answered by PAIRING instead —
-the two blocks that hold a picture sit side by side at this breakpoint. The
-reasoning is on `.pictures` in `SkinProfileSummary.module.css`; **do not
-re-apply `width/card-focus` here.** The
-read-only face is capped at the **392** it is drawn at, because `width: 100%`
-over a `392 / 300` box rendered it about 600 tall there. Step 1's face is
-untouched: there the diagram IS the screen and its regions are targets.
-
-⚠️ **AND ITS LABELS NAME THEIR SUBJECT.** `Symptoms started` and `Symptoms now`,
-never step 4's own `Approximate start date` and `Current status` — those are
-short because that screen's question is still above them saying what "this" is.
-On a recap carrying four other answers, `Started` leaves the reader to guess
-which of them started and `Current status` reads like the status of the
-investigation.
-
-⚠️ **IT IS THE ONE `/investigation` ROUTE THAT IS `force-dynamic`**, because it
-is the only one that measures a span against today ("18 days ago"). `now` is the
-server timestamp seeding the first render and `useToday` corrects it — see
-`lib/useToday.ts`; prerendered, that `now` would be the BUILD time.
-
-⚠️ **IT IS WHY STEP 4 NO LONGER POINTS AT `/check/new`** — the hand-off now runs
-timing → recap → step 5 → analysis. That is not a reversal of the CHECK/analysis
-merge: `/check/new` is still the shared builder and is still reachable from
-CHECK. It closes the gap `flow.ts` had already written down against the
-shortcut — `/check/new` collects PRODUCTS but not DURATIONS, and the duration is
-the entire mechanism of the analysis, so a basket built there left the analysis
-able only to refuse.
-
-⚠️ **IT DOES NOT USE `skinProfile()` FROM `lib/demo.ts`, DELIBERATELY.** That
-helper falls back to `DEMO_PROFILE` so a readout tab never opens blank, which is
-right for PROGRESS and CHECK and wrong here: this screen's whole claim is "here
-is what you told us", and answering a deep link with the demo's skin type would
-put words in the user's mouth. It reads the raw answers and renders a real empty
-state instead.
-
-⚠️ **`/investigation/analysis` IS NOT A STEP, AND `TOTAL_STEPS` IS STILL 5.** It
-is the retrospective analysis — the culprit finder the product brief specifies
-and the thing LUX is named for. It carries no progress track and no
-`Save & exit`, which by the rule above is exactly what makes it not a step: the
-five steps COLLECT, this REPORTS on what they collected. It lives under
-`/investigation` for that reason and not because it is a sixth question.
-**Do not add it to `STEPS`.**
-
-⚠️ **AND IT IS ONE ROUTE BECAUSE THREE WAS TOO MANY.** It shipped on 5 Sep as
-`evidence` → `analyzing` → `findings` and was cut back the next day: three
-screens between step 5 and an answer read as three more steps. The wait is a
-STATE of this route now, the ambiguous-product question is an inline strip on
-it, and the read-only "here is what I worked out" summary was deleted outright.
-**Do not re-expand it into a wizard.**
-
-`features/my-skin/analysis.ts` owns the whole model — the evidence states, the
-gates, the subtraction, the confidence label and every sentence the screens put
-on the page. A screen states nothing it could compute from there, and the copy
-lives in the module rather than the components so the brief's controlled
-vocabulary can be checked by `npm run vocab` over one file.
-
-⚠️ **IT IS NOT CHECK, AND THE TWO MUST NOT CONVERGE.** `/check/*` asks "is this
-product right for my skin?" prospectively and scores a product. The analysis
-asks "which of the things I already use is associated with the reaction I
-recorded?" retrospectively, over a timeline, and its answer is an argument
-rather than a number. They share `lib/actives.ts` — the ingredient names, what
-they do to skin, the INCI patterns, the conflict pairs — and nothing else.
-⚠️ **CHECK's penalties are NOT shared**: they live on as `SCORING` in
-`check.ts`, tuned to reproduce a comp's five scores, and a number tuned that way
-has no business behind a sentence about what caused someone's reaction.
-
-⚠️ **NO SCORE, NO BAR, NO PERCENTAGE ON `findings`.** The brief: "Do not show a
-scientific-looking percentage." Confidence is a WORD — stronger / possible /
-weak — derived from the shape of the subtraction. `CompatCard` keeps its `%`,
-deliberately; the split is recorded in `docs/decisions.md`.
-
-⚠️ **THE ANALYSIS IS ALLOWED TO REFUSE — BUT ONLY WHEN THERE IS NOTHING TO
-COMPARE.** "Not enough evidence for a responsible conclusion" is one of § 07's
-three outcomes and is a designed state, not an error. It fires on exactly two
-things: no flare date, or nothing new plus nothing readable.
-
-⚠️ **AND "NOTHING NEW" NO LONGER SWALLOWS "NOT SURE YET" — a third gap landed 8
-Sep 2026 and it is a QUESTION, not a refusal.** `deriveEvidence` returns
-`unclear` when a product's introduction range STRADDLES the reaction, and § 05's
-confirmation strip exists to resolve exactly that. With no `associated` product
-the refusal used to fire anyway, so the screen said "Nothing in your list is
-new" and sent the user off to add more — while the one question that settles it
-sat unasked, and the strip was unreachable in the only case it was built for.
-`unresolved-timeline` now takes that state: it carries **no `href` and no
-action**, because the answer is the strip rendered directly under it, and
-answering one chip re-runs the comparison in place. `Gap.href` and `Gap.action`
-are optional for this reason. ⚠️ **The strip renders in BOTH outcomes now** —
-`Hypotheses` and `NoConclusion` — and it drops its own overline in the refusal,
-where the verdict card above is already saying it.
-
-⚠️ **THE ANALYSIS READS `ownedProducts()`, NOT `answers.products`.** Reading the
-raw key meant the seeded demo library was invisible to it: `/products` counted
-five products and the analysis compared none, so the deployed prototype
-dead-ended on the screen the app is named for. Every product surface in the app
-resolves through `lib/demo.ts`; `evidenceFor` and `forgottenRoles` are not
-exceptions. `AddProductMethodSheet` and `CheckBuilder` still are — they compute
-what the USER added.
-
-⚠️ **It used to
-fire on five**, including a missing cleanser or sunscreen, and the result was a
-screen that lectured the user about what they had not typed in before it would
-say anything. Everything else now LOWERS THE CONFIDENCE instead — which the
-screen already has a word for. **Do not put the completeness gates back**; in
-particular, a missing cleanser is a reminder, never a requirement.
-
-## The prototype starts EMPTY — and Continue is gated
-
-**Nothing is pre-selected, on any screen.** The Figma frames show options
-already chosen because a comp has to show a filled-in state. If you port a
-screen and it renders with something selected, that is a bug.
-
-⚠️ **THIS IS ABOUT CONTROLS, NOT READOUTS.** `/progress` and `/check`
-deliberately open populated — they have nothing to select, and an empty readout
-shows nothing. `lib/demo.ts` owns the one seeded skin profile; both sections
-resolve it through `skinProfile()` so the demo cannot claim two different skin
-types depending on which tab you are on.
-
-**`Continue` is DISABLED until the step is answered.** The rule lives on the
-step in `flow.ts` (`isComplete`), never in the screen, so a new screen cannot
-forget it. `QuestionScreen` reads it and owns the button.
-
-Answers live in `lib/store/InvestigationProvider.tsx` — React context,
-provided from `app/layout.tsx` so the PRODUCTS hub reads what step 5 writes.
-Read them with `useInvestigation()`.
-
-⚠️ **THE STORE IS SPLIT THREE WAYS, AND EACH SLICE HAS ITS OWN LIFETIME.**
-
-| Slice | Survives | Owned by |
-| ----- | -------- | -------- |
-| what the user COMPLETED — `products`, `checks`, `checkIns`, `savedFinding` | forever | `PERSISTED_KEYS` |
-| the FLOW'S ANSWERS — steps 1–4 | **24 hours, sliding** | `FLOW_KEYS` |
-| everything else — drafts, baskets, search fields, `evidence`, `scan` | the tab | by construction |
-
-The first row is the controls-vs-readouts line drawn two paragraphs above:
-those render as readouts, and `/products`, `/check` and `/progress` are
-specified to open populated anyway.
-
-⚠️ **THE MIDDLE ROW ARRIVED 7 Sep 2026 AND IT CHANGED A RULE THIS FILE USED TO
-STATE ABSOLUTELY.** It read "do not persist a control's state", because
-localStorage once made every visit open with the previous visit's selections
-still ticked — which reads exactly like the screens shipping pre-filled. **That
-is still the failure to avoid, but the cause was the LIFETIME, not the writing.**
-State that belongs to nobody is furniture; state from the last day belongs to
-the person still looking at the screen. So `/investigation/start` may now open
-with chips ticked, and it is only ever THIS browser's answers from the last 24
-hours. Past the window `readFlow` drops the envelope **and deletes it**, and
-every screen is empty again.
-
-⚠️ **A DRAFT, A BASKET AND A SEARCH FIELD ARE STILL NEVER WRITTEN, AT ANY
-AGE.** `productDraft`, `productQuery`, `checkBasket`, `checkQuery`, `scan`,
-`viewingCheck`, `evidence` — the user was mid-gesture there, not answering a
-question, and restoring a search field with yesterday's query is the pre-filled
-bug with none of the value.
-
-`lib/store/persistence.ts` owns both seams: `PERSISTED_KEYS` and `FLOW_KEYS` are
-the whole of both lists, `PersistedAnswers` and `PersistedFlow` are derived from
-them, and each split is a **type** so a new key has to be placed deliberately.
-⚠️ **TWO STORAGE KEYS, BECAUSE THERE ARE TWO LIFETIMES** — `lux.records.v2` and
-`lux.flow.v2` (v1 until 14 Sep 2026, deleted unread on mount since step 1's
-`start` became a map), the second holding an envelope (`{ savedAt, answers }`) so an
-unstamped payload can be refused rather than trusted. The window is **sliding**:
-every write re-stamps it, so 24 hours means a day of not touching the
-investigation. Expiry is enforced **on read**, not by a timer. Hydration happens
-in an effect (never in the `useState` initialiser — that is a hydration
-mismatch) and the write is gated on `hydrated` as **state, not a ref**, or the
-first write clobbers what it just read. Anything failing its shape check on read
-is dropped, and a stamp in the FUTURE counts as stale (a clock that moved
-backwards would otherwise pin the slice open forever).
-
-⚠️ **THIS IS STILL NOT RESUMABILITY.** One device, one browser, no account, and
-now also one day. `Save & exit` still does not resume a flow, and a deep link to
-another visitor's check-in still has no data behind it. Real resumability
-belongs to a backend — **do not add an affordance that promises it.** See
-`docs/decisions.md`, "PERSISTENCE".
-
-⚠️ **USE THE UPDATER FORM FOR ANY TOGGLE:**
-`setAnswer("start", (prev) => toggleMulti(prev ?? [], option))`. A value
-computed from the `answers` you read during render uses a snapshot, so two
-toggles in the same tick silently lose the first.
-
-Screens ECHO earlier answers rather than hardcoding the comp's copy. Guard for
-the answer being absent (deep links) rather than rendering an empty bubble.
-
-## The vocabulary — what exists, so you don't invent one
-
-⚠️ **lux-v3: `app/vidgen.css` OVERRIDES THE TABLES BELOW.** It is imported after
-`globals.css` and holds VidGen's type sizes (headline 36/44 Light, page title
-22/28, body 16/22, chip 16/20, tab and button 14–15 Medium), the spacing roles
-(`--space-group` 4, `--space-inset` 8, `--space-gutter` 24, `--space-panel` 32,
-`--space-section` 48), control sizes (`--size-round` / `--size-chip` 56), the
-glass tokens (white at 25% / 40% — never an opaque white fill), and the
-`.vg-sheet` / `.vg-panel` / `.vg-glass` recipes. Gradients are lux-v2's (VidGen's were tried and dropped
-1 Oct 2026). The font is Urbanist, and
-SemiBold (600) and Bold (700) are in the ramp now — the wordmark and the
-emphasised words in a headline use them, which retires non-negotiable 4's
-Light/Regular/Medium-only rule. New components: `IconButton` (the round
-control). Icons are VidGen's glyphs (`components/ui/icons.tsx`). `/styleguide`
-shows all of it.
-
-Generated from `app/globals.css`, `app/tokens.css` and the components
-themselves. If a value here disagrees with the source, the source wins and this
-table is stale — say so rather than working around it.
-
-### Type — every piece of text takes one of these classes
-
-| Class | Mobile | Desktop | Weight | Use |
-| --- | --- | --- | --- | --- |
-| `t-display1` / `-2` | 84/96 · 64/76 | — | 500 | brand surfaces only |
-| `t-h1` | 40/48 | — | 500 | not used by any screen |
-| `t-h2` | 32/40 | — | 500 | — |
-| `t-h3` | 24/32 | — | 500 | — |
-| **`t-h4-h3`** | **20/28** | **20/28** ⚠️ | 500 | ⭐ **every page `<h1>`, hub and flow alike** — no desktop step since 15 Sep 2026 |
-| `t-h4` | 20/28 | — | 500 | fixed-size headings |
-| `t-h5` | 18/26 | — | 500 | card titles |
-| `t-h6` | 16/24 | — | 500 | desktop option-row labels, row titles |
-| `t-body1` | 18/28 | — | 400 | — |
-| **`t-body2-body1`** | **16/26** | **18/28** | 400 | ⭐ **chat bubbles** |
-| `t-body2` | 16/26 | — | 400 | body copy |
-| **`t-body3-body2`** | **14/22** | **16/26** | 400 | secondary body |
-| `t-body3` | 14/22 | — | 400 | — |
-| `t-label` | 14/20 | — | 500 | mobile option-row labels, chips |
-| `t-label-sm` | 12/16 | — | 500 | tags, meta lines |
-| `t-nav` | 16/22 | — | 300 | ⚠️ the nav bar's labels — NOT IN FIGMA |
-| `t-caption` | 12/16 | — | 400 | captions |
-| `t-overline` | 13/18 + 1.82px tracking | — | 500 | section labels on data cards |
-| `t-button` | 17/22 | — | 400 | `Button` — owns it, don't re-apply |
-| `t-button-md` | 15/22 | — | 400 | `Button size="md"` (48 tall) — same |
-| `t-button-sm` | 14/22 | — | 400 | `SmallButton` — same |
-| `t-metric1` / `-2` | 56/60 · 40/40 | — | 300 | big figures on data cards |
-
-⚠️ **A `-a-b` name means "a on mobile, b on desktop"** — the responsive pair is
-one class, never a media query you write. `t-h3-h2` is a real Figma style with
-**no caller**; page titles are `t-h4-h3`. See non-negotiable 16.
-
-⚠️ **THE RAMP ALSO OWNS WHERE A LINE BREAKS, AS OF 8 Sep 2026.** Every heading
-class (`t-h1`–`t-h6`, `t-h4-h3`, `t-h3-h2`, `t-display*`) carries
-`text-wrap: balance`; every prose class (`t-body*`, both responsive pairs,
-`t-caption`) carries `text-wrap: pretty`. Figma cannot express either — a comp
-breaks a title wherever its fixed 440 or 1440 canvas breaks it, and the build
-breaks it at the reader's width — so this is a code-side decision applied by
-ROLE, the same way tabular figures are (non-negotiable 19). ⚠️ **The CONTROL
-classes are deliberately excluded** — `t-label`, `t-label-sm`, `t-button`,
-`t-button-md`, `t-button-sm`, `t-nav` and `t-overline` size chips, buttons and section labels whose
-widths are measured against Figma, and balancing a two-line chip label moves the
-pill. **No local `balance` is left** — `SkinProfileSummary`'s `.headlineValue`
-was the last, and it went on 15 Sep 2026 with the sage card that used it. **Do
-not write `text-wrap` in a module** unless a control class is doing duty as a
-data value, which was that rule's reason.
-
-### Spacing — `--space-*`
-
-`2xs` 2 · `xs` 4 · `sm` 8 · `md` 12 · `lg` 16 · `xl` 20 · `2xl` 24 · `3xl` 32 ·
-`4xl` 40 · `5xl` 48 · `6xl` 64 · `7xl` 80 · `8xl` 96 · `9xl` 120
-
-### Radius — `--radius-*`
-
-`none` 0 · `xs` 4 · `sm` 8 · `md` 12 · `lg` 16 · `xl` 20 · `2xl` 24 · `3xl` 32 ·
-`full` 999 · `bubble` 30 · `bubble-tail` 1
-
-`2xl` is the data card. `full` is every pill — buttons, chips, the nav, the
-tray bar. The two `bubble` values are `ChatBubble`'s and nothing else's.
-
-### Sizes — `--size-*`
-
-Icons `xs` 16 · `sm` 20 · `md` 24 (the default) · `lg` 32 · `xl` 48.
-Controls `sm` 36 · `md` 48 (`Button size="md"`) · `lg` 62 (`Button`'s default height).
-
-### Icons — 13 exist, in `components/ui/icons.tsx`
-
-Nav: `MySkinIcon` `ProgressIcon` `CheckIcon` `ProductsIcon` — ⚠️ **redrawn as
-ONE set on 27 Sep 2026 and back in the bar.** They were four different drawings
-(a ring of dots, a filled circle in a broken ring, a droplet, a solid bottle),
-which is why the bar went text-only on 13 Sep; the set is now one 24 box, one
-1.5 stroke, `currentColor`, rendered at `size/icon-sm` over the labels.
-⚠️ **`MySkinIcon` IS TRACED FROM `face-silhouette.svg`, THE DIAGRAM'S OWN
-OUTLINE** — asked for directly after three hand-drawn faces failed; the head is
-cut at the jaw and simplified to 28 points. Regenerate it if the diagram is
-retraced (`scripts/face-art.mjs`); nothing keeps the two in step. ⚠️ The
-old note said they were kept "for their other callers (`PassList`)" — that was
-wrong: `PassList` imports `SuccessCheckIcon`, and the four had no caller at all
-while the bar was text-only. ⚠️ NOT IN FIGMA: the file still holds the old four
-Chevrons: `ChevronLeftIcon` `ChevronRightIcon` `ChevronDownIcon`
-Actions: `PlusIcon` `CloseIcon` `SearchIcon` `CameraIcon` `NoteIcon`
-Feedback: `SuccessCheckIcon`
-
-⚠️ **There is no other glyph, and the DS has no more to give.** If a screen
-needs one that is not here, that is a gap to raise in Figma — see
-`docs/decisions.md`. Size them with a CSS class or `--icon-size`, never
-`width`/`height` (non-negotiable 14).
-
-### Components — the props, so you don't read every file
+## Components
 
 | Component | Props |
 | --- | --- |
-| `Button` | `variant?: "primary" \| "secondary"`, `size?: "lg" \| "md"`, `fullWidth?`, `href?`, `icon?` + button attrs |
-| `SmallButton` | `label`, `arrow?`, `href?`, `className?` + button attrs |
+| `Button` | `variant?: "primary" \| "secondary"`, `size?: "lg" \| "md"`, `width?: "hug" \| "full" \| "action"`, `href?`, `icon?` |
+| `IconButton` | `label`, `variant?: "glass" \| "primary" \| "outline" \| "soft"`, `size?: "lg" \| "md" \| "sm" \| "xs"` (56/48/44/20), `href?`, `ref?` |
+| `SmallButton` | `label`, `arrow?`, `href?`, `className?` |
+| `EditToggle` | Edit/Save toggle |
 | `Chip` | `label`, `selected`, `control?: "checkbox" \| "radio"`, `onToggle` |
 | `OptionRow` | `control: "radio" \| "checkbox"`, `label`, `selected`, `onSelect` |
-| `Tag` | `children`, `variant?: "neutral" \| "brand"`, `className?` |
+| `Tag` | `children`, `variant?: "neutral" \| "brand"` |
 | `TextField` | input attrs + `ref?` |
-| `DateField` | `value?: IsoDate`, `onChange`, `id?`, `placeholder?` |
-| `SearchField` | `value`, `onChange`, `placeholder?`, `label` (the accessible name — there is no visible `<label>`) |
+| `DateField` | `value?`, `onChange`, `id?`, `placeholder?` |
+| `SearchField` | `value`, `onChange`, `placeholder?`, `label` |
 | `ChatBubble` | `from: "ai" \| "user"`, `align?`, `full?` |
 | `Sheet` | `open`, `onClose`, `title`, `children` |
-| `Collapse` | `open`, `as?: "div" \| "li"`, `appear?`, `children` — wraps an in-flow panel (or IS a list row) so it opens down and closes up; see "Entrance reveals" |
-| `DataCard` | `as?`, `className?`, `children?` |
+| `Collapse` | `open`, `as?`, `appear?` |
+| `DataCard` | `as?`, `className?` |
 | `CameraCapture` | `captured`, `title`, `helper`, `onCapture` |
-| `Orb` | `size?`, `className?`, `animateIn?`, `thinking?` |
+| `Orb` | `size?`, `animateIn?`, `thinking?` |
 
-`Button` and `SmallButton` apply their own type class. `Chip`'s `control` changes
-the ARIA role and nothing visual — read the selection-controls contract below
-before reaching for `"radio"`.
+- A control that looks like one of these IS one of these. Add a variant; never restyle it in a screen module.
+- Icons: `components/ui/icons.tsx`. Size via CSS or `--icon-size`. Never `width`/`height` in `icons.tsx`.
 
-### Colour — bind semantic tokens, never a primitive
+## Rules
 
-Groups in `02 Color`: `bg/` `surface/` `text/` `icon/` `border/` `state/`
-`feedback/` `gradient/` `button/` `effect/`. The ones you will actually reach
-for:
+- Buttons: hover reverses the gradient; disabled = opacity 0.4. `@property` initial values must match the tokens.
+- Bottom nav: fixed, same on every screen, 4 items. Offset is `--nav-inset-bottom`, never a literal. `surface/frost-nav`, opaque `bg/nav` fallback, dark ink. Height ≥ 56.
+- Chat bubbles: opaque, no border, one tail corner.
+- Fixed-height row with a border: `min-height`, no vertical padding.
+- Gradient + border: `background-origin: border-box`.
+- Frosted surface: solid `prefers-reduced-transparency` fallback.
+- Mobile-first. Desktop at `min-width: 1024px`. No 440/1440 queries.
+- Focus ring is an `outline`. Never remove. Only `main[tabindex="-1"]:focus` turns it off.
+- Every button declares its own padding.
+- `surface/data` takes dark ink. `surface/data-deep` takes white. Don't swap.
+- `::selection`, caret, native accents bind `bg/brand`.
 
-- **Text on light:** `text/primary` `#2e2a3f` · `-secondary` `#4b4b57` ·
-  `-muted` `#63636f`
-- **Text on a data card:** `text/on-data` `#2e2a3f` · `-secondary` and `-muted`
-  both `#354446` — **dark, not white** (non-negotiable 17). ⚠️ **That is the ink
-  for `surface/data`. The DEEP tier takes `text/on-data-inverse` (white)** —
-  see non-negotiable 17.
-- **Surfaces:** `surface/frost-light` (translucent) vs `bg/frost-light`
-  (opaque) — ⚠️ a frost fill ON a frost surface does not read; use the opaque
-  one. Same relationship as `surface/frost-nav` → `bg/nav`.
-- **Brand:** `bg/brand` `#39386f` indigo, for selection and accents — ⚠️ **it
-  was `#3b305c` (`indigo/700`) until 8 Sep 2026.** It is the same value as
-  `gradient/brand`'s dark end on purpose: one indigo for the primary action and
-  for every mark that says "selected". `-hover` `#2c2a5f`, `-soft` `#8284c0`,
-  both re-hued with it.
-  ⚠️ **`gradient/brand` IS INDIGO TOO AS OF 8 Sep 2026 — every older note
-  calling it "the SAGE button gradient, not the indigo one" is stale.** It runs
-  `#657792 → #39386f`. See non-negotiable 5.
-- **Feedback:** `success` `#5f8a6e` · `warning` `#c9918e` · `error` `#a86561`.
-  ⚠️ Warning and error share a hue — **never carry the distinction by colour
-  alone**, always pair with a label.
-  ⚠️ **`feedback/success` IS A FILL, AND GREEN TEXT TAKES `text/success-ink`
-  `#46664f` INSTEAD — added 8 Sep 2026.** #5f8a6e measures 3.28:1 at 440 as 12px
-  text on a light frosted card (the analysis screen's `Evidence against this
-  explanation` count); the ink tier measures 5.36:1 on the same pixels. It is a
-  SECOND token declared on `:root` in `globals.css`, not a retune — every fill
-  and every 4px rule keeps `feedback/success`. Raise the pair in Figma; see
-  `docs/figma-catchup.md`.
+### Surfaces
 
-### Entrance reveals — three classes and two data attributes
+- System A, forms (my-skin, products, check): frosted rows, dark text, 1px `border/subtle`.
+- System B, readouts (progress): `DataCard`, no stroke, `border/glass` dividers.
+- Don't mix.
 
-| Hook | Duration | Use |
-| --- | --- | --- |
-| `.reveal` | `slow` 320ms | a block arriving with the screen |
-| `.reveal-quick` | `base` 200ms | something the user just revealed |
-| `.reveal-hero` | `slower` 480ms | the orb and hero entrances |
-| `[data-reveal]` | `slow` 320ms | ⚠️ a FADE UP (8px rise) on every DIRECT child, since 15 Sep 2026 |
-| `[data-reveal-stagger]` | + 50ms a child, to the 8th | stagger those children top to bottom; the delay holds past the 8th |
+### Empty states
 
-The three classes run the global `lux-fade-in`; the two attributes run
-`lux-fade-up`. The stagger hits **direct children only**, so a ten-row option
-list arrives as one block rather than ten cascading rows. ⚠️ **A `[data-reveal]`
-INSIDE a `[data-reveal]` does not fade itself** — its children start one step
-later (`--reveal-base`), so a shell's header lands before the body's first
-card and nothing arrives twice. PROGRESS's two column wrappers carry both
-attributes for this reason (asked for directly 15 Sep 2026: "things to appear
-in order, top to bottom … slight fade up").
+- `HubScreen layout="plain" center`: Orb → 32 → `t-h4-h3` title → 12 → body → 32 → action. No card.
+- Heading stays top; only the block centres.
 
-⚠️ **A DROPDOWN IS NOT A REVEAL, AS OF 13 Sep 2026 — it opens down AND closes
-back up.** Every disclosure and dropdown panel wore `.reveal-quick` and left in
-one frame; they now take one of two recipes, both transitions entered with
-`@starting-style` and held on screen for their exit by `useDialogPresence`:
+### Selection controls
 
-| Hook | Duration | Use |
-| --- | --- | --- |
-| `<Collapse open>` | `base` 200ms both ways | a panel IN FLOW — its space animates, so the rows below slide. The parent's flex gap is declared ON the Collapse: `.parent > :global(.collapse) { --collapse-gap: … }` |
-| `.drop` + `data-state="leaving"` | `base` in, `fast` out | a panel FLOATING under its trigger — falls 4px from 0.98 and lifts back. A search dropdown also takes `useHeldWhileClosing`, so it fades out on the results it was showing |
+| Control | Shape | Picks | Role |
+| --- | --- | --- | --- |
+| Radio row | circle | one | `radio` |
+| Checkbox row | square | 0+ | `checkbox` |
+| Chip | pill | 0+ | `checkbox` |
+| Chip (radio) | pill | one, short scale only | `radio` + `radiogroup` |
 
-**Do not put `.reveal-quick` back on a panel that closes.** The reasoning is on
-"Dropdowns" in `globals.css`.
+- Exclusive options ("None", "Not sure") stay checkboxes. Declared only in `EXCLUSIVE_OPTIONS`.
 
-⚠️ **Use these rather than naming an animation in a module** — a module
-localizes the `@keyframes` name and it resolves to nothing (motion section
-below). A module may safely set `animation-delay`, which carries no name.
+### Motion
 
-For anything not listed — the full 9 collections, the Figma node ids, the
-variant structures — read `docs/archive/design-figma.md` (history: the
-Figma-era guide).
+- Nothing snaps. Every change animates.
+- Hover uses `--ease-hover`. Enter/exit/selection use `--ease-standard` or `--ease-in-out`.
+- Press = `pressable` class. No transform.
+- Name `@keyframes` animations only in `globals.css`. Modules may set `animation-delay`.
+- Reveals: `.reveal`, `.reveal-quick`, `.reveal-hero`, `[data-reveal]`, `[data-reveal-stagger]`. Fill mode `backwards`.
+- Panels that close: `<Collapse>` (in flow) or `.drop` + `data-state="leaving"` (floating). Not `.reveal-quick`.
+- Popover owner: `position: relative; z-index: 1`.
+- Every `:hover` gets a `@media (hover: none)` counterpart.
+- Verify motion with `getAnimations()`, not by sleeping.
 
-## Non-negotiables
+## Page titles
 
-1. **`app/tokens.css` is the design system's primitive and semantic layer, and
-   it is hand-owned** (it was generated from Figma until 1 Oct 2026 — nothing
-   generates it now). Change a value there, not on a screen.
-2. **Never reference the `01 Primitives` block** (`--color-indigo-*`,
-   `--color-sage-*`, …) from a component. Bind to the semantic tokens.
-3. **Every piece of text uses a `t-*` class** from `globals.css`, one per Figma
-   text style. No ad-hoc `font-size`.
-4. **Weights are Light / Regular / Medium only.** `--font-weight-semibold` and
-   `--font-weight-bold` exist as tokens but using them is drift.
-   ⚠️ **ONE DECLARED EXCEPTION, 27 Sep 2026: the SELECTED bottom-nav label is
-   `--font-weight-semibold` (600).** Asked for directly twice — the second time
-   with 500 already on screen — so it is a design call, not an oversight, and
-   `BottomNav.module.css` carries the reasoning. It is the app's only caller,
-   600 had to be added to the Figtree request in `app/layout.tsx` for it to
-   render at all, and it is **not** permission to reach for 600 anywhere else:
-   raise the weight ramp in Figma instead.
-5. **Buttons: one rule for every style.** Hover runs the gradient END FOR END at
-   full strength; disabled fades the whole control to `opacity/disabled` (0.4).
-   Applies to `Button`, `SmallButton` and the back button alike.
+- Every route exports `metadata` via `lib/pageTitles.ts`. Title names the kind of page.
+- `RouteAnnouncer` announces and moves focus. Screens just render a `<main>`.
 
-   | Style | Default | Hover |
-   | ----- | ------- | ----- |
-   | Primary | `gradient/brand` | `gradient/brand-hover` |
-   | Secondary | `gradient/secondary` + 1px `border/default` | `gradient/secondary-hover` |
-   | Ghost | no fill | ⚠️ `bg/accent-mint`, a variable no longer in `02 Color` |
+## Before done
 
-   ⚠️ **`gradient/brand` IS INDIGO, AND IT WAS SAGE UNTIL 8 Sep 2026.** It runs
-   `#657792 → #39386f`, declared on `:root` in `globals.css` (Figma still holds
-   the sage `#bbd3d9 → #637073`; see `docs/figma-catchup.md` §2 and §6). This is
-   a REASSIGNMENT, not a retune: plotted in OKLCH, LUX runs a sage GROUND family
-   (canvas, nav, bubbles, data cards; hue 197–216) and an indigo FIGURE family
-   (selection, chips, checked days, the orb's mark; hue 281–295). The button sat
-   in the ground family at hue 213–215 with chroma **0.016–0.027** — the colour
-   drained out of it — and read on ten routes as a disabled steel pill. It now
-   sits at hue 258 → 282, chroma 0.047 → 0.092.
-
-   ⚠️ **THE OLD NOTE THAT `#a2b9bf` IS A CHOSEN VALUE NOT TO BE IMPROVED IS
-   RETIRED**, along with the whole "no ink clears both ends" block that went
-   with it. The white label now measures **4.56:1 at the left edge and 10.66:1
-   at the right** — AA across the entire sweep, which was the app's widest
-   contrast failure. The sage version that passed (`#5f7275 → #3c4b4e`) is still
-   rejected and still too dark; this is not that. It keeps a 24° hue rotation
-   and nearly doubles its chroma on the way down, so it reads as a sweep rather
-   than a slab.
-
-   ⚠️ **CLOSED THE SAME DAY: `bg/brand` MOVED TO THE BUTTON'S DARK END.** The
-   button and the checked-in calendar discs appear together on `/progress` and
-   were two violets eleven degrees apart. `bg/brand` is `#39386f` now — the same
-   value — so the primary action and the selection accent are one indigo. Its
-   two siblings moved with it to stay on one hue: `-hover` `#2e2447` → `#2c2a5f`,
-   `-soft` `#8e80bc` → `#8284c0`. White holds everywhere: 11.91 → **10.66:1** on
-   `bg/brand`, 14.39 → 13.10:1 on `-hover`. `-soft` goes 3.52 → 3.49:1, i.e. the
-   failure it already carried, unchanged in substance.
-
-   ⚠️ **The reversal only animates because of the `--grad-*` plumbing.** CSS
-   cannot interpolate `background-image`; the endpoints are registered
-   `<color>` properties in `globals.css`. Motion is `duration/hover` (400ms).
-   ⚠️ **The `@property` initial-values are hand-written and must move with the
-   tokens** — a registered property takes no `var()`, so a stale initial-value
-   flashes the previous colour for a frame.
-⚠️ **THE NAV'S THIRD ITEM READS `Analysis`, AND ITS ID IS STILL `check`.** The
-label is the word the user sees; the id keys the route map, the `NavSection`
-type and every `nav=` prop. Do not "fix" the mismatch by renaming the id — see
-`docs/decisions.md`, "the naming".
-
-6. **The bottom nav is fixed and identical on every screen**:
-   `--nav-inset-bottom` from the bottom, centred, `--z-nav`, 380 wide mobile /
-   598 desktop. `active="none"` is a real state, not a fallback. ⚠️ **FOUR
-   items, not the component's three** — `My skin` leads, then Progress, Check,
-   Products. The widths did not change and no breakpoint was added; a FIFTH item
-   would exhaust the headroom.
-
-   ⚠️ **THE OFFSET IS A TOKEN, NOT A NUMBER, AND IT IS NO LONGER 24.** It is
-   **5** as of 4 Sep 2026 — off the spacing scale on purpose, which is why it is
-   a literal on `:root` in `globals.css` rather than a `--space-*` step. It is
-   not only the nav's own `bottom`: five other rules reserve clearance FROM it
-   (`.screen`'s bottom padding in three variants, the global focus
-   `scroll-margin-bottom`, `Sheet`'s desktop max-height guard and CHECK's basket
-   bar). **Never write the number at any of them** — a literal at one site and a
-   token at the others is 19px of dead space nobody can see. See
-   `docs/decisions.md`.
-7. **The nav is `surface/frost-nav` `#dbeded @88%` — NOT 17%.** Frosted does not
-   mean see-through. `bg/nav` is its opaque counterpart, the **same colour**
-   fully opaque (`#dbeded`), and is the `prefers-reduced-transparency` fallback
-   — a fallback must not be translucent or a different hue. Same colour as
-   `bg/bubble-ai`, so the nav sits on the AI bubble's hue, and `Search Field`
-   binds the same token: one frosted-pill surface, two components.
-   ⚠️ **THE BAR LEFT THAT TOKEN ON 13 Sep 2026 AND CAME BACK TO IT ON 27 Sep
-   2026**, both asked for directly. It spent those two weeks on its own deep
-   slate teal (`#356472b0` at 69% for a few hours, then `#17292f42` at 26%,
-   then `#17292f8c` at 55% on 26 Sep) with WHITE labels; the ask that ended it
-   held the undo snackbar up beside it — "make the nav bar transparent like the
-   undo bar and use dark font" — and `Snackbar` was always drawn as the nav's
-   sibling on this very token. So the bar is `surface/frost-nav` again, falls
-   back to `bg/nav`, and its labels are `text/primary`, the snackbar's own ink.
-   `--color-surface-nav-bar` / `--color-bg-nav-bar` survive as ALIASES of that
-   pair, because the dark-welcome prototype themes the bar through those names. ⚠️ **IT IS AN ICON OVER A LABEL, AND 58.5 TALL** — text-only from 13 Sep to
-   27 Sep 2026, when the four glyphs were redrawn as one set and came back at
-   `size/icon-sm` (20) with a 2 gap; labels in `t-nav` (16 Regular, the ACTIVE
-   one semibold — see non-negotiable 4), inactive items at 0.85 opacity and the
-   active one at full ink with no fill of its own. The height went 75 -> 65
-   (13 Sep, with the icons out) -> **58.5** (27 Sep, "reduce the height 10%"),
-   always as an override of `--size-nav-height` so every nav reservation
-   follows it. ⚠️ **56 IS THE FLOOR** — a 44 touch target inside the bar's own
-   6 of vertical padding. The search field, snackbar,
-   segmented toggle and product groups still bind `surface/frost-nav`. Measured
-   by hand-compositing over the canvas, `text/primary` reads **9.60:1** on the
-   bar and **6.50:1** through the inactive item's 0.85 opacity, so every state
-   clears AA — which no state did in the deep-teal fortnight, where white was
-   2.74:1 at 26% and the app ink ~1.9:1 at 55%. The labels' dark drop-shadow
-   went with the white: it separated white strokes from a light backdrop and
-   only smudges dark ones. See globals.css.
-   ⚠️ **AND THE BAR SPENT 27 Sep 2026 BEING SOMETHING ELSE ENTIRELY — read
-   this before "restoring" any of it.** In one day it took KokonutUI's
-   `MorphicNavbar`: the four items became one contiguous segmented track with
-   the active item lifting out of it on a gap, then the outer pill was removed,
-   then the segments took `gradient/secondary` opaque with drop shadows, and
-   the selected tab was tried both brighter and darker than its neighbours.
-   **All of it was reverted the same day** — "revert the nav bar to transparent
-   frosted and without the separation effect" — so the bar is the frosted pill
-   again, rim, shadows, edge ring and grain included, with `space-between`
-   items that carry no fill of their own. ⚠️ **TWO THINGS WERE KEPT**: the dark
-   ink, and the **semibold selected label**, which is now the only thing
-   marking the active item (the recessed `state/pressed-overlay` well went with
-   the rest). See non-negotiable 4 for the weight exception.
-
-8. **Chat bubbles carry an asymmetric tail corner, and NO border.** Three
-   corners at `--radius-bubble` (30), the sender-side corner at
-   `--radius-bubble-tail` (1). AI = tail top-left, sits left; user = top-right,
-   sits right. A bubble is a **fill plus two shadows**. Frosted _rows_ and
-   _cards_ do carry a 1px `border/subtle`; **do not merge the two recipes.**
-   ⚠️ **Bubbles are OPAQUE** — `--color-bg-bubble-ai` (#dbeded) and
-   `--color-bg-bubble-user` (#cadfdf), a pair on one hue. **Never put a
-   translucent surface on a bubble.** Padding 14/18 mobile, 14/22 desktop.
-9. **A Figma stroke does not add to a frame's height; a CSS border does.** For a
-   FIXED-height row, give it `min-height` and drop the vertical padding. For a
-   box whose height is CONTENT-driven, write
-   `padding: calc(14px - var(--border-width-hairline))` so it lands on the
-   design height in every state.
-10. ⚠️ **A GRADIENT + A BORDER NEEDS `background-origin: border-box`.** The
-    default sizes the gradient to the padding box while painting it into the
-    border box, so the outermost 1px of every edge has no gradient on it and the
-    drop shadow shows through as a thin dark notch. Only background IMAGES are
-    affected; a flat `background-color` is not.
-11. **Frosted surfaces always get a solid `prefers-reduced-transparency`
-    fallback**, and a translucent fill always needs its inner shadow or it reads
-    flat.
-12. **Breakpoints: mobile-first, desktop at `min-width: 1024px`.** Never write a
-    440px or 1440px media query — those are the Figma canvas widths.
-13. ⚠️ **THE FOCUS RING IS AN `outline`, NOT A `box-shadow`.** CSS Modules load
-    after `globals.css`, so at equal specificity a component's own shadow simply
-    won and the ring silently disappeared on almost every control in the app. An
-    outline is a separate property, composes with any shadow, and follows
-    `border-radius`. Never remove it.
-14. ⚠️ **AN ICON'S SIZE IS A CSS DEFAULT, NOT AN INLINE STYLE — NEVER PUT
-    `width`/`height` BACK IN `icons.tsx`.** An inline style beats an external
-    stylesheet rule at every specificity, and it fails silently: eleven module
-    rules across nine components sat there looking correct while rendering 24.
-    The default lives in `globals.css` as `:where(svg[data-lux-icon])`;
-    **`:where()` is load-bearing**, since a bare attribute selector would beat
-    the single class it must yield to. An icon whose default is not `md` sets
-    `--icon-size` inline — a custom property feeding the rule, not a `width`
-    outranking it. No icon needs `!important`.
-15. ⚠️ **THE UA `button` PADDING IS `1px 6px`, NOT ZERO.** The global reset
-    zeroes it; every LUX button declares its own.
-16. ⚠️ **Three type facts the comps and the component notes get wrong:**
-    `Size=Desktop` option rows are **58, not 56** (the row hugs vertically, and
-    `H6` is 24 where `Label` is 20); desktop chat bubbles are **`Body 1`
-    (18/28), not `Body 2`** — use `t-body2-body1`; and **every page title is
-    `t-h4-h3`, including a hub's**, which the comps draw one step larger.
-    ⚠️ **And `t-h4-h3` is 20/28 on desktop too, as of 15 Sep 2026** — asked for
-    directly, "for all the pages". The class name still reads "H3 on desktop";
-    the rule in `globals.css` no longer steps up. Do not put the 24/32 back.
-17. ⚠️ **SURFACE SYSTEM B's TEXT IS DARK, NOT WHITE — ON `surface/data`.**
-    That surface composites too light for white text at any alpha; measured, it
-    failed WCAG AA on 38 of 59 text nodes on `/check/results`. `text/on-data` is
-    `#2e2a3f` and `-secondary`/`-muted` share `#354446`; hierarchy is carried by
-    size, weight and tracking. Redefined on `:root` in `globals.css`. Still
-    white, deliberately: the `border/glass` divider and the check-in discs'
-    `text/on-brand`.
-
-    ⚠️ **SYSTEM B HAS A SECOND SURFACE AS OF 8 Sep 2026, AND ITS INK IS WHITE.**
-    The rule above is about `surface/data`, not about sage. `surface/data-deep`
-    (`#4f838f @85%`, declared in `globals.css`) is the deep tier, and it is
-    paired with `text/on-data-inverse` — white. **The pairing is the contract
-    and neither half is portable:** white on `surface/data` is 1.87:1, and the
-    app ink on the deep tier is 3.67:1. Putting `text/on-data-inverse` on a
-    `surface/data` card re-creates exactly the failure this rule exists to stop.
-
-    ⚠️ **IN lux-v3 NOTHING TAKES THE DEEP TIER ANY MORE (1 Oct 2026).** It
-    held four surfaces — `SymptomTrend`'s card, `ResultCards`' emphasis block,
-    `CheckBasket`'s rows, `AddProductMethodSheet`'s tiles — at 3.42–3.77:1 for
-    their white ink. The trend card became the 30% panel with Trend C; the
-    other three became GLASS with the app's dark ink in the pages round. The
-    tokens remain declared; the history below is why the tier existed.
-
-    ⚠️ **IT STILL DOES NOT CLEAR AA, AND NO INK FIXES IT.** On the `surface/data`
-    backdrop white is 3.71:1 and the app ink is 3.73:1 — the surface sits almost
-    exactly where the two inks cross over. Only the SURFACE can move, and it has
-    to move meaningfully: an opaque `#407375` was built the same day and gives
-    white 5.35:1; going lighter returns the ink to 4.6:1+ and gives up the white.
-    ⚠️ **`#4f838f @85%` is a chosen design value — do not "improve" it toward a
-    passing one without asking**, and do not "correct" its hue onto the sage line
-    either (it is 214.1 against `surface/data`'s 199.8, deliberately cooler).
-
-    ⚠️ **AN INTERACTIVE DEEP SURFACE HOVERS TO `surface/data-deep-hover`, NOT TO
-    `-strong`.** The method tiles hovered to `surface/data-strong` for as long as
-    `-deep` was `#538b8d @62%`, where it happened to be one step lighter. It is
-    not one step at any other value — different hue, different alpha — so the
-    hover token exists to make the step structural.
-
-    Still known-failing and awaiting a Figma decision: `CompatCard`'s band pills
-    and the deep tier above. ⚠️ **`gradient/brand`'s white label is no longer on
-    that list** — it clears AA across the sweep since the indigo reassignment
-    (non-negotiable 5).
-
-18. ⚠️ **THE BROWSER'S OWN SURFACES BELONG TO THE DESIGN SYSTEM TOO.** Text
-    selection, the caret and native control accents ship at the browser default
-    unless something claims them, and Figma cannot draw any of them — so they
-    stayed a Windows-blue highlight, a black caret and a blue OS date picker on
-    a page where nothing else is blue. All three bind `bg/brand` in
-    `globals.css`; `::selection` also sets `text/on-brand`, because `bg/brand` is
-    opaque and the ink has to pass on THAT ground rather than on the surface
-    underneath (letting it inherit put `text/on-data` on indigo at 1.36:1 on
-    every System B card). The scrollbar is deliberately hidden and stays so.
-
-19. ⚠️ **DIGITS THAT STACK TAKE `font-variant-numeric: tabular-nums`.** Figtree's
-    default figures are proportional, which is right for prose and wrong for a
-    column. Applied BY ROLE, never globally: the calendar grid, the chart axes,
-    `.t-metric1`/`.t-metric2`, and the compat score. Adding a fifth role is a
-    line in the relevant module, not a change to `body`.
-
-## Two surface systems — do not mix them
-
-- **SYSTEM A — forms.** GETTING STARTED, PRODUCTS and CHECK. Light frosted rows
-  and cards, dark text, a 1px `border/subtle`.
-- **SYSTEM B — readouts.** PROGRESS, plus CHECK's skin-profile strip and tray.
-  `surface/data` + `surface/frosted-data` + `radius/2xl`, padding 20 mobile /
-  24 desktop, **NO stroke**. A divider inside one is `border/glass`, never
-  `border/subtle`. Accents are indigo `bg/brand`. `components/ui/DataCard.tsx`
-  is the whole recipe; use it.
-
-⚠️ **SYSTEM B IS TWO SURFACES, NOT ONE — AND EACH CARRIES ITS OWN INK.**
-
-| Tier | Fill | Ink | White measures |
-| ---- | ---- | --- | -------------- |
-| `surface/data` | `#7da7a9 @44%` | `text/on-data` (dark) | 1.87:1 — never |
-| `surface/data-deep` | `#4f838f @85%` | `text/on-data-inverse` (white) | 3.42–3.77:1 |
-
-The deep tier is for a block that has to read as EMPHASIS rather than as one
-more sage card, and it is what a nested emphasis block takes. ⚠️ **It was
-`surface/data-strong` until 8 Sep 2026** — a 62% sage inside a 44% sage is two
-steps of one hue with almost nothing between them, and every caller that put
-white on it was failing at 1.64–2.32:1. Non-negotiable 17 has the numbers and
-the standing instruction not to retune it unasked.
-
-⚠️ **A sage card inside a light card is a LUX pattern; the reverse is not.**
-
-## Empty states — one recipe, four screens
-
-⚠️ **THERE IS A PATTERN AND EVERY EMPTY STATE USES IT.** `ProgressScreen` calls
-it "the standing exception every LUX empty state has": `HubScreen` with
-`layout="plain"` and `center`, and inside it
-
-    Orb (animateIn) → 32 → `t-h4-h3` title → 12 → body → 32 → primary action
-
-centred, text-centred, on bare gradient with **no card** at either breakpoint.
-The action is full-width on mobile and `width/action` (280) on desktop.
-`/progress/empty`, `/check/no-profile`, `My Products — empty` and
-`/investigation/profile` all draw it. ⚠️ **The profile recap was the one screen
-not using it until 8 Sep 2026** — it had the heading, two paragraphs and a
-bottom-pinned button, which left roughly 1000px of canvas between them at 440.
-
-⚠️ **THE HEADING STAYS AT THE TOP; ONLY THE BLOCK IS CENTRED.** That is what
-`layout="plain"` buys, and it is why the recipe specifies it. ⚠️ **`center` NOW
-WORKS WITH `layout="card"` TOO, AS OF 8 Sep 2026 — and it did not before.** The
-card layout renders the heading INSIDE `.body`, so centring the block used to
-float the page title into the middle of the screen above the card; it was tried
-on `/investigation/analysis` and reverted the same day. `HubScreen` hoists the
-heading out of the centred region for `card` + `center` now, which is the fix
-that note asked for, and `/investigation/analysis`'s refusal state is the one
-caller. ⚠️ **The refusal state ONLY** — the `unresolved-timeline` state carries
-the confirmation strip and is as tall as any answer, so it is not centred. A
-screen that centres a question is a screen that floats a strip of chips in the
-middle of the viewport.
-
-⚠️ **THE ANALYSIS'S REFUSAL IS NOT A FIFTH DRAWER OF THE RECIPE.** It borrows
-the CENTRING and nothing else — it has a verdict card rather than an orb, and it
-keeps `layout="card"`. Do not count it toward the "if a fifth appears, lift it"
-line below.
-
-⚠️ **IT IS NOT A SHARED COMPONENT, DELIBERATELY.** Four screens is past the
-usual bar, but each differs in what goes in the block and the recipe is four
-spacing values — lifting it would trade four numbers for a component with four
-configurations. If a fifth appears, lift it then.
-
-⚠️ **A PUSHED VIEW KEEPS ITS BACK CHEVRON.** `/investigation/profile` has one;
-the other three are hub landings with nothing behind them and have none. The
-recipe does not change that rule.
-
-## Selection controls — the shape is the contract
-
-Not a style choice. It maps to the ARIA role and screen readers announce them
-differently.
-
-| Control | Shape | Cardinality | Role |
-| ------- | ----- | ----------- | ---- |
-| Radio row | circle | exactly one | `role="radio"` |
-| Checkbox row | square | zero or more | `role="checkbox"` |
-| Chip | pill | zero or more, short labels | `role="checkbox"` |
-| Chip (radio) | pill | exactly one, SHORT ORDINAL SCALE only | `role="radio"` |
-
-⚠️ **THE RADIO CHIP BENDS THIS TABLE AND IS SCOPED ON PURPOSE.** It existed for
-ONE case — the daily check-in's five-point scale — and has a SECOND since 4 Oct
-2026, asked for directly: step 2's skin type, five short exclusive answers
-beside the tendency chips. The caller MUST supply a
-real `role="radiogroup"`. Do not reach for it to make an ordinary multi-select
-tidier. **Raise a single-select Chip variant in Figma** rather than widening it.
-
-**Exclusive options** ("None", "Not sure", "Prefer not to say") stay
-**checkboxes** and keep `role="checkbox"`. Selecting one clears every other box;
-selecting a normal option clears the exclusives. Never swap them to radios —
-mixing shapes in one group tells the user the whole group is single-select.
-`EXCLUSIVE_OPTIONS` is the only place exclusivity is declared; an option missing
-from it toggles like an ordinary one and the bug is invisible in the screen.
-
-## Motion — board 04b (389:200)
-
-"LUX motion is calm. Nothing snaps."
-
-| Token | Value | Use |
-| ----- | ----- | --- |
-| `--duration-fast` | 120ms | hover, focus, small colour changes |
-| `--duration-base` | 200ms | selection, chips, rows, toggles |
-| `--duration-slow` | 320ms | sheets, overlays, page-level reveals |
-| `--duration-slower` | 480ms | orb and hero entrances |
-
-`--ease-standard` is the default for anything that enters and settles.
-⚠️ **A HOVER TAKES `--ease-hover`, NOT `--ease-standard` — 15 Sep 2026.**
-`--ease-standard` lands half its change in the first fifth of any duration,
-so a hover on it snaps however long it runs (the selfie shutter went 120 →
-320ms and still snapped). `--ease-hover` is CSS `ease`, declared on `:root`
-in `globals.css`. Only for a transition whose sole job is a hover: selection,
-press, entrance and exit keep `--ease-standard`.
-
-- **Pressed never uses a transform** — "LUX does not bounce." Overlay
-  `state/pressed-overlay` at 14% instead. ⚠️ **AND IT IS A SHARED CLASS NOW —
-  `pressable`, in `globals.css`, added 8 Sep 2026.** `Button` had drawn the
-  board's overlay since 22 Aug and NOTHING ELSE IN THE APP DID: the nav items,
-  both back chevrons, `SmallButton`, the history rows, the checked-in calendar
-  discs and the add tray's method tiles all shipped with hover and focus and no
-  press. Hover does not exist on a phone, so on touch — which is the frame the
-  whole app is drawn at — a tap on any of them produced no feedback at all until
-  the next screen painted. ⚠️ **It uses `::before`, because `.tap-target` owns
-  `::after`** and a small text control can want both. ⚠️ **It is an OPT-IN, not
-  a blanket `button:active` rule**: a chip, an option row and a disclosure change
-  the moment they are tapped, and darkening those adds a second signal to a
-  state change already on screen. It goes on the controls whose result arrives
-  LATER. `Button` keeps its own inline copy of the recipe and is not a caller.
-- ⚠️ **The rule that NAMES an animation must live in `globals.css`, never in a
-  CSS Module.** Modules localize `@keyframes` names, so `animation: lux-fade-in`
-  inside a module resolves to nothing while still reporting a duration in
-  `getComputedStyle`. Use the `[data-reveal]` / `[data-reveal-stagger]` hooks. A
-  module may safely set `animation-delay`, which carries no name.
-- ⚠️ **Reveals use `animation-fill-mode: backwards`, NOT `both`.** `both` adds
-  `forwards`, and an opacity animation still in effect leaves a **persistent
-  stacking context** — every revealed block then paints in DOM order regardless
-  of `z-index`. That is how the date picker ended up behind the radio rows.
-- **Anything that opens a popover gets `position: relative; z-index: 1`** on its
-  own block.
-- **Wrap every `:hover` rule's counterpart in `@media (hover: none)`** so the
-  state does not stick after a tap.
-- `prefers-reduced-motion` already collapses all durations globally; don't
-  special-case it per component.
-- ⚠️ **A "stuck" transition in a preview pane is almost always the HIDDEN TAB,
-  not your CSS.** Chromium freezes rAF and CSS transitions when
-  `document.visibilityState === "hidden"`. **Verify motion with
-  `element.getAnimations()`** — assert the animation exists with the expected
-  duration, call `.finish()`, then check the end state. Do not sleep and re-read
-  `getComputedStyle`.
-
-## Translate, don't transcribe
-
-The Figma frames are fixed-height canvases (440x957, 1440x900). Their internal
-spacer frames are artefacts of those heights. Express the _intent_ in CSS —
-flex, `100dvh`, `clamp()` — and keep the tokens exact. Component sizes, radii,
-type and colour must match Figma to the pixel; page-level whitespace adapts.
-Mobile frames pad 58 at the top; the build uses 40 everywhere.
-
-## Every route is a page, and the app has to say so
-
-**⚠️ A NEW ROUTE NEEDS A `metadata` EXPORT, AND IT IS NOT OPTIONAL.** All
-seventeen routes once rendered `<title>LUX</title>`. That is a WCAG 2.4.2 (level
-A) failure on its own, but it costs more than the tab label: **a title is the
-only sentence available to announce a client-side navigation.**
-
-`lib/pageTitles.ts` owns them. A flow step takes its title from `flow.ts`; a hub
-route gets an entry in `HUB_TITLES`. Then the page exports
-`export const metadata: Metadata = { title: metadataTitleFor("/its/path") };`.
-The one dynamic route matches a regex and uses `generateMetadata`. A title names
-the KIND of page, never its content — "Check-in record", not the date on screen.
-
-**⚠️ THE APP ROUTER ANNOUNCES NOTHING AND MOVES NO FOCUS — `RouteAnnouncer`
-DOES BOTH.** (The route announcer people remember is the Pages Router's; the App
-Router ships none.) It is mounted once in `app/layout.tsx` and needs nothing
-from a screen except that it render a `<main>`. It reads `titleFor`, not
-`document.title` — Next writes the tag at its own moment in the commit, and
-losing that race announces the screen the user just left.
-
-**⚠️ `main[tabindex="-1"]:focus` IS THE ONE PLACE THE RING IS TURNED OFF**, in
-`globals.css`. **No interactive control ever gets this rule.**
-
-## Before you call a screen done
-
-- `npm run build` and `npm run typecheck` both clean.
-- ⚠️ **`npm run spacing` clean IF THE SCREEN'S LAYOUT CHANGED.** WCAG 1.4.12:
-  a user may override line-height to 1.5x and letter/word-spacing to
-  0.12/0.16em, and nothing may be lost when they do. Nothing else here can see
-  that failure — it exists only once those overrides land on a live layout — so
-  the script drives a headless Chrome over CDP (no dependencies) across 18
-  routes at 320/440/1440 and reports only what the OVERRIDES caused, by
-  differencing against a baseline pass. It needs a running server and a Chrome,
-  which is why it is not on the same footing as `vocab`; the header of
-  `scripts/text-spacing.mjs` has the three commands. `body` carries
-  `overflow-wrap: break-word` as the standing safety net — see
-  `docs/decisions.md`, "The layout survives the user's own text spacing".
-- ⚠️ **`npm run vocab` clean IF THE SCREEN SAYS ANYTHING ABOUT A PRODUCT'S
-  EFFECT ON SKIN.** It checks user-facing strings against the product brief's
-  forbidden list — "this caused your reaction", "safe for you", "toxic
-  ingredient", two ingredients that "clashed". That vocabulary is a
-  **regulatory** constraint, not a tone preference: an absolute claim needs
-  substantiating and is the language that pushes a beauty app toward
-  medical-device territory. See `docs/decisions.md`, "Claim language".
-- Check it at 440 and at 1440, and against `/styleguide` if it uses a
-  component in a new way.
-- Check computed values in the browser rather than eyeballing a screenshot.
-- Keyboard: focus is visible on every interactive element, as an `outline`.
-- The route exports `metadata` from `lib/pageTitles.ts`.
-- **An ARIA `role` that takes a NAME needs one.** `role="progressbar"` takes its
-  name from a label and never from its value; `aria-valuetext` says where a
-  thing has got to, not what it is. axe calls this `aria-progressbar-name`, and
-  it fired serious on all five flow screens until `StepProgress` got an
-  `aria-label`.
-- ⚠️ **Settled, do not re-report: THE FLOW CTA SCROLLS WITH THE PAGE, AND THAT
-  IS THE DESIGN.** `Continue` sits behind the nav pill *at rest* on flow steps 1
-  and 2, the two screens that outgrow the viewport (measured 440: step 1
-  `cta=852` against `nav=858`; step 2 `cta=1033`, i.e. below the fold). It is
-  **not** out of reach: `.screen`'s bottom reservation
-  (`--nav-inset-bottom + --size-nav-height + --space-lg` = 96) exists so the
-  last element clears the fixed nav at the end of the document, and a short
-  scroll puts the button fully in the clear. The chips on those screens are
-  themselves below the fold, so anyone answering the screen has already
-  scrolled past the overlap. Accepted 7 Sep 2026 after walking it.
-- ⚠️ **AND DO NOT "FIX" IT.** A sticky footer was built for this once and
-  **rejected and reverted** — `QuestionScreen.module.css` is byte-identical to
-  what it was. What WOULD be a real defect: the reservation drifting out of step
-  with the nav tokens so the button never clears at full scroll, or a screen
-  where the overlap band is the only place the button can be tapped — the fixed
-  nav wins the hit test there, so a tap leaves the flow instead of advancing it.
-  See `.design/whole-app/DESIGN_REVIEW.md`.
-- Contrast: ⚠️ **do not trust a clean axe run.** Every screen sits on the canvas
-  gradient, so `color-contrast` degrades to INCOMPLETE — never to a violation —
-  the moment a background is a gradient or a stack of translucent fills. All 17
-  routes report zero contrast violations with known failures on screen. Measure
-  by compositing the fill stack by hand and sampling the gradient at the
-  element's own position; one representative surface is not enough.
+- `npm run build` and `npm run typecheck` clean.
+- `npm run spacing` if layout changed.
+- `npm run vocab` if copy mentions a product's effect on skin.
+- Check at 440 and 1440. Check computed values, not screenshots.
+- Visible focus outline on every control.
+- ARIA roles that take a name have one.
+- Measure contrast by hand. A clean axe run proves nothing on gradients.
+- Flow CTA behind the nav at rest is by design. No sticky footer.

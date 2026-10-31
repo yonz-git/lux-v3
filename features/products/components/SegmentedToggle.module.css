@@ -12,8 +12,8 @@
 
 .toggle {
   display: flex;
-  gap: 4px;
-  padding: 5px;
+  gap: 0.25rem;
+  padding: 0.3125rem;
   border-radius: var(--radius-full);
   background: var(--color-surface-frost-nav);
   /* ⚠️ THE HAIRLINE AND THE LIT RING BELOW AT 80% OF THEIR OPACITY, asked for
@@ -67,14 +67,26 @@
   }
 }
 
-/* Each segment is a button — pill-shaped, t-label (14/20 Medium), no UA
-   padding (globals.css zeroes it on all buttons). The gradient layer sits
-   in a pseudo-element so background-color can transition the solid fill
-   independently while the gradient cross-fades via opacity. */
+/* Each segment is a button — pill-shaped, `t-button-md` (14/20 Medium, the
+   md `Button`'s role), no UA padding (globals.css zeroes it on all buttons).
+   The gradient layer sits in a pseudo-element so background-color can
+   transition the solid fill independently while the gradient cross-fades via
+   opacity.
+
+   ⚠️ FLEX-CENTRED ON ONE LINE — 31 Oct 2026, asked for directly ("vertical
+   center please always"). The segment carried no text role, so its label
+   fell back to 16px / `normal` leading, sat 9px low of the pill's centre and
+   wrapped to two lines at phone width. */
 
 .segment {
   position: relative;
-  padding: 11px 22px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  white-space: nowrap;
+  /* `Button size="sm"` reads the same two tokens */
+  min-height: var(--size-button-sm);
+  padding: 0 var(--space-button-sm-inline);
   border-radius: var(--radius-full);
   border: none;
   background: transparent;

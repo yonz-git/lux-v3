@@ -181,7 +181,15 @@ export function MyProducts() {
 
   if (products.length === 0) {
     return (
-      <HubScreen title="Products in use" layout="plain" center tightTop>
+      /* the title centred as the populated list centres it — 31 Oct 2026,
+         asked for directly */
+      <HubScreen
+        title="Products in use"
+        centerHeading
+        layout="plain"
+        center
+        tightTop
+      >
         <div className={styles.empty}>
           <Orb animateIn />
           <h2 className="t-h4-h3">No products added yet</h2>
@@ -189,6 +197,7 @@ export function MyProducts() {
             Add products you use to check skin compatibility.
           </p>
           <Button
+            width="action"
             className={styles.emptyCta}
             onClick={() => setSheetOpen(true)}
           >
@@ -240,6 +249,7 @@ export function MyProducts() {
                  the store minus that product, and from then on the list is
                  theirs — including when they empty it. */
                 onRemove={(id) => removeProduct(id)}
+                onAdd={() => setSheetOpen(true)}
               />
             </li>
           ))}
@@ -299,10 +309,12 @@ function CategoryGroup({
   bucket,
   products,
   onRemove,
+  onAdd,
 }: {
   bucket: BucketId;
   products: SavedProduct[];
   onRemove: (id: string) => void;
+  onAdd: () => void;
 }) {
   const [open, setOpen] = useState(false);
   const panelId = `bucket-${bucket}`;
@@ -392,7 +404,16 @@ function CategoryGroup({
       <Collapse open={open}>
         <div id={panelId} className={styles.panel}>
           {n === 0 ? (
-            <EmptyBox compact>No products in this list yet</EmptyBox>
+            <EmptyBox
+              compact
+              action={
+                <Button size="sm" onClick={onAdd}>
+                  Add product
+                </Button>
+              }
+            >
+              No products yet
+            </EmptyBox>
           ) : (
             <ul className={styles.stack}>
               {products.map((p) => (

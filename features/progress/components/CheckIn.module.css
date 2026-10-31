@@ -51,7 +51,7 @@
 .options {
   display: flex;
   flex-wrap: wrap;
-  gap: var(--space-md); /* 12 */
+  gap: var(--space-pill-gap); /* the app's one pill gap, 30 Oct 2026 */
 
   /* ⚠️ HALF THE GAP, SO THE ROW HAS NO DEAD SPACE IN IT. The pills are 32 tall
      here rather than the DS 40, and at that size the 12 between them was wide
@@ -63,7 +63,7 @@
      nothing. The extra pixel makes them overlap by 2, so the seam belongs to
      the later chip in DOM order instead of to no one. Invisible — see the note
      on `.chip::after`. */
-  --chip-hit-inline: calc(var(--space-md) / 2 + var(--border-width-hairline)); /* 7 */
+  --chip-hit-inline: calc(var(--space-pill-gap) / 2 + var(--border-width-hairline));
 }
 
 /* lux-v3: the answers are plain `Chip`s — 44 glass at rest, indigo picked —
@@ -137,12 +137,6 @@
    width at both breakpoints while the panel was 375 wide; at the nav's 598 that
    stretched it to 558, a slab wider than anything else on the dashboard. */
 .submit {
-  width: 100%;
-}
-
-@media (min-width: 1024px) {
-  .submit {
-    width: var(--width-action); /* 376 */
-    align-self: center;
-  }
+  /* width is `Button`'s `width="action"` (31 Oct 2026) */
+  align-self: center;
 }

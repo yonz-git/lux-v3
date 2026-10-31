@@ -1,0 +1,32 @@
+/* The profile recap's editor — see ProfileEditor.tsx. Four labelled groups of
+   chips, left-aligned under the card's own overline so the answers line up
+   with the pills they replace. */
+
+.editor {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2xl); /* 24 between questions */
+}
+
+.group {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-sm); /* 8, label to chips — the tiles' own */
+}
+
+.label {
+  margin: 0;
+  color: var(--color-text-secondary);
+}
+
+.chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-pill-gap); /* the app's one pill gap, 30 Oct 2026 */
+}
+
+/* a field `Other` opens grows in with `Collapse`; the group's 8 is declared on
+   it, as globals.css asks */
+.group > :global(.collapse) {
+  --collapse-gap: var(--space-sm);
+}

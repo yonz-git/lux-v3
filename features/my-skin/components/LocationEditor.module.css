@@ -1,0 +1,21 @@
+/* step 1's own controls under a card's overline, so their first margin (the
+   chips' 32 under LUX's bubble) goes */
+.editor {
+  display: flex;
+  flex-direction: column;
+}
+
+.editor > :first-child {
+  margin-top: 0;
+}
+
+.field {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-sm);
+  margin-top: var(--space-2xl); /* 24 under `Other` */
+}
+
+.label {
+  color: var(--color-text-secondary);
+}

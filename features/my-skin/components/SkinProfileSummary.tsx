@@ -6,7 +6,11 @@ import { HubScreen } from "@/components/layout/HubScreen";
 import { Button } from "@/components/ui/Button";
 import { Orb } from "@/components/ui/Orb";
 import { SmallButton } from "@/components/ui/SmallButton";
+import { EditToggle } from "@/components/ui/EditToggle";
 import { SymptomLocation } from "./SymptomLocation";
+import { LocationEditor } from "./LocationEditor";
+import { ProfileEditor } from "./ProfileEditor";
+import { Collapse } from "@/components/ui/Collapse";
 import { SelfieSheet } from "./SelfieSheet";
 /* ⚠️ ACROSS SECTIONS, WHICH THE PLACEMENT RULE ALLOWS AND THIS IS THE THIRD
    CASE OF. `CheckInPhotoArt` draws the capture in a PROGRESS check-in record;
@@ -169,6 +173,16 @@ import { COPY, isEmpty, recap } from "@/features/my-skin/profile";
 export function SkinProfileSummary({ now }: { now: number }) {
   const { answers } = useInvestigation();
   const [photoOpen, setPhotoOpen] = useState(false);
+  /* ⚠️ EACH SECTION EDITS IN PLACE — 29 Oct 2026, usability testing: the recap
+     read the answers back and offered no way to change one. `Edit` swaps a
+     section's read-back for the controls that gave the answer, `Save` swaps
+     it back (`Done` until 31 Oct 2026); nothing waits for `Save`, every tap
+     writes to the store as step 1 does — see `EditToggle`. No new page. The location section stays drawn once it has been
+     opened, so clearing every symptom there cannot make it vanish under the
+     reader's hand. */
+  const [editProfile, setEditProfile] = useState(false);
+  const [editLocation, setEditLocation] = useState(false);
+  const [locationOpened, setLocationOpened] = useState(false);
   const profile = recap(answers, useToday(now));
 
   /* ⚠️ THE EMPTY STATE IS REACHABLE AND IS NOT AN ERROR. The flow's answers
@@ -211,7 +225,7 @@ export function SkinProfileSummary({ now }: { now: number }) {
           <Orb animateIn />
           <p className={`${styles.emptyTitle} t-h4-h3`}>{COPY.emptyTitle}</p>
           <p className={`${styles.emptyBody} t-body3-body2`}>{COPY.emptyBody}</p>
-          <Button href="/investigation/start" className={styles.emptyCta}>
+          <Button width="action" href="/investigation/start" className={styles.emptyCta}>
             {COPY.emptyCta}
           </Button>
         </div>
@@ -242,7 +256,8 @@ export function SkinProfileSummary({ now }: { now: number }) {
      and nothing else — no heading, no border, no card. A label naming a group
      is what this screen deleted once already ("From your answers"), and it
      would be the same mistake at a smaller scale. */
-  const hasEpisode = hasLocation || Boolean(profile.photo);
+  const showLocation = hasLocation || locationOpened;
+  const hasEpisode = showLocation || Boolean(profile.photo);
 
   return (
     <HubScreen
@@ -262,17 +277,42 @@ export function SkinProfileSummary({ now }: { now: number }) {
           `skinProfile()`: an unanswered value says so ("Not answered", "None")
           rather than borrowing the demo's. The start line only renders with a
           real day count — "No start date given" is not a date. */}
-      <SkinProfileTiles
-        className={styles.headline}
-        skinType={profile.skinType}
-        tendencies={profile.tendencies}
-        conditions={profile.conditions}
-        symptomsState={timeline?.status}
-      />
+      <div className={styles.headline}>
+        <Collapse smooth open={!editProfile}>
+          <SkinProfileTiles
+            skinType={profile.skinType}
+            tendencies={profile.tendencies}
+            conditions={profile.conditions}
+            symptomsState={timeline?.status}
+            action={
+              <EditToggle
+                editing={false}
+                subject="skin profile"
+                onClick={() => setEditProfile(true)}
+              />
+            }
+          />
+        </Collapse>
+        <Collapse smooth open={editProfile}>
+          <Block
+            label="Skin profile"
+            id="profile-edit"
+            action={
+              <EditToggle
+                editing
+                subject="skin profile"
+                onClick={() => setEditProfile(false)}
+              />
+            }
+          >
+            <ProfileEditor />
+          </Block>
+        </Collapse>
+      </div>
 
       {hasEpisode && (
         <div className={styles.blocks}>
-          {(hasLocation || profile.photo) && (
+          {(showLocation || profile.photo) && (
             /* ⚠️ THE TWO BLOCKS THAT HOLD A PICTURE, PAIRED WHEN BOTH EXIST.
                `data-pair` is what turns the stack into two columns at 1024 —
                the screen knows whether it has two images and says so, because
@@ -281,10 +321,23 @@ export function SkinProfileSummary({ now }: { now: number }) {
                `.pictures` in the stylesheet. */
             <div
               className={styles.pictures}
-              data-pair={(hasLocation && profile.photo) || undefined}
+              data-pair={(showLocation && profile.photo) || undefined}
             >
-              {hasLocation && (
-                <Block label={COPY.locationLabel} id="profile-location">
+              {showLocation && (
+                <Block
+                  label={COPY.locationLabel}
+                  id="profile-location"
+                  action={
+                    <EditToggle
+                      editing={editLocation}
+                      subject="symptoms and location"
+                      onClick={() => {
+                        setLocationOpened(true);
+                        setEditLocation((v) => !v);
+                      }}
+                    />
+                  }
+                >
                   {/* ⚠️ THE DIAGRAM IS `aria-hidden`, AND ITS CALLOUTS SAY THE
                       ANSWER IN WORDS. A pill only means the left cheek because
                       of where it sits, which is worth nothing read aloud — so
@@ -307,17 +360,22 @@ export function SkinProfileSummary({ now }: { now: number }) {
                       places right, then the start date and the typed `Other`
                       as labelled pairs under the rows. The `Other: <words>`
                       line that sat centred under the face went with it. */}
+                  <Collapse smooth open={!editLocation}>
                   <SymptomLocation
-                    places={profile.places}
-                    faceRegions={profile.faceRegions}
-                    otherLocations={profile.otherLocations}
-                    otherNote={profile.locationNote}
-                    started={
-                      timeline && timeline.dayNumber !== null
-                        ? timeline.started
-                        : null
-                    }
-                  />
+                      places={profile.places}
+                      faceRegions={profile.faceRegions}
+                      otherLocations={profile.otherLocations}
+                      otherNote={profile.locationNote}
+                      started={
+                        timeline && timeline.dayNumber !== null
+                          ? timeline.started
+                          : null
+                      }
+                    />
+                  </Collapse>
+                  <Collapse smooth open={editLocation}>
+                    <LocationEditor idPrefix="profile" />
+                  </Collapse>
                 </Block>
               )}
 
@@ -395,17 +453,23 @@ export function SkinProfileSummary({ now }: { now: number }) {
 function Block({
   label,
   id,
+  action,
   children,
 }: {
   label: string;
   id: string;
+  /** the section's `Edit` / `Save` (`EditToggle`), at the overline's end */
+  action?: React.ReactNode;
   children: React.ReactNode;
 }) {
   return (
     <section className={`${styles.block} canvas-card`} aria-labelledby={id}>
-      <h2 id={id} className={`${styles.blockLabel} t-overline`}>
-        {label}
-      </h2>
+      <div className={styles.blockHead}>
+        <h2 id={id} className={`${styles.blockLabel} t-overline`}>
+          {label}
+        </h2>
+        {action}
+      </div>
       {children}
     </section>
   );

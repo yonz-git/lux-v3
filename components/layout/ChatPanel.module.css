@@ -142,24 +142,6 @@
   height: 58px;
 }
 
-/* A 44px touch target around a glyph smaller than it is offset by HALF the
-   difference on every side, so the box takes the GLYPH's room in the layout and
-   the drawn gap survives. Same move as SearchField's clear button. */
-.headerButton {
-  flex: none;
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  width: var(--size-touch-target);
-  height: var(--size-touch-target);
-  margin: calc((var(--chat-glyph) - var(--size-touch-target)) / 2);
-  padding: 0;
-  border: 0;
-  background: none;
-  border-radius: var(--radius-full);
-  color: var(--color-icon-default);
-}
-
 /* Set through `--icon-size` rather than width/height — a custom property
    feeding the globals rule, never an inline size outranking it.
 
@@ -168,7 +150,6 @@
    scale. See the doc comment on ChatPanel.tsx for why it is an X. */
 .close {
   --chat-glyph: var(--size-icon-xs);
-  --icon-size: var(--size-icon-xs);
   /* ⚠️ NOT IN FIGMA — asked for directly 12 Sep 2026. `.header`'s
      `align-items: center` puts the X level with the 58px avatar slot's
      midpoint; nudged 4px above that so it sits closer to the panel's own top
@@ -183,7 +164,14 @@
      set into the corner rather than floating beside the orb. The 44 target
      overhangs the header by 10 and stays inside the panel's 16 top pad. */
   align-self: flex-start;
-  margin-top: calc((var(--chat-glyph) - var(--size-touch-target)) / 2 + var(--space-xs));
+  /* ⚠️ IT IS `IconButton size="xs"` AS OF 31 Oct 2026 — the app's one small
+     glass ✕ (asked for directly: "buttons that use the same design should be
+     using reusable components with variants"). The 20 disc keeps the 16 of
+     room the glyph had, centred where it was: half the difference off every
+     side, and the same 4 down. Its 44 target is `IconButton`'s. */
+  flex: none;
+  margin: calc((var(--chat-glyph) - var(--size-icon-sm)) / 2);
+  margin-top: calc((var(--chat-glyph) - var(--size-icon-sm)) / 2 + var(--space-xs));
 }
 
 /* ---------------------------------------------------------------------------
@@ -300,11 +288,3 @@
   }
 }
 
-/* ⚠️ FULL SIZE — asked for directly 1 Oct 2026 ("the x button too small
-   here"). Its box is already the small 16, so the app-wide 60% for a ✕
-   (app/vidgen.css) left it ~10. (0,2,1) over that rule's (0,1,1). */
-.close svg[data-lux-icon] {
-  /* ⚠️ 15% SMALLER, 4 Oct 2026, asked for directly. The glyph only: the 44
-     touch target around it is unchanged. */
-  scale: 0.85;
-}

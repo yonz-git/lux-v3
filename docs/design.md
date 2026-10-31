@@ -1,7 +1,7 @@
 ---
 version: alpha
 name: LUX v3
-description: Glass over a pale sage canvas, one indigo, Urbanist, round controls — the system every lux-v3 screen is built from.
+description: Glass over a pale sage canvas, one indigo, Figtree, round controls — the system every lux-v3 screen is built from.
 colors:
   primary: "#313560"
   primary-start: "#485780"
@@ -36,112 +36,112 @@ colors:
   symptom: "#D3858A"
 typography:
   headline:
-    fontFamily: Urbanist
+    fontFamily: Figtree
     fontSize: 36px
     fontWeight: 300
     lineHeight: 44px
     letterSpacing: -0.005em
   headline-emphasis:
-    fontFamily: Urbanist
+    fontFamily: Figtree
     fontSize: 36px
     fontWeight: 700
     lineHeight: 44px
     letterSpacing: -0.005em
   kicker:
-    fontFamily: Urbanist
+    fontFamily: Figtree
     fontSize: 16px
     fontWeight: 400
     lineHeight: 20px
   wordmark:
-    fontFamily: Urbanist
+    fontFamily: Figtree
     fontSize: 20px
     fontWeight: 700
     lineHeight: 24px
     letterSpacing: 0.005em
   h2:
-    fontFamily: Urbanist
+    fontFamily: Figtree
     fontSize: 28px
     fontWeight: 400
     lineHeight: 34px
   page-title:
-    fontFamily: Urbanist
+    fontFamily: Figtree
     fontSize: 22px
     fontWeight: 400
     lineHeight: 28px
   h4:
-    fontFamily: Urbanist
+    fontFamily: Figtree
     fontSize: 20px
     fontWeight: 400
     lineHeight: 24px
   panel-label:
-    fontFamily: Urbanist
+    fontFamily: Figtree
     fontSize: 18px
     fontWeight: 400
     lineHeight: 22px
   row-title:
-    fontFamily: Urbanist
+    fontFamily: Figtree
     fontSize: 16px
     fontWeight: 500
     lineHeight: 20px
   body-lg:
-    fontFamily: Urbanist
+    fontFamily: Figtree
     fontSize: 18px
     fontWeight: 400
     lineHeight: 24px
   body:
-    fontFamily: Urbanist
+    fontFamily: Figtree
     fontSize: 16px
     fontWeight: 400
     lineHeight: 22px
   body-sm:
-    fontFamily: Urbanist
+    fontFamily: Figtree
     fontSize: 14px
     fontWeight: 400
     lineHeight: 20px
   chip:
-    fontFamily: Urbanist
+    fontFamily: Figtree
     fontSize: 16px
     fontWeight: 400
     lineHeight: 20px
   label:
-    fontFamily: Urbanist
+    fontFamily: Figtree
     fontSize: 14px
     fontWeight: 500
     lineHeight: 20px
   button:
-    fontFamily: Urbanist
+    fontFamily: Figtree
     fontSize: 15px
     fontWeight: 500
     lineHeight: 20px
   button-sm:
-    fontFamily: Urbanist
+    fontFamily: Figtree
     fontSize: 14px
     fontWeight: 500
     lineHeight: 20px
   label-sm:
-    fontFamily: Urbanist
+    fontFamily: Figtree
     fontSize: 12px
     fontWeight: 500
     lineHeight: 16px
   caption:
-    fontFamily: Urbanist
+    fontFamily: Figtree
     fontSize: 12px
     fontWeight: 400
     lineHeight: 16px
   overline:
-    fontFamily: Urbanist
+    fontFamily: Figtree
     fontSize: 12px
     fontWeight: 600
     lineHeight: 16px
     letterSpacing: 0.12em
   metric-lg:
-    fontFamily: Urbanist
+    fontFamily: Figtree
     fontSize: 56px
     fontWeight: 300
     lineHeight: 60px
     fontFeature: '"tnum"'
   metric-md:
-    fontFamily: Urbanist
+    fontFamily: Figtree
     fontSize: 40px
     fontWeight: 300
     lineHeight: 40px
@@ -414,7 +414,7 @@ LUX is an AI-guided skincare investigation app: people record what their skin
 is doing, list the products they use, and get a careful, non-diagnostic
 reading of what might be associated with a reaction. They use it on a phone,
 briefly, often daily, sometimes while their skin is uncomfortable, so it has to
-feel **calm, clear and trustworthy**. The look comes from the VidGen
+feel **calm, clear and trustworthy**. The look comes from the
 references (`~/Claude/vidgen/index.html`, `~/Claude/vidgen-studio/index.html`):
 glass controls over a pale sage canvas, round buttons, light headlines with the
 key words in bold. The canvas gradient and the indigo are lux-v2's own; the
@@ -422,8 +422,8 @@ references' glows and dark ground were tried and dropped.
 It must never look clinical (white, grey, cold), never look like a video tool
 (lilac glows, dark editor chrome), and never shout (more than one primary
 action, bright fills).
-The values here are mirrored in code: `app/tokens.css`, `app/globals.css`, and
-`app/vidgen.css` (loaded last, so it wins), plus the components in
+The values here are mirrored in code: `app/tokens.css` (every value, declared
+once) and `app/globals.css` (every rule), plus the components in
 `components/ui/` and `components/layout/`. `docs/design.html` shows this file
 rendered; `/styleguide` shows the real components live. If the code and this
 file disagree, fix whichever is wrong in the same change, never one alone.
@@ -459,8 +459,8 @@ The compatibility bands map to them: Compatible = `success`, Risky =
 
 ## Typography
 
-Urbanist is the only typeface: a geometric sans that stays soft at light
-weights, which is what lets a 36px Light headline feel calm rather than thin.
+Figtree is the only typeface: a friendly sans that stays soft at light
+weights and holds up at 12px, which is what lets a 36px Light headline feel calm rather than thin.
 Five weights are loaded (300–700). The hierarchy is carried by size and weight,
 not colour.
 `headline` (36/44 Light) opens a welcome or empty state, with its key words in
@@ -477,11 +477,19 @@ nothing smaller, ever.
 In code each style is a `t-*` class (`t-headline`, `t-h4-h3`, `t-body2`,
 `t-chip`…); a screen never writes a font-size. Headings balance their lines
 and prose avoids orphans automatically.
+**Units (31 Oct 2026):** every size is rem (16px = 1rem), so the whole ramp
+follows the reader's browser text size, and every line height is a unitless
+ratio of its size. The px pairs above are the sizes at the default 16px root.
+Five roles are FLUID — they slide between 375 and 1440 wide with
+`clamp(min, rem + vw, max)`: `headline` 36 → 44, `t-h2` 28 → 32, `t-h3-h2`
+22 → 24, `t-body2-body1` 16 → 18, `t-body3-body2` 14 → 16. Every other role,
+page titles included, stays one size.
 
 ## Layout
 
 The spacing scale runs 2 · 4 · 8 · 12 · 16 · 20 · 24 · 32 · 40 · 48 · 64 · 80 ·
-96 · 120. Reach for the five roles first; they are the gaps the references
+96 · 120, written in rem (0.125rem … 7.5rem) so spacing grows with the
+reader's text size. Pills in a row sit `--space-pill-gap` (4) apart, app-wide. Reach for the five roles first; they are the gaps the references
 actually use: `group` (4) between controls in one cluster, `inset` (8) from a
 sheet's edge to the panel inside it and from the screen edge to a floating
 sheet, `gutter` (24) for screen side margins and a panel's side padding,
@@ -611,7 +619,7 @@ the empty states — reskinned only by the tokens they already read.
 
 **Do**
 - Do take every value from a token, a role or a component; a new look means a
-  new token here and in `app/vidgen.css` first.
+  new token here and in `app/tokens.css` first.
 - Do keep one primary action per screen, and make "selected" the primary
   colour every time.
 - Do use glass for controls and panels for boxes, each with its edge and top

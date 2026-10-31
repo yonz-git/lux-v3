@@ -16,7 +16,7 @@ import { ProductThumb } from "./ProductThumb";
 import { useInvestigation } from "@/lib/store/InvestigationProvider";
 import { useSnackbar } from "@/components/layout/Snackbar";
 import { DROP_EXIT_MS, useDialogPresence, useHeldWhileClosing } from "@/lib/useModalDialog";
-import { SearchIcon, CameraIcon, ChevronRightIcon, CloseIcon, PlusIcon } from "@/components/ui/icons";
+import { SearchIcon, CameraIcon, ChevronRightIcon, CloseIcon } from "@/components/ui/icons";
 import {
   BUCKET_LIST_TITLE,
   DURATIONS,
@@ -212,7 +212,12 @@ export function AddProductMethodSheet({
               : "Confirm product";
 
   return (
-    <Sheet open={open} onClose={resetAndClose} title={title}>
+    /* ✕ in the corner, not `Done` at the foot — 31 Oct 2026, asked for
+       directly; every view of this tray */
+    <Sheet open={open} onClose={resetAndClose} title={title}
+      dismiss="corner"
+      className={styles.cornerRoom}
+    >
       {view === "method" && (
         <MethodView
           onSearch={() => setView("search")}
@@ -486,7 +491,7 @@ function ScanView({
           : "Take photo of the front instead"}
       </button>
 
-      <Button
+      <Button width="action"
         className={styles.trayAction}
         disabled={!captured}
         onClick={onContinue}
@@ -617,12 +622,10 @@ function ConfirmView({
           {/* the tray's own primary action. Disabled until the question is
               answered, for the same reason Continue is on every step: there is
               no group to file the product under until it is. */}
-          {/* ⚠️ NOT IN FIGMA — the small secondary pill, asked for directly
-              13 Sep 2026; it was the full primary `Button` */}
+          {/* the indigo primary at `size="sm"`, the same `Add product` as the
+              verify stage's toggle (asked for directly 31 Oct 2026) */}
           <Button
-            variant="secondary"
-            size="md"
-            icon={<PlusIcon />}
+            size="sm"
             className={`${styles.trayAction} ${styles.trayActionSmall}`}
             disabled={!draft.duration}
             onClick={onAdd}

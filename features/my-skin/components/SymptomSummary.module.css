@@ -1,0 +1,139 @@
+/* Step 1's running summary — see SymptomSummary.tsx for what each value is
+   for. The surface is the global `canvas-card`, the panel every card is in
+   lux-v3. */
+
+.card {
+  position: relative;
+  /* 20 under `Reset all`, the within-question step. On the card and not on a
+     wrapper: inside the Collapse the space opens and closes with the card, and
+     a wrapper's margin would leave a 20 hole while it is closed. */
+  margin-top: var(--space-xl);
+  /* 24 round the card; the rows carry 12 above and below themselves, so the
+     foot takes 12 and the overline needs no margin of its own */
+  padding: var(--space-gutter) var(--space-gutter) var(--space-md);
+  border-radius: var(--radius-panel); /* 28 */
+  color: var(--color-text-primary);
+}
+
+.overline {
+  margin: 0;
+  color: var(--color-text-muted);
+}
+
+.rows {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+/* a rule between two symptoms, in the ink at 14% — never above the first */
+.rows > :global(.collapse) + :global(.collapse) {
+  border-top: var(--border-width-hairline) solid
+    color-mix(in srgb, currentColor 14%, transparent);
+}
+
+.row {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-sm); /* 8, name to pills */
+  padding-block: var(--space-md); /* 12 above and below the rule */
+}
+
+/* the name, with the rose dot ahead of it on the same line */
+.name {
+  display: flex;
+  align-items: center;
+  gap: var(--space-sm); /* 8 */
+  margin: 0;
+  color: var(--color-text-primary);
+}
+
+.mark {
+  flex: none;
+  width: 8px;
+  height: 8px;
+  border-radius: var(--radius-full);
+  background: var(--color-bg-symptom);
+  box-shadow: inset 0 1px 0 rgb(255 255 255 / 0.28);
+}
+
+.places {
+  display: flex;
+  flex-wrap: wrap;
+  margin: 0;
+  /* ⚠️ FLUSH LEFT WITH THE OVERLINE AND THE DOT — 31 Oct 2026, asked for
+     directly ("align left the pills"). They were indented the dot's 8 and its
+     8 gap, to start under the symptom's name. */
+  padding: 0;
+  list-style: none;
+}
+
+/* ⚠️ A PLACE IS A GLASS PILL, 28 TALL — the face's own region pill height and
+   the HIG's floor for a control. Spaced by margin, not `gap`, so a pill that
+   leaves can close its own gap as it fades; `max-width` is the room it takes up,
+   long enough for the widest label. Enters from `@starting-style`, leaves on
+   `data-leaving`, both on `--duration-move` and `--ease-in-out`. */
+.place {
+  display: inline-flex;
+  align-items: center;
+  box-sizing: border-box;
+  min-height: 28px;
+  max-width: 14em;
+  margin: 0 var(--space-pill-gap) var(--space-pill-gap) 0;
+  padding: 0 var(--space-md); /* 12 */
+  /* fill, rim, ink and shade are the face's lit pill — `.placePill` in
+     FaceDiagram.module.css, 30 Oct 2026, asked for directly. This rule keeps
+     only the size, the spacing and the enter/leave motion. */
+  position: relative;
+  white-space: nowrap;
+  overflow: hidden;
+  opacity: 1;
+  transition:
+    opacity var(--duration-fade) var(--ease-in-out),
+    max-width var(--duration-move) var(--ease-in-out),
+    margin var(--duration-move) var(--ease-in-out),
+    padding var(--duration-move) var(--ease-in-out),
+    border-width var(--duration-move) var(--ease-in-out);
+}
+
+@starting-style {
+  .place {
+    opacity: 0;
+    max-width: 0;
+    margin-right: 0;
+    padding-inline: 0;
+    border-width: 0;
+  }
+}
+
+.place[data-leaving] {
+  opacity: 0;
+  max-width: 0;
+  margin-right: 0;
+  padding-inline: 0;
+  border-width: 0;
+}
+
+/* the last row of pills carries the pill gap under it from the pill margins; the row's
+   own 12 sits below that, so take the pills' bottom back */
+.places {
+  margin-bottom: calc(var(--space-pill-gap) * -1);
+}
+
+/* ⚠️ THE SAME WIDTH AS THE FACE CARD ABOVE IT, AND ON ITS CENTRE LINE — from
+   1024 the face card is capped at 480 and centred (`.diagram` in
+   StartInvestigation.module.css); a summary left at the column's 640 hung 80
+   past it on each side. `taste.md`: elements meant to be centred sit on their
+   container's centre with equal gaps either side. */
+@media (min-width: 1024px) {
+  .card {
+    max-width: 480px;
+    margin-inline: auto;
+  }
+}
+
+@media (prefers-reduced-transparency: reduce) {
+  .place {
+    background: var(--color-bg-nav);
+  }
+}

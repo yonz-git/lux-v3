@@ -1,8 +1,8 @@
-/* ⚠️ lux-v3, 1 Oct 2026 — THE TRAY HAS VIDGEN'S SHAPE ON v2'S FILL. The AI
+/* ⚠️ lux-v3, 1 Oct 2026 — THE TRAY HAS THE REFERENCE'S SHAPE ON v2'S FILL. The AI
    Assistant's 36 top / 44 bottom corners and no border (⚠️ the white rim
    along the top went 3 Oct 2026, asked for directly: "remove the white
    borders"), over lux-v2's own sage frost (`--surface-sheet`, kept when the
-   VidGen gradients were dropped the same day);
+   the reference gradients were dropped the same day);
    on a phone it floats 8 in from the screen's edges like the reference's
    (`--space-inset`). The ✕ is a 56 glass circle. The sage `surface/data` tray and its notes below are history. */
 
@@ -50,7 +50,7 @@
      real content started 37px down. See `.grabber` for the other half of that.
      The back-chevron header this also used to pay for is gone — `Cancel` at
      the foot of the tray replaced it. */
-  padding: var(--space-sm) var(--space-xl) 28px;
+  padding: var(--space-sm) var(--space-xl) 1.75rem;
 
   /* Figma's radius 28 is off the radius scale at both ends (2xl is 24, 3xl 32).
      Written as a literal rather than snapped to a token that would be quietly
@@ -132,53 +132,18 @@
   }
 }
 
-/* ⚠️ THE CORNER ✕ — `dismiss="corner"`, added 15 Sep 2026 (see Sheet.tsx).
-   A 44 target (`size/touch-target`) around a 24 glyph, pinned to the tray's
-   top-right: the tray is `position: fixed`, so it is the containing block and
-   the ✕ sits in its padding rather than in the centred column. On a phone it
-   shares the top row with the grabber, 4 down and 8 in; the desktop dialog's
-   48 padding puts it 16 in. The same 0.7 hover fade as `Done`, and the global
-   focus outline follows its round radius. */
-.close {
+/* ⚠️ THE CORNER ✕ — `dismiss="corner"`, added 15 Sep 2026 (see Sheet.tsx),
+   pinned to the tray's top-right: the tray is `position: fixed`, so it is the
+   containing block and the ✕ sits in its padding rather than in the centred
+   column. ⚠️ IT IS `IconButton size="xs"` AS OF 31 Oct 2026 — the app's one
+   small glass ✕ (asked for directly: "buttons that use the same design should
+   be using reusable components with variants"); only its place is set here.
+   Two classes deep, over `IconButton`'s own `position: relative`. */
+.tray > .close {
   position: absolute;
-  top: var(--space-xl); /* 20 — the reference's 22 */
+  top: var(--space-xl); /* 20 */
   right: var(--space-xl);
   z-index: 1;
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  /* ⚠️ 44, NOT THE ROUND BUTTON'S 56 — asked for directly 1 Oct 2026
-     ("reduce the circle size of the x") on the progress gallery, the one
-     `dismiss="corner"` caller. 44 is the touch floor, so the circle is
-     still its own target. */
-  width: var(--size-touch-target);
-  height: var(--size-touch-target);
-  padding: 0;
-  border-radius: var(--radius-full);
-  color: var(--color-text-primary);
-  /* glass, not the reference's opaque white — no white fills in lux-v3 */
-  background: var(--color-glass);
-  border: var(--border-width-hairline) solid var(--color-border-glass);
-  box-shadow: var(--shadow-glass);
-  transition: opacity var(--duration-fast) var(--ease-hover);
-}
-
-/* ⚠️ 30% UNDER `icon/md`, 16 Sep 2026, asked for directly on the gallery
-   ("reduce -30% the x of the progress gallery") — the one `dismiss="corner"`
-   caller, so the corner ✕ is that ✕. 16.8, written as the multiple, and ONLY
-   the glyph: the 44 target round it keeps its size. */
-.closeIcon {
-  --icon-size: 14px; /* the reference's 13 */
-}
-
-.close:hover {
-  opacity: 0.7;
-}
-
-@media (hover: none) {
-  .close:hover {
-    opacity: 1;
-  }
 }
 
 /* 40x5, border/glass, fully rounded */

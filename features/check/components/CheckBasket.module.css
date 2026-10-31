@@ -29,7 +29,7 @@
      the comp's 6px overhang either side. See AGENTS.md. */
   max-width: calc(100vw - (var(--margin-mobile) * 2));
   min-height: 54px;
-  padding: 14px var(--space-xl); /* 14 / 20 */
+  padding: 0.875rem var(--space-xl); /* 14 / 20 */
 
   border-radius: var(--radius-full);
   /* ⚠️ HALF THE FILL AND A REAL FROST — 16 Sep 2026, asked for directly ("give
@@ -39,10 +39,10 @@
      through from going grey. The reduced-transparency fallback below still
      composites the full token, so that path is unchanged. */
   /* lux-v3: the panel's glass, floating — a 30% frost, the panel edge and
-     rim, and the nav's soft drop (app/vidgen.css). The v2 sage is history. */
+     rim, and the nav's soft drop (app/globals.css). The v2 sage is history. */
   border: var(--border-width-hairline) solid var(--color-border-panel);
   background: var(--color-panel);
-  box-shadow: var(--shadow-nav-vg);
+  box-shadow: var(--shadow-nav-bar);
   -webkit-backdrop-filter: blur(16px);
   backdrop-filter: blur(16px);
 
@@ -87,7 +87,7 @@
   min-width: 0;
   /* ⚠️ 1.5px OVER `t-body2`'s 16 — asked for directly 16 Sep 2026. Off the
      type ramp (non-negotiable 3); the class keeps the weight and the 26 line. */
-  font-size: 17.5px;
+  font-size: 1.0938rem; /* 17.5 */
   /* the chevron's 24 plus an 8 gap, reserved on BOTH sides — so a long label
      wraps before it reaches the arrow, and the words stay centred on the pill
      whether or not the arrow is there */
@@ -176,7 +176,7 @@
   display: flex;
   align-items: center;
   gap: var(--space-md); /* 12 */
-  padding: 12px var(--space-lg); /* 12 / 16 */
+  padding: 0.75rem var(--space-lg); /* 12 / 16 */
   border-radius: var(--radius-lg);
   /* ⚠️ `surface/data-deep`, NOT `-data-strong` — BY EXPLICIT REQUEST, and the
      same swap `ResultCards`' emphasis block takes. A 62% sage row on the 44%
@@ -293,14 +293,7 @@
    is `--width-action-mobile`, the nav pill's width, like every other action in
    the app on a phone; the 376 it used to be is the desktop value. */
 .submit {
-  width: 100%;
-  max-width: var(--width-action-mobile);
-}
-
-@media (min-width: 1024px) {
-  .submit {
-    max-width: var(--width-action);
-  }
+  /* width is `Button`'s `width="action"` (31 Oct 2026) */
 }
 
 /* sits directly under the disabled CTA, so the reason is next to the control it

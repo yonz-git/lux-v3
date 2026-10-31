@@ -21,10 +21,10 @@
   min-height: 76px;
   /* ⚠️ 10% MORE, asked for directly 15 Sep 2026 ("make it breathe more"):
      15.4 / 19.8, so a one-line row now measures ~79 over the 48 thumb */
-  padding: calc(14px * 1.1) calc(18px * 1.1);
+  padding: calc(0.875rem * 1.1) calc(1.125rem * 1.1);
   text-align: left;
 
-  /* lux-v3: the 30% panel at 24 (app/vidgen.css), as the PRODUCTS hub's
+  /* lux-v3: the 30% panel at 24 (app/globals.css), as the PRODUCTS hub's
      groups and the score cards. The v2 two-layer mint is in `git log -p`. */
   border-radius: var(--radius-2xl); /* 24 */
   border: var(--border-width-hairline) solid var(--color-border-panel);
@@ -167,7 +167,11 @@
 .empty.emptyCompact {
   padding: var(--space-xl) 0; /* 20 */
   border-radius: var(--radius-md); /* 12 */
-  background: var(--color-bg-surface-frost);
+  /* ⚠️ NO FILL, NO RIM — the group's own glass shows through, pressed in by
+     the frosted-row inner shadow (asked for directly 31 Oct 2026). */
+  border-color: transparent;
+  background: none;
+  box-shadow: var(--shadow-frosted-row);
   -webkit-backdrop-filter: none;
   backdrop-filter: none;
 }

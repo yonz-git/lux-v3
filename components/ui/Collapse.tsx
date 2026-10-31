@@ -37,6 +37,7 @@ export function Collapse({
   open,
   as: Tag = "div",
   appear = false,
+  smooth = false,
   children,
 }: {
   open: boolean;
@@ -44,9 +45,17 @@ export function Collapse({
   as?: "div" | "li";
   /** grow in even when mounted open — a row put back by Undo */
   appear?: boolean;
+  /**
+   * The slow, premium recipe — a 500ms ease in-out move and a 350ms fade
+   * (`--duration-move`, `--duration-fade`, `--ease-in-out`) in place of the
+   * app's quicker 200ms recipe. For a surface that is swapping, not a row morphing;
+   * `~/.claude/taste.md`. Opt-in: every other Collapse is unchanged.
+   */
+  smooth?: boolean;
   children: ReactNode;
 }) {
-  const { present, leaving } = useDialogPresence(open);
+  const ms = smooth ? SMOOTH_MS : ENTER_MS;
+  const { present, leaving } = useDialogPresence(open, ms);
   const [settled, setSettled] = useState(open && !appear);
 
   useEffect(() => {
@@ -54,9 +63,9 @@ export function Collapse({
       setSettled(false);
       return;
     }
-    const timer = setTimeout(() => setSettled(true), ENTER_MS);
+    const timer = setTimeout(() => setSettled(true), ms);
     return () => clearTimeout(timer);
-  }, [present, leaving]);
+  }, [present, leaving, ms]);
 
   /* ⚠️ `open`, NOT JUST `present`, DECIDES THE FIRST FRAME — changed 13 Sep
      2026. `useDialogPresence` sets `present` in an effect, so opening mounted
@@ -76,6 +85,7 @@ export function Collapse({
   return (
     <Tag
       className="collapse"
+      data-smooth={smooth ? "" : undefined}
       data-state={closing ? "leaving" : settled ? undefined : "entering"}
       inert={closing}
     >
@@ -89,6 +99,10 @@ export function Collapse({
    panel's content spills over the rows below for the last frames of growing;
    too late and a focus ring at its edge stays cut for a moment longer. */
 const ENTER_MS = 200;
+
+/* ⚠️ KEEP IN STEP WITH `--duration-move` (500ms) — `<Collapse smooth>`'s slide,
+   and both its clip-off and its unmount: shorter cuts the exit off mid-move. */
+const SMOOTH_MS = 500;
 
 /* ⚠️ KEEP IN STEP WITH `useDialogPresence`'s default exit (lib/useModalDialog.ts)
    and `--duration-base` — how long a collapse takes to close. A caller that

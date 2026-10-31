@@ -2,8 +2,10 @@
    LUX design tokens — HAND-OWNED since 1 Oct 2026.
    This file was generated from Figma file wIftBhzkn8E4wjZwgdH71n until Figma
    was retired; nothing generates it now, and it is the design system's source
-   of truth. Edit values here (or as overrides on `:root` in globals.css), never
-   on a screen. `/styleguide` renders every token.
+   of truth. Every custom property is declared ONCE, in this file. The first
+   block is the base scale; the blocks after it are the later decisions, each
+   with its own reasoning. Edit values here, never on a screen. Rules live in globals.css.
+   `/styleguide` renders every token.
 
    Light mode only. Figma defines a Dark mode but it has never been visually
    reviewed, so it is deliberately not emitted yet.
@@ -50,13 +52,63 @@
   --color-rose-500: #c9918e;
   --color-red-100: #f5e7e6;
   --color-red-500: #a86561;
-
   /* ---- 02 Color — semantic (Light) ---------------------------------------- */
   --color-bg-canvas: var(--color-sage-300);
   --color-bg-surface: var(--color-neutral-0);
   --color-bg-surface-frost: var(--color-neutral-100);
-  --color-bg-brand: var(--color-indigo-700);
-  --color-bg-brand-hover: var(--color-indigo-800);
+  /* ==========================================================================
+     THE INDIGO FAMILY — moved to hue 282 on 8 Sep 2026.
+
+     ⚠️ NOT IN FIGMA. `bg/brand` was `indigo/700` `#3b305c` (hue 293.5) and is
+     now `#39386f` (hue 281.7), asked for directly. It is the same value as
+     `gradient/brand`'s dark end, which is the point: the primary button and the
+     accent that marks a selection are the same indigo now, rather than two
+     violets eleven degrees apart appearing side by side on `/progress` (the
+     button beside the checked-in calendar discs). That was written up as the
+     one open question left by the button reassignment; this closes it.
+
+     ⚠️ ALL THREE STEPS MOVE TOGETHER, AND ONLY `bg/brand` WAS ASKED FOR. The
+     other two are defined relative to it and would have been left stranded on
+     the old hue:
+
+       bg/brand        #3b305c -> #39386f   L 0.343->0.371  H 293.5->281.7
+       bg/brand-hover  #2e2447 -> #2c2a5f   the same lightness delta, new hue
+       bg/brand-soft   #8e80bc -> #8284c0   the same L and C, new hue
+
+     `-soft` in particular HAS to follow: it is the moderate-likelihood pill on
+     `ResultCards` and its whole job is to read as one scale with `bg/brand`,
+     which two different hues would break. Reverting the two dependents is three
+     lines if that is wanted; `bg/brand` itself is the asked-for change.
+
+     ⚠️ WHITE STILL PASSES EVERYWHERE IT WAS PASSING. `text/on-brand` on
+     `bg/brand` goes 11.91:1 -> **10.66:1**, and on `-hover` 14.39:1 ->
+     13.10:1 — both far clear of AA. The roles are the checked-in calendar
+     discs, selected chips and option rows, `StepProgress`' fill, the face
+     diagram's picked regions, the "High likelihood" pill and `::selection`.
+
+     ⚠️ `bg/brand-soft` STILL FAILS, AS IT DID BEFORE. White on it goes 3.52:1
+     -> 3.49:1 — a 0.03 change, i.e. the same open question it already carried,
+     not a new one. It is indigo/300's job to be the lighter half of a
+     two-point scale, and a fill light enough to read as "less" is a fill white
+     struggles on. Listed with `CompatCard`'s band pills in AGENTS.md
+     non-negotiable 17.
+
+     ⚠️ DECLARED HERE, NOT IN `tokens.css` — that file is generated from the
+     Figma variables and Figma still holds `indigo/700`. Raise all three there;
+     see `docs/archive/figma-catchup.md`. ⚠️ AND DO NOT REPOINT THE PRIMITIVE
+     `--color-indigo-700` INSTEAD: non-negotiable 2 forbids a component binding
+     a primitive, and moving the ramp step would drag anything else aliasing it.
+     ========================================================================== */
+  /* ⚠️ `#39386f` → `#313560` AND `-hover` `#2c2a5f` → `#242750`, 14 Sep 2026,
+     asked for directly ("one indigo"): the button gradient was retuned by hand
+     to end on `#313560`, and `bg/brand` follows it so the action and every
+     selected mark stay one value. Both siblings took the same OKLCH step
+     (L −0.024, C −0.018, H −4°). White: 11.61:1 here, 14.18:1 on hover. The
+     notes above still quote the old values. */
+  --color-bg-brand: #313560;
+  --color-bg-brand-hover: #242750;
+  /* the routine card's dark teal base; the products hub's count badge too */
+  --color-bg-routine: #005461;
   /* ⚠️ A DIRECT VALUE, NOT `var(--color-blue-50)`. Changed to #dbeded on
      22 Aug 2026. It pairs with --color-bg-bubble-user (#cadfdf) on the same
      hue — both G == B — differing only in lightness, so the two are held the
@@ -72,28 +124,68 @@
   --color-bg-bubble-user: #cadfdf;
   --color-text-primary: var(--color-neutral-800);
   --color-text-secondary: var(--color-neutral-600);
-  --color-text-muted: var(--color-neutral-400);
+  /* ⚠️ #575763 SINCE 29 Oct 2026 — #63636f measured 4.12–4.34:1 on the
+     calendar, the profile tiles' labels and CompatCard's brand line by
+     `npm run contrast`. 4.95:1 on the darkest of those surfaces. */
+  --color-text-muted: #575763;
   --color-text-on-brand: var(--color-neutral-0);
   --color-text-brand: var(--color-indigo-700);
   --color-text-disabled: #8b9698;
   --color-text-success: var(--color-green-500);
-  --color-text-warning: var(--color-rose-500);
-  --color-text-error: var(--color-red-500);
-  --color-text-on-data: #ffffff;
-  --color-text-on-data-secondary: rgba(255, 255, 255, 0.85);
-  --color-text-on-data-muted: rgba(255, 255, 255, 0.62);
+  --color-text-warning: #c24e47;
+  /* text/error + text/warning + border/error — THE SAME TWO VALUES, ASKED FOR
+     8 Sep 2026, A TURN AFTER THE BANDS.
+
+     ⚠️ THEY WERE DELIBERATELY LEFT BEHIND FIRST AND THAT WAS REVERSED, WHICH
+     IS WHY THIS IS A SECOND BLOCK RATHER THAN THREE MORE LINES ABOVE. The
+     first pass moved only `feedback/*`, on the argument that a destructive
+     control is not a compatibility band; the answer was that LUX gets ONE red,
+     not a band red and a control red six points of saturation apart. It is the
+     same reasoning that collapsed `bg/brand` onto the button gradient's dark
+     end.
+
+     ⚠️ ONE OF THE THREE HAS A CALLER, AND IT IS NOT WHAT THE FIRST PASS SAID.
+     `text/error` is the **Remove** action on `ProductAccordionCard` — a
+     `t-label` (14/20) destructive control, not an inline validation message.
+     Measured on `surface/frost-light` composited over the canvas gradient at
+     three positions:
+
+       start #dce7ea   3.98:1 -> 3.77:1
+       mid   #cedee2   3.82:1 -> 3.62:1
+       end   #acc5cc   3.42:1 -> 3.25:1
+
+     ⚠️ IT FAILED 1.4.3 BEFORE AND FAILS BY ~0.2 MORE NOW — a 14px label needs
+     4.5:1 and the old red never reached it at any position on the gradient.
+     A pre-existing failure widened, not a new one; logged with the band pills
+     in `docs/archive/figma-catchup.md` § 2. ⚠️ Do not close it by exempting this one
+     token from the red: the fix is a DARKER red for all of them, or the Remove
+     action stops carrying its meaning in colour — it is the only destructive
+     control on these screens and the word already says what it does.
+
+     `text/warning` and `border/error` have NO callers in the build. They move
+     anyway, so that a first caller inherits the red the app actually uses
+     rather than the one Figma still holds. ⚠️ The `-subtle` tints (`rose/100`,
+     `red/100`) did NOT move — nothing asked them to, they are near-neutral
+     either way, and `CompatCard`'s tinted tag is the only thing reading
+     them. */
+  --color-text-error: #82302b;
+  --color-text-on-data: var(--color-text-primary);
+  /* sage-tinted rather than gray: secondary text on a coloured surface takes
+     that surface's hue, and a neutral gray reads as dirt on this one. */
+  --color-text-on-data-secondary: #354446;
+  --color-text-on-data-muted: #354446;
   --color-icon-default: var(--color-neutral-800);
   --color-icon-secondary: var(--color-neutral-600);
   --color-icon-muted: var(--color-neutral-400);
   --color-icon-brand: var(--color-indigo-700);
   --color-icon-on-brand: var(--color-neutral-0);
-  --color-icon-on-data: #ffffff;
+  --color-icon-on-data: var(--color-text-primary);
   --color-border-subtle: var(--color-neutral-200);
   --color-border-default: var(--color-neutral-300);
   --color-border-brand: var(--color-indigo-600);
   --color-border-focus: var(--color-indigo-600);
-  --color-border-error: var(--color-red-500);
-  --color-border-glass: rgba(255, 255, 255, 0.55);
+  --color-border-error: #82302b;
+  --color-border-glass: rgb(255 255 255 / 0.3); /* 1px edge on all glass — 0.55 until 3 Oct 2026, asked for directly */
   --color-border-highlight: rgba(255, 255, 255, 0.9);
   --color-bg-glass: rgba(255, 255, 255, 0.5);
   --color-bg-glass-strong: rgba(255, 255, 255, 0.72);
@@ -120,8 +212,8 @@
      bg/bubble-ai, so the nav sits on the same hue as the AI bubble.
      ⚠️ THE SEARCH FIELD BINDS THIS TOO, in Figma and here — the frosted pill is
      one surface used by two components, so they move together by design. */
-  --color-surface-frost-nav: rgba(219, 237, 237, 0.878);
-  --color-surface-card-desktop: rgba(237, 248, 251, 0.55);
+  --color-surface-frost-nav: #dbeded7a;
+  --color-surface-card-desktop: #edf8fb30;
   --color-surface-data: rgba(125, 167, 169, 0.44);
   --color-surface-data-strong: rgba(125, 167, 169, 0.62);
   --color-effect-rim-highlight: rgba(255, 255, 255, 0.9);
@@ -134,14 +226,53 @@
   --color-state-disabled-bg: rgba(238, 246, 247, 0.51);
   --color-feedback-success: var(--color-green-500);
   --color-feedback-success-subtle: var(--color-green-100);
-  --color-feedback-warning: var(--color-rose-500);
+  --color-feedback-warning: #c24e47;
   --color-feedback-warning-subtle: var(--color-rose-100);
-  --color-feedback-error: var(--color-red-500);
+  /* ==========================================================================
+     feedback/error + feedback/warning — THE COMPATIBILITY BANDS, RETUNED
+     8 Sep 2026, ASKED FOR DIRECTLY.
+
+     ⚠️ DECLARED HERE, NOT IN `tokens.css` — that file is generated from the
+     Figma variables and Figma still holds `rose/500` (#c9918e) and `red/500`
+     (#a86561). Raise both there; see `docs/archive/figma-catchup.md`.
+
+     ⚠️ AND STILL DO NOT REPOINT THE PRIMITIVES `--color-rose-500` /
+     `--color-red-500`, EVEN THOUGH EVERY ROLE THAT ALIASES THEM NOW MOVES.
+     Five semantic roles read those two steps and all five are declared below,
+     so repointing the ramp would be equivalent today and two lines shorter —
+     and it would still be wrong, for the reason the `bg/brand` block above
+     gives: a primitive is not a role, non-negotiable 2 forbids a component
+     binding one, and the next role that wants to stay behind would have
+     nowhere to stand. The roles are named so that divergence stays possible.
+
+     Both moved together because Avoid and Risky are one scale: #a86561 and
+     #c9918e are a dusty red and a dusty rose four steps of chroma apart, and
+     the two bands read as different families rather than as two rungs. The
+     new pair is one hue with a real step between them.
+
+     Measured, white on the fill (the pill in `CompatCard` and `CheckHistory`,
+     and the badge on `ResultCards`' emphasis block):
+
+       Avoid  #a86561 -> #c65953   4.47:1 -> 4.24:1
+       Risky  #c9918e -> #d47873   2.65:1 -> 3.12:1
+
+     Risky gains 0.47 and still fails AA — it is the known-failing band pill
+     already listed under non-negotiable 17, unchanged in substance. Avoid
+     gives up 0.23 and drops just under AA with it, which is a WIDENING of that
+     same open question rather than a new one; the band pills are on the
+     Figma-decision list either way. ⚠️ Do not "fix" either by putting the app
+     ink on the fill — `HypothesisCard` does that deliberately and the note on
+     its `--band-ink` is why it cannot be lifted here. */
+  /* ⚠️ 29 Oct 2026: DARKER, AS THE NOTE ABOVE SAID THE FIX WOULD BE. Avoid
+     #82302b (white 8.7:1, and 4.8:1 as `text/error` on frost at the bottom of
+     the gradient), Risky #c24e47 (white 4.7:1). Still one hue, two rungs. */
+  --color-feedback-error: #82302b;
   --color-feedback-error-subtle: var(--color-red-100);
   --color-feedback-info: var(--color-indigo-600);
   --color-feedback-info-subtle: var(--color-indigo-50);
-  --color-button-bg-default-start: #bbd3d9;
-  --color-button-bg-default-end: #637073;
+  /* the mirrors of the two lines above — these are the ones `Button` reads */
+  --color-button-bg-default-start: #485780;
+  --color-button-bg-default-end: #313560;
   --color-button-bg-hover-start: #a9c3ca;
   --color-button-bg-hover-end: #556164;
   --color-button-bg-pressed-start: #96b1b9;
@@ -160,67 +291,78 @@
   /* The Secondary gradient, mirroring button/bg-default-start / -end for
      Primary. Taken from Small Button / Secondary, which already used it, so
      Secondary now reads the same at both sizes. Hover swaps the two ends. */
-  --color-button-bg-secondary-start: #deeff3;
-  --color-button-bg-secondary-end: #b7c6ca;
-  --color-gradient-canvas-start: #dce7ea;
-  --color-gradient-canvas-mid: #cedee2;
-  --color-gradient-canvas-end-mobile: #acc5cc;
-  --color-gradient-canvas-end-desktop: #b9d1d7;
-  --color-gradient-brand-start: #bbd3d9;
-  --color-gradient-brand-end: #637073;
-
+  /* ⚠️ NOT IN FIGMA — `gradient/secondary` made TRANSLUCENT, 14 Sep 2026,
+     asked for directly: `#deeff3` → `#deeff391` and `#b7c6ca` → `#b9c8cddb`
+     (the end also nudged lighter). Every caller of these two — `Button
+     variant="secondary"` and `SmallButton` — now carries a backdrop blur so the
+     pill reads as frost rather than a thin wash. Opaque fallback below. Figma
+     still holds the opaque pair; raise it there. */
+  --color-button-bg-secondary-start: #deeff391;
+  --color-button-bg-secondary-end: #b9c8cddb;
+  --color-gradient-canvas-start: #e2edf1; /* Figma #dce7ea; #c6d0d3 on 14 Sep */
+  --color-gradient-canvas-mid: #d3e4e7; /* Figma #cedee2; #b9c8cb on 14 Sep */
+  --color-gradient-canvas-end-mobile: #b1cad2; /* Figma #acc5cc; #9bb1b8 on 14 Sep */
+  --color-gradient-canvas-end-desktop: #bdd6dd; /* Figma #b9d1d7; #a6bcc2 on 14 Sep */
+  /* ⚠️ RETUNED 14 Sep 2026, by hand: `#657792` → `#546982` and `#39386f` →
+     `#313560`, a step darker. The notes above still quote the old pair. The
+     `@property --grad-*` initial-values moved with it, and so did `bg/brand`
+     (to `#313560`, its siblings by the same step), so the button's dark end and
+     the selection indigo are still one value. White measures 5.65:1 and
+     11.61:1 at the ends.
+     ⚠️ The START retuned again 15 Sep 2026, asked for directly: `#546982` →
+     `#485780`, darker and bluer. The end and `bg/brand` did not move. */
+  --color-gradient-brand-start: #485780;
+  --color-gradient-brand-end: #313560;
   /* ---- 03 Spacing --------------------------------------------------------- */
-  --space-2xs: 2px;
-  --space-xs: 4px;
-  --space-sm: 8px;
-  --space-md: 12px;
-  --space-lg: 16px;
-  --space-xl: 20px;
-  --space-2xl: 24px;
-  --space-3xl: 32px;
-  --space-4xl: 40px;
-  --space-5xl: 48px;
-  --space-6xl: 64px;
-  --space-7xl: 80px;
-  --space-8xl: 96px;
-  --space-9xl: 120px;
-
+  --space-2xs: 0.125rem; /* 2px */
+  --space-xs: 0.25rem; /* 4px */
+  --space-sm: 0.5rem; /* 8px */
+  --space-md: 0.75rem; /* 12px */
+  --space-lg: 1rem; /* 16px */
+  --space-xl: 1.25rem; /* 20px */
+  --space-2xl: 1.5rem; /* 24px */
+  --space-3xl: 2rem; /* 32px */
+  --space-4xl: 2.5rem; /* 40px */
+  --space-5xl: 3rem; /* 48px */
+  --space-6xl: 4rem; /* 64px */
+  --space-7xl: 5rem; /* 80px */
+  --space-8xl: 6rem; /* 96px */
+  --space-9xl: 7.5rem; /* 120px */
   /* ---- 04 Radius ---------------------------------------------------------- */
   --radius-none: 0px;
-  --radius-xs: 4px;
-  --radius-sm: 8px;
-  --radius-md: 12px;
-  --radius-lg: 16px;
-  --radius-xl: 20px;
-  --radius-2xl: 24px;
-  --radius-3xl: 32px;
+  --radius-xs: 0.25rem; /* 4px */
+  --radius-sm: 0.5rem; /* 8px */
+  --radius-md: 0.75rem; /* 12px */
+  --radius-lg: 1rem; /* 16px */
+  --radius-xl: 1.25rem; /* 20px */
+  --radius-2xl: 1.5rem; /* 24px */
+  --radius-3xl: 2rem; /* 32px */
   --radius-full: 999px;
   /* chat bubbles: three corners at --radius-bubble, the sender-side corner at
      --radius-bubble-tail. See Spec/Chat Bubble (47:12) on board 06 · Core. */
-  --radius-bubble: 30px;
+  --radius-bubble: 1.875rem; /* 30px */
   --radius-bubble-tail: 1px;
-
   /* ---- 05 Layout ---------------------------------------------------------- */
   --bp-mobile: 440px;
   --bp-tablet: 1024px;
   --bp-desktop: 1440px;
   --container-max: 1280px;
-  --margin-mobile: 24px;
-  --margin-tablet: 40px;
-  --margin-desktop: 80px;
+  --margin-mobile: 1.5rem; /* 24px */
+  --margin-tablet: 2.5rem; /* 40px */
+  --margin-desktop: 5rem; /* 80px */
   --columns-mobile: 4;
   --columns-tablet: 8;
   --columns-desktop: 12;
-  --gutter-mobile: 16px;
-  --gutter-tablet: 24px;
-  --gutter-desktop: 24px;
-  --width-card-focus: 640px;
-  --width-card-form: 920px;
-  --width-card-detail: 1040px;
-  --width-content-max: 1280px;
-
+  --gutter-mobile: 1rem; /* 16px */
+  --gutter-tablet: 1.5rem; /* 24px */
+  --gutter-desktop: 1.5rem; /* 24px */
+  --width-card-focus: 40rem; /* 640px */
+  --width-card-form: 57.5rem; /* 920px */
+  --width-card-detail: 65rem; /* 1040px */
+  --width-content-max: 80rem; /* 1280px */
   /* ---- 06 Typography ------------------------------------------------------ */
-  --font-family-sans: var(--font-urbanist), "Urbanist", system-ui, sans-serif;
+  /* ---- type — Figtree, 4 Oct 2026 (see app/layout.tsx) ---- */
+  --font-family-sans: var(--font-figtree), "Figtree", system-ui, sans-serif;
   --font-family-mono: ui-monospace, SFMono-Regular, Menlo, monospace;
   --font-weight-light: 300;
   --font-weight-regular: 400;
@@ -229,63 +371,66 @@
      If you see SemiBold or Bold rendering anywhere, that is drift. */
   --font-weight-semibold: 600;
   --font-weight-bold: 700;
-  --font-size-3xs: 12px;
-  --font-size-2xs: 13px;
-  --font-size-xs: 14px;
-  --font-size-sm: 16px;
-  --font-size-md: 18px;
-  --font-size-lg: 20px;
-  --font-size-xl: 24px;
-  --font-size-2xl: 32px;
-  --font-size-3xl: 40px;
-  --font-size-4xl: 56px;
-  --font-size-5xl: 64px;
-  --font-size-6xl: 84px;
-  --line-height-3xs: 16px;
-  --line-height-2xs: 18px;
-  --line-height-xs: 22px;
-  --line-height-sm: 26px;
-  --line-height-md: 28px;
-  --line-height-lg: 28px;
-  --line-height-xl: 32px;
-  --line-height-2xl: 40px;
-  --line-height-3xl: 48px;
-  --line-height-4xl: 60px;
-  --line-height-5xl: 76px;
-  --line-height-6xl: 96px;
-  --tracking-tight: -1.25px;
-  --tracking-snug: -1px;
-  --tracking-normal: 0px;
-  --tracking-wide: 0.71px;
-  --tracking-wider: 1.67px;
-  --tracking-widest: 14px;
-
+  --font-size-3xs: 0.75rem; /* 12px */
+  --font-size-2xs: 0.8125rem; /* 13px */
+  --font-size-xs: 0.875rem; /* 14px */
+  --font-size-sm: 1rem; /* 16px */
+  --font-size-md: 1.125rem; /* 18px */
+  --font-size-lg: 1.25rem; /* 20px */
+  --font-size-xl: 1.5rem; /* 24px */
+  --font-size-2xl: 2rem; /* 32px */
+  --font-size-3xl: 2.5rem; /* 40px */
+  --font-size-4xl: 3.5rem; /* 56px */
+  --font-size-5xl: 4rem; /* 64px */
+  --font-size-6xl: 5.25rem; /* 84px */
+  --line-height-3xs: 1rem; /* 16px */
+  --line-height-2xs: 1.125rem; /* 18px */
+  --line-height-xs: 1.375rem; /* 22px */
+  --line-height-sm: 1.625rem; /* 26px */
+  --line-height-md: 1.75rem; /* 28px */
+  --line-height-lg: 1.75rem; /* 28px */
+  --line-height-xl: 2rem; /* 32px */
+  --line-height-2xl: 2.5rem; /* 40px */
+  --line-height-3xl: 3rem; /* 48px */
+  --line-height-4xl: 3.75rem; /* 60px */
+  --line-height-5xl: 4.75rem; /* 76px */
+  --line-height-6xl: 6rem; /* 96px */
+  --tracking-tight: -0.0781rem; /* -1.25px */
+  --tracking-snug: -0.0625rem; /* -1px */
+  --tracking-normal: 0rem; /* 0px */
+  --tracking-wide: 0.0444rem; /* 0.71px */
+  --tracking-wider: 0.1044rem; /* 1.67px */
+  --tracking-widest: 0.875rem; /* 14px */
   /* ---- 07 Size ------------------------------------------------------------ */
-  --size-icon-xs: 16px;
-  --size-icon-sm: 20px;
-  --size-icon-md: 24px;
-  --size-icon-lg: 32px;
-  --size-icon-xl: 48px;
-  --size-touch-target: 44px;
-  --size-control-sm: 36px;
-  --size-control-md: 48px;
-  --size-control-lg: 62px;
-  --size-nav-height: 75px;
-  --size-nav-width-mobile: 380px;
-  --size-nav-width-desktop: 598px;
+  --size-icon-xs: 1rem; /* 16px */
+  --size-icon-sm: 1.25rem; /* 20px */
+  --size-icon-md: 1.5rem; /* 24px */
+  --size-icon-lg: 2rem; /* 32px */
+  --size-icon-xl: 3rem; /* 48px */
+  --size-touch-target: 2.75rem; /* 44px */
+  --size-control-sm: 2.25rem; /* 36px */
+  --size-control-md: 3rem; /* 48px */
+  /* the segmented toggle's pill and `Button size="sm"`: one indigo `Add product` */
+  --size-button-sm: 2.625rem; /* 42px */
+  --space-button-sm-inline: 1.375rem; /* 22px */
+  --size-control-lg: 3.875rem; /* 62px */
+  /* the bar is 56 circles in 6 of padding and a 1px edge: 70 tall. Every
+     `.screen` reservation reads these two, so they move together. */
+  --size-nav-height: 4.375rem; /* 70px */
+  --size-nav-width-mobile: 23.75rem; /* 380px */
+  --size-nav-width-desktop: 37.375rem; /* 598px */
   --size-progress-track: 4px;
-  --size-avatar: 40px;
-  --size-logo-mobile: 62px;
-  --size-logo-desktop: 82px;
-  --size-orb-sm: 48px;
-  --size-orb-md: 80px;
-  --size-orb-lg: 129px;
-  --size-orb-xl: 140px;
+  --size-avatar: 2.5rem; /* 40px */
+  --size-logo-mobile: 3.875rem; /* 62px */
+  --size-logo-desktop: 5.125rem; /* 82px */
+  --size-orb-sm: 3rem; /* 48px */
+  --size-orb-md: 5rem; /* 80px */
+  --size-orb-lg: 8.0625rem; /* 129px */
+  --size-orb-xl: 8.75rem; /* 140px */
   --border-width-hairline: 1px;
   --border-width-thin: 1.5px;
   --border-width-thick: 2px;
   --border-width-focus: 2px;
-
   /* ---- 08 Elevation ------------------------------------------------------- */
   --blur-sm: 8px;
   --blur-md: 10px;
@@ -308,7 +453,6 @@
   --z-overlay: 300;
   --z-sheet: 400;
   --z-toast: 500;
-
   /* ---- 09 Motion ---------------------------------------------------------- */
   --duration-instant: 0ms;
   --duration-fast: 120ms;
@@ -325,9 +469,7 @@
   --ease-decelerate: cubic-bezier(0, 0, 0, 1);
   --ease-accelerate: cubic-bezier(0.3, 0, 1, 1);
   --ease-breathe: cubic-bezier(0.37, 0, 0.63, 1);
-
   /* ---- Composed recipes (Figma paint + effect styles) --------------------- */
-
   /* paint style gradient/canvas-mobile — Figma gradient handles run from
      (0.2, 0) to (0.8, 1) of the frame, which is 165deg at the 440x957 mobile
      frame and 136deg at the 1440x900 desktop frame. Because a CSS angle
@@ -338,21 +480,20 @@
     var(--color-gradient-canvas-start) 0%,
     var(--color-gradient-canvas-mid) 50%,
     var(--color-gradient-canvas-end-mobile) 100%
-  );
+    );
   --gradient-canvas-desktop: linear-gradient(
     136deg,
     var(--color-gradient-canvas-start) 0%,
     var(--color-gradient-canvas-mid) 50%,
     var(--color-gradient-canvas-end-desktop) 100%
-  );
+    );
   /* paint style gradient/brand — identity transform in Figma, i.e. left to
      right, light start to dark end. This is the SAGE button gradient. */
   --gradient-brand: linear-gradient(
     90deg,
     var(--color-gradient-brand-start) 0%,
     var(--color-gradient-brand-end) 100%
-  );
-
+    );
   /* effect style surface/chat-bubble */
   --shadow-chat-bubble: 0 4px 12px rgba(24, 32, 42, 0.04),
     inset 2px 4px 8px rgba(0, 0, 0, 0.1);
@@ -371,7 +512,13 @@
     inset 0 2px 12px rgba(255, 255, 255, 0.25);
   /* effect style surface/frosted-row — inner shadow only. A frosted row
      without this reads flat. */
-  --shadow-frosted-row: inset 2px 4px 9px rgba(0, 0, 0, 0.2);
+  /* ⚠️ THE BOXES' INNER SHADOW AT HALF STRENGTH, asked for directly 14 Sep
+     2026 ("less opacity to all the inner shadows of the boxes"). tokens.css
+     generates `shadow/frosted-row` as `inset 2px 4px 9px` black at 20%; every
+     frosted row and card, `DataCard` and the face card bind it (43 uses), and
+     the dark top-left edge it drew read heavy. Same geometry, 10%. Raise the
+     new alpha in Figma. */
+  --shadow-frosted-row: inset 2px 4px 9px rgba(0, 0, 0, 0.1);
   /* effect styles surface/sheet-mobile · surface/sheet-desktop — the modal tray
      shadows. Added to Figma on 21 Aug 2026: every tray in the file carried raw
      effects and there was no style to point at. The BACKGROUND_BLUR 28 that the
@@ -381,11 +528,411 @@
   --shadow-sheet-mobile: 0 -8px 32px rgba(0, 0, 0, 0.12);
   --shadow-sheet-desktop: 0 12px 40px -8px rgba(0, 0, 0, 0.18);
   /* the Bottom-Nav-Bar's own effects */
-  --shadow-nav: 0 2px 12px rgba(0, 0, 0, 0.08),
-    inset 0 0 12px rgba(0, 0, 0, 0.2);
+  --shadow-nav:
+    inset 0 1px 2px
+    color-mix(in srgb, var(--color-border-highlight) 60%, transparent),
+    inset 0 -1px 2px rgba(46, 42, 63, 0.1), 0 2px 6px rgba(28, 27, 36, 0.1),
+    0 12px 28px -10px rgba(28, 27, 36, 0.16);
   /* the Button component's two stacked drop shadows */
   --shadow-button: 0 4px 12px -2px rgba(46, 36, 71, 0.22),
     0 1px 2px rgba(46, 36, 71, 0.1);
   /* effect style focus/ring */
   --shadow-focus-ring: 0 0 0 var(--border-width-focus) var(--color-border-focus);
+}
+
+:root {
+  /* THE WHITE INK OF SYSTEM B's SECOND TIER. Non-negotiable 17 says System B's
+     text is dark, and that is still right for `surface/data` — this is the ink
+     for the surface that rule does not cover.
+
+     ⚠️ IT IS STILL THE APP'S STANDING EXCEPTION, AND IT STILL DOES NOT MEET AA.
+     On `surface/data-deep` (`#4f838f @85%`) white composites to 3.42–3.77:1
+     depending on the backdrop, against 4.5:1 — better than the 1.64–2.32:1 the
+     callers measured before that surface existed, and short of the bar. The
+     full measurement table and the reason no ink fixes it are on
+     `--color-surface-data-deep` above.
+
+     ⚠️ IT IS ONLY EVER FOR `surface/data-deep`. On `surface/data` white measures
+     1.87:1, which is the failure non-negotiable 17 was written to stop. The
+     pairing is the contract; the token is not portable.
+
+     Named rather than left as a raw `#fff` in the modules so the pairing is
+     greppable, and so no module reaches into the primitives block, which
+     non-negotiable 2 forbids. */
+  --color-text-on-data-inverse: #ffffff;
+  /* surface/data-deep — ⚠️ DECLARED HERE, NOT IN `tokens.css`, and NOT IN
+     FIGMA. It is the `sage/700` System B never had: the third step, the one a
+     nested emphasis block and a white-ink card both need.
+
+     `#4f838f @85%` — L 0.578, C 0.0585, hue 214.1 in OKLCH. ⚠️ IT IS NOT ON THE
+     SAGE HUE LINE: `surface/data` is 199.8 and `bg/nav` 196.8, so this sits
+     ~15° bluer than the tier below it and reads cooler than the card it nests
+     in. That is a chosen value, asked for directly on 8 Sep 2026 — do not
+     "correct" it onto the sage line without asking.
+
+     ⚠️ WHERE IT LEAVES THE WHITE, measured by compositing at 85% over each
+     backdrop it actually lands on:
+
+       backdrop                          composites to   white     ink #2e2a3f
+       surface/data-strong tray            #5a8b96       3.77:1      3.67:1
+       surface/data card                   #5d8c97       3.71:1      3.73:1
+       canvas, mid                         #62919b       3.48:1      3.98:1
+
+     against 4.5:1. So it clears the 3:1 large-text bar and fails AA for the
+     12px overlines, axis ticks and meta lines its four callers put on it.
+
+     ⚠️ AND NEITHER INK PASSES, WHICH IS THE THING TO KNOW ABOUT THIS VALUE.
+     White and the app ink land within 0.06 of each other on the card backdrop —
+     3.71 against 3.73 — because the surface sits almost exactly at the
+     lightness where the two cross over. There is no ink colour that fixes it;
+     only the SURFACE can move, and it has to move meaningfully in one direction
+     or the other. Darker (`#407375`, opaque) gives white 5.35:1; lighter gives
+     the ink its usual 4.6:1+. This is the same shape of problem `gradient/brand`
+     documents further down, and the same answer applies: it is a design
+     decision, not a token correction.
+
+     ⚠️ THE ALPHA IS ALSO WHY THE RATIO IS A RANGE RATHER THAN A NUMBER. A
+     translucent surface takes its contrast from whatever it is sitting on, so
+     the same card measures differently at the top and the bottom of a scrolling
+     page — which is why `SymptomTrend`'s note has to measure "at this card's
+     own position". Only an opaque fill makes the ratio a property of the token.
+
+     Four callers: `SymptomTrend`'s card, `ResultCards`' "what to do next"
+     emphasis block, `CheckBasket`'s product rows, and
+     `AddProductMethodSheet`'s method tiles. Still to raise in Figma as a real
+     `sage/700` surface role. */
+  --color-surface-data-deep: #4f838fd9;
+  /* surface/data-deep · HOVER — ⚠️ DECLARED HERE, NOT IN `tokens.css`, and NOT
+     IN FIGMA. The method tiles lighten on hover, and they used to lighten to
+     `surface/data-strong` — a real step while `-deep` was `#538b8d @62%`, and
+     not one at any other value, since `-strong` is a different hue at a
+     different alpha and the "step" was a coincidence of those two numbers.
+
+     This is the same colour and alpha as the base, one lightness step up
+     (L 0.578 -> 0.608), so hover is a step BY CONSTRUCTION rather than by
+     coincidence. It costs contrast in the direction hover always does on a
+     white label — 3.43:1 on the tray against the base's 3.77:1 — which is the
+     lesser problem while the base itself is at 3.77. */
+  --color-surface-data-deep-hover: #588c98d9;
+  /* ⚠️ NOT IN FIGMA, BY EXPLICIT REQUEST — the moderate-likelihood pill on
+     `ResultCards`' ingredients card. `02 Color` has no semantic role for it, so
+     it is named here rather than left as a raw hex (or as a reach into the
+     primitives block, which non-negotiable 2 forbids) — declared, greppable,
+     and to be raised in Figma.
+
+     It is `indigo/300` re-hued to match `bg/brand` above: the high-likelihood
+     pill is `bg/brand` and the two have to read as one scale, which a neutral
+     frost pill did not and which two different hues would not either. White on
+     it measures 3.49:1 — under AA for a 12px label, the same open question
+     `CompatCard`'s band pills already carry. */
+  /* `#8284c0` → `#7980af` with `bg/brand`, 14 Sep 2026 (same step). White is
+     3.49 → 3.80:1 — still the known failure, marginally less so. */
+  --color-bg-brand-soft: #7980af;
+  /* `effect/shine` — the bright lilac every light effect in the build wears:
+     the text shine's band and the specular rim's streaks. ⚠️ NOT IN FIGMA —
+     added 13 Sep 2026, asked for in those words. It is `indigo/200`
+     (#b4aad3) bound here as a semantic token so no component reaches into
+     the primitives (non-negotiable 2). Raise it in Figma as `effect/shine`. */
+  --color-effect-shine: #b4aad3;
+  /* `effect/specular` — the rim's own colour, split from the text shine on
+     13 Sep 2026, asked for directly: the lilac read too purple on the pill's
+     edge. Same lightness (OKLCH L 0.76), hue turned from 296 to 262 — onto the
+     button gradient's own start hue (258) — and chroma cut 20% (0.059 to
+     0.047). A pale steel blue, #a1b2d0. Not in Figma; raise with the above. */
+  --color-effect-specular: #a1b2d0;
+  /* bg/frost-light-muted — ⚠️ DECLARED HERE, NOT IN `tokens.css`, and NOT IN
+     FIGMA. It was the face-diagram region pills' OPAQUE fill (the old dome's
+     outline passed behind them, and a translucent pill showed the ellipse
+     through itself); ⚠️ since 14 Sep 2026 those pills are glass
+     (`surface/face-pill`) and this is only their reduced-transparency
+     fallback. `bg/frost-light` (#f4feff) is the brightest light value in the
+     app and on the sage `surface/data` card it reads as a white sticker. This
+     is the same near-white one step down — literally the value `bg/nav` and
+     `bg/bubble-ai` already carry, i.e. the LUX opaque light mint, written out
+     rather than aliased to either of them so that retuning the nav or the AI
+     bubble does not silently move the pills. Raise it in Figma as a real
+     frost-light-muted role; the DS has the colour three times and no name for
+     it. */
+  --color-bg-frost-light-muted: #dbeded;
+  /* border/chip — ⚠️ DECLARED HERE, NOT IN `tokens.css`, and NOT IN FIGMA. The
+     Chip component has no stroke in Figma, which works only while the chip is
+     the brightest thing on its surface. It is not: measured on 01, the chip
+     fill (#dbeded) against the composited question card (#e3eff2) is
+     **1.03:1**, so the pill had no boundary at all and the row read as floating
+     labels. A chip is a CONTROL, so its boundary is what WCAG 1.4.11 asks 3:1
+     of — nothing else here can carry it, since the fill cannot get darker
+     without becoming the loudest element again.
+
+     #6b8b8d is the sage ramp continued past its last step (400, #a7c0c1) rather
+     than a new hue: it measures **3.14:1** on the light card and 2.20:1 on the
+     sage `FaceDiagram` card, where the fill is already doing most of the work
+     (1.38:1 there, and the surface is saturated enough to separate). The
+     neutral border tokens cannot reach it — border/subtle is 1.08:1 and
+     border/default 1.35:1 against that card, i.e. both invisible — and going
+     darker (#577476, a true 3:1 on BOTH surfaces) stops reading as a hairline
+     and starts reading as an outlined pill, which is louder than the calm the
+     motion board asks for. Raise it in Figma as a real border role; the ramp
+     wants a sage/500 anyway. */
+  --color-border-chip: #6b8b8d;
+}
+
+:root {
+  /* ⚠️ NOT IN FIGMA. The highlight of the light that sweeps the lockup in the
+     entrance (components/ui/LuxLogo.tsx, `LightStops`) — asked for as this
+     value on 12 Sep 2026, replacing `bg/brand-soft`. It is between the ramp's
+     two ends, a touch bluer than `gradient/brand`'s start, so the pass reads as
+     light through the indigo rather than a colour laid over it. Raise it in
+     Figma as a token of the gradient group. */
+  --color-logo-light: #587095;
+}
+
+:root {
+  --color-text-success-ink: #46664f;
+}
+
+:root {
+  --ease-hover: cubic-bezier(0.25, 0.1, 0.25, 1);
+}
+
+:root {
+  --ease-in-out: cubic-bezier(0.65, 0, 0.35, 1);
+  --duration-move: 500ms;
+  --duration-fade: 350ms;
+}
+
+:root {
+  /* ⚠️ #b44148 SINCE 29 Oct 2026 (was #d3858a): white on the callouts, the
+     `Ongoing` pill and `High likelihood` measured 2.5–2.8:1; this clears
+     4.5:1 at the recipe's 88% stop on the lightest canvas (`npm run contrast`). */
+  --color-bg-symptom: #b44148;
+}
+
+:root {
+  --color-bg-field-action: #c0d5da;
+}
+
+:root {
+  --color-surface-face-pill-base: #d3ffff66;
+  --color-surface-face-pill: #ffffff4d;
+  --color-surface-face-pill-end: #919ebd6e;
+  --color-surface-face-pill-glow: #ffffff00;
+  --color-surface-face-pill-rim: #d2d9c747;
+  --color-surface-face-pill-tint: #d3e7e845;
+  --color-surface-face-pill-wash: #ffffff24;
+  --color-effect-face-pill-light: #4143ad00;
+  --color-effect-face-pill-shade: #484d4e4a;
+}
+
+:root {
+  /* ⚠️ A LITTLE DARKER AND LESS SHINY, asked for directly the same day: the
+     hue now pulls 15% toward the deep end (`-hue` is what the pill is TINTED
+     from, `#597f8c` as supplied), the base goes 60% → 72%, the top light
+     40% → 22%, the pooled glow 20% → 8% and the edge light 35% → 14%. */
+  /* ⚠️ THE DEEP CORE, NAMED — 25 Sep 2026. It was the bare `#1c2b30` written
+     twice below, the colour every selected stop is deepened TOWARD, i.e. the
+     darkest tone this glass has. `SkinProfileTiles`' outlined answer pills
+     bind it as their ink and ring ("use the active tone of this, the
+     darkest"), so the readout's pills and the face's picked pills are one
+     family. NOT IN FIGMA, like the rest of this block. */
+  --color-face-pill-selected-core: #1c2b30;
+  --color-face-pill-selected-hue: color-mix(
+    in srgb,
+    #597f8c 85%,
+    var(--color-face-pill-selected-core)
+    );
+  --color-face-pill-selected-light: color-mix(
+    in srgb,
+    var(--color-face-pill-selected-hue) 70%,
+    #ffffff
+    );
+  --color-face-pill-selected-deep: color-mix(
+    in srgb,
+    var(--color-face-pill-selected-hue) 65%,
+    var(--color-face-pill-selected-core)
+    );
+  --color-surface-face-pill-selected-base: color-mix(
+    in srgb,
+    var(--color-face-pill-selected-hue) 72%,
+    transparent
+    );
+  --color-surface-face-pill-selected: color-mix(
+    in srgb,
+    var(--color-face-pill-selected-light) 22%,
+    transparent
+    );
+  --color-surface-face-pill-selected-end: color-mix(
+    in srgb,
+    var(--color-face-pill-selected-deep) 60%,
+    transparent
+    );
+  --color-surface-face-pill-selected-glow: color-mix(
+    in srgb,
+    var(--color-face-pill-selected-light) 8%,
+    transparent
+    );
+  /* the radial's outer stop — clear, so the lilac pools at the top-left and
+     fades out, the reverse of the unselected glass's sage rim */
+  --color-surface-face-pill-selected-rim: transparent;
+  --color-surface-face-pill-selected-tint: color-mix(
+    in srgb,
+    var(--color-face-pill-selected-hue) 15%,
+    transparent
+    );
+  --color-effect-face-pill-selected-light: color-mix(
+    in srgb,
+    var(--color-face-pill-selected-light) 14%,
+    transparent
+    );
+  --color-effect-face-pill-selected-shade: color-mix(
+    in srgb,
+    var(--color-face-pill-selected-deep) 90%,
+    transparent
+    );
+}
+
+:root {
+  /* halved 31 Oct 2026, asked for directly: 16 → 8, desktop 24 → 12 */
+  --nav-inset-bottom: var(--space-sm);
+}
+
+:root {
+  --color-surface-nav-bar: var(--color-surface-frost-nav);
+  --color-bg-nav-bar: var(--color-bg-nav);
+  /* the deep teal's last composite, kept for PROGRESS's gallery pills — see
+     the note above and `.date`/`.day` in PhotoGallery.module.css */
+  --color-bg-photo-pill: #5c7178;
+}
+
+:root {
+  --width-action: 23.5rem; /* 376px */
+  --width-action-mobile: var(--size-nav-width-mobile);
+}
+
+:root {
+  --edge-ring-all-round: linear-gradient(
+    135deg,
+    rgba(255, 255, 255, 0.85),
+    rgba(255, 255, 255, 0.15) 40%,
+    rgba(255, 255, 255, 0.15) 60%,
+    rgba(255, 255, 255, 0.45)
+    );
+}
+
+:root {
+  /* above `--z-toast` (500), the previous ceiling: the entrance covers the app
+     entire, including anything that managed to raise a snackbar on load */
+  --z-entrance: 900;
+}
+
+/* the translucent secondary endpoints (see :root above) made opaque again —
+   `tokens.css`'s own pair — for a reader who asked for less transparency */
+@media (prefers-reduced-transparency: reduce) {
+  :root {
+    --color-button-bg-secondary-start: #deeff3;
+    --color-button-bg-secondary-end: #b7c6ca;
+  }
+}
+
+:root {
+  /* ---- glass — the material every control and box is made of ------- */
+  /* ⚠️ LOWERED from the reference's 50% / 72%, asked for directly 1 Oct 2026
+     ("lower the opacity — nowhere should we use such white"). Glass is a tint
+     over the canvas, never a white fill; no opaque white surface exists. */
+  --color-glass: rgb(255 255 255 / 0.25); /* chip, round button      */
+  --color-glass-strong: rgb(255 255 255 / 0.4); /* hover, selected row     */
+  --color-rim: rgb(255 255 255 / 0.9); /* inset top highlight     */
+  --color-rim-soft: rgb(255 255 255 / 0.8); /* the chips' and fabs' rim */
+  /* the panel's fill is `surface/frost-light`, already rgba(244 254 255 / .55) */
+  /* ---- gradients: lux-v2's, NOT the reference's ------------------------------- */
+  /* ⚠️ KEPT FROM v2, asked for directly 1 Oct 2026 ("the gradients are not
+     that good. keep the gradients of v2"). The reference's glow, lit sheet,
+     board and ink ground were tried and removed the same day. The gradients
+     in play are v2's own: `--gradient-canvas-*` (the ground), `--gradient-brand`
+     (#485780 -> #313560 at 90°, the primary action) and the sheet's sage frost
+     below. */
+  --surface-sheet: rgb(
+    from var(--color-surface-data) calc(r + (255 - r) * 0.1)
+    calc(g + (255 - g) * 0.1) calc(b + (255 - b) * 0.1) / 0.3
+    );
+  /* ---- shadows ------------------------------------------------------------ */
+  /* ⚠️ THE PILL'S SOFT TOP LIGHT — 31 Oct 2026, asked for directly ("make the
+     edges of the indigo buttons smooth like those red pills"). White at 38%,
+     1px down and blurred 4px: the red symptom pill's light, tuned in DevTools
+     14 Sep 2026. The indigo pills drew a crisp 1px white line instead, which
+     read as a hard rim. One token, so the two cannot drift again. */
+  --shadow-pill-light: inset 0 1px 4px #ffffff61;
+  /* ⚠️ A WELL PRESSED INTO THE SURFACE — 31 Oct 2026, supplied directly as a
+     reference's two inner shadows: white at 64% from the lower right
+     (-33, -33, blur 46) over `#0d2750` at 16% from the upper left (28, 28,
+     blur 54), no fill. For a recessed box that holds nothing yet. */
+  --shadow-inset-well: inset -33px -33px 46px rgb(255 255 255 / 0.64),
+    inset 28px 28px 54px rgb(13 39 80 / 0.16);
+  --shadow-brand-pill: 0 8px 18px rgb(49 53 96 / 0.3), var(--shadow-pill-light);
+  --shadow-float: 0 4px 14px rgb(46 42 63 / 0.1); /* the white ✕ circle  */
+  --shadow-lift: 0 10px 24px rgb(46 42 63 / 0.16); /* the image card      */
+  --shadow-sheet: inset 0 1px 0 rgb(255 255 255 / 0.7);
+  --shadow-glass: inset 0 1px 0 var(--color-rim-soft);
+  --shadow-panel: inset 0 1px 0 var(--color-rim);
+  /* ---- radius ------------------------------------------------------------- */
+  --radius-sheet: 2.25rem; /* top corners of the sheet                   */
+  --radius-sheet-foot: 2.75rem; /* bottom corners — follows the phone's 46    */
+  --radius-panel: 1.75rem; /* the frost panel inside the sheet           */
+  --radius-media: 1.375rem; /* the image card                             */
+  /* ---- spacing ROLES — every gap lands on an existing step ---------- */
+  --space-group: var(--space-xs); /* 4 — between controls in one cluster   */
+  /* 4 — between pills in a row: chips, tags, place pills. One value app-wide,
+     30 Oct 2026, asked for directly (step 1's symptom chips set it) */
+  --space-pill-gap: var(--space-xs);
+  --space-inset: var(--space-sm); /* 8 — sheet edge to the panel inside it */
+  --space-gutter: var(--space-2xl); /* 24 — screen edge; panel's side padding */
+  --space-panel: var(--space-3xl); /* 32 — panel's top padding to its label  */
+  --space-section: var(--space-5xl); /* 48 — headline block to the next block  */
+  /* ---- control sizes ------------------------------------------------------ */
+  --size-round: 3.5rem; /* every round button: back, ✕, +, mic, send  */
+  /* ⚠️ 44, NOT THE REFERENCE'S 55 — asked for directly on the canvas, 1 Oct
+     2026 ("adjust those pills' height again. less height"). 44 is the touch
+     floor, so the chip IS its hit area. A field stays 56 (`--size-field`). */
+  --size-chip: 2.75rem; /* 44px */
+  --space-chip-inline: 1.125rem; /* the 44 chip's side padding, off-scale      */
+  --size-field: 3.5rem; /* text and search fields, the radio rows     */
+  --size-tab: 3.5rem; /* pill tabs (57 in the ref)                  */
+  --size-slider: 4rem; /* slide-to-start track                       */
+  --size-pill: 2.25rem; /* the small time pill (17.7 × 1.745 ≈ 31, raised to the control floor) */
+}
+
+:root {
+  /* the question panel — "this is also too white and bright": fill 55% -> 30%,
+     a softer edge and rim, so the canvas shows through as frost */
+  --color-panel: rgb(244 254 255 / 0.3);
+  --color-border-panel: rgb(255 255 255 / 0.45);
+  --color-rim-panel: rgb(255 255 255 / 0.6);
+  /* NAV B, the round-button bar — "the nav bar needs to be more transparent
+     too": bar 10% / edge 40% / rim 50%, its circles 12% */
+  --color-nav-bar: rgb(255 255 255 / 0.1);
+  --color-border-nav: rgb(255 255 255 / 0.4);
+  --color-rim-nav: rgb(255 255 255 / 0.5);
+  --color-nav-item: rgb(255 255 255 / 0.12);
+  --shadow-nav-bar: inset 0 1px 0 var(--color-rim-nav), 0 8px 24px rgb(46 42 63 / 0.06);
+  --nav-inset-inline: var(--space-sm); /* "50% less side paddings": 16 -> 8 */
+}
+
+@media (min-width: 1024px) {
+  :root {
+    --nav-inset-bottom: var(--space-md); /* 12, half the Welcome board's 24 */
+  }
+}
+
+@media (prefers-reduced-transparency: reduce) {
+  :root {
+    --color-panel: #e3eef0;
+    --color-nav-bar: #dbeded;
+    --color-nav-item: #e8f3f3;
+  }
+}
+
+@media (prefers-reduced-transparency: reduce) {
+  :root {
+    --color-glass: #f4f6f9;
+    --color-glass-strong: #f8fafb;
+  }
 }

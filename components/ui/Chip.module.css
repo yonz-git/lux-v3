@@ -1,4 +1,4 @@
-/* Chip — VidGen's option chip (`9:16`, `1080p`, `15s`), 1 Oct 2026.
+/* Chip — the reference's option chip (`9:16`, `1080p`, `15s`), 1 Oct 2026.
 
    DEFAULT   glass: white @25%, 1px white @55% edge, the inset white @80% rim,
              44 tall (`--size-chip` — 55 in the reference, taken down on the
@@ -20,7 +20,7 @@
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  gap: 9px; /* the reference's glyph-to-label gap */
+  gap: 0.5625rem; /* the reference's glyph-to-label gap */
   min-height: var(--size-chip);
   padding: 0 var(--space-chip-inline);
   border: var(--border-width-hairline) solid var(--chip-edge);
@@ -85,6 +85,25 @@
 
 .chip[data-selected="true"] .icon {
   color: #fff;
+}
+
+/* ⚠️ MUTED — SELECTED, NOT THE ONE BEING WORKED ON (29 Oct 2026, see
+   Chip.tsx). The indigo fill fades out of the overlay and leaves a tint of it
+   under indigo ink and edge, so it still reads as chosen and the full fill
+   marks the active chip alone. The ink is `text/brand`, which holds contrast
+   on the tint where the white label would not. */
+.chip[data-selected="true"][data-muted] {
+  --chip-edge: color-mix(in srgb, var(--color-bg-brand) 45%, transparent);
+  color: var(--color-text-brand);
+  background-color: color-mix(in srgb, var(--color-bg-brand) 14%, var(--color-glass));
+}
+
+.chip[data-selected="true"][data-muted]::before {
+  opacity: 0;
+}
+
+.chip[data-selected="true"][data-muted] .icon {
+  color: var(--color-bg-brand);
 }
 
 .chip:disabled {

@@ -1,10 +1,10 @@
-import { useId } from "react";
+import { useId, type ReactNode } from "react";
 import styles from "./SkinProfileTiles.module.css";
 
 /**
  * ⚠️ lux-v3 (1 Oct 2026): THE PANEL, A STANDARD OVERLINE, GLASS PILLS. The
  * card is the 30% panel every card is now (the global `canvas-card`, see
- * app/vidgen.css), the overline is `t-overline` at its own size with no rule
+ * app/globals.css), the overline is `t-overline` at its own size with no rule
  * under it — as on the trend card — and each answer is a read-only GLASS
  * pill: `glass-strong`, a glass edge, the app's ink, 32 tall, so it stays
  * smaller than the 44 chips that are controls. The v2 history below explains
@@ -84,6 +84,7 @@ export function SkinProfileTiles({
   tendencies,
   conditions,
   symptomsState,
+  action,
   className,
 }: {
   skinType?: string | null;
@@ -91,6 +92,9 @@ export function SkinProfileTiles({
   conditions?: readonly string[] | null;
   /** where the current episode stands — step 4's status */
   symptomsState?: string | null;
+  /** a control at the overline's end — the recap's `Edit`, the only caller.
+   *  Draws nothing else differently: the card's look is still one look. */
+  action?: ReactNode;
   className?: string;
 }) {
   const titleId = useId();
@@ -115,10 +119,13 @@ export function SkinProfileTiles({
       className={[styles.card, "canvas-card", className].filter(Boolean).join(" ")}
       aria-labelledby={titleId}
     >
-      <h2 id={titleId} className={`${styles.overline} t-overline`}>
-        {/* "Your" cut 4 Oct 2026, asked for directly */}
-        Skin profile
-      </h2>
+      <div className={styles.head}>
+        <h2 id={titleId} className={`${styles.overline} t-overline`}>
+          {/* "Your" cut 4 Oct 2026, asked for directly */}
+          Skin profile
+        </h2>
+        {action}
+      </div>
       <dl className={styles.tiles}>
         {tiles.map(({ label, values }) => (
           <div key={label} className={styles.tile}>

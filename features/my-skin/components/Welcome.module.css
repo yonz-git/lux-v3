@@ -148,21 +148,21 @@
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: 13px; /* matches desktop's button-to-disclaimer gap, tighter than the Figma-literal 24 (--space-2xl) */
+  gap: 0.8125rem; /* matches desktop's button-to-disclaimer gap, tighter than the Figma-literal 24 (--space-2xl) */
   width: 100%;
   /* bubble bottom to button top is 163 at the 957 design height, and shrinks
      first on short viewports — less the 40 .hero now takes above it, so the
      button lands exactly where it did */
-  margin-top: clamp(0px, 17vh - var(--space-4xl), 123px);
+  margin-top: clamp(0px, 17vh - var(--space-4xl), 7.6875rem);
 }
 
 /* ⚠️ lux-v3 KEEPS v2's WELCOME, asked for directly on the canvas, 1 Oct 2026
    ("the welcome page design doesn't work. we will keep the v2 version just
-   replace the nav bar"). The VidGen layer re-sized two things under it — the
+   replace the nav bar"). The v3 restyle re-sized two things under it — the
    button to 56 and the bubble's body to 16/22 — and both are put back here,
    on this screen only, so the orb, the reply and the action sit where v2 had
    them: the 62 `Button` (`--button-height` is its own hook) and the bubble at
-   v2's 16/26 (18/28 desktop). The face is Figtree, as the whole app is (Urbanist from 1 to 4 Oct 2026). */
+   v2's 16/26 (18/28 desktop). The face is Figtree, as the whole app is. */
 .cta {
   --button-height: var(--size-control-lg); /* 62 */
   width: 100%;
@@ -172,12 +172,12 @@
 /* (0,2,0), so it outranks `.t-body2-body1` on the same element whichever
    stylesheet loads last */
 .bubbleReply[data-from] {
-  line-height: 26px;
+  line-height: 1.625; /* 26 on 16 */
 }
 
 @media (min-width: 1024px) {
   .bubbleReply[data-from] {
-    line-height: 28px;
+    line-height: 1.5556; /* 28 on 18 */
   }
 }
 
@@ -222,14 +222,14 @@
   }
 
   .hero {
-    gap: 23px;
+    gap: 1.4375rem;
   }
 
   .actions {
-    gap: 13px;
+    gap: 0.8125rem;
     /* 23 gap + 94 spacer + 23 gap between the bubble and the CTA group,
        less .hero's 40 offset */
-    margin-top: 100px;
+    margin-top: 6.25rem;
   }
 
   .cta {

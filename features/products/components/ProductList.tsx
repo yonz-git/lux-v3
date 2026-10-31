@@ -163,13 +163,17 @@ export function AddProductRow({
 export function EmptyBox({
   children,
   compact = false,
+  action,
 }: {
   children: ReactNode;
   compact?: boolean;
+  /** a control under the label, e.g. the group's `Add product` */
+  action?: ReactNode;
 }) {
   return (
     <div className={`${styles.empty}${compact ? ` ${styles.emptyCompact}` : ""}`}>
       <p className={`${styles.emptyLabel} t-body3`}>{children}</p>
+      {action}
     </div>
   );
 }

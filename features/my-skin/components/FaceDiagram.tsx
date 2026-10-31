@@ -6,6 +6,7 @@ import {
   useState,
   type CSSProperties,
   type PointerEvent as ReactPointerEvent,
+  type ReactNode,
 } from "react";
 import styles from "./FaceDiagram.module.css";
 import { Chip } from "@/components/ui/Chip";
@@ -448,6 +449,8 @@ type FaceDiagramProps = CalloutProps &
         disabled?: boolean;
         /** a new number shines every region's label once — see the note above */
         glint?: number;
+        /** a control pinned to the card's top-right corner — step 1's reset */
+        corner?: ReactNode;
       }
     | {
         readOnly: true;
@@ -614,7 +617,7 @@ export function FaceDiagram(props: FaceDiagramProps) {
       ref={cardRef}
       className={styles.card}
       /* the entrance — the drawing, then the pills, then the callouts; see
-         "THE FACE ENTRANCE" in app/vidgen.css */
+         "THE FACE ENTRANCE" in app/globals.css */
       data-motion="face"
       onPointerDown={(e) => {
         touching.current = e.pointerType === "touch";
@@ -711,13 +714,16 @@ export function FaceDiagram(props: FaceDiagramProps) {
                 data-part="callout"
                 data-side={c.side}
                 data-lit={litCallouts.includes(c) || undefined}
-                style={{ top: pct(c.y) }}
+                /* `--cy`, not `top`: CSS rounds it to a whole pixel */
+                style={{ "--cy": c.y } as CSSProperties}
                 data-tap-light
                 onPointerEnter={enter({ symptom: c.symptom })}
                 onPointerLeave={leave}
                 onClick={tap({ symptom: c.symptom })}
               >
-                {c.symptom}
+                {/* the label is its own block so `text-box` can trim it to
+                    cap height — see `.symptomLabel` */}
+                <span className={styles.symptomLabel}>{c.symptom}</span>
               </span>
             ))}
           </div>
@@ -726,7 +732,7 @@ export function FaceDiagram(props: FaceDiagramProps) {
           const position = {
             left: `${r.x * 100}%`,
             top: `${r.y * 100}%`,
-            /* the entrance's order (app/vidgen.css, "THE FACE ENTRANCE") */
+            /* the entrance's order (app/globals.css, "THE FACE ENTRANCE") */
             "--i": i,
           } as CSSProperties;
 
@@ -841,6 +847,9 @@ export function FaceDiagram(props: FaceDiagramProps) {
             ))}
           </div>
         )}
+      {props.readOnly !== true && props.corner && (
+        <div className={styles.corner}>{props.corner}</div>
+      )}
     </div>
   );
 }

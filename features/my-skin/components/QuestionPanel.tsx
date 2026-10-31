@@ -2,13 +2,14 @@
 
 import { useId, type ReactNode } from "react";
 import styles from "./QuestionPanel.module.css";
+import { ChatBubble } from "@/components/ui/ChatBubble";
 import { Orb } from "@/components/ui/Orb";
 
 /**
  * One investigation question in its glass panel — lux-v3, 1 Oct 2026, from the
- * canvas boards ("First pages"). The panel is `.vg-panel` (app/vidgen.css):
+ * canvas boards ("First pages"). The panel is `.panel` (app/globals.css):
  * 30% frost, 28 radius, padded 32 / 24 / 24. The question is the panel's
- * `<h2>`, led by the sparkle the chat uses for LUX's own voice, with an
+ * `<h2>`, asked in LUX's own bubble beside the chat's orb, with an
  * optional hint under it; the answers follow 20 below.
  *
  * ⚠️ AN `<h2>`: the step's title is the page's one `<h1>` (`QuestionScreen`),
@@ -30,21 +31,25 @@ export function QuestionPanel({
   return (
     <section
       aria-labelledby={id}
-      className={className ? `vg-panel ${styles.panel} ${className}` : `vg-panel ${styles.panel}`}
+      className={className ? `panel ${styles.panel} ${className}` : `panel ${styles.panel}`}
     >
       <div className={styles.head}>
-        <h2 id={id} className={`${styles.question} t-h5`}>
-          {/* ⚠️ THE SMALL ORB, NOT A SPARKLE — asked for directly 1 Oct 2026
-              ("apply the small orb for all those icons"): LUX asking the
-              question, as the orb speaks the check-in and the results */}
+        {/* ⚠️ THE QUESTION IS LUX'S BUBBLE, NOT A HEADING LINE — 29 Oct 2026,
+            usability testing, asked for directly ("these should be in bubbles
+            too"): step 1 already asks its question in the orb's bubble, and
+            steps 2–4 read as a different voice. Same pair, centred. The
+            `role="heading"` keeps the level the `<h2>` carried. */}
+        <div className={styles.ask}>
           <span className={styles.orb} aria-hidden="true">
-            {/* ⚠️ THE CHAT'S ORB, SHRUNK — 4 Oct 2026, asked for directly
-                ("replace all the small orbs with the one in chat"): the same
-                `animateIn halo` the check-in's 50 avatar wears, at 26 */}
-            <Orb size="26px" animateIn halo />
+            {/* the chat's orb, as step 1's coach wears it */}
+            <Orb size="40px" animateIn halo />
           </span>
-          {question}
-        </h2>
+          <ChatBubble from="ai" hug className={styles.bubble}>
+            <span id={id} role="heading" aria-level={2} className="t-body2-body1">
+              {question}
+            </span>
+          </ChatBubble>
+        </div>
         {hint && <p className={`${styles.hint} t-body3`}>{hint}</p>}
       </div>
       {children}

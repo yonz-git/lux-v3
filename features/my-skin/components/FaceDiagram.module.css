@@ -211,6 +211,18 @@
 
 /* the grain — the nav bar's noise tile, at `z-index: -1` inside the card's own
    stacking context: over the mesh, under the face and every pill */
+/* step 1's reset, pinned inside the card's top-right corner at the card's own
+   padding — 30 Oct 2026, asked for directly: it replaced the `Reset all` pill
+   under the card */
+.corner {
+  position: absolute;
+  top: var(--space-md);
+  right: var(--space-md);
+  z-index: 2;
+  display: flex;
+  justify-content: flex-end;
+}
+
 .card::after {
   content: "";
   position: absolute;
@@ -268,8 +280,7 @@
   display: flex;
   flex-wrap: wrap;
   justify-content: center;
-  /* 10 is the Chip grid gap in Figma and is off the spacing scale there too */
-  gap: 10px;
+  gap: var(--space-pill-gap); /* the app's one pill gap, 30 Oct 2026 */
 }
 
 /* ⚠️ THE ILLUSTRATION — A WIREFRAME TRACED FROM A REFERENCE, NOT A DOME. NOT
@@ -458,6 +469,14 @@
   position: absolute;
   inset: 0;
   pointer-events: none;
+  /* the symptom pill's height — `.symptom` and the leaders' clip share it.
+     ⚠️ ROUNDED TO AN EVEN PIXEL, 31 Oct 2026 — with `.symptom`'s rounded `top`
+     below, every pill lands on whole pixels, so every label renders on the
+     same row of its pill. A fractional height (20.27 at 1024) and top
+     (a percentage of the face) let each label round to a different row: up
+     to 0.9px apart between pills of the one component ("aren't those pills
+     using one component?"). */
+  --callout-h: round(nearest, clamp(18px, 6cqw, 24px), 2px);
   transition: opacity var(--duration-base) var(--ease-standard);
 }
 
@@ -471,12 +490,28 @@
   width: 100%;
   height: 100%;
   overflow: visible;
+  /* ⚠️ THE LINES STOP INSIDE THE PILL — 31 Oct 2026, asked for directly
+     ("make this not surpass"). Each line ends at its symptom pill's outer tip,
+     so its end showed past the pill as a red spike (a nub with a round cap, a
+     sliver with a flat one). Clipping the layer a pill-radius in from each
+     side ends every line inside the pill's rounded end; the region ends sit
+     far from the edges and are untouched. Same height as `.symptom`. */
+  /* ⚠️ THE TOP AND BOTTOM ARE NOT CLIPPED — `-100%`, not `0`. The places
+     under the nose (Around mouth, Chin / jaw, the neck) sit below this box,
+     and their lines leave it through `overflow: visible`; a `0` cut every one
+     of them off at the box's bottom edge for a few hours on 31 Oct 2026. */
+  clip-path: inset(-100% calc(var(--callout-h) / 2));
 }
 
 .leader {
   stroke: var(--color-bg-symptom);
   stroke-width: 1.25;
-  stroke-linecap: round;
+  /* ⚠️ BUTT, NOT ROUND — 31 Oct 2026, asked for directly ("make this not
+     surpass"). Each line ends exactly at its symptom pill's outer tip
+     (`x2` 0% / 100%), so a round cap stuck half the stroke out past the pill
+     as a red nub. Both ends sit under a pill, so a flat end is never seen
+     (and `.leaders` clips the pill's end off the line anyway). */
+  stroke-linecap: butt;
   stroke-dasharray: 1;
   stroke-dashoffset: 0;
   /* the draw-out, then the hover's light (see HOVER below) on its own clock */
@@ -511,13 +546,29 @@
 
 .symptom {
   position: absolute;
+  /* `--cy` is the pill's centre as a fraction of the face (FaceDiagram.tsx),
+     rounded to a whole pixel — see `--callout-h` */
+  top: round(nearest, calc(var(--cy) * 100%), 1px);
   transform: translateY(-50%);
   display: inline-flex;
   align-items: center;
-  min-height: clamp(18px, 6cqw, 24px);
+  min-height: var(--callout-h);
   padding: 0 clamp(4px, 1.8cqw, var(--space-sm));
   font-size: clamp(11px, 3cqw, 12px); /* 11 is the HIG floor */
   line-height: 1.3;
+  /* ⚠️ THE CAPITALS ARE CENTRED BY THE BROWSER, NOT BY A NUDGE — 31 Oct 2026,
+     asked for directly ("why are those red pills not vertically centered …
+     it got moved somehow and i fixed it again and again"). Figtree's caps sit
+     high in its line box, so a flex-centred label read ~0.75px high; on
+     30 Oct a hairline of `padding-bottom` copied from `.region` lifted it a
+     further pixel (8x capture: caps 1.75 above centre locally, 0.75 on the
+     deployed build). `text-box` trims the line box to the capitals and the
+     baseline (see `.symptomLabel`), so `align-items: center` centres the
+     letters themselves at every size and font. ⚠️ Do not add padding to move this label: if it
+     looks off, measure the ink and fix the trim. Descenders (Itching's g)
+     hang below the trimmed box, as they should. The trim is on
+     `.symptomLabel`: `text-box` only acts on a block box, and bare text in a
+     flex pill is an anonymous one it cannot reach. */
   white-space: nowrap;
   border-radius: var(--radius-full);
   color: var(--color-text-on-brand);
@@ -549,6 +600,18 @@
     filter var(--duration-slow) var(--ease-standard);
   /* the one part of the callout layer that takes the pointer — see HOVER */
   pointer-events: auto;
+}
+
+/* ⚠️ `cap` — THE CAPITALS SIT ON THE PILL'S CENTRE. Tried as `ex` (the
+   x-height) for an hour on 31 Oct 2026 after "now u put it too low": that
+   left Rash and Breakouts, mostly capitals and ascenders, visibly high. The
+   "too low" round was before the pills were snapped to whole pixels
+   (`--callout-h`, `.symptom`'s `top`), when Redness landed 0.2-0.4px low;
+   snapped, `cap` centres every label exactly, and identically in every
+   pill. */
+.symptomLabel {
+  display: block;
+  text-box: trim-both cap alphabetic;
 }
 
 /* non-negotiable 11: the opaque chip it was */
@@ -674,7 +737,14 @@
      typed-note case) this lands the font at ~10px, `Cheeks (L)` and `Nose`
      8-9px clear of each other where they used to overlap. */
   min-height: clamp(28px, 9cqw, 30px); /* 28 is the HIG minimum control */
-  padding: 0 clamp(3px, 1.8cqw, calc(var(--space-sm) - var(--border-width-hairline)));
+  /* ⚠️ THE LABEL IS LIFTED 0.5px — 30 Oct 2026, asked for directly ("adjust all
+     the pills vertical centering", from the Forehead and Cheeks (L) crops).
+     The line box centres the capitals, but this label is lowercase and read low
+     (measured 0.35px below centre on cap and x-height together). A hairline of
+     `padding-bottom` moves a centred label up by half of it. THE REGION PILLS
+     ONLY: the symptom chips, `Chip` and `Button` are as deployed. */
+  padding: 0 clamp(3px, 1.8cqw, calc(var(--space-sm) - var(--border-width-hairline)))
+    var(--border-width-hairline);
   font-size: clamp(11px, 3.6cqw, 12px); /* 11 is the HIG floor */
   line-height: 1.3;
 
@@ -758,7 +828,8 @@
    ⚠️ THE COLOURS AND THE LIFT ARE STATE VARIABLES (`--glass-*`), so one recipe
    draws both states and the selected rule only swaps values. */
 .region,
-.chips button[data-selected] {
+.chips button[data-selected],
+.placePill {
   --glass-base: var(--color-surface-face-pill-base);
   --glass-top: var(--color-surface-face-pill);
   --glass-end: var(--color-surface-face-pill-end);
@@ -921,8 +992,13 @@
    selected `Chip` in the app stays flat indigo. The diagonal shade
    (`::before`, below) still darkens the lower right, and the border stays
    transparent so no rim is drawn round it. */
+/* ⚠️ `.placePill` IS THE SAME PILL OUTSIDE THE FACE — 30 Oct 2026, asked for
+   directly: step 1's `Your symptoms` list draws each place as the face's lit
+   pill, so a place reads the same in both. It is always this selected state,
+   because the list only ever holds places that were picked. */
 .region[data-selected="true"],
-.chips button[data-selected="true"] {
+.chips button[data-selected="true"],
+.placePill {
   --glass-base: var(--color-surface-face-pill-selected-base);
   --glass-top: var(--color-surface-face-pill-selected);
   --glass-end: var(--color-surface-face-pill-selected-end);
@@ -985,11 +1061,13 @@
    overlay that fades, so it rides the fill's transition rather than snapping.
    `isolation` keeps it above the fill and under the label. The border here
    is already transparent, so it needs no hairline inset. */
-.region {
+.region,
+.placePill {
   isolation: isolate;
 }
 
-.region::before {
+.region::before,
+.placePill::before {
   content: "";
   position: absolute;
   inset: calc(var(--border-width-hairline) * -1);
@@ -1021,7 +1099,8 @@
   );
 }
 
-.region[data-selected="true"]::before {
+.region[data-selected="true"]::before,
+.placePill::before {
   opacity: 1;
 }
 
@@ -1073,12 +1152,6 @@
 /* the unmarked chips wait at the regions' 0.52 rather than `Chip`'s 0.4 */
 .chips button[data-selected="false"]:disabled {
   --chip-disabled-opacity: calc(var(--opacity-disabled) * 1.3);
-}
-
-@media (min-width: 1024px) {
-  .chips {
-    gap: var(--space-md); /* 12 on desktop, 10 on mobile — matches .chips in StartInvestigation.module.css */
-  }
 }
 
 @media (prefers-reduced-transparency: reduce) {

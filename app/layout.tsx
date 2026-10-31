@@ -1,7 +1,6 @@
 import type { Metadata, Viewport } from "next";
 import { Figtree } from "next/font/google";
 import "./globals.css";
-import "./vidgen.css";
 import { InvestigationProvider } from "@/lib/store/InvestigationProvider";
 import { RouteAnnouncer } from "@/components/layout/RouteAnnouncer";
 import { MotionObserver } from "@/components/layout/MotionObserver";
@@ -10,15 +9,12 @@ import { SnackbarProvider } from "@/components/layout/Snackbar";
 import { AppCanvas } from "@/components/layout/CanvasShader";
 
 /**
- * ⚠️ FIGTREE AGAIN, 4 Oct 2026 — asked for directly ("switch to figtree")
- * after a side-by-side on step 1 and Progress. Urbanist, the VidGen
- * references' face, was the lux-v3 typeface from 1 Oct 2026; Figtree is
- * lux-v2's and held up better at the 12px labels and in the date grids. The
- * same five weights load: Light for headlines and metrics, Regular for body
+ * ⚠️ THE TYPEFACE IS FIGTREE — asked for directly 4 Oct 2026, after a
+ * side-by-side on step 1 and Progress: it holds up at the 12px labels and in
+ * the date grids. Five weights load: Light for headlines and metrics, Regular for body
  * and chips, Medium for labels and buttons, SemiBold for card titles and the
  * selected nav label, Bold for the emphasised words in a light headline.
- * `--font-family-sans` points at it on `:root` in vidgen.css, since
- * tokens.css is generated and still names Urbanist.
+ * `--font-family-sans` in tokens.css points at it.
  */
 const figtree = Figtree({
   subsets: ["latin"],

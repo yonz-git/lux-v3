@@ -37,7 +37,7 @@
   /* 14/18 stays 14 here: a method card sits on sage and carries NO border, so
      there is nothing to subtract */
   min-height: 70px;
-  padding: 14px 18px;
+  padding: 0.875rem 1.125rem;
   text-align: left;
 
   /* lux-v3: a glass tile at 24 — the chips' material on the sheet's frost */
@@ -435,24 +435,36 @@
    ⚠️ CAPPED AT THE NAV PILL'S 380 ON MOBILE TOO, 13 Sep 2026 — asked for
    directly; see `--width-action-mobile` in globals.css. */
 .trayAction {
-  width: 100%;
-  max-width: var(--width-action-mobile);
+  /* width is `Button`'s `width="action"` (31 Oct 2026) */
   align-self: center;
+}
+
+/* `Add product` on the duration stage is the primary `Button` at
+   `size="sm"` (42, the verify stage's toggle pill), hugging its label and centred at both breakpoints.
+   `button.` + two classes outranks the shared rule above whatever the bundle
+   order; the height and padding are `Button`'s own. */
+button.trayAction.trayActionSmall {
+  align-self: center;
+}
+
+/* ⚠️ ROOM FOR THE CORNER ✕ — 31 Oct 2026, with `dismiss="corner"`. The ✕ is
+   a 20 circle pinned 20 down and 20 in, and this tray's views open with
+   full-width rows, so the first row sat under it. The view right after the ✕
+   drops so its top lands `space/md` below the circle, where its 44 tap area
+   ends: on a phone the content starts 37 down (8 padding, the grabber, its 4
+   and the 20 gap), on desktop at the dialog's 48 padding. */
+.cornerRoom > [aria-label="Close"] + * {
+  margin-top: calc(
+    var(--size-icon-sm) + var(--space-md) - var(--space-sm) - var(--space-xs) -
+      5px
+  ); /* 15 */
 }
 
 @media (min-width: 1024px) {
-  .trayAction {
-    width: var(--width-action);
-    align-self: center;
+  .cornerRoom > [aria-label="Close"] + * {
+    margin-top: calc(
+      var(--space-xl) + var(--size-icon-sm) + var(--space-md) -
+        var(--space-5xl)
+    ); /* 4 */
   }
-}
-
-/* ⚠️ NOT IN FIGMA — `Add product` on the duration stage is the secondary
-   `Button` at `size="md"` (48) with a plus, hugging its label and centred at
-   both breakpoints: step 1's `Take a photo` recipe, asked for directly 13 Sep
-   2026. `button.` + two classes outranks the shared rule above whatever the
-   bundle order; the height and padding are `Button`'s own now. */
-button.trayAction.trayActionSmall {
-  width: auto;
-  align-self: center;
 }

@@ -60,7 +60,7 @@ export function CheckHistory() {
           <p className={`${styles.emptyText} t-body3-body2`}>
             Run a compatibility check and it will appear here.
           </p>
-          <Button href="/check/new" className={styles.emptyCta}>
+          <Button width="action" href="/check/new" className={styles.emptyCta}>
             Start a check
           </Button>
         </div>

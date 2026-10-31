@@ -23,7 +23,7 @@ import { toggleMulti } from "@/lib/store/answers";
  * ⚠️ lux-v3 (1 Oct 2026, the canvas boards): the answers are CHIPS in one glass
  * panel, `Other` among them, and the field `Other` opens sits under the group.
  */
-const CONDITIONS = ["Rosacea", "Eczema", "Perioral dermatitis", "Psoriasis", "None", "Other"];
+export const CONDITIONS = ["Rosacea", "Eczema", "Perioral dermatitis", "Psoriasis", "None", "Other"];
 
 export function KnownConditions() {
   const { answers, setAnswer } = useInvestigation();

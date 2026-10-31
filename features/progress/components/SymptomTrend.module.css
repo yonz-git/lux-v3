@@ -84,7 +84,7 @@
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
-  padding: var(--space-xs) 10px;
+  padding: var(--space-xs) 0.625rem;
   border-radius: var(--radius-full);
   border: var(--border-width-hairline) solid var(--color-border-glass);
   background: var(--color-glass-strong);
@@ -173,7 +173,7 @@
 }
 
 .month {
-  line-height: 16px;
+  line-height: 1rem;
 }
 
 .dayTrack {

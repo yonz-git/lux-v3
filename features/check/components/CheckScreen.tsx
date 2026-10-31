@@ -144,7 +144,7 @@ export function CheckScreen() {
       </div>
 
       <div className={styles.actions}>
-        <Button href="/check/new" className={styles.cta}>
+        <Button width="action" href="/check/new" className={styles.cta}>
           Start analysis
         </Button>
         {/* ⚠️ THE TRAILING CHEVRON IS NOT IN FIGMA. 601:1952 draws this as a
@@ -194,7 +194,7 @@ export function CheckNoProfile() {
           same routine.
         </p>
         {/* the handoff's transition map: → GETTING STARTED 01 */}
-        <Button href="/investigation/start" className={styles.cta}>
+        <Button width="action" href="/investigation/start" className={styles.cta}>
           Create skin profile
         </Button>
       </div>

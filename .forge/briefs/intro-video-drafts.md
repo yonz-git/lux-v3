@@ -74,7 +74,7 @@ All three: 1080×1080, 30fps, muted-first captions, lux-v3 palette, real capture
 - the tracking beat is framed as *keeping the record*, not as proof (no causation by montage);
 - the loop returns to an empty canvas.
 
-**Type:** Urbanist only. Light dark ink `#2E2A3F`, with key words Bold in `#313560`. Every caption sits on the canvas, not on glass. Sizes:
+**Type:** Figtree only. Light dark ink `#2E2A3F`, with key words Bold in `#313560`. Every caption sits on the canvas, not on glass. Sizes:
 - headline 84–96px;
 - supporting line 48px;
 - kicker 32px tracked caps (a label like "DAY 1", always shown with a ≥48px caption).

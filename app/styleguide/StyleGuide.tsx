@@ -163,7 +163,7 @@ export function StyleGuide() {
 
       <Section title="Boxes — sheet and panel">
         <div className={styles.boxes}>
-          <div className={`vg-sheet ${styles.sheetDemo}`}>
+          <div className={`sheet ${styles.sheetDemo}`}>
             <div className={styles.sheetHead}>
               <h3 className={`t-h4-h3 ${styles.sheetTitle}`}>
                 {/* the chat panel's own orb — ChatPanel's header, 50px with the halo */}
@@ -174,7 +174,7 @@ export function StyleGuide() {
                 <Icons.CloseIcon />
               </IconButton>
             </div>
-            <div className={`vg-panel ${styles.panelDemo}`}>
+            <div className={`panel ${styles.panelDemo}`}>
               <p className={`t-h5 ${styles.panelLabel}`}>
                 <Icons.SparkleIcon />
                 Daily check-in
