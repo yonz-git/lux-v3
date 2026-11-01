@@ -310,9 +310,12 @@
      (the end also nudged lighter). Every caller of these two — `Button
      variant="secondary"` and `SmallButton` — now carries a backdrop blur so the
      pill reads as frost rather than a thin wash. Opaque fallback below. Figma
-     still holds the opaque pair; raise it there. */
-  --color-button-bg-secondary-start: #deeff391;
-  --color-button-bg-secondary-end: #b9c8cddb;
+     still holds the opaque pair; raise it there.
+     ⚠️ 15 POINTS LIGHTER, 1 Nov 2026, asked for directly ("lower the opacity
+     of those bg color 15%"): 57% → 42% (`91` → `6b`) and 86% → 71%
+     (`db` → `b5`), the secondary pills and step 1's `Undo` together. */
+  --color-button-bg-secondary-start: #deeff36b;
+  --color-button-bg-secondary-end: #b9c8cdb5;
   --color-gradient-canvas-start: #e2edf1; /* Figma #dce7ea; #c6d0d3 on 14 Sep */
   --color-gradient-canvas-mid: #d3e4e7; /* Figma #cedee2; #b9c8cb on 14 Sep */
   --color-gradient-canvas-end-mobile: #b1cad2; /* Figma #acc5cc; #9bb1b8 on 14 Sep */

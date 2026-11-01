@@ -24,6 +24,8 @@
   --color-border-subtle: rgb(255 255 255 / 0.08);
   --color-border-default: rgb(255 255 255 / 0.18);
   --color-border-button-secondary: #8d94d4;
+  --color-button-bg-secondary-start: rgb(255 255 255 / 0.1);
+  --color-button-bg-secondary-end: rgb(255 255 255 / 0.04);
   --shadow-glass: none;
   --shadow-sm: none;
 

@@ -137,12 +137,20 @@
   cursor: default;
 }
 
+/* ⚠️ THE SECONDARY GRADIENT IS BACK — 1 Nov 2026, asked for directly ("the
+   secondary buttons did have this gradient bg. now it looks flat … use the
+   button bg of this undo button"). The fork to lux-v3 (1 Oct 2026) swapped
+   lux-v2's `gradient/secondary` for flat glass; step 1's `Undo`
+   (StartInvestigation.module.css `.undoAction`) kept it. Same fill now:
+   `button/bg-secondary-start` → `-end` at 90°, the two ends exchanged on
+   hover through the registered `--grad-*` (so it cross-fades), opaque
+   under reduced transparency (tokens.css). Inside the indigo border: the
+   fill is clipped to the padding box. */
 .secondary {
+  --grad-start: var(--color-button-bg-secondary-start);
+  --grad-end: var(--color-button-bg-secondary-end);
   color: var(--color-text-primary);
-  background: var(--color-glass);
-  /* the fill stops inside the border, so it neither shows through the
-     indigo nor past its edge */
-  background-clip: padding-box;
+  background: linear-gradient(90deg, var(--grad-start), var(--grad-end)) padding-box;
   border-color: var(--color-border-button-secondary);
   box-shadow: var(--shadow-glass);
   -webkit-backdrop-filter: blur(10px);
@@ -150,7 +158,8 @@
 }
 
 .secondary:hover:not(:disabled) {
-  background-color: var(--color-glass-strong);
+  --grad-start: var(--color-button-bg-secondary-end);
+  --grad-end: var(--color-button-bg-secondary-start);
 }
 
 @media (hover: none) {
@@ -159,7 +168,8 @@
     --grad-end: #313560;
   }
   .secondary:hover:not(:disabled) {
-    background-color: var(--color-glass);
+    --grad-start: var(--color-button-bg-secondary-start);
+    --grad-end: var(--color-button-bg-secondary-end);
   }
 }
 
