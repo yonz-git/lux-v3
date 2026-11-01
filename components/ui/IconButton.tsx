@@ -14,12 +14,14 @@ import styles from "./IconButton.module.css";
  *            round button on a WHITE card, where glass would not show
  *
  * `label` is REQUIRED and becomes the accessible name: a glyph alone says
- * nothing to a screen reader. `size="sm"` is 44, the HIG floor, for rows
- * where 56 is too much; 56 is the default because every circle is.
+ * nothing to a screen reader. 56 is the default because every circle is.
  *
  * ⚠️ TWO MORE SIZES, 31 Oct 2026 — asked for directly ("buttons that use the
  * same design should be using reusable components with variants"):
- *   md  48 — the back button (`ScreenHeader`, `HubScreen`)
+ *   md  32 — the back button (`ScreenHeader`, `HubScreen`), the edit toggle,
+ *       the calendar's ‹ › and the face's ↺. 48 until 1 Nov 2026, when it
+ *       went to 32 and the 44 `sm` folded into it (asked for directly); the
+ *       disc is 32 and `.tap-target` keeps the hit area at 44.
  *   xs  20 — the small ✓ / ✎ / ✕ inside a field, a tray's corner ✕ and the
  *       chat panel's ✕. The disc is 20; `.tap-target` keeps the hit area at
  *       44 round it. Pair it with `CloseSmallIcon` (12) or a 16 glyph.
@@ -38,7 +40,7 @@ export function IconButton({
   label: string;
   children: ReactNode;
   variant?: "glass" | "primary" | "outline" | "soft";
-  size?: "lg" | "md" | "sm" | "xs";
+  size?: "lg" | "md" | "xs";
   href?: string;
   /** React 19 passes `ref` as a prop; it lands on the <button> */
   ref?: Ref<HTMLButtonElement>;
@@ -46,10 +48,10 @@ export function IconButton({
   const cls = [
     styles.button,
     styles[variant],
-    size === "sm" && styles.sm,
     size === "md" && styles.md,
     size === "xs" && styles.xs,
-    size === "xs" && "tap-target",
+    /* both small discs keep a 44 hit area round them */
+    (size === "md" || size === "xs") && "tap-target",
     "pressable",
     className,
   ]

@@ -20,14 +20,13 @@
     opacity var(--duration-base) var(--ease-standard);
 }
 
-.sm {
-  width: var(--size-touch-target);
-  height: var(--size-touch-target);
-}
-
+/* ⚠️ 32, NOT 48 — 1 Nov 2026, asked for directly, for every small circle at
+   once: the back button, the edit toggle, the calendar's ‹ › and the face's
+   ↺ (the last three were `sm`, 44, which went with them). The disc is 32;
+   `.tap-target` keeps the hit area at 44 round it (IconButton.tsx). */
 .md {
-  width: var(--size-control-md); /* 48 */
-  height: var(--size-control-md);
+  width: var(--size-round-md);
+  height: var(--size-round-md);
 }
 
 /* the 20 disc; its 44 target is `.tap-target` (IconButton.tsx) */

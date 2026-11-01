@@ -305,7 +305,7 @@ export function SymptomPlacer({
                 </div>
               )}
               <IconButton
-                size="sm"
+                size="md"
                 label="Reset all selections"
                 className={styles.resetButton}
                 disabled={nothingSelected}

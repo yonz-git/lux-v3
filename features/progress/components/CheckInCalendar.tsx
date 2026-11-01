@@ -180,17 +180,17 @@ export function CheckInCalendar({
           {monthLabel}
         </h2>
         <div className={styles.arrows}>
-          {/* the app's 44 glass circle — `IconButton`, not a copy of it
-              (31 Oct 2026) */}
+          {/* the app's small glass circle — `IconButton`, not a copy of it
+              (31 Oct 2026); 32 since 1 Nov 2026 */}
           <IconButton
-            size="sm"
+            size="md"
             label={`Previous month, ${formatMonth(addMonths(view, -1))}`}
             onClick={() => setView((v) => addMonths(v, -1))}
           >
             <ChevronLeftIcon className={styles.arrowIcon} />
           </IconButton>
           <IconButton
-            size="sm"
+            size="md"
             disabled={atLatestMonth}
             label={`Next month, ${formatMonth(addMonths(view, 1))}`}
             onClick={() => setView((v) => addMonths(v, 1))}
