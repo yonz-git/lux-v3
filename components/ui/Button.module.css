@@ -153,8 +153,10 @@
   background: linear-gradient(90deg, var(--grad-start), var(--grad-end)) padding-box;
   border-color: var(--color-border-button-secondary);
   box-shadow: var(--shadow-glass);
-  -webkit-backdrop-filter: blur(10px);
-  backdrop-filter: blur(10px);
+  /* the `Undo`'s frost — `blur/card` and a saturation lift; 10 until 1 Nov
+     2026 ("give bg blur") */
+  -webkit-backdrop-filter: blur(var(--blur-card)) saturate(160%);
+  backdrop-filter: blur(var(--blur-card)) saturate(160%);
 }
 
 .secondary:hover:not(:disabled) {
@@ -211,3 +213,11 @@
 /* the hover rim rides the outer edge: with no border the padding box IS the
    edge, so `.specular`'s own `inset: 0` is right (it was pushed out 1px over
    the border ring until 31 Oct 2026) */
+
+/* the secondary's ends turn opaque here (tokens.css), so its frost goes too */
+@media (prefers-reduced-transparency: reduce) {
+  .secondary {
+    -webkit-backdrop-filter: none;
+    backdrop-filter: none;
+  }
+}

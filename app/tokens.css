@@ -313,9 +313,13 @@
      still holds the opaque pair; raise it there.
      ⚠️ 15 POINTS LIGHTER, 1 Nov 2026, asked for directly ("lower the opacity
      of those bg color 15%"): 57% → 42% (`91` → `6b`) and 86% → 71%
-     (`db` → `b5`), the secondary pills and step 1's `Undo` together. */
-  --color-button-bg-secondary-start: #deeff36b;
-  --color-button-bg-secondary-end: #b9c8cdb5;
+     (`db` → `b5`), the secondary pills and step 1's `Undo` together.
+     ⚠️ 20 POINTS LIGHTER AGAIN the same day, asked for directly ("needs lower
+     opacity, 20% and give bg blur"): 42% → 22% (`38`) and 71% → 51% (`82`).
+     The pills' backdrop blur went 10 → `blur/card` (28) with it, so the
+     thinner fill still reads as frost. */
+  --color-button-bg-secondary-start: #deeff338;
+  --color-button-bg-secondary-end: #b9c8cd82;
   --color-gradient-canvas-start: #e2edf1; /* Figma #dce7ea; #c6d0d3 on 14 Sep */
   --color-gradient-canvas-mid: #d3e4e7; /* Figma #cedee2; #b9c8cb on 14 Sep */
   --color-gradient-canvas-end-mobile: #b1cad2; /* Figma #acc5cc; #9bb1b8 on 14 Sep */

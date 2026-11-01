@@ -22,3 +22,8 @@
   background: var(--color-bg-brand);
   color: #fff;
 }
+
+/* `size="sm"` — 8 a side (Tag.tsx) */
+.tag[data-size="sm"] {
+  padding: 0 var(--space-sm);
+}

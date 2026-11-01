@@ -217,17 +217,24 @@
    that and read too short for a tap target, so the pair sits at **30** — 26
    +15%, chosen by eye on the running screen.
 
-   ⚠️ 30 IS A LITERAL AND HAS TO BE. It is off the spacing scale and there is no
-   size/control step between sm (36) and nothing; --space-* is for gaps, not
-   control heights. Written once here as `--slot-h` so the three rules below
-   cannot drift apart. Both children keep their own fill, radius and type — only
-   the box they sit in is shared. */
+   ⚠️ 26 × 54 SINCE 1 NOV 2026, asked for directly ("the pills are too big for
+   this usage. reduce the paddings inside"): both pills are 8 a side now
+   (`SmallButton` / `Tag` `size="sm"`), the height is back to the Tag's own 26
+   — the 44 to the thumb is each pill's `.tap-target`, not its drawn size —
+   and 54 holds `Added` at that padding (53.9), which fills the slot as `Add`
+   does, so the two states are one size; at 12 a side it had spilled past.
+
+   ⚠️ THE TWO ARE LITERALS AND HAVE TO BE. They are off the spacing scale and
+   there is no size/control step below sm (36); --space-* is for gaps, not
+   control heights. Written once here so the rules below cannot drift apart.
+   Both children keep their own fill, radius and type — only the box they sit
+   in is shared. */
 .trailing {
-  --slot-h: 30px;
+  --slot-h: 1.625rem; /* 26 */
 
   flex: none;
   display: flex;
-  width: 54px;
+  width: 3.375rem; /* 54 */
   min-height: var(--slot-h);
 }
 
@@ -242,14 +249,16 @@
    gets to decide. Naming each child outranks its component's rule, so the
    height lands whichever way the bundler orders them. The Small Button also
    needs its vertical padding gone: 8 + a 22 line-height is 38, and a min-height
-   cannot pull a box back below its content. Side padding stays 16 on the
-   button, 12 on the tag. */
+   cannot pull a box back below its content. Side padding is 12 on both, and
+   the label 12 on both: the button is `SmallButton size="sm"` since 1 Nov
+   2026 (asked for directly), where it was 16 and 14 beside the tag's 12. */
 .trailing .add {
   min-height: var(--slot-h);
   padding-block: 0;
 }
 
 .trailing .added {
+  width: 100%;
   min-height: var(--slot-h);
 }
 

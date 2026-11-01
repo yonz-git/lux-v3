@@ -21,13 +21,14 @@
      `.secondary`, where the 1 Nov 2026 note is) */
   background: linear-gradient(90deg, var(--grad-start), var(--grad-end)) padding-box;
   box-shadow: var(--shadow-glass);
-  -webkit-backdrop-filter: blur(10px);
-  backdrop-filter: blur(10px);
+  /* the `Undo`'s frost, as `Button`'s `.secondary` */
+  -webkit-backdrop-filter: blur(var(--blur-card)) saturate(160%);
+  backdrop-filter: blur(var(--blur-card)) saturate(160%);
   text-decoration: none;
   white-space: nowrap;
   cursor: pointer;
   transition:
-    background-color var(--duration-fast) var(--ease-hover),
+    background-color var(--duration-hover) var(--ease-hover),
     --grad-start var(--duration-hover) var(--ease-hover),
     --grad-end var(--duration-hover) var(--ease-hover);
 }
@@ -59,6 +60,22 @@
   .primary:hover:not(:disabled) {
     background-color: var(--color-bg-brand);
   }
+}
+
+/* `size="sm"` — 8 a side, `Tag size="sm"`'s padding (SmallButton.tsx); 12
+   until later on 1 Nov 2026 ("the pills are too big for this usage") */
+.sm {
+  padding-inline: var(--space-sm);
+}
+
+/* ⚠️ THE 12 LABEL'S LINE BOX IS TRIMMED TO THE CAPS — 1 Nov 2026. At
+   `Label Small`'s 16 line height Figtree's ascent outweighs its descent, so
+   `Add` sat 1.2 above the pill's middle; trimmed to cap height and the
+   baseline, the box the pill centres IS the ink. A block box, not a flex
+   one — `text-box` skips flex boxes (taste.md). */
+.sm > span:not(.icon) {
+  display: inline-block;
+  text-box: trim-both cap alphabetic;
 }
 
 .button:disabled {

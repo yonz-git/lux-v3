@@ -214,13 +214,15 @@ export function CheckBuilder({ now }: { now: number }) {
             aria-label={`Remove ${fullName(p)} from this analysis`}
             onClick={() => remove(p.id)}
           >
-            <Tag variant="brand" className={styles.added}>
+            <Tag variant="brand" size="sm" className={styles.added}>
               Added
             </Tag>
           </button>
         ) : (
           <SmallButton
             label="Add"
+            /* the `Added` tag's 12 text and 12 padding (1 Nov 2026) */
+            size="sm"
             arrow={false}
             specular={false}
             className={`${styles.add} tap-target`}

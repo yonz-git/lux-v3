@@ -9,6 +9,10 @@ type Props = {
   /** `primary` is the flat indigo pill — a small action that commits, such as
    *  step 1's `Save` (canvas boards, 1 Oct 2026). Glass by default. */
   variant?: "glass" | "primary";
+  /** `sm`: the label one role down to `Label Small` (12 Medium) and 8 side
+   *  padding — `Tag size="sm"` beside it, CHECK's `Add` / `Added` (1 Nov
+   *  2026, asked for directly). The height is the caller's slot. */
+  size?: "md" | "sm";
   arrow?: boolean;
   /** a leading glyph from `icons.tsx`, sized to icon/sm (20) by the module */
   icon?: ReactNode;
@@ -33,6 +37,7 @@ type Props = {
 export function SmallButton({
   label,
   variant = "glass",
+  size = "md",
   arrow = true,
   icon,
   specular: _specular,
@@ -40,6 +45,7 @@ export function SmallButton({
   className,
   ...rest
 }: Props) {
+  const role = size === "sm" ? "t-label-sm" : "t-button-sm";
   const content = (
     <>
       {icon && (
@@ -47,9 +53,9 @@ export function SmallButton({
           {icon}
         </span>
       )}
-      <span className="t-button-sm">{label}</span>
+      <span className={role}>{label}</span>
       {arrow && (
-        <span className="t-button-sm" aria-hidden="true">
+        <span className={role} aria-hidden="true">
           →
         </span>
       )}
@@ -58,6 +64,7 @@ export function SmallButton({
   const cls = [
     styles.button,
     variant === "primary" && styles.primary,
+    size === "sm" && styles.sm,
     "pressable",
     className,
   ]
