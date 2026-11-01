@@ -219,7 +219,7 @@
      duty as a fill, which meant the track could not be tuned without moving
      every frosted-row border with it. The filled part is still bg/brand. */
   --color-bg-progress-track: #ecf8f9;
-  --color-surface-frost-light: rgba(244, 254, 255, 0.55);
+  --color-surface-frost-light: #f4feff47; /* 28%, 1 Nov 2026, asked for directly — 0.55 until then */
   /* The nav pill. 83% — NOT the old 17%, which let the Continue button read
      straight through the bar. */
   /* #dbedede0 — set 22 Aug 2026 (was #dde8eb @83%). Shares its colour with
@@ -371,6 +371,10 @@
   --gutter-tablet: 1.5rem; /* 24px */
   --gutter-desktop: 1.5rem; /* 24px */
   --width-card-focus: 40rem; /* 640px */
+  /* step 1's symptom column from 1024: chips, safety notice, face card, your
+     symptoms and `Other` all on this one width — 1 Nov 2026, asked for
+     directly ("use these elements in one width") */
+  --width-symptom-placer: 30rem; /* 480px */
   --width-card-form: 57.5rem; /* 920px */
   --width-card-detail: 65rem; /* 1040px */
   --width-content-max: 80rem; /* 1280px */

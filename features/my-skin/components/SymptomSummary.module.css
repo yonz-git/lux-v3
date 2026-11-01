@@ -127,7 +127,7 @@
    container's centre with equal gaps either side. */
 @media (min-width: 1024px) {
   .card {
-    max-width: 480px;
+    max-width: var(--width-symptom-placer);
     margin-inline: auto;
   }
 }

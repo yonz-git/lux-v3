@@ -59,7 +59,7 @@
 
 @media (min-width: 1024px) {
   .chips {
-    max-width: 480px;
+    max-width: var(--width-symptom-placer);
   }
 }
 
@@ -239,6 +239,17 @@
    within-question 20, where it used to start the second question at 40. */
 .other {
   margin-top: var(--space-4xl); /* 40 */
+}
+
+/* the face card's width and centre line from 1024, like every block of the
+   symptom column (`--width-symptom-placer`); `width: 100%` for the reason
+   `.diagram` gives */
+@media (min-width: 1024px) {
+  .other {
+    width: 100%;
+    max-width: var(--width-symptom-placer);
+    margin-inline: auto;
+  }
 }
 
 .diagram {
@@ -499,7 +510,7 @@ button.takePhoto {
 @media (min-width: 1024px) {
   .diagram {
     /* the diagram does not need the full 824 card width to read */
-    max-width: 480px;
+    max-width: var(--width-symptom-placer);
     /* ⚠️ CENTRED — a deliberate departure from the comp, which left-aligns it at
        the card's content edge (Figma 476:2934 puts face-diagram-card at x=308,
        the same x as everything else in the card).
