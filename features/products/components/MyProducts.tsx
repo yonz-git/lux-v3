@@ -270,7 +270,8 @@ export function MyProducts() {
             icon={<PlusIcon />}
             onClick={() => setSheetOpen(true)}
           >
-            Add more products
+            {/* `Add more products` until 1 Nov 2026, asked for directly */}
+            Add your products
           </Button>
         </div>
       </HubScreen>
