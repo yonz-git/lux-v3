@@ -66,6 +66,7 @@ lib/                 date.ts, demo.ts, pageTitles.ts, actives.ts
 | `/check/results` | pushed | `check` |
 | `/check/history` | pushed | `check` |
 | `/styleguide` | dev tool | `none` |
+| `/tweak` | dev tool, step 1 framed with a tuning panel | `none` |
 
 - Flow step = has a progress track. Hub landing: no track, no back. Pushed view: back, no track.
 - `TOTAL_STEPS` = 5. Profile and analysis are not steps. Don't add them to `STEPS`.

@@ -1,0 +1,203 @@
+/* Tweak — a dev tool, like `/styleguide`. See Tweak.tsx.
+   Narrow: the framed screen on top, the panel under it, each with half the
+   height. From 1024 the frame fills what the panel leaves and the panel is a
+   column on the right; both scroll on their own. */
+
+/* ⚠️ DARK — 1 Nov 2026, asked for directly ("make the page in darkmode",
+   "white screens is tiring"). The tool's chrome only: the framed screen is
+   the app as it ships. The semantic tokens are redefined for this subtree, so
+   the design system's own Chip, SmallButton and IconButton turn dark with
+   it rather than staying light pills on a dark ground. */
+.tool {
+  --color-text-primary: #e6e7ee;
+  --color-text-secondary: #b3b5c3;
+  --color-text-muted: #9092a3;
+  --color-text-brand: #c3c8ff;
+  --color-text-on-brand: #ffffff;
+  --color-bg-brand: #5961a6;
+  --color-bg-brand-hover: #6971b8;
+  --color-glass: rgb(255 255 255 / 0.06);
+  --color-glass-strong: rgb(255 255 255 / 0.12);
+  --color-bg-glass: rgb(255 255 255 / 0.04);
+  --color-bg-glass-strong: rgb(255 255 255 / 0.07);
+  --color-border-glass: rgb(255 255 255 / 0.16);
+  --color-border-subtle: rgb(255 255 255 / 0.08);
+  --color-border-default: rgb(255 255 255 / 0.18);
+  --color-border-button-secondary: #8d94d4;
+  --shadow-glass: none;
+  --shadow-sm: none;
+
+  display: grid;
+  grid-template-rows: minmax(0, 1fr) minmax(0, 1fr);
+  height: 100dvh;
+  color: var(--color-text-primary);
+  background: #15161c;
+  color-scheme: dark;
+}
+
+@media (min-width: 1024px) {
+  .tool {
+    grid-template-rows: none;
+    grid-template-columns: minmax(0, 1fr) var(--width-action); /* the panel: 376 */
+  }
+}
+
+.main {
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+  min-height: 0;
+}
+
+.bar {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--space-sm);
+  padding: var(--space-md) var(--space-lg);
+  border-bottom: var(--border-width-hairline) solid var(--color-border-subtle);
+}
+
+.stage {
+  position: relative;
+  flex: 1;
+  min-height: 0;
+  overflow: hidden;
+  display: flex;
+  justify-content: center;
+}
+
+.frame {
+  flex: none;
+  border: 0;
+  transform-origin: top center;
+  background: #15161c;
+  box-shadow: 0 0 0 var(--border-width-hairline) var(--color-border-subtle);
+}
+
+.panel {
+  display: flex;
+  flex-direction: column;
+  min-height: 0;
+  border-top: var(--border-width-hairline) solid var(--color-border-subtle);
+  background: var(--color-bg-glass-strong);
+}
+
+.tabs {
+  display: flex;
+  gap: var(--space-xs);
+  padding: var(--space-md) var(--space-lg);
+  border-bottom: var(--border-width-hairline) solid var(--color-border-subtle);
+}
+
+.body {
+  flex: 1;
+  min-height: 0;
+  overflow-y: auto;
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-md);
+  padding: var(--space-lg);
+}
+
+.row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-xs);
+}
+
+.meta {
+  color: var(--color-text-muted);
+}
+
+.code {
+  font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+  overflow-wrap: anywhere;
+}
+
+.field {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-xs);
+}
+
+.picked {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: var(--space-xs);
+  padding: var(--space-md);
+  border-radius: var(--radius-md);
+  background: var(--color-bg-glass);
+}
+
+.group {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-xs);
+  margin: 0;
+  padding: 0;
+  border: 0;
+}
+
+.legend {
+  padding: 0;
+  margin-bottom: var(--space-xs);
+  color: var(--color-text-muted);
+}
+
+.prop {
+  display: grid;
+  grid-template-columns: minmax(0, 7fr) minmax(0, 9fr) auto auto;
+  align-items: center;
+  gap: var(--space-xs);
+}
+
+.propName {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  color: var(--color-text-secondary);
+}
+
+.prop[data-changed] .propName {
+  color: var(--color-bg-brand);
+  font-weight: 600;
+}
+
+.input {
+  min-width: 0;
+  padding: var(--space-xs) var(--space-sm);
+  border: var(--border-width-hairline) solid var(--color-border-default);
+  border-radius: var(--radius-sm);
+  background: var(--color-bg-glass-strong);
+  color: var(--color-text-primary);
+}
+
+.prop[data-changed] .input {
+  border-color: var(--color-bg-brand);
+}
+
+.export {
+  min-height: 50vh;
+  resize: vertical;
+}
+
+.swatch {
+  width: var(--space-2xl);
+  height: var(--space-2xl);
+  padding: 0;
+  border: var(--border-width-hairline) solid var(--color-border-default);
+  border-radius: var(--radius-sm);
+  background: none;
+  cursor: pointer;
+}
+
+/* the panel's edge follows it to the right from 1024 (after `.panel`, so it
+   wins at equal specificity) */
+@media (min-width: 1024px) {
+  .panel {
+    border-top: 0;
+    border-left: var(--border-width-hairline) solid var(--color-border-subtle);
+  }
+}

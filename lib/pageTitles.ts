@@ -61,6 +61,9 @@ const HUB_TITLES: Record<string, string> = {
   "/investigation/profile": "What we know about your skin",
   /* the design system rendered live — a dev tool, in no nav section */
   "/styleguide": "Style guide",
+  /* step 1 framed beside a panel for tuning it by hand — a dev tool, in no
+     nav section */
+  "/tweak": "Tweak a screen",
   /* ⚠️ `/chat` USED TO BE HERE AND THE ROUTE IS GONE — 7 Sep 2026. It was the
      standalone conversation panel (270:96), prototype-only and in no nav
      section; `app/chat/page.tsx` was deleted, so a title for it would name a
