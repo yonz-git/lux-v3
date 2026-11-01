@@ -1,16 +1,24 @@
-/* `Edit` and `Save` share one grid cell and crossfade, so the pill keeps one
-   width and the swap does not snap. */
+/* The pen and the ✓ share one grid cell and crossfade, so the swap does not
+   snap. Each glyph is centred in that cell, the cell in the round button. */
 .swap {
-  display: inline-grid;
-  justify-items: center;
+  display: grid;
+  place-items: center;
 }
 
 .swap > span {
   grid-area: 1 / 1;
+  display: grid;
+  place-items: center;
   opacity: 0;
   transition: opacity var(--duration-fade) var(--ease-in-out);
 }
 
 .swap > span[data-on] {
   opacity: 1;
+}
+
+/* the ✓'s own box is 28; at the set's small size its stroke sits with the
+   16 pen rather than looming over it */
+.swap > span:last-child svg {
+  --icon-size: var(--size-icon-sm);
 }

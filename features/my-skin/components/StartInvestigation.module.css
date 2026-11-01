@@ -369,13 +369,12 @@
   height: calc(24px * 20 / 36);
 }
 
-/* `SuccessCheckIcon` is drawn in a 28 box with its tick high and left of
-   centre, so at the ✕'s size it reads small and off-centre: one step up, and
-   nudged back to the middle (the 1.5 and 2 units it sits off, at 16/28) */
+/* `SuccessCheckIcon` is drawn in a 28 box, so at the ✕'s size it reads
+   small: one step up. It centres in its own box now (icons.tsx), so the
+   0.86 / 1.14 nudge it took here went on 1 Nov 2026. */
 .otherCheckIcon {
   width: 16px;
   height: 16px;
-  transform: translate(0.86px, 1.14px);
 }
 
 .otherLabel {

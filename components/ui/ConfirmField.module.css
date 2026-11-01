@@ -29,10 +29,10 @@
   height: calc(24px * 20 / 36);
 }
 
+/* the tick centres in its own box now (icons.tsx), so no nudge */
 .checkIcon {
   width: 16px;
   height: 16px;
-  transform: translate(0.86px, 1.14px);
 }
 
 .confirmed {
