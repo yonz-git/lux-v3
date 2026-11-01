@@ -108,13 +108,13 @@ export function useDialogPresence(open: boolean, exitMs: number = EXIT_MS) {
   return { present, leaving };
 }
 
-/* ⚠️ KEEP IN STEP WITH `--duration-base` (200ms) — the fade and the slide are
+/* ⚠️ KEEP IN STEP WITH `--duration-base` (300ms) — the fade and the slide are
    CSS transitions on `[data-tray][data-state="leaving"]` in `globals.css`, and
    this is only the moment the node is removed (Radix's `forceMount` holds it
    until then). Unmounting EARLY cuts the exit off mid-flight; unmounting late
    leaves an invisible dialog over the screen holding Radix's scroll lock. Same arrangement, same hazard, as `Snackbar`'s
    `EXIT_MS`. */
-const EXIT_MS = 200;
+const EXIT_MS = 300;
 
 /* ⚠️ KEEP IN STEP WITH `--duration-fast` (120ms) — `.drop[data-state="leaving"]`
    in globals.css. A floating dropdown leaves faster than a tray, and this is

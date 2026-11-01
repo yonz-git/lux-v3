@@ -15,8 +15,8 @@ import { useDialogPresence } from "@/lib/useModalDialog";
  * ⚠️ THE PANEL IS STILL NOT MOUNTED WHILE CLOSED, and callers rely on that —
  * `Disclosure` for the heading tree a screen reader must not reach behind a
  * collapsed section. `useDialogPresence`, the trays' own hook, holds a closing
- * panel only for the 200ms it takes to leave, and `inert` takes it out of the
- * tab order and the accessibility tree for exactly those 200ms, as `Sheet`
+ * panel only for the 300ms it takes to leave, and `inert` takes it out of the
+ * tab order and the accessibility tree for exactly those 300ms, as `Sheet`
  * does.
  *
  * ⚠️ `entering` IS A STATE, NOT JUST THE FIRST FRAME, because the clip hangs
@@ -48,7 +48,7 @@ export function Collapse({
   /**
    * The slow, premium recipe — a 500ms ease in-out move and a 350ms fade
    * (`--duration-move`, `--duration-fade`, `--ease-in-out`) in place of the
-   * app's quicker 200ms recipe. For a surface that is swapping, not a row morphing;
+   * app's quicker 300ms recipe. For a surface that is swapping, not a row morphing;
    * `~/.claude/taste.md`. Opt-in: every other Collapse is unchanged.
    */
   smooth?: boolean;
@@ -94,11 +94,11 @@ export function Collapse({
   );
 }
 
-/* ⚠️ KEEP IN STEP WITH `--duration-base` (200ms) — the row's transition in
+/* ⚠️ KEEP IN STEP WITH `--duration-base` (300ms) — the row's transition in
    `globals.css`. This only decides when the clip comes off: too early and the
    panel's content spills over the rows below for the last frames of growing;
    too late and a focus ring at its edge stays cut for a moment longer. */
-const ENTER_MS = 200;
+const ENTER_MS = 300;
 
 /* ⚠️ KEEP IN STEP WITH `--duration-move` (500ms) — `<Collapse smooth>`'s slide,
    and both its clip-off and its unmount: shorter cuts the exit off mid-move. */
@@ -107,4 +107,4 @@ const SMOOTH_MS = 500;
 /* ⚠️ KEEP IN STEP WITH `useDialogPresence`'s default exit (lib/useModalDialog.ts)
    and `--duration-base` — how long a collapse takes to close. A caller that
    commits a removal only once its row has closed waits this long. */
-export const COLLAPSE_EXIT_MS = 200;
+export const COLLAPSE_EXIT_MS = 300;

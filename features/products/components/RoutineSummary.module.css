@@ -12,31 +12,17 @@
 }
 
 /* `.card.card` (0,2,0) outranks DataCard's panel fill and its
-   reduced-transparency rule whatever order the modules load in */
+   reduced-transparency rule whatever order the modules load in.
+   The teal was faded to 85% on its own layer from 3 Oct 2026; back at full
+   strength since 29 Oct 2026 (at 0.85 the white ink read 3.2–3.8:1), so it is
+   the card's own background again. */
 .card.card {
   position: relative;
   isolation: isolate;
   border-color: rgb(255 255 255 / 0.2);
   box-shadow: inset 0 1px 0 rgb(255 255 255 / 0.25);
-  background: none;
-  color: #fff;
-}
-
-/* ⚠️ THE TEAL IS ON ITS OWN LAYER AT 85%, 3 Oct 2026, asked for directly
-   ("lower opacity to 0.7", the background only, then 0.85). The stack mixes opaque and
-   translucent stops, so no single alpha could thin it evenly; drawn on a
-   pseudo-element and faded as one, the whole fill goes to 85% while the
-   white ink, the pill and the bar above it stay at full strength. */
-.card.card::before {
-  content: "";
-  position: absolute;
-  inset: 0;
-  z-index: -2;
-  border-radius: inherit;
-  pointer-events: none;
-  /* 1 since 29 Oct 2026: at 0.85 over a 71% base the white ink read 3.2–3.8:1 */
-  opacity: 1;
   background: var(--gradient-routine);
+  color: #fff;
 }
 
 /* the overline left, the total's pill right, centred on one line */
@@ -55,9 +41,13 @@
 
 /* the chart's own pill (`.dayPill` / `.eventPill` on teal), at the 28 the
    age pills below use */
+/* a block, not a flex box, so the line box can be trimmed to the x-height and
+   centred on it (`text-box` skips flex boxes): mostly lowercase, so the
+   x-height is what the eye centres — 7.7 above the ink and 7.7 below */
 .total {
-  display: inline-flex;
-  align-items: center;
+  display: inline-block;
+  align-content: center;
+  text-box: trim-both ex alphabetic;
   box-sizing: border-box;
   height: 28px;
   padding: 0 var(--space-md);
@@ -71,10 +61,10 @@
   font-variant-numeric: tabular-nums;
 }
 
-/* one 8 tall bar, a 3 gap between groups, each segment as wide as its count */
+/* one 8 tall bar, a 4 gap between groups, each segment as wide as its count */
 .bar {
   display: flex;
-  gap: 0.1875rem;
+  gap: var(--space-xs);
   height: 8px;
 }
 
@@ -118,7 +108,7 @@
 .keyItem {
   display: inline-flex;
   align-items: center;
-  gap: 0.375rem;
+  gap: var(--space-sm);
   color: rgb(255 255 255 / 0.85);
 }
 

@@ -37,9 +37,22 @@
     --grad-end var(--duration-hover) var(--ease-hover);
 }
 
-/* the label sits in its own element so the shine can cross the whole word */
+/* the label sits in its own element so the shine can cross the whole word.
+   ⚠️ ITS LINE BOX IS TRIMMED TO THE X-HEIGHT, NOT THE CAPITALS (1 Nov 2026,
+   asked for directly: "its not vertically centered still"). Labels are mostly
+   lowercase; centred on the caps, `Add product` had 16.1 above its ink and
+   13.3 below and read low. On the x-height the ink is 14.7 / 14.7.
+   ⚠️ THE PADDING GIVES THE ASCENDERS AND DESCENDERS BACK. A primary label's
+   ink is `.shine-text`'s gradient clipped to the text, and a background only
+   paints the element's box: trimmed to the x-height, the caps' tops and the
+   tails of y, p and g would be left unpainted. The padding grows the painted
+   box past them and the equal negative margin keeps the box the button
+   centres. */
 .label {
   display: inline-block;
+  text-box: trim-both ex alphabetic;
+  padding-block: var(--space-xs);
+  margin-block: calc(-1 * var(--space-xs));
 }
 
 /* v2's primary hover (see Button.tsx): the rim and shine read these.

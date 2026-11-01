@@ -19,8 +19,8 @@
   flex-direction: column;
   gap: var(--space-lg); /* 16 — see above */
   /* ⚠️ 10% MORE, asked for directly 15 Sep 2026 ("make it breathe more"):
-     17.6 / 19.8 */
-  padding: calc(var(--space-lg) * 1.1) calc(1.125rem * 1.1);
+     17.6 / 19.8, then the nearest tokens on 1 Nov 2026, 16 / 20 */
+  padding: var(--space-lg) var(--space-xl);
 
   /* lux-v3: the 30% panel at the score cards' 24 radius (app/globals.css) */
   border-radius: var(--radius-2xl); /* 24 */
@@ -63,10 +63,9 @@
      `.card` above: the collapsed 8 sat between nothing */
   gap: var(--space-md);
   /* ⚠️ 20% MORE THAN `space/md` — 10% asked for directly 15 Sep 2026 ("make
-     the design breathe more"), then 10% more again the same day: 14.4,
-     written as a multiple of the token so it still reads as the 12 step,
-     loosened, rather than a new number */
-  padding: calc(var(--space-md) * 1.2);
+     the design breathe more"), then 10% more again the same day: 14.4, as a
+     multiple of the 12 step; the nearest token since 1 Nov 2026, 16 */
+  padding: var(--space-lg);
 
   /* ⚠️ SUPERSEDED 13 Sep 2026, asked for directly: the surface and radius of
      `/check/new`'s product row (`ProductList`'s `.row`), which is also this

@@ -412,8 +412,10 @@ export function SuccessCheckIcon({ className }: IconProps) {
 export function ProgressIcon({ className }: IconProps) {
   return (
     <Icon box="0 0 24 24" className={className}>
-      <path d="M4 15.25L9 10.25L12.5 13.75L19.25 7" {...ns} />
-      <circle cx="19.25" cy="7" r="1.6" fill="currentColor" stroke="none" />
+      {/* 1.3 lower than first drawn (1 Nov 2026), so the ink, 6.7 to 17.3,
+          centres on the box's 12 */}
+      <path d="M4 16.55L9 11.55L12.5 15.05L19.25 8.3" {...ns} />
+      <circle cx="19.25" cy="8.3" r="1.6" fill="currentColor" stroke="none" />
     </Icon>
   );
 }

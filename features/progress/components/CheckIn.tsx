@@ -205,7 +205,7 @@ export function CheckInPanel({
      tapped. Focus now skips that scroll and the body is scrolled SMOOTHLY
      instead, to the same place: `scrollIntoView` honours the global focus
      `scroll-margin` (globals.css) exactly as the focus scroll did. The field
-     grows in with `Collapse`, so the scroll waits the collapse's 200ms
+     grows in with `Collapse`, so the scroll waits the collapse's 300ms
      (`--duration-base` — keep in step) to aim at the whole field rather than
      at a zero-height row. Reduced motion scrolls instantly, which is what the
      global duration collapse cannot do for a JS scroll. */
@@ -223,7 +223,7 @@ export function CheckInPanel({
     if (!input) return;
     const timer = window.setTimeout(() => {
       input.scrollIntoView({ behavior: prefersReducedMotion() ? "auto" : "smooth", block: "nearest" });
-    }, 200);
+    }, 300);
     return () => window.clearTimeout(timer);
   }, [noteOpen]);
 
@@ -233,7 +233,7 @@ export function CheckInPanel({
      fold stayed below the fold until the user found it themselves. Turn 2 has
      no `Collapse` over it — it mounts at full height the instant `choice` is
      set — so there is nothing to wait out; turn 3 does, so its effect keeps
-     the note field's 200ms rule (`--duration-base` — keep in step) rather than
+     the note field's 300ms rule (`--duration-base` — keep in step) rather than
      aiming at a row still growing. Neither effect re-fires on an unrelated
      re-render: `choice` is a stable reference into `SKIN_TREND_CHOICES` for as
      long as `trend` itself hasn't changed, and `askedExtras` is a boolean, so
@@ -255,7 +255,7 @@ export function CheckInPanel({
         behavior: prefersReducedMotion() ? "auto" : "smooth",
         block: "nearest",
       });
-    }, 200);
+    }, 300);
     return () => window.clearTimeout(timer);
   }, [askedExtras]);
 

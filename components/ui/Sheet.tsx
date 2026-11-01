@@ -186,7 +186,7 @@ export function Sheet({
           /* ⚠️ `inert` WHILE LEAVING, NOT JUST UNCLICKABLE. The dialog is already
              closed as far as focus and assistive tech are concerned — focus has
              gone back to the opener — so a fading copy of it must not be
-             reachable by pointer, Tab or a screen reader for those 200ms. */
+             reachable by pointer, Tab or a screen reader for those 300ms. */
           inert={leaving}
           aria-describedby={undefined}
           tabIndex={-1}

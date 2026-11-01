@@ -12,8 +12,9 @@
 
 .toggle {
   display: flex;
-  gap: 0.25rem;
-  padding: 0.3125rem;
+  gap: var(--space-xs);
+  /* 5 until 1 Nov 2026, off the scale */
+  padding: var(--space-xs);
   border-radius: var(--radius-full);
   background: var(--color-surface-frost-nav);
   /* ⚠️ THE HAIRLINE AND THE LIT RING BELOW AT 80% OF THEIR OPACITY, asked for

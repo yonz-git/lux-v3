@@ -117,6 +117,13 @@
   --icon-size: 22px; /* the canvas draws the set at 22 inside a 56 circle */
 }
 
+/* the bottle is the set's one narrow glyph: 10 of ink in its 22 box, where the
+   others fill ~16, so its pill read 1.8 right of centre. Tucking the box 4
+   left puts the ink back on the pill's centre (measured 1 Nov 2026). */
+.item[data-active="true"][data-nav-id="products"] .icon {
+  margin-left: calc(-1 * var(--space-xs));
+}
+
 .label {
   white-space: nowrap;
 }

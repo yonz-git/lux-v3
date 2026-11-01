@@ -8,8 +8,8 @@
   align-items: flex-start;
   gap: var(--space-md);
   /* ⚠️ 10% MORE, asked for directly 15 Sep 2026 ("make it breathe more"): 22,
-     `space/xl` loosened rather than a new number */
-  padding: calc(var(--space-xl) * 1.1);
+     `space/xl` loosened; the next token up since 1 Nov 2026, 24 */
+  padding: var(--space-2xl);
 
   border-radius: var(--radius-2xl);
   background: var(--color-surface-frost-light);

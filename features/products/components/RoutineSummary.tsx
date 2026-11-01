@@ -43,7 +43,11 @@ export function RoutineSummary({ products }: { products: SavedProduct[] }) {
     <DataCard className={`${styles.card} grain`} aria-labelledby="routine-total">
       <p className={styles.top}>
         <span className={`${styles.overline} t-overline`}>In your routine</span>
-        <span id="routine-total" className={`${styles.total} t-label`}>
+        <span
+          id="routine-total"
+          className={`${styles.total} t-label`}
+          data-align-exempt="centred on the x-height, not the caps (RoutineSummary.module.css)"
+        >
           {total} product{total === 1 ? "" : "s"}
         </span>
       </p>

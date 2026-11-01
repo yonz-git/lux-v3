@@ -34,10 +34,10 @@
   align-items: center;
   gap: var(--space-md);
   width: 100%;
-  /* 14/18 stays 14 here: a method card sits on sage and carries NO border, so
-     there is nothing to subtract */
+  /* the frosted row's 14/18 until 1 Nov 2026, now the nearest tokens, 16/20;
+     a method card sits on sage and carries NO border, so nothing to subtract */
   min-height: 70px;
-  padding: 0.875rem 1.125rem;
+  padding: var(--space-lg) var(--space-xl);
   text-align: left;
 
   /* lux-v3: a glass tile at 24 — the chips' material on the sheet's frost */
@@ -354,17 +354,13 @@
   transition: color var(--duration-fast) var(--ease-hover);
 }
 
-/* ⚠️ THE 44 TOUCH TARGET SURVIVES THE SHRINK, as a transparent ::after rather
-   than as the button's own box. `.otherClear` is a bare 20px control and that
-   is under the minimum everywhere; this row is the one place in the tray where
-   a tap DESTROYS something, so the hit area is kept and only the visible circle
-   is 20. Same principle as `Sheet`'s back chevron — the glyph keeps its size,
-   the hit area overhangs into space that is padding anyway. */
-.removeButton::after {
-  content: "";
-  position: absolute;
-  inset: calc((20px - var(--size-touch-target)) / 2);
-}
+/* ⚠️ THE 44 TOUCH TARGET SURVIVES THE SHRINK — the global `.tap-target`
+   (globals.css) on the button, rather than the button's own box. `.otherClear`
+   is a bare 20px control and that is under the minimum everywhere; this row is
+   the one place in the tray where a tap DESTROYS something, so the hit area is
+   kept and only the visible circle is 20. Same principle as `Sheet`'s back
+   chevron — the glyph keeps its size, the hit area overhangs into space that
+   is padding anyway. */
 
 .removeButton:hover {
   color: var(--color-text-primary);

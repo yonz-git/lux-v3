@@ -465,7 +465,7 @@
   /* ---- 09 Motion ---------------------------------------------------------- */
   --duration-instant: 0ms;
   --duration-fast: 120ms;
-  --duration-base: 200ms;
+  --duration-base: 300ms; /* 200 until 1 Nov 2026: under the 0.3s floor for a fade */
   --duration-slow: 320ms;
   --duration-slower: 480ms;
   /* duration/hover — added to `09 Motion` on 22 Aug 2026 with the new button

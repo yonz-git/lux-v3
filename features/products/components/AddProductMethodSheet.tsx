@@ -680,7 +680,7 @@ function ConfirmView({
                   trailing={
                     <button
                       type="button"
-                      className={styles.removeButton}
+                      className={`${styles.removeButton} tap-target`}
                       onClick={() => onRemove(p.id)}
                       aria-label={`Remove ${fullName(p)}`}
                     >

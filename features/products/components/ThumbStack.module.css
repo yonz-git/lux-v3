@@ -40,8 +40,9 @@
     var(--shadow-sm);
 }
 
+/* 12 of each 40 well tucked under the one before (14 until 1 Nov 2026) */
 .thumb + .thumb {
-  margin-left: -14px;
+  margin-left: calc(-1 * var(--space-md));
 }
 
 /* ⚠️ FRONT TO BACK, AND CAPPED AT THREE — paired with `PREVIEW_MAX`. Later

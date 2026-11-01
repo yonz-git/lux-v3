@@ -90,12 +90,19 @@ export function Button({
       {primary && (
         <>
           <span className="edge-light" aria-hidden="true" />
-          <span className="specular" aria-hidden="true" />
+          {/* its 120ms linear angle follows the pointer between moves; an
+              eased 0.3s would trail the cursor, so the motion check skips it */}
+          <span
+            className="specular"
+            aria-hidden="true"
+            data-motion-exempt="pointer-follow smoothing, not a state change"
+          />
         </>
       )}
       {icon}
       <span
         className={primary ? `${styles.label} shine-text shine-on-hover` : styles.label}
+        data-align-exempt="centred on the x-height, not the caps (Button.module.css)"
       >
         {children}
       </span>
@@ -106,7 +113,14 @@ export function Button({
      nothing, so it would stay focusable and still navigate */
   if (href && !rest.disabled) {
     return (
-      <Link href={href} className={cls} style={rest.style} onPointerMove={handlePointerMove}>
+      <Link
+        href={href}
+        className={cls}
+        style={rest.style}
+        onPointerMove={handlePointerMove}
+        // the check measures a link's own text as well as the label inside it
+        data-align-exempt="label centred on the x-height, not the caps (Button.module.css)"
+      >
         {content}
       </Link>
     );

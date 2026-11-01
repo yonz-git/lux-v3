@@ -32,7 +32,8 @@ import { nextHref } from "@/features/my-skin/flow";
  * ⚠️ NOT IN FIGMA — THE NAV LIGHTS `Products` HERE, NOT `My skin`. This is
  * still step 5 of the profile — track, `Save & exit` and all — but the screen
  * IS the products list, reached to add products, and the nav names the section
- * the user is looking at. Every other flow screen keeps the `my-skin` default.
+ * the user is looking at. Every other flow screen keeps the nav's default,
+ * `my-skin` (token-exempt: a nav id, not a margin class).
  *
  * ⚠️ THE PROTOTYPE ARRIVES EMPTY. The comps show two products because a comp
  * has to show a filled-in state; which state renders here is decided by what
