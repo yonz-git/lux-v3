@@ -80,9 +80,12 @@ export function Chip({
   control?: "checkbox" | "radio";
   /**
    * The pill's size and label style. `compact` is the chat panel's — see the
-   * note above, and raise it in Figma before reusing it.
+   * note above, and raise it in Figma before reusing it. `small` is step 1's
+   * symptom chips: 32 tall, `Caption` (12 Regular), the default's weight —
+   * 1 Nov 2026, asked for directly from `/tweak` (0.8rem there, which is no
+   * step on the type scale; `Caption` is the nearest role at this weight).
    */
-  size?: "default" | "compact";
+  size?: "default" | "compact" | "small";
   /**
    * The SELECTED fill. `brand` is the indigo every chip had; `teal` is the
    * face diagram's picked-region pill, which the investigation questions and
@@ -103,12 +106,12 @@ export function Chip({
       role={control}
       aria-checked={selected}
       data-selected={selected}
-      data-size={size === "compact" ? "compact" : undefined}
+      data-size={size === "default" ? undefined : size}
       data-tone={tone === "teal" ? "teal" : undefined}
       data-muted={selected && muted ? "" : undefined}
       disabled={disabled}
-      /* still a `t-*` class either way — rule 3 holds for both sizes */
-      className={`${styles.chip} ${size === "compact" ? "t-label-sm" : "t-chip"}`}
+      /* still a `t-*` class at every size — rule 3 holds for all three */
+      className={`${styles.chip} ${size === "compact" ? "t-label-sm" : size === "small" ? "t-caption" : "t-chip"}`}
       onClick={onToggle}
     >
       {icon && (

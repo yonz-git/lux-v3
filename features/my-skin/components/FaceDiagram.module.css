@@ -12,6 +12,9 @@
   gap: var(--space-md);
   width: 100%;
   padding: var(--space-md);
+  /* the face starts 4 under the card's top edge — 1 Nov 2026, asked for
+     directly from `/tweak` (the card, so every face card takes it) */
+  padding-top: var(--space-xs);
 
   /* ⚠️ A SECOND QUERY CONTAINER, ADDED 9 Sep 2026 — NOT IN FIGMA. `.diagram`
      is already one for `.region` (see below); this one is for `.readOnlyChip`,

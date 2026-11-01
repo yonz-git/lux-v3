@@ -114,7 +114,16 @@ export function StartInvestigation() {
   const [photoOpen, setPhotoOpen] = useState(false);
 
   return (
-    <QuestionScreen id="start" gapBeforeContinue={48} tightTop>
+    /* ⚠️ 1 Nov 2026, asked for directly from `/tweak`: the screen starts 16
+       higher (top 24 → 8) and Continue sits 32 further down (24 → 56 below
+       1024, 48 → 80 from it). 56 is 24 + 32, not a step of its own. */
+    <QuestionScreen
+      id="start"
+      gapBeforeContinue={80}
+      gapBeforeContinueMobile={56}
+      contentTop={8}
+      tightTop
+    >
       {/* ⚠️ AN `<h2>`, NOT AN `<h1>` — the step's own title is the page's one
           `<h1>`, rendered by `QuestionScreen` (visually hidden here). This is a
           question WITHIN that step, so it is a level down. Marking both as

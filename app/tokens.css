@@ -375,6 +375,9 @@
      symptoms and `Other` all on this one width — 1 Nov 2026, asked for
      directly ("use these elements in one width") */
   --width-symptom-placer: 30rem; /* 480px */
+  /* one width for every symptom chip, so the rows read as a grid — 1 Nov
+     2026, asked for directly */
+  --width-symptom-chip: 4.5rem; /* 72px */
   --width-card-form: 57.5rem; /* 920px */
   --width-card-detail: 65rem; /* 1040px */
   --width-content-max: 80rem; /* 1280px */
@@ -752,6 +755,9 @@
      bind it as their ink and ring ("use the active tone of this, the
      darkest"), so the readout's pills and the face's picked pills are one
      family. NOT IN FIGMA, like the rest of this block. */
+  /* the face card's ↺ reset, a paler and denser glass than the shared one —
+     1 Nov 2026, asked for directly from `/tweak` */
+  --color-face-reset-bg: #e2edf094;
   --color-face-pill-selected-core: #1c2b30;
   --color-face-pill-selected-hue: color-mix(
     in srgb,
@@ -912,6 +918,9 @@
      floor, so the chip IS its hit area. A field stays 56 (`--size-field`). */
   --size-chip: 2.75rem; /* 44px */
   --space-chip-inline: 1.125rem; /* the 44 chip's side padding, off-scale      */
+  /* the small chip, step 1's symptoms (Chip `size="small"`) — 1 Nov 2026,
+     asked for directly; 44 to the thumb still, through the chip's `::after` */
+  --size-chip-sm: 2rem; /* 32px */
   --size-field: 3.5rem; /* text and search fields, the radio rows     */
   --size-tab: 3.5rem; /* pill tabs (57 in the ref)                  */
   --size-slider: 4rem; /* slide-to-start track                       */

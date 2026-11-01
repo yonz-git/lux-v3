@@ -18,6 +18,8 @@
    on desktop only, which left the mobile title flush left over a centred chip
    grid. */
 .question {
+  /* 20 above and below — 1 Nov 2026, asked for directly from `/tweak` */
+  margin-block: var(--space-xl);
   color: var(--color-text-primary);
   text-align: center;
 }
@@ -39,9 +41,9 @@
    inter-block height is unchanged at 132, so the card does not move; mobile
    loses 40 of the 92px by which the screen overflowed its own 957 canvas. */
 .chips {
-  /* ⚠️ 32 UNDER LUX's BUBBLE — the chips lead the screen now (30 Oct 2026,
-     asked for directly), taking the 32 the face card had there */
-  margin-top: var(--space-3xl);
+  /* ⚠️ 16 UNDER LUX's BUBBLE — 1 Nov 2026, asked for directly from `/tweak`.
+     It was 32 from 30 Oct 2026, when the chips came to lead the screen */
+  margin-top: var(--space-lg);
   display: flex;
   flex-wrap: wrap;
   justify-content: center;
@@ -63,6 +65,15 @@
   }
 }
 
+/* ⚠️ ONE WIDTH FOR EVERY SYMPTOM — 1 Nov 2026, asked for directly from
+   `/tweak`: the chips are `Chip size="small"` (32 tall, Caption) and all 72
+   wide, so the two rows line up as a grid instead of ragged label widths.
+   The label is centred in the pill, so the longest (`Breakouts`) still sits
+   inside it. Only this row: the face's `Whole face` / `Neck` / `Other` are
+   `Chip`s too and keep their own size. */
+.chips button {
+  width: var(--width-symptom-chip);
+}
 
 /* ⚠️ NOT IN FIGMA — A PICKED SYMPTOM IS `bg/symptom` (#d3858a), NOT INDIGO,
    asked for directly 14 Sep 2026: the colour the profile's symptom pills
@@ -206,7 +217,9 @@
    hugs the face card's left edge; the bubble's tail corner (top left) sits
    level with the orb's middle, so the bubble reads as coming from it. */
 .coach {
-  margin: var(--space-lg) 0 0;
+  /* 20 under the question's own 20 — 1 Nov 2026, asked for directly from
+     `/tweak`; 16 until then */
+  margin: var(--space-xl) 0 0;
   display: flex;
   align-items: flex-start;
   /* ⚠️ CENTRED AS A PAIR, 4 Oct 2026, asked for directly ("center the
@@ -237,8 +250,11 @@
    ⚠️ THE FACE DIAGRAM IS NOT ONE ANY MORE: with the chips moved under it (14
    Sep 2026), it opens the question straight after the instruction, at the
    within-question 20, where it used to start the second question at 40. */
+/* ⚠️ 8 NOW, NOT 40 — 1 Nov 2026, asked for directly from `/tweak` (16 on
+   `.other` less 8 on the button inside it, so 8 is what showed): `Other`
+   sits right under `Your symptoms` as one more way to say where. */
 .other {
-  margin-top: var(--space-4xl); /* 40 */
+  margin-top: var(--space-sm);
 }
 
 /* the face card's width and centre line from 1024, like every block of the
@@ -381,6 +397,9 @@
 /* two classes deep, to win over `IconButton`'s own transition and its 0.4
    disabled fade whichever module loads last */
 .reset .resetButton {
+  /* a paler, denser glass on the face card — 1 Nov 2026, asked for directly
+     from `/tweak`; `IconButton`'s hover still lifts it */
+  background-color: var(--color-face-reset-bg);
   transition:
     opacity var(--duration-fade) var(--ease-in-out),
     visibility 0s linear 0s,

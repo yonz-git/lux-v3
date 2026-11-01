@@ -252,6 +252,7 @@ export function SymptomPlacer({
           <Chip
             key={s}
             label={s}
+            size="small"
             selected={placing === s || reported.includes(s)}
             /* the lit chip is the one the face is taking taps for; the rest
                that are marked step back, so it is clear which is on */

@@ -40,7 +40,8 @@
 /* Continue follows the content; it is not pushed to the foot of the screen */
 .spacer {
   flex: none;
-  min-height: var(--space-2xl);
+  /* 24, unless a screen asks for more (`gapBeforeContinueMobile`) */
+  min-height: var(--continue-gap-mobile, var(--space-2xl));
 }
 
 /* Continue, plus whatever sits above it — `04a — Long-term products · filled`

@@ -118,6 +118,12 @@
   gap: var(--space-xs);
 }
 
+/* step 1's symptom chips (Chip.tsx `size="small"`) */
+.chip[data-size="small"] {
+  min-height: var(--size-chip-sm);
+  padding: 0 var(--space-xl);
+}
+
 /* the 44 hit area — invisible, never a bigger pill */
 .chip::after {
   content: "";

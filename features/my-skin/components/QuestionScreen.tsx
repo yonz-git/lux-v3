@@ -46,12 +46,14 @@ export function QuestionScreen({
   children,
   continueLabel = "Continue",
   gapBeforeContinue,
+  gapBeforeContinueMobile,
   footer,
   onContinue,
   contentGap,
   contentGapDesktop,
   nav = "my-skin",
   tightTop,
+  contentTop,
 }: {
   id: StepId;
   children: ReactNode;
@@ -61,6 +63,8 @@ export function QuestionScreen({
    *  spacer Figma draws on 476:2670 — that pushed Continue to y 1002 on an
    *  868-tall viewport. Keep any value here on the spacing scale. */
   gapBeforeContinue?: number;
+  /** the same gap below 1024, in px. Defaults to 24. */
+  gapBeforeContinueMobile?: number;
   /**
    * An extra control ABOVE Continue, inside the same footer — `04a — Long-term
    * products · filled` puts a secondary "Done" there. Continue stays the last
@@ -96,6 +100,11 @@ export function QuestionScreen({
   nav?: NavSection;
   /** take the screen's top padding 40 -> 32, as the hub screens do */
   tightTop?: boolean;
+  /**
+   * The screen's top padding at every width, in px, through `--content-top`
+   * (globals.css) — a flow screen's default is 24. Step 1 passes 8.
+   */
+  contentTop?: number;
 }) {
   const router = useRouter();
   const { answers } = useInvestigation();
@@ -108,6 +117,11 @@ export function QuestionScreen({
       className="screen"
       data-layout="flow"
       data-tight-top={tightTop || undefined}
+      style={
+        contentTop != null
+          ? ({ "--content-top": `${contentTop}px` } as React.CSSProperties)
+          : undefined
+      }
     >
       <div className={styles.shell} data-reveal>
         <ScreenHeader backHref={prevHref(id)} />
@@ -168,9 +182,12 @@ export function QuestionScreen({
             className={styles.spacer}
             aria-hidden="true"
             style={
-              gapBeforeContinue
-                ? ({ "--continue-gap": `${gapBeforeContinue}px` } as React.CSSProperties)
-                : undefined
+              {
+                ...(gapBeforeContinue && { "--continue-gap": `${gapBeforeContinue}px` }),
+                ...(gapBeforeContinueMobile && {
+                  "--continue-gap-mobile": `${gapBeforeContinueMobile}px`,
+                }),
+              } as React.CSSProperties
             }
           />
 
