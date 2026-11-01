@@ -196,6 +196,11 @@
   --color-border-error: #82302b;
   --color-border-glass: rgb(255 255 255 / 0.3); /* 1px edge on all glass — 0.55 until 3 Oct 2026, asked for directly */
   --color-border-highlight: rgba(255, 255, 255, 0.9);
+  /* the glass pills' edge (Button secondary, SmallButton glass): the primary's
+     indigo, 1 Nov 2026, asked for directly. Full strength since the same day
+     ("1.25px"): Chrome draws 1.25 and 1.5 borders as 1, so weight comes from
+     the colour, not the width (80% until then, for "0.8px") */
+  --color-border-button-secondary: var(--color-bg-brand);
   --color-bg-glass: rgba(255, 255, 255, 0.5);
   --color-bg-glass-strong: rgba(255, 255, 255, 0.72);
   /* SOLID nav background — the prefers-reduced-transparency fallback for

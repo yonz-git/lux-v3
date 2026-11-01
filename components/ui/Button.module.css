@@ -140,14 +140,17 @@
 .secondary {
   color: var(--color-text-primary);
   background: var(--color-glass);
-  border-color: var(--color-border-glass);
+  /* the fill stops inside the border, so it neither shows through the
+     indigo nor past its edge */
+  background-clip: padding-box;
+  border-color: var(--color-border-button-secondary);
   box-shadow: var(--shadow-glass);
   -webkit-backdrop-filter: blur(10px);
   backdrop-filter: blur(10px);
 }
 
 .secondary:hover:not(:disabled) {
-  background: var(--color-glass-strong);
+  background-color: var(--color-glass-strong);
 }
 
 @media (hover: none) {
@@ -156,7 +159,7 @@
     --grad-end: #313560;
   }
   .secondary:hover:not(:disabled) {
-    background: var(--color-glass);
+    background-color: var(--color-glass);
   }
 }
 

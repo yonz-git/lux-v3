@@ -11,10 +11,12 @@
   gap: var(--space-xs);
   min-height: var(--size-control-sm);
   padding: 0 var(--space-lg);
-  border: var(--border-width-hairline) solid var(--color-border-glass);
+  border: var(--border-width-hairline) solid var(--color-border-button-secondary);
   border-radius: var(--radius-full);
   color: var(--color-text-primary);
   background: var(--color-glass);
+  /* the fill stops inside the border (Button.module.css `.secondary`) */
+  background-clip: padding-box;
   box-shadow: var(--shadow-glass);
   -webkit-backdrop-filter: blur(10px);
   backdrop-filter: blur(10px);
