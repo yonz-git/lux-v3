@@ -407,7 +407,8 @@ function CategoryGroup({
             <EmptyBox
               compact
               action={
-                <Button size="sm" onClick={onAdd}>
+                /* secondary since 1 Nov 2026, asked for directly */
+                <Button variant="secondary" size="sm" onClick={onAdd}>
                   Add product
                 </Button>
               }
