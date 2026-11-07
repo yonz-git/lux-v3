@@ -1,16 +1,3 @@
-/* Chip — the reference's option chip (`9:16`, `1080p`, `15s`), 1 Oct 2026.
-
-   DEFAULT   glass: white @25%, 1px white @55% edge, the inset white @80% rim,
-             44 tall (`--size-chip` — 55 in the reference, taken down on the
-             canvas) with 18 a side, 16 Regular label in the app's secondary
-             ink, a leading glyph in the brand indigo.
-   SELECTED  lux-v2's: flat `bg/brand` shading to `bg/brand-hover` at 135°,
-             white label and glyph.
-
-   Caller hooks that predate lux-v3 still work: `--chip-edge` recolours the
-   edge, `--chip-lift` is a second shadow slot, `--chip-disabled-opacity` and
-   `--chip-hit-inline` are unchanged. The 44 hit area is `::after`. */
-
 .chip {
   --chip-edge: var(--color-border-glass);
   --chip-lift: 0 0 #0000;
@@ -27,9 +14,6 @@
   border-radius: var(--radius-full);
   color: var(--color-text-secondary);
   background: var(--color-glass);
-  /* ⚠️ THE TOP SHINE AT HALF STRENGTH, 4 Oct 2026, asked for directly ("make
-     the white shine borders 50% less opacity"): `--shadow-glass`'s 80% white
-     rim at 40%, on the chips only; then 20%, "it has not changed" */
   box-shadow: inset 0 1px 0 rgb(255 255 255 / 0.2), var(--chip-lift);
   -webkit-backdrop-filter: blur(10px);
   backdrop-filter: blur(10px);
@@ -87,11 +71,6 @@
   color: #fff;
 }
 
-/* ⚠️ MUTED — SELECTED, NOT THE ONE BEING WORKED ON (29 Oct 2026, see
-   Chip.tsx). The indigo fill fades out of the overlay and leaves a tint of it
-   under indigo ink and edge, so it still reads as chosen and the full fill
-   marks the active chip alone. The ink is `text/brand`, which holds contrast
-   on the tint where the white label would not. */
 .chip[data-selected="true"][data-muted] {
   --chip-edge: color-mix(in srgb, var(--color-bg-brand) 45%, transparent);
   color: var(--color-text-brand);
@@ -140,18 +119,6 @@
   }
 }
 
-/* ⚠️ `tone="teal"` — THE PICKED PILL IN TEAL, NOT INDIGO. 4 Oct 2026, asked
-   for directly ("change them to green pills"): steps 2, 3 and 4 first, then
-   the check-in ("here too"), which is when it moved here from
-   QuestionPanel.module.css as a prop. The chips take the
-   face diagram's picked-region pill (`.region[data-selected="true"]` in
-   FaceDiagram.module.css), the same recipe the skin profile card's answers
-   wear: the deeper teal at 89% under the 20% diagonal shade, a faint
-   `#869ea626` hairline and a 5% white light along the top, white ink. So an
-   answer looks the same here, where it is given, as on the profile card,
-   where it is read back. It rides `Chip`'s own fading `::before`, so the
-   change of state still fades rather than snaps. Every chip without the
-   tone keeps the indigo. */
 .chip[data-tone="teal"][data-selected="true"] {
   --chip-edge: #869ea626;
   box-shadow: inset 0 1px 0 #ffffff0d, var(--shadow-sm);
@@ -164,8 +131,6 @@
       color-mix(in srgb, var(--color-face-pill-selected-deep) 20%, transparent)
         100%
     ),
-    /* #106a7f since 29 Oct 2026, with the face pills: white on #13758c at
-       89% is ~4.46:1 on the light canvas */
     #106a7fe3;
 }
 

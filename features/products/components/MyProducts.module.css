@@ -1,14 +1,9 @@
 /* My Products. Figma empty 579:1574 / 583:1863, filled 579:1607 / 583:1889.
 
-   empty:  orb 129 -> 16 spacer -> title -> description -> 16 spacer -> CTA,
-           the whole block centred, no card at either breakpoint.
-   filled: heading (+ subtitle) -> 24 -> category rows 56 tall, gap 12 -> 16
-           -> add-more.
-
-   ⚠️ A CATEGORY ROW IS A DISCLOSURE, NOT A LINK — it opens the group's product
-   cards in place. See MyProducts.tsx. The row itself is unchanged: still 56,
-   still padding 0/18, still the frosted-row recipe; only the trailing glyph
-   swapped from chevron-right to a rotating chevron-down. */
+empty:  orb 129 -> 16 spacer -> title -> description -> 16 spacer -> CTA,
+the whole block centred, no card at either breakpoint.
+filled: heading (+ subtitle) -> 24 -> category rows 56 tall, gap 12 -> 16
+-> add-more. */
 
 .empty {
   display: flex;
@@ -19,20 +14,11 @@
   color: var(--color-text-primary);
 }
 
-/* ⚠️ 48 UNDER THE ORB AND 48 ABOVE THE CTA, not the block's own 16. Figma puts
-   a named 16-tall `spacer` frame in both places, so with the 16 gap on either
-   side of it the real distance is 48 — the orb and the button each get room,
-   while the title and its description stay tight at 16. Reading the gap alone
-   and ignoring the spacer children makes the block 64 too short. */
 .empty > svg,
 .empty > :global(.lux-orb) {
   margin-bottom: var(--space-3xl); /* + the 16 gap = 48 */
 }
 
-/* ⚠️ THE WIDTH IS `Button`'s `width="action"` NOW — 31 Oct 2026, asked for
-   directly ("why is this button so wide?"). This rule lifted the 380 cap
-   from 1024 up, so the CTA ran across the whole 640 body while `/check`'s
-   stopped at 380. Only the spacing stays here. */
 .emptyCta {
   margin-top: var(--space-3xl); /* + the 16 gap = 48 */
 }
@@ -50,19 +36,6 @@
   gap: var(--space-md);
 }
 
-/* ⚠️ THE GROUP IS THE SURFACE NOW, AND THE ROW IS NOT — NOT IN FIGMA. The
-   frosted fill, the 16 radius, the inner shadow and the blur moved here off
-   `.category`, so an OPEN group is one box with the row as its header and its
-   products inside it rather than a row and a detached stack of cards beneath
-   it. CLOSED, the box holds nothing but the 56 row and renders exactly as it
-   did before: same fill, same radius, same height, same shadow. See
-   MyProducts.tsx for why the cards moved inside.
-
-   The gap is the distance from the row to the first card INSIDE the box, and
-   `.panel` pays the other three sides. Two categories are still 12 apart —
-   that gap belongs to `.categories` and is untouched. `--collapse-gap` hands
-   the same 8 to the panel's `Collapse`, so it opens with the panel — see
-   "Dropdowns" in globals.css. */
 .group {
   display: flex;
   flex-direction: column;
@@ -70,8 +43,6 @@
 
   /* lux-v3: the 30% panel at the score cards' 24 radius (app/globals.css) */
   border-radius: var(--radius-2xl); /* 24 */
-  /* ⚠️ A FAINT 12% EDGE, NOT `border/panel`'s 45% — 3 Oct 2026, asked for
-     directly (set in the inspector and handed over) */
   border: var(--border-width-hairline) solid #ffffff1f;
   background: var(--color-panel);
   box-shadow: inset 0 1px 0 var(--color-rim-panel);
@@ -83,28 +54,7 @@
   --collapse-gap: var(--space-sm);
 }
 
-/* 56 tall, padding 16/18, gap 12.
-
-   ⚠️ THE FILL IS `surface/frost-nav`, NOT `frost-light` — NOT IN FIGMA. It is
-   declared on `.group` (above), not here, but this is the reasoning for it.
-   579:1607 draws every row on frost-light, which was correct while the row was
-   a LINK to a pushed screen. It opens its products IN PLACE now, so the header
-   and the cards it discloses sit on the same screen at the same time — and
-   `ProductAccordionCard` is frost-light too, so an open group read as one
-   undifferentiated pale stack with no edge saying which row owned which cards.
-   frost-nav (#dbeded @88%) is the app's existing darker frosted fill, already
-   the pill the nav and the search field share, so this is a token swap inside
-   one family rather than a new surface. Same recipe otherwise: same radius,
-   same frosted-row inner shadow, same blur, same 56. Its opaque counterpart
-   `bg/nav` is the reduced-transparency fallback, the pairing that token already
-   has. */
-/* ⚠️ BELOW DESKTOP THE DECK MOVES TO THE SECOND LINE — 31 Oct 2026, asked
-   for directly. Beside the name, the 66 deck plus count and chevron left
-   `Long-term products` 138 at 375, so it wrapped to three lines and the weeks
-   pill ran under the thumbs. Here the name takes the whole first line up to
-   the count, and the deck sits right-aligned opposite the pill. `.copy`
-   dissolves (`display: contents`) so its two children join the grid. From
-   1024 the row is one flex line again — see the media query at the end. */
+/* 56 tall, padding 16/18, gap 12. */
 .category {
   display: grid;
   grid-template-columns: minmax(0, 1fr) auto auto;
@@ -114,20 +64,7 @@
   align-items: center;
   gap: var(--space-sm) var(--space-md);
   width: 100%;
-  /* ⚠️ 112, DOUBLE THE COMP'S 56, as of 15 Sep 2026, asked for directly, with
-     the thumb deck doubled to 56 inside it (ThumbStack.module.css). The notes
-     in this file that say "the row must stay 56" describe what it was. */
   min-height: 112px;
-  /* ⚠️ 14 TOP AND BOTTOM, NOT 0 — changed 13 Sep 2026, asked for directly from
-     a real phone. With no vertical padding the row was 56 only because of
-     `min-height`, so a name that wrapped (`Long-term products` does at 375)
-     grew the row to exactly its 48 of text and left 4 above and below — the
-     name pressed against both edges. 14 is what keeps a ONE-line row on 56:
-     the tallest thing in it is the 28 thumb stack, and 28 + 14 + 14 = 56, so
-     the comp height is untouched and only a wrapped row grows (to 76). */
-  /* 14 / 18, with the left 21.6, until 1 Nov 2026: hand-typed and multiplied
-     values, off the spacing scale. Now the nearest tokens, 16 / 20 all round;
-     `.panel` below takes the same 20 so the cards keep the name's left line. */
   padding: var(--space-lg) var(--space-xl);
   text-align: left;
 
@@ -145,37 +82,8 @@
   grid-area: name;
   min-width: 0;
   color: var(--color-text-primary);
-  /* ⚠️ IT WRAPS RATHER THAN ELLIPSISING, CHANGED 8 Sep 2026 — WCAG 1.4.12. It
-     used to be `overflow: hidden` + `text-overflow: ellipsis` + nowrap, on the
-     reasoning that "the name yields first" because `.window` is the shorter,
-     fixed string and a truncated "4+ wee" would read worse than a truncated
-     category name. That reasoning holds for WHICH of the two yields; what it
-     got wrong is HOW. Measured with the WCAG text-spacing overrides applied,
-     the ellipsis cut "Long-term products" at 440 and "Recent" at 320 — content
-     the user cannot get back, caused by their own accessibility setting, which
-     is the failure 1.4.12 names. Wrapping loses nothing.
-
-     ⚠️ THE ROW STILL STAYS 56 AT EVERY DESIGN WIDTH, which is what the note on
-     `.window` below is actually protecting. Measured: at 440, 390 and 1440 the
-     longest name fits on one line, so nothing wraps and the comp height is
-     unchanged. ⚠️ IT DOES WRAP AT 375 — a real phone, not only the 320 this
-     note used to name — and under a user's own spacing overrides. The row
-     grows then, and `.category`'s vertical padding is what gives the two lines
-     room inside it. */
 }
 
-/* ⚠️ THE WINDOW SITS UNDER THE NAME NOW (see `.copy`). It sat beside it while
-   the row had to stay 56; the row is 112 as of 15 Sep 2026, so the second
-   line costs no height.
-   ⚠️ AND IT IS A GLASS PILL WITH AN AGE METER, 3 Oct 2026, picked on the design
-   canvas: muted `Label Small` text under the name "looked strange", so the
-   window is `Label` in the chips' glass at 28 tall, its ink one step up to
-   `text/secondary` now that it has a ground. A width-less flex item, so
-   `.copy`'s `align-items: flex-start` keeps it hugging its text. It sits 8
-   under the name (`.copy`'s 2 plus 6 of its own): a pill needs more air under
-   a heading than a bare line did.
-   Below desktop it shares the grid's full-width `meta` cell with the deck, so
-   the deck's width never widens the count and chevron columns above it. */
 .window {
   grid-area: meta;
   justify-self: start;
@@ -222,23 +130,6 @@
   background: var(--color-bg-brand);
 }
 
-/* ⚠️ NOT IN FIGMA — THE COUNT IS A DISC, 15 Sep 2026, asked for directly: the
-   secondary button's gradient (`button/bg-secondary-*`) taken 15% darker, a
-   circle (36 at first, 28 now — see `min-width` below) around the `H6`
-   numeral, and the ink one step
-   up to `text/primary` now that the numeral has a ground of its own. The
-   `min-width` + padding let a two- or three-digit count stretch the circle
-   into a pill rather than overflow it.
-   ⚠️ THEN BRIGHTENED 20% AND GIVEN THE EDGE LIGHT, the same day, asked for
-   directly: each darkened end mixed 20% toward white in OKLab (a lightness
-   step, as `.specular`'s streaks take theirs), and the fixed rim light
-   (globals.css `.edge-light`) at its pale-pill defaults — a real span in
-   MyProducts.tsx, which is why the disc is `position: relative`.
-   ⚠️ SUPERSEDED THE SAME DAY, asked for directly: after a further 20% and a
-   blue tone, the disc took the COLOURS of the skin profile card's answer
-   pills on PROGRESS instead — indigo `bg/brand` with a white numeral. The
-   gradient, both brightenings and the tint are gone; the size, the shape and
-   the edge light stay. */
 .count {
   grid-area: count;
   position: relative;
@@ -250,29 +141,14 @@
   align-content: center;
   text-align: center;
   text-box: trim-both cap alphabetic;
-  /* ⚠️ 28, NOT 36, asked for directly later the same day ("smaller"). A
-     literal, off the size scale as the thumb deck's wells were at 28: the
-     scale runs 24, 32, 36 and this disc is neither an icon nor a control. The
-     padding came down one step with it so a two-digit count still fits. */
-  /* ⚠️ AND 10% UNDER THAT, 15 Sep 2026, asked for directly: 28 → 25.2,
-     written as the multiple so the step it came from stays readable */
   min-width: calc(28px * 0.9);
   height: calc(28px * 0.9);
   padding: 0 var(--space-xs);
   border-radius: var(--radius-full);
-  /* the routine card's dark teal, so the counts read as part of the summary
-     above (asked for directly 31 Oct 2026); white ink */
   background: var(--color-bg-routine);
   color: var(--color-text-on-brand);
 }
 
-/* ⚠️ NOT IN FIGMA — the deck of the group's first three products. See
-   `ThumbStack.tsx` for what it draws and why 28 is a literal.
-
-   It fades rather than unmounting when the group opens, so the row does not
-   reflow under the finger that just tapped it — and it keeps its width either
-   way, so the name truncates identically in both states. duration/base, the
-   token every selection and toggle in the app uses. */
 .preview {
   grid-area: meta;
   justify-self: end;
@@ -302,18 +178,7 @@
 }
 
 /* the group's cards, INSIDE the group's box — 8 in from three sides, with the
-   row's own gap above. ⚠️ They used to sit at the list's full width as a
-   SIBLING of the row, on the argument that insetting them would push them off
-   the 392 / 640 column every other card sits on. They are children of the
-   surface now, so this is the container's padding rather than an indent, and
-   the column it belongs to is the group's. 16 − 8 used to set the cards'
-   concentric 8 radius; they are 12 as of 13 Sep 2026 — see `.compact` in
-   ProductAccordionCard.module.css. */
-/* ⚠️ THE CARDS LINE UP WITH THE GROUP'S NAME — 16 Sep 2026, asked for directly
-   ("give more space here, align with Long-term…"). The sides and bottom were
-   8, which put a card's edge 14 left of the name above it; they are now the
-   row's own left padding (`.category`, `space/xl`), so the card's edge and the
-   name share one left line, and the right and bottom match it. */
+   row's own gap above. */
 .panel {
   display: flex;
   flex-direction: column;
@@ -342,10 +207,6 @@
 
 /* carried over from the deleted pushed view, which is also where the filled hub
    was missing an add affordance entirely */
-/* ⚠️ NOT IN FIGMA — the secondary `Button` at `size="md"` (48), hugging its
-   label, centred at both breakpoints: step 1's `Take a photo` recipe, asked for
-   directly 13 Sep 2026 after `SmallButton` (36) read too small. A flex row so
-   the pill centres whether or not `.body` stretches its children. */
 .addMore {
   display: flex;
   justify-content: center;
@@ -366,12 +227,7 @@
   }
 
   /* name + window travel together and take the slack, so the count and
-     chevron stay pinned right.
-     ⚠️ STACKED, NOT ONE LINE, as of 15 Sep 2026, asked for directly: the
-     window sits UNDER the name, left-aligned with it. It used to share the
-     name's baseline, as `Your products` still sets its group headers; the 112
-     row has the height for two lines, which the 56 one did not. `space/2xs`
-     between them, so the two read as one label. */
+     chevron stay pinned right. */
   .copy {
     flex: 1;
     min-width: 0;

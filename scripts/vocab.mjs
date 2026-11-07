@@ -1,31 +1,4 @@
-/**
- * The controlled-vocabulary check — `npm run vocab`.
- *
- * ⚠️ THIS IS A REGULATORY CONSTRAINT, NOT A TONE PREFERENCE. `docs/decisions.md`
- * ("Claim language is a REGULATORY constraint") records why: under EU cosmetic-
- * claims rules an absolute claim needs substantiating, and absolute claims about
- * what a product does to skin are the language that pushes a beauty app toward
- * MEDICAL-DEVICE territory. The product brief states the same rule from the
- * other direction and ships the list below.
- *
- * The analysis screens add more product-effect copy than the rest of the app
- * combined, and the whole point of keeping that copy in
- * `features/my-skin/analysis.ts` rather than in the components is that one file
- * can be checked. This is the check. It runs over every user-facing string in
- * `features/`, `components/` and `app/`, so it also covers the copy that was
- * already there.
- *
- * ⚠️ IT READS COPY, NOT COMMENTARY. Comments are stripped before matching, and
- * that is not a loophole — it is the only way the rule can be WRITTEN DOWN.
- * Every file that explains the vocabulary has to quote the forbidden half to be
- * useful, and a checker that fails on its own documentation teaches people to
- * delete the documentation. User-facing copy lives in string literals and JSX
- * text; that is what is checked.
- *
- * ⚠️ OTHERWISE IT IS DELIBERATELY DUMB. A phrase on this list is one nobody
- * should be typing on purpose, so there is no judgement here to be argued with.
- * If a real string trips it, the fix is to rephrase the string.
- */
+/** The controlled-vocabulary check — `npm run vocab`. */
 import { readdirSync, readFileSync, statSync } from "node:fs";
 import { join, relative } from "node:path";
 

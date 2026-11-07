@@ -5,58 +5,7 @@ import { Sheet } from "@/components/ui/Sheet";
 import { SuccessCheckIcon } from "@/components/ui/icons";
 import { useInvestigation } from "@/lib/store/InvestigationProvider";
 
-/**
- * 03b — Selfie capture. Figma mobile 487:834, desktop 490:1041.
- *
- * ⚠️ IT IS AN OVERLAY NOW, NOT A ROUTE — DECIDED HERE, NOT IN FIGMA. It was
- * `/investigation/selfie`, a full screen carrying its own progress track and
- * `Save & exit` while explicitly SHARING step 1's number — a "step" that never
- * moved the track, on the main line of a flow it was an optional side path off.
- * Two things went wrong in practice: leaving step 1 to take a photo meant the
- * symptoms and face regions just picked scrolled away behind a screen that
- * says nothing about them, and coming back was a navigation rather than a
- * dismissal. The photo is one tap on a placeholder viewfinder — an aside to
- * the question on screen, which is exactly what the modal tray is for.
- *
- * So it is the SAME recipe as the PRODUCTS scan view: `Sheet`'s sage tray,
- * the viewfinder inside it, `Done` as the only way out. Every treatment below
- * is the frame's own — the 392x400 / 420x340 viewfinder, the portrait oval,
- * the 72 shutter — only the container changed. The `selfie` step is gone from
- * `lib/flow.ts` with the route; the answer it writes is unchanged.
- *
- * ⚠️ THE DESIGN SYSTEM HAS NO SHUTTER COMPONENT — the control is composed from
- * tokens in Figma and again here. A third capture surface DID appear (the daily
- * check-in's photo overlay), so `components/CameraCapture.tsx` now exists and
- * the products scan view uses it. This screen deliberately does NOT: 487:834 /
- * 490:1041 give it a larger viewfinder (392x400 / 420x340), a PORTRAIT oval
- * rather than a landscape rectangle, a 72 shutter rather than 64, and the helper
- * BELOW the shutter rather than above. Those are measurements off its own frame,
- * not drift — folding it in would move them. See the note on `CameraCapture`.
- *
- * The viewfinder is a placeholder, not a live camera: wiring getUserMedia would
- * make the prototype demand a camera permission just to walk the flow. Tapping
- * the shutter records that a capture happened.
- *
- * ⚠️ THE SHUTTER ONLY EVER CAPTURES — IT USED TO TOGGLE, AND THAT WAS A BUG THE
- * CONTROL'S OWN LABEL ALREADY CONTRADICTED. It wrote `undefined` when a photo
- * existed, so the second tap of a "retake" DELETED the capture and a third was
- * needed to make a new one, while the button announced itself as `Retake photo`
- * and the helper said "tap the shutter again to retake". Harmless-looking on
- * step 1, where the photo is optional and the tray is right there; destructive
- * from the recap, where `Update photo` opened this tray over a photo BLOCK that
- * then vanished behind it on the first tap. A shutter is not a delete button.
- * **There is now no way to remove a capture** — there never was a labelled one,
- * and if the product wants one it is an explicit `Remove photo` action, not a
- * second meaning silently loaded onto this control.
- *
- * ⚠️ EACH CAPTURE WRITES A NEW ID, NOT THE STRING "captured". Nothing compares
- * the value to a literal — it is read for its truthiness and, on the recap, as
- * the SEED for the drawn photograph (`CheckInPhotoArt`). So a retake produces a
- * different picture there, which is the only feedback in a prototype whose
- * viewfinder cannot show what the camera sees. It is also what makes the retake
- * inside this tray legible at all: the status line is keyed on it, so it
- * re-enters and re-announces rather than sitting there unchanged.
- */
+/** 03b — Selfie capture. Figma mobile 487:834, desktop 490:1041. */
 export function SelfieSheet({
   open,
   onClose,

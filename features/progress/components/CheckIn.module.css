@@ -7,14 +7,7 @@
    heading slot and the footer are `components/layout/ChatPanel`'s. Nothing here
    sets a type size or a colour of its own — the only rules are the gaps between
    blocks, plus the two extras buttons, which have no component and are composed
-   from the frosted-row recipe below.
-
-   ⚠️ THE SCREEN MOVED INTO THE `/chat` PANEL — see CheckIn.tsx. Two things
-   follow for this file. The chat's own 24 between messages is NOT adopted: a
-   turn here is a bubble AND its pills, so the frame's 20/12 pair is what keeps
-   a question with its own answers, and 24 would loosen the wrong join. And the
-   frosted rows below now sit on the PANEL's gradient rather than the canvas's,
-   which is a lighter ground. */
+   from the frosted-row recipe below. */
 
 /* The whole exchange. 20 between TURNS, 12 inside one — a question and its own
    pills belong together more tightly than one turn belongs to the next, and
@@ -43,26 +36,11 @@
   --collapse-gap: var(--space-md);
 }
 
-/* ⚠️ A WRAPPING PILL ROW, WHICH IS WHAT THE FRAME DRAWS — five chips over two
-   lines for turn 1, four over two for turn 2, both flowing rather than gridded.
-   12 both ways, the gap every chip group in the app uses. No desktop
-   two-column grid: that is right for the stacked option ROWS on 02a/02b/02c,
-   and wrong here — these hug their labels and the row is already the layout. */
 .options {
   display: flex;
   flex-wrap: wrap;
-  gap: var(--space-pill-gap); /* the app's one pill gap, 30 Oct 2026 */
+  gap: var(--space-pill-gap); /* the app's one pill gap */
 
-  /* ⚠️ HALF THE GAP, SO THE ROW HAS NO DEAD SPACE IN IT. The pills are 32 tall
-     here rather than the DS 40, and at that size the 12 between them was wide
-     enough to swallow a click: aiming at a pill and landing 2px wide selected
-     nothing, which reads as the control being broken rather than as a miss.
-     ⚠️ HALF THE GAP PLUS A PIXEL, NOT EXACTLY HALF. At exactly 6 the two hit
-     areas MEET rather than overlap, and a click landing on that one-pixel seam
-     hit neither — measured: the precise midpoint of the gap still selected
-     nothing. The extra pixel makes them overlap by 2, so the seam belongs to
-     the later chip in DOM order instead of to no one. Invisible — see the note
-     on `.chip::after`. */
   --chip-hit-inline: calc(var(--space-pill-gap) / 2 + var(--border-width-hairline));
 }
 
@@ -70,15 +48,8 @@
    exactly as step 1's chips are now. The copy of step 1's v2 rest state (the
    nav's mint at 34% under a teal `surface/data-deep` hairline) went with it. */
 
-/* ---------------------------------------------------------------------------
-   Turn 3's two buttons — `Add a note` / `Take a photo`.
-
-   ⚠️ THEY ARE `Button` NOW — the secondary at `md` with a leading glyph,
-   the `Add more products` button, asked for directly 1 Oct 2026. They were
-   two equal frosted tiles composed from the option-row recipe because no
-   component fitted; the history is in `git log -p`. */
+/* Turn 3's two buttons — `Add a note` / `Take a photo`. */
 .extras {
-  /* two hugging secondary `Button`s (lux-v3, 1 Oct 2026), the chips' 12 */
   display: flex;
   flex-wrap: wrap;
   gap: var(--space-md); /* 12 */
@@ -130,13 +101,7 @@
   margin-bottom: var(--space-md); /* 12 */
 }
 
-/* ⚠️ THE SAME WIDTH AS `Check in today`, asked for directly 13 Sep 2026. The
-   overlay opens FROM that button and closes back onto it, so the control that
-   ends the check-in wears the one that started it: full width on mobile,
-   `width/action` centred on desktop — ProgressScreen's `.cta` rule. It was full
-   width at both breakpoints while the panel was 375 wide; at the nav's 598 that
-   stretched it to 558, a slab wider than anything else on the dashboard. */
 .submit {
-  /* width is `Button`'s `width="action"` (31 Oct 2026) */
+  /* width is `Button`'s `width="action"` */
   align-self: center;
 }

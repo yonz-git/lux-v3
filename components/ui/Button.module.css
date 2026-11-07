@@ -37,17 +37,7 @@
     --grad-end var(--duration-hover) var(--ease-hover);
 }
 
-/* the label sits in its own element so the shine can cross the whole word.
-   ⚠️ ITS LINE BOX IS TRIMMED TO THE X-HEIGHT, NOT THE CAPITALS (1 Nov 2026,
-   asked for directly: "its not vertically centered still"). Labels are mostly
-   lowercase; centred on the caps, `Add product` had 16.1 above its ink and
-   13.3 below and read low. On the x-height the ink is 14.7 / 14.7.
-   ⚠️ THE PADDING GIVES THE ASCENDERS AND DESCENDERS BACK. A primary label's
-   ink is `.shine-text`'s gradient clipped to the text, and a background only
-   paints the element's box: trimmed to the x-height, the caps' tops and the
-   tails of y, p and g would be left unpainted. The padding grows the painted
-   box past them and the equal negative margin keeps the box the button
-   centres. */
+/* the label sits in its own element so the shine can cross the whole word. */
 .label {
   display: inline-block;
   text-box: trim-both ex alphabetic;
@@ -61,17 +51,12 @@
    the fixed edge light is only its 1px ring (no inner glow), lit stop 0.54. */
 .button:not(.secondary) {
   --shine-ink: #fff;
-  --specular-width: 1.5px; /* 3 until 3 Oct 2026 — "make the animated border on hover thinner" */
+  --specular-width: 1.5px;
   --specular-core: 90%;
   --specular-a: color-mix(in oklab, #485780, white 65%);
   --specular-b: color-mix(in oklab, #313560, white 65%);
   --edge-ring-lit: 0.54;
   --edge-ring-dim: 0.45;
-  /* ⚠️ THE ALL-ROUND RING, 3 Oct 2026, asked for directly ("the border shine
-     breaks"). The default sweep falls to ZERO between 40% and 60%, and on a
-     wide pill that band covers most of the top and bottom edges, so the ring
-     read as two lit corners with gaps between them. The shared all-round
-     ring keeps that middle at 0.15, so it never vanishes. */
   --edge-ring: var(--edge-ring-all-round);
 }
 
@@ -79,33 +64,12 @@
   box-shadow: none;
 }
 
-/* ⚠️ THE PRIMARY'S RING IS ITS OWN BORDER, NOT THE `.edge-light` OVERLAY —
-   3 Oct 2026, the real cause of "the border shine breaks" and of the speckled
-   pixels round the caps. The overlay was a second shape stacked on the
-   button: a 1px ring cut out of a span by two XOR'd masks, sitting 1px
-   inside a transparent border the fill painted indigo. Each of those layers
-   antialiased its own curve, so the cap edge was three half-covered pixels
-   on top of each other (dark fill, white ring, dark fill again), which read
-   as a broken, grainy rim. Now the ring is painted INTO the 1px border: the
-   fill on `padding-box`, the sweep on `border-box` over a second copy of
-   the fill, so there is one shape with one antialiased edge. The overlay's
-   ring is switched off, and the inset top rim with it, since it drew a
-   second line 1px under the ring. */
-/* ⚠️ NO RING AT REST, AND NO BORDER — 31 Oct 2026, asked for directly ("make
-   the edges of the indigo buttons smooth like those red pills"). The white
-   ring painted into the border above read as a hard edge beside the red
-   symptom pill, which has no border at all and only a soft light inside its
-   top (`--shadow-pill-light`, now part of `--shadow-brand-pill`). The border
-   goes to 0 so nothing sits outside that light, and the padding takes the
-   pixel back so the pill keeps its box. The orbiting hover rim (`.specular`)
-   is unchanged. */
 .button:not(.secondary) {
   border-width: 0;
   padding-inline: calc(var(--button-pad-x) + var(--border-width-hairline));
   background: linear-gradient(90deg, var(--grad-start), var(--grad-end));
   box-shadow: var(--shadow-brand-pill);
 }
-
 
 .button:not(.secondary) :global(.edge-light)::before {
   display: none;
@@ -137,15 +101,6 @@
   cursor: default;
 }
 
-/* ⚠️ THE SECONDARY GRADIENT IS BACK — 1 Nov 2026, asked for directly ("the
-   secondary buttons did have this gradient bg. now it looks flat … use the
-   button bg of this undo button"). The fork to lux-v3 (1 Oct 2026) swapped
-   lux-v2's `gradient/secondary` for flat glass; step 1's `Undo`
-   (StartInvestigation.module.css `.undoAction`) kept it. Same fill now:
-   `button/bg-secondary-start` → `-end` at 90°, the two ends exchanged on
-   hover through the registered `--grad-*` (so it cross-fades), opaque
-   under reduced transparency (tokens.css). Inside the indigo border: the
-   fill is clipped to the padding box. */
 .secondary {
   --grad-start: var(--color-button-bg-secondary-start);
   --grad-end: var(--color-button-bg-secondary-end);
@@ -153,8 +108,6 @@
   background: linear-gradient(90deg, var(--grad-start), var(--grad-end)) padding-box;
   border-color: var(--color-border-button-secondary);
   box-shadow: var(--shadow-glass);
-  /* the `Undo`'s frost — `blur/card` and a saturation lift; 10 until 1 Nov
-     2026 ("give bg blur") */
   -webkit-backdrop-filter: blur(var(--blur-card)) saturate(160%);
   backdrop-filter: blur(var(--blur-card)) saturate(160%);
 }
@@ -209,10 +162,6 @@
     var(--space-button-sm-inline) - var(--border-width-hairline)
   );
 }
-
-/* the hover rim rides the outer edge: with no border the padding box IS the
-   edge, so `.specular`'s own `inset: 0` is right (it was pushed out 1px over
-   the border ring until 31 Oct 2026) */
 
 /* the secondary's ends turn opaque here (tokens.css), so its frost goes too */
 @media (prefers-reduced-transparency: reduce) {

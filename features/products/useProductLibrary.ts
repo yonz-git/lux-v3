@@ -18,12 +18,6 @@ import { useInvestigation } from "@/lib/store/InvestigationProvider";
 /**
  * Changing the Product library — `library.ts` holds the rules, this holds the
  * store and the undo.
- *
- * ⚠️ `remove` IS UNDOABLE, AND THE SNAPSHOT IS THE STORE'S OWN VALUE. The library
- * persists forever, and its value can be `undefined` because the library is
- * seeded. Restoring `undefined` puts the seeded library back; restoring
- * `DEMO_PRODUCTS` would materialise it and quietly turn a portfolio visitor's
- * list into a stored one.
  */
 export function useProductLibrary(start: LibraryStart) {
   const { answers, setAnswer } = useInvestigation();

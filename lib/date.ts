@@ -9,8 +9,7 @@ export function toIso(d: Date): IsoDate {
   return `${d.getFullYear()}-${m}-${day}`;
 }
 
-/** Parses as LOCAL midnight. `new Date("2026-08-02")` would parse as UTC and can
- *  land on the previous day west of Greenwich. */
+/** Parses as LOCAL midnight. */
 export function fromIso(iso: IsoDate): Date | null {
   const m = /^(\d{4})-(\d{2})-(\d{2})$/.exec(iso);
   if (!m) return null;
@@ -86,15 +85,7 @@ export function formatFull(d: Date): string {
   });
 }
 
-/* ---------------------------------------------------------------------------
-   THE CHECK-IN CALENDAR'S MONTH — Monday-first, like the date picker
-
-   ⚠️ ONE WEEK START FOR THE WHOLE APP, AS OF lux-v3 (1 Oct 2026). The two
-   calendars used to disagree because their Figma frames did: `DateField` was
-   Monday-first and the PROGRESS check-in calendar (552:1255) Sunday-first, and
-   this file said "one product should pick one". The canvas picked: Calendar A
-   is drawn Monday-first, the date picker's week.
-   -------------------------------------------------------------------------- */
+/* THE CHECK-IN CALENDAR'S MONTH — Monday-first, like the date picker */
 
 /** Full names, because the initials repeat (T/S twice) and a screen reader
  *  reading "M, T, W, T, F, S, S" tells you nothing about which T you are on. */
@@ -108,15 +99,7 @@ export const WEEKDAY_NAMES = [
   "Sunday",
 ];
 
-/**
- * The month laid out Monday-first, as whole weeks of 7.
- *
- * ⚠️ PADS WITH `null`, NOT WITH THE NEIGHBOURING MONTHS. `monthGrid` above
- * shows the days either side because a date PICKER lets you reach them; this
- * calendar is a read-only record of one month, so those cells stay empty. It
- * also returns only the rows the month needs (5 or 6) rather than a fixed 42,
- * so a short month does not render a blank trailing week.
- */
+/** The month laid out Monday-first, as whole weeks of 7. */
 export function monthRecordGrid(month: Date): (Date | null)[] {
   const first = startOfMonth(month);
   const lead = (first.getDay() + 6) % 7; // getDay() is Sunday-first

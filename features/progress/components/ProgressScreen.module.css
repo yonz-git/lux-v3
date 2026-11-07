@@ -1,33 +1,11 @@
-/* PROGRESS. Figma empty 551:1196 / 551:1231, active 552:1236 / 554:1252.
-
-   MOBILE — one column, and the gaps are NOT uniform, which is why they are
-   written per block rather than as a gap on the body:
-     heading -> 24 -> tiles -> 16 -> face -> 16 -> trend -> 16 -> (record
-             -> 16 ->) gallery -> 16 -> calendar -> 24 -> Check in today
-             -> 8 -> last-check-in
-   (the leading 24 belongs to HubScreen's grid body, not to the tiles.)
-   ⚠️ That order was asked for directly, 14 Sep 2026; it used to follow
-   desktop's columns (tiles, face, gallery, calendar, trend).
-
-   DESKTOP — the handoff's 1280 dashboard grid, NOT a page card:
-     col-1  640         tiles / face diagram / gallery, one stack
-     col-2  616         trend / record / calendar / CTA / caption, one stack
-   ⚠️ Both are FRACTIONS of the grid (`640fr 616fr`, passed as `gridColumns`),
-   16 Sep 2026: exactly 640 / 616 at 1280, narrowing together below it.
-   ⚠️ NOT IN FIGMA — the handoff puts the profile at the top of col-2 and the
-   calendar alone in col-1, and has no face diagram here. Rearranged on 13 Sep
-   2026, asked for directly; on 14 Sep the profile card became the gallery and
-   went under the face.
-   Both gutters are gutter/desktop (24). HubScreen's `grid` layout owns the two
-   columns; this file only places the children in them. */
+/* PROGRESS. Figma empty 551:1196 / 551:1231, active 552:1236 / 554:1252. */
 
 .calendar {
   margin-top: var(--space-lg); /* 16 */
 }
 
 /* lux-v3: the calendar is the 30% panel like every card on the page
-   (Calendar A, canvas). The sheet's sage frost it wore from 16 Sep 2026 made
-   it the one darker card in the column. */
+   (Calendar A, canvas). */
 
 .trend {
   margin-top: var(--space-lg); /* 16 */
@@ -46,8 +24,6 @@
   margin-top: var(--space-lg); /* 16 */
 }
 
-/* ⚠️ ONE GALLERY PER BREAKPOINT — the same trade as the action below. Doubled
-   classes: `DataCard`'s own `display: flex` is a single class too. */
 .galleryDesktop.galleryDesktop {
   display: none;
 }
@@ -74,26 +50,13 @@
   margin: 0;
 }
 
-/* ⚠️ `.face` AND `.otherNote*` WENT ON 15 Sep 2026: the 392 cap on the
-   diagram, its centring and the typed `Other` line all live in
-   `SymptomLocation.module.css` now, where the face sits beside its list. */
-
 /* mobile: col-1's wrapper is invisible to layout, like `.checkInColumn` */
 .profileColumn {
   display: contents;
 }
 
-/* ⚠️ WIDTH IS SET HERE, NOT VIA Button's `fullWidth`. `.full` and `.cta` are
-   both single-class selectors, so which one wins depends on the order the two
-   CSS modules happen to land in the bundle — the same trap that silently ate
-   the focus ring (non-negotiable 11). Owning the width outright means there is
-   nothing to lose a specificity race against. */
 .cta {
-  /* width is `Button`'s `width="action"` (31 Oct 2026) */
-  /* ⚠️ the nav pill's 380 on a phone, asked for directly 13 Sep 2026 — see
-     `--width-action-mobile`. This copy sits in `HubScreen`'s stretching
-     `.body`, not its footer, so it needs its own cap and `align-self`; the
-     desktop copy is `.ctaDesktop` and is untouched. */
+  /* width is `Button`'s `width="action"` */
   align-self: center;
   margin-top: var(--space-2xl); /* 24 */
 }
@@ -118,11 +81,6 @@
 }
 
 @media (min-width: 1024px) {
-  /* ⚠️ NOT IN FIGMA — two stacks, each ONE grid item: col-1 is tiles -> 24
-     -> face diagram -> 24 -> gallery, col-2 is trend -> 24 -> record -> 24 ->
-     calendar -> 24 -> CTA -> 8 -> caption. As grid rows, a tall card in one
-     column opened a gap beside it in the other (the CTA once sat ~215px under
-     the calendar). */
   .galleryDesktop.galleryDesktop {
     display: flex;
   }
@@ -174,20 +132,6 @@
     margin-top: 0;
   }
 
-  /* ⚠️ THE ACTION STAYS UNDER THE CALENDAR, NOT IN FIGMA. The handoff puts
-     `Check in today` in col-2 under the trend, away from the calendar; here it
-     sits under the calendar of check-ins it adds to, rather than under a chart
-     it does not change. The calendar moved to col-2 on 13 Sep 2026 and took
-     the action with it.
-
-     ⚠️ THE RECORD IS UNDER THE TREND — it belongs with the chart, the other
-     block that says what the investigation knows. It is conditional, so the
-     calendar simply follows the trend when there is no record.
-
-     col-2 reads trend -> record -> calendar -> CTA in DOM order; the `order`
-     rules that used to produce it went on 14 Sep 2026, when the phone's order
-     put the trend first too. */
-
   /* after the single-class resets above, so the cascade reads in specificity
      order — two classes, so they outrank `margin-top: 0` either way. The trend
      leads col-2 and takes no margin. */
@@ -204,14 +148,7 @@
 
   /* 376 is the comp's own width for this button. Not a token and not the 280 a
      flow footer uses — written as a literal rather than snapped to something
-     that would be quietly wrong.
-
-     ⚠️ CENTRED IN col-2, NOT LEFT-ALIGNED — NOT IN FIGMA. `554:1433` sits at
-     x=0 of the column, hard against the trend card's left edge, while the
-     `Last check-in` caption directly beneath it is centred across the full 616.
-     That left the screen's one action visibly off-axis from its own caption.
-     Centring it lines the two up and puts the primary action on the column's
-     axis. Decided here; the comp has not caught up. */
+     that would be quietly wrong. */
   /* 376 / centring: now carried by `.ctaDesktop` inside `.checkInColumn`. */
 }
 
@@ -246,16 +183,10 @@
    (`--width-action-mobile`); the comp narrows it on desktop rather than
    letting it span the whole 640 block */
 .emptyCta {
-  /* width is `Button`'s `width="action"` (31 Oct 2026) */
+  /* width is `Button`'s `width="action"` */
   margin-top: var(--space-3xl); /* 32 */
 }
 
-/* ⚠️ BIGGER HEADINGS ON DESKTOP — asked for directly 1 Oct 2026 ("use bigger
-   font for all the h2 on /progress of desktop"). Every card's `<h2>` steps
-   up one size at 1024+: the overlines 14 → 16 (`YOUR SKIN PROFILE`,
-   `SYMPTOMS AND LOCATION`, `PROGRESS GALLERY`, `SYMPTOMS · LAST 14 DAYS`) and
-   the calendar's month 18 → 20. The phone is untouched. (0,3,1) over the
-   global type classes. */
 @media (min-width: 1024px) {
   .profileColumn h2:global(.t-overline),
   .checkInColumn h2:global(.t-overline) {

@@ -1,13 +1,3 @@
-/* ⚠️ lux-v3, 1 Oct 2026 — A DATA CARD IS THE REFERENCE'S PANEL. The frost box inside
-   the AI Assistant sheet (`.panel` in app/globals.css): `--color-panel`
-   (#f4feff @30%), a 1px panel edge, a white inset rim, 12 blur, radius 28,
-   24 padding (32 on desktop — the reference's ~30). The sage `surface/data`
-   card described below is history; the ink stays the app's dark ink.
-   ⚠️ 30%, NOT `surface/frost-light`'s 55% — the canvas review took the
-   question panels down ("too white and bright") and the Progress and Check
-   cards followed when their components were built, so one page never mixes
-   the two strengths. */
-
 /* The sage data card — SURFACE SYSTEM B. See DataCard.tsx for the full recipe
    and for why it is not the frosted-row recipe with a different fill. */
 
@@ -24,7 +14,6 @@
   padding: var(--space-gutter); /* 24 */
   border-radius: var(--radius-panel); /* 28 */
 
-  /* ⚠️ NO BORDER. A data card has no stroke — see the doc comment. */
   background: var(--color-panel);
   border: var(--border-width-hairline) solid var(--color-border-panel);
   /* the panel's white rim along the top — non-negotiable 11's inner light */
@@ -45,12 +34,6 @@
 
 @media (prefers-reduced-transparency: reduce) {
   .card {
-    /* ⚠️ THE DESIGN SYSTEM STILL HAS NO OPAQUE SAGE — the same gap `Sheet`
-       documents for surface/data-strong. surface/data is 44%, so without the
-       blur behind it the canvas gradient reads straight through and the white
-       text loses its contrast. Composited from the two semantic tokens the app
-       already owns rather than inventing a colour: the same sage over
-       bg/canvas. A real `surface/data-opaque` belongs in Figma. */
     background: #eef6f7;
     -webkit-backdrop-filter: none;
     backdrop-filter: none;

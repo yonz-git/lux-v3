@@ -1,77 +1,6 @@
 import { useId, type ReactNode } from "react";
 import styles from "./SkinProfileTiles.module.css";
 
-/**
- * ⚠️ lux-v3 (1 Oct 2026): THE PANEL, A STANDARD OVERLINE, GLASS PILLS. The
- * card is the 30% panel every card is now (the global `canvas-card`, see
- * app/globals.css), the overline is `t-overline` at its own size with no rule
- * under it — as on the trend card — and each answer is a read-only GLASS
- * pill: `glass-strong`, a glass edge, the app's ink, 32 tall, so it stays
- * smaller than the 44 chips that are controls. The v2 history below explains
- * the shape (four tiles, a pill per answer), not the look.
- *
- * ⚠️ NOT IN FIGMA — the skin profile as four tiles, under the skin-profile
- * strip on `/check`, asked for directly 14 Sep 2026. No frame draws it.
- *
- * ⚠️ IT WAS `PlanCard` FOR ONE DAY AND KEPT ONLY ITS GLASS. The same slot held
- * a card built from a supplied reference — a four-point star, "Monthly" and a
- * line of plan copy — in the strip's exact box. Its contents were replaced,
- * asked for directly: the strip's own `Your skin profile` overline at the
- * top-left, then `Skin type`, `Tendencies` and `Known conditions` — and, added
- * later the same day, `Symptoms state` — each in a tile of its own. The strip
- * above is deliberately untouched ("leave the profile box for now"), so the
- * two are a side-by-side trial of one readout, not a pair.
- *
- * ⚠️ THE HEIGHT IS ITS CONTENT NOW, NOT THE STRIP'S. The equal-rows rule that
- * held the plan card at 112 is gone from `CheckScreen.module.css`: boxed pairs
- * under an overline do not fit 112, "add more height if needed" was the ask,
- * and equal rows would have grown the untouched strip along with it.
- *
- * ⚠️ BARE CARD, DARK INK, ANSWERS AS PILLS — all tuned by hand in the
- * browser or asked for directly, 14 Sep 2026; every value and its history is
- * in the module. It was deep teal glass with white ink until later that day;
- * the fill and the frost were switched off in DevTools and the ink went to the
- * global `text/primary`. What is left is the card's shadows, lit edge ring and
- * grain, 1.4rem a side, at the column's width at every breakpoint. An 18px
- * overline sits over a left-anchored rule in its own ink. Four tiles, two a
- * row at every width, 6 apart; each tile is only spacing — label over answer,
- * left-aligned — and each answer is an OUTLINED indigo pill.
- * ⚠️ THE PILL WAS SOLID `bg/brand` WITH WHITE INK UNTIL 24 Sep 2026, when it
- * was asked for outlined: filled, it wore the primary button's own indigo, so
- * a read-only answer on `/progress` read as tappable beside `Check in today`.
- * Solid indigo is for actions and for `Chip`'s selected state; a readout gets
- * the ring — and, since 25 Sep, the face pill's deep core rather than any
- * indigo at all (see the module). It fixed the contrast too — the white pill measured 4.13–4.29:1
- * against the 4.5:1 that 14px needs, and the ink now measures 8.08:1 or
- * better. See the module.
- *
- * ⚠️ THE VALUES ARE THE CALLER'S, AND ON `/check` THEY ARE LITERALS — `Dry`,
- * `Acne-prone`, `None`, as supplied. That breaks the "screens echo answers"
- * rule on purpose, for a trial, and it means this card and the strip above
- * currently disagree about the demo skin type. Wire them to `skinProfile()`
- * (and step 3's conditions) before this outlives the trial.
- *
- * ⚠️ NO START DATE, ON ANY SCREEN — 15 Sep 2026, asked for directly. The
- * state tile carried `Started <date> · Day <n>` from 14 Sep; `/progress` and
- * the recap dropped it first, then `/check/new` and `/check/results`, and the
- * prop went with it so no caller can bring it back on one screen alone.
- *
- * ⚠️ ONE CARD, FOUR SCREENS, ONE LOOK — asked for directly 15 Sep 2026 ("when
- * I fix one it is automatically fixed on others"). Callers hand over the RAW
- * answers; the `None` for an empty set and the `Not set` for a missing answer
- * live here. Do not add a prop that lets one screen draw this card
- * differently — change the card.
- *
- * ⚠️ ONE PILL PER ANSWER, NOT ONE PILL OF COMMAS — 16 Sep 2026, asked for
- * directly ("2 conditions should be 2 pills"). Tendencies and conditions were
- * joined into a single pill, so `Rosacea, Psoriasis` wrapped inside one
- * indigo shape and read as one condition with a long name. A multi-select is a
- * SET (AGENTS.md), and each member is its own pill now, wrapping as a row.
- *
- * A `dl`: each tile is one term and its values, grouped in a `div` so a tile is
- * one box. ⚠️ A SET IS SEVERAL `dd`s UNDER ONE `dt` — the HTML form for a name
- * with more than one value — rather than a list nested in one `dd`.
- */
 const NOT_SET = "Not set";
 const NONE = "None";
 
@@ -104,11 +33,6 @@ export function SkinProfileTiles({
     { label: "Known conditions", values: members(conditions) },
     { label: "Symptoms state", values: [symptomsState || NOT_SET] },
   ];
-  /* ⚠️ AN ONGOING EPISODE IS ROSE, 4 Oct 2026, asked for directly ("for
-     symptom, if it's ongoing, use pink pills like in the face diagram"). The
-     face's symptom callouts are the rose pill, so a state that says the
-     symptoms are still here wears their colour; every other value keeps the
-     teal of an answer given. */
   const isActive = (label: string, value: string) =>
     label === "Symptoms state" && value === "Ongoing";
 
@@ -121,7 +45,6 @@ export function SkinProfileTiles({
     >
       <div className={styles.head}>
         <h2 id={titleId} className={`${styles.overline} t-overline`}>
-          {/* "Your" cut 4 Oct 2026, asked for directly */}
           Skin profile
         </h2>
         {action}

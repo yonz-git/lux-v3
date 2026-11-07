@@ -4,10 +4,6 @@
    The 24 above the strip is HubScreen's `.heading + *` rule; everything below
    is this screen's. */
 
-/* ⚠️ THE ANCHOR FOR THE RESULTS PANEL. `position: relative` makes the panel's
-   absolute offsets its own; the `z-index: 1` is the rule every block that opens
-   a popover in this app carries, so the panel's layering does not depend on
-   nothing else on the screen ever creating a stacking context. */
 .search {
   position: relative;
   z-index: 1;
@@ -18,15 +14,7 @@
    The same panel the PRODUCTS tray hangs off its search pill
    (`AddProductMethodSheet.module.css .dropdown`) — frost-light + the frosted
    inner shadow + a real drop shadow, tucked 8 under the pill and inset 8 either
-   side, capped and scrolling internally.
-
-   ⚠️ AND HERE IT IS ABSOLUTELY POSITIONED, WHERE THE TRAY'S IS IN FLOW. That
-   is not drift: the tray is DOCKED TO THE BOTTOM EDGE and hugs its content, so
-   an overlaid panel there would open past the bottom of the viewport. This is a
-   full page that scrolls, so a panel in flow would push the screen's own
-   content down and make the page grow and shrink on every keystroke. Floating
-   it leaves the page exactly where it was — "Your products" stays put
-   underneath — and the panel takes its own scroll. */
+   side, capped and scrolling internally. */
 .dropdown {
   position: absolute;
   top: calc(100% + var(--space-sm)); /* 8 under the pill */
@@ -43,28 +31,6 @@
   padding: var(--space-sm);
 
   border-radius: var(--radius-2xl);
-  /* ⚠️ THE SEARCH FIELD'S OWN FILL — `surface/frost-nav`, the frosted pill the
-     field and the nav bar share — where the tray's panel is `frost-light`. Two
-     reasons, and they point the same way. It reads as the pill's own output
-     rather than as a separate white card dropped on the page; and frost-light
-     at 55% let the page's list straight through, which frost-light is fine for
-     in the tray (a uniform sage tray with nothing written on it) and is not
-     here, where the panel floats over the user's own products — measured at
-     1440, four rows of "BHA Exfoliant", "Retinol B3 Serum", "Foaming Cleanser"
-     were legible THROUGH the results.
-
-     ⚠️ AND IT IS `bg/nav`, THE SOLID COUNTERPART — not `surface/frost-nav`
-     itself. Same colour, no alpha, which is the only difference between the two
-     tokens; the field can be translucent because it sits on the page's own
-     background, and this panel cannot because it sits on the page's own LIST.
-     At 87.8% + blur(28) the ghost was faint rather than gone — "Retinol B3
-     Serum" and "Foaming Cleanser" still read between the result rows at 1440,
-     which is the same two-lists-in-one-place problem in a quieter voice. Over
-     these backdrops the two composite to within a point of each other, so the
-     panel and the pill read as one surface.
-
-     NO BORDER, for the same reason the field has none: it is the nav pill's
-     surface, and that surface carries an inner shadow instead of a stroke. */
   background: var(--color-bg-nav);
   /* the frosted inner shadow (rule 9) PLUS a real drop shadow: this panel sits
      ABOVE the page's own rows */
@@ -104,11 +70,6 @@
   gap: var(--space-2xs);
 }
 
-/* ⚠️ A ROW ON THE PANEL'S OWN FILL — NOT `ProductRow`. That is the frosted CARD
-   recipe, and a card inside a panel is two surfaces doing one job; the tray's
-   dropdown made the same call. Unlike the tray's, the row itself is NOT a
-   button — the action here is `Add`, which lives in its own slot and has an
-   `Added` state, so there is nothing for a whole-row hover to promise. */
 .result {
   display: flex;
   align-items: center;
@@ -151,11 +112,6 @@
   text-align: center;
 }
 
-/* ⚠️ NOT IN FIGMA — the comp has one unlabelled list because it only ever shows
-   search results. With "Your products" above the catalogue search, the list
-   changes meaning between the two and has to say which it is. `Label` in
-   text/secondary is the section-label treatment `Check results` already uses
-   for "Risky ingredients", so this is not a new style. */
 .sectionLabel {
   margin-top: var(--space-xl); /* 20 */
   color: var(--color-text-secondary);
@@ -204,31 +160,6 @@
   height: calc(54px + var(--space-md));
 }
 
-/* ⚠️ NOT IN FIGMA — the trailing slot on a result row, sized once so the
-   `Add` → `Added` swap does not resize the control or shift the row's right
-   edge. 76 is the wider of the two at their Figma paddings ("Added" in
-   Label Small + 12 either side).
-
-   ⚠️ ONE HEIGHT FOR BOTH STATES, AND IT IS NEITHER COMPONENT'S OWN. Sizing the
-   slot to the taller of the pair (the Small Button's size/control-sm, 36) only
-   sized the BOX: `Add` kept the Small Button's 8/16 padding and stood 38 tall
-   while `Added` sat at the Tag's 26, so the two states of one control were
-   visibly different heights down the list. Matching them at the Tag's 26 fixed
-   that and read too short for a tap target, so the pair sits at **30** — 26
-   +15%, chosen by eye on the running screen.
-
-   ⚠️ 26 × 54 SINCE 1 NOV 2026, asked for directly ("the pills are too big for
-   this usage. reduce the paddings inside"): both pills are 8 a side now
-   (`SmallButton` / `Tag` `size="sm"`), the height is back to the Tag's own 26
-   — the 44 to the thumb is each pill's `.tap-target`, not its drawn size —
-   and 54 holds `Added` at that padding (53.9), which fills the slot as `Add`
-   does, so the two states are one size; at 12 a side it had spilled past.
-
-   ⚠️ THE TWO ARE LITERALS AND HAVE TO BE. They are off the spacing scale and
-   there is no size/control step below sm (36); --space-* is for gaps, not
-   control heights. Written once here so the rules below cannot drift apart.
-   Both children keep their own fill, radius and type — only the box they sit
-   in is shared. */
 .trailing {
   --slot-h: 1.625rem; /* 26 */
 
@@ -243,15 +174,6 @@
   min-height: var(--slot-h);
 }
 
-/* ⚠️ TWO CLASSES DEEP ON PURPOSE, BOTH OF THEM. `.trailing > *` is one class,
-   and so are Small Button's own `.button` and Tag's `.tag` — at equal
-   specificity the winner is module load order, which is not something this file
-   gets to decide. Naming each child outranks its component's rule, so the
-   height lands whichever way the bundler orders them. The Small Button also
-   needs its vertical padding gone: 8 + a 22 line-height is 38, and a min-height
-   cannot pull a box back below its content. Side padding is 12 on both, and
-   the label 12 on both: the button is `SmallButton size="sm"` since 1 Nov
-   2026 (asked for directly), where it was 16 and 14 beside the tag's 12. */
 .trailing .add {
   min-height: var(--slot-h);
   padding-block: 0;

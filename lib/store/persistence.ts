@@ -4,49 +4,7 @@ import type { SavedCheck } from "@/features/check/check";
 import type { CheckIn } from "@/features/progress/progress";
 import type { Answers } from "./answers";
 
-/**
- * What survives a refresh — and, just as importantly, what does not.
- *
- * ⚠️ THIS IS THE CONTROLS / READOUTS SEAM, APPLIED TO STORAGE. `AGENTS.md`
- * already draws the line for what a screen may open with: "/progress and
- * /check deliberately open populated — they have nothing to select, and an
- * empty readout shows nothing", against "nothing is pre-selected, on any
- * screen". Persistence follows the SAME line, and for the same reason.
- *
- * ⚠️ AN EARLIER BUILD PERSISTED THE WHOLE STORE AND WAS REVERTED. Writing
- * every key meant a revisit restored `conditions`, `skin-type` and `start`,
- * so the flow opened with chips already ticked and read as though the screens
- * shipped pre-filled. ⚠️ **THE ANSWERS COME BACK AGAIN NOW, AND THE DIFFERENCE
- * IS THE CLOCK** — see `FLOW_TTL_MS` below. What is unconditional is the rest:
- * no draft, no basket and no search field is ever written, so nothing the user
- * was in the middle of typing is waiting for the next reader.
- *
- * What is written back is the set of things the user COMPLETED — a product
- * they added, a check they ran, a day they recorded, a finding they saved.
- * Restoring those cannot reproduce the bug, because no control renders from
- * them: they are the populated readouts `/products`, `/check` and `/progress`
- * are specified to show.
- *
- * The split is a TYPE, not a filter at the call site, so a new key has to be
- * placed deliberately. The old bug was invisible precisely because nothing in
- * the store said which keys were safe to keep.
- *
- * ⚠️ AND SINCE 7 Sep 2026 THERE IS A THIRD LIFETIME, NOT A SECOND LIST — the
- * flow answers now survive too, but only for `FLOW_TTL_MS`. Asked for
- * directly, and it is a real change to the rule above rather than a loophole
- * in it: `/investigation/start` WILL reopen with the user's own chips ticked
- * if they were ticked in the last day. What made the reverted build wrong was
- * that the state was FOREVER and belonged to nobody — a demo opened weeks
- * later greeted a new reader with a stranger's skin type, indistinguishable
- * from screens that ship pre-filled. A day-long window is the user's own
- * recent work and nothing else's.
- *
- * ⚠️ TWO KEYS, BECAUSE THERE ARE TWO LIFETIMES. Records never expire; flow
- * answers expire in a day. One blob with a mixed lifetime would have to either
- * drop the records with the answers or keep the answers with the records, and
- * both are wrong. `STORAGE_KEY` holds what was completed, `FLOW_STORAGE_KEY`
- * holds what is in progress, and neither read can damage the other.
- */
+/** What survives a refresh — and, just as importantly, what does not. */
 export const PERSISTED_KEYS = [
   "products",
   "checks",
@@ -59,26 +17,7 @@ export type PersistedKey = (typeof PERSISTED_KEYS)[number];
 /** The saved slice. Every other key in `Answers` is transient by construction. */
 export type PersistedAnswers = Pick<Answers, PersistedKey>;
 
-/**
- * The answers steps 1–4 collect — the slice that expires.
- *
- * ⚠️ THE FLOW'S ANSWERS, NOT EVERY CONTROL IN THE APP. What is here is what the
- * five steps ASKED and the recap reads back. What is deliberately absent is
- * every control that is mid-gesture rather than answered: `productDraft` and
- * `productQuery` (a tray half-filled), `checkBasket` and `checkQuery` (a basket
- * being built), `scan`, `viewingCheck` and `evidence`. Restoring a search field
- * with yesterday's query in it is the pre-filled-screen bug with none of the
- * value — the user did not answer a question there, they were typing.
- *
- * ⚠️ `products` IS NOT HERE AND IS NOT MISSING. Step 5's products are a
- * completed record: they persist above, under `PERSISTED_KEYS`, with no expiry,
- * because `/products` is specified to open populated. The step that collects
- * them is the one flow step whose answer outlives the day.
- *
- * ⚠️ `location` IS NOT HERE BECAUSE IT IS NOT AN ANSWER ANY MORE. It folded
- * into `start` on 14 Sep 2026, when step 1 began keeping each symptom's places
- * with the symptom; the union it held is derived now (`areasOf`, answers.ts).
- */
+/** The answers steps 1–4 collect — the slice that expires. */
 export const FLOW_KEYS = [
   "start",
   "locationOther",
@@ -95,45 +34,12 @@ export type FlowKey = (typeof FLOW_KEYS)[number];
 /** The expiring slice. */
 export type PersistedFlow = Pick<Answers, FlowKey>;
 
-/**
- * How long a set of flow answers outlives the tab.
- *
- * ⚠️ THE WINDOW IS SLIDING, MEASURED FROM THE LAST ANSWER AND NOT THE FIRST.
- * Every write re-stamps it, so "24 hours" means a day of not touching the
- * investigation rather than a day from the first chip — a walk through the flow
- * cannot time out underneath someone who is still walking it.
- *
- * ⚠️ IT IS ENFORCED ON READ, NOT BY A TIMER. Nothing sweeps storage on a
- * schedule; a stale envelope is dropped (and deleted) the next time anything
- * asks for it. A tab left open past the window keeps the answers it already has
- * in memory, which is correct — they are still that reader's own session.
- */
+/** How long a set of flow answers outlives the tab. */
 export const FLOW_TTL_MS = 24 * 60 * 60 * 1000;
 
-/**
- * ⚠️ A NEW KEY, AND `lux.investigation.v1` IS NEVER READ AGAIN.
- *
- * The legacy key holds whole-store snapshots written by the build that was
- * reverted — exactly the flow selections this module refuses to restore. It is
- * deleted on mount and never parsed. Bump this name rather than widening the
- * old one if the persisted shape ever changes again.
- */
 export const STORAGE_KEY = "lux.records.v2";
 
-/**
- * The expiring slice's own key.
- *
- * ⚠️ NOT `lux.investigation.v1` REVIVED. That key held the whole store with no
- * expiry and is still deleted unread on mount (see `LEGACY_STORAGE_KEY`); this
- * one holds an envelope — `{ savedAt, answers }` — and answers without a
- * readable `savedAt` are dropped rather than trusted, which is exactly what the
- * old key cannot offer. Bump the name rather than widening the shape.
- *
- * ⚠️ AND IT WAS BUMPED, 14 Sep 2026: `v1` to `v2`, when step 1's `start`
- * became a map and `location` folded into it. A v1 envelope is a shape this
- * build does not write, so it is deleted unread on mount (`LEGACY_FLOW_V1_KEY`)
- * rather than parsed by a guard widened to accept both.
- */
+/** The expiring slice's own key. */
 export const FLOW_STORAGE_KEY = "lux.flow.v2";
 
 /* ---- shape guards -------------------------------------------------------
@@ -183,9 +89,6 @@ const BUCKET_IDS: readonly BucketId[] = [
 ];
 
 function isSavedProduct(v: unknown): v is SavedProduct {
-  // ⚠️ read the extra fields off the RECORD, not off a value already narrowed
-  // to CatalogProduct — that type does not declare them and the checks would
-  // not compile against it
   if (!isObject(v) || !isCatalogProduct(v)) return false;
   const row = v as Record<string, unknown>;
   return (
@@ -197,8 +100,6 @@ function isSavedProduct(v: unknown): v is SavedProduct {
   );
 }
 
-/** Builds before 7 Nov 2026 wrote `addedOn` as a full timestamp. It reads as
- *  its date; see `savedProduct`. */
 function dated(product: SavedProduct): SavedProduct {
   return { ...product, addedOn: product.addedOn.slice(0, 10) };
 }
@@ -226,7 +127,6 @@ function isCheckIn(v: unknown): v is CheckIn {
       v.direction === "worse") &&
     optionalString(v.note) &&
     optionalString(v.photo) &&
-    // ⚠️ absent is not empty — see the CheckIn.products doc comment
     (v.products === undefined || isStringArray(v.products))
   );
 }
@@ -273,9 +173,6 @@ export function parsePersisted(raw: string | null): PersistedAnswers {
 
   if (Array.isArray(data.products)) {
     const products = data.products.filter(isSavedProduct).map(dated);
-    /* ⚠️ AN EMPTY LIST IS AN ANSWER, a list of only bad rows is not: `[]` means
-       the user emptied it, and dropping it brought the seeded five back on the
-       next reload (`ownedProducts`). */
     if (products.length || data.products.length === 0) out.products = products;
   }
   if (Array.isArray(data.checks)) {
@@ -363,17 +260,7 @@ export function pickFlow(answers: Answers): PersistedFlow {
   return out;
 }
 
-/**
- * Read the expiring slice back, dropping anything stale or malformed.
- *
- * ⚠️ THE ENVELOPE IS CHECKED BEFORE THE ANSWERS ARE. A payload with no
- * numeric `savedAt` is not "answers of unknown age", it is data this build did
- * not write — the reverted whole-store format is exactly that shape — so it is
- * refused outright rather than restored and shown to whoever opens the tab.
- *
- * `now` is passed in rather than read from the clock so the expiry is testable
- * and so the caller decides which "now" it means; see `readFlow`.
- */
+/** Read the expiring slice back, dropping anything stale or malformed. */
 export function parseFlow(raw: string | null, now: number): PersistedFlow {
   if (!raw) return {};
 
@@ -387,9 +274,6 @@ export function parseFlow(raw: string | null, now: number): PersistedFlow {
 
   const savedAt = data.savedAt;
   if (typeof savedAt !== "number" || !Number.isFinite(savedAt)) return {};
-  // ⚠️ A FUTURE STAMP IS STALE TOO. A clock that moved backwards (a timezone
-  // fix, a corrected system time) would otherwise pin the slice open forever,
-  // since `now - savedAt` never grows past the window.
   const age = now - savedAt;
   if (age < 0 || age > FLOW_TTL_MS) return {};
 
@@ -427,14 +311,7 @@ export function writeFlow(answers: Answers, now: number): void {
   }
 }
 
-/**
- * Read the expiring slice. Never throws.
- *
- * ⚠️ A STALE ENVELOPE IS DELETED, NOT JUST IGNORED. Nothing else sweeps this
- * key, so leaving it there would keep one visitor's answers on the machine
- * indefinitely — expired, unreadable and still sitting in the browser. Reading
- * is the only moment the app can know it is past the window.
- */
+/** Read the expiring slice. Never throws. */
 export function readFlow(now: number): PersistedFlow {
   try {
     const raw = window.localStorage.getItem(FLOW_STORAGE_KEY);
@@ -448,8 +325,3 @@ export function readFlow(now: number): PersistedFlow {
   }
 }
 
-/* ⚠️ THERE IS NO `clearFlow`, AND NOTHING NEEDS ONE. `reset()` empties the
-   store, the provider's write effect runs on the emptied `answers`, and
-   `writeFlow` removes the key when the slice comes back empty — the same path
-   `writePersisted` takes for records. A second way to delete the key would be a
-   second thing to keep in step with the first. */

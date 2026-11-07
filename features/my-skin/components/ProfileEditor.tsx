@@ -13,14 +13,7 @@ import { toggleMulti } from "@/lib/store/answers";
 /**
  * The profile recap's editor for the four answers in its `Skin profile` card —
  * skin type, tendencies, known conditions and the symptoms' state (steps 2, 3
- * and 4). 29 Oct 2026, usability testing: the recap read the answers back and
- * offered no way to change one.
- *
- * ⚠️ THE SAME CHIPS AS THE STEPS, THE SAME LISTS — they are imported from the
- * step screens, so an option added there appears here, and `toggleMulti` keeps
- * `None` / `Not sure` exclusive. ⚠️ NOTHING IS SAVED ON A BUTTON: each tap
- * writes to the store as it is made (as step 1 does since the same day), so the
- * card above updates live and `Done` only closes this.
+ * and 4).
  */
 export function ProfileEditor() {
   const { answers, setAnswer } = useInvestigation();

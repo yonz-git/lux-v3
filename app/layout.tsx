@@ -8,14 +8,6 @@ import { SmoothScroll } from "@/components/layout/SmoothScroll";
 import { SnackbarProvider } from "@/components/layout/Snackbar";
 import { AppCanvas } from "@/components/layout/CanvasShader";
 
-/**
- * ⚠️ THE TYPEFACE IS FIGTREE — asked for directly 4 Oct 2026, after a
- * side-by-side on step 1 and Progress: it holds up at the 12px labels and in
- * the date grids. Five weights load: Light for headlines and metrics, Regular for body
- * and chips, Medium for labels and buttons, SemiBold for card titles and the
- * selected nav label, Bold for the emphasised words in a light headline.
- * `--font-family-sans` in tokens.css points at it.
- */
 const figtree = Figtree({
   subsets: ["latin"],
   weight: ["300", "400", "500", "600", "700"],
@@ -23,14 +15,6 @@ const figtree = Figtree({
   display: "swap",
 });
 
-/**
- * ⚠️ THIS TITLE IS A FALLBACK NOW, NOT THE APP'S TITLE. Every route used to
- * render the same `<title>LUX</title>` because this was the only one set and no
- * page overrode it — a WCAG 2.4.2 failure, since a title has to describe the
- * page's topic or purpose, and the reason a client-side navigation had nothing
- * to announce. Each page exports its own via `metadataTitleFor`; this covers
- * anything that does not, such as the 404.
- */
 export const metadata: Metadata = {
   title: "LUX",
   description:
@@ -40,9 +24,6 @@ export const metadata: Metadata = {
 export const viewport: Viewport = {
   width: "device-width",
   initialScale: 1,
-  /* `gradient/canvas-mid` as the app draws it — Figma's #cedee2 darkened 10%
-     on 14 Sep 2026 (#b9c8cb), then brightened 14% on 15 Sep 2026 (see the
-     canvas override in globals.css) */
   themeColor: "#d3e4e7",
 };
 
@@ -59,12 +40,6 @@ export default function RootLayout({
           the flow — a provider scoped to /investigation would hand it an empty
           list every time. Still IN MEMORY ONLY: a reload starts clean. */}
       <body>
-        {/* ⚠️ NOT IN FIGMA — the living canvas behind EVERY route, asked for
-            directly on 12 Sep 2026. Mounted ONCE, here, rather than per screen:
-            a per-screen canvas re-created its WebGL context and faded in again
-            on every navigation. It sits behind the page at z-index -1 and only
-            shows once it has drawn — see `:root[data-canvas-ready] .screen` in
-            globals.css — so a device without WebGL keeps the token gradient. */}
         <AppCanvas />
         {/* speaks each client-side navigation and moves focus into the new
             screen — the App Router provides neither. See the component. */}
@@ -73,11 +48,6 @@ export default function RootLayout({
         {/* eases the page's WHEEL scroll on every route — touch, keyboard and
             modals are left to the browser. See the component. */}
         <SmoothScroll />
-        {/* ⚠️ INSIDE THE ANSWER STORE, NOT OUTSIDE IT. Every snackbar this app
-            raises offers to put a slice of the store back, so the callers hold
-            both hooks and the undo action closes over a `setAnswer`. Mounted
-            once, at the root, for the same reason the nav is fixed once: a
-            message about what just happened must not be a screen's to draw. */}
         <InvestigationProvider>
           <SnackbarProvider>{children}</SnackbarProvider>
         </InvestigationProvider>

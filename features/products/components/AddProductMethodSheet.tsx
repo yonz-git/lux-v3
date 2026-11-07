@@ -36,22 +36,6 @@ import { useEnrichedProduct } from "@/features/products/useEnrichedProduct";
 /**
  * The "Add a product" tray — Figma mobile 576:1376, desktop dialog 583:1786.
  * The one way into step 5's add flow, opened from `Your products`.
- *
- * ⚠️ CHANGE OF FLOW, NOT IN FIGMA. The comps treat search and scan as two
- * routed screens (`576:1428`, `577:1498`) handing off to a third (`577:1430` /
- * `578:1482`) and then to `Product added` (`579:1540`). Here the ENTIRE add
- * flow — method, search-or-scan, confirm, duration, added — plays out inside
- * this one tray, which grows to fit whichever view is showing. Nothing in the
- * add flow navigates; the four routed screens have been deleted.
- *
- * ⚠️ THE PERIOD IS NOT CHOSEN BEFORE THE PRODUCT ANY MORE — that reordering is
- * what this step was rebuilt for. The tray used to open already committed to a
- * period (`targetBucket`), decided by which bucket row the user tapped on a
- * screen BEFORE they had searched for anything, and it then ran that backwards
- * through `durationForBucket()` to invent a duration. The three rows that were
- * supposed to set it never did, so everything filed under Long term regardless.
- * Now the tray asks "how long have you used it?" once, with the product on
- * screen, and `bucketFor()` derives the group from that answer alone.
  */
 type View = "method" | "search" | "scan" | "confirm";
 type ConfirmSource = "search" | "scan";
@@ -157,13 +141,6 @@ export function AddProductMethodSheet({
     // whatever photo/ingredients Open Beauty Facts found and the hub's
     // thumbs and accordion cards show it too
     add(enrichedProduct, draft.duration);
-    // ⚠️ THE QUERY IS CLEARED HERE, and it matters now the results are a
-    // dropdown. `Add another product` reuses the same `productQuery`, so a
-    // query left standing meant the added stage opened with a full panel of
-    // results for a search the user had already finished — a dropdown open
-    // without anyone having typed into the field under it. `rejectDraft`
-    // deliberately does NOT do this: "No, search again" means search again
-    // for the same thing.
     setAnswer("productQuery", "");
     setStage("added");
   }
@@ -182,8 +159,6 @@ export function AddProductMethodSheet({
               : "Confirm product";
 
   return (
-    /* ✕ in the corner, not `Done` at the foot — 31 Oct 2026, asked for
-       directly; every view of this tray */
     <Sheet open={open} onClose={resetAndClose} title={title}
       dismiss="corner"
       className={styles.cornerRoom}
@@ -244,12 +219,10 @@ export function AddProductMethodSheet({
   );
 }
 
-/** The two-card chooser — the tray's default view. Search and scan set the
+/**
+ * The two-card chooser — the tray's default view. Search and scan set the
  *  view directly; nothing here navigates.
- *
- *  ⚠️ NO `Cancel` HERE ANY MORE. It was this view's own button, which is why
- *  every other view had no visible way out; `Sheet` renders one under whatever
- *  view is showing instead. */
+ */
 function MethodView({
   onSearch,
   onScan,
@@ -279,15 +252,7 @@ function MethodView({
   );
 }
 
-/**
- * A method card inside the tray.
- *
- * ⚠️ THE CARD IS SAGE, AND SO IS ITS ICON. `surface/data-strong` takes WHITE
- * text, and an icon instance carries its own dark default — a dark glyph beside
- * white text is the single most-repeated bug in this file. Both the fill and the
- * stroke have to change, because most LUX icons are stroke-drawn and a
- * fills-only recolour silently does nothing. `currentColor` does both here.
- */
+/** A method card inside the tray. */
 function MethodCard({
   icon,
   title,
@@ -313,29 +278,10 @@ function MethodCard({
   );
 }
 
-/** Was `04 — Search by name` (576:1428) as its own routed screen; now the
+/**
+ * Was `04 — Search by name` (576:1428) as its own routed screen; now the
  *  tray's search view. Same field-starts-empty rule — only the destination on
  *  picking a result changed.
- *
- * ⚠️ NOT IN FIGMA: THE RESULTS ARE A DROPDOWN HANGING OFF THE SEARCH BAR, not
- * a list on the tray. They used to be free-standing `ProductRow` cards in a
- * capped `.searchResultsScroll` region, which put a second column of frosted
- * cards on a surface that already had them and read as "more content" rather
- * than "what you just typed matched". One panel tucked under the pill reads as
- * the bar's own output. Consequences worth knowing:
- *
- *   - NOTHING SHOWS UNTIL SOMETHING IS TYPED. The old "Search for a product by
- *     brand or name" `EmptyBox` is gone: a dropdown with nothing in the field
- *     is not a state a dropdown has, and the field's own placeholder already
- *     says it.
- *   - THE PANEL IS IN FLOW, not absolutely positioned. On mobile the tray is
- *     DOCKED TO THE BOTTOM EDGE and hugs its content, so an overlaid dropdown
- *     would open straight off the bottom of the viewport with nowhere to go.
- *     In flow the tray grows upward to hold it, which is the whole point of a
- *     bottom sheet. It still overlays in the sense that matters — see
- *     `.dropdown`'s negative top margin tucking it under the pill — and the
- *     panel caps its own height and scrolls internally, so a long result list
- *     can never push the search field itself out of reach.
  */
 function SearchView({
   query,
@@ -397,7 +343,7 @@ function SearchView({
                   >
                     <ProductThumb product={p} />
                     <span className={styles.resultCopy}>
-                      {/* brand-led title, no size under it — 15 Sep 2026 */}
+                      {/* brand-led title, no size under it */}
                       <span className={`${styles.resultName} t-h6`}>
                         {fullName(p)}
                       </span>
@@ -476,13 +422,6 @@ function ScanView({
  * Was `04 — Confirm product` (577:1430) / `04 — Product match` (578:1482) as
  * two routed screens sharing one body — plus, now, the duration question that
  * screen asked and the `Product added` screen (579:1540) that followed it.
- *
- * ⚠️ THE DURATION QUESTION IS THE POINT OF THIS VIEW. It sits here, after the
- * product is identified and with the product on screen, because "how long have
- * you used it" is a fact about the thing in front of the user rather than a
- * mode they had to enter before searching. Its answer is the only input to
- * `bucketFor()`, so this is the single place in the app where a product's group
- * is decided.
  */
 function ConfirmView({
   source,
@@ -533,13 +472,6 @@ function ConfirmView({
         </ChatBubble>
       )}
 
-      {/* ⚠️ A SEARCHED PRODUCT IS A DROPDOWN ROW, NOT THE BIG CARD — 16 Sep
-          2026, asked for directly ("make it as a dropdown like here", pointing
-          at the PRODUCTS hub's compact card). The same `ProductAccordionCard`
-          the hub draws, closed by default, opening onto the same
-          `ProductDetails`; no Remove, because nothing is added yet. A SCAN
-          keeps `ProductCard`: its "92% match" tag and big picture are the
-          answer to "is this what the camera saw?". */}
       {showsCard &&
         (isScan ? (
           <ProductCard
@@ -592,8 +524,6 @@ function ConfirmView({
           {/* the tray's own primary action. Disabled until the question is
               answered, for the same reason Continue is on every step: there is
               no group to file the product under until it is. */}
-          {/* the indigo primary at `size="sm"`, the same `Add product` as the
-              verify stage's toggle (asked for directly 31 Oct 2026) */}
           <Button
             size="sm"
             className={`${styles.trayAction} ${styles.trayActionSmall}`}
@@ -606,14 +536,6 @@ function ConfirmView({
       )}
 
       {stage === "added" && draft?.duration && (
-        // ⚠️ THE VISIBLE "Added to <group>" TAG IS GONE, and only the
-        // announcement is left. The tray's own title already reads `Product
-        // added` and the block below already reads `Add another product`, so
-        // the tag was a third thing saying the same thing on a stage the user
-        // reaches by pressing a button labelled `Add product`. A screen reader
-        // gets none of that for free, though — the title never changes focus
-        // and neither heading is a live region — so the group is still said
-        // out loud here, read back off the same answer that put it there.
         <p role="status" className="visually-hidden">
           Added to {BUCKET_LIST_TITLE[bucketFor(draft.duration)]}
         </p>
@@ -621,8 +543,6 @@ function ConfirmView({
 
       {(stage === "added" || stage === "rejected") && (
         <div className={styles.confirmBlock}>
-          {/* `t-label`, one step over `t-label-sm` — asked for directly 16 Sep
-              2026, with `Added products` below */}
           <p className={`${styles.confirmLabel} t-label`}>
             {stage === "added"
               ? "Add another product"
@@ -638,8 +558,6 @@ function ConfirmView({
 
       {addedProducts.length > 0 && stage !== "verify" && (
         <div className={styles.confirmBlock}>
-          {/* `t-label`, one step over `t-label-sm` — asked for directly 16 Sep
-              2026, as the check basket's "and" took the same day */}
           <p className={`${styles.confirmLabel} t-label`}>Added products</p>
           <ul className={styles.addedList}>
             {addedProducts.map((p) => (

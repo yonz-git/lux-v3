@@ -21,13 +21,7 @@ import styles from "./StyleGuide.module.css";
 
 /**
  * `/styleguide` — the design system rendered live, from the real tokens and
- * the real components. It is what Figma was for until 1 Oct 2026: the place
- * to SEE the system before changing it. Nothing here is a copy — the swatches
- * are read from the stylesheets at runtime, and every component is the one the
- * screens import — so it cannot drift from what ships.
- *
- * ⚠️ It lives beside its route rather than in `features/` because it belongs
- * to no nav section and no screen imports it.
+ * the real components.
  */
 
 /** every custom property declared on `:root`, in source order, deduplicated */
@@ -101,7 +95,6 @@ const GRADIENTS = [
   ["--gradient-brand", "brand — the primary action"],
   ["--surface-sheet", "sheet — the tray's sage frost"],
 ];
-
 
 export function StyleGuide() {
   const colours = useRootTokens("--color-");

@@ -18,8 +18,6 @@
   width: 100%;
 }
 
-/* ⚠️ column-reverse: the DOM is <dt> then <dd>, as a description list requires,
-   and the comp shows the figure above its label. See ResultCards.tsx. */
 .stat {
   display: flex;
   flex-direction: column-reverse;
@@ -67,24 +65,7 @@
   gap: var(--space-md); /* 12 */
 }
 
-/* 4 wide, full height of the entry, radius/full.
-
-   ⚠️ EACH BAR TAKES ITS OWN PILL'S FILL, AND NEITHER IS THE COMP'S — NOT IN
-   FIGMA. The comp paints high #c9918e (feedback/warning) and moderate
-   text/on-data-muted #354446, so every entry carried TWO colours for one
-   judgement: a pink-red rule beside an indigo pill, a near-black rule beside a
-   lilac one. The bar and the pill are the same statement, so they now say it in
-   the same colour — a deep rose for high and a light one for moderate since
-   5 Oct 2026 (bg/brand and bg/brand-soft before that), the pair the pills use.
-
-   The two levels still differ by weight, which is what the bar was for; only
-   the hue it borrows changed. And nothing is lost by dropping the warning hue:
-   non-negotiable 17's rule is that a warning must never be carried by COLOUR
-   ALONE, and the pill under each bar says "High likelihood" or "Moderate
-   likelihood" in words.
-
-   `moderate` is the base rule rather than its own selector because the type has
-   exactly two values — a third would need to declare itself here. */
+/* 4 wide, full height of the entry, radius/full. */
 .accent {
   flex: none;
   width: 4px;
@@ -96,14 +77,6 @@
   background: color-mix(in srgb, var(--color-bg-symptom) 80%, var(--color-text-primary));
 }
 
-/* ⚠️ ROSE, NOT INDIGO, SINCE 5 Oct 2026 — asked for directly ("it makes more
-   sense to use reddish pinkish tones"). Indigo is LUX's selection and action
-   colour; a likelihood of irritation is a warning, and the app already says
-   "symptom" in one rose (`bg/symptom`, the face's callouts and the `Ongoing`
-   pill). High is that pill's recipe exactly, white ink on the rose gradient;
-   moderate is the same rose as a tint with the app's dark ink. The bars take
-   the same two weights. The words in the pill still carry the level, so the
-   two roses are never the only difference (non-negotiable 17). */
 .concernBody .likelihood[data-variant] {
   border-color: transparent;
 }
@@ -157,9 +130,6 @@
 
 /* ---- card · what to do next (549:1163) ----------------------------------- */
 
-/* ⚠️ surface/data-strong, NOT a light card. The handoff's rule for a nested
-   emphasis block: a sage card inside a light card is a LUX pattern, the reverse
-   is not. */
 .emphasis {
   --emphasis-border: 2px;
 
@@ -168,88 +138,28 @@
   align-items: flex-start;
   gap: var(--space-md); /* 12 */
   width: 100%;
-  /* ⚠️ 20 MINUS THE BORDER, per non-negotiable 9. A Figma stroke does not add
-     to a frame's height and a CSS border does, so a box whose height is
-     CONTENT-driven has to give the stroke back out of its own padding or it
-     lands 4 taller and 4 wider than the block beside it. */
   padding: calc(var(--space-xl) - var(--emphasis-border));
-  /* ⚠️ THE BAND, AGAIN — NOT IN FIGMA. The block's stroke is the same colour as
-     the badge sitting in it, so the verdict outlines the thing it is about
-     rather than only labelling it. `--band` is declared on the BLOCK now
-     (below) and inherits down to the pill, which is why one value can feed
-     both. Falls back to transparent: `badgeBand` is optional — a check with no
-     primary product renders this block with no pill — and an undefined var
-     would compute the border to currentColor and paint a white rule. */
   border: var(--emphasis-border) solid var(--band, transparent);
   border-radius: var(--radius-lg);
-  /* ⚠️ `surface/data-deep`, NOT `-data-strong` — BY EXPLICIT REQUEST. Sage at
-     62% inside a sage card gave the block almost no edge against the card it
-     sits in; this is the darker sage at the same alpha (see globals.css). */
   /* lux-v3: glass inside the panel, dark ink (the deep tier is gone) */
   background: var(--color-glass-strong);
   box-shadow: var(--shadow-glass);
 }
 
-/* ⚠️ 24 UNDER THE BLOCK, WHERE THE CARD'S OWN RHYTHM IS 16 — NOT IN FIGMA. The
-   block now carries a 2px band stroke, which closes it off as its own object;
-   at the card's flex gap it sat too close to the first numbered step and the
-   step read as if it were inside the outline. 8 on top of that gap lands on 24,
-   a real spacing step, and the stroke gets room to be seen as an edge.
-
-   ⚠️ ON THE NEXT SIBLING, NOT AS THE BLOCK'S OWN margin-bottom. `steps`,
-   `schedule` and `actions` are all optional, so the block can be the card's
-   LAST child — a trailing margin would then pad the bottom of the card with
-   space nobody asked for. An adjacent-sibling rule only exists when there is
-   something to be spaced from. */
 .emphasis + * {
   margin-top: var(--space-sm); /* 8, on top of the card's 16 gap = 24 */
 }
 
-/* ⚠️ WHITE, BY EXPLICIT REQUEST — AND IT DOES NOT MEET AA. Everything else on a
-   sage surface was moved to the ink (see the SURFACE SYSTEM B block in
-   globals.css); this nested emphasis block was asked to stay white.
-
-   The three surfaces it has sat on, measured on `/check/results`:
-
-     surface/data-strong inside a surface/data card   rgb(141,177,179)   2.32:1
-     surface/data-deep at #538b8d @62%                rgb(116,160,163)   2.90:1
-     surface/data-deep at #4f838f @85%                #5d8c97            3.71:1
-
-   against 4.5:1. Better each time and still short.
-
-   ⚠️ THE INK IS NO LONGER THE ALTERNATIVE. On this fill `text/on-data`
-   (#2e2a3f) measures 3.73:1 — within 0.02 of the white — because the surface
-   sits almost exactly where the two inks cross over. Withdrawing the white
-   request would change nothing. Only the surface can move; see the measurement
-   table on `--color-surface-data-deep` in globals.css. Still to raise
-   `sage/700` in Figma as a real surface role. */
 .emphasisTitle,
 .emphasisText {
-  /* ⚠️ SUPERSEDED, lux-v3: the block is glass, so the app's ink — the white
-     above never cleared AA and has nothing dark left to sit on */
   color: var(--color-text-primary);
 }
 
-/* ⚠️ THE BADGE CARRIES THE BAND, NOT A NEUTRAL LABEL — NOT IN FIGMA. It states
-   the worst band in the check ("Avoid", "Risky"), and as a frost pill it said
-   that in the same voice as every other Tag in the app. It takes the feedback
-   colour the CompatCard for that band already uses, so one verdict is one
-   colour on both halves of the screen.
-
-   ⚠️ FILLED, WHERE COMPATCARD'S PILL IS TINTED. That pill sits on a light card
-   and can use `-subtle` behind `--band`; this one sits on `surface/data-strong`
-   — sage over sage — where a `red/100` tint has almost no edge and the red text
-   on it is unreadable. White on `feedback/error` measures 4.47:1, the same
-   figure the band pills already carry on `/check/results`. Specificity per the
-   note above. */
 .emphasis .badge[data-band] {
   background: var(--band);
   color: var(--color-text-on-data-inverse);
 }
 
-/* ⚠️ SET ON THE BLOCK, NOT THE PILL, because the block's border needs it too
-   and a custom property inherits downward. The pill above still reads
-   `var(--band)`; it just gets it from its parent now. */
 .emphasis[data-band="avoid"] {
   --band: var(--color-feedback-error);
 }
@@ -262,8 +172,6 @@
   --band: var(--color-feedback-success);
 }
 
-/* ⚠️ A ROW, NOT A STACK — see the doc comment on NextStepsCard for why the band
-   pill came off its own line. 12 apart, vertically centred on the 48 thumb. */
 .emphasisHead {
   display: flex;
   align-items: center;
@@ -415,23 +323,6 @@
 
 /* ---- reading measure, desktop only --------------------------------------- */
 
-/* ⚠️ NOT IN FIGMA, AND IT ONLY APPLIES AT 1024+. Mobile is a 392 column, so
-   these paragraphs run about 50 characters a line and need nothing. The desktop
-   card is 920 wide with 48 of padding, and every one of them fills it:
-   measured on `/check/results`, the ingredient descriptions run 103 characters
-   a line at 1024 and 115 at 1440, against the 45-75 that is comfortable to
-   read. Nothing else on the screen is prose — the stats, the tags and the
-   product rows are all short strings — so the card grew a column width that
-   suits a label and not a sentence.
-
-   `ch` rather than a pixel value: the cap is a measure, so it has to follow
-   the type it is measuring. ⚠️ `ch` IS THE WIDTH OF A ZERO, NOT OF AN AVERAGE
-   LETTER — a digit is one of the widest glyphs in this face, so 62ch measured
-   89 characters a line on the first attempt. 52ch is what actually lands in
-   the 65-75 the rule is about; measured 71. The cards keep their full width — only the running text
-   inside them stops early, which is also why the wrapping blocks are untouched:
-   a max-width on `.concernItem` would drag its `foundIn` line and its badge in
-   with it. */
 @media (min-width: 1024px) {
   .concernText,
   .stepText,
@@ -440,13 +331,6 @@
   }
 }
 
-/* ============================================================================
-   THE ENTRANCE — 1 Oct 2026, asked for directly (MotionObserver.tsx). Like
-   21st.dev's donut legend: the first time a card is in view its list arrives
-   one entry at a time, sliding 12px in from the left, 80ms apart — the
-   ingredients of concern and the numbered next steps. The summary's figures
-   count up (`CountUp`).
-   ========================================================================== */
 .concernItem,
 .step {
   transition:

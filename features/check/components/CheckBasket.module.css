@@ -15,7 +15,6 @@
   bottom: calc(
     var(--nav-inset-bottom) + var(--size-nav-height) + var(--space-md)
   );
-  /* ⚠️ BELOW THE NAV. The bar is not a modal — only `Sheet` outranks the nav. */
   z-index: var(--z-sticky);
 
   display: flex;
@@ -32,12 +31,6 @@
   padding: 0.875rem var(--space-xl); /* 14 / 20 */
 
   border-radius: var(--radius-full);
-  /* ⚠️ HALF THE FILL AND A REAL FROST — 16 Sep 2026, asked for directly ("give
-     less opacity and make it frosted"). `surface/data-strong` is 62%, which
-     read as a solid slab with the blur behind it doing nothing visible; mixed
-     to half (≈31%) the page shows through, and `saturate` keeps what shows
-     through from going grey. The reduced-transparency fallback below still
-     composites the full token, so that path is unchanged. */
   /* lux-v3: the panel's glass, floating — a 30% frost, the panel edge and
      rim, and the nav's soft drop (app/globals.css). The v2 sage is history. */
   border: var(--border-width-hairline) solid var(--color-border-panel);
@@ -50,9 +43,6 @@
   /* the label's shine paints from this, not from `color` — the surface's own
      ink, per `.shine-text` in globals.css */
   --shine-ink: var(--color-text-on-data);
-  /* ⚠️ CENTRED IN BOTH STATES, asked for directly 15 Sep 2026 — the goal line
-     first, then the ready line ("align center too"). The chevron is taken out
-     of the flow (`.barChevron`) so it cannot pull the words off centre. */
   text-align: center;
   transition: opacity var(--duration-fast) var(--ease-hover);
 }
@@ -85,8 +75,6 @@
 .barLabel {
   flex: 1;
   min-width: 0;
-  /* ⚠️ 1.5px OVER `t-body2`'s 16 — asked for directly 16 Sep 2026. Off the
-     type ramp (non-negotiable 3); the class keeps the weight and the 26 line. */
   font-size: 1.0938rem; /* 17.5 */
   /* the chevron's 24 plus an 8 gap, reserved on BOTH sides — so a long label
      wraps before it reaches the arrow, and the words stay centred on the pill
@@ -96,12 +84,6 @@
 
 /* points UP, because the sheet opens upward */
 .barChevron {
-  /* ⚠️ ABSOLUTE, NOT A FLEX ITEM — asked for directly 15 Sep 2026 ("don't
-     count the up arrow"). In the row it took 24 + the 12 gap off the label's
-     width, so the centred words sat 18 left of the pill's middle. Pinned to
-     the bar's own right padding and vertically centred, it no longer takes
-     part in the layout; `.bar` is `position: fixed`, so it is the containing
-     block. */
   position: absolute;
   top: 50%;
   right: var(--space-xl); /* 20 — the bar's own side padding */
@@ -113,9 +95,6 @@
 
 @media (min-width: 1024px) {
   .bar {
-    /* ⚠️ THE NAV'S 598, NOT THE CARD COLUMN'S 640 — asked for directly
-       15 Sep 2026 ("match the width of the element to the nav bar"). On a
-       phone the two already shared `size/nav-width-mobile`. */
     width: var(--size-nav-width-desktop); /* 598 */
     max-width: none;
   }
@@ -168,20 +147,12 @@
   color: var(--color-text-on-data-muted);
 }
 
-/* ⚠️ 72 TALL, NOT THE COMP'S 50 — the row carries a 48 product thumb now (see
-   CheckBasket.tsx), and 12 + 48 + 12 is 72. The padding is unchanged; only the
-   tallest thing inside it is new. Same proportion the add-product tray's own
-   result rows already have. */
 .item {
   display: flex;
   align-items: center;
   gap: var(--space-md); /* 12 */
   padding: 0.75rem var(--space-lg); /* 12 / 16 */
   border-radius: var(--radius-lg);
-  /* ⚠️ `surface/data-deep`, NOT `-data-strong` — BY EXPLICIT REQUEST, and the
-     same swap `ResultCards`' emphasis block takes. A 62% sage row on the 44%
-     sage tray is two steps of one hue with almost nothing between them; the
-     darker sage separates the rows from the tray they sit on. */
   /* lux-v3: GLASS ON THE SHEET, DARK INK — the deep-sage tier with white
      ink (3.77:1, never AA) is gone; the row is the chips' material. */
   border: var(--border-width-hairline) solid var(--color-border-glass);
@@ -192,23 +163,6 @@
 .itemLabel {
   flex: 1;
   min-width: 0;
-  /* ⚠️ WHITE ON A SAGE ROW, BY EXPLICIT REQUEST — AND IT DOES NOT MEET AA. The
-     row sits on `surface/data-deep` (`#4f838f @85%`), which composites over the
-     tray to #5a8b96, where white measures **3.77:1** against 4.5:1.
-
-     ⚠️ THE NUMBERS IT CAME THROUGH: 1.64–2.13:1 on `surface/data-strong` (which
-     is why globals.css redefined `text/on-data` dark in the first place), then
-     ~2.9:1 on the 62% `-deep`, now 3.77:1. All three are composites over
-     whatever sits behind the tray, so all three are ranges rather than numbers.
-
-     ⚠️ THE INK IS NOT THE WAY OUT — it measures 3.67:1 on the same fill, BELOW
-     the white. The surface sits where the two inks cross over; see the table on
-     `--color-surface-data-deep` in globals.css.
-
-     Named via `text/on-data-inverse` rather than a raw `#fff` so the
-     surface-and-ink pairing stays greppable and the module does not reach into
-     the primitives block (non-negotiable 2).
-     ⚠️ SUPERSEDED, lux-v3: the row is glass now and takes the app's ink. */
   color: var(--color-text-primary);
 }
 
@@ -245,11 +199,6 @@
   height: var(--size-icon-sm);
 }
 
-/* ⚠️ NOT IN FIGMA — `Add another product` is the secondary `Button` at
-   `size="md"` (48) with a plus, hugging its label and centred under the rows:
-   step 1's `Take a photo` recipe, asked for directly 13 Sep 2026. It was a
-   56-tall full-width deep-sage row with a border/glass stroke, then briefly a
-   36-tall `SmallButton` that read too small. */
 .addAnotherItem {
   display: flex;
   justify-content: center;
@@ -271,29 +220,9 @@
 /* The same `width/action` every other primary action in the app takes, rather
    than stretching across the tray. No centring needed here — `Sheet`'s tray is
    a flex column with `align-items: center`, so a child that is not full width
-   is already on the axis.
-
-   ⚠️ THE CAP IS UNCONDITIONAL, NOT DESKTOP-ONLY — that was the bug. `Sheet`'s
-   tray is `left: 0; right: 0` until 1024, so between a phone and that
-   breakpoint it is as wide as the VIEWPORT, and a `width: 100%` CTA grew with
-   it: measured at a 988 window the button was ~948 while `Start analysis` —
-   the same primary action one section over — was 392, because `HubScreen`
-   caps its mobile column. Every screen-level action in LUX is bounded; the one
-   inside the tray was not.
-
-   `max-width` rather than `width` so a narrow phone is unaffected — at 416 and
-   below the tray's content box is under 376 and the button fills it outright.
-   Between there and 440 (the Figma canvas, content box 400) the cap leaves a
-   12 gutter either side of a CTA the rows still span; that is the price of
-   having no breakpoint between mobile and 1024 to hang this on, and 12 is
-   cheaper than the ~570 of overshoot it replaces. Non-negotiable 12 forbids a
-   440 media query, so the cap is unconditional.
-
-   ⚠️ 380 BELOW 1024, 376 FROM IT — 13 Sep 2026. Below the breakpoint the cap
-   is `--width-action-mobile`, the nav pill's width, like every other action in
-   the app on a phone; the 376 it used to be is the desktop value. */
+   is already on the axis. */
 .submit {
-  /* width is `Button`'s `width="action"` (31 Oct 2026) */
+  /* width is `Button`'s `width="action"` */
 }
 
 /* sits directly under the disabled CTA, so the reason is next to the control it

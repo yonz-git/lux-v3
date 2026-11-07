@@ -5,61 +5,6 @@ import { useEffect } from "react";
 /**
  * Smooths wheel scrolling — the page's, and every scroll container inside it.
  * Mounted once in `app/layout.tsx`. Nothing renders.
- *
- * ⚠️ NOT IN FIGMA — asked for directly on 13 Sep 2026 ("add smooth scroll
- * animation effect when moving down", on `/investigation/start`). Figma cannot
- * draw scrolling, so this is a code-side decision the same way the text-wrap
- * rules are.
- *
- * WHAT IT DOES: a wheel notch used to move its scroller in one frame. Now each
- * wheel event moves a TARGET, and the scroller eases toward it every frame, so
- * a burst of notches reads as one glide rather than a stack of jumps. The ease
- * is frame-rate independent (`1 - exp(-dt / TAU)`), so a 120Hz display does not
- * scroll twice as snappily as a 60Hz one.
- *
- * ⚠️ IT GLIDES INSIDE SCROLL CONTAINERS TOO, AND FOR ITS FIRST FEW HOURS IT DID
- * NOT — asked for directly the same day on `/check/new`'s basket tray ("already
- * on the scroll down effect here animate it"). It used to hand the event back
- * over ANY scrollable element, so the page glided and the modal on top of it
- * jumped: the surface holding focus was the one still scrolling the old way.
- * The tray, the check-in body, the builder's results, the add-product dropdown
- * and the results picker now take the same glide, and each keeps its own — a
- * child still settling does not stop its parent.
- *
- * ⚠️ TAKING THE EVENT MEANS TAKING THE BROWSER'S CHOICE OF WHICH SCROLLER
- * MOVES, so `scrollerFor` reimplements that rule:
- *   - the innermost scroller that can still move in the wheel's direction
- *     takes it
- *   - one already at its end hands on to its parent only if its
- *     `overscroll-behavior` is `auto`. Every scroller named above except the
- *     add-product dropdown is `contain` and keeps the gesture, exactly as it
- *     did natively; that dropdown hands on to the tray it sits in, as it did
- *     natively too
- *   - ⚠️ one still GLIDING keeps the gesture even at its end. The browser
- *     latches a wheel gesture to one scroller; a flick's tail handed on would
- *     start the parent moving while the child settles, and handed back to the
- *     browser it would jump the child the rest of the way in one frame.
- *
- * ⚠️ IT ONLY EVER TAKES THE WHEEL, AND THAT IS THE WHOLE SAFETY STORY:
- *   - TOUCH is untouched. A phone's own momentum already is the smooth scroll,
- *     and lerping a finger drag makes the page lag behind the finger.
- *   - THE KEYBOARD is untouched. Space, arrows and Page Down are pressed many
- *     times in a row, and an eased key scroll feels delayed (the motion rule
- *     "never animate keyboard-initiated actions"). So are the focus scroll, a
- *     `scrollIntoView`, an anchor jump and the router's scroll-to-top.
- *   - ANYTHING ELSE MOVING A SCROLLER WINS. If it is not where this last put
- *     it, something else scrolled, and that glide is dropped on the spot
- *     rather than fighting it back.
- *
- * ⚠️ IT STANDS DOWN — hands the event to the browser untouched — for:
- *   - `prefers-reduced-motion`. The global duration collapse in `globals.css`
- *     cannot reach a JS scroll, so this checks the query itself, live.
- *   - Ctrl/Cmd + wheel (zoom) and a mainly horizontal wheel.
- *   - A locked page. Radix Dialog (under `Sheet` and the check-in overlay) sets
- *     `overflow: hidden` on `body` while a
- *     modal is up, and a JS scroll would go straight through that lock. ⚠️ The
- *     lock is the DOCUMENT's: the tray above it is a scroller of its own and
- *     still glides, which is the case this was widened for.
  */
 
 /* ~120ms time constant: a notch is most of the way there in ~200ms and fully
@@ -194,12 +139,6 @@ export function SmoothScroll() {
         glides.set(el, glide);
       }
 
-      /* ⚠️ A REVERSE NOTCH TURNS THE GLIDE ROUND AT ONCE. Notches add to where
-         the glide is headed, so during a fast scroll the target runs a few
-         hundred px ahead of the page — and one reverse notch added to THAT
-         still left it ahead, so the page kept going the old way. A reversal
-         restarts from where the page actually is; same-direction notches
-         still pile up. */
       const heading = glide.target - glide.current;
       if (heading !== 0 && Math.sign(heading) !== Math.sign(delta)) {
         glide.target = glide.current;

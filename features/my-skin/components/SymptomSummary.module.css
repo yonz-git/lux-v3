@@ -61,18 +61,10 @@
   display: flex;
   flex-wrap: wrap;
   margin: 0;
-  /* ⚠️ FLUSH LEFT WITH THE OVERLINE AND THE DOT — 31 Oct 2026, asked for
-     directly ("align left the pills"). They were indented the dot's 8 and its
-     8 gap, to start under the symptom's name. */
   padding: 0;
   list-style: none;
 }
 
-/* ⚠️ A PLACE IS A GLASS PILL, 28 TALL — the face's own region pill height and
-   the HIG's floor for a control. Spaced by margin, not `gap`, so a pill that
-   leaves can close its own gap as it fades; `max-width` is the room it takes up,
-   long enough for the widest label. Enters from `@starting-style`, leaves on
-   `data-leaving`, both on `--duration-move` and `--ease-in-out`. */
 .place {
   display: inline-flex;
   align-items: center;
@@ -81,9 +73,6 @@
   max-width: 14em;
   margin: 0 var(--space-pill-gap) var(--space-pill-gap) 0;
   padding: 0 var(--space-md); /* 12 */
-  /* fill, rim, ink and shade are the face's lit pill — `.placePill` in
-     FaceDiagram.module.css, 30 Oct 2026, asked for directly. This rule keeps
-     only the size, the spacing and the enter/leave motion. */
   position: relative;
   white-space: nowrap;
   overflow: hidden;
@@ -120,11 +109,6 @@
   margin-bottom: calc(var(--space-pill-gap) * -1);
 }
 
-/* ⚠️ THE SAME WIDTH AS THE FACE CARD ABOVE IT, AND ON ITS CENTRE LINE — from
-   1024 the face card is capped at 480 and centred (`.diagram` in
-   StartInvestigation.module.css); a summary left at the column's 640 hung 80
-   past it on each side. `taste.md`: elements meant to be centred sit on their
-   container's centre with equal gaps either side. */
 @media (min-width: 1024px) {
   .card {
     max-width: var(--width-symptom-placer);

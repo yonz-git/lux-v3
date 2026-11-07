@@ -24,77 +24,10 @@ import silhouette from "../assets/face-silhouette.svg";
  *
  * Multi-select, so each region is role="checkbox" — the same contract as every
  * other multi-select control in the flow.
- *
- * ⚠️ PROTOTYPE-ONLY MERGE, NOT YET REFLECTED IN FIGMA. `locationChips`
- * ("Whole face" / "Neck" / "Other") used to render as their own chip row
- * below this card in StartInvestigation; they now render inside it, under
- * the diagram, so the whole location answer reads as one frosted control.
- * They write to the same `location` answer as the regions do, so `selected`
- * and `onToggle` are shared rather than being a second pair of props. The
- * 392x300 ratio in the comment above now belongs to the diagram illustration
- * alone — the card itself grows to fit the chip row under it.
- *
- * ⚠️ THE FACE IS A WIREFRAME TRACED FROM A SUPPLIED REFERENCE IMAGE — NOT IN
- * FIGMA, AND NOT OURS. It was a CSS terraced dome, then from 13 Sep 2026 a
- * contour drawing (a scanned head's iso-depth lines, asked for directly),
- * and since 26 Sep 2026 a quad-mesh head: the lines of a wireframe-head
- * image found on Pinterest (pin 305611524731014086) thinned to skeletons
- * and written as vector strokes by `scripts/face-art.mjs` (`npm run face`;
- * the provenance and the IP position are in its header). A procedural
- * head was built and reshaped against that reference first and did not
- * read as a real face; image generation was blocked on the account; the
- * decision to trace the reference itself was the product owner's, asked
- * for directly ("use the reference, trace it and wire it in"). ⚠️ Replace
- * the source with a generated or licensed head before this ships beyond
- * the prototype — the script takes any light-lines-on-black image.
- *
- * The asset is white lines on transparency, each line's opacity the
- * source's own glow at that point — see `.art` for its footprint — and a
- * shine follows the pointer ACROSS THE LINES ONLY (`.shine`, masked by the
- * same image). The silhouette is the same image's non-background region
- * plus the neck column, so the shading it masks falls down the neck.
- * ⚠️ REGISTERED BY THE EYES AND THE LIPS, THEN DRAWN 5% LARGER (asked for
- * directly 26 Sep 2026): one uniform scale maps the image's eye row and
- * mouth line onto `REGIONS`' rows below, and the head is then enlarged
- * about the eye row, so the eyes sit 3 rows under their pill, the lips 15,
- * the nose tip 38 (this head's nose is longer than the landmark spacing)
- * — all still under their pills, which are ~100 rows tall. ⚠️ THE NECK AND
- * THE SHOULDERS ARE DRAWN, NOT TRACED: the image is
- * cut at the chin, and they follow a second supplied line drawing (asked
- * for directly: "add the neck part like the image I attached"), measured
- * and hung off the traced jaw by the script. The frame is 670x1040 for
- * them, up from the 980 of the first asset — `.form` in the module CSS
- * carries what that costs. ⚠️ AND THE WHOLE DRAWING IS 15% LARGER AND 45
- * UNITS LOWER ON THE CARD than the footprint every seat and measurement in
- * this file is written at (asked for directly) — see `REGIONS`. Raise the artwork in Figma: the DS still has no
- * face artwork.
  */
 /* `x`/`y` are the pill's CENTRE, as fractions of the 392x300 box. */
 type Region = { id: string; x: number; y: number };
 
-/* ⚠️ SEATED ON THE DRAWING'S OWN LANDMARKS, NOT ON FIGMA'S COORDINATES. The
-   comp's positions were for a 168x214 ellipse, and the dome after it moved them
-   to fractions of a smooth form. A drawn face has a real eye line, nose tip and
-   mouth, and a pill that misses them names the wrong place — so these were read
-   off the head itself at its drawn footprint (226x280 at 83,10): forehead,
-   the eye line, the nose tip with the cheek centres level with it, the lips,
-   the chin. Cheeks sit 81 either side of the nose, which clears the middle row
-   at the diagram's narrowest scaled pill (see `.region`).
-
-   ⚠️ AND `y` IS THE CENTRE, NOT THE TOP. A pill is a fixed-ratio object in a box
-   that scales, so a top-anchored pill's centre drifts up the face as the diagram
-   grows; `.region` translates -50% on both axes so one set of fractions means
-   the same point at 440 and at 1024+.
-
-   ⚠️ THE DRAWING IS 32.25% LARGER AND 45 UNITS LOWER THAN EVERY SEAT BELOW
-   SAYS, AS OF 26 Sep 2026 — asked for directly ("make the whole face diagram
-   bigger 15% and move it down 15%"), then 15% bigger again the same day, which
-   compounds: 1.15 x 1.15 = 1.3225. The seats are still written at the footprint
-   they were read at (226x280 at 83,10); `seat` maps each one the way `.form`
-   in the module CSS maps the drawing — scaled about the crown's centre
-   (196,10), then dropped 45 — so a pill stays on its feature. `FACE_ZOOM` and
-   `FACE_DROP` here and the `.form` calc there are ONE value written twice;
-   change both. The callout rails and the neck point take the same map. */
 const FACE_ZOOM = 1.15 * 1.15;
 const FACE_DROP = 45 / 300;
 const seatX = (x: number) => 0.5 + (x - 0.5) * FACE_ZOOM;
@@ -116,34 +49,6 @@ const REGIONS: Region[] = [
 /** So "Whole face" can select/clear every region pill in one tap — see StartInvestigation. */
 export const FACE_REGION_IDS = REGIONS.map((r) => r.id);
 
-/* ---------------------------------------------------------------------------
-   THE SYMPTOM CALLOUTS — NOT IN FIGMA, asked for directly 14 Sep 2026, from a
-   supplied anatomy reference (labels at the edge, a leader line to each point).
-
-   ⚠️ ONE PILL PER SYMPTOM, WITH A LINE TO EACH OF ITS PLACES — not one per
-   place. `start` is symptom → places, so a symptom is the unit the answer is
-   stored in, and it is the bounded one: eight symptoms at most, where a pill
-   per (place, symptom) pair could need 56 and a 300-tall box holds about nine
-   a side.
-
-   ⚠️ THE SEVEN FACE REGIONS AND `Neck` GET A LINE. `Neck` has no pill on the
-   face, so it draws to a point on the drawn neck (`NECK`) instead, marked by a
-   dot because no pill covers that end of its line. It takes the side of the
-   neck its pill is on, so the line never crosses the `Chin / jaw` pill
-   above it. Added 14 Sep 2026, asked for directly. `Whole face` and `Other`
-   have no coordinate to draw to, and their lit chips under the face already say
-   them; a symptom placed only there has no callout. `Whole face` writes every
-   region too, so it fans seven lines — that is what the answer says.
-
-   ⚠️ THE LINE RUNS FROM THE REGION'S CENTRE TO THE BOX'S EDGE, AND BOTH ENDS ARE
-   COVERED — the region pill paints over its start, the symptom pill over its
-   end — so no label is ever measured.
-
-   ⚠️ THE MIDDLE ROW IS THE ONE COLLISION. `Cheeks (L)`, `Nose` and `Cheeks (R)`
-   share a y, so a level line from `Nose` to either edge would run behind a
-   cheek pill and read as ending there. A callout with a line that would cross
-   a middle-row pill steps its pill off that row, turning the line into a
-   diagonal that clears the pill between. */
 export type SymptomPlaces = Partial<Record<Symptom, string[]>>;
 
 type Callout = {
@@ -167,10 +72,7 @@ const CALLOUT_BOTTOM = seatY(286 / 300);
 
 /* the neck is not a pill, so its line ends on the drawing: level with the neck
    below the `Chin / jaw` pill, at the neck's edge on the side its callout
-   is on. ⚠️ The drawn neck of 26 Sep 2026 is wider than the 14 Sep one these
-   were read on (152–264): its sides are `NECK_HALF` 180 either side of frame
-   x 337 (the script prints both), i.e. 136–257 of the box's width at the
-   footprint the seats are written in, and the dot sits on the line. */
+   is on. */
 const NECK: Region = seat({ id: "Neck", x: 199 / 392, y: 290 / 300 });
 const NECK_X = { left: seatX(136 / 392), right: seatX(257 / 392) };
 
@@ -254,16 +156,6 @@ const SHINE_EASE = 0.2;
 /**
  * The pointer-following shine. Writes two custom properties straight onto the
  * glow element from a rAF loop, so a pointer move never re-renders the pills.
- *
- * ⚠️ NATIVE LISTENERS, AND THE LIGHT COMES ON AT THE FIRST MOVE RATHER THAN ON
- * AN "ENTER". Keyed on movement, it also lights for a pointer already resting
- * on the face when the screen mounts and for a touch that starts on it — cases
- * where there is no enter to wait for. `pointerenter` is still listened to so a
- * mouse lights it on arrival.
- * ⚠️ IT SNAPS ON THAT FIRST MOVE. Without that the light starts from wherever
- * it last settled (or 0,0) and flies across the face to the pointer.
- * ⚠️ UNDER REDUCED MOTION IT FOLLOWS WITHOUT TRAILING — the glide is the motion;
- * the light under the pointer is feedback, and stays.
  */
 function useLineShine() {
   const ref = useRef<HTMLSpanElement>(null);
@@ -335,98 +227,10 @@ function useLineShine() {
   return { ref, diagramRef };
 }
 
-/**
- * ⚠️ TWO MODES, AND THE PROPS ARE A UNION SO THE WRONG ONE CANNOT COMPILE.
- * `readOnly` is the recap at `/investigation/profile` reading the location
- * answer back: the same face, the same seven pills at the same coordinates,
- * with the picked ones filled and the rest dimmed. It exists rather than a
- * chip list because the coordinates ARE the answer — "Cheeks (L)" only means
- * the left cheek because of where the pill sits, and a comma-separated line
- * throws exactly that away.
- *
- * The read-only face takes no `onToggle`: there is nothing to toggle. It does
- * take `otherLocations`, and the union means the interactive `locationChips`
- * and the read-only list cannot be swapped by accident.
- *
- * ⚠️ THE NON-FACE ANSWERS COME INSIDE THE CARD IN BOTH MODES — asked for
- * directly, 7 Sep 2026. In the recap they were `Tag`s in the light block
- * BESIDE this card, which split one answer across two surfaces: "Neck" is the
- * same answer as "Cheeks (L)", given in the same tap, and the only reason it
- * has no coordinate is that the neck is not on the face. Inside, it reads as
- * what it is. The interactive mode already made this move (see the note above);
- * the recap was the half that had not caught up.
- *
- * ⚠️ THE READ-ONLY CHIPS ARE THE SAME PILL STEP 1 DRAWS, IN THE STATE THE
- * ANSWER PUTS THEM IN — matched to `/investigation/start`, asked for directly.
- * Step 1's location chips are `Chip`s: 40 tall, `Label`, `radius/full`, and
- * INDIGO once picked. The recap only ever shows the ones that were picked, so
- * the pill it draws is the selected one — exactly the rule the face regions
- * above already follow, where a chosen region keeps its full indigo treatment
- * and only the others step back. Drawing them as the pale unselected pill said
- * the opposite of what the answer was.
- *
- * They are `span`s with a local class rather than `Chip`s or `Tag`s: `Chip` is
- * a `role="checkbox"` control and there is nothing here to check, and `Tag` is
- * 26 tall with `Label Small`, which is a different pill from the one step 1
- * draws. The region pills beside them are `span`s for the same reason.
- *
- * ⚠️ THE SHINE RUNS IN BOTH MODES. It is a property of the drawing, not of the
- * control, and a face that lights under the pointer on step 1 and not on the
- * recap would be two different objects.
- *
- * ⚠️ AND THE DIAGRAM IS `aria-hidden` — DELIBERATELY, NOT AN OVERSIGHT. In
- * read-only mode it is an illustration of an answer the recap also writes out
- * in text; announcing seven pills, five of them dimmed and meaningless without
- * their position, would be the screen reader getting the worse half of the
- * picture twice. ⚠️ **The chip row below it is NOT hidden** — it sits outside
- * the diagram, its labels mean what they say without a position, and it is a
- * `<ul>` so the count is announced. The interactive mode keeps its
- * `role="group"` and every pill's `role="checkbox"`.
- *
- * ⚠️ A THIRD STATE, `disabled` — NOT IN FIGMA, added 14 Sep 2026. Step 1 asks
- * for places one symptom at a time now (see `StartInvestigation.tsx`), so
- * between symptoms a region has nothing to be the place OF. The face stays
- * drawn and every place already marked keeps its full selected treatment; the
- * regions nobody marked fade to `opacity/disabled`, as real disabled buttons.
- * ⚠️ **IT IS NOT `readOnly`**, whose stylesheet note says in capitals that it
- * must not look disabled: that face is a finished answer, and this one is a
- * control waiting for a symptom.
- *
- * ⚠️ `glint` SHINES EVERY REGION'S LABEL ONCE, TOGETHER — asked for directly
- * 14 Sep 2026 ("face locations shine once altogether"), for the moment a
- * symptom is picked and the face becomes the next thing to answer. It is the
- * app's own shine (`.shine-text` + `.shine-on-enter`, `globals.css`) on all
- * seven labels at once, not a new effect. A new number replays it, and the
- * class comes off after the one run: a label painted through the shine's
- * transparent ink would SNAP to white when its pill is then picked, where the
- * plain label fades with the fill.
- *
- * ⚠️ HOVER LIGHTS ONE ANSWER'S PAIRS — NOT IN FIGMA, asked for directly 14 Sep
- * 2026: with several symptoms placed, the leader lines cross and it stops
- * being clear which pill goes with which place. Hovering a symptom's callout
- * lights the places it was marked on and its lines to them; hovering a place
- * lights the symptoms marked there and their lines to that place. What is lit
- * brightens under a soft glow on `duration/slow`, and the other lines and
- * symptom pills fade back, so the pairing reads on its own. Nothing is
- * selected or written: it is a reading aid, and the hidden list after the
- * diagram already says the same pairs in words. It runs in both modes, since
- * the recap and PROGRESS draw the same lines, and never while the callouts are
- * hidden.
- * ⚠️ STEP 1's IDLE FACE IS DISABLED, and that is exactly when the callouts
- * show, so its places are hovered as disabled buttons. Pointer events still
- * reach a disabled button (checked in Chrome 152), which is why these are
- * `onPointerEnter` / `onPointerLeave`.
- */
 /* what the pointer is on — a symptom's callout pill, a place, or one of the
    location chips under the face (`Whole face`, `Neck`, `Other`) */
 type Lit = { symptom: Symptom } | { region: string } | { chip: string } | null;
 
-/* ⚠️ THE CHIPS UNDER THE FACE LIGHT THEIR SYMPTOMS TOO, asked for directly 14
-   Sep 2026. A chip has no coordinate of its own, so it lights by the ANSWER:
-   every symptom whose places include it, and the lines that answer draws —
-   `Neck`'s to the neck, `Whole face`'s to every face region, `Other`'s none
-   (it has nothing to draw to, so only its symptoms' pills light). The other
-   way round, a hovered symptom lights the chips it was placed on. */
 const WHOLE_FACE = "Whole face";
 
 type CalloutProps = {
@@ -445,9 +249,7 @@ type FaceDiagramProps = CalloutProps &
         selected: string[];
         onToggle: (id: string) => void;
         locationChips: string[];
-        /** nothing to toggle yet — see the note above */
         disabled?: boolean;
-        /** a new number shines every region's label once — see the note above */
         glint?: number;
         /** a control pinned to the card's top-right corner — step 1's reset */
         corner?: ReactNode;
@@ -484,19 +286,7 @@ export function FaceDiagram(props: FaceDiagramProps) {
   /* each instance owns its filter, under an id stable across SSR */
   const callouts = layoutCallouts(props.callouts ?? {});
 
-  /* the pairing under the pointer — see HOVER in the note above. Ignored while
-     the callouts are hidden, and cleared when the pointer leaves the face, so a
-     pill that unmounts under the pointer cannot leave its pairs lit. */
   const [hover, setHover] = useState<Lit>(null);
-  /* ⚠️ TAP LIGHTS IT ON TOUCH — 16 Sep 2026, asked for directly ("this hover
-     highlight effect is not working on mobile, make it tap and work"). A touch
-     fires `pointerenter` on press and `pointerleave` on lift, so the pairing
-     flashed for the length of the tap and went out. Touch now ignores
-     enter/leave, and a TAP pins the pairing instead: tap a symptom pill, a
-     read-only place or a read-only chip to light it, tap it again (or tap
-     anywhere that is not one of them) to clear it, tap another to move the
-     light. A mouse keeps hover exactly as before. Step 1's editable places
-     and chips are not pinned — a tap on those toggles the answer. */
   const [pinned, setPinned] = useState<Lit>(null);
   const cardRef = useRef<HTMLDivElement | null>(null);
   /* whether the pointer that is about to click is a finger — `click` itself
@@ -511,11 +301,6 @@ export function FaceDiagram(props: FaceDiagramProps) {
   const tap = (lit: Lit) => () => {
     if (touching.current) setPinned((prev) => (sameLit(prev, lit) ? null : lit));
   };
-  /* ⚠️ LIT FROM THE LIST — NOT IN FIGMA, 15 Sep 2026. `SymptomLocation` draws
-     the pairing as rows beside this diagram, and a row under the pointer is
-     the same reading aid as a pill under it, so it feeds the same state. The
-     diagram's own hover wins while it has one (the pointer can only be in one
-     place); the list's lights the face when the pointer is on the words. */
   const external: Lit =
     props.readOnly === true && props.litSymptom
       ? { symptom: props.litSymptom }
@@ -596,9 +381,7 @@ export function FaceDiagram(props: FaceDiagramProps) {
     onLitRef.current?.(reported === "" ? [] : (reported.split("|") as Symptom[]));
   }, [reported]);
 
-  /* the glint in progress — the number it was started for, or null. Set during
-     render, the pattern `SafetyNotice` uses, so the shine never starts a frame
-     behind the chip that asked for it */
+  /* the glint in progress — the number it was started for, or null. */
   const [glintRun, setGlintRun] = useState<number | null>(null);
   const [seenGlint, setSeenGlint] = useState(glint);
   if (glint !== seenGlint) {
@@ -647,13 +430,6 @@ export function FaceDiagram(props: FaceDiagramProps) {
             } as CSSProperties
           }
         >
-          {/* ⚠️ NO ALPHA LIFT ANY MORE. The contour asset ran through an SVG
-              filter raising each pixel's alpha to its square root (asked for
-              directly 14 Sep 2026, twice), because a faint antialiased line
-              only has its alpha to raise. The mesh carries the LIGHT in its
-              alpha — a shadowed segment at 0.4 is the form — and a square
-              root would pull 0.4 to 0.63 and flatten the head. Gone with the
-              contour lines, 26 Sep 2026. */}
           <span className={styles.volume} />
           {/* biome-ignore lint/performance/noImgElement: a fixed decorative
               asset masked by CSS; next/image's wrapper and srcset buy nothing */}

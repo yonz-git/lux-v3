@@ -101,7 +101,7 @@
 }
 
 .emptyCta {
-  /* width is `Button`'s `width="action"` (31 Oct 2026) */
+  /* width is `Button`'s `width="action"` */
   margin-top: var(--space-3xl); /* + the 16 gap = 48 */
 }
 

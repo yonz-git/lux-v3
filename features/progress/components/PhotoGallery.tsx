@@ -13,41 +13,6 @@ import { formatDay, formatShort, fromIso } from "@/lib/date";
 /**
  * `Progress gallery` on `/progress` — a card of the latest check-in photos —
  * and the gallery sheet it opens.
- *
- * ⚠️ NOT IN FIGMA — asked for directly 14 Sep 2026: "next to current state add
- * a small gallery feature showing the latest photos and access button to
- * gallery". Every check-in can carry a photo, and every seeded one does (see
- * `demoExtras`), but the only way to see one was to open its day from the
- * calendar, one day at a time.
- *
- * ⚠️ IT IS ITS OWN CARD NOW, AND THE PROFILE CARD IS GONE — later the same day,
- * asked for directly ("change this to just a gallery, call it progress
- * gallery"). The strip sat at the right end of `SkinProfile`'s state row as
- * three 36s under a `Latest photos` label. Once CHECK's tiles card joined the
- * screen above it, every answer on that card was said twice, so the card became
- * the gallery and `SkinProfile` was deleted. With the row to itself the photos
- * share the card's width instead of squeezing in beside a date.
- * ⚠️ `Started <date> · Day <n>` went with the card and has no home here yet.
- *
- * ⚠️ THE CARD ALWAYS RENDERS, the face card's rule: the screen paints the demo
- * first and the user's own check-ins a moment later, so a card that only
- * existed with photos would unmount under the reader. With none it says so.
- *
- * ⚠️ THE STRIP IS ONE BUTTON. The thumbnails and the chevron circle after them
- * all open the same gallery, so they are one control with one name rather than
- * five stops that do the same thing; the circle is what says the row is a
- * control. The thumbnails do not lead to their own days — in the gallery, each
- * photo does.
- *
- * ⚠️ THE GALLERY IS A `Sheet`, NOT A ROUTE — the same call the selfie capture
- * and the products tray make (AGENTS.md, the route map). It looks through
- * records that already have routes: each tile links to its day's
- * `Check-in detail`, so the sheet adds a way in without adding a page.
- *
- * ⚠️ EVERY PHOTO IS THE SAME SAMPLE, so the strip and the grid repeat one
- * picture. `CheckInPhotoArt` draws one close-up for every capture, by request
- * (13 Sep 2026); the dates under the tiles are what tell them apart until the
- * captures are real.
  */
 
 /** How many photos the card shows before the gallery. */
@@ -114,66 +79,6 @@ export function ProgressGallery({
 /**
  * The gallery sheet — a row of photos that SLIDES, four to a view on desktop
  * and three on a phone, each photo wearing its own date.
- *
- * ⚠️ NOT IN FIGMA — redrawn 15 Sep 2026, asked for directly ("create a nicer
- * way to display date. it can be on the photo, display only 4 and use sliding
- * feature, and mobile only 3. and dont forget to add smooth animation effect"),
- * from a supplied bento reference: image tiles with a small label set INTO a
- * corner of the picture, and a hairline rule running under the row. It was a
- * 3 / 4-column grid of every photo with `Sep 13` over `Day 14` captioned under
- * each tile, which put the date a line away from the picture it belongs to
- * and stacked nine tiles into three rows of scrolling on a phone.
- *
- * ⚠️ THE ROW IS A NATIVE SCROLLER WITH SCROLL SNAP, NOT A TRANSFORMED TRACK.
- * `scroll-snap-type: x mandatory` on the `<ul>`, `snap-align: start` on every
- * tile, and the arrows call `scrollBy` for one view's width. That buys three
- * things a translated track has to re-implement: a swipe on touch that
- * follows the finger and settles with the platform's own physics, an
- * interruptible move (a second tap mid-slide retargets rather than restarting
- * — the interruptibility rule in AGENTS.md's motion section), and keyboard
- * reach — tabbing into an off-screen tile scrolls it into view because the
- * tiles are real links. `scroll-behavior: smooth` is the slide the arrows
- * produce; the global `prefers-reduced-motion` rule does not reach it, so the
- * stylesheet sets it back to `auto` there itself.
- *
- * ⚠️ THE RULE UNDER THE ROW IS THE POSITION, AND IT MOVES WITH THE SCROLL. A
- * hairline the width of the row, with a darker segment whose width is the
- * share of photos in view and whose offset is the share scrolled past —
- * `--track-size` / `--track-x`, written on every scroll event and applied as
- * `transform`, so it glides under a swipe rather than jumping page to page.
- * It is not a scrollbar (the app hides those, non-negotiable 18) and it is not
- * a control: the arrows beside it are, and they disable at either end with the
- * DS's own fade, as the calendar's do.
- *
- * ⚠️ THE DATE IS ON THE PHOTO. `Sep 13` sits in the tile's top-left corner in
- * a glass pill, white `t-label-sm`, and `Day 14` in the bottom-right in the
- * same pill. ⚠️ It was plain white on a drop shadow for its first render and
- * did not hold: the placeholder photograph is lightest exactly there (a pale
- * callout circle sits in that corner), so the count went under. One pill
- * recipe, two corners: the date names the photo, the day count is its place in
- * the investigation. Both are inside the link, so the tile's accessible name
- * is unchanged.
- *
- * ⚠️ AND THE PHOTO SITS IN A GLASS FRAME — 16 Sep 2026, asked for directly to
- * a supplied reference ("edit our gallery image like the first image … the
- * border radius, the frosted border around with transparency and also the
- * pill with transparency, frosted, and the gradient border around"). A 6 bezel
- * of frost round a photo whose corners it rounds further (32 outside, 26 in,
- * after a first pass at 24 / 18 read too square), and the pills went from the
- * nav bar's dark slate to clear glass over a dimmed blur. The frame and both pills are rimmed with the `Reset` pills' ring
- * — "reuse the border we made for the reset button" — which is one token,
- * `--edge-ring-all-round` in globals.css, so the three can never drift from
- * it. ⚠️ THE GALLERY SHEET'S TILES ONLY: the card's thumbnails, the check-in
- * record's photo and the recap's are untouched. The numbers are in the
- * stylesheet.
- *
- * ⚠️ EVERYTHING THAT MOVES OR HOVERS IS ON A CURVE. The slide is the
- * browser's smooth scroll; the rule's segment moves on `duration/slow` +
- * `ease/standard`; a hovered tile's picture scales 1.03 inside its clipped well
- * on the same clock (a transform, so no layout) and lifts its saturation as
- * before; the arrows take `pressable` and the 0.7 hover fade every arrow in
- * the app takes. `hover: hover` guards the hover rules so nothing sticks after
- * a tap.
  */
 /** `--per-view` in the stylesheet — keep the two in step */
 const PER_VIEW_MOBILE = 3;
@@ -205,22 +110,12 @@ export function PhotoGallery({
     const max = scrollWidth - clientWidth;
     setPos({
       size: scrollWidth > 0 ? clientWidth / scrollWidth : 1,
-      /* ⚠️ OVER `scrollWidth`, NOT `clientWidth`: the segment's `translateX`
-         is a percentage of its own UNSCALED width, which is the full rule, so
-         the offset has to be the share of the whole row scrolled past. Over
-         `clientWidth` it ran off the end of the rule on the first slide. */
       x: scrollWidth > 0 ? scrollLeft / scrollWidth : 0,
       atStart: scrollLeft <= 1,
       atEnd: max <= 1 || scrollLeft >= max - 1,
     });
   }, []);
 
-  /* ⚠️ A CALLBACK REF, NOT AN EFFECT ON `open`. `Sheet` mounts its children on
-     its own clock (it holds them through the exit), so an effect keyed on
-     `open` can run before the row exists and never measure it — which drew
-     the rule's segment at full width with both arrows dead. The observer
-     attaches the moment the `<ul>` mounts and follows its width from then on
-     (the phone tray and the desktop dialog are different widths). */
   const observer = useRef<ResizeObserver | null>(null);
   const setScroller = useCallback(
     (el: HTMLUListElement | null) => {
@@ -239,9 +134,7 @@ export function PhotoGallery({
   const slide = (dir: -1 | 1) => {
     const el = scroller.current;
     if (!el) return;
-    /* one view plus one gap. ⚠️ THE GAP IS READ OFF THE ROW, 16 Sep 2026 —
-       it was a `TILE_GAP = 12` copy of `--tile-gap`, and the gap changing
-       ("-20%") is exactly the edit that copy would have missed */
+    /* one view plus one gap. */
     const gap = Number.parseFloat(getComputedStyle(el).columnGap) || 0;
     el.scrollBy({ left: dir * (el.clientWidth + gap) });
   };
@@ -249,9 +142,6 @@ export function PhotoGallery({
   const multiple = photos.length > 1;
 
   return (
-    /* ⚠️ A CORNER ✕, NOT `Done` — asked for directly 15 Sep 2026 ("remove done
-       and add x top right corner"). The gallery is something you look through
-       and leave, so its exit sits where a viewer's does. */
     <Sheet
       open={open}
       onClose={onClose}
@@ -262,17 +152,8 @@ export function PhotoGallery({
       {/* `Sheet` uses the title for its aria-label only, so the visible
           heading is rendered here, as `SelfieSheet` does */}
       <div className={styles.head}>
-        {/* ⚠️ THE CARD'S OVERLINE, NOT `t-h6` — 16 Sep 2026, asked for
-            directly ("capitalize", "same as this" to the card's
-            `PROGRESS GALLERY`): one title, drawn one way on the card that
-            opens the gallery and on the gallery itself */}
         <h2 className={`${styles.overline} t-overline`}>{TITLE}</h2>
         <p className={`${styles.intro} t-body3`}>
-          {/* ⚠️ THE NUMBER IS THE PHOTOS IN VIEW — 3 on a phone, 4 on
-              desktop (`--per-view`) — asked for directly 15 Sep 2026. It was
-              the whole diary, which read as a miscount beside a row that
-              shows fewer. Capped by the diary so it never claims a photo
-              that does not exist. */}
           <span className={styles.perViewMobile}>
             {photoCount(Math.min(photos.length, PER_VIEW_MOBILE))}
           </span>
@@ -307,10 +188,6 @@ export function PhotoGallery({
                       : `Photo from ${formatDay(day)}`
                   }
                 >
-                  {/* ⚠️ THE PHOTO SITS IN A GLASS FRAME — 16 Sep 2026, see
-                      the doc comment. The edge light goes FIRST so the well
-                      paints over its inner glow: the ring stays on the frame's
-                      outer edge and the photo is never washed. */}
                   <span className={styles.frame}>
                     <span className="edge-light" aria-hidden="true" />
                     <span className={styles.well}>

@@ -6,12 +6,7 @@ import styles from "./SmallButton.module.css";
 
 type Props = {
   label: ReactNode;
-  /** `primary` is the flat indigo pill — a small action that commits, such as
-   *  step 1's `Save` (canvas boards, 1 Oct 2026). Glass by default. */
   variant?: "glass" | "primary";
-  /** `sm`: the label one role down to `Label Small` (12 Medium) and 8 side
-   *  padding — `Tag size="sm"` beside it, CHECK's `Add` / `Added` (1 Nov
-   *  2026, asked for directly). The height is the caller's slot. */
   size?: "md" | "sm";
   arrow?: boolean;
   /** a leading glyph from `icons.tsx`, sized to icon/sm (20) by the module */

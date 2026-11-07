@@ -22,14 +22,6 @@ import {
  *
  * The destination for "View previous analyses" on the Analysis landing — the handoff
  * added this screen precisely so that link was no longer dangling.
- *
- * ⚠️ A ROW'S PILL IS THE CHECK'S WORST BAND, and no pill means every product in
- * it scored ≥ 80. Same rule as a card: the band is stated in the row's
- * accessible name too, because Risky and Avoid are not separable by colour.
- *
- * ⚠️ THE EMPTY STATE IS NOT DRAWN — the handoff says to reuse the
- * `Check — no profile` empty-state block with "No checks yet", which is what
- * this does.
  */
 export function CheckHistory() {
   const router = useRouter();

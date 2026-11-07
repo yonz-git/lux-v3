@@ -2,32 +2,6 @@ import type { ButtonHTMLAttributes, ReactNode, Ref } from "react";
 import Link from "next/link";
 import styles from "./IconButton.module.css";
 
-/**
- * IconButton — the reference's round control, the most-used control in both
- * references (1 Oct 2026). A 56 circle holding one glyph from `icons.tsx`.
- *
- *   glass    white @50% + glass edge + rim, brand-indigo glyph — `+`, mic,
- *            the Storyboard's tool rail
- *   primary  lux-v2's brand gradient + brand shadow, white glyph — `Generate`
- *   outline  no fill, a 1px ink hairline at 18% — Welcome's back arrow
- *   soft     `#eeecf5` lilac with a brand glyph — the Moodboard's `+`, for a
- *            round button on a WHITE card, where glass would not show
- *
- * `label` is REQUIRED and becomes the accessible name: a glyph alone says
- * nothing to a screen reader. 56 is the default because every circle is.
- *
- * ⚠️ TWO MORE SIZES, 31 Oct 2026 — asked for directly ("buttons that use the
- * same design should be using reusable components with variants"):
- *   md  32 — the back button (`ScreenHeader`, `HubScreen`), the edit toggle,
- *       the calendar's ‹ › and the face's ↺. 48 until 1 Nov 2026, when it
- *       went to 32 and the 44 `sm` folded into it (asked for directly); the
- *       disc is 32 and `.tap-target` keeps the hit area at 44.
- *   xs  20 — the small ✓ / ✎ / ✕ inside a field, a tray's corner ✕ and the
- *       chat panel's ✕. The disc is 20; `.tap-target` keeps the hit area at
- *       44 round it. Pair it with `CloseSmallIcon` (12) or a 16 glyph.
- * Every one of those was a copy of this circle in a screen's own module, and
- * a fix to one never reached the rest.
- */
 export function IconButton({
   label,
   children,

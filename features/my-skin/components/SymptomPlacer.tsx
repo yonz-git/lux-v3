@@ -1,10 +1,6 @@
 "use client";
 
 import { type CSSProperties, useEffect, useRef, useState } from "react";
-/* ⚠️ THE STYLES ARE STEP 1's, AND STAY IN ITS MODULE. The placer was lifted out
-   of `StartInvestigation` on 29 Oct 2026 so the profile recap could edit the
-   same answers with the same controls; moving the classes too would have meant
-   restating a hundred lines of chip, pill and undo recipes in a second module. */
 import styles from "./StartInvestigation.module.css";
 import { Chip } from "@/components/ui/Chip";
 import { IconButton } from "@/components/ui/IconButton";
@@ -37,31 +33,6 @@ const LOCATION_CHIPS = ["Whole face", "Neck", "Other"];
 /* how long the reset's undo stays — the `Snackbar`'s 4s hold */
 const UNDO_MS = 4000;
 
-/* ⚠️ AND ITS COPY ASKS ABOUT A PLACE, AS OF 8 Sep 2026. The field read
-   `Other – describe in detail` over the placeholder `Describe what's
-   happening` — a symptom question sitting under the face diagram, between the
-   location chips and the camera, whose answer the recap reads back under
-   `Where you noticed it`. Three surfaces, two subjects. The placeholder was the
-   odd one out and it predates this screen: 01 (Start investigation) and 03b
-   (Location) were separate Figma frames and this field came from the half that
-   asked what was happening. It asks where now — `Other, describe where` over
-   `Describe where you noticed it` — which is the question the chip beside it
-   is an answer to. ⚠️ **The dash went with it**: an en dash in a sentence the
-   app says is the one that survived the em-dash sweep, and a comma is what the
-   rest of the app's copy uses (the recap's own `Other, in your words` included).
-
-   ⚠️ THE "Other" DESCRIPTION IS AN ANSWER IN THE STORE NOW — `locationOther`,
-   changed 8 Sep 2026. It used to be written to a bespoke localStorage key of
-   its own, outside `InvestigationProvider`, on the reasoning that a free-text
-   note had nowhere else to live; the cost of that was invisible here and
-   obvious one screen later. Nothing except this file could read the key, so
-   `/investigation/profile` recapped a location answer with the typed part
-   silently missing — the user tapped `Other`, said where, and the recap showed
-   `Other` and nothing else. It is step 1's answer like every other, so it sits
-   with them and expires with them (`FLOW_KEYS`, 24 hours). It still gates
-   nothing: `isComplete` asks for a symptom with a place, and a place given only
-   in words is that symptom's `Other` chip plus this sentence. */
-
 /**
  * The symptom and place controls — the face card, the symptom chips, the safety
  * notice, the ↺ reset in the face card's corner and the typed `Other`
@@ -81,8 +52,6 @@ export function SymptomPlacer({
   const { answers, setAnswer } = useInvestigation();
   const reported = symptomsOf(answers);
 
-  /* the symptom whose places are being marked, or null between symptoms —
-     this screen's state, never an answer (see the note at the top) */
   const [placing, setPlacing] = useState<Symptom | null>(null);
   /* a new number each time a symptom opens, to shine the face's labels once */
   const [glint, setGlint] = useState(0);
@@ -90,17 +59,10 @@ export function SymptomPlacer({
 
   const placingAreas = placing ? (answers.start?.[placing] ?? []) : [];
 
-  /* ⚠️ THE NOTICE FIRES ON THE TAP, NOT ON THE FIRST PLACE. A symptom is only
-     stored once it has somewhere to be, but `Swelling` picked and not yet
-     placed is already something the reader has told us. */
   const showSafetyNotice = needsProfessionalNotice(
     placing ? [...reported, placing] : reported,
   );
 
-  /* ⚠️ NO `Save`, NO `Reset` — usability testing, 29 Oct 2026. Every tap is
-     already written as it happens, so a symptom is saved the moment it has a
-     place and unsaved by tapping it again. Picking another chip just moves
-     the placing to it; the one left behind keeps its places. */
   const tapSymptom = (s: Symptom) => {
     if (placing === s) {
       // the lit chip, tapped again: deselect it, places and all
@@ -113,21 +75,6 @@ export function SymptomPlacer({
     setGlint((n) => n + 1);
   };
 
-  /* ⚠️ `Reset all` — NOT IN FIGMA, asked for directly 14 Sep 2026. Clears
-     every symptom and every place and closes the one being placed. The typed
-     `Other` description is NOT a selection and stays; it has its own ✕. The
-     button fades out as it empties.
-     ⚠️ IT IS A ↺ IN THE FACE CARD'S TOP-RIGHT CORNER as of 30 Oct 2026, asked
-     for directly — it was a `Reset all` pill under the card. Its accessible
-     name keeps the words.
-     ⚠️ AND IT IS UNDOABLE, asked for directly the same day — a snapshot undo,
-     like `Remove` on a product: `start` and the symptom being placed are
-     captured before the clear and handed back.
-     ⚠️ THE UNDO SITS ON THE BUTTON, NOT IN THE APP'S `Snackbar` — asked for
-     directly: the page must not move. It is absolutely positioned on
-     the ↺, so it takes no layout, and focus goes to
-     its `Undo` with `preventScroll` rather than up to the chips, which
-     scrolled the screen. It holds for `UNDO_MS`, the snackbar's own window. */
   const [undo, setUndo] = useState<{
     id: number;
     start: typeof answers.start;
@@ -192,7 +139,6 @@ export function SymptomPlacer({
     });
   };
 
-
   /* whether the description is being typed — local, and closed to begin with,
      so a description restored from the store arrives confirmed */
   const [otherEditing, setOtherEditing] = useState(false);
@@ -232,13 +178,8 @@ export function SymptomPlacer({
     requestAnimationFrame(() => penRef.current?.focus());
   };
 
-
   return (
     <>
-      {/* ⚠️ THE SYMPTOM CHIPS SIT UNDER THE FACE, NOT UNDER THE QUESTION —
-          asked for directly 14 Sep 2026: the face card leads, and the chips
-          sit right above the face card that acts on them. `SafetyNotice` moves with them, because it reveals under the
-          chip grid (safety.ts). NOT IN FIGMA. */}
       <div
         ref={chipsRef}
         className={styles.chips}
@@ -271,12 +212,6 @@ export function SymptomPlacer({
           locationChips={LOCATION_CHIPS}
           disabled={placing === null}
           glint={glint}
-          /* ⚠️ THE SAVED SYMPTOMS, AS EDGE PILLS WITH LEADER LINES — NOT IN
-             FIGMA, asked for directly 14 Sep 2026; see `layoutCallouts` in
-             FaceDiagram.tsx. Hidden while a symptom is being placed, because
-             the face then shows that symptom's places alone. The symptom being
-             placed is left out rather than hidden with the rest, so its lines
-             mount on `Save` and draw in then, not unseen under the fade. */
           callouts={placing ? withAreas(answers.start, placing, []) : answers.start}
           calloutsHidden={placing !== null}
           corner={

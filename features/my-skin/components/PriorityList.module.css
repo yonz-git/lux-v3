@@ -1,8 +1,4 @@
-/* § 11's investigation-priority list. ⚠️ NOT IN FIGMA.
-
-   One frosted card holding the rows, rather than a card per product: the list
-   is a RANKING, and a ranking read as separate cards loses the one thing it is
-   trying to say. `Disclosure` owns the hairline between rows. */
+/* § 11's investigation-priority list. */
 
 .list {
   display: flex;

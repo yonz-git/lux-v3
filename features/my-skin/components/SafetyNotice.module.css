@@ -9,43 +9,25 @@
    jumping, which is the whole of "nothing snaps" at this size.
 
    `.live`  the persistent live region (the component doc says why it persists).
-            Persisting is also what makes the motion possible: a conditionally
-            MOUNTED element has no previous state to transition FROM, so the
-            transition lives here and the mounting child flips it via `:has()`.
-            No `@starting-style` — one less thing to be unsupported — and no
-            enter/exit orchestration in React.
+   Persisting is also what makes the motion possible: a conditionally
+   MOUNTED element has no previous state to transition FROM, so the
+   transition lives here and the mounting child flips it via `:has()`.
+   No `@starting-style` — one less thing to be unsupported — and no
+   enter/exit orchestration in React.
    `.clip`  the grid row that is actually measured, and the only element that
-            may carry `overflow: hidden`.
+   may carry `overflow: hidden`.
    `.notice` the card itself, which must NOT be the grid item: `min-height: 0`
-            and a clipped overflow belong on a wrapper, not on the box whose
-            padding and border are the design.
-
-   ⚠️ CLIPPING IS SAFE HERE ONLY BECAUSE `--shadow-frosted-row` IS AN `inset`
-   SHADOW — it paints inside the border box, so `overflow: hidden` cannot cut
-   it. Check that again before reusing this wrapper on a card with an OUTER
-   shadow; that one would be clipped for good, not just during the transition.
-
-   ⚠️ NOT `display: contents` on `.live`: browsers have dropped such elements
-   from the accessibility tree, which is the one thing this wrapper exists to be
-   in. It also could not hold the grid. */
+   and a clipped overflow belong on a wrapper, not on the box whose
+   padding and border are the design. */
 .live {
   display: grid;
   grid-template-rows: 0fr;
   /* `base` 200ms, the same token `.reveal-quick` runs on, so the box finishes
      opening exactly as the text finishes fading — one gesture, not two. It is
-     also the duration the chip that triggered it uses.
-     ⚠️ ON THE BASE RULE NOW, SO CLOSING ANIMATES TOO — changed 13 Sep 2026. It
-     used to sit on the open state only, because React removed the card in the
-     same frame and a close transition animated an empty box. The component
-     holds the card mounted until this transition ends now, so the space closes
-     WITH the card in it and the face diagram glides back up rather than
-     jumping. Being a transition rather than a keyframe, re-ticking mid-close
-     reverses from wherever it has got to. */
+     also the duration the chip that triggered it uses. */
   transition: grid-template-rows var(--duration-base) var(--ease-standard);
 }
 
-/* ⚠️ `data-open`, NOT `:has(> .clip)` — the card is still in the DOM while it
-   closes, so its presence no longer says whether the block is open. */
 .live[data-open="true"] {
   grid-template-rows: 1fr;
 }
@@ -66,10 +48,7 @@
   /* 20 — the WITHIN-question gap. The notice answers the symptom chips directly
      above it, so it takes the tighter of the two intervals
      `StartInvestigation.module.css` establishes, not the 40/48 that separates
-     the screen's two merged questions.
-     ⚠️ ON `.clip` AS PADDING, NOT ON `.notice` AS MARGIN — inside the clipped
-     box the gap grows with the reveal. Left outside it, 20px of empty space
-     would appear instantly and the card would then open beneath it. */
+     the screen's two merged questions. */
   padding-top: var(--space-xl);
 }
 
@@ -95,11 +74,6 @@
   color: var(--color-text-secondary);
 }
 
-/* ⚠️ `text/primary`, WHERE THE OLD DISCLAIMER USED `text/secondary`. That block
-   was boilerplate the reader was meant to skim; this one is the only sentence
-   on the screen that might send someone elsewhere, and muted body copy is how a
-   message gets read as fine print. The label stays secondary, so the hierarchy
-   still reads. */
 .body {
   color: var(--color-text-primary);
 }
@@ -112,15 +86,6 @@
   }
 }
 
-/* ⚠️ THE NOTICE TAKES THE SYMPTOM COLUMN'S WIDTH FROM 1024 — 1 Nov 2026,
-   asked for directly ("use these elements in one width"). It hugged a 52ch
-   measure inside the 640 column, so it was neither the chips' and face
-   card's 480 nor the `Other` field's 640. It now fills
-   `--width-symptom-placer` on the face card's centre line, like every block
-   of step 1's symptom column; at 480 the line is already short enough to
-   read, so the 52ch cap went with the hug. `width: 100%` because auto inline
-   margins on a flex item override its stretch (`.diagram`,
-   StartInvestigation.module.css). */
 @media (min-width: 1024px) {
   .live {
     width: 100%;

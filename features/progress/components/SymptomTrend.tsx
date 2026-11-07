@@ -16,41 +16,6 @@ import {
 } from "@/features/progress/progress";
 import { formatShort, fromIso, sameDay, toIso } from "@/lib/date";
 
-/**
- * The symptom trend — TREND C, lux-v3 (1 Oct 2026), picked on the design canvas
- * ("Trend C — Bands and events") with two asks: every day labelled, and the
- * mild / moderate / severe bands equally spaced.
- *
- * An overline, a one-line reading ("From moderate to mild in 10 days"), then
- * the chart: three equal bands named down the left, a 2px indigo line through
- * the check-ins of the last fortnight ending on a ringed dot, a dashed line
- * and a pill where a product started, and every day of the window under it,
- * today in indigo. `progress.ts` owns the bands, the window, the reading and
- * the events; this file only draws them.
- *
- * ⚠️ v2's TEAL MESH, WHITE INK — the card was the 30% panel with dark ink
- * for the first build, and took v2's background back the same day, asked for
- * directly ("keep the design and use the bg color of v2"). The layout is
- * Trend C's; the fill, the grain and the white ink are v2's. See the block at
- * the end of the module.
- *
- * ⚠️ X IS THE CALENDAR, NOT THE CHECK-IN COUNT. Each of the 14 days has its
- * place whether or not it holds a check-in, so a gap in the record is a gap on
- * the chart, and the line joins the days that do. Every day is its number;
- * the months the window spans are named at the left ("Sep–Oct").
- *
- * ⚠️ THE LINE STRETCHES, THE DOT MUST NOT. The plot is an SVG with
- * `preserveAspectRatio="none"` and a non-scaling stroke so it fills any card
- * width; the end dot, the event lines and every label are positioned elements,
- * so they stay round and sharp at every width.
- *
- * ⚠️ THE OVERLINE SAYS "Symptoms", NOT A SYMPTOM. The board read "Redness", but
- * a check-in records one severity for the skin as a whole; naming one symptom
- * would claim a series LUX does not keep.
- *
- * The chart is hidden from assistive tech; the reading states the trend and a
- * visually-hidden list gives every check-in and every product start.
- */
 export function SymptomTrend({
   checkIns,
   today,
@@ -64,8 +29,7 @@ export function SymptomTrend({
   products: readonly { name: string; addedOn: string }[];
   /**
    * Which day of the investigation today is — `Day 16`, a quiet pill at the
-   * title's right end. Asked for directly 15 Sep 2026 ("the day 16 pill
-   * should be on top right of the trend graph"); kept through the redesign.
+   * title's right end.
    */
   day?: number;
   className?: string;

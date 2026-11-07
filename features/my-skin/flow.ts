@@ -1,20 +1,4 @@
-/**
- * The investigation flow.
- *
- * ⚠️ THE FLOW IS 5 STEPS, NOT 8. It was 8 until Skin type (02a) and Skin
- * tendencies (02b) were combined onto one screen at `skin-type`, Observable
- * symptoms (03a) was dropped entirely, and Start investigation (01) and
- * Location (03b) were combined onto one screen at `start` — all three
- * prototype-only changes with no matching Figma frame yet (see the doc
- * comments on `components/SkinType.tsx` and `components/StartInvestigation.tsx`).
- * Products still sits between Timing and Investigating and shows a progress
- * track, so it keeps its own step — it is just ONE screen now rather than six
- * (see the step itself). Verified: the track fill on 01 is 1/5, not 1/8.
- *
- * A screen belongs to this flow if and only if it carries BOTH a progress track
- * AND `Save & exit` — those two together mean "resumable step". Hub screens
- * reached from the bottom nav (Check, Products, Progress) get neither.
- */
+/** The investigation flow. */
 import { symptomsOf, type Answers } from "@/lib/store/answers";
 
 export const TOTAL_STEPS = 5;
@@ -33,25 +17,7 @@ export type Step = {
   href: string;
   /** Figma frame ids, so the next person can diff code against the design. */
   figma: { mobile: string; desktop: string };
-  /**
-   * The screen's name, and its `<h1>`.
-   *
-   * ⚠️ EVERY SCREEN NEEDS ONE. Most of these screens pose their question inside
-   * a chat bubble, which is a div — so before this there was no heading on any
-   * flow screen at all, and a screen-reader user landing on one got no page
-   * title and nothing to navigate by (WCAG 1.3.1 / 2.4.6). The four screens that
-   * show a title visibly render this same string; the rest render it
-   * visually-hidden. One source of truth either way, and it lives on the step
-   * for the same reason `isComplete` does — a new screen cannot forget it.
-   *
-   * These are the Figma frame names, not new copy — with ONE exception. Step 1
-   * is titled `Create skin profile`, not the frame's `Start investigation`: the
-   * flow is now a nav section called `My skin`, and every link into it in the
-   * app says `Create skin profile`, which is the label `Check — no profile`
-   * (606:2183) already gives that exact destination. Naming the section, the
-   * three CTAs and the screen four different things for one place was the
-   * confusion; the frame name is the odd one out and Figma catches up.
-   */
+  /** The screen's name, and its `<h1>`. */
   title: string;
   /**
    * Whether this step has been answered. Drives the Continue button: it stays
@@ -62,56 +28,15 @@ export type Step = {
    * user does the selecting.
    */
   isComplete: (a: Answers) => boolean;
-  /**
-   * Where back and Continue go when the array neighbour is the wrong answer.
-   *
-   * ⚠️ PRODUCTS USED TO BE A FORK AND IS A LINE AGAIN. "Add product" opened a
-   * method sheet whose search and scan branches rejoined at `Product added`,
-   * across six routed screens sharing one track position. The whole add flow
-   * now happens inside the tray on one screen, so nothing forks and only
-   * `products` still names its own `next` — the last step in the array has no
-   * neighbour to fall through to.
-   */
+  /** Where back and Continue go when the array neighbour is the wrong answer. */
   back?: string;
   next?: string;
 };
 
 export const STEPS: Step[] = [
   // Start (01, 476:2542/476:2670) and Location (03b, 476:2802/476:2934)
-  // combined onto one screen — see components/StartInvestigation.tsx. Continue
-  // needs both answers, which used to gate two separate steps.
-  //
-  // ⚠️ SELFIE CAPTURE (03b, 487:834/490:1041) IS NO LONGER A STEP AT ALL. It
-  // was listed here at step 1 — sharing this screen's number, so it never moved
-  // the track — because it was a routed screen with a track to move. It is the
-  // tray overlay `components/SelfieSheet.tsx` now, opened by "Take a photo"
-  // without leaving the page, so it has no route, no track and nothing for this
-  // file to own. Frame ids are kept on the component.
-  //
-  // ⚠️ THIS IS ALSO THE `My skin` NAV LANDING. It keeps its back chevron, its
-  // track and its `Save & exit` — it is a flow step that the nav happens to
-  // point at, not a hub, and the "no back chevron on a hub landing" rule does
-  // not reach it. See `components/BottomNav.tsx`.
-  // ⚠️ A SYMPTOM WITH A PLACE IS THE WHOLE ANSWER, AS OF 14 Sep 2026. Step 1
-  // asks for the places one symptom at a time and stores them together
-  // (`start`, a map — see `lib/store/answers.ts`), and no symptom is ever
-  // stored without a place. So "at least one symptom" is the rule, and the
-  // second half it used to spell out — a place tapped, or one typed — holds by
-  // construction whenever the first does.
-  //
-  // ⚠️ A TYPED DESCRIPTION NO LONGER UNLOCKS CONTINUE ON ITS OWN, which
-  // reverses the 8 Sep note that stood here ("a typed location is a
-  // location"). That was right while the places were one answer for the whole
-  // screen. A place belongs to a symptom now, and a place with no pill is that
-  // symptom's `Other` chip: the chip carries the answer and the sentence under
-  // the diagram describes it. The instruction under the question says to mark
-  // places per symptom, and `Other` is one of them.
-  //
-  // ⚠️ IT IS STILL NOT STEP 3's `otherIsFilled` RULE, AND MUST NOT BECOME IT.
-  // There, a ticked "Other" REQUIRES its text, because the row and its field
-  // are one unit and the field is always visible. Here the `Other` chip and the
-  // field are independent controls and the field is collapsed behind a button,
-  // so an `Other` place with no words is still a complete answer.
+// combined onto one screen — see components/StartInvestigation.tsx. Continue
+// needs both answers, which used to gate two separate steps.
   { id: "start",      step: 1, href: "/investigation/start",      title: "Create skin profile", figma: { mobile: "476:2542", desktop: "476:2670" }, isComplete: (a) => symptomsOf(a).length > 0, next: "/investigation/skin-type" },
   // Skin type (02a, 484:722/489:902) and Skin tendencies (02b, 485:755/489:960)
   // combined onto one screen — see components/SkinType.tsx. Continue needs
@@ -121,76 +46,8 @@ export const STEPS: Step[] = [
   // prefer" and carries a "Skip this question" link — so Continue is available
   // from the start. The only requirement is that a ticked "Other" is filled in.
   { id: "conditions", step: 3, href: "/investigation/conditions", title: "Known conditions", figma: { mobile: "476:2566", desktop: "476:2695" }, isComplete: (a) => otherIsFilled(a.conditions, a.conditionsOther) },
-  // ⚠️ TIMING CONTINUES TO `/check/new`, NOT TO STEP 5 — decided 6 Sep 2026, and
-  // it is the first move of the CHECK/analysis merge rather than a reroute.
-  // `/investigation/products` and `/check/new` were two screens doing the same
-  // job — search a catalogue, build a list of your products — in two sections
-  // with two vocabularies, which is the "analysis, check and investigation
-  // should be one thing" problem in its most concrete form. The flow now hands
-  // off to the shared builder.
-  //
-  // ⚠️ AND STEP 5 IS STILL A STEP, STILL 5/5, AND STILL REACHABLE. It is not
-  // deleted: the Products tab links to it and `TOTAL_STEPS` is unchanged. It is
-  // simply no longer the only way through, while the merge is decided.
-  //
-  // ⚠️ THE OPEN PROBLEM, WRITTEN HERE BECAUSE IT IS INVISIBLE FROM THE ROUTE:
-  // `/check/new` collects PRODUCTS, not DURATIONS. Step 5 asks "how long have
-  // you used this?" once per product, and that answer is the entire mechanism
-  // of the analysis — `bucketFor` turns it into a group and `deriveEvidence`
-  // compares that against step 4's flare date. A basket built at `/check/new`
-  // has no timeline, so the analysis can only refuse. See the note in
-  // `features/my-skin/analysis.ts` and "the naming" in `docs/decisions.md`:
-  // the builder needs the duration question before this hand-off is finished.
-  // ⚠️ AND AS OF 7 SEP 2026 IT CONTINUES TO `/investigation/profile`, NOT
-  // STRAIGHT TO `/check/new`. The recap of what steps 1-4 collected now sits
-  // between them; its "Add products" button carries on to step 5. Everything
-  // above still stands — `/check/new` remains the shared builder and is still
-  // reachable from CHECK — but the flow no longer LEAVES the investigation to
-  // reach a products list.
-  //
-  // ⚠️ THIS ALSO CLOSES THE OPEN PROBLEM WRITTEN DIRECTLY ABOVE, WHICH IS THE
-  // REAL ARGUMENT FOR IT. The note says a basket built at `/check/new` has no
-  // timeline, because that screen collects PRODUCTS but not DURATIONS, and the
-  // duration is the entire mechanism of the analysis — so the hand-off left
-  // `deriveEvidence` with nothing to compare against step 4's flare date and
-  // the analysis could only refuse. Routing through the recap to step 5 puts
-  // the duration question back on the path. The merge is not reverted; the
-  // shortcut past the duration is.
-  //
-  // ⚠️ THE RECAP IS NOT A STEP AND MUST NOT BE ADDED TO THIS ARRAY. No progress
-  // track, no `Save & exit` — the rule at the top of this file — so
-  // `TOTAL_STEPS` is still 5 and the track still reads 4/5 here and 5/5 on
-  // products. See `features/my-skin/profile.ts`.
   { id: "timing",     step: 4, href: "/investigation/timing",     title: "Timing", figma: { mobile: "488:851",  desktop: "491:1031" }, isComplete: (a) => Boolean(a.timing?.date && a.timing?.status), next: "/investigation/profile" },
 
-  // ---- Step 5: PRODUCTS ---------------------------------------------------
-  // ⚠️ ONE SCREEN NOW, NOT SIX. `Add products intro`, `Long-term products` and
-  // the four routed add-flow screens (`search`, `confirm`, `scan`, `match`)
-  // shared this one track position; all six are gone. The briefing merged into
-  // the list screen and the entire add flow — method, search-or-scan, confirm,
-  // duration — plays out inside `AddProductMethodSheet` without ever leaving
-  // the page. `Product added` went with them: it existed to announce a
-  // navigation that no longer happens.
-  //
-  // Complete on arrival rather than gating Continue on a product: the step is
-  // genuinely optional and the screen says so ("None — skip to next"). Same
-  // call 02c makes, and it belongs here rather than in the screen.
-  //
-  // ⚠️ CONTINUE ENDS THE FLOW AT THE ANALYSIS NOW, NOT AT THE PRODUCTS HUB.
-  // It pointed at `/products` while the analysis had no route — the note here
-  // said "the real destination once INVESTIGATION lands is 05 — Investigating",
-  // and it has landed: `/investigation/analysis`, which is ONE screen (it was
-  // three). See `features/my-skin/analysis.ts`.
-  //
-  // ⚠️ AND THE ANALYSIS IS NOT A STEP. It carries no progress track and no
-  // `Save & exit`, so by the rule at the top of this file it is not in `STEPS`
-  // and `TOTAL_STEPS` is still 5. The flow COLLECTS; the analysis REPORTS on
-  // what it collected.
-  //
-  // ⚠️ IT NAMES ITS OWN `back` NOW, AND IT HAS TO. The array neighbour is
-  // `timing`, but the screen the user actually arrived from is the recap at
-  // `/investigation/profile` — so without this, Back skipped a screen and
-  // returned to a question the user had already answered twice over.
   { id: "products", step: 5, href: "/investigation/products", title: "Your products", figma: { mobile: "574:1342", desktop: "582:1612" }, isComplete: () => true, back: "/investigation/profile", next: "/investigation/analysis" },
 ];
 

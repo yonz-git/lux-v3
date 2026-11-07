@@ -1,46 +1,7 @@
-/* `/investigation/analysis`. ⚠️ NOT IN FIGMA — page `06. Screen Designs` has no
-   analysis frames outside CHECK, so every value here is decided in the
-   prototype and listed in `docs/archive/figma-catchup.md`.
-
-   ⚠️ THE SCREEN MIXES BOTH SURFACE SYSTEMS, DELIBERATELY, AND `/check/results`
-   IS THE PRECEDENT. The verdict is System B — a sage DataCard, because it is a
-   READOUT and it is the one thing that has to be legible at arm's length. The
-   hypothesis cards below stay System A, frosted light, because they are the
-   detail you open. The CHECK handoff already permits exactly this: "a sage card
-   inside a light screen is correct and matches Check results".
-
-   ⚠️ COLOUR IS A FILL OR A STRIPE HERE, NEVER A TEXT COLOUR, AND THAT IS
-   MEASURED RATHER THAN ASSUMED. Composited over the real surfaces:
-
-     on surface/data (the sage card, over the canvas range)
-       feedback/warning   1.24 – 1.42     unusable as text
-       feedback/success   1.84 – 2.10     unusable as text
-       bg/brand           5.57 – 6.38     fine
-       text/on-data-muted 4.75 – 5.44     fine
-
-     on surface/frost-light (the light cards, over the canvas range)
-       feedback/warning   2.03 – 2.36     unusable as text
-       feedback/success   3.00 – 3.50     fails AA for 13px; OK as a 3px stripe
-       bg/brand           9.11 – 10.63    fine
-
-   So the warm and the green appear as a STRIPE or a FILL and the words beside
-   them are always in a token that passes. This is also why the confidence pill
-   in `HypothesisCard.module.css` carries its own ink: white on
-   `feedback/warning` is 2.65 and is the failure AGENTS.md already records
-   against `CompatCard`'s band pills. Do not repeat it here.
-
-   And per non-negotiable 7 every colour is paired with a word regardless —
-   "Ruled out by what you tolerate", "Stronger pattern" — so nothing on this
-   screen depends on seeing the colour at all. */
+/* `/investigation/analysis`. */
 
 /* ---- the verdict ------------------------------------------------------- */
 
-/* ⚠️ THE SAGE IS THE EMPHASIS — THE CARD DOES NOT NEED AN ACCENT STRIPE AS WELL.
-   It carried one per outcome at first, in `feedback/warning`; measured against
-   the sage composite that stripe is 1.24–1.42 and effectively invisible, which
-   is the tell that the colour was decorative rather than doing work. One sage
-   card on a screen of light frosted ones is already the loudest thing on it.
-   The per-outcome signal is the confidence band on the cards below. */
 .verdict {
   margin-bottom: var(--space-2xl);
 }
@@ -112,9 +73,6 @@
   backdrop-filter: blur(var(--blur-card));
 }
 
-/* ⚠️ `text/secondary`, NOT `feedback/success`. The green is 3.00–3.50 on this
-   surface — enough for the 3px stripe beside it, not enough for 13px type. The
-   stripe carries the colour, the words carry the meaning. */
 .clearedTitle {
   margin: 0;
   color: var(--color-text-secondary);
@@ -162,14 +120,6 @@
   color: var(--color-text-secondary);
 }
 
-/* ⚠️ `text/secondary`, NOT `text/muted`, AND THE TOKEN'S OWN NOTE SAYS WHY.
-   The block above `--color-text-muted` in globals.css records that the value is
-   measured against frosted rows and cards and that "a new screen that sets
-   muted text straight on the gradient needs a darker value, not this one".
-   These two lines are exactly that screen — they sit on bare canvas, low on a
-   long page where the gradient is at its darkest — and measured 3.62:1
-   (fineprint) and 4.02:1 against the composited backdrop at 440. At
-   `text/secondary` they measure above 4.5:1 on the same pixels. */
 .fineprint {
   margin: 0;
   color: var(--color-text-secondary);

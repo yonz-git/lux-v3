@@ -16,20 +16,6 @@
   --bubble-enter-delay: 160ms;
 }
 
-/* ⚠️ NOT IN FIGMA — the briefing bubbles span the whole column in the comps,
-   which is right at 392 and wrong inside the 920 desktop card: three full-width
-   bubbles under a centred title read as three paragraphs of page copy, not as
-   someone talking.
-
-   EACH BUBBLE HUGS ITS OWN TEXT, capped at 70% of the column. A fixed 70% is
-   what a full-width bubble already is, only narrower — the one-line first
-   bubble still ended in half a bubble of empty fill, which is exactly what
-   makes a bubble look mis-sized. `fit-content` sizes to the text and the cap
-   only bites on the two paragraphs, which is where the ragged right edge the
-   eye reads as speech comes from.
-
-   MOBILE IS UNTOUCHED — 70% of 392 is 274, which re-wraps the second bubble
-   from three lines to five for no gain. */
 @media (min-width: 1024px) {
   .briefBubble {
     --bubble-width: fit-content;
@@ -117,10 +103,6 @@
   }
 }
 
-/* ⚠️ NOT IN FIGMA — step 5's `Add product` is the secondary `Button` at
-   `size="md"` (48) with a plus, hugging its label and centred, asked for
-   directly 13 Sep 2026. `.addWrap` keeps its spacing; this only centres. The
-   height and padding that used to follow here are `Button`'s own now. */
 .addCentre {
   display: flex;
   justify-content: center;

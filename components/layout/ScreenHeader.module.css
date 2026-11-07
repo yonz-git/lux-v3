@@ -9,7 +9,3 @@
   min-height: var(--size-control-sm);
 }
 
-/* ⚠️ THE BACK BUTTON IS `IconButton size="md"` (glass, 48) AS OF 31 Oct 2026,
-   asked for directly ("buttons that use the same design should be using
-   reusable components with variants"). Its circle was written out here and
-   again in `HubScreen`; the copies went. */

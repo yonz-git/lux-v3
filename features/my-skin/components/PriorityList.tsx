@@ -8,18 +8,6 @@ import type { PriorityEntry } from "@/features/my-skin/analysis";
 /**
  * § 11 — "If the user cannot add it, offer INVESTIGATE ONE PRODUCT AT A TIME.
  * Show products ranked by INVESTIGATION PRIORITY, not medical risk."
- *
- * ⚠️ THE RANKING IS ABOUT WHAT YOU WOULD LEARN, NOT ABOUT DANGER, AND THE
- * HEADER SAYS SO. "Investigation priority" is on the brief's approved
- * vocabulary list and "highest-risk product" is explicitly on the forbidden
- * one — the difference is not politeness. Ranking by risk would be the app
- * making a clinical judgement it is not qualified to make; ranking by how much
- * a pause would tell you is a statement about the EVIDENCE, which is the only
- * thing LUX can speak to. Every card therefore leads with why it ranks where it
- * does, and the ordinal is a position in a queue rather than a score.
- *
- * ⚠️ NOT IN FIGMA — no analysis frames exist on page `06. Screen Designs`. The
- * card is `ProductAccordionCard`'s recipe by way of `Disclosure`.
  */
 export function PriorityList({ entries }: { entries: PriorityEntry[] }) {
   return (

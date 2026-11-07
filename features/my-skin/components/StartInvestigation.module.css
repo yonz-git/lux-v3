@@ -1,60 +1,15 @@
-/* 01 + 03b combined — Start investigation and Location, on the canvas board
-   (lux-v3, 1 Oct 2026): the question panel (question, instruction, symptom
-   chips, safety notice), the face card, the save pill under it, then the typed
-   description and `Take a photo`, 24 apart. The panel's own rules are
-   QuestionPanel.module.css.
-   ⚠️ THE DISCLAIMER CARD THAT OPENED THIS STACK IS GONE — cut in `f3edc75`
-   while 01 and 03b were merged. Its recipe was not lost: `SafetyNotice` reuses
-   it for the conditional notice under the chip grid. */
-
-/* ⚠️ v2's FACE SECTION, RESTORED 1 Oct 2026 — asked for directly ("the face
-   diagram should have kept the old system"). The question and its
-   instruction on the page, the face card, the rose symptom chips under it,
-   the safety notice, then v2's segmented `Save` / `Reset` / `Reset all`
-   pill. The rules below are v2's, copied unchanged; the canvas board's
-   question panel over the chips is gone from this step. */
-
-/* ⚠️ CENTRED AT EVERY WIDTH, asked for directly 13 Sep 2026 — it was centred
-   on desktop only, which left the mobile title flush left over a centred chip
-   grid. */
 .question {
-  /* 20 above and below — 1 Nov 2026, asked for directly from `/tweak` */
   margin-block: var(--space-xl);
   color: var(--color-text-primary);
   text-align: center;
 }
 
-/* ⚠️ NOT IN FIGMA — THE STACK IS TWO-LEVEL NOW, NOT ONE FLAT GAP.
-   Figma mobile 476:2542 spaces the top-level blocks 60 apart (off the spacing
-   scale there too) and desktop 476:2670 uses 48. Both were applied as ONE gap
-   to every block, which put the stack's WIDEST interval INSIDE a single
-   question — the title and its own chips — and its NARROWEST, 20, at the
-   boundary BETWEEN the two questions this screen merges. Measured on the
-   rendered page: 60 / 20 / 60 / 16 mobile, 48 / 20 / 48 / 16 desktop. Proximity
-   was telling the user that the symptom chips and the face diagram were one
-   group and that the title belonged to nothing.
-   Two levels instead, so the merge reads as the two questions it is:
-     WITHIN a question   20
-     BETWEEN questions   40 mobile / 48 desktop
-   Desktop keeps the comp's 48 and mobile drops to 40 — more air where there is
-   more room, which is the way round the old pair had backwards. Desktop's total
-   inter-block height is unchanged at 132, so the card does not move; mobile
-   loses 40 of the 92px by which the screen overflowed its own 957 canvas. */
 .chips {
-  /* ⚠️ 16 UNDER LUX's BUBBLE — 1 Nov 2026, asked for directly from `/tweak`.
-     It was 32 from 30 Oct 2026, when the chips came to lead the screen */
   margin-top: var(--space-lg);
   display: flex;
   flex-wrap: wrap;
   justify-content: center;
-  /* ⚠️ 4, HALF THE 8 BEFORE IT — 30 Oct 2026, asked for directly ("half the
-     gap size between pills"); it was 10 until the same day */
   gap: var(--space-pill-gap);
-  /* ⚠️ NEVER WIDER THAN THE FACE CARD UNDER IT — asked for directly the same
-     day ("fit all the pills within this width"). The card is the column on a
-     phone and is capped at 480 from 1024 (`.diagram` below), so the row
-     takes the same cap and wraps inside it rather than running past the
-     card's edges. */
   width: 100%;
   margin-inline: auto;
 }
@@ -65,45 +20,15 @@
   }
 }
 
-/* ⚠️ ONE WIDTH FOR EVERY SYMPTOM — 1 Nov 2026, asked for directly from
-   `/tweak`: the chips are `Chip size="small"` (32 tall, Caption) and all 72
-   wide, so the two rows line up as a grid instead of ragged label widths.
-   The label is centred in the pill, so the longest (`Breakouts`) still sits
-   inside it. Only this row: the face's `Whole face` / `Neck` / `Other` are
-   `Chip`s too and keep their own size. */
 .chips button {
   width: var(--width-symptom-chip);
 }
 
-/* ⚠️ NOT IN FIGMA — A PICKED SYMPTOM IS `bg/symptom` (#d3858a), NOT INDIGO,
-   asked for directly 14 Sep 2026: the colour the profile's symptom pills
-   already wear on PROGRESS and the recap, so a symptom looks like a symptom
-   wherever it appears. White label, as those pills have. The indigo stays for
-   what is selected on the face. `Chip`'s diagonal shade (`::before`) runs to
-   the same rose deepened 20% toward `text/primary` rather than to indigo.
-   ⚠️ WHITE ON IT IS THE PROFILE PILLS' KNOWN SHORTFALL, 2.8:1 — the same pair,
-   not a new one (see `bg/symptom` in globals.css); the app ink would be 4.9:1.
-   Written against `.chips button[data-selected="true"]` (0,2,1) to outrank
-   `Chip`'s `.chip[data-selected="true"]` (0,2,0), and on the hover rules so
-   `Chip`'s indigo hover border does not come back. Only this screen's symptom
-   row: every other selected `Chip` stays indigo. */
 .chips button[data-selected="true"] {
   background: var(--color-bg-symptom);
   color: var(--color-text-on-brand);
-  /* ⚠️ NO BORDER AT ALL, asked for directly 14 Sep 2026 — not a transparent
-     one. With the hairline merely transparent, `Chip`'s own indigo
-     `border-color` showed through whenever this rule's colour was off, and an
-     inset shadow is clipped to the PADDING box, so a transparent 1px ring would
-     sit outside the light below as a darker edge. The width goes to 0 and the
-     padding takes the pixel back (16 + 1), so the pill keeps `Chip`'s exact
-     box: `min-height` holds the 40 and the width is unchanged. */
   border-width: 0;
   padding: 0 calc(var(--space-lg) + var(--border-width-hairline));
-  /* ⚠️ A SOFT INNER LIGHT, tuned in DevTools and supplied directly the same
-     day: white at 38% (`#ffffff61`), 1px down and blurred 4px. It replaced a
-     crisp `inset 0 1px 0` edge. It is `--shadow-pill-light` (tokens.css) since
-     31 Oct 2026, the indigo pills' light too. The hover rules below restate it, since
-     `Chip`'s hover shadow outranks this. */
   box-shadow: var(--shadow-pill-light);
 }
 
@@ -119,24 +44,11 @@
   );
 }
 
-/* ⚠️ NO HOVER ON THE SYMPTOM CHIPS — asked for directly 1 Oct 2026 ("remove
-   this hover effect"). `Chip`'s hover (0,3,0) brightened the glass over this
-   file's rose (0,2,1), so a picked symptom under the pointer turned white with
-   only its rose shade left at the right edge. Both states hold their resting
-   look under the pointer now: the rose stays rose, the frost stays frost and
-   its teal hairline stays teal. (0,4,1). */
 .chips button[data-selected="true"]:hover:not(:disabled) {
   background: var(--color-bg-symptom);
   box-shadow: var(--shadow-pill-light);
 }
 
-/* ⚠️ A MARKED SYMPTOM THAT IS NOT THE ONE BEING PLACED IS MUTED — 29 Oct
-   2026, usability testing: with `Save` gone nothing said which symptom the
-   face was taking taps for. The lit chip alone keeps the full `bg/symptom`
-   fill; the others step back to a tint of it under rose ink and a rose ring,
-   still plainly chosen. `Chip` sets `data-muted` (Chip.tsx). (0,3,1) over the
-   fill above, and the hover rule restated at (0,5,1) because the one above
-   would put the full rose back under the pointer. */
 .chips button[data-selected="true"][data-muted] {
   background: color-mix(in srgb, var(--color-bg-symptom) 16%, #dbeded57);
   color: color-mix(in srgb, var(--color-bg-symptom) 75%, var(--color-text-primary));
@@ -152,17 +64,6 @@
   box-shadow: inset 0 0 0 1px color-mix(in srgb, var(--color-bg-symptom) 45%, transparent);
 }
 
-/* ⚠️ AN UNSELECTED SYMPTOM IS FROSTED, asked for directly 14 Sep 2026: the
-   nav's `#dbeded` at 34% (`#dbeded57`) over a `blur/sm` backdrop blur, where
-   `Chip` draws an opaque `bg/frost-light-muted`. NOT IN FIGMA. (0,2,1) over
-   `.chip` (0,1,0); the hairline and the hover rose stay `Chip`'s and this
-   file's. The reduced-transparency fallback below is the opaque fill it
-   replaced. */
-/* ⚠️ AND IT CARRIES A SLIGHT SHADE, asked for directly 15 Sep 2026, "to match
-   the selected ones": the selected pill's 135deg darkening (`::before` above),
-   at half its strength — ink 10% where the selected shade mixes 20%. A
-   `background-image` on the pill rather than the fading `::before`, so it
-   drops out on select while the rose shade fades in over it. */
 .chips button[data-selected="false"] {
   --chip-rest-shade: linear-gradient(
     135deg,
@@ -170,14 +71,7 @@
     color-mix(in srgb, var(--color-text-primary) 10%, transparent) 100%
   );
   background: var(--chip-rest-shade), #dbeded57;
-  /* ⚠️ THE HAIRLINE IS `surface/data-deep`'s TEAL, asked for directly 15 Sep
-     2026 from a supplied swatch, where `Chip` draws `border/chip`'s grey-green.
-     The hover rose below still replaces it. */
   --chip-edge: var(--color-surface-data-deep);
-  /* ⚠️ `border-width/thin` (1.5), NOT THE 1px HAIRLINE — 4 Oct 2026, asked
-     for directly. 1.3 was tried first and drew exactly like 1: a border is
-     snapped DOWN to whole device pixels, and 1.3 is 2.6 at 2x, so 2. 1.5 is
-     3. These chips only; every other `Chip` keeps the hairline. */
   border-width: var(--border-width-thin);
   -webkit-backdrop-filter: blur(var(--blur-sm));
   backdrop-filter: blur(var(--blur-sm));
@@ -191,8 +85,6 @@
   }
 }
 
-/* the unpicked chip's hover is gone too (see the note above) — it previewed
-   the rose in its hairline from 14 Sep 2026 */
 .chips button[data-selected="false"]:hover:not(:disabled) {
   background: var(--chip-rest-shade), #dbeded57;
   --chip-edge: var(--color-surface-data-deep);
@@ -208,23 +100,10 @@
   }
 }
 
-/* ⚠️ NOT IN FIGMA — THE INSTRUCTION UNDER THE QUESTION, asked for directly
-   14 Sep 2026. It says how the screen works now that places are marked one
-   symptom at a time (StartInvestigation.tsx). 12 under the title, the
-   title-to-body step every empty state already takes; the face card keeps 20
-   below it, so title, instruction, face and chips still read as one question. */
-/* the orb and its bubble — see the note in StartInvestigation.tsx. The row
-   hugs the face card's left edge; the bubble's tail corner (top left) sits
-   level with the orb's middle, so the bubble reads as coming from it. */
 .coach {
-  /* 20 under the question's own 20 — 1 Nov 2026, asked for directly from
-     `/tweak`; 16 until then */
   margin: var(--space-xl) 0 0;
   display: flex;
   align-items: flex-start;
-  /* ⚠️ CENTRED AS A PAIR, 4 Oct 2026, asked for directly ("center the
-     bubble"): the orb and its bubble sit together in the middle of the
-     column, under the centred question, rather than hugging the left */
   justify-content: center;
   gap: var(--space-sm);
 }
@@ -245,14 +124,7 @@
   --bubble-enter-delay: 320ms;
 }
 
-
-/* The two "tell us more" controls close the screen — a group boundary.
-   ⚠️ THE FACE DIAGRAM IS NOT ONE ANY MORE: with the chips moved under it (14
-   Sep 2026), it opens the question straight after the instruction, at the
-   within-question 20, where it used to start the second question at 40. */
-/* ⚠️ 8 NOW, NOT 40 — 1 Nov 2026, asked for directly from `/tweak` (16 on
-   `.other` less 8 on the button inside it, so 8 is what showed): `Other`
-   sits right under `Your symptoms` as one more way to say where. */
+/* The two "tell us more" controls close the screen — a group boundary. */
 .other {
   margin-top: var(--space-sm);
 }
@@ -269,10 +141,6 @@
 }
 
 .diagram {
-  /* ⚠️ 20 UNDER THE CHIPS, 30 Oct 2026 — the face card follows the chips now.
-     It was 32 under LUX's bubble (4 Oct 2026, "give a bit more space here"):
-     the bubble is a voice and the thing to act on sits apart from it; that 32
-     moved to the chips, which took the place under the bubble. */
   margin-top: var(--space-xl);
 }
 
@@ -280,11 +148,6 @@
    the open field and the confirmed sentence (StartInvestigation.tsx) — so the
    margin-top rule above stays on one selector whichever is showing. */
 
-/* ⚠️ THE CONFIRMED SENTENCE WEARS THE BUTTON'S ROW — NOT IN FIGMA, added
-   14 Sep 2026. It takes the field's place once ✓ is pressed, and it is not a
-   field any more: no border, no caret, just the frosted row the collapsed
-   button already draws, holding the words and the two controls that reopen or
-   remove them. */
 .otherButton,
 .otherConfirmed {
   display: flex;
@@ -295,7 +158,7 @@
   padding: 0 var(--space-xl);
   text-align: left;
 
-  /* lux-v3: the fields' glass pill (canvas boards, 1 Oct 2026) */
+  /* lux-v3: the fields' glass pill (canvas boards */
   border-radius: var(--radius-full);
   border: var(--border-width-hairline) solid var(--color-border-glass);
   background: var(--color-glass);
@@ -323,11 +186,6 @@
   position: relative;
 }
 
-/* ⚠️ THE FIELD'S FOCUS RING IS THE ✓ / ✕ CIRCLES' OWN RIM, asked for directly
-   15 Sep 2026: `border/subtle` at full strength, where `TextField` draws
-   `gradient/brand` at 30%. This field only. (0,2,1) and (0,3,1) over
-   `TextField`'s `.wrap::after` (0,1,1) and `.wrap:focus-within::after`
-   (0,2,1), so both win on specificity rather than module load order. */
 .otherFieldWrap > span[class]::after {
   background: var(--color-border-subtle);
 }
@@ -353,12 +211,6 @@
   transform: translateY(-50%);
 }
 
-/* ⚠️ ✓, ✎ AND ✕ ARE `IconButton size="xs"` AS OF 31 Oct 2026, asked for
-   directly ("buttons that use the same design should be using reusable
-   components with variants"). Their 20 glass circle was written out here, in
-   `ConfirmField`, in `Sheet` and in `ChatPanel`, and a fix to one never
-   reached the others. The glyph sizes below stay: they belong to the glyph. */
-
 /* icon scaled down by the same ratio as the button itself, 20/36 of the
    CloseIcon's default 24px (`size-icon-md`). `!important` used to be required —
    `icons.tsx` set width/height inline and a plain class was silently ignored —
@@ -370,8 +222,7 @@
 }
 
 /* `SuccessCheckIcon` is drawn in a 28 box, so at the ✕'s size it reads
-   small: one step up. It centres in its own box now (icons.tsx), so the
-   0.86 / 1.14 nudge it took here went on 1 Nov 2026. */
+   small: one step up. */
 .otherCheckIcon {
   width: 16px;
   height: 16px;
@@ -381,12 +232,6 @@
   color: var(--color-text-secondary);
 }
 
-/* ⚠️ RESET IS A ↺ IN THE FACE CARD'S TOP-RIGHT CORNER — 30 Oct 2026, asked
-   for directly. It was a `Reset all` pill (the products tray's
-   `SegmentedToggle`) centred under the card; with `Save` and `Reset` gone it
-   was a one-word pill doing an icon's job, away from the thing it clears.
-   `FaceDiagram`'s `corner` slot places it. It fades out, rather than sitting
-   disabled, while nothing is selected — including while its undo shows. */
 .reset {
   position: relative;
   display: flex;
@@ -396,8 +241,6 @@
 /* two classes deep, to win over `IconButton`'s own transition and its 0.4
    disabled fade whichever module loads last */
 .reset .resetButton {
-  /* a paler, denser glass on the face card — 1 Nov 2026, asked for directly
-     from `/tweak`; `IconButton`'s hover still lifts it */
   background-color: var(--color-face-reset-bg);
   transition:
     opacity var(--duration-fade) var(--ease-in-out),
@@ -413,12 +256,6 @@
     visibility 0s linear var(--duration-fade);
 }
 
-/* ⚠️ THE UNDO SITS WHERE THE ↺ WAS — asked for directly 14 Sep 2026 ("don't
-   make the page move"), moved into the corner with it 30 Oct 2026. Absolutely
-   positioned and right-aligned on the button, so it takes no layout and
-   grows leftward over the card. The frosted-nav pill recipe the app's
-   `Snackbar` uses (`surface/frost-nav`, the half-pixel white rim,
-   `shadow/nav`), smaller, and it rises 4px as it fades in. */
 .undo {
   position: absolute;
   top: 50%;
@@ -451,13 +288,6 @@
   color: var(--color-text-secondary);
 }
 
-/* ⚠️ `Undo` WEARS THE SECONDARY BUTTON'S COLOURS — asked for directly 14 Sep
-   2026. It was a flat `bg/brand` indigo with `text/on-brand` ink. It now takes
-   `SmallButton`'s secondary recipe: the `button/bg-secondary` gradient, the
-   frost blur its translucent ends need, `shadow/button`, `text/brand` ink, and
-   the gradient run end for end on hover (non-negotiable 5). That is what the
-   app's `Snackbar` `Undo`, a `SmallButton`, already wears on the same frosted
-   pill. The 32 height and the `t-label` type stay this pill's. */
 .undoAction {
   --grad-start: var(--color-button-bg-secondary-start);
   --grad-end: var(--color-button-bg-secondary-end);
@@ -504,22 +334,7 @@
 a.takePhoto,
 button.takePhoto {
   margin-top: var(--space-lg);
-  /* ⚠️ NOT full-width, and `size="md"` rather than the default — decided here.
-     This is the OPTIONAL side path off step 1 (selfie capture shares the step
-     number); rendered as a 62-tall bar across the card it was the largest
-     control on a screen whose actual task is the chips and the face diagram,
-     and it outweighed Continue. Hugging its own label at 48 puts it back in
-     proportion.
-
-     ⚠️ THE 48 AND ITS PADDING USED TO BE SET FROM HERE, through
-     `--button-height`, and kept the 62's 17px label — so this pill read as
-     carrying bigger type than Continue. Height, padding and a 15px label are
-     `Button`'s `md` size as of 13 Sep 2026; this rule only places it. */
   align-self: center;
-  /* ⚠️ NOT IN FIGMA — a LIGHTER `shadow/button`, 14 Sep 2026, asked for
-     directly. Same two layers and geometry, alphas cut 0.22 → 0.1 and
-     0.1 → 0.05: the frosted pill read as sitting in a dark pool. This button
-     only; every other `Button` keeps the token. */
   box-shadow:
     0 4px 12px -2px rgba(46, 36, 71, 0.1),
     0 1px 2px rgba(46, 36, 71, 0.05);
@@ -529,14 +344,6 @@ button.takePhoto {
   .diagram {
     /* the diagram does not need the full 824 card width to read */
     max-width: var(--width-symptom-placer);
-    /* ⚠️ CENTRED — a deliberate departure from the comp, which left-aligns it at
-       the card's content edge (Figma 476:2934 puts face-diagram-card at x=308,
-       the same x as everything else in the card).
-       ⚠️ `width: 100%` IS LOAD-BEARING. Auto inline margins on a flex item
-       OVERRIDE the default stretch, so `margin-inline: auto` alone dropped the
-       item to its content width — and its only child is `width: 100%` of that,
-       so the whole diagram collapsed to 3px. The explicit width restores the
-       size, max-width caps it, and the auto margins centre what is left. */
     width: 100%;
     margin-inline: auto;
   }

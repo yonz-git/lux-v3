@@ -1,14 +1,10 @@
 /* Date field + calendar.
 
-   The trigger mirrors Figma's `date-field` (03c Timing): 52 tall, padding 0/18,
-   surface/frost-light + radius/lg + the frosted-row inner shadow, value in
-   Body 2, chevron-down on the right.
+The trigger mirrors Figma's `date-field` (03c Timing): 52 tall, padding 0/18,
+surface/frost-light + radius/lg + the frosted-row inner shadow, value in
+Body 2, chevron-down on the right.
 
-   The panel is NOT in the design system — there is no calendar component yet.
-   It is composed from tokens: radius/2xl and shadow/lg for elevation, over a
-   DENSE FROSTED surface since 14 Sep 2026 — it was opaque until then (a
-   floating panel over content must not be see-through, the lesson of the nav
-   at 17%), and the frost keeps that lesson by staying at 72%; see `.panel`. */
+The panel is NOT in the design system — there is no calendar component yet. */
 
 .root {
   position: relative;
@@ -22,9 +18,6 @@
   justify-content: space-between;
   gap: var(--space-md);
   width: 100%;
-  /* lux-v3 (1 Oct 2026, the canvas boards): a glass field — 56, a
-     pill, the chips' own glass and rim. It was v2's 52 rounded row on an
-     inset shadow. */
   min-height: var(--size-field);
   padding: 0 var(--space-xl);
   text-align: left;
@@ -59,35 +52,8 @@
   padding: var(--space-xl);
 
   border-radius: var(--radius-2xl);
-  /* ⚠️ FROSTED, NOT OPAQUE — asked for directly 14 Sep 2026 ("make the date
-     picker calendar frosty"). The opaque panel was the nav-at-17% lesson; this
-     keeps that lesson by staying DENSE — `surface/frost-light`'s near-white at
-     72%, not 55% — over the card blur plus 140% saturate, so the rows behind
-     read as colour and never as shapes under the dates. A lit top edge inside
-     (non-negotiable 11) keeps the thin fill from reading flat. The opaque fill
-     is the reduced-transparency fallback below. NOT IN FIGMA.
-     ⚠️ RETUNED IN DEVTOOLS AND SUPPLIED, the same day: a sage `#98b4b6` at 72%
-     rather than the near-white, a brighter 60% top light, and a 120px blur
-     with no saturate. */
-  /* ⚠️ 57%, NOT 72% — 15 points less, asked for directly 15 Sep 2026 with the
-     blur below ("make it frosty, I think we did it already") */
-  /* ⚠️ 20% BRIGHTER, 4 Oct 2026, asked for directly ("the calendar feels
-     dark; I like the blur but brighten it up 20%"): the sage mixed 20% toward
-     white, #98b4b6 → #adc3c5, at the same 57%. The blur is untouched. */
   background: #adc3c591;
-  /* ⚠️ NO TOP LIGHT AND A REAL DROP SHADOW, asked for directly 15 Sep 2026
-     ("remove the top border light and add drop shadow"): the `inset 0 1px 0
-     #fff9` read as a white rim along the top edge, and `shadow/lg` alone was
-     too soft to lift the panel off the rows it opens over. The added layer is
-     the check basket bar's own `0 6px 20px` at 12% black, under `shadow/lg`. */
   box-shadow: 0 6px 20px rgba(0, 0, 0, 0.12), var(--shadow-lg);
-  /* ⚠️ THE BLUR WAS ALWAYS ON, AND THAT WAS THE PROBLEM — 15 Sep 2026. Nothing
-     above the panel cuts its backdrop (checked: no ancestor carries a filter,
-     an opacity or a backdrop-filter of its own), but at 120px the rows behind
-     smeared into one even colour, and under a 72% fill that reads as a flat
-     tinted panel, not frost. `blur/card` keeps the rows as soft shapes you can
-     see moving under the dates, and 140% saturate keeps their hue from going
-     grey — the recipe the panel first shipped with, over the thinner fill. */
   -webkit-backdrop-filter: blur(var(--blur-card)) saturate(140%);
   backdrop-filter: blur(var(--blur-card)) saturate(140%);
   /* it hangs from the trigger's LEFT edge, not its middle, so `.drop` settles

@@ -27,11 +27,6 @@
   margin-bottom: var(--space-2xl); /* 24 */
 }
 
-/* ⚠️ THE BACK BUTTON IS `IconButton size="md"` (glass, 48) AS OF 31 Oct 2026,
-   asked for directly ("buttons that use the same design should be using
-   reusable components with variants"). Its circle was written out here and
-   again in `ScreenHeader`; the copies went. */
-
 .heading {
   display: flex;
   flex-direction: column;
@@ -54,12 +49,7 @@
 }
 
 /* the heading is the body's first child on a card screen, so the 24 that
-   separates it from the content lives here rather than on the heading.
-   ⚠️ SCOPED TO THE HEADING'S SIBLING INSIDE THE BODY. As `> :not(:first-child)`
-   it also put 24 between a screen's own blocks, silently overriding the 16 the
-   comps give `add-more`; as a bare `.heading + *` it then hit the flexible
-   spacer on a `plain` screen, whose heading sits OUTSIDE the body — which threw
-   the centred hero 12px off. Every other gap belongs to the screen. */
+   separates it from the content lives here rather than on the heading. */
 .body > .heading + * {
   margin-top: var(--space-2xl);
 }
@@ -77,20 +67,6 @@
   flex: 1 1 0;
 }
 
-/* ⚠️ `center="low"` — 00 WELCOME'S PLACEMENT, NOT IN FIGMA (see `center` in
-   HubScreen.tsx). The weights are Welcome's own, copied from
-   Welcome.module.css rather than tuned here: 266:70 on a phone, and 130:215 on
-   desktop below. Move them there first and here second, or `/check` stops
-   landing on Welcome.
-
-   ⚠️ THE BASIS IS WHAT MAKES IT THE SAME COLUMN. Welcome's group is placed in
-   the space under `.screen`'s own top padding — 40, and 120 on desktop — while
-   a hub pads `--content-top` (32 with `tightTop`) and starts this spacer
-   there. Giving it the difference as a basis puts the free space back on
-   Welcome's footing, so a body as tall as Welcome's group lands on Welcome's
-   pixels at every height, not only at one — keeping it that tall is the
-   screen's job. The heading inside floors the spacer: where the share is
-   shorter than the heading, the heading wins and the body waits under it. */
 .above {
   flex: 266 1 calc(var(--space-4xl) - var(--content-top));
 }
@@ -99,46 +75,16 @@
   flex: 70 1 0;
 }
 
-/* ⚠️ THE FOOTER OWNS ITS OWN TOP GAP. `.shell` has no row gap, so a footer
-   rendered flush against the body — on `My Products — filled` the Start
-   analysis button sat directly on the last category row and read as a fourth
-   row rather than the screen's action. 32 mobile / 48 desktop, the same two
-   values the card uses for its own internal rhythm and its desktop padding.
-   A `center` screen absorbs it into the trailing spacer, so this is safe for
-   the pinned-footer composition too. */
 .footer {
   display: flex;
   flex-direction: column;
   gap: var(--space-md);
   width: 100%;
-  /* ⚠️ LAST TO ARRIVE — 15 Sep 2026, asked for directly ("things to appear
-     in order, top to bottom"). The shell reveals header, body and footer
-     together and the body's blocks stagger 50ms apart to the eighth; without
-     this the action landed at 0ms, before the first card. 400 is one step past
-     the stagger's cap (8 × 50), so the footer follows the last block on any
-     screen. A delay only — the animation is named in globals.css. */
   animation-delay: 400ms;
 
-  /* ⚠️ 32 IS A MINIMUM, NOT A POSITION — NOT IN FIGMA. `auto` takes whatever
-     vertical space is left over, so on a screen whose content fills the column
-     the footer keeps exactly the 32 the comps draw, and on a short one it
-     drops to the bottom of the screen instead of leaving the action stranded
-     in the upper half. Measured on `/products` at 440: the last row ended at
-     y=470 of a 957 viewport with `Start analysis` right under it and 480px of
-     empty canvas below, so the screen's action sat in the middle of nothing
-     while the bottom of the screen — where every other LUX action lives, from
-     Continue to the basket bar — was empty.
-
-     `padding-top` carries the 32 because `margin-top: auto` consumes the
-     margin: on a screen that DOES fill the column the auto resolves to 0 and
-     the padding is the whole gap, which is the comps' spacing exactly. */
   margin-top: auto;
   padding-top: var(--space-3xl); /* 32 */
 
-  /* ⚠️ NOT IN FIGMA — the nav pill's 380 on mobile, asked for directly
-     13 Sep 2026: the same cap the desktop rule below puts on this box with
-     `--width-action`, so a hub's action lines up with the nav under it rather
-     than overhanging it by 6 either side. See `--width-action-mobile`. */
   max-width: var(--width-action-mobile);
   align-self: center;
 }
@@ -149,49 +95,20 @@
     align-items: stretch;
   }
 
-  /* ⚠️ NO DESKTOP REGROUP. A rule here used to drop the trailing spacer below
-     the footer, centring a centred screen's body and footer as one group —
-     `Product added`'s desktop comp, and that screen is gone. Its last caller
-     was `/check`, where it put `Start analysis` mid-screen; that landing now
-     places its actions with `center="low"`, and no screen passes both `center`
-     and `footer`. */
-
   /* Welcome's desktop weights and top padding — see `.above` above. */
   .above {
     flex: 130 1 calc(var(--space-9xl) - var(--content-top));
   }
 
-  /* ⚠️ THE WEIGHT IS THE NAV GUARD, AND THIS FLOOR IS FOR WHEN IT RUNS OUT.
-     `center="low"` reserves no nav on desktop (globals.css), because Welcome
-     does not: its 215 share keeps the group off the floating pill. On a short
-     window the share runs under the pill too, so it stops at a phone's
-     reservation — 16 clear of the nav — and the space above gives way instead.
-     Not the desktop hub's 40: every pixel of floor is a window height at which
-     `/check` stops landing on Welcome, and 16 already keeps the last line out
-     from under the pill. It first catches below 726 tall; the share measured
-     120 at 1440x780 and 112 at 1024x768. */
   .below {
     flex: 215 1 0;
     min-height: calc(var(--nav-inset-bottom) + var(--size-nav-height) + var(--space-lg));
   }
 
-  /* ⚠️ THE 32 BELONGS TO THE CARD, NOT THE HEADER. Every desktop hub frame puts
-     a 32 spacer directly above the card — `Long-term products list` after its
-     header row, `My Products — filled` where there is no header row at all. As a
-     margin on the header it simply vanished on the screen that has none, and the
-     card started 32 too high. */
   .header {
     margin-bottom: 0;
   }
 
-  /* ⚠️ BUT A `plain` OR `grid` SCREEN PUTS ITS HEADING DIRECTLY UNDER THE
-     HEADER ROW, and zeroing the margin above left the h1 sitting on the back
-     chevron — measured on `/progress/check-in/<date>` at 1440, the 24 the
-     mobile frame draws between the chevron and the date had collapsed to 0.
-     The card's 32 is the CARD's, so the gap comes back here for the two
-     layouts whose heading is a page header rather than the card's first
-     child. `.header + .heading` matches only those: on a `card` screen the
-     heading is inside the body and never the header's sibling. */
   .header + .heading {
     margin-top: var(--space-2xl); /* 24 — the same gap mobile gives it */
   }
@@ -206,13 +123,6 @@
     border-radius: var(--radius-3xl);
     background: var(--color-surface-card-desktop);
     box-shadow: var(--shadow-frosted-card-desktop);
-    /* ⚠️ THE FROST IS ON `::before`, NOT ON THE CARD — 14 Sep 2026, the same
-       fix as `QuestionScreen`'s `.card::before`. A `backdrop-filter` on the
-       card makes it a BACKDROP ROOT, so every frosted surface inside it could
-       blur only the card's own contents, never the page behind. A
-       pseudo-element is a sibling of the content, not an ancestor. `isolation`
-       keeps the `z-index: -1` layer above the card's fill and does not make a
-       backdrop root. */
     position: relative;
     isolation: isolate;
   }
@@ -228,22 +138,12 @@
     backdrop-filter: blur(var(--blur-card-desktop));
   }
 
-  /* ⚠️ NO CARD FILL AND NO STROKE on an empty state or a confirmation. The
-     content floats directly on the gradient, the way `desktop-welcome` does.
-     Adding a visible card here is a regression, not a tidy-up. */
   .body[data-layout="plain"] {
     align-self: center;
     width: 100%;
     max-width: var(--width-card-focus); /* 640 */
   }
 
-  /* ⚠️ A DASHBOARD GRID, NOT A CARD — see HubScreen.tsx. The full 1280 in two
-     columns a gutter/desktop apart: col-1 fixed 640, col-2 FILL (616). The
-     screen places its own children; this only draws the columns.
-
-     `align-items: start` matters — without it a card that spans several rows
-     stretches its neighbours to match, and the calendar is much taller than the
-     profile card beside it. Rows stay at their natural height. */
   .body[data-layout="grid"] {
     display: grid;
     /* `--hub-grid-columns` is set inline by the `gridColumns` prop */

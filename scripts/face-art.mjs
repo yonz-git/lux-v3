@@ -1,67 +1,4 @@
-/**
- * The face artwork generator — `npm run face`.
- *
- * ⚠️ THE FACE DIAGRAM'S TWO ASSETS ARE TRACED FROM A SUPPLIED REFERENCE IMAGE.
- * `features/my-skin/assets/face-art.svg` (the head as a wireframe) and
- * `face-silhouette.svg` (its outline, the mask for the card's shading) both
- * come out of this file, and nothing else edits them. The source is
- * `assets/source/face-reference.png`: the brightest channel of a wireframe
- * head image found on Pinterest (pin 305611524731014086 — a glowing blue
- * quad-mesh head on black, front view), converted once with PIL on 26 Sep
- * 2026. ⚠️ IT IS SOMEONE ELSE'S ARTWORK. A procedural head was built and
- * reshaped against it first and did not read as a real face; image
- * generation was blocked on the account (Gemini credits, Weave link); the
- * decision to trace the reference itself was the product owner's, asked for
- * directly ("use the reference, trace it and wire it in"). Replace the
- * source with a generated or licensed head before anything ships beyond
- * the prototype — the pipeline below is the same for any light-lines-on-
- * black image; only the three measured landmarks change.
- *
- * What this does: registers the image to the diagram's frame, thresholds
- * its lines, THINS every stroke to a one-pixel skeleton (Zhang–Suen),
- * chains the skeleton into polylines, prunes the mesh thinning leaves where
- * the glow of neighbouring lines touches, joins ends across small gaps,
- * smooths each line, and writes it as one vector stroke whose opacity is
- * the source's own glow at that point — so the rim glows as it does in the
- * reference. The silhouette is the image's non-background region, found by
- * flooding the black from the corners, cut as an iso-line.
- *
- * ⚠️ REGISTRATION IS BY THE EYES AND THE LIPS. FaceDiagram.tsx seats every
- * region pill on the drawing's landmarks in the 670×980 frame (row r lands
- * at box y = 10 + r·280/830, see `.form` in FaceDiagram.module.css): eyes
- * 382, lips 631, centre x 335. `SOURCE` holds those rows measured on the
- * image; one uniform scale (0.844) maps them. ⚠️ THE HEAD IS THEN DRAWN 5%
- * LARGER THAN THAT (`ENLARGE`, asked for directly 26 Sep 2026): the scale
- * is 0.886, taken about the eye row and dropped 3 rows (`DROP`) so the
- * crown clears the frame top. The eyes land at 385, 3 below their pill;
- * the lips at 646, 15 below theirs; the nose tip at 545, 38 below its pill
- * at 507 (this head's nose is longer, relative to eyes and lips, than the
- * landmark spacing, and the enlargement stretches it further); the chin at
- * 803. Every pill still sits on its feature — a pill is ~100 frame rows
- * tall.
- *
- * ⚠️ THE NECK IS DRAWN, NOT TRACED. The image is cut at the chin. The neck
- * and the shoulders come from a SECOND supplied reference — a clean line
- * drawing of a neck (asked for directly: "add the neck part like the image
- * I attached") — measured in units of its own neck width (`NECK_SIDE`: x
- * from the neck's centre, y below the chin) and drawn as clean strokes in
- * the wireframe's stroke width, no mesh, which is what that drawing shows.
- * ⚠️ The reference's collarbones were drawn too, for an hour, and removed —
- * asked for directly ("remove those lines"). The neck is `NECK_HALF` wide each side;
- * each side starts on the traced outline itself, at the lowest row where
- * the jaw is that wide, so it hangs off THIS jaw and not off the frame's
- * centre. The shoulder strokes fade out before the frame's edge (the
- * frame is not widened for them — see `.form` in FaceDiagram.module.css
- * for what its width costs) and end at row ~1012 of 1040. The silhouette
- * takes the neck and the shoulders with it, out to the shoulder strokes,
- * so the card's shading falls down the neck.
- *
- * `--preview <pgm path>` also writes the thinned skeleton as a PGM (P5).
- *
- *   node scripts/face-art.mjs --preview /tmp/face-skeleton.pgm
- *
- * No dependencies: the PNG is decoded with `node:zlib`.
- */
+/** The face artwork generator — `npm run face`. */
 import { readFileSync, writeFileSync } from "node:fs";
 import { dirname, resolve } from "node:path";
 import { inflateSync } from "node:zlib";
@@ -69,10 +6,6 @@ import { inflateSync } from "node:zlib";
 /* ------------------------------------------------------------------ frame */
 
 const W = 670;
-/** 980 until 26 Sep 2026 — 1040 rows so the neck and the shoulders fit under
-    an 803-row chin (see the header; 1100 while the collarbones were drawn);
-    `.form` in FaceDiagram.module.css scales the box by H/830 and every height
-    percentage there by 830/H */
 const H = 1040;
 /** traced at SS× so the skeleton sits between the image's pixels */
 const SS = 2;
@@ -80,9 +13,6 @@ const SS = 2;
 const FRAME = { eyes: 382, lips: 631, cx: 335 };
 /** the same landmarks measured on the source image, in its pixels */
 const SOURCE = { eyes: 460, lips: 755, cx: 410, width: 856, height: 976 };
-/** ⚠️ drawn 5% larger than the registration gives, about the eye row (asked
-    for directly 26 Sep 2026), and dropped `DROP` rows so the crown clears the
-    frame top — see the header for where the landmarks land */
 const ENLARGE = 1.05;
 const DROP = 3;
 
@@ -288,9 +218,7 @@ function thin(bin, w, h) {
 }
 
 /** chains a 1px skeleton into polylines, split at junctions, with spurs,
-    specks and mesh bars dropped. ⚠️ A DIAGONAL NEIGHBOUR ONLY COUNTS WHEN NO
-    4-NEIGHBOUR BRIDGES IT — counted naively, a thinned line's corner pixel
-    has three neighbours and the trace shatters into stubs. */
+    specks and mesh bars dropped. */
 function trace(bin, w, h) {
   const N8 = [
     [-1, -1],
@@ -721,7 +649,6 @@ function pathD(pts) {
   return d.replace(/ -/g, "-");
 }
 
-
 /* --------------------------------------------------------------- main */
 
 const args = process.argv.slice(2);
@@ -811,10 +738,7 @@ const cut = (field) =>
 const outline = cut(padded);
 // the neck joins the SILHOUETTE only: everything between the two neck sides,
 // out to the shoulder strokes, from where they leave the jaw to the shoulder's
-// end (the card's fade has removed it before then). ⚠️ It follows the
-// shoulder curve rather than stopping at a straight edge — a column clamped
-// at the shoulder's start put a vertical edge across the curve, and it was
-// asked to be smoothed.
+// end (the card's fade has removed it before then).
 {
   const edge = (pts, j) => {
     for (let k = 1; k < pts.length; k++) {

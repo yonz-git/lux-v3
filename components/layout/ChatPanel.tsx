@@ -13,50 +13,6 @@ import { IconButton } from "@/components/ui/IconButton";
  * X across the top, a scrolling body, and a caller-supplied footer pinned under
  * it. `/chat` puts its composer in that footer; the daily check-in puts
  * `Submit check-in` there.
- *
- * ⚠️ IT IS IN `components/layout/` BECAUSE TWO SECTIONS USE IT, which is the
- * placement rule exactly: a component used by one section is that section's,
- * and this one stopped being `chat`'s the moment PROGRESS's check-in adopted
- * it. It takes no opinion about what goes inside it — no chat data, no check-in
- * data — so it is the frame around a screen, which is what this folder is for.
- *
- * ⚠️ IT IS A PANEL, NOT A SCREEN, and every measurement follows from that. The
- * frame is 375x538 with a 36 radius on all four corners and its own gradient,
- * where every other frame in the file is the 440x957 canvas. That is also the
- * only reading under which a close control means anything: you collapse a
- * panel, not a page.
- *
- * ⚠️ THE CLOSE CONTROL IS AN X AND THE FRAME DRAWS A CHEVRON-DOWN — decided
- * 5 Sep 2026. A chevron-down is a DISCLOSURE glyph: it says the panel folds
- * away and can be unfolded, and pointed at a route change it promises a state
- * the app cannot return you to. An X says the thing goes away, which is what
- * happens. It is the DS's own `CloseIcon` rather than a panel-local glyph, so
- * it sits on `size/icon-xs` (16) against the frame's off-scale 14.
- *
- * ⚠️ THE X IS THE ONLY WAY OUT, ON EVERY CALLER, AND A `backHref` CHEVRON WAS
- * BUILT AND THEN REMOVED — 5 Sep 2026, both on request. AGENTS.md says a pushed
- * view keeps its back chevron and the daily check-in is one, so the chevron was
- * added beside the orb; walked, it made the header carry two controls that went
- * to the same place. The panel's idiom wins here: you close a panel, and one
- * way out is the whole point of a surface that floats over the app rather than
- * sitting in its navigation stack.
- *
- * ⚠️ SO A PUSHED VIEW IN THIS PANEL HAS NO CHEVRON, WHICH IS A REAL DIVERGENCE
- * FROM THE ROUTE RULES — not an oversight. Re-adding one is a prop and a
- * stylesheet rule; the argument against it is that the X already keeps the
- * promise the chevron would make.
- *
- * ⚠️ THE HEADING IS THE CALLER'S AND IS USUALLY INVISIBLE. `Hi, I'm LUX` is
- * `Body 1` and NOT a page heading — the panel is a surface inside a page and
- * the greeting names the speaker, not the screen. A route that needs an `<h1>`
- * (every route does) passes one through `heading`, which is why the check-in
- * can keep announcing itself as "Daily Check-in" while showing the greeting.
- *
- * ⚠️ NOTHING HERE ANIMATES ITSELF. The panel arrives on the global
- * `[data-reveal]` hook and a bubble inside it runs `ChatBubble`'s own entrance
- * because it is newly mounted. This file names no animation, which is what
- * keeps it clear of the "a rule that NAMES an animation may not live in a CSS
- * module" trap.
  */
 export function ChatPanel({
   closeHref,
@@ -69,21 +25,9 @@ export function ChatPanel({
 }: {
   /** where the X goes — the screen's own way out, not a shared destination */
   closeHref?: string;
-  /**
-   * ⚠️ THE OTHER HALF OF THE X, FOR A PANEL THAT IS NOT A ROUTE. PROGRESS opens
-   * the check-in as an overlay ON `/progress`, so there is nowhere to link to —
-   * closing it is a state change, not a navigation. Exactly one of `closeHref`
-   * and `onClose` is supplied; `onClose` wins if both are, and the control is a
-   * `<button>` rather than a `<Link>` because it goes nowhere. Nothing else
-   * about the header changes: same glyph, same slot, same accessible name.
-   */
   onClose?: () => void;
   /** the X's accessible name; it names what closes, so it is per-caller */
   closeLabel: string;
-  /**
-   * The route's `<h1>`. Render it `visually-hidden` unless the screen really
-   * shows a title — see the note above.
-   */
   heading?: ReactNode;
   /** pinned under the scrolling body: `/chat`'s composer, check-in's Submit */
   footer?: ReactNode;
@@ -98,13 +42,6 @@ export function ChatPanel({
       <div className={styles.header}>
         <div className={styles.headerLeft}>
           <span className={styles.avatar}>
-            {/* ⚠️ NOT IN FIGMA — WELCOME'S ORB, asked for directly 13 Sep 2026
-                ("use the orb animation we made"): the mark assembles L → U → X
-                as the panel arrives and the rim light travels round it. A
-                THIRD `halo` route, past the two globals.css says it is scoped
-                to — the ask overrides that line; raise it in Figma. The halo's
-                geometry is all ratios, so it lands on a 50px rim as it does on
-                a 129px one. */}
             <Orb size="50px" animateIn halo />
           </span>
           <p className="t-body1">Hi, I&rsquo;m LUX</p>

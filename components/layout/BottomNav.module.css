@@ -1,21 +1,3 @@
-/* NAV B — the round-button bar, lux-v3 (1 Oct 2026, picked on the design
-   canvas). Replaces the v2 frosted pill of four icon-over-label items.
-
-   BAR     a thin glass pill: white @10%, a 1px white @40% edge, a white @50%
-           rim along the top, 16 blur. 6 of padding round 56 circles, so 70
-           tall — `--size-nav-height`, which every `.screen` reservation reads.
-   ITEM    a 56 glass circle (white @12%) with the section's glyph in indigo.
-   ACTIVE  the brand gradient pill with the glyph and the word in white; it
-           sizes to its word.
-
-   The bar is fixed `--nav-inset-bottom` off the bottom and HUGS its items,
-   centred, at every width. ⚠️ It used to span the phone 8 in from each side
-   whenever a section was active, with the pill taking the slack; on 3 Oct 2026
-   that was cut, asked for directly ("it should be contained like in
-   desktop"), because at tablet and phone widths the pill stretched into a
-   long slab. `--nav-inset-inline` survives only as the floor it never
-   crosses on a narrow screen. */
-
 .nav {
   position: fixed;
   bottom: var(--nav-inset-bottom);
@@ -86,11 +68,6 @@
   overflow: hidden;
   justify-content: safe center;
   width: auto;
-  /* ⚠️ NO BORDER — 31 Oct 2026, asked for directly ("make the edges of the
-     indigo buttons smooth like those red pills"): a transparent hairline left
-     a 1px band outside the soft top light (an inset shadow stops at the
-     padding box), which read as a hard rim. The padding takes the pixel back;
-     the box is `border-box`, so the height holds. */
   border-width: 0;
   padding: 0 calc(var(--space-xl) + var(--border-width-hairline)) 0
     calc(var(--space-chip-inline) + var(--border-width-hairline));
@@ -103,10 +80,6 @@
   color: var(--color-text-on-brand);
 }
 
-/* ⚠️ THE 320 FLOOR: three circles, the bar's padding and `Products`' pill come
-   to 7 more than a 320 screen leaves inside the inset, so the pill poked out
-   of the bar. Below 360 its sides close to 12 each, which fits the longest
-   word with 1 to spare. Every wider phone keeps the full 18 / 20. */
 @media (max-width: 359px) {
   .item[data-active="true"] {
     padding: 0 var(--space-md);
@@ -118,8 +91,7 @@
 }
 
 /* the bottle is the set's one narrow glyph: 10 of ink in its 22 box, where the
-   others fill ~16, so its pill read 1.8 right of centre. Tucking the box 4
-   left puts the ink back on the pill's centre (measured 1 Nov 2026). */
+   others fill ~16, so its pill read 1.8 right of centre. */
 .item[data-active="true"][data-nav-id="products"] .icon {
   margin-left: calc(-1 * var(--space-xs));
 }

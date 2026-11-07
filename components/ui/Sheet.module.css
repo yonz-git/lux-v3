@@ -1,26 +1,9 @@
-/* ⚠️ lux-v3, 1 Oct 2026 — THE TRAY HAS THE REFERENCE'S SHAPE ON v2'S FILL. The AI
-   Assistant's 36 top / 44 bottom corners and no border (⚠️ the white rim
-   along the top went 3 Oct 2026, asked for directly: "remove the white
-   borders"), over lux-v2's own sage frost (`--surface-sheet`, kept when the
-   the reference gradients were dropped the same day);
-   on a phone it floats 8 in from the screen's edges like the reference's
-   (`--space-inset`). The ✕ is a 56 glass circle. The sage `surface/data` tray and its notes below are history. */
-
 /* The modal tray.
    Mobile  (576:1376 `bottom-sheet`): full width, x=0, radius 28/28/0/0, docked
-           to the bottom edge, padding 12/20/28/20, gap 20, children centred.
+   to the bottom edge, padding 12/20/28/20, gap 20, children centred.
    Desktop (583:1786 `method-dialog`): width/card-focus 640, radius/3xl on all
-           four corners, NO grabber, padding 48, gap 20.
-   Both: surface/data-strong + BACKGROUND_BLUR 28 + the sheet drop shadow.
-
-   ⚠️ --z-sheet (400) is ABOVE --z-nav (200). The tray covers the nav on purpose;
-   this is the only layer in LUX that outranks it.
-
-   ⚠️ THE ENTRANCE LIVES IN globals.css, NOT HERE. CSS Modules localize
-   @keyframes names, so `animation: lux-sheet-in ...` written in this file would
-   compile to a scoped name with no matching keyframes — it resolves to nothing
-   and no animation runs, while getComputedStyle still reports a duration. The
-   rules hang off the [data-tray] hooks instead. */
+   four corners, NO grabber, padding 48, gap 20.
+   Both: surface/data-strong + BACKGROUND_BLUR 28 + the sheet drop shadow. */
 
 .scrim {
   position: fixed;
@@ -42,29 +25,13 @@
   gap: var(--space-xl);
   /* Figma 12/20/28/20. 28 is off the spacing scale (2xl is 24, 3xl 32) at the
      bottom edge, the same way the 28 radius is — written as a literal rather
-     than snapped to a token that would be quietly wrong.
-
-     ⚠️ THE TOP IS 8, NOT FIGMA'S 12 — page-level whitespace, not a component
-     size (rule "translate, don't transcribe"). The comp has no grabber row at
-     all; the built tray does, and at 12 plus a full 20 gap under it the first
-     real content started 37px down. See `.grabber` for the other half of that.
-     The back-chevron header this also used to pay for is gone — `Cancel` at
-     the foot of the tray replaced it. */
+     than snapped to a token that would be quietly wrong. */
   padding: var(--space-sm) var(--space-xl) 1.75rem;
 
   /* Figma's radius 28 is off the radius scale at both ends (2xl is 24, 3xl 32).
      Written as a literal rather than snapped to a token that would be quietly
      wrong — the same call `Chip`'s 10/16 padding gets. */
   border-radius: var(--radius-sheet) var(--radius-sheet) var(--radius-sheet-foot) var(--radius-sheet-foot);
-  /* ⚠️ `surface/data`, NOT `-data-strong` — the tray read too dark. 44% of the
-     same sage; the cards inside keep 62%, so the card-on-tray step the recipe
-     depends on is the one that survived, just one token lighter underneath. */
-  /* ⚠️ LIGHTER, MORE SEE-THROUGH AND FROSTED — 16 Sep 2026, asked for
-     directly ("make both frosted and less opacity and brighten the color
-     10%"), phone and desktop alike. `surface/data`'s own sage mixed 10% toward
-     white, at 30% instead of its 44%; `saturate` on the blur keeps what shows
-     through from going grey behind the thinner fill. The reduced-transparency
-     fallback below still composites the full token. */
   background: var(--surface-sheet);
   -webkit-backdrop-filter: blur(var(--blur-card)) saturate(1.4);
   backdrop-filter: blur(var(--blur-card)) saturate(1.4);
@@ -73,22 +40,12 @@
   /* NOT optional: a translucent tray lets the nav underneath read straight
      through without a blur */
 
-
   /* THE TRAY CAN EXPAND. AddProductMethodSheet grows this well past its
      original two-card content (a search field + results, a viewfinder, a
      confirm card). Docked to the bottom edge, so it has to cap its own height
      and scroll internally rather than push past the top of the viewport. */
   max-height: calc(100dvh - var(--space-4xl) - var(--space-inset));
   overflow-y: auto;
-  /* ⚠️ A SCROLL THAT STARTS IN THE TRAY STAYS IN THE TRAY — added 12 Sep 2026,
-     alongside the page-level lock Radix Dialog holds. Without it, reaching the
-     end of a long results list hands the rest of the gesture to the document
-     and the SCREEN BEHIND THE MODAL scrolls — on touch, in one unbroken drag,
-     which is where it is most obvious. `ChatPanel`'s body has carried this
-     since it shipped; the tray is the second scroll container in the app and
-     never got it. The two halves are separate mechanisms: the lock stops the
-     page moving at all, this stops the chaining that a lock alone cannot
-     express. */
   overscroll-behavior: contain;
   /* a search results list is the thing most likely to push the tray into this
      scroll state — an OS scrollbar cutting into the frosted sage surface
@@ -104,13 +61,7 @@
 /* THE TRAY'S ONE WAY OUT, on every view — it used to be the method view's own
    button (`AddProductMethodSheet`'s `.cancel`) while every other view had none,
    and a back chevron in a header row above the content did a different job
-   again. `Sheet` renders it now, so it cannot be forgotten by a new view.
-
-   ⚠️ IT READS `Done`, NOT `Cancel`. The class keeps the old name; the label
-   changed because the word did. See the doc comment on `Sheet`.
-
-   display:block so the line box is exactly the 20 of `Label`; a button's
-   default inline-block layout renders 22. */
+   again. `Sheet` renders it now, so it cannot be forgotten by a new view. */
 .dismiss {
   display: block;
   width: 100%;
@@ -132,13 +83,6 @@
   }
 }
 
-/* ⚠️ THE CORNER ✕ — `dismiss="corner"`, added 15 Sep 2026 (see Sheet.tsx),
-   pinned to the tray's top-right: the tray is `position: fixed`, so it is the
-   containing block and the ✕ sits in its padding rather than in the centred
-   column. ⚠️ IT IS `IconButton size="xs"` AS OF 31 Oct 2026 — the app's one
-   small glass ✕ (asked for directly: "buttons that use the same design should
-   be using reusable components with variants"); only its place is set here.
-   Two classes deep, over `IconButton`'s own `position: relative`. */
 .tray > .close {
   position: absolute;
   top: var(--space-xl); /* 20 */
@@ -153,19 +97,8 @@
   border-radius: var(--radius-full);
   background: var(--color-border-glass);
   /* the grabber is an affordance attached to the tray's top edge, not the
-     first item of a 20-gap content stack. ⚠️ What follows sits 24 below it,
-     not 12 — 16 Sep 2026, asked for directly on `CheckBasket` ("more space on
-     top before the title"): at 12 the title pressed up under the grabber. */
+     first item of a 20-gap content stack. */
   margin-bottom: calc(var(--space-2xl) - var(--space-xl));
-  /* ⚠️ IT DRAGS — `Sheet`'s pointer handlers. `touch-action: none` or the
-     browser takes the pull as a scroll and cancels the pointer mid-drag. */
-  /* ⚠️ STICKY, NOT `relative` — 16 Sep 2026, asked for directly on the
-     add-product tray ("add this on that modal too"). A tall tray scrolls
-     inside itself, and the grabber scrolled away with the content, so the one
-     affordance saying "pull me down" was gone exactly on the trays that need
-     it. It pins where it rests, 8 below the tray's top edge — `top: 0` is
-     measured inside the tray's own 8 of top padding. Sticky is positioned, so
-     it is still the containing block for the `::before` hit area. */
   position: sticky;
   top: 0;
   z-index: 1;
@@ -190,12 +123,7 @@
     right: auto;
     bottom: auto;
     /* Centred in the FULL viewport: `method-dialog` sits at y=274 in a 900 frame,
-       which is (900 − 352) / 2. ⚠️ design.md's modal rule centres a tray in the
-       region ABOVE the nav instead — that rule exists for the CHECK dialogs,
-       where a 725-tall tray would otherwise slide under it. This one is 352 and
-       clears the nav by 175 either way, so the comp's own placement is kept.
-       The max-height is the guard: a tray tall enough to reach the nav scrolls
-       inside itself rather than disappearing behind it. */
+       which is (900 − 352) / 2. */
     top: 50%;
     transform: translate(-50%, -50%);
     max-height: calc(
@@ -209,14 +137,6 @@
     padding: var(--space-5xl);
     border-radius: var(--radius-sheet) var(--radius-sheet) var(--radius-sheet-foot) var(--radius-sheet-foot);
     box-shadow: 0 14px 30px rgb(15 10 30 / 0.35);
-
-    /* ⚠️ THE PHONE TRAY'S SAGE ON DESKTOP TOO — 16 Sep 2026, asked for
-       directly on `CheckBasket` ("use the left bg color"). From 12 Sep every
-       desktop dialog swapped to a light frost (`#edf8fb` at 24%, blur 16 —
-       see git history for its three rounds of tuning), so one `Sheet` wore two
-       different grounds on either side of 1024. It keeps the base rule's
-       `surface/data` and `--blur-card` now, at every width and for every
-       caller; the ink inside was always `text/on-data`, the sage's own. */
   }
 
   .grabber {

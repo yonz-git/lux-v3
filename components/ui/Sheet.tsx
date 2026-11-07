@@ -14,62 +14,6 @@ import { useDialogFocus, useDialogPresence } from "@/lib/useModalDialog";
  * ONE component, two shapes: a bottom sheet docked to the frame's bottom edge
  * below 1024, a centred dialog above it. That is the documented LUX recipe, not
  * a responsive convenience.
- *
- * ⚠️ IT IS SAGE, NOT LIGHT. `Bottom Sheet` (255:91) is `surface/data` with
- * WHITE text even on a light screen — the surface follows the component, not the
- * section. PRODUCTS is otherwise surface system A throughout.
- *
- * ⚠️ THE BLUR IS NOT OPTIONAL. `surface/data-strong` is 62% translucent, so
- * without a backdrop blur the nav and the CTA read straight through the tray.
- *
- * ⚠️ THIS IS THE ONE PLACE THE NAV IS NOT THE TOPMOST LAYER. `--z-sheet` (400)
- * sits above `--z-nav` (200): the tray covers the nav by design. Any sweep that
- * asserts "the nav is on top" must exempt a screen showing a sheet.
- *
- * The design system has no Bottom Sheet with a blur and no scrim token, so this
- * is composed from the recipe rather than instanced. See AGENTS.md.
- *
- * ⚠️ RADIX DIALOG IS UNDERNEATH, AS OF 4 Oct 2026 — asked for directly. The
- * scrim is `Dialog.Overlay`, the tray `Dialog.Content`, the portal
- * `Dialog.Portal`: Radix runs the focus trap, Escape, the press on the scrim,
- * the page's scroll lock and hiding the rest of the page from assistive tech.
- * Every pixel is still this file's and the CSS's — Radix ships no styles.
- * `forceMount` keeps both nodes up for the exit, which `useDialogPresence`
- * times; see `lib/useModalDialog.ts` for the two focus behaviours put back.
- *
- * ⚠️ IT RENDERS IN A PORTAL ON `document.body`, AND IT HAS TO. `position:
- * fixed` is relative to the viewport only while no ancestor establishes a
- * containing block — and `backdrop-filter` does, exactly like `transform` and
- * `filter`. Every tray in the app opens from inside `QuestionScreen`'s card,
- * which is a frosted surface with `blur(32px)` on it, so the desktop dialog's
- * `top: 50%` centred it in THAT CARD rather than the viewport: measured at
- * 1238x875 the tray's top edge sat at y = −41, hanging off the top of the
- * screen with its heading cut away, while the scrim covered the card instead of
- * the page. A portal takes the tray out of the frosted subtree; nothing about
- * the recipe changes.
- *
- * ⚠️ THE BACK CHEVRON IS GONE, AND `Done` IS THE TRAY'S ONLY DISMISSAL. The
- * tray used to carry an `onBack` chevron in a header row of its own, so a
- * multi-view tray had TWO ways out that did different things — a chevron at the
- * top that stepped back one view, and a `Cancel` at the bottom of the method
- * view only that closed the whole thing. Every other view had no visible way
- * out at all. One dismissal, in one place, on every view: it is rendered HERE
- * rather than by each view, so a new view cannot ship without one.
- *
- * ⚠️ IT READS `Done`, NOT `Cancel`. `Cancel` promised to undo, and the button
- * does not: every view that reaches it has already committed — a product added
- * on the `added` view stays added when the tray closes. Naming the sole exit
- * after an undo it never performed was the misleading half. `Done` describes
- * what it does. Escape and the scrim run the same `onClose`.
- *
- * ⚠️ THE GRABBER DRAGS, AS OF 13 Sep 2026 — it was a drawn bar with no
- * behaviour, which is a promise on a phone: every OS sheet with that bar
- * closes by pulling it down. Drag it past a quarter of the tray's height, or
- * flick it, and the tray slides out and runs `onClose`; short of that it
- * springs back. ⚠️ ONLY THE GRABBER, NOT THE TRAY: the tray scrolls and its
- * views hold targets (the selfie viewfinder, results lists), so a drag started
- * there is theirs. The grabber stays `aria-hidden` — it is a pointer shortcut
- * to `Done`, which remains the one labelled dismissal (WCAG 2.5.1).
  */
 export function Sheet({
   open,
@@ -89,21 +33,10 @@ export function Sheet({
   /** the words on the tray's one way out — `Done` unless a caller's close
    *  means something else (CHECK's basket says `Cancel`) */
   dismissLabel?: string;
-  /** ⚠️ WHERE THE ONE WAY OUT SITS — added 15 Sep 2026, asked for directly
-   *  on PROGRESS's photo gallery ("remove done and add x top right corner").
-   *  `label` is the worded button at the tray's foot, every other tray's;
-   *  `corner` is a labelled ✕ pinned to the top-right instead, for a tray
-   *  whose content is a viewer rather than a task. Still exactly ONE dismissal
-   *  either way — the rule the doc comment above exists to keep. */
   dismiss?: "label" | "corner";
 }) {
   const trayRef = useRef<HTMLDivElement>(null);
 
-  /* ⚠️ `present` OUTLIVES `open` BY THE LENGTH OF THE EXIT — see
-     `useDialogPresence`. The tray used to leave in one frame after a 320ms
-     entrance. Every behaviour still keys off `open`: Radix stops treating the
-     dialog as modal the moment the user closes it, and only its painting
-     lingers. */
   const { present, leaving } = useDialogPresence(open);
   const focus = useDialogFocus(open, trayRef);
 
@@ -183,10 +116,6 @@ export function Sheet({
           className={className ? `${styles.tray} ${className}` : styles.tray}
           data-tray="tray"
           data-state={leaving ? "leaving" : undefined}
-          /* ⚠️ `inert` WHILE LEAVING, NOT JUST UNCLICKABLE. The dialog is already
-             closed as far as focus and assistive tech are concerned — focus has
-             gone back to the opener — so a fading copy of it must not be
-             reachable by pointer, Tab or a screen reader for those 300ms. */
           inert={leaving}
           aria-describedby={undefined}
           tabIndex={-1}

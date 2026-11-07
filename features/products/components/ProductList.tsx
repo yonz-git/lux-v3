@@ -24,24 +24,6 @@ import type { CatalogProduct } from "@/features/products/products";
  *
  * `onClick` turns the whole row into a button. A row with no `onClick` renders
  * as a plain div: the added-products list is a readout, not a picker.
- *
- * ⚠️ `details` OPENS THE ROW IN PLACE, AND IS NOT IN FIGMA. `/check/new` shows
- * the products you own beside an `Add` control, and until now that was every
- * word it would ever tell you about them — you could add a product to a
- * COMPATIBILITY check without being able to see what was in it. The PRODUCTS
- * hub answers exactly that question by expanding its cards, so the row learned
- * the same move rather than the check growing a second way to look a product
- * up. See `ProductDetails`, which is what both screens open onto.
- *
- * The disclosure is the thumb + copy + chevron, NOT the whole row: the
- * trailing slot on that screen holds the `Add` button, and one tap target that
- * both expands the row and adds the product would be two actions on one
- * control. `onClick` and `details` are therefore mutually exclusive in
- * practice — a row that is itself a button has no room for a second one.
- *
- * ⚠️ THE CHEVRON IS `icon-sm`, THE CARD-LEVEL SIZE. `ProductDetails` puts an
- * `icon-xs` one on its ingredients toggle, and that step down is what says the
- * inner disclosure is subordinate to this one.
  */
 export function ProductRow({
   name,
@@ -56,14 +38,6 @@ export function ProductRow({
   meta?: string;
   trailing?: ReactNode;
   onClick?: () => void;
-  /** ⚠️ THE PRODUCT, NOT A URL. The thumb draws the product when there is no
-   *  photograph to show, so it needs to know which product it is — see
-   *  ProductThumb. `name` and `meta` stay separate props because a row does
-   *  not always title itself the way `fullName` would.
-   *  ⚠️ EVERY CALLER PASSES `fullName` AND NO SIZE AS OF 15 Sep 2026, asked
-   *  for directly: the brand leads the title as it does on `/products`, and
-   *  the size lives in `ProductDetails` only, in ml. `meta` survives for the
-   *  check's "Contains …" hint. */
   product: CatalogProduct;
   /** what the row opens onto. Absent = the row does not open. */
   details?: ReactNode;
@@ -151,14 +125,6 @@ export function AddProductRow({
  * The "nothing here yet" box — a frosted panel with a single muted line.
  * radius/2xl rather than radius/lg, which is what `empty-state` (574:1391)
  * draws.
- *
- * ⚠️ `compact` IS THE SAME BOX INSIDE ANOTHER ONE, and it exists for exactly
- * one caller: an empty category group on the PRODUCTS hub, which opens onto
- * this box INSIDE the row's own surface. It matches what the product cards do
- * there — 12 radius, opaque fill, less air — because an empty group and a full
- * one have to open onto the same shape or the box looks like a different kind
- * of thing. See `.compact` in ProductAccordionCard.module.css for the
- * reasoning; this is that recipe, not a second one.
  */
 export function EmptyBox({
   children,

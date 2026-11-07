@@ -17,8 +17,6 @@
   border: var(--border-width-hairline) solid var(--color-border-button-secondary);
   border-radius: var(--radius-full);
   color: var(--color-text-primary);
-  /* the secondary gradient, stopping inside the border (Button.module.css
-     `.secondary`, where the 1 Nov 2026 note is) */
   background: linear-gradient(90deg, var(--grad-start), var(--grad-end)) padding-box;
   box-shadow: var(--shadow-glass);
   /* the `Undo`'s frost, as `Button`'s `.secondary` */
@@ -62,17 +60,10 @@
   }
 }
 
-/* `size="sm"` — 8 a side, `Tag size="sm"`'s padding (SmallButton.tsx); 12
-   until later on 1 Nov 2026 ("the pills are too big for this usage") */
 .sm {
   padding-inline: var(--space-sm);
 }
 
-/* ⚠️ THE 12 LABEL'S LINE BOX IS TRIMMED TO THE CAPS — 1 Nov 2026. At
-   `Label Small`'s 16 line height Figtree's ascent outweighs its descent, so
-   `Add` sat 1.2 above the pill's middle; trimmed to cap height and the
-   baseline, the box the pill centres IS the ink. A block box, not a flex
-   one — `text-box` skips flex boxes (taste.md). */
 .sm > span:not(.icon) {
   display: inline-block;
   text-box: trim-both cap alphabetic;

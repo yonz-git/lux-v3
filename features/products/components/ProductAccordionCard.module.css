@@ -2,24 +2,12 @@
    `Long-term products list` (581:1593 / 583:1924).
 
    Card: radius/2xl, padding 16/18, surface/frost-light + the frosted-row
-   inner shadow. Gap 12 collapsed, 16 expanded.
-
-   ⚠️ THE GAP IS 16 WHETHER OR NOT THE CARD IS OPEN, AND IT DRAWS THE SAME
-   CARD. Closed, the header is the card's only child, so the comp's collapsed 12
-   sat between nothing — the value only ever rendered once the panel was there.
-   It stopped being harmless on 13 Sep 2026, when the panel started closing
-   with motion: `data-open` flips the moment the header is tapped, the panel is
-   still on screen for its 200ms exit, and a gap keyed to `data-open` dropped
-   16 to 12 in the first frame of it. `--collapse-gap` hands the same 16 to the
-   panel's `Collapse` — see "Dropdowns" in globals.css. */
-
+   inner shadow. Gap 12 collapsed, 16 expanded. */
 
 .card {
   display: flex;
   flex-direction: column;
-  gap: var(--space-lg); /* 16 — see above */
-  /* ⚠️ 10% MORE, asked for directly 15 Sep 2026 ("make it breathe more"):
-     17.6 / 19.8, then the nearest tokens on 1 Nov 2026, 16 / 20 */
+  gap: var(--space-lg);
   padding: var(--space-lg) var(--space-xl);
 
   /* lux-v3: the 30% panel at the score cards' 24 radius (app/globals.css) */
@@ -35,56 +23,18 @@
   --collapse-gap: var(--space-lg);
 }
 
-/* ⚠️ NOT IN FIGMA — the card as it renders INSIDE a category group's box on
-   the PRODUCTS hub. Same anatomy, one step down: padding 12 rather than 16/18,
-   gap 12 rather than 16, the thumb at `size/control-sm` (36) rather than 48 and
-   the name at `Label` rather than `H6`. Nothing is removed and nothing moves —
-   it is the same card, smaller, because it is now a box inside a box rather
-   than a card on the canvas.
-
-   ⚠️ AND IT IS OPAQUE, WHICH IS THE RULE AND NOT A PREFERENCE. `frost-light` on
-   the group's `frost-nav` is a frosted fill on a frosted surface: the two
-   translucencies composite into one pale smear with no edge between them, and
-   the stack of cards stops reading as separate cards. `bg/surface-frost` is
-   frost-light's opaque counterpart — the same relationship `bg/nav` has to
-   `surface/frost-nav` — and the blur goes with it, since the group behind it
-   has already blurred what is under both.
-
-   ⚠️ 12, NOT THE CONCENTRIC 8 — changed 13 Sep 2026, asked for directly
-   ("increase the border radius for all of these"). The group's box is 16 and
-   insets these by 8, so 16 − 8 was the radius that kept the two curves
-   parallel; on screen, 8 read as a near-square tile against the box's soft
-   corners. 12 trades exact concentricity for a card that belongs to the same
-   rounded family as its box. `EmptyBox`'s compact variant takes the same
-   value — an empty group must open onto the same shape. See `.panel` in
-   MyProducts.module.css and `.empty.emptyCompact` in ProductList.module.css. */
 .card.compact {
   /* 12 — the expanded value whether or not it is open, for the reason on
      `.card` above: the collapsed 8 sat between nothing */
   gap: var(--space-md);
-  /* ⚠️ 20% MORE THAN `space/md` — 10% asked for directly 15 Sep 2026 ("make
-     the design breathe more"), then 10% more again the same day: 14.4, as a
-     multiple of the 12 step; the nearest token since 1 Nov 2026, 16 */
   padding: var(--space-lg);
 
-  /* ⚠️ SUPERSEDED 13 Sep 2026, asked for directly: the surface and radius of
-     `/check/new`'s product row (`ProductList`'s `.row`), which is also this
-     card's own full-size recipe — so the product cards in PRODUCTS and CHECK
-     read as one. The opaque-fill argument above is traded knowingly; the
-     frosted-row shadow `.card` already carries is what keeps each edge. */
   /* lux-v3: inside a panel, a card is glass — the chips' material, one step
      in from the box around it — at 16, inside the box's 24 */
   border-radius: var(--radius-lg); /* 16 */
   border-color: var(--color-border-glass);
   box-shadow: var(--shadow-glass);
 
-  /* (v2) ⚠️ 40% OF `surface/frost-light`, asked for directly 15 Sep 2026 ("use the
-     /check/new card's bg"). The two cards ALREADY shared the same fill — the
-     difference was the ground: `/check/new`'s row sits on the page card, this
-     one on the group's much lighter `frost-nav` box, so the same 55% white
-     composited near-white here. 40% of it (22% net) lands the card on the
-     same grey-blue the check row reads as. Measured by eye against both
-     screens, not by a token. */
   background: var(--color-glass);
 }
 
@@ -160,7 +110,6 @@
     opacity: 1;
   }
 }
-
 
 /* the compact card is opaque in every mode already, so this is the frosted one
    catching up to it rather than a second recipe */

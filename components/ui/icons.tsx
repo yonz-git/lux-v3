@@ -1,23 +1,3 @@
-/**
- * The lux-v3 icon set — THE REFERENCE GLYPHS, 1 Oct 2026.
- *
- * Every path below that has a reference counterpart is copied from
- * ~/Claude/vidgen/index.html or ~/Claude/vidgen-studio/index.html with its own
- * viewBox, so the drawing is the reference's and not a redraw by eye. The few
- * LUX needs that the reference never draws (search, the success tick, the note pencil,
- * the four nav marks) are kept and drawn to the same weight.
- *
- * ⚠️ ONE STROKE AT EVERY SIZE. Each line uses `vectorEffect="non-scaling-stroke"`
- * at 1.4px, so a glyph drawn in a 13 box and one drawn in a 22 box come out the
- * same weight however large `--icon-size` makes them — the references draw
- * every glyph at 1.3–1.6 on screen, never scaled.
- *
- * ⚠️ NO `width` / `height` HERE. Size comes from `:where(svg[data-lux-icon])`
- * in globals.css; a glyph whose reference size is not `md` (24) sets
- * `--icon-default` inline — the size it is drawn at in the reference — and a caller's
- * `--icon-size` or any class still overrides it (non-negotiable 14).
- */
-
 import type { CSSProperties, ReactNode } from "react";
 
 type IconProps = { className?: string };
@@ -77,13 +57,7 @@ const ns = { vectorEffect: "non-scaling-stroke" as const };
    NAVIGATION AND DIRECTION
    --------------------------------------------------------------------------- */
 
-/**
- * The back button's arrow — the reference Welcome `.back`.
- * ⚠️ THE BOX STARTS AT 0.25, NOT 0 — 31 Oct 2026, from an 8× capture: the ink
- * runs 1.5 → 13 across a 14 box, so its middle sat at 7.25 and the arrow drew
- * 0.25 right of its button's centre. Shifting the box puts the ink's middle
- * on the box's.
- */
+/** The back button's arrow — the reference Welcome `.back`. */
 export function ArrowLeftIcon({ className }: IconProps) {
   return (
     <Icon box="0.25 0 14 12" size={16} className={className}>
@@ -111,10 +85,7 @@ export function DoubleChevronIcon({ className }: IconProps) {
   );
 }
 
-/* The chevrons are the Storyboard's `.nav` pair, extended to a down twin.
-   ⚠️ ← AND → SIT 0.1 OFF THEIR BOX'S ORIGIN — 31 Oct 2026, from an 8× capture:
-   the ‹ ink spans 1.2 → 4 and the › 1 → 3.8 of a 5 box, so each drew ~0.3 off
-   its button's centre. Shifting the box puts the ink's middle on it. */
+/* The chevrons are the Storyboard's `.nav` pair, extended to a down twin. */
 export function ChevronLeftIcon({ className }: IconProps) {
   return (
     <Icon kind="chevron" box="0.1 0 5 7" size={16} className={className}>
@@ -179,16 +150,7 @@ export function CloseIcon({ className }: IconProps) {
 
 /**
  * The small dismiss's ✕ — the `Other` field's and `ConfirmField`'s, and a
- * tray's corner. ⚠️ NOT A REFERENCE GLYPH: the ✕ of a circled ✕ supplied
- * directly 31 Oct 2026, its ring dropped the same day ("remove the circle
- * border"); the button's glass circle is the ring now. A filled shape on the
- * box's centre, so it centres in its button by construction, where the
- * stroked `CloseIcon` sat off the pixel grid under its 0.6 scale.
- * ⚠️ THE BOX IS CROPPED TO 512 ROUND THE ✕ AND DRAWN AT 12 — 31 Oct 2026. It
- * was the full 1024 box drawn at 22.9 so the ✕ kept its size, which
- * overflowed the 18 inside a 20 disc and started on a fractional pixel: an
- * 8× capture showed the ✕ ~0.8 low and right. 12 is even, so in an 18
- * content box it sits 3 in on every side, on whole pixels; no caller sizes it.
+ * tray's corner.
  */
 export function CloseSmallIcon({ className }: IconProps) {
   return (
@@ -248,12 +210,7 @@ export function TrashIcon({ className }: IconProps) {
   );
 }
 
-/**
- * A counter-clockwise arrow — reset, step 1's face card. ⚠️ NOT A REFERENCE
- * GLYPH (the references never reset anything). The path was supplied
- * directly 31 Oct 2026, replacing a Lucide `rotate-ccw`. ⚠️ IT KEEPS THE
- * SUPPLIED 2 STROKE, asked for directly — the one glyph off the set's 1.4.
- */
+/** A counter-clockwise arrow — reset, step 1's face card. */
 export function ResetIcon({ className }: IconProps) {
   return (
     <Icon kind="glyph" box="0 0 24 24" size={20} className={className}>
@@ -271,11 +228,7 @@ export function FrameIcon({ className }: IconProps) {
   );
 }
 
-/**
- * A pencil, for the check-in's "Add a note". ⚠️ NOT A REFERENCE GLYPH — the
- * references have no pencil (`ExpandIcon` is what they label Edit, and a
- * diagonal arrow does not say "write"). Drawn to the set's weight.
- */
+/** A pencil, for the check-in's "Add a note". */
 export function NoteIcon({ className }: IconProps) {
   return (
     <Icon kind="glyph" box="0 0 20 20" size={20} className={className}>
@@ -285,12 +238,7 @@ export function NoteIcon({ className }: IconProps) {
   );
 }
 
-/**
- * A pen with two sparkles, for `EditToggle`'s round Edit. ⚠️ NOT A REFERENCE
- * GLYPH — supplied directly 1 Nov 2026 ("use this svg"), a filled 16 box.
- * Its ink runs 0–15 down the box, 0.5 above the middle; the box starts 0.5
- * higher so the ink's middle is the box's, as `ArrowLeftIcon` does across.
- */
+/** A pen with two sparkles, for `EditToggle`'s round Edit. */
 export function EditSparkleIcon({ className }: IconProps) {
   return (
     <Icon box="0 -0.5 16 16" size={16} fill className={className}>
@@ -305,7 +253,6 @@ export function EditSparkleIcon({ className }: IconProps) {
   );
 }
 
-/** ⚠️ NOT A REFERENCE GLYPH — the references have no search. */
 export function SearchIcon({ className }: IconProps) {
   return (
     <Icon kind="glyph" box="0 0 24 24" size={20} className={className}>
@@ -419,13 +366,7 @@ export function InfoIcon({ className }: IconProps) {
    LUX-ONLY GLYPHS — no reference counterpart, kept and re-weighted
    --------------------------------------------------------------------------- */
 
-/**
- * The success tick (product added). ⚠️ THE BOX STARTS AT -1.5, -2 — 1 Nov
- * 2026, when it became `EditToggle`'s Save: the tick's ink runs 5–20 across
- * and 6–18 down, 1.5 left of and 2 above the 28 box's middle, so every
- * caller sat it off-centre (1.07 / 1.43 at 20) and two nudged it back by
- * hand. Shifting the box puts the ink's middle on the box's for all of them.
- */
+/** The success tick (product added). */
 export function SuccessCheckIcon({ className }: IconProps) {
   return (
     <Icon box="-1.5 -2 28 28" size={28} className={className}>
@@ -438,8 +379,6 @@ export function SuccessCheckIcon({ className }: IconProps) {
 export function ProgressIcon({ className }: IconProps) {
   return (
     <Icon box="0 0 24 24" className={className}>
-      {/* 1.3 lower than first drawn (1 Nov 2026), so the ink, 6.7 to 17.3,
-          centres on the box's 12 */}
       <path d="M4 16.55L9 11.55L12.5 15.05L19.25 8.3" {...ns} />
       <circle cx="19.25" cy="8.3" r="1.6" fill="currentColor" stroke="none" />
     </Icon>

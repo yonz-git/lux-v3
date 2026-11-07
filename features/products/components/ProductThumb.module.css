@@ -12,27 +12,13 @@
   height: var(--size-control-md);
   border-radius: var(--radius-md);
   background: var(--color-bg-surface-frost);
-  /* ⚠️ THE SIZE EASES, added 15 Sep 2026: a compact card's 36 well grows to
-     48 when the card opens (ProductAccordionCard.tsx), and a size that snaps
-     is the one thing LUX motion rules out. `duration/base`, the same clock
-     the card's chevron turns on. */
   transition:
     width var(--duration-base) var(--ease-standard),
     height var(--duration-base) var(--ease-standard),
     border-radius var(--duration-base) var(--ease-standard);
-  /* ⚠️ A SLIGHT DROP SHADOW AT EVERY SIZE, asked for directly 15 Sep 2026 for
-     every product picture in the app: `shadow/sm`, the lightest elevation.
-     It was the 36 well's alone (see `.sm`); the 48 now takes it too. */
   box-shadow: var(--shadow-sm);
 }
 
-/* ⚠️ NOT IN FIGMA — the same well at `size/control-sm`, for a product card
-   nested inside a category group's box on the PRODUCTS hub. It is a `size`
-   prop rather than a class the caller passes in, so both sizes are declared in
-   this file: a width set from another module is one class against one class,
-   and which of them wins is decided by stylesheet order rather than by
-   anything either file can see. 8 is the radius the compact card carries, and
-   the well follows its card. */
 .thumb.sm {
   width: var(--size-control-sm); /* 36 */
   height: var(--size-control-sm);

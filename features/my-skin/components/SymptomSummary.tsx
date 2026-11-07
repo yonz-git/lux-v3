@@ -18,35 +18,7 @@ const LEAVE_MS = 500;
 
 /**
  * Step 1's running summary — every symptom marked so far and the places marked
- * for it, under the face card. 30 Oct 2026, asked for directly, then redrawn
- * the same day against Apple's HIG numbers ("/hig and redesign").
- *
- * ⚠️ IT LISTS SYMPTOMS THAT HAVE A PLACE, NOT SYMPTOMS THAT ARE MERELY LIT. A
- * symptom is stored only once it has somewhere to be (`withAreas`), so the
- * list is exactly what `Continue` will carry forward.
- *
- * ⚠️ THE REDESIGN, AND WHAT EACH CHOICE IS FOR (HIG, fetched 2026-09-27):
- *   - the symptom is the row's heading at 16/26 `t-body2` — Callout is 16/21 on
- *     iOS and the type ramp's nearest role; it was `t-label` at 14, a size
- *     below the Body/Callout a primary line takes, in a card whose second line
- *     was 12;
- *   - the places are PILLS, not a `·`-joined sentence — a set of discrete
- *     answers (AGENTS.md: a multi-select is a SET) and the same unit the face
- *     draws them in, so "Forehead" here is the thing tapped there. 28 tall, the
- *     HIG's floor for a control and the face's own region pill; they are not
- *     controls, so no 44 hit area is owed;
- *   - 12 between rows' content and rules, 8 between pills: the HIG's 12 for
- *     things with a bezel, and the pills have one;
- *   - the rose dot is no longer the only thing marking a symptom — the name
- *     says it, so nothing is carried by colour alone;
- *   - ink is `text/primary` on glass everywhere: 4.5:1 is the floor at these
- *     sizes (≤17pt), and the old muted ink on the places line was the weakest
- *     text on the screen.
- *
- * ⚠️ NOTHING SNAPS (`taste.md`). The card and every row open on `<Collapse
- * smooth>`; a place arrives on a 500ms fade and settle, and one removed stays
- * long enough to leave the same way (`useExiting`). A leaving row keeps what
- * it last showed (`useHeldWhileClosing`).
+ * for it, under the face card.
  */
 export function SymptomSummary() {
   const { answers } = useInvestigation();

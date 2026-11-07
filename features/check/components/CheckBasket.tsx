@@ -18,57 +18,11 @@ import { fullName, type CatalogProduct } from "@/features/products/products";
  *
  * Figma: `tray-bar` on `Check — tray collapsed` (650:2513) and `bottom-sheet`
  * on `Check — selection · N products` (604:2103).
- *
- * ⚠️ THE BAR IS THE DEFAULT AND THE SHEET IS THE EXPANSION — the design has it
- * the other way round, and this is a decided-here flow change.
- *
- * The comps give the tray three states: closed (nothing added), open (a scrim'd
- * modal sheet above the nav) and collapsed (a docked pill). Adding your FIRST
- * product opened the modal — over the search list, with the CTA disabled and
- * the helper reading "Add at least 2 products". So the screen's opening move
- * put a blocking sheet on top of the one thing you still had to use, which is
- * why the transition map has to say "Add another product returns focus to the
- * search list with the tray still open", and why a third state exists at all:
- * `tray collapsed` is the escape hatch from a modal that should not have been
- * modal.
- *
- * Adding is not a decision that needs confirming — it is the loop. So the
- * basket lives in the bar: always visible, never covering the list, counting up
- * as you add. The sheet is still exactly the drawn sheet, opened deliberately
- * to review, reorder or remove. Every drawn treatment is used; only which one
- * is the resting state changed. Two states instead of three.
- *
- * ⚠️ THE BAR IS NOT A MODAL, so it stays BELOW the nav (`--z-sticky` 100 vs
- * `--z-nav` 200) and has no scrim. Only the sheet outranks the nav, and that is
- * `Sheet`'s own documented exception.
  */
 
 /**
  * The docked pill above the nav — ALWAYS present, and it is the only thing on
  * the screen that states the goal.
- *
- * ⚠️ IT USED TO APPEAR ONLY AFTER THE FIRST ADD, AND THAT WAS THE BUG. The
- * screen's job is to assemble a comparison of two to eight products, and until
- * you had added one, nothing said so: you arrived at a title, a search field and
- * a list of products, with no indication you were building anything, how many
- * you needed, or what happened next. The requirement — "Add at least 2
- * products" — lived inside the sheet, which you could only reach by adding
- * something first. So you discovered the rule by breaking it.
- *
- * One persistent element now carries all three:
- *
- *   0 products   the GOAL        "Pick 2 products to compare"
- *   1 product    the PROGRESS    "1 of 2 — pick one more"
- *   2-8          the ACTION      "N products · review & analyse"
- *
- * ⚠️ IT IS INERT BELOW TWO, on purpose. With nothing to review there is nothing
- * for the sheet to show, and a control that opens an empty tray teaches the
- * wrong thing. It renders as a statement until it has something to do — which is
- * also why the tag is chosen at render rather than always being a button.
- *
- * ⚠️ NOT A MODAL, so it stays BELOW the nav (`--z-sticky` 100 vs `--z-nav` 200)
- * and has no scrim. Only the sheet outranks the nav, and that is `Sheet`'s own
- * documented exception.
  */
 export function CheckBasketBar({
   count,
@@ -87,10 +41,6 @@ export function CheckBasketBar({
 
   const content = (
     <>
-      {/* ⚠️ THE LABEL SHINES AS IT ARRIVES — 16 Sep 2026, asked for directly
-          ("text shine"). The app's own `.shine-text` + `.shine-on-enter`, the
-          bubbles' recipe; keyed on the words so a new count glints again
-          rather than changing silently. `--shine-ink` is set on `.bar`. */}
       <span
         key={label}
         className={`${styles.barLabel} t-body2 shine-text shine-on-enter`}
@@ -105,7 +55,7 @@ export function CheckBasketBar({
 
   if (!ready) {
     return (
-      /* `rise-in` — the bar fades up as it appears (globals.css), 16 Sep 2026 */
+      /* `rise-in` — the bar fades up as it appears (globals.css) */
       <p className={`${styles.bar} rise-in`} data-quiet aria-live="polite">
         {content}
       </p>
@@ -122,16 +72,6 @@ export function CheckBasketBar({
 /**
  * The expanded basket — `bottom-sheet` (604:2103), a docked sheet on mobile and
  * a centred dialog on desktop, both from `Sheet`.
- *
- * ⚠️ 0–1 PRODUCTS DISABLES THE CTA AND SHOWS THE HELPER; 2–8 ENABLES IT. The
- * handoff's rule, and the cap is 8. You cannot compare one product with itself.
- *
- * ⚠️ `/check/new` IS ITS ONLY CALLER, AND THAT IS THE POINT. `Check results`
- * used to open this same sheet behind its `Edit` — over a screen that was
- * already listing the same products, so one set appeared twice and the copy of
- * it that could be edited covered the copy that carried the answers. That
- * screen edits its set in place now and this sheet lost its `submitLabel` prop
- * with it. See `CheckResults`.
  */
 export function CheckBasketSheet({
   open,
@@ -151,9 +91,6 @@ export function CheckBasketSheet({
   const enough = products.length >= MIN_CHECK_PRODUCTS;
   const full = products.length >= MAX_CHECK_PRODUCTS;
 
-  /* ⚠️ A REMOVED ROW CLOSES BEFORE IT LEAVES THE BASKET — added 13 Sep 2026;
-     it used to vanish and jump the tray's edge. Same two beats as the
-     PRODUCTS hub's cards (MyProducts.tsx `CategoryGroup`). */
   const [leaving, setLeaving] = useState<ReadonlySet<string>>(() => new Set());
   const pending = useRef(new Set<string>());
   const drawn = useRef<ReadonlySet<string> | null>(null);
@@ -177,8 +114,6 @@ export function CheckBasketSheet({
   }
 
   return (
-    /* ⚠️ `Cancel`, NOT THE SHEET'S `Done` — asked for directly 15 Sep 2026.
-       Only this sheet: every other tray keeps `Done`. */
     <Sheet
       open={open}
       onClose={onClose}
@@ -198,28 +133,12 @@ export function CheckBasketSheet({
             appear={drawn.current !== null && !drawn.current.has(p.id)}
           >
             <div className={styles.basketItem}>
-              {/* ⚠️ THE "and" IS A CONNECTOR, NOT A LIST ITEM. It reads as one
-                  sentence — "this AND this AND this" — which is what a
-                  compatibility check is asking about. Hidden from assistive tech,
-                  where the list semantics already say it. */}
               {i > 0 && (
-                /* `t-label`, one step over `t-label-sm` — asked for directly
-                   16 Sep 2026 ("1 step bigger") */
                 <span className={`${styles.and} t-label`} aria-hidden="true">
                   and
                 </span>
               )}
               <span className={styles.item}>
-                {/* ⚠️ THE THUMB IS NOT IN THE COMP — `bottom-sheet` (604:2103)
-                    draws these rows as a label and a close glyph alone. Every
-                    other place a product appears carries its drawn vessel
-                    (`/check/new`'s own result rows, the PRODUCTS tray, both
-                    hubs), so the ONE screen where you review what you picked was
-                    the one screen that dropped the picture — and it is the
-                    screen where two rows are most likely to read alike, since a
-                    basket is two products from the same shelf. Same
-                    `ProductArt`, same hash, so a row keeps the identity it had
-                    in the list you picked it from. */}
                 <ProductThumb product={p} />
                 <span className={`${styles.itemLabel} t-body2`}>
                   {fullName(p)}
@@ -239,8 +158,6 @@ export function CheckBasketSheet({
 
         {!full && (
           <li className={styles.addAnotherItem}>
-            {/* ⚠️ NOT IN FIGMA — the small secondary pill, asked for directly
-                13 Sep 2026; it was a full-width deep-sage row */}
             <Button
               variant="secondary"
               size="md"
@@ -253,7 +170,6 @@ export function CheckBasketSheet({
         )}
       </ul>
 
-      {/* `t-body3`, one step over `t-caption` — asked for directly 16 Sep 2026 */}
       <p className={`${styles.count} t-body3`}>
         {products.length} of {MAX_CHECK_PRODUCTS} products
       </p>

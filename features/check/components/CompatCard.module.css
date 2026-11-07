@@ -63,9 +63,6 @@
   color: var(--color-text-primary);
 }
 
-/* the ring and the product's own picture side by side (5 Oct 2026, asked
-   for: a score card named the product only in words). Beside the ring, not
-   at the card's far edge, so the remove button keeps its corner. */
 .top {
   display: flex;
   align-items: center;
@@ -225,7 +222,7 @@
 .tags {
   display: flex;
   flex-wrap: wrap;
-  gap: var(--space-pill-gap); /* the app's one pill gap, 30 Oct 2026 */
+  gap: var(--space-pill-gap); /* the app's one pill gap */
   margin: 0;
   padding: 0;
   list-style: none;
@@ -277,15 +274,6 @@
   }
 }
 
-/* ============================================================================
-   THE ENTRANCE — 1 Oct 2026, asked for directly, after 21st.dev's donut
-   chart: the first time the results grid is in view (`MotionObserver.tsx`
-   marks the `.panel` around it), each card rises 8px into place, 90ms after
-   the one before; its ring DRAWS from 12 o'clock to the score over 960ms
-   while the number counts up with it (`CountUp`); the band pill arrives as
-   the arc lands. The detail in the sheet is outside the panel and does not
-   animate. Reduced motion collapses every duration and `CountUp` skips.
-   ========================================================================== */
 [data-motion]:not([data-inview]) .card {
   opacity: 0;
   translate: 0 8px;

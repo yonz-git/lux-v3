@@ -7,11 +7,6 @@
   flex-direction: column;
   gap: var(--space-xl); /* 20, question to answers */
   padding: var(--space-panel) var(--space-gutter) var(--space-gutter); /* 32 / 24 / 24 */
-  /* ⚠️ THE FROST MOVES TO `::before`. An element with `backdrop-filter` is a
-     backdrop root, so every frosted thing inside it — the chips, the date
-     picker's popover — could only blur the panel's own contents, never the
-     page (QuestionScreen's old desktop card found this on 14 Sep 2026). A
-     pseudo-element is a sibling of the content, not its ancestor. */
   -webkit-backdrop-filter: none;
   backdrop-filter: none;
 }
@@ -45,9 +40,6 @@
   gap: var(--space-sm);
 }
 
-/* ⚠️ THE QUESTION'S ORB AND BUBBLE, centred as a pair — the same recipe as
-   step 1's `.coach` (StartInvestigation.module.css): the bubble's tail corner
-   (top left) sits level with the orb's middle. */
 .ask {
   display: flex;
   align-items: flex-start;
@@ -73,14 +65,7 @@
   color: var(--color-text-secondary);
 }
 
-/* the answer chips — a wrapping row, CENTRED, 8 apart.
-   ⚠️ CENTRED AND LOOSENED, 4 Oct 2026, asked for directly ("the arrangements
-   are a bit messy, place them in a more balanced way"). Left-packed, a short
-   last row hung off the left edge with a ragged gap at the right, so two
-   rows of different lengths read as an accident; centred, every row sits on
-   the panel's axis, as step 1's symptom chips already do. The gap went from
-   the 4 a cluster takes to `space/sm` (8), since these are separate answers
-   rather than one control. Steps 2, 3 and 4 all draw it. */
+/* the answer chips — a wrapping row, CENTRED, 8 apart. */
 .chips {
   display: flex;
   flex-wrap: wrap;

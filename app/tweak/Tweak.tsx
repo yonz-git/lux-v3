@@ -9,33 +9,7 @@ import styles from "./Tweak.module.css";
 
 /**
  * Tweak — step 1 (`/investigation/start`) in a frame, with a panel for tuning
- * it by hand. Asked for directly 1 Nov 2026 ("make me tweak page for this …
- * that i can control all of the elements manually").
- *
- *   Element  pick anything on the screen (or a component from the list) and
- *            edit its box, layout, type and look.
- *   Tokens   every custom property on `:root`, edited for the whole screen.
- *   Export   the changes as CSS, to hand back so they land in the real
- *            modules and tokens. Nothing here edits the source.
- *
- * ⚠️ REBUILT THE SAME DAY, asked for directly ("its still in px", "when i
- * reduce … a width the element is not centered anymore", "elements sharing
- * one component should be bined together"):
- *   - A value shows as AUTHORED — `var(--space-lg)`, `clamp(…)`, a ratio —
- *     read from the stylesheet rule that wins for the element; only when no
- *     rule sets it does the computed value show, in rem. ↑/↓ steps a token
- *     along its own scale (`--space-md` → `--space-lg`), a rem by 0.25 (Shift
- *     1), a px by 1 (Shift 10), a ratio by 0.05.
- *   - A change targets the COMPONENT by default: every element carrying the
- *     same module classes (all eight symptom chips at once). `Only this one`
- *     narrows it to the picked element.
- *   - A change holds at `All widths` or `From 1024`, the app's one
- *     breakpoint. Changes are a stylesheet injected into the framed page, so
- *     the breakpoint is real and switching the frame width shows it.
- *   - Narrowing a block's width or max-width in a column also sets its side
- *     margins to `auto`, so it stays centred instead of sliding left.
- *
- * Changes are kept in this browser (localStorage) until reset.
+ * it by hand.
  */
 
 const SRC = "/investigation/start";
@@ -149,10 +123,7 @@ function contextOf(el: Element) {
 }
 
 /* every element that shares this one's module classes AND sits in the same
-   place: the component, in this variant, here. ⚠️ THE PLACE IS PART OF IT —
-   1 Nov 2026, asked for directly: grouping by the classes alone bound the
-   face's `Whole face` / `Neck` / `Other` to the symptom chips, because they
-   are all `Chip`s. */
+   place: the component, in this variant, here. */
 function componentSelector(el: Element) {
   const own = moduleClasses(el).map((c) => `.${CSS.escape(c)}`).join("");
   if (!own) return null;
@@ -417,9 +388,6 @@ export function Tweak() {
   const onLoad = useCallback(() => {
     const d = doc();
     if (!d || wired.current.has(d) || d.location.href === "about:blank") return;
-    /* ⚠️ NOT BEFORE THE SCREEN HAS HYDRATED: a stylesheet or outline put into
-       the server HTML is a hydration mismatch. `data-store-ready` is stamped
-       on <html> once the store has hydrated (InvestigationProvider). */
     if (!d.documentElement.hasAttribute("data-store-ready")) {
       const wait = new MutationObserver(() => {
         if (!d.documentElement.hasAttribute("data-store-ready")) return;
@@ -623,9 +591,6 @@ export function Tweak() {
       const props = { ...rule.props };
       if (clear) delete props[prop];
       else props[prop] = value;
-      /* ⚠️ A NARROWED BLOCK STAYS CENTRED: in a column (block or flex column
-         parent) a capped width slides to the left edge, so its side margins
-         go to `auto` with it — unless they were set here by hand */
       if (!clear && (prop === "width" || prop === "max-width") && el?.parentElement) {
         const p = win()?.getComputedStyle(el.parentElement);
         const column = p && (p.display === "block" || (p.display.includes("flex") && p.flexDirection.startsWith("column")));

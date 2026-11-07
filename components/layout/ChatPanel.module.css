@@ -1,112 +1,27 @@
 /* The conversation panel — Figma `chat-page / mobile` (270:96), inside the spec
-   column `col` (274:99) captioned "Mobile · 375". See ChatPanel.tsx.
-
-   ⚠️ THE FRAME IS A PANEL, NOT A DEVICE SCREEN. Every other screen in the file
-   is drawn on the 440x957 mobile canvas; this one is 375x538 with a 36 radius
-   on all four corners and its own gradient fill. It is a self-contained surface
-   that floats on the canvas — which is also what its close control says, since
-   you collapse a panel, not a page.
-
-   ⚠️ THREE VALUES HERE ARE OFF THE PUBLISHED SCALES: the 36 radius, and the
-   panel's own gradient, which is not a paint style. Each is marked where it is
-   used. None was "corrected" — Figma leads on pixels — but none should survive
-   into a shipped screen either.
-
-   ⚠️ docs/archive/figma-catchup.md LISTS NINE OFF-SCALE VALUES FOR THIS FRAME AND IS
-   STALE. Six left with the controls that carried them (the timestamps' 6 gap
-   and 10 text, the kebab's 18 glyph, the `Today` divider's 11 text and its
-   #b5c8cc / #606d75 fills); the frame's off-scale 14 chevron was never
-   reproduced. Reconcile it there — that file is the truth about what FIGMA
-   HOLDS and this one is the truth about what SHIPPED.
-   ========================================================================== */
+   column `col` (274:99) captioned "Mobile · 375". See ChatPanel.tsx. */
 
 .panel {
-  /* ⚠️ NOT IN FIGMA — THE PANEL IS NOW DARKER THAN THE CANVAS IT SITS ON,
-     asked for directly. The frame's own fill was #dbebed -> #d1e1e5 -> #c3cdd9,
-     which read LIGHTER than `gradient/canvas-mobile` (Figma's #dce7ea ->
-     #cedee2 -> #acc5cc) at both ends; the panel now reads darker at both ends
-     instead. ⚠️ THE MARGIN NARROWED ON 14 Sep 2026, when the canvas was
-     darkened 10% (#c6d0d3 -> #b9c8cb -> #9bb1b8): by relative luminance the
-     panel is still darker at the top (0.585 against 0.618) and the bottom
-     (0.345 against 0.419), but now a touch LIGHTER than the canvas mid-stop
-     (0.588 against 0.559). Not retuned — this is the panel's own value. The
-     geometry is untouched — same 116.756deg, same three stops at 36.39 / 53.77 /
-     105.01 — so only the colours moved, and the panel still separates from the
-     canvas by contrast, just in the other direction.
-
-     ⚠️ STILL NOT A PAINT STYLE. `get_design_context` reports only
-     gradient/brand, gradient/brand-indigo and surface/chat-bubble as named
-     styles on this frame, so this is a local fill with no variable behind it —
-     and it is now a local fill that DIVERGES from the frame as well. Raise it as
-     `gradient/chat-panel` with these values, not the frame's.
-
-     ⚠️ THE BUBBLES DID NOT MOVE AND MUST NOT. `bg/bubble-ai` (#dbeded) and
-     `bg/bubble-user` (#cadfdf) are opaque, so they now sit clearly proud of the
-     ground rather than melting into it — which is the point of the change.
-     What DOES need watching is `text/secondary` (#4b4b57): measured against the
-     bottom stop it lands at 3.3:1, below AA, and CheckIn's `.note` and
-     `.captured` are the two lines that use it inside this panel. Flagged, not
-     "fixed" — non-negotiable 17: a chosen design value is not improved toward a
-     passing one without asking. */
   --chat-panel-gradient: linear-gradient(
     116.756deg,
     #b6cece 36.39%,
     #b8cecf 53.77%,
     #94a0af 105.01%
   );
-  /* ⚠️ OFF THE RADIUS SCALE — `3xl` is 32 and `full` is 999, so 36 is a value
-     the system does not publish. Raise `radius/4xl`. */
   --chat-panel-radius: 36px;
 
   width: 100%;
-  /* ⚠️ NOT IN FIGMA — THE NAV'S WIDTH, NOT THE FRAME'S 375, asked for directly
-     13 Sep 2026 ("increase the width like the nav bar"). The panel stands
-     directly above the nav, so the two share both edges at both breakpoints:
-     380 here, 598 on desktop below. */
   max-width: var(--size-nav-width-mobile);
 
-  /* ⚠️ THE PANEL STRETCHES ON MOBILE RATHER THAN HOLDING THE FRAME'S 538.
-     "Translate, don't transcribe" — 538 is a height on a fixed canvas, and a
-     panel that stops two-thirds of the way down a phone is the artefact
-     reproduced rather than the intent. The COMPONENT sizes — radius, padding,
-     the bubbles — are all exact; it is the page-level whitespace that adapts,
-     which is the rule. Desktop holds 538, at the bottom of this file, because
-     there is no desktop frame to say otherwise. */
   flex: 1;
   min-height: 0;
 
   display: flex;
   flex-direction: column;
 
-  /* ⚠️ NOT IN FIGMA — THE TOP IS 16 WHERE THE FRAME DRAWS 24, asked for
-     directly. Sides and bottom are the frame's 20 and 24; only the top moved,
-     so the header sits closer to the panel's edge without narrowing the column
-     or lifting the footer.
-
-     ⚠️ THE GAP YOU SEE IS 4 MORE THAN THIS NUMBER, and the rest is not padding.
-     `.avatar` is the frame's 58 `chat-ball` slot holding a 50 sphere, so it
-     carries 4 of slack above the orb that no padding here can reach. 16 + 4 =
-     20 to the sphere, against 28 before. Take the slot down before reaching for
-     a smaller top pad again — the sphere is the thing the eye measures to, and
-     `--space-md` here would put the X 12 from the edge while the orb still sat
-     at 16. */
   padding: var(--space-lg) var(--space-xl) var(--space-2xl);
   border-radius: var(--chat-panel-radius);
   background: var(--chat-panel-gradient);
-  /* ⚠️ NOT IN FIGMA — asked for directly 12 Sep 2026. The frame has no drop
-     shadow of its own and the panel sat flush with the canvas gradient behind
-     it, hardest to tell apart as the check-in overlay over `/progress`.
-     `--shadow-frosted-data` is the existing lift every other System B surface
-     uses (`DataCard`, `CameraCapture`, `SkinProfileStrip`) — not a new value.
-
-     ⚠️ AND ITS EDGE IS A GLOW, NOT A LINE — asked for directly 13 Sep 2026.
-     It carried the nav's glass edge for part of that day (the 0.5px #ffffff54
-     rim and `--shadow-nav`'s bevel), and on a panel this size the rim read as
-     a drawn outline round the whole screen. It now takes the desktop page
-     card's effect style instead, `surface/frosted-card-desktop` — the soft
-     white inner glow along every edge that `HubScreen`'s card (`My Products`)
-     wears, with no stroke at all — layered over the lift above. No new value,
-     and no border, so non-negotiable 10's `background-origin` is moot. */
   box-shadow: var(--shadow-frosted-card-desktop), var(--shadow-frosted-data);
   /* the frame is overflow-clip; a footer's drop shadow is clipped in the comp
      too */
@@ -150,25 +65,7 @@
    scale. See the doc comment on ChatPanel.tsx for why it is an X. */
 .close {
   --chat-glyph: var(--size-icon-xs);
-  /* ⚠️ NOT IN FIGMA — asked for directly 12 Sep 2026. `.header`'s
-     `align-items: center` puts the X level with the 58px avatar slot's
-     midpoint; nudged 4px above that so it sits closer to the panel's own top
-     edge instead of the avatar's centre. Only the top offset moves — the
-     shorthand `margin` on `.headerButton` still sets the other three sides.
-     ⚠️ PINNED TO THE HEADER'S TOP INSTEAD, asked for directly 13 Sep 2026
-     ("move up the x button higher"). A centred item only moves HALF of any
-     margin change — the other half re-centres the margin box — so nudging
-     the top margin bought 6px for 12. `flex-start` takes the X out of the
-     centring, and the margin then lands the glyph's top edge 21 below the
-     panel's edge: the same 21 it sits in from the right, so the X reads as
-     set into the corner rather than floating beside the orb. The 44 target
-     overhangs the header by 10 and stays inside the panel's 16 top pad. */
   align-self: flex-start;
-  /* ⚠️ IT IS `IconButton size="xs"` AS OF 31 Oct 2026 — the app's one small
-     glass ✕ (asked for directly: "buttons that use the same design should be
-     using reusable components with variants"). The 20 disc keeps the 16 of
-     room the glyph had, centred where it was: half the difference off every
-     side, and the same 4 down. Its 44 target is `IconButton`'s. */
   flex: none;
   margin: calc((var(--chat-glyph) - var(--size-icon-sm)) / 2);
   margin-top: calc((var(--chat-glyph) - var(--size-icon-sm)) / 2 + var(--space-xs));
@@ -179,27 +76,12 @@
    header and the footer stay put while the conversation moves under them.
    -------------------------------------------------------------------------- */
 
-/* ⚠️ NOT IN FIGMA — 12 ABOVE THE FIRST ROW WHERE THE FRAME GIVES 20. The 12 was
-   set to pull the `Today` divider up under the header; the divider has since
-   gone, so it is now the gap between the header and the first thing in the
-   body, and it was kept because the whole top of this panel was tightened on
-   purpose. The bottom pad keeps the frame's 20 — that one is clearance above
-   the footer, not space around anything that was removed.
-
-   The 16 gap is a FLOOR. A caller that wants its rows further apart adds to it
-   rather than replacing it — see `.messageRow + .messageRow` in ChatScreen and
-   `.chat` in CheckIn. */
 .body {
   flex: 1;
   min-height: 0;
   overflow-y: auto;
   overscroll-behavior: contain;
 
-  /* ⚠️ THE BAR IS HIDDEN, THE SCROLL IS NOT — the same recipe `html` carries in
-     globals.css, and for the same reason: LUX hides OS scrollbar chrome so the
-     frosted surfaces stay chrome-free. This is a SECOND scroll container, so
-     the global rule never reached it, and the panel was the one surface in the
-     app drawing a bar down its side. */
   scrollbar-width: none; /* Firefox */
   -ms-overflow-style: none; /* legacy Edge */
 
@@ -208,15 +90,6 @@
   gap: var(--space-lg); /* 16 */
   padding-block: var(--space-md) var(--space-xl); /* 12 / 20 */
 
-  /* ⚠️ NOT IN FIGMA — THE SCROLLED EDGES FADE, asked for directly 16 Sep 2026:
-     without a mask a bubble scrolling past the header or the footer disappears
-     at the panel's own rounded corner, a hard line with nothing soft about it.
-     `--space-2xl` (24) is the same distance in from both edges regardless of
-     content, so a bubble dissolves before it reaches either boundary instead of
-     being cut by it. Static, not scroll-position-aware: it fades a hair of the
-     first and last bubble even at the very top or bottom of the scroll range,
-     which is the accepted trade for not wiring a scroll listener to a panel
-     that never holds more than three short turns. */
   -webkit-mask-image: linear-gradient(
     to bottom,
     transparent,
@@ -237,54 +110,11 @@
   display: none; /* Chrome, Safari, Chromium Edge */
 }
 
-/* ---------------------------------------------------------------------------
-   DESKTOP
-
-   ⚠️ THERE IS NO DESKTOP FRAME FOR THIS PANEL. The column is captioned
-   "Mobile · 375" and nothing else in the file draws it, so rather than invent a
-   1440 composition the panel keeps the size it was drawn at and centres. That
-   is a decision to revisit the moment a desktop frame exists — noted in
-   docs/archive/figma-catchup.md.
-   -------------------------------------------------------------------------- */
+/* DESKTOP */
 
 @media (min-width: 1024px) {
   .panel {
-    /* ⚠️ NOT IN FIGMA — 450, WHICH IS THE FRAME'S 375 PLUS 20%, asked for
-       directly. Desktop only: a phone is about 390 wide, so 375 is already
-       nearly the full screen there and widening it would just remove the
-       margins. On a 1440 canvas the same 375 is a narrow column in a lot of
-       empty space, and 20% is what closes that without turning a conversation
-       panel into a page.
-
-       ⚠️ THE HEIGHT IS NOT PART OF THIS AND CANNOT BE. The panel already fills
-       the column top to bottom — 16 under the screen's top pad, 16 above the
-       nav — so "20% larger" only has one dimension left to grow in. */
-    /* ⚠️ SUPERSEDED 13 Sep 2026 — the nav's desktop width now, see `.panel`
-       above. The 450 reasoning stands: this only widens a column, never the
-       height. */
     max-width: var(--size-nav-width-desktop);
-
-    /* ⚠️ NOTHING ELSE. THE PANEL STRETCHES ON DESKTOP TOO, AND THE 538 IS GONE —
-       asked for directly, and it was also a BUG, not just a preference.
-
-       The frame is 375x538 and this rule used to reproduce that height, on the
-       reasoning that with no desktop frame to say otherwise the panel should
-       keep the size it was drawn at. That is defensible for `/chat`, which
-       holds two seeded bubbles and never grows. It is wrong for the daily
-       check-in, which is the same panel and builds itself as the user answers:
-       measured at 1440x900, turn 3 put `Add a note` and `Take a photo` 100px
-       BELOW the panel's bottom edge, where `.panel`'s `overflow: hidden`
-       clipped them — so the two controls were invisible and unclickable while
-       the body still reported itself scrollable. Mobile never had it, because
-       mobile already stretched.
-
-       So the mobile rule now applies at every width: `flex: 1` against the
-       screen's own padding. That is the "translate, don't transcribe" reading
-       the mobile comment above already makes — 538 is a height on a fixed
-       canvas, and a panel that stops two-thirds of the way down is the artefact
-       reproduced rather than the intent. Revisit if a desktop frame ever
-       appears, and note that a fixed height there has to answer for a panel
-       whose content grows. */
   }
 }
 

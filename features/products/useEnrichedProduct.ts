@@ -10,17 +10,6 @@ import { lookupOpenBeautyFacts } from "./openBeautyFacts";
  * that fell back to the offline fixture. Products that already carry a
  * `description` (a live Open Beauty Facts search result) pass through
  * unchanged with no extra request.
- *
- * ⚠️ INGREDIENTS ONLY — IT USED TO FETCH A PHOTO TOO, and keyed its skip on
- * `imageUrl`. Photos are no longer read from the API at all (see
- * lib/openBeautyFacts.ts); the artwork is drawn from the product itself and
- * needs no request. The description is the one field left that a lookup can
- * add, so it is what the skip now tests.
- *
- * Used by the add-product tray's confirm view (the old `04 — Product match` /
- * `04 — Confirm product` screens, now one view inside the tray)
- * and the add-product tray's ConfirmView — the two places a `ProductCard`
- * renders a product that may still be the bare catalogue fixture.
  */
 export function useEnrichedProduct(product: CatalogProduct): CatalogProduct {
   const [enriched, setEnriched] = useState<CatalogProduct>(product);

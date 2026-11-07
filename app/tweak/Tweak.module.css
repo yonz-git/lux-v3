@@ -3,11 +3,6 @@
    height. From 1024 the frame fills what the panel leaves and the panel is a
    column on the right; both scroll on their own. */
 
-/* ⚠️ DARK — 1 Nov 2026, asked for directly ("make the page in darkmode",
-   "white screens is tiring"). The tool's chrome only: the framed screen is
-   the app as it ships. The semantic tokens are redefined for this subtree, so
-   the design system's own Chip, SmallButton and IconButton turn dark with
-   it rather than staying light pills on a dark ground. */
 .tool {
   --color-text-primary: #e6e7ee;
   --color-text-secondary: #b3b5c3;

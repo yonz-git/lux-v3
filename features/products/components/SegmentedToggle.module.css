@@ -13,23 +13,13 @@
 .toggle {
   display: flex;
   gap: var(--space-xs);
-  /* 5 until 1 Nov 2026, off the scale */
   padding: var(--space-xs);
   border-radius: var(--radius-full);
   background: var(--color-surface-frost-nav);
-  /* ⚠️ THE HAIRLINE AND THE LIT RING BELOW AT 80% OF THEIR OPACITY, asked for
-     directly 15 Sep 2026 ("lower opacity the border color 20%"): `border/glass`
-     mixed 80% with transparent here, and the ring's two stops 0.7 → 0.56 and
-     0.3 → 0.24 on `::before` */
   border: 1px solid color-mix(in srgb, var(--color-border-glass) 80%, transparent);
   -webkit-backdrop-filter: blur(16px);
   backdrop-filter: blur(16px);
   align-self: center;
-  /* ⚠️ NOT IN FIGMA — the edge light the buttons and the page card carry
-     (globals.css `.edge-light`), on the TRACK, 14 Sep 2026, asked for directly:
-     the card's inward white glow and a 1px top catch here, the lit ring on
-     `::before` below. Values copied at the pale pills' strengths, not shared —
-     `.edge-light` is a span and the track's children are its segments. */
   position: relative;
   box-shadow:
     inset 0 2px 12px rgba(255, 255, 255, 0.25),
@@ -72,12 +62,7 @@
    md `Button`'s role), no UA padding (globals.css zeroes it on all buttons).
    The gradient layer sits in a pseudo-element so background-color can
    transition the solid fill independently while the gradient cross-fades via
-   opacity.
-
-   ⚠️ FLEX-CENTRED ON ONE LINE — 31 Oct 2026, asked for directly ("vertical
-   center please always"). The segment carried no text role, so its label
-   fell back to 16px / `normal` leading, sat 9px low of the pill's centre and
-   wrapped to two lines at phone width. */
+   opacity. */
 
 .segment {
   position: relative;
@@ -99,19 +84,6 @@
     --shine-ink var(--duration-base) var(--ease-standard);
 }
 
-/* ⚠️ THE PILL FOLLOWS THE POINTER — asked for directly 13 Sep 2026 ("when I
-   hover on Search again the Add product hover effect is also on"). The
-   unselected segment used to take a faint overlay while the selected one kept
-   its full gradient, so hovering `Search again` lit BOTH, and the brighter of
-   the two was the one the pointer was not on. Both segments here are actions
-   (the tray's accept / reject), so the gradient now moves to whichever one is
-   under the pointer and the other drops to plain ink until the pointer leaves.
-   `:has()` is what lets the hovered segment reach its sibling.
-
-   The grad endpoints are set on `::before`, where the gradient is painted, for
-   the reason recorded on the reversal below. The label ink cross-fades with
-   the pill on `duration/base`: `--shine-ink` is a registered <color>
-   (globals.css), so it interpolates like `color` does. */
 @media (hover: hover) {
   /* `:not(:disabled)` throughout: a disabled segment never takes the pill */
   .segment:not(.selected):not(:disabled):hover {
@@ -178,19 +150,6 @@
   opacity: 1;
 }
 
-/* ⚠️ NOT IN FIGMA — A HOVER, asked for directly 13 Sep 2026: "same as add
-   buttons", NOT like the main big buttons. So it is `SmallButton`'s hover and
-   nothing more — the selected pill's gradient runs end for end
-   (non-negotiable 5) and the label shines — with no specular rim, which the
-   Add buttons dropped the same day. The unselected segment keeps its overlay
-   and takes the shine too.
-
-   ⚠️ THE REVERSAL IS WRITTEN ON `::before`, WHERE THE GRADIENT IS PAINTED, and
-   the transition lives there too — so it animates whether or not the
-   registered properties inherit from the button.
-
-   `--shine-ink` MUST be each label's own token: `.shine-text` paints the
-   glyphs transparent and draws the ink from this. */
 .segment {
   --shine-ink: var(--color-text-secondary);
 }
@@ -211,12 +170,6 @@
   z-index: 1;
 }
 
-/* ⚠️ NOT IN FIGMA — the edge light `Button` and `SmallButton` carry
-   (globals.css `.edge-light`), 14 Sep 2026, asked for directly. It belongs to
-   the indigo PILL, not the segment, so it follows `::before`'s opacity: on the
-   selected segment, on an unselected one while it borrows the pill under the
-   pointer, and off the selected one while it has lent it away. Same clock as
-   the pill's fade. */
 .edge {
   /* the indigo pill's brighter edge — the ring values the primary `Button`
      sets (Button.module.css) */
@@ -226,11 +179,6 @@
   transition: opacity var(--duration-base) var(--ease-standard);
 }
 
-/* ⚠️ AND NO INNER GLOW, as the primary `Button` lost its on 15 Sep 2026 —
-   asked for directly the same day ("update these colors to the new primary
-   btn colors"). The gradient already read the primary's tokens; the glow and
-   top catch were what still set the pill apart. Only the 1px ring
-   (`.edge-light::before`) stays. Two classes, over `.edge-light`'s one. */
 .segment > .edge {
   box-shadow: none;
 }
@@ -251,12 +199,6 @@
   }
 }
 
-/* ⚠️ A DISABLED SEGMENT — `actions` only, added 14 Sep 2026 (see
-   SegmentedToggle.tsx). It fades like every disabled LUX control
-   (`opacity/disabled`), and the primary one gives up its indigo pill and its
-   edge light while it cannot be pressed: a lit `Save` that does nothing reads
-   as broken. Three classes deep, so it outranks `.segment.selected::before`
-   and `.segment.selected > .edge`. */
 .segment:disabled {
   opacity: var(--opacity-disabled);
   cursor: not-allowed;

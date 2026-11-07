@@ -1,31 +1,6 @@
 /**
  * What each ingredient on an INCI list IS — the glossary behind the ingredient
  * names that explain themselves (`IngredientTerms`).
- *
- * ⚠️ NOT `lib/actives.ts`, AND IT MUST NOT BECOME IT. That module is what the
- * app REASONS about: six actives, the INCI patterns that find them and the
- * pairs that conflict, read by CHECK's score and the analysis's subtraction.
- * This is what the app EXPLAINS: a line for any name a reader might tap,
- * read by nothing but a tooltip. No score and no hypothesis may ever read it —
- * a sentence written to tell someone what glycerin is has no business behind a
- * compatibility number or a causal claim.
- *
- * ⚠️ IT LIVES IN PRODUCTS BECAUSE ONE COMPONENT READS IT. CHECK reaches it only
- * through `ProductDetails`, and sections may import each other. It moves to
- * `lib/` the day a second section imports it directly, not before.
- *
- * ⚠️ HAND-WRITTEN, AND NOT A CITABLE AUTHORITY — the same standing as
- * `ACTIVES[id].concern`. The entries were drafted and then adversarially
- * fact-checked (16 Sep 2026), their roles use CosIng's function vocabulary in
- * plain words, and every line is kept to what is well established; but CosIng
- * itself — the European Commission's cosmetic ingredient database — is still
- * wired nowhere in the build. See "The ingredient data" in `docs/decisions.md`.
- *
- * ⚠️ THE COPY IS UNDER THE CLAIM-LANGUAGE RULE, AND `npm run vocab` READS THIS
- * FILE. A line says what an ingredient IS and what it does in a formula, hedged
- * where it touches skin ("helps", "can"). It never says safe, gentle, toxic or
- * irritant, never promises an outcome, and never contradicts
- * `ACTIVES[id].concern` for the six actives that module names.
  */
 
 /** What the ingredient mainly does in a formula — CosIng's functions, plainly. */
@@ -66,22 +41,7 @@ type Entry = IngredientNote & {
   aliases: string[];
 };
 
-/**
- * An INCI list as its separate names, in order, each as the label prints it.
- *
- * ⚠️ A COMMA SEPARATES TWO NAMES ONLY OUTSIDE BRACKETS, AND NOT BETWEEN DIGITS.
- *   - Inside a bracket it is the name's own. Open Beauty Facts lists like
- *     `CI 77891 (Titanium Dioxide, Mica)` are common, and a plain split cuts
- *     one ingredient into two nonsense halves.
- *   - Between two digits it is a locant or a decimal comma — `1,2-Hexanediol`,
- *     `Diethylhexyl 2,6-Naphthalate`, `Salicylic Acid 0,5%`. Splitting there put
- *     `1, 2-Hexanediol` on screen, a name no label prints, and no lookup could
- *     ever reach it.
- *   - ⚠️ A BRACKET THAT NEVER CLOSES IS TEXT, NOT A GROUP. A stray `[` or an OCR
- *     misread (`(PARFUMI.`) used to swallow every comma after it, so the rest
- *     of the list lost its notes. Brackets are paired first — `(` with `)`,
- *     `[` with `]` — and only a paired one holds its commas.
- */
+/** An INCI list as its separate names, in order, each as the label prints it. */
 export function splitInci(list: string): string[] {
   const chars = [...list];
 
@@ -147,20 +107,6 @@ const LEAD_IN = /^\s*(?:[a-z]{0,2}\d{5,}\s+-\s+)?(?:ingr[eé]dient[es]?s?\b[^:,]
  *      (`Aqua/Water/Eau`);
  *   3. what is inside a bracket, but only when the name outside it is at most
  *      three words (`CI 77891 (Titanium Dioxide)`).
- *
- * ⚠️ EACH FALLBACK USED TO BE UNCONDITIONAL, AND EACH ONE LIED.
- *   - In INCI a slash also means "a copolymer of" — `Dimethicone/Vinyl
- *     Dimethicone Crosspolymer`, `Castor Oil/IPDI Copolymer` — or a blend, or
- *     `Glyceryl Caprylate/Caprate`. Any side that matched explained the whole,
- *     so an elastomer powder read as Dimethicone's line. A slashed name the
- *     glossary does not know now gets NO note, which beats a borrowed one.
- *   - A bracket fallback run over text `splitInci` could not split — a list
- *     separated by full stops, dashes or new lines, 950 characters of it on
- *     one live product — made the whole paragraph one dotted button, explained
- *     by the first bracketed word anywhere inside it.
- * Known residue: a short run with no separators at all (`BISABOLOL CETYL
- * ALCOHOL FRAGRANCE (PARFUM)`) is four words outside its bracket and gets no
- * note, but three words and a bracket would still borrow one.
  */
 export function noteFor(name: string): IngredientNote | undefined {
   const index = glossaryIndex();

@@ -1,14 +1,13 @@
 # LUX — decision record
 
 Why this build diverges from Figma, and what earlier versions got wrong. Every
-entry here is history plus rationale: the RULES themselves live in `AGENTS.md`,
-and each screen's own reasoning is repeated in the doc comment at the top of its
-component, where it cannot drift from the code it describes.
+entry here is history plus rationale: the RULES themselves live in `AGENTS.md`.
+Code comments say what a thing is, and only why when the code can't show it.
+History stays here and in git, never in the code.
 
 **Read a section here before you change the flow, the surfaces or the copy of
 that nav section** — the ⚠️ blocks record decisions that a comp will contradict,
-so "fixing" the code to match Figma is how they get undone. For ordinary work,
-the component's own doc comment is enough.
+so "fixing" the code to match Figma is how they get undone.
 
 **Figma file:** `wIftBhzkn8E4wjZwgdH71n` · **Screens page:** `06. Screen
 Designs` (`453:2252`). Each section has a `HANDOFF — *` annotation panel beside

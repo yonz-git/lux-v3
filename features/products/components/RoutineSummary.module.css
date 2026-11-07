@@ -12,10 +12,7 @@
 }
 
 /* `.card.card` (0,2,0) outranks DataCard's panel fill and its
-   reduced-transparency rule whatever order the modules load in.
-   The teal was faded to 85% on its own layer from 3 Oct 2026; back at full
-   strength since 29 Oct 2026 (at 0.85 the white ink read 3.2–3.8:1), so it is
-   the card's own background again. */
+   reduced-transparency rule whatever order the modules load in. */
 .card.card {
   position: relative;
   isolation: isolate;
@@ -53,8 +50,6 @@
   padding: 0 var(--space-md);
   border-radius: var(--radius-full);
   border: var(--border-width-hairline) solid rgb(255 255 255 / 0.35);
-  /* 0.08 since 29 Oct 2026, with the chart's pills: at 0.14 over the card's
-     top-left light `5 products` read 4.2:1 at 320 */
   background: rgb(255 255 255 / 0.08);
   color: #fff;
   white-space: nowrap;

@@ -8,21 +8,7 @@ import { Chip } from "@/components/ui/Chip";
 import { useInvestigation } from "@/lib/store/InvestigationProvider";
 import { toggleMulti } from "@/lib/store/answers";
 
-/**
- * 02c — Known conditions. Figma mobile 476:2566, desktop 476:2695. Step 4/6.
- *
- * ⚠️ THIS QUESTION IS OPTIONAL — Continue is available from the start rather
- * than gated on a selection, the only requirement being that a ticked "Other"
- * is filled in. There is no separate "Skip" control; Continue itself is the
- * skip.
- *
- *
- * "None" is the one exclusive answer on this screen — it stays a checkbox and
- * clears the rest via toggleMulti (it is in `EXCLUSIVE_OPTIONS`, lib/answers.ts).
- *
- * ⚠️ lux-v3 (1 Oct 2026, the canvas boards): the answers are CHIPS in one glass
- * panel, `Other` among them, and the field `Other` opens sits under the group.
- */
+/** 02c — Known conditions. Figma mobile 476:2566, desktop 476:2695. Step 4/6. */
 export const CONDITIONS = ["Rosacea", "Eczema", "Perioral dermatitis", "Psoriasis", "None", "Other"];
 
 export function KnownConditions() {
@@ -35,10 +21,6 @@ export function KnownConditions() {
 
   return (
     <QuestionScreen id="conditions">
-      {/* ⚠️ SHORTENED 4 Oct 2026, asked for directly with step 2's: "Do you
-          have any diagnosed skin conditions?" wrapped beside the orb on a
-          phone, and a wrapped question will not centre. The page title
-          already says what kind. */}
       <QuestionPanel question="Any diagnosed conditions?">
         <div
           className={panel.chips}

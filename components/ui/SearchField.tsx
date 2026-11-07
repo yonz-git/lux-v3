@@ -10,13 +10,6 @@ import { SearchIcon, CloseIcon } from "./icons";
  * 50 tall, radius/full, `surface/frost-nav` fill with the frosted-row inner
  * shadow, a leading search glyph and a trailing clear button, both in
  * `text/muted`.
- *
- * ⚠️ THIS IS THE ONLY INPUT COMPONENT THE DESIGN SYSTEM HAS, and it is
- * search-specific. `TextField` (the "Other" field, 02c/03a) is a separate
- * hand-composed recipe. Do not reach for this one for general text entry.
- *
- * The clear button only exists while there is something to clear — the comp
- * shows it because the comp shows a typed query.
  */
 export function SearchField({
   value,
