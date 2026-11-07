@@ -39,20 +39,22 @@ export function EditToggle({
   onClick: () => void;
 }) {
   return (
-    <IconButton
-      size="md"
-      label={editing ? `Save ${subject}` : `Edit ${subject}`}
-      aria-expanded={editing}
-      onClick={onClick}
-    >
-      <span className={styles.swap}>
-        <span data-on={!editing || undefined}>
-          <EditSparkleIcon />
+    <span className={styles.slot}>
+      <IconButton
+        size="md"
+        label={editing ? `Save ${subject}` : `Edit ${subject}`}
+        aria-expanded={editing}
+        onClick={onClick}
+      >
+        <span className={styles.swap}>
+          <span data-on={!editing || undefined}>
+            <EditSparkleIcon />
+          </span>
+          <span data-on={editing || undefined}>
+            <SuccessCheckIcon />
+          </span>
         </span>
-        <span data-on={editing || undefined}>
-          <SuccessCheckIcon />
-        </span>
-      </span>
-    </IconButton>
+      </IconButton>
+    </span>
   );
 }

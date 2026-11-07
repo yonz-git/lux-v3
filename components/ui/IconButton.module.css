@@ -29,6 +29,14 @@
   height: var(--size-round-md);
 }
 
+/* ⚠️ A DROP SHADOW ON THE SMALL GLASS CIRCLE — 1 Nov 2026, asked for directly
+   ("give all these icons drop shadows"): back, edit, the calendar's ‹ › and the
+   face's ↺. `shadow/float`, the white ✕ circle's own. Outside the disc only, so
+   the rim stays even (see `.glass`). */
+.glass.md {
+  box-shadow: var(--shadow-float);
+}
+
 /* the 20 disc; its 44 target is `.tap-target` (IconButton.tsx) */
 .xs {
   width: var(--size-icon-sm); /* 20 */

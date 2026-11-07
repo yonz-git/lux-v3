@@ -1,3 +1,32 @@
+/* ⚠️ THE OVERLINE SETS THE ROW, NOT THE CIRCLE — 1 Nov 2026, asked for
+   directly ("start looking from the heading"). The 32 circle in a 20 overline
+   row made the row 32 tall: the heading dropped 6 and the gap under it grew
+   from 16 to 22. The slot is size-contained, so it adds nothing to the row:
+   the row is the overline's own line and the slot stretches to it.
+
+   ⚠️ AND IT SITS EVENLY IN THE CORNER — same day, asked for directly ("fix
+   the position still"): centred on the overline it was 19 from the card's top
+   but 25 from its right. The circle's centre now sits half the row's height
+   in from the slot's end (`50cqh`), so it overflows the end by what it
+   overflows the top and bottom, and both corner insets match. `cqh` reads the
+   real row, which is 20 on the recap and 22 on PROGRESS's desktop column.
+   The slot is the circle's width, so a long overline wraps before it rather
+   than running under it at narrow widths. */
+.slot {
+  container-type: size;
+  position: relative;
+  align-self: stretch;
+  flex: none;
+  width: var(--size-round-md);
+}
+
+.slot > * {
+  position: absolute;
+  top: 50%;
+  right: calc(50cqh - var(--size-round-md) / 2);
+  translate: 0 -50%;
+}
+
 /* The pen and the ✓ share one grid cell and crossfade, so the swap does not
    snap. Each glyph is centred in that cell, the cell in the round button. */
 .swap {
