@@ -53,7 +53,7 @@ import {
   hasReadableIngredients,
 } from "@/lib/actives";
 import { daysBetween, fromIso } from "@/lib/date";
-import { ownedProducts } from "@/lib/demo";
+import { ownedProducts } from "@/features/products/library";
 
 /* ---------------------------------------------------------------------------
    The timeline

@@ -168,7 +168,11 @@ export function YourProducts() {
         )}
       </QuestionScreen>
 
-      <AddProductMethodSheet open={sheetOpen} onClose={() => setSheetOpen(false)} />
+      <AddProductMethodSheet
+        open={sheetOpen}
+        onClose={() => setSheetOpen(false)}
+        start="empty"
+      />
     </>
   );
 }

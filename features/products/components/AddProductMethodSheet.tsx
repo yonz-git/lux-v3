@@ -14,7 +14,6 @@ import { SearchField } from "@/components/ui/SearchField";
 import { ProductRow } from "./ProductList";
 import { ProductThumb } from "./ProductThumb";
 import { useInvestigation } from "@/lib/store/InvestigationProvider";
-import { useSnackbar } from "@/components/layout/Snackbar";
 import { DROP_EXIT_MS, useDialogPresence, useHeldWhileClosing } from "@/lib/useModalDialog";
 import { SearchIcon, CameraIcon, ChevronRightIcon, CloseIcon } from "@/components/ui/icons";
 import {
@@ -29,6 +28,8 @@ import {
   type ProductDraft,
   type SavedProduct,
 } from "@/features/products/products";
+import type { LibraryStart } from "@/features/products/library";
+import { useProductLibrary } from "@/features/products/useProductLibrary";
 import { useOpenBeautyFactsSearch } from "@/features/products/useOpenBeautyFactsSearch";
 import { useEnrichedProduct } from "@/features/products/useEnrichedProduct";
 
@@ -70,23 +71,15 @@ type ConfirmStage = "verify" | "duration" | "added" | "rejected";
 export function AddProductMethodSheet({
   open,
   onClose,
-  base = [],
+  start,
 }: {
   open: boolean;
   onClose: () => void;
-  /**
-   * ⚠️ WHAT AN EMPTY STORE MEANS DEPENDS ON WHO OPENED THE TRAY. In step 5 it
-   * means the user has added nothing, so a first add starts from `[]`. On the
-   * PRODUCTS hub it means the seeded library is still showing
-   * (`ownedProducts`), and starting from `[]` there would materialise the store
-   * as that ONE new product and wipe the list the user was looking at. The
-   * caller passes what it is currently displaying; the same fallback
-   * `MyProducts`' remove path already uses.
-   */
-  base?: SavedProduct[];
+  /** what an untouched library means to the screen that opened the tray */
+  start: LibraryStart;
 }) {
   const { answers, setAnswer } = useInvestigation();
-  const { show } = useSnackbar();
+  const { add, remove: removeProduct } = useProductLibrary(start);
   const [view, setView] = useState<View>("method");
   const [confirmSource, setConfirmSource] = useState<ConfirmSource>("search");
   const [stage, setStage] = useState<ConfirmStage>("verify");
@@ -160,19 +153,10 @@ export function AddProductMethodSheet({
    */
   function addProduct() {
     if (!draft?.duration) return;
-    const saved: SavedProduct = {
-      // the ENRICHED product, not the bare draft, so a saved product carries
-      // whatever photo/ingredients Open Beauty Facts found and the hub's
-      // thumbs and accordion cards show it too
-      ...enrichedProduct,
-      duration: draft.duration,
-      bucket: bucketFor(draft.duration),
-      addedOn: new Date().toISOString(),
-    };
-    setAnswer("products", (prev) => [
-      ...(prev ?? base).filter((p) => p.id !== saved.id),
-      saved,
-    ]);
+    // the ENRICHED product, not the bare draft, so a saved product carries
+    // whatever photo/ingredients Open Beauty Facts found and the hub's
+    // thumbs and accordion cards show it too
+    add(enrichedProduct, draft.duration);
     // ⚠️ THE QUERY IS CLEARED HERE, and it matters now the results are a
     // dropdown. `Add another product` reuses the same `productQuery`, so a
     // query left standing meant the added stage opened with a full panel of
@@ -182,20 +166,6 @@ export function AddProductMethodSheet({
     // for the same thing.
     setAnswer("productQuery", "");
     setStage("added");
-  }
-
-  /** ⚠️ THE SAME UNDO THE HUB'S `Remove` GETS, AND FOR THE SAME REASON: this
-   *  removes from `answers.products`, the library that persists forever, not
-   *  from anything local to the tray. The snapshot is the store's own value so
-   *  a seeded library comes back seeded — see `MyProducts.removeProduct`. */
-  function removeProduct(id: string) {
-    const before = answers.products;
-    const removed = (answers.products ?? base).find((p) => p.id === id);
-    setAnswer("products", (prev) => (prev ?? base).filter((p) => p.id !== id));
-    show({
-      message: removed ? `Removed ${fullName(removed)}` : "Product removed",
-      onAction: () => setAnswer("products", before),
-    });
   }
 
   const title =

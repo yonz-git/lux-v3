@@ -31,6 +31,7 @@ import {
   CONFIDENCE_LABEL,
   type Analysis as AnalysisResult,
 } from "@/features/my-skin/analysis";
+import { ownedProducts } from "@/features/products/library";
 import { fullName } from "@/features/products/products";
 import { addDays, toIso } from "@/lib/date";
 
@@ -446,7 +447,7 @@ function Reminder() {
   /* ⚠️ NOT WHEN THE LIST IS EMPTY. With no products at all, the screen is
      already asking for products; adding "and by the way, no cleanser either" is
      the same request twice, in a quieter voice. */
-  if (missing.length === 0 || (answers.products?.length ?? 0) === 0) return null;
+  if (missing.length === 0 || ownedProducts(answers).length === 0) return null;
 
   return (
     <p className={`${styles.reminder} t-body3`}>

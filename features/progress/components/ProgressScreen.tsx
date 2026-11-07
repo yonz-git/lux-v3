@@ -20,7 +20,7 @@ import { PhotoGallery, ProgressGallery } from "./PhotoGallery";
 import { useInvestigation } from "@/lib/store/InvestigationProvider";
 import { useToday } from "@/lib/useToday";
 import { formatLong } from "@/lib/date";
-import { ownedProducts } from "@/lib/demo";
+import { ownedProducts } from "@/features/products/library";
 import {
   checkInsFor,
   dayNumber,

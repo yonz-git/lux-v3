@@ -31,17 +31,16 @@ import {
   worstBand,
   type SavedCheck,
 } from "@/features/check/check";
-import { DEMO_PRODUCTS, ownedProducts } from "@/lib/demo";
+import { ownedProducts } from "@/features/products/library";
+import { useProductLibrary } from "@/features/products/useProductLibrary";
 import { useToday } from "@/lib/useToday";
 import { useShrinkWrap } from "@/lib/useShrinkWrap";
 import { progressView } from "@/features/progress/progress";
 import {
   DURATIONS,
-  bucketFor,
   fullName,
   type CatalogProduct,
   type Duration,
-  type SavedProduct,
 } from "@/features/products/products";
 import { useCheckSearch } from "@/features/check/useCheckSearch";
 import SegmentedToggle from "@/features/products/components/SegmentedToggle";
@@ -114,6 +113,7 @@ import SegmentedToggle from "@/features/products/components/SegmentedToggle";
 export function CheckResults({ now }: { now: number }) {
   const router = useRouter();
   const { answers, setAnswer } = useInvestigation();
+  const { add } = useProductLibrary("seeded");
   /* the skin profile card's values, from PROGRESS's own view — the same
      derivation `/check/new` and `/progress` use, so the three cannot disagree */
   const profile = progressView(answers, useToday(now));
@@ -220,21 +220,9 @@ export function CheckResults({ now }: { now: number }) {
    * by someone who is not using it, so the duration doubles as the yes — which
    * is why there is no separate confirm, only the decline beside it.
    *
-   * ⚠️ THE FALLBACK IS `DEMO_PRODUCTS`, not `[]` — the same materialisation
-   * `MyProducts` documents. With `?? []` the first add would replace the whole
-   * seeded library with the one product just added.
    */
   function keepUsing(p: CatalogProduct, duration: Duration) {
-    const saved: SavedProduct = {
-      ...p,
-      duration,
-      bucket: bucketFor(duration),
-      addedOn: new Date().toISOString(),
-    };
-    setAnswer("products", (prev) => [
-      ...(prev ?? DEMO_PRODUCTS).filter((x) => x.id !== saved.id),
-      saved,
-    ]);
+    add(p, duration);
     setAsking(null);
   }
 

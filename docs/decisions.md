@@ -1637,6 +1637,26 @@ risk. All are on the missing-from-the-DS list.
 
 ---
 
+## The Product library is one module (7 Nov 2026)
+
+`features/products/library.ts` holds the rules and `useProductLibrary` the store
+and the undo. The seeded-or-theirs rule had lived in every caller, and it failed
+five ways: an emptied list came back seeded on reload, a first add from
+`/check/new` cut the seeded five down to one, a product added from that tray
+never joined the check, a timestamped `addedOn` missed its add day and the trend,
+and Analysis's reminder read the raw store.
+
+- **`LibraryStart` is required, never defaulted.** The optional `base = []` is how
+  `CheckBuilder` got it wrong without anything saying so.
+- **Step 5 stays `empty`.** The open question in `lib/demo.ts` is still open; this
+  did not decide it.
+- **`CheckBuilder` keeps diffing rather than being told what was added.** Holding
+  the ids from when the tray opened keeps "removed in the tray again" correct for
+  free, which a report from the tray would have to handle.
+- **`npm test` is `node --test`, with no framework.** Node strips the types and
+  `scripts/test-resolve.mjs` resolves `@/`. It runs pure modules only, so anything
+  importing JSX, such as `progress.ts`, needs its rules moved out to be tested.
+
 ## PERSISTENCE — the store is SPLIT, and only completed records are written
 
 **6 Sep 2026.** Everything the user did lived in RAM and died on refresh. That

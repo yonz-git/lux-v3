@@ -26,7 +26,7 @@ app/                 routes only, thin page.tsx shells
 components/ui/       design system components + icons
 components/layout/   app chrome: BottomNav, HubScreen, ScreenHeader, RouteAnnouncer, Snackbar
 features/my-skin/    flow.ts, safety.ts, analysis.ts, profile.ts, steps, FaceDiagram
-features/products/   products.ts, search hooks, list/card/details, add tray
+features/products/   products.ts, library.ts, search hooks, list/card/details, add tray
 features/progress/   progress.ts, ProgressScreen, check-in, calendar, trend
 features/check/      check.ts, check screens, CompatCard, ResultCards, CheckBasket
 lib/store/           answers.ts, persistence.ts, InvestigationProvider.tsx
@@ -100,6 +100,7 @@ lib/                 date.ts, demo.ts, pageTitles.ts, actives.ts
 - Readouts (`/progress`, `/check`) open populated via `skinProfile()` in `lib/demo.ts`.
 - Continue is gated by the step's `isComplete` in `flow.ts`. `QuestionScreen` owns the button.
 - Read with `useInvestigation()`.
+- Owned products: read with `ownedProducts()`, change with `useProductLibrary()`. Every change names its `LibraryStart`. Terms in `CONTEXT.md`.
 
 | Slice | Lifetime | List |
 | --- | --- | --- |
@@ -207,7 +208,7 @@ lib/                 date.ts, demo.ts, pageTitles.ts, actives.ts
 
 ## Before done
 
-- `npm run build` and `npm run typecheck` clean.
+- `npm run build`, `npm run typecheck` and `npm test` clean.
 - `npm run spacing` if layout changed.
 - `npm run vocab` if copy mentions a product's effect on skin.
 - Check at 440 and 1440. Check computed values, not screenshots.

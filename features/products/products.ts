@@ -1,3 +1,5 @@
+import { fromIso } from "@/lib/date";
+
 /**
  * PRODUCTS — the data behind step 5 and the Products hub.
  *
@@ -601,8 +603,8 @@ export function groupProducts(
 
 /** "Aug 5, 2026" — the format on the expanded accordion card. */
 export function formatAdded(iso: string): string {
-  const d = new Date(iso);
-  if (Number.isNaN(d.getTime())) return iso;
+  const d = fromIso(iso);
+  if (!d) return iso;
   return d.toLocaleDateString("en-US", {
     month: "short",
     day: "numeric",

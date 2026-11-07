@@ -197,6 +197,12 @@ function isSavedProduct(v: unknown): v is SavedProduct {
   );
 }
 
+/** Builds before 7 Nov 2026 wrote `addedOn` as a full timestamp. It reads as
+ *  its date; see `savedProduct`. */
+function dated(product: SavedProduct): SavedProduct {
+  return { ...product, addedOn: product.addedOn.slice(0, 10) };
+}
+
 function isSavedCheck(v: unknown): v is SavedCheck {
   return (
     isObject(v) &&
@@ -266,8 +272,11 @@ export function parsePersisted(raw: string | null): PersistedAnswers {
   const out: PersistedAnswers = {};
 
   if (Array.isArray(data.products)) {
-    const products = data.products.filter(isSavedProduct);
-    if (products.length) out.products = products;
+    const products = data.products.filter(isSavedProduct).map(dated);
+    /* ⚠️ AN EMPTY LIST IS AN ANSWER, a list of only bad rows is not: `[]` means
+       the user emptied it, and dropping it brought the seeded five back on the
+       next reload (`ownedProducts`). */
+    if (products.length || data.products.length === 0) out.products = products;
   }
   if (Array.isArray(data.checks)) {
     const checks = data.checks.filter(isSavedCheck);

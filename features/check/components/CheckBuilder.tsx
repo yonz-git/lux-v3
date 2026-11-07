@@ -18,7 +18,7 @@ import { useInvestigation } from "@/lib/store/InvestigationProvider";
 import { DROP_EXIT_MS, useDialogPresence, useHeldWhileClosing } from "@/lib/useModalDialog";
 import { MAX_CHECK_PRODUCTS, matchedActives } from "@/features/check/check";
 import { useCheckSearch } from "@/features/check/useCheckSearch";
-import { ownedProducts } from "@/lib/demo";
+import { addedSince, ownedProducts } from "@/features/products/library";
 import { useToday } from "@/lib/useToday";
 import { progressView } from "@/features/progress/progress";
 import {
@@ -77,6 +77,7 @@ export function CheckBuilder({ now }: { now: number }) {
 
   const [sheetOpen, setSheetOpen] = useState(false);
   const [addManually, setAddManually] = useState(false);
+  const idsWhenOpened = useRef<string[]>([]);
   /* ⚠️ THE PANEL IS DISMISSIBLE, and it has to be. In the tray the dropdown is
      in flow, so it can only ever push content; here it FLOATS over the page's
      own list, and an overlay you cannot put away is a trap — you would have to
@@ -158,13 +159,22 @@ export function CheckBuilder({ now }: { now: number }) {
   }
 
   /**
-   * The PRODUCTS tray writes into `answers.products` itself, so the way to know
-   * what it added is to look at what is new. Anything that appeared while the
-   * tray was open joins this check.
+   * The PRODUCTS tray writes into the library itself, so the way to know what it
+   * added is to look at what is new. Anything that appeared while the tray was
+   * open joins this check.
+   *
+   * ⚠️ THE IDS ARE TAKEN WHEN THE TRAY OPENS AND HELD. They were recomputed
+   * every render, so at close `before` already held the new product and nothing
+   * ever joined.
    */
-  function closeManualAdd(before: string[]) {
+  function openManualAdd() {
+    idsWhenOpened.current = ownedProducts(answers).map((p) => p.id);
+    setAddManually(true);
+  }
+
+  function closeManualAdd() {
     setAddManually(false);
-    const added = (answers.products ?? []).filter((p) => !before.includes(p.id));
+    const added = addedSince(answers, idsWhenOpened.current);
     if (added.length > 0) {
       setAnswer("checkBasket", (prev) => {
         const next = [...(prev ?? [])];
@@ -177,8 +187,6 @@ export function CheckBuilder({ now }: { now: number }) {
       });
     }
   }
-
-  const ownedIdsWhenOpened = (answers.products ?? []).map((p) => p.id);
 
   /** The line under a dropdown row: ONLY the ingredient that pulled it in when
    *  the query matched nothing visible on the row itself, and nothing
@@ -338,7 +346,7 @@ export function CheckBuilder({ now }: { now: number }) {
                     className={styles.manual}
                     onClick={() => {
                       setDismissed(true);
-                      setAddManually(true);
+                      openManualAdd();
                     }}
                   >
                     Add it manually
@@ -434,7 +442,8 @@ export function CheckBuilder({ now }: { now: number }) {
 
       <AddProductMethodSheet
         open={addManually}
-        onClose={() => closeManualAdd(ownedIdsWhenOpened)}
+        onClose={closeManualAdd}
+        start="seeded"
       />
     </>
   );
