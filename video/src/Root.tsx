@@ -12,6 +12,7 @@ import { DURATION_V2, LuxIntroV2 } from "./v2/LuxIntroV2";
 import { Measure } from "./Measure";
 import { TOO_MUCH_LEN, TooMuch } from "./v3/TooMuch";
 import { LuxNext, NEXT_LEN } from "./v3/LuxNext";
+import { FlowMockup, MOCKUP_H, MOCKUP_W, TAKES, type Flow } from "./mockup/FlowMockup";
 
 /* the same film, laid out for 16:9 — see WIDE in src/layout.ts */
 const LuxIntroWide: React.FC = () => (
@@ -35,6 +36,19 @@ export const RemotionRoot: React.FC = () => (
     <Composition id="Measure" component={Measure} durationInFrames={1} fps={FPS} width={1920} height={400} />
     <Composition id="LuxNext" component={LuxNext} durationInFrames={NEXT_LEN} fps={FPS} width={1920} height={1080} />
     <Composition id="TooMuch" component={withCanvas(TooMuch)} durationInFrames={TOO_MUCH_LEN} fps={FPS} width={1920} height={1080} />
+    <Folder name="Mockups">
+      {(Object.keys(TAKES) as Flow[]).map((flow) => (
+        <Composition
+          key={flow}
+          id={`Mockup-${flow}`}
+          component={() => <FlowMockup flow={flow} />}
+          durationInFrames={TAKES[flow].frames}
+          fps={FPS}
+          width={MOCKUP_W}
+          height={MOCKUP_H}
+        />
+      ))}
+    </Folder>
     <Folder name="Scenes">
       <Composition id="Hook" component={withCanvas(Hook)} durationInFrames={170} fps={FPS} width={1080} height={1080} />
       <Composition id="Brand" component={withCanvas(Brand)} durationInFrames={160} fps={FPS} width={1080} height={1080} />
