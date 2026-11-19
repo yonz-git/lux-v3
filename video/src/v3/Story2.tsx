@@ -14,7 +14,8 @@ import { FiveTile, P5, Tap } from "./Story";
  * 6 · The app's `Start analysis` button flies in under the groups and is
  *     tapped; the analysing screen runs, then the results page (4 Oct 2026,
  *     asked for: the orb used to point and explain before anything had been
- *     analysed, which put the answer before the question).
+ *     analysed, which put the answer before the question). The page runs in
+ *     the app's order: the five scores, then what to do next (Nov 2026).
  * 7 · The row re-forms; the new addition's name is struck through, it leaves
  *     the row as a paused ghost and the rest close the gap.
  * 8 · PROGRESS's symptom trend card, as the app draws it (SymptomTrend, the
@@ -49,8 +50,11 @@ const D2 = DWELL + AN;
 /* the answer card, its push in and the evidence were cut 3 Oct 2026 (asked
    for): the results page follows the analysing screen directly */
 const SCORE = P6 + D2 + 66;
-/* the results page (what to do next, then compatibility) holds SCORE → P7 */
-const P7 = SCORE + 345;
+/* the results page runs in the app's order, the scores and then what to do
+   next, and holds SCORE → P7. NEXT_AT is when the page has travelled down to
+   the advice; everything on that card is timed from it. */
+const NEXT_AT = 168;
+const P7 = SCORE + NEXT_AT + 270;
 const P8 = P7 + 156;
 /* longer since the gallery joined the graph (3 Oct 2026) */
 const P9 = P8 + 165;
@@ -265,9 +269,9 @@ export const Story2: React.FC = () => {
       {/* ── captions ── */}
       {/* over the results page, where the pause card is (moved 4 Oct 2026: it
           used to come before the analysis had run) */}
-      <Caption text="LUX points to **what to pause** first" at={SCORE + 8} out={SCORE + 66} />
-      <Caption text="And **what to do next**, step by step" at={SCORE + 80} out={SCORE + 184} />
-      <Caption text="Analyses **compatibility**" at={SCORE + 214} out={P7 - 8} top={COMPAT_CAP_TOP} />
+      <Caption text="Analyses **compatibility**" at={SCORE + 8} out={SCORE + 138} top={COMPAT_CAP_TOP} />
+      <Caption text="LUX points to **what to pause** first" at={SCORE + NEXT_AT + 8} out={SCORE + NEXT_AT + 66} />
+      <Caption text="And **what to do next**, step by step" at={SCORE + NEXT_AT + 80} out={P7 - 12} />
       {/* over the row while it is the whole picture; up to the top as the graph comes in */}
       <Caption text="Pause the **suspected** product" at={P7 + 40} out={P9} top={lerp(R7_CAP_TOP, 64, e(f, P8 - 10, P8 + 16, 0, 1, EASE_IN_OUT))} />
       <Caption text="then see **what changes**" at={P8 + 6} out={P9 + 2} top={64 + 65} />
@@ -335,7 +339,7 @@ export const Story2: React.FC = () => {
                   width: 56,
                   height: 56,
                   borderRadius: 28,
-                  background: C.primary,
+                  background: C.routine,
                   color: "#fff",
                   display: "flex",
                   alignItems: "center",
@@ -464,8 +468,8 @@ export const Story2: React.FC = () => {
         </>
       )}
 
-      {/* ── 6 · the results page, as the Analysis tab draws it: what to do next,
-          then the camera travels down to the compatibility scores ── */}
+      {/* ── 6 · the results page, as the Analysis tab draws it: the compatibility
+          scores, then the camera travels down to what to do next ── */}
       {f >= SCORE && f < P7 + 10 && <ResultsPage t={f - SCORE} out={e(f, P7 - 14, P7 + 8)} />}
 
       {/* ── 8 · the progress graph: the app's symptom trend card ── */}
@@ -496,7 +500,7 @@ export const Story2: React.FC = () => {
               cy={POINTS[POINTS.length - 1][1]}
               r={6 * TS * (0.4 + 0.6 * tw(tt, 33, 10))}
               fill="#fff"
-              stroke="#1f5c66"
+              stroke={C.routine}
               strokeWidth={2.4 * TS}
             />
           </svg>
@@ -643,8 +647,9 @@ const TrendCard: React.FC<{ t: number }> = ({ t }) => {
         width: TC.w,
         height: TC.h,
         borderRadius: 24,
-        background: "linear-gradient(160deg, rgba(76,128,139,0.96), rgba(46,106,115,0.97))",
-        boxShadow: "inset 0 1px 0 rgba(255,255,255,0.22), 0 30px 60px -30px rgba(30,60,66,0.55)",
+        /* the app's --gradient-routine (tokens.css) */
+        background: `linear-gradient(#0000000d, #0000000d), radial-gradient(45% 45% at 100% 100%, #00303c3d, #0000 70%), radial-gradient(60% 55% at 0 0, #d0b4b81f, #a0353500 70%), radial-gradient(110% 90% at 0 35%, #567e88, #0000 60%), radial-gradient(90% 80% at 90% 105%, #60a8ba52, #0000 65%), radial-gradient(70% 60% at 80% -10%, #37617547, #0000 70%), ${C.routine}`,
+        boxShadow: "inset 0 1px 0 rgba(255,255,255,0.25), 0 30px 60px -30px rgba(30,60,66,0.55)",
         fontFamily: FIGTREE,
         color: white,
       }}
@@ -679,16 +684,18 @@ const TrendCard: React.FC<{ t: number }> = ({ t }) => {
    ⚠️ Every brand here is made up (Clearwell, Lumen Lab, Serave): the app's
    demo data names real ones. */
 /* narrower than the app's desktop panel (1646) and drawn larger, so its
-   copy reads at video size */
-const RK = 0.93;
+   copy reads at video size; 0.86 since the third step joined (Nov 2026) */
+const RK = 0.86;
 /* the steps breathe as the app spaces them: 20 between a title, its pair and
    its reason (4 Oct 2026, asked for; they were 3 and 0 apart) */
-const RP = { w: 1380, h: 900 };
+const RP = { w: 1380, h: 1000 };
 const RIN = RP.w - 132;
 const RPOS = { x: W / 2 - (RP.w * RK) / 2, y: 170 };
-const TRAVEL = 760;
-const AVOID = "#C4564F";
-const RISKY = "#C97A72";
+const TRAVEL = 860;
+/* the app's feedback/error, /warning and /success */
+const AVOID = "#82302B";
+const RISKY = "#C24E47";
+const COMPATIBLE = "#5F8A6E";
 const ee = (t: number, a: number, b: number, easing = EASE_OUT) => interpolate(t, [a, b], [0, 1], { ...clamp, easing });
 
 const ProductTile: React.FC<{ photo: string; size: number; style?: React.CSSProperties }> = ({ photo, size, style }) => (
@@ -775,8 +782,8 @@ const ScoreCard: React.FC<{ score: number; name: string; brand?: string; band: s
         <ProductTile photo={photo} size={96} style={{ left: 0, top: 0 }} />
       </div>
       </div>
-      <div style={{ fontSize: 30, fontWeight: 500, marginTop: 30 }}>{name}</div>
-      {brand && <div style={{ fontSize: 22, fontWeight: 400, marginTop: 6, color: C.inkMuted }}>{brand}</div>}
+      <div style={{ fontSize: 30, fontWeight: 500, lineHeight: 1.2, marginTop: 26 }}>{name}</div>
+      {brand && <div style={{ fontSize: 24, fontWeight: 400, marginTop: 6, color: C.inkMuted }}>{brand}</div>}
       <div
         style={{
           marginTop: "auto",
@@ -806,37 +813,73 @@ const CARDS = [
   { score: 45, name: "BHA Exfoliant", brand: "Clearwell", band: "Avoid", color: AVOID, photo: "bottle-milky" },
   { score: 62, name: "Retinol B3 Serum", brand: "Lumen Lab", band: "Risky", color: RISKY, photo: "dropper-green" },
   { score: 71, name: "Foaming Cleanser", brand: "Serave", band: "Risky", color: RISKY, photo: "bottle-brown" },
+  { score: 94, name: "Niacinamide 10% + Zinc 1%", brand: "Aldermere", band: "Compatible", color: COMPATIBLE, photo: "pump-milky" },
+  { score: 98, name: "Moisturizing Cream", brand: "Serave", band: "Compatible", color: COMPATIBLE, photo: "jar-olive" },
 ];
-const CARD_GAP = 24;
-const CARDS_X = W / 2 - (3 * 400 + 2 * CARD_GAP) / 2;
-/* the caption and the three cards as one block centred on the frame (4 Oct 2026,
+/* all five on one line: the 400 card drawn at CARD_K */
+const CARD_K = 0.82;
+const CARD_W = 400 * CARD_K;
+const CARD_GAP = 18;
+const CARDS_X = W / 2 - (5 * CARD_W + 4 * CARD_GAP) / 2;
+/* the caption and the cards as one block centred on the frame (4 Oct 2026,
    asked for: the caption sat at the top with the cards well below it) */
-const COMPAT_CAP_TOP = 205;
+const COMPAT_CAP_TOP = 255;
 const COMPAT_Y = COMPAT_CAP_TOP + 175;
 
 const ResultsPage: React.FC<{ t: number; out: number }> = ({ t, out }) => {
-  const panelIn = ee(t, 6, 30);
-  const travel = ee(t, 190, 238, EASE_IN_OUT);
+  /* the page scrolls: the scores leave upward as the advice comes up under them */
+  const travel = ee(t, 146, 196, EASE_IN_OUT);
   const ty = -TRAVEL * travel;
-  const body = { fontSize: 28, lineHeight: "40px", color: C.inkSecondary, width: 1000 } as const;
+  /* everything on the advice card runs from n */
+  const n = t - NEXT_AT;
+  const panelIn = ee(t, 150, 186);
+  const body = { fontSize: 28, lineHeight: "40px", color: C.inkSecondary, width: 1170 } as const;
   const title = { fontSize: 34, lineHeight: "40px", color: C.ink, whiteSpace: "nowrap" } as const;
-  /* the two steps' tiles slide together round the + */
-  const pair = ee(t, 80, 104, EASE_IN_OUT);
-  const border = ee(t, 18, 52, EASE_IN_OUT);
-  const pill = ee(t, 44, 58);
+  /* each step's two tiles slide together round the + */
+  const pair1 = ee(n, 80, 104, EASE_IN_OUT);
+  const pair2 = ee(n, 126, 150, EASE_IN_OUT);
+  const border = ee(n, 18, 52, EASE_IN_OUT);
+  const pill = ee(n, 44, 58);
   return (
     <AbsoluteFill style={{ opacity: 1 - out, fontFamily: FIGTREE }}>
-      {/* what to do next */}
+      {/* compatibility first: the cards rise and their rings draw */}
+      {t < 200 && (
+        <div style={{ position: "absolute", inset: 0, translate: `0 ${ty}px`, opacity: 1 - ee(t, 150, 190, (x) => x) }}>
+          <Up k={ee(t, 8, 26)} style={{ left: CARDS_X, top: COMPAT_Y, fontSize: 28, fontWeight: 500, letterSpacing: "0.2em", color: C.ink }}>
+            COMPATIBILITY · 5 PRODUCTS
+          </Up>
+          {CARDS.map((c, i) => {
+            const k = ee(t, 14 + i * 6, 40 + i * 6);
+            return (
+              <div
+                key={c.name}
+                style={{
+                  position: "absolute",
+                  left: CARDS_X + i * (CARD_W + CARD_GAP),
+                  top: COMPAT_Y + 66 + (1 - k) * 40,
+                  transformOrigin: "0 0",
+                  scale: CARD_K,
+                  opacity: k,
+                }}
+              >
+                <ScoreCard {...c} ring={ee(t, 28 + i * 8, 76 + i * 8)} bandK={ee(t, 72 + i * 8, 86 + i * 8)} />
+              </div>
+            );
+          })}
+        </div>
+      )}
+
+      {/* what to do next, coming up from under the scores */}
       <div
         style={{
           position: "absolute",
           left: RPOS.x,
-          top: RPOS.y + ty + (1 - panelIn) * 40,
+          top: RPOS.y + TRAVEL + ty,
           width: RP.w,
           height: RP.h,
           transformOrigin: "0 0",
           scale: RK,
-          opacity: panelIn * (1 - ee(t, 192, 226, (x) => x)),
+          opacity: panelIn,
           boxSizing: "border-box",
           borderRadius: 60,
           background: C.panel,
@@ -844,20 +887,20 @@ const ResultsPage: React.FC<{ t: number; out: number }> = ({ t, out }) => {
           boxShadow: `inset 0 2px 0 ${C.panelRim}, 0 50px 90px -40px rgba(44, 69, 70, 0.4)`,
         }}
       >
-        <Up k={ee(t, 12, 28)} style={{ left: 66, top: 70, fontSize: 30, fontWeight: 500, letterSpacing: "0.2em", color: C.ink }}>WHAT TO DO NEXT</Up>
+        <Up k={ee(n, 12, 28)} style={{ left: 66, top: 56, fontSize: 30, fontWeight: 500, letterSpacing: "0.2em", color: C.ink }}>WHAT TO DO NEXT</Up>
 
         {/* the pause: its outline draws itself, then the reason */}
-        <div style={{ position: "absolute", left: 66, top: 138, width: RIN, height: 278, borderRadius: 40, background: `rgba(255,255,255,${0.3 * border})` }}>
-          <svg width={RIN} height={278} style={{ position: "absolute", inset: 0, overflow: "visible" }}>
-            <rect x={2} y={2} width={RIN - 4} height={274} rx={38} fill="none" stroke={AVOID} strokeWidth={4} pathLength={1} strokeDasharray={`${border} 1`} />
+        <div style={{ position: "absolute", left: 66, top: 116, width: RIN, height: 252, borderRadius: 40, background: `rgba(255,255,255,${0.3 * border})` }}>
+          <svg width={RIN} height={252} style={{ position: "absolute", inset: 0, overflow: "visible" }}>
+            <rect x={2} y={2} width={RIN - 4} height={248} rx={38} fill="none" stroke={AVOID} strokeWidth={4} pathLength={1} strokeDasharray={`${border} 1`} />
           </svg>
-          <ProductTile photo="bottle-milky" size={96} style={{ left: 39, top: 39, opacity: ee(t, 28, 44), scale: 0.85 + 0.15 * ee(t, 28, 44) }} />
-          <Up k={ee(t, 32, 48)} style={{ ...title, left: 159, top: 67 }}>Pause BHA Exfoliant</Up>
+          <ProductTile photo="bottle-milky" size={96} style={{ left: 39, top: 30, opacity: ee(n, 28, 44), scale: 0.85 + 0.15 * ee(n, 28, 44) }} />
+          <Up k={ee(n, 32, 48)} style={{ ...title, left: 159, top: 58 }}>Pause Clearwell BHA Exfoliant</Up>
           <div
             style={{
               position: "absolute",
               left: RIN - 149,
-              top: 62,
+              top: 53,
               height: 50,
               padding: "0 26px",
               borderRadius: 25,
@@ -872,54 +915,34 @@ const ResultsPage: React.FC<{ t: number; out: number }> = ({ t, out }) => {
           >
             Avoid
           </div>
-          <Up k={ee(t, 48, 66)} style={{ ...body, left: 39, top: 146, color: C.ink }}>
+          <Up k={ee(n, 48, 66)} style={{ ...body, left: 39, top: 142, color: C.ink }}>
             It contains Salicylic Acid (BHA), the biggest problem for your skin profile in this set. Leave it out for two weeks and see whether the flare settles.
           </Up>
         </div>
 
         {/* step 1: the pair, brought together */}
-        <Disc n={1} k={ee(t, 70, 82)} x={89} y={475} />
-        <Up k={ee(t, 74, 90)} style={{ ...title, left: 137, top: 449 }}>Keep BHA Exfoliant and Retinol B3 Serum on alternate nights</Up>
-        <ProductTile photo="bottle-milky" size={80} style={{ left: 137 - 40 * (1 - pair), top: 509, opacity: ee(t, 80, 92) }} />
-        <div style={{ position: "absolute", left: 217, top: 509, width: 48, height: 80, display: "flex", alignItems: "center", justifyContent: "center", fontSize: 30, lineHeight: 1, color: C.ink, opacity: ee(t, 96, 106) }}>+</div>
-        <ProductTile photo="dropper-green" size={80} style={{ left: 265 + 40 * (1 - pair), top: 509, opacity: ee(t, 80, 92) }} />
-        <Up k={ee(t, 94, 110)} style={{ ...body, left: 137, top: 609 }}>
+        <Disc n={1} k={ee(n, 70, 82)} x={89} y={416} />
+        <Up k={ee(n, 74, 90)} style={{ ...title, left: 137, top: 396 }}>Keep Retinol B3 Serum and Niacinamide 10% + Zinc 1% on alternate nights</Up>
+        <ProductTile photo="dropper-green" size={72} style={{ left: 137 - 36 * (1 - pair1), top: 450, opacity: ee(n, 80, 92) }} />
+        <div style={{ position: "absolute", left: 209, top: 450, width: 44, height: 72, display: "flex", alignItems: "center", justifyContent: "center", fontSize: 30, lineHeight: 1, color: C.ink, opacity: ee(n, 96, 106) }}>+</div>
+        <ProductTile photo="pump-milky" size={72} style={{ left: 253 + 36 * (1 - pair1), top: 450, opacity: ee(n, 80, 92) }} />
+        <Up k={ee(n, 94, 110)} style={{ ...body, left: 137, top: 536 }}>Retinol and Niacinamide irritate in the same routine. One tonight, the other tomorrow.</Up>
+
+        {/* step 2: the same */}
+        <Disc n={2} k={ee(n, 116, 128)} x={89} y={626} />
+        <Up k={ee(n, 120, 136)} style={{ ...title, left: 137, top: 606 }}>Keep BHA Exfoliant and Retinol B3 Serum on alternate nights</Up>
+        <ProductTile photo="bottle-milky" size={72} style={{ left: 137 - 36 * (1 - pair2), top: 660, opacity: ee(n, 126, 138) }} />
+        <div style={{ position: "absolute", left: 209, top: 660, width: 44, height: 72, display: "flex", alignItems: "center", justifyContent: "center", fontSize: 30, lineHeight: 1, color: C.ink, opacity: ee(n, 142, 152) }}>+</div>
+        <ProductTile photo="dropper-green" size={72} style={{ left: 253 + 36 * (1 - pair2), top: 660, opacity: ee(n, 126, 138) }} />
+        <Up k={ee(n, 140, 156)} style={{ ...body, left: 137, top: 746 }}>
           Salicylic Acid 2% and Retinol irritate in the same routine, so this pair settles itself while BHA Exfoliant is out, and matters again the day it comes back.
         </Up>
 
-        {/* step 2 */}
-        <Disc n={2} k={ee(t, 120, 132)} x={89} y={765} />
-        <Up k={ee(t, 124, 140)} style={{ ...title, left: 137, top: 739 }}>Bring anything back one product at a time</Up>
-        <Up k={ee(t, 132, 148)} style={{ ...body, left: 137, top: 789 }}>Two at once and a reaction cannot be traced to either of them.</Up>
+        {/* step 3 */}
+        <Disc n={3} k={ee(n, 166, 178)} x={89} y={876} />
+        <Up k={ee(n, 170, 186)} style={{ ...title, left: 137, top: 856 }}>Bring anything back one product at a time</Up>
+        <Up k={ee(n, 178, 194)} style={{ ...body, left: 137, top: 904 }}>Two at once and a reaction cannot be traced to either of them.</Up>
       </div>
-
-      {/* compatibility: the camera arrives, the cards rise and their rings draw */}
-      {t >= 196 && (
-        <>
-          <Up
-            k={ee(t, 214, 232)}
-            style={{ left: CARDS_X, top: COMPAT_Y + TRAVEL * (1 - travel), fontSize: 28, fontWeight: 500, letterSpacing: "0.2em", color: C.ink }}
-          >
-            COMPATIBILITY · 3 PRODUCTS
-          </Up>
-          {CARDS.map((c, i) => {
-            const k = ee(t, 222 + i * 8, 248 + i * 8);
-            return (
-              <div
-                key={c.name}
-                style={{
-                  position: "absolute",
-                  left: CARDS_X + i * (400 + CARD_GAP),
-                  top: COMPAT_Y + 66 + TRAVEL * (1 - travel) + (1 - k) * 40,
-                  opacity: k,
-                }}
-              >
-                <ScoreCard {...c} ring={ee(t, 238 + i * 10, 290 + i * 10)} bandK={ee(t, 286 + i * 10, 300 + i * 10)} />
-              </div>
-            );
-          })}
-        </>
-      )}
     </AbsoluteFill>
   );
 };
@@ -998,7 +1021,7 @@ const GalleryCard: React.FC<{ t: number }> = ({ t }) => {
       }}
     >
       <div style={{ position: "absolute", left: 33, top: 30, fontSize: 15, fontWeight: 500, letterSpacing: "0.14em", lineHeight: "22px" }}>PROGRESS GALLERY</div>
-      <div style={{ position: "absolute", right: 33, top: 30, fontSize: 14, lineHeight: "22px" }}>4 photos</div>
+      <div style={{ position: "absolute", right: 33, top: 30, fontSize: 14, lineHeight: "22px" }}>9 photos</div>
       {DAYS.map((d, i) => {
         const k = tw(t, i * 7, 14);
         return (

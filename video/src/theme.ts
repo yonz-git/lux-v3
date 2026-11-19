@@ -27,6 +27,7 @@ export const C = {
   glassStrong: "rgba(255, 255, 255, 0.40)",
   glassEdge: "rgba(255, 255, 255, 0.55)",
   symptom: "#D3858A",
+  routine: "#005461",
   shadow: "rgba(44, 69, 70, 0.18)",
 } as const;
 
