@@ -196,8 +196,7 @@ export function PhotoGallery({
                         <span className="edge-light" />
                         {formatShort(day)}
                       </span>
-                      {/* no pill on a seeded photo from before the start —
-                          see `checkInsFor` */}
+                      {/* no pill on a photo from before the start */}
                       {n >= 1 && (
                         <span className={`${styles.day} t-label-sm`} aria-hidden="true">
                           <span className="edge-light" />

@@ -29,8 +29,8 @@ features/my-skin/    flow.ts, safety.ts, analysis.ts, profile.ts, steps, FaceDia
 features/products/   products.ts, library.ts, search hooks, list/card/details, add tray
 features/progress/   progress.ts, ProgressScreen, check-in, calendar, trend
 features/check/      check.ts, check screens, CompatCard, ResultCards, CheckBasket
-lib/store/           answers.ts, persistence.ts, InvestigationProvider.tsx
-lib/                 date.ts, demo.ts, pageTitles.ts, actives.ts
+lib/store/           answers.ts, InvestigationProvider.tsx
+lib/                 date.ts, pageTitles.ts, actives.ts
 ```
 
 - Four sections, four folders. No fifth.
@@ -40,7 +40,7 @@ lib/                 date.ts, demo.ts, pageTitles.ts, actives.ts
 - `features/<section>/*.ts` own data and derived values. Screens don't recompute.
 - `QuestionScreen`, `StepProgress` live in `my-skin` (they read `flow.ts`).
 - `lib/actives.ts` is shared by analysis and CHECK. CHECK's `SCORING` stays in `check.ts`.
-- Shared modules allowed to import a feature: `lib/pageTitles.ts` (step titles), `lib/demo.ts` (the seeded profile both readouts open with) and `lib/store/` (the app-wide state that saves every section). `lib/actives.ts` imports a feature type only. Nothing else in `lib/` or `components/` imports a feature.
+- Shared modules allowed to import a feature: `lib/pageTitles.ts` (step titles) and `lib/store/` (the app-wide state every section shares). `lib/actives.ts` imports a feature type only. Nothing else in `lib/` or `components/` imports a feature.
 
 ## Routes
 
@@ -55,7 +55,7 @@ lib/                 date.ts, demo.ts, pageTitles.ts, actives.ts
 | `/investigation/products` | step 5/5 | `products` |
 | `/investigation/analysis` | pushed, retrospective analysis | `my-skin` |
 | `/products` | hub | `products` |
-| `/progress` | hub, default, populated | `progress` |
+| `/progress` | hub, default, empty until step 4 | `progress` |
 | `/progress/empty` | prototype empty state | `progress` |
 | `/progress/check-in` | pushed, check-in chat | `progress` |
 | `/progress/check-in/[date]` | pushed, only dynamic route | `progress` |
@@ -97,20 +97,14 @@ lib/                 date.ts, demo.ts, pageTitles.ts, actives.ts
 ## State
 
 - Controls start empty. Nothing pre-selected.
-- Readouts (`/progress`, `/check`) open populated via `skinProfile()` in `lib/demo.ts`.
+- Every visit starts fresh: nothing is saved between visits and there is no demo data. A reload empties everything.
+- Hubs and their pushed screens show their empty state until `hasInvestigation()` (`progress.ts`): `ProgressEmpty`, `CheckNoProfile`. Never a hollow screen.
 - Continue is gated by the step's `isComplete` in `flow.ts`. `QuestionScreen` owns the button.
 - Read with `useInvestigation()`.
-- Owned products: read with `ownedProducts()`, change with `useProductLibrary()`. Every change names its `LibraryStart`. Terms in `CONTEXT.md`.
+- Owned products: read with `ownedProducts()`, change with `useProductLibrary()`. Terms in `CONTEXT.md`.
 
-| Slice | Lifetime | List |
-| --- | --- | --- |
-| `products`, `checks`, `checkIns`, `savedFinding` | forever | `PERSISTED_KEYS` |
-| steps 1–4 answers | 24h sliding | `FLOW_KEYS` |
-| drafts, baskets, search, `evidence`, `scan`, `viewingCheck` | tab only, never written | — |
-
-- Keys: `lux.records.v2`, `lux.flow.v2` (envelope `{ savedAt, answers }`).
-- Expiry checked on read. Future stamp = stale.
-- Hydrate in an effect. Gate writes on `hydrated` state, not a ref.
+- Answers live in memory for one page load. Nothing is written to the browser; `RETIRED_STORAGE_KEYS` (`answers.ts`) are deleted on load, never read.
+- Navigate between screens with `Link` or `router`, never a full page load: it empties the visit.
 - Not resumable. No UI that promises resume.
 - Toggles use the updater form: `setAnswer(key, (prev) => …)`.
 - Screens echo earlier answers. Guard for missing ones.

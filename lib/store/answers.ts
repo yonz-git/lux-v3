@@ -144,9 +144,13 @@ export function withAreas(
   );
 }
 
-export const LEGACY_STORAGE_KEY = "lux.investigation.v1";
-
-export const LEGACY_START_OTHER_KEY = "lux-start-other-description";
-
-export const LEGACY_FLOW_V1_KEY = "lux.flow.v1";
+/** Every key an earlier build saved in the browser. Nothing is saved now: the
+ *  prototype starts fresh on every visit, so these are only ever deleted. */
+export const RETIRED_STORAGE_KEYS = [
+  "lux.investigation.v1",
+  "lux-start-other-description",
+  "lux.flow.v1",
+  "lux.flow.v2",
+  "lux.records.v2",
+] as const;
 

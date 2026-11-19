@@ -7,12 +7,19 @@ import { Button } from "@/components/ui/Button";
 import { Orb } from "@/components/ui/Orb";
 import { ChatBubble } from "@/components/ui/ChatBubble";
 import { ChevronRightIcon } from "@/components/ui/icons";
+import { hasInvestigation } from "@/features/progress/progress";
+import { useInvestigation } from "@/lib/store/InvestigationProvider";
 
 /**
  * CHECK — the Check tab landing, at `/check`: `Check — start` (601:1952, and
  * its desktop twin). Documented by `HANDOFF — CHECK` (613:2434).
  */
 export function CheckScreen() {
+  const { answers } = useInvestigation();
+
+  /* nothing to check against until there is a skin profile */
+  if (!hasInvestigation(answers)) return <CheckNoProfile />;
+
   return (
     <HubScreen
       nav="check"

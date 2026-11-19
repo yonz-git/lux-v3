@@ -2,11 +2,10 @@
 
 import { useSnackbar } from "@/components/layout/Snackbar";
 import {
-  productIn,
+  ownedProducts,
   savedProduct,
   withoutProduct,
   withProduct,
-  type LibraryStart,
 } from "@/features/products/library";
 import {
   fullName,
@@ -19,19 +18,19 @@ import { useInvestigation } from "@/lib/store/InvestigationProvider";
  * Changing the Product library — `library.ts` holds the rules, this holds the
  * store and the undo.
  */
-export function useProductLibrary(start: LibraryStart) {
+export function useProductLibrary() {
   const { answers, setAnswer } = useInvestigation();
   const { show } = useSnackbar();
 
   function add(product: CatalogProduct, duration: Duration) {
     const saved = savedProduct(product, duration, new Date());
-    setAnswer("products", (prev) => withProduct(prev, saved, start));
+    setAnswer("products", (prev) => withProduct(prev, saved));
   }
 
   function remove(id: string) {
     const before = answers.products;
-    const removed = productIn(before, id, start);
-    setAnswer("products", (prev) => withoutProduct(prev, id, start));
+    const removed = ownedProducts(answers).find((p) => p.id === id);
+    setAnswer("products", (prev) => withoutProduct(prev, id));
     show({
       message: removed ? `Removed ${fullName(removed)}` : "Product removed",
       onAction: () => setAnswer("products", before),

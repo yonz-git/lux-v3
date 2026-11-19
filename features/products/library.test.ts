@@ -8,20 +8,20 @@ import {
   withProduct,
 } from "@/features/products/library";
 import { formatAdded, productById } from "@/features/products/products";
-import { DEMO_PRODUCTS } from "@/lib/demo";
 
 const catalogued = productById("cerave-foaming-cleanser");
 assert.ok(catalogued);
 const added = savedProduct(catalogued, "1–4 weeks", new Date(2026, 10, 7, 23, 30));
 const fresh = { ...added, id: "fresh" };
+const other = { ...added, id: "other" };
 
 describe("ownedProducts", () => {
-  it("is the seeded library until the list is touched", () => {
-    assert.equal(ownedProducts({}), DEMO_PRODUCTS);
+  it("is empty on a fresh visit", () => {
+    assert.deepEqual(ownedProducts({}), []);
   });
 
-  it("is the user's own list once it exists, even empty", () => {
-    assert.deepEqual(ownedProducts({ products: [] }), []);
+  it("is the user's own list once it exists", () => {
+    assert.deepEqual(ownedProducts({ products: [fresh] }), [fresh]);
   });
 });
 
@@ -40,44 +40,38 @@ describe("savedProduct", () => {
 });
 
 describe("withProduct", () => {
-  it("keeps the seeded library when the library opened seeded", () => {
-    const next = withProduct(undefined, fresh, "seeded");
-    assert.equal(next.length, DEMO_PRODUCTS.length + 1);
-    assert.equal(next.at(-1), fresh);
+  it("starts from nothing on a fresh visit", () => {
+    assert.deepEqual(withProduct(undefined, fresh), [fresh]);
   });
 
-  it("starts from nothing when the library opened empty", () => {
-    assert.deepEqual(withProduct(undefined, fresh, "empty"), [fresh]);
+  it("adds beside what is already there", () => {
+    assert.deepEqual(withProduct([other], fresh), [other, fresh]);
   });
 
   it("replaces a product already in the list rather than duplicating it", () => {
-    const next = withProduct([fresh], { ...fresh, duration: "4+ weeks" }, "seeded");
+    const next = withProduct([fresh], { ...fresh, duration: "4+ weeks" });
     assert.equal(next.length, 1);
     assert.equal(next[0].duration, "4+ weeks");
   });
 });
 
 describe("withoutProduct", () => {
-  it("removes from the seeded library without losing the rest", () => {
-    const next = withoutProduct(undefined, DEMO_PRODUCTS[0].id, "seeded");
-    assert.equal(next.length, DEMO_PRODUCTS.length - 1);
+  it("removes only that product", () => {
+    assert.deepEqual(withoutProduct([other, fresh], fresh.id), [other]);
   });
 
   it("can empty the list", () => {
-    assert.deepEqual(withoutProduct([fresh], fresh.id, "seeded"), []);
+    assert.deepEqual(withoutProduct([fresh], fresh.id), []);
   });
 });
 
 describe("addedSince", () => {
-  const seededIds = DEMO_PRODUCTS.map((p) => p.id);
-
-  it("finds only what is new, not the seeded library it materialised", () => {
-    const products = withProduct(undefined, fresh, "seeded");
-    assert.deepEqual(addedSince({ products }, seededIds), [fresh]);
+  it("finds only what is new", () => {
+    assert.deepEqual(addedSince({ products: [other, fresh] }, [other.id]), [fresh]);
   });
 
   it("finds nothing when nothing was added", () => {
-    assert.deepEqual(addedSince({}, seededIds), []);
+    assert.deepEqual(addedSince({}, []), []);
   });
 });
 

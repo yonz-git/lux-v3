@@ -20,7 +20,8 @@ import { MAX_CHECK_PRODUCTS, matchedActives } from "@/features/check/check";
 import { useCheckSearch } from "@/features/check/useCheckSearch";
 import { addedSince, ownedProducts } from "@/features/products/library";
 import { useToday } from "@/lib/useToday";
-import { progressView } from "@/features/progress/progress";
+import { hasInvestigation, progressView } from "@/features/progress/progress";
+import { CheckNoProfile } from "./CheckScreen";
 import {
   type CatalogProduct,
   fullName,
@@ -153,6 +154,9 @@ export function CheckBuilder({ now }: { now: number }) {
       </span>
     );
   }
+
+  /* no skin profile to check against yet */
+  if (!hasInvestigation(answers)) return <CheckNoProfile />;
 
   return (
     <>
@@ -315,7 +319,6 @@ export function CheckBuilder({ now }: { now: number }) {
       <AddProductMethodSheet
         open={addManually}
         onClose={closeManualAdd}
-        start="seeded"
       />
     </>
   );

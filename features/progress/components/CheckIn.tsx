@@ -14,6 +14,7 @@ import { CameraCapture } from "@/components/ui/CameraCapture";
 import { CameraIcon, NoteIcon } from "@/components/ui/icons";
 import { ConfirmField } from "@/components/ui/ConfirmField";
 import { useInvestigation } from "@/lib/store/InvestigationProvider";
+import { ProgressEmpty } from "./ProgressScreen";
 import { useToday } from "@/lib/useToday";
 import { useHeldWhileClosing } from "@/lib/useModalDialog";
 import { symptomsOf, toggleMulti } from "@/lib/store/answers";
@@ -21,6 +22,7 @@ import { toIso } from "@/lib/date";
 import {
   SKIN_TREND_CHOICES,
   checkInsFor,
+  hasInvestigation,
   changeOptions,
   changeReply,
   latestCheckIn,
@@ -32,6 +34,10 @@ import {
 /** The daily check-in — `Check-in chat` (555:1268), at `/progress/check-in`. */
 export function CheckIn({ now }: { now: number }) {
   const router = useRouter();
+  const { answers } = useInvestigation();
+
+  /* no investigation to check in on — the empty Progress hub says so */
+  if (!hasInvestigation(answers)) return <ProgressEmpty />;
 
   return (
     <main className="screen" data-layout="panel">
@@ -78,7 +84,7 @@ export function CheckInPanel({
   const choice = SKIN_TREND_CHOICES.find((c) => c.label === trend);
 
   /* The check-in is dated the VIEW's today, not a bare `new Date()`. They are
-     the same day now that the demo clock is real — but the view's is the one
+     the same day — but the view's is the one
      the calendar rings and the chart plots against, and reading the clock twice
      is how the two come to disagree. `useToday` is also the only safe way to
      ask: calling `new Date()` during render bakes a date into the prerender and

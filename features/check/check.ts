@@ -5,7 +5,7 @@
  * y=8800. 8 screens x 2 breakpoints.
  */
 import type { CatalogProduct } from "@/features/products/products";
-import { fullName, productById } from "@/features/products/products";
+import { fullName } from "@/features/products/products";
 import type { IsoDate } from "@/lib/date";
 import type { ActiveId } from "@/lib/actives";
 import { ACTIVES, activesOf, conflicts } from "@/lib/actives";
@@ -230,35 +230,6 @@ export function productsOf(check: SavedCheck): CatalogProduct[] {
   return check.products;
 }
 
-/** The seeded checks are authored by catalogue id, because that is what is
- *  readable in a fixture; they are resolved to products once, here. */
-function demoCheck(id: string, date: IsoDate, ids: string[]): SavedCheck {
-  return {
-    id,
-    date,
-    products: ids.map(productById).filter((p): p is CatalogProduct => Boolean(p)),
-  };
-}
-
-/* The demo check */
-
-export const DEMO_CHECKS: SavedCheck[] = [
-  demoCheck("demo-1", "2026-08-18", [
-    "the-ordinary-niacinamide",
-    "lrp-retinol-b3-serum",
-    "paulas-choice-bha-exfoliant",
-    "cerave-moisturizing-cream-16",
-    "cerave-foaming-cleanser",
-  ]),
-  demoCheck("demo-2", "2026-08-11", [
-    "lrp-retinol-b3-serum",
-    "the-ordinary-niacinamide",
-  ]),
-  demoCheck("demo-3", "2026-08-02", [
-    "cerave-moisturizing-cream-16",
-    "cerave-am-lotion-spf30",
-  ]),
-];
 
 /* THE INGREDIENT-MAJOR VIEW — `Ingredients of concern` on `06 — Results`
    (549:1139), and the synthesis blocks that now open `Check results` too. */

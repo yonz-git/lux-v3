@@ -3217,3 +3217,25 @@ every width, the desktop dialog, centred in the viewport and inset from the
 screen's sides on mobile. The drag handle and its pull-to-close are gone with
 the dock; a sheet closes with its ✕ or label, the scrim, or Escape. Don't bring
 the bottom sheet back for mobile.
+
+## The prototype starts fresh on every visit (19 Nov 2026)
+
+Asked for directly: "always start as empty and fresh without previous profile
+for prototype". Two things went:
+
+- **Saving.** Nothing is written to the browser. Answers live in memory for one
+  page load, so a reload is a fresh start. `lib/store/persistence.ts` (the
+  forever slice and the 24h flow slice) is deleted; it is in git at `5bf8ba3`
+  if saving comes back. Every key an earlier build saved is deleted on load
+  (`RETIRED_STORAGE_KEYS`).
+- **The demo.** `lib/demo.ts` (the seeded skin profile and five products), the
+  seeded check-ins on Progress and the seeded analyses in CHECK's history are
+  gone. This supersedes "The Product library is one module": there is no
+  seeded or untouched library and no `LibraryStart`, and the library starts
+  empty.
+
+One rule decides whether there is anything to show: `hasInvestigation()` in
+`progress.ts`, true once step 4's date is answered. Until then `/progress` and
+the check-in screens show `ProgressEmpty`, and `/check`, `/check/new` and
+`/check/results` show `CheckNoProfile`.
+

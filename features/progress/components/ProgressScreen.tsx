@@ -23,6 +23,7 @@ import { formatLong } from "@/lib/date";
 import { ownedProducts } from "@/features/products/library";
 import {
   checkInsFor,
+  hasInvestigation,
   dayNumber,
   faceLocations,
   lastCheckInLabel,
@@ -46,10 +47,13 @@ export function ProgressScreen({ now }: { now: number }) {
   const { start, today, skinType, tendencies, conditions, status } = view;
   const checkIns = checkInsFor(answers, view);
   const lastCheckIn = lastCheckInLabel(checkIns, today);
-  const places = symptomPlaces(answers, view);
+  const places = symptomPlaces(answers);
   const face = faceLocations(places);
-  const otherNote = view.isDemo ? null : answers.locationOther?.trim() || null;
+  const otherNote = answers.locationOther?.trim() || null;
   const photos = photoDiary(checkIns);
+
+  /* nothing to read until step 4 is answered — the empty hub says so */
+  if (!hasInvestigation(answers)) return <ProgressEmpty />;
 
   return (
     <HubScreen

@@ -10,6 +10,7 @@ import SegmentedToggle from "@/features/products/components/SegmentedToggle";
 import { ProductThumb } from "@/features/products/components/ProductThumb";
 import { CheckInPhotoArt } from "./CheckInPhotoArt";
 import { useInvestigation } from "@/lib/store/InvestigationProvider";
+import { ProgressEmpty } from "./ProgressScreen";
 import { useToday } from "@/lib/useToday";
 import { formatDay, fromIso } from "@/lib/date";
 import {
@@ -22,6 +23,7 @@ import {
   checkInOn,
   checkInDirection,
   checkInsFor,
+  hasInvestigation,
   dayNumber,
   editNote,
   productsForCheckIn,
@@ -60,7 +62,7 @@ export function CheckInDetail({ date, now }: { date: string; now: number }) {
   /* `Day 4` — the same 1-based count the profile card writes, so the tag and
      "Started … · Day 12" cannot disagree about which day this is. */
   const dayN = day ? dayNumber(view.start, day) : 0;
-  /* none on a seeded day from before the start — see `checkInsFor` */
+  /* none on a day from before the start */
   const dayTag = day && dayN >= 1 ? `Day ${dayN}` : null;
 
   const products = entry ? productsForCheckIn(answers, entry) : [];
@@ -86,6 +88,9 @@ export function CheckInDetail({ date, now }: { date: string; now: number }) {
     restoreNoteFocus.current = false;
     noteEditRef.current?.focus();
   }, [editingNote]);
+
+  /* no investigation, so no record to show — the empty Progress hub says so */
+  if (!hasInvestigation(answers)) return <ProgressEmpty />;
 
   return (
     <HubScreen

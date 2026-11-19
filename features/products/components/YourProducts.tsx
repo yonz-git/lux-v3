@@ -124,7 +124,6 @@ export function YourProducts() {
       <AddProductMethodSheet
         open={sheetOpen}
         onClose={() => setSheetOpen(false)}
-        start="empty"
       />
     </>
   );

@@ -9,7 +9,6 @@ import { ChevronRightIcon } from "@/components/ui/icons";
 import { useInvestigation } from "@/lib/store/InvestigationProvider";
 import {
   BAND_LABEL,
-  DEMO_CHECKS,
   analyseCheck,
   formatCheckDate,
   productsOf,
@@ -27,9 +26,8 @@ export function CheckHistory() {
   const router = useRouter();
   const { answers, setAnswer } = useInvestigation();
 
-  /* What the user actually ran, then the seeded rows below — never merged and
-     never re-sorted together, so a real check always sits above the demo. */
-  const checks: SavedCheck[] = [...(answers.checks ?? []), ...DEMO_CHECKS];
+  /* what the user ran this visit, newest first */
+  const checks: SavedCheck[] = answers.checks ?? [];
 
   function open(check: SavedCheck) {
     setAnswer("viewingCheck", check.id);

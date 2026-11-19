@@ -9,13 +9,7 @@ import {
   useMemo,
   useState,
 } from "react";
-import type { Answers } from "./answers";
-import {
-  LEGACY_FLOW_V1_KEY,
-  LEGACY_STORAGE_KEY,
-  LEGACY_START_OTHER_KEY,
-} from "./answers";
-import { readFlow, readPersisted, writeFlow, writePersisted } from "./persistence";
+import { type Answers, RETIRED_STORAGE_KEYS } from "./answers";
 
 /** The investigation's answer store. */
 type Ctx = {
@@ -39,27 +33,14 @@ export function InvestigationProvider({
   const [answers, setAnswers] = useState<Answers>({});
   const [hydrated, setHydrated] = useState(false);
 
+  /* The prototype starts fresh on every visit: answers live in memory for
+     this page load only. Anything an earlier build saved is deleted, never
+     read. */
   useEffect(() => {
-    // one-time cleanup: an earlier build persisted the WHOLE store, and that
-    // data — the flow selections this build refuses to restore — would
-    // otherwise sit in visitors' browsers forever. It is deleted, never read.
     try {
-      window.localStorage.removeItem(LEGACY_STORAGE_KEY);
-      // step 1's own free-text key, orphaned when the description became
-      // `locationOther` — never read, so it can only sit there
-      window.localStorage.removeItem(LEGACY_START_OTHER_KEY);
-      // the flow answers' first envelope, retired when step 1's `start` became
-      // a map: this build reads `lux.flow.v2`, and nothing reads v1 to expire it
-      window.localStorage.removeItem(LEGACY_FLOW_V1_KEY);
+      for (const key of RETIRED_STORAGE_KEYS) window.localStorage.removeItem(key);
     } catch {
       // storage unavailable (private mode) — nothing to clean up
-    }
-
-    const saved = { ...readPersisted(), ...readFlow(Date.now()) };
-    if (Object.keys(saved).length) {
-      // merge UNDER anything already set this session: an effect runs after
-      // paint, so a fast first interaction must not be overwritten by disk
-      setAnswers((prev) => ({ ...saved, ...prev }));
     }
     setHydrated(true);
   }, []);
@@ -67,12 +48,6 @@ export function InvestigationProvider({
   useLayoutEffect(() => {
     if (hydrated) document.documentElement.setAttribute("data-store-ready", "");
   }, [hydrated]);
-
-  useEffect(() => {
-    if (!hydrated) return;
-    writePersisted(answers);
-    writeFlow(answers, Date.now());
-  }, [answers, hydrated]);
 
   const setAnswer = useCallback<Ctx["setAnswer"]>((key, value) => {
     setAnswers((prev) => ({

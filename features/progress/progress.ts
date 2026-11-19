@@ -7,7 +7,6 @@
  */
 import type { Answers } from "@/lib/store/answers";
 import { ownedProducts } from "@/features/products/library";
-import { DEMO_PROFILE, skinProfile } from "@/lib/demo";
 import { type IsoDate, addDays, daysBetween, fromIso, toIso } from "@/lib/date";
 import type { SavedProduct } from "@/features/products/products";
 import {
@@ -57,32 +56,17 @@ export function investigationStart(a: Answers): Date | null {
   return a.timing?.date ? fromIso(a.timing.date) : null;
 }
 
-/* THE DEMO INVESTIGATION */
-
-/* The seeded profile lives in lib/demo.ts — PROGRESS and CHECK share it, so the
-   demo cannot claim two different skin types depending on the tab. */
-
 /**
- * How far back the seeded investigation began — 15 days, and the number is
- * load-bearing.
- *
- * `DEMO_OFFSETS` ends at 12, so a 15-day span puts the last seeded check-in
- * three days ago, which is what makes the button's caption read "Last check-in:
- * 3 days ago" — one of the three facts the comp states at once. It also leaves
- * today a ring on a day with no disc, which is the picture the frame draws, and
- * keeps every seeded day in the past. Change it and all three move.
+ * Whether there is an investigation to show — the one rule both hubs use.
+ * Step 4's date is the last answer the flow asks for, so by then the skin
+ * type and symptoms are answered too.
  */
-const DEMO_SPAN = 15;
-
-/** Where the seeded investigation started: `DEMO_SPAN` days before today. */
-export function demoStart(today: Date): Date {
-  return addDays(today, -DEMO_SPAN);
+export function hasInvestigation(a: Answers): boolean {
+  return investigationStart(a) !== null;
 }
 
-/** Everything the Progress screen needs, from the user's answers or the demo. */
+/** Everything the Progress screen needs, from the user's answers. */
 export type ProgressView = {
-  /** false once the user has answered step 4 — then it is all their data */
-  isDemo: boolean;
   start: Date;
   today: Date;
   skinType?: string;
@@ -92,86 +76,21 @@ export type ProgressView = {
   status?: string;
 };
 
+/** Before step 4 is answered the start is today, so nothing reads as past. */
 export function progressView(a: Answers, today: Date): ProgressView {
-  const answered = investigationStart(a);
-
-  const profile = skinProfile(a);
-
   return {
-    isDemo: !answered,
-    start: answered ?? demoStart(today),
+    start: investigationStart(a) ?? today,
     today,
-    skinType: profile.skinType,
-    tendencies: profile.tendencies,
+    skinType: a["skin-type"],
+    tendencies: a.tendencies,
     conditions: conditionsList(a),
-    status: answered ? a.timing?.status : DEMO_PROFILE.status,
+    status: a.timing?.status,
   };
 }
 
 /** 1-based, so the day the investigation started is "Day 1", not "Day 0". */
 export function dayNumber(start: Date, today: Date): number {
   return daysBetween(start, today) + 1;
-}
-
-/*
-   * The shape of the seeded series — offsets in days from the start date, and the
-   *    severity reported on each.
-   */
-const DEMO_OFFSETS = [0, 1, 3, 4, 5, 7, 9, 10, 12];
-const DEMO_SEVERITY = [9, 9, 7, 5, 7, 5, 3, 3, 1];
-
-/** The seeded check-in history — see the file header. */
-export function demoCheckIns(
-  start: Date,
-  today: Date,
-  offsets: readonly number[] = DEMO_OFFSETS,
-  severities: readonly number[] = DEMO_SEVERITY
-): CheckIn[] {
-  const elapsed = daysBetween(start, today);
-
-  return offsets.filter((offset) => offset <= elapsed).map(
-    (offset, i) => ({
-      date: toIso(
-        new Date(start.getFullYear(), start.getMonth(), start.getDate() + offset)
-      ),
-      severity: severities[i],
-      /* the rest of the record — see DEMO_EXTRAS */
-      ...demoExtras(i, offset, severities),
-    })
-  );
-}
-
-/**
- * The seeded check-in's `changes`, `note` and `photo` — everything
- * `Check-in detail` (556:1330) displays that a bare severity does not carry.
- */
-const DEMO_NOTE_OFFSET = 3;
-const DEMO_NOTE =
-  "Patches on cheeks seem slightly less red than yesterday. Still itchy in the evening.";
-
-const DEMO_PHOTO = "captured";
-
-function demoExtras(
-  i: number,
-  offset: number,
-  severities: readonly number[]
-): Partial<CheckIn> {
-  return {
-    changes: demoChanges(i, severities),
-    photo: DEMO_PHOTO,
-    ...(offset === DEMO_NOTE_OFFSET ? { note: DEMO_NOTE } : {}),
-  };
-}
-
-function demoChanges(i: number, severities: readonly number[]): string[] {
-  const previous = i === 0 ? SEVERITY_MAX / 2 : severities[i - 1];
-  const severity = severities[i];
-  if (severity === previous) return [NO_CHANGE];
-
-  const direction = severity < previous ? "better" : "worse";
-  const prefix = direction === "better" ? "Less" : "More";
-
-  return DEMO_PROFILE.symptoms.map((s) => `${prefix} ${s.toLowerCase()}`);
 }
 
 /** The chart's window: today and the 13 days before it — the most days that
@@ -268,15 +187,8 @@ export function latestCheckIn(list: CheckIn[]): CheckIn | null {
  * `/progress` draws as callouts: a pill at the face's edge per symptom, with a
  * line to each of its places.
  */
-export function symptomPlaces(a: Answers, view: ProgressView): SymptomPlaces {
-  if (!view.isDemo) return a.start ?? {};
-
-  const places = DEMO_PROFILE.locations.flatMap((l) =>
-    l === "Cheeks" ? ["Cheeks (L)", "Cheeks (R)"] : [l]
-  );
-  return Object.fromEntries(
-    DEMO_PROFILE.symptoms.map((s) => [s, places])
-  ) as SymptomPlaces;
+export function symptomPlaces(a: Answers): SymptomPlaces {
+  return a.start ?? {};
 }
 
 /**
@@ -374,10 +286,7 @@ export function recordCheckIn(current: CheckIn[], entry: CheckIn): CheckIn[] {
   );
 }
 
-/**
- * What `/progress` actually plots — the user's own check-ins, merged over the
- * seeded series on both branches.
- */
+/** What `/progress` plots: the user's own check-ins since the start, oldest first. */
 export function checkInsFor(a: Answers, view: ProgressView): CheckIn[] {
   const recorded = (a.checkIns ?? []).filter((c) => {
     const day = fromIso(c.date) ?? view.today;
@@ -386,9 +295,7 @@ export function checkInsFor(a: Answers, view: ProgressView): CheckIn[] {
     );
   });
 
-  const seed = demoCheckIns(demoStart(view.today), view.today);
-
-  return recorded.reduce(recordCheckIn, seed);
+  return recorded.reduce(recordCheckIn, []);
 }
 
 /* CHECK-IN DETAIL — `Check-in detail` (556:1330 / 557:1353)
@@ -434,9 +341,9 @@ export function productsForCheckIn(a: Answers, entry: CheckIn): SavedProduct[] {
  * The store update for one edit of a day's NOTE — the same reducer shape
  * `editProductsUsed` has, and for the same two reasons: the updater form so two
  * edits in one tick cannot start from the same rendered snapshot, and the
- * fallback to `entry` so editing a SEEDED day materialises the whole record
- * (severity, changes, products, photo) rather than writing a note-only entry
- * that drops the rest of the day.
+ * fallback to `entry` so editing a day writes the whole record (severity,
+ * changes, products, photo) rather than a note-only entry that drops the rest
+ * of the day.
  */
 export function editNote(
   entry: CheckIn,
@@ -471,10 +378,9 @@ export function editProductsUsed(
 /**
  * Which way turn 1 said the skin moved on this record.
  *
- * The stored answer when there is one. Otherwise it is derived the way
- * `demoChanges` derives the seed — this severity against the previous record's,
- * or against `SEVERITY_MAX / 2` for the first — so the seed and older records
- * agree with the words already on their pills.
+ * The stored answer when there is one. Otherwise it is derived from this
+ * severity against the previous record's, or against `SEVERITY_MAX / 2` for
+ * the first.
  */
 export function checkInDirection(
   list: CheckIn[],

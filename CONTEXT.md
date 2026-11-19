@@ -5,23 +5,12 @@ The language of the product. Terms only; how they are built lives in the code an
 ## Language
 
 **Product library**:
-Everything the user owns. It outlives any one investigation.
+Everything the user owns, for this visit. It outlives any one investigation within it.
 _Avoid_: product list, my products, inventory
-
-**Seeded library**:
-The five demo products a visitor's Product library shows until they change it.
-_Avoid_: demo products, default products
-
-**Untouched library**:
-A Product library the user has never changed, so it still shows the Seeded library. An emptied library is not untouched: it is theirs, and empty.
-
-**Library start**:
-What an Untouched library means to the screen changing it: seeded on every screen except step 5, which starts empty so the user can watch the list sort itself.
 
 ## Relationships
 
-- A **Product library** is either **Untouched** or the user's own.
-- Adding from a seeded **Library start** makes the **Seeded library** the user's own, with the new product beside it.
+- A **Product library** starts empty on every visit and holds only what the user adds in that visit.
 
 ## Flagged ambiguities
 

@@ -33,7 +33,7 @@ import {
  */
 export function MyProducts() {
   const { answers } = useInvestigation();
-  const { remove: removeProduct } = useProductLibrary("seeded");
+  const { remove: removeProduct } = useProductLibrary();
   const [sheetOpen, setSheetOpen] = useState(false);
   const products: SavedProduct[] = ownedProducts(answers);
 
@@ -68,7 +68,6 @@ export function MyProducts() {
         <AddProductMethodSheet
           open={sheetOpen}
           onClose={() => setSheetOpen(false)}
-          start="seeded"
         />
       </HubScreen>
     );
@@ -114,7 +113,6 @@ export function MyProducts() {
       <AddProductMethodSheet
         open={sheetOpen}
         onClose={() => setSheetOpen(false)}
-        start="seeded"
       />
     </>
   );

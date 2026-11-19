@@ -29,7 +29,6 @@ import {
   type ProductDraft,
   type SavedProduct,
 } from "@/features/products/products";
-import type { LibraryStart } from "@/features/products/library";
 import { useProductLibrary } from "@/features/products/useProductLibrary";
 import { useOpenBeautyFactsSearch } from "@/features/products/useOpenBeautyFactsSearch";
 import { useEnrichedProduct } from "@/features/products/useEnrichedProduct";
@@ -56,15 +55,12 @@ type ConfirmStage = "verify" | "duration" | "added" | "rejected";
 export function AddProductMethodSheet({
   open,
   onClose,
-  start,
 }: {
   open: boolean;
   onClose: () => void;
-  /** what an untouched library means to the screen that opened the tray */
-  start: LibraryStart;
 }) {
   const { answers, setAnswer } = useInvestigation();
-  const { add, remove: removeProduct } = useProductLibrary(start);
+  const { add, remove: removeProduct } = useProductLibrary();
   const [view, setView] = useState<View>("method");
   const [confirmSource, setConfirmSource] = useState<ConfirmSource>("search");
   const [stage, setStage] = useState<ConfirmStage>("verify");

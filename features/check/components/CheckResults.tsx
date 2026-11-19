@@ -19,7 +19,6 @@ import { useInvestigation } from "@/lib/store/InvestigationProvider";
 import { useHeldWhileClosing } from "@/lib/useModalDialog";
 import {
   BAND_LABEL,
-  DEMO_CHECKS,
   MAX_CHECK_PRODUCTS,
   MIN_CHECK_PRODUCTS,
   analyseCheck,
@@ -35,7 +34,8 @@ import { ownedProducts } from "@/features/products/library";
 import { useProductLibrary } from "@/features/products/useProductLibrary";
 import { useToday } from "@/lib/useToday";
 import { useShrinkWrap } from "@/lib/useShrinkWrap";
-import { progressView } from "@/features/progress/progress";
+import { hasInvestigation, progressView } from "@/features/progress/progress";
+import { CheckNoProfile, CheckScreen } from "./CheckScreen";
 import {
   DURATIONS,
   fullName,
@@ -57,7 +57,7 @@ export function CheckResults({
 }) {
   const router = useRouter();
   const { answers, setAnswer } = useInvestigation();
-  const { add } = useProductLibrary("seeded");
+  const { add } = useProductLibrary();
   /* the skin profile card's values, from PROGRESS's own view — the same
      derivation `/check/new` and `/progress` use, so the three cannot disagree */
   const profile = progressView(answers, useToday(now));
@@ -125,6 +125,10 @@ export function CheckResults({
     setAnswer("checkBasket", list);
     router.push(href);
   }
+
+  /* nothing has been analysed this visit — the CHECK hub's own state says what
+     to do next */
+  if (!check) return hasInvestigation(answers) ? <CheckScreen /> : <CheckNoProfile />;
 
   return (
     <HubScreen
@@ -454,14 +458,13 @@ function verdict(
 }
 
 /**
- * Which check to show: the one the user opened, else the newest they ran, else
- * the newest seeded one.
+ * Which check to show: the one the user opened, else the newest they ran.
  */
 function resolveCheck(
   viewing: string | undefined,
   ran: SavedCheck[] | undefined
 ): SavedCheck | undefined {
-  const all = [...(ran ?? []), ...DEMO_CHECKS];
+  const all = ran ?? [];
   if (viewing) {
     const match = all.find((c) => c.id === viewing);
     if (match) return match;
