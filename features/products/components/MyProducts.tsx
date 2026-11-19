@@ -11,7 +11,7 @@ import { ThumbStack } from "./ThumbStack";
 import { EmptyBox } from "./ProductList";
 import { AddProductMethodSheet } from "./AddProductMethodSheet";
 import { Collapse, COLLAPSE_EXIT_MS } from "@/components/ui/Collapse";
-import { ChevronDownIcon, PlusIcon } from "@/components/ui/icons";
+import { ChevronDownIcon } from "@/components/ui/icons";
 import { useInvestigation } from "@/lib/store/InvestigationProvider";
 import { ownedProducts } from "@/features/products/library";
 import { useProductLibrary } from "@/features/products/useProductLibrary";
@@ -104,7 +104,6 @@ export function MyProducts() {
           <Button
             variant="secondary"
             size="md"
-            icon={<PlusIcon />}
             onClick={() => setSheetOpen(true)}
           >
             Add your products

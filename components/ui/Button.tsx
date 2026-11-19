@@ -85,7 +85,13 @@ export function Button({
   }
 
   return (
-    <button type="button" className={cls} onPointerMove={handlePointerMove} {...rest}>
+    <button
+      type="button"
+      className={cls}
+      onPointerMove={handlePointerMove}
+      data-align-exempt="label centred on the x-height, not the caps (Button.module.css)"
+      {...rest}
+    >
       {content}
     </button>
   );
