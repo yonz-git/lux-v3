@@ -70,11 +70,6 @@ export function IngredientsCard({
                 card — see SkinProfile */}
             {i > 0 && <div className={styles.divider} />}
             <div className={styles.concern}>
-              <span
-                className={styles.accent}
-                data-likelihood={c.likelihood}
-                aria-hidden="true"
-              />
               <div className={styles.concernBody}>
                 <p className={`${styles.concernName} t-h6`}>{c.name}</p>
                 <p className={`${styles.foundIn} t-label-sm`}>

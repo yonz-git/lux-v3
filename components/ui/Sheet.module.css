@@ -1,9 +1,6 @@
-/* The modal tray.
-   Mobile  (576:1376 `bottom-sheet`): full width, x=0, radius 28/28/0/0, docked
-   to the bottom edge, padding 12/20/28/20, gap 20, children centred.
-   Desktop (583:1786 `method-dialog`): width/card-focus 640, radius/3xl on all
-   four corners, NO grabber, padding 48, gap 20.
-   Both: surface/data-strong + BACKGROUND_BLUR 28 + the sheet drop shadow. */
+/* The modal tray: a dialog centred in the viewport at every width, inset
+   from the screen's sides on mobile and 640 wide at most. Padding 20, 48 from
+   1024. surface/data-strong + BACKGROUND_BLUR 28 + the sheet drop shadow. */
 
 .scrim {
   position: fixed;
@@ -15,22 +12,18 @@
 .tray {
   position: fixed;
   z-index: var(--z-sheet);
-  left: var(--space-inset);
-  right: var(--space-inset);
-  bottom: var(--space-inset);
+  left: 50%;
+  top: 50%;
+  transform: translate(-50%, -50%);
+  width: calc(100% - var(--space-inset) - var(--space-inset));
+  max-width: var(--width-card-focus); /* 640 */
 
   display: flex;
   flex-direction: column;
   align-items: center;
   gap: var(--space-xl);
-  /* Figma 12/20/28/20. 28 is off the spacing scale (2xl is 24, 3xl 32) at the
-     bottom edge, the same way the 28 radius is — written as a literal rather
-     than snapped to a token that would be quietly wrong. */
-  padding: var(--space-sm) var(--space-xl) 1.75rem;
+  padding: var(--space-xl);
 
-  /* Figma's radius 28 is off the radius scale at both ends (2xl is 24, 3xl 32).
-     Written as a literal rather than snapped to a token that would be quietly
-     wrong — the same call `Chip`'s 10/16 padding gets. */
   border-radius: var(--radius-sheet) var(--radius-sheet) var(--radius-sheet-foot) var(--radius-sheet-foot);
   background: var(--surface-sheet);
   -webkit-backdrop-filter: blur(var(--blur-card)) saturate(1.4);
@@ -40,16 +33,14 @@
   /* NOT optional: a translucent tray lets the nav underneath read straight
      through without a blur */
 
-  /* THE TRAY CAN EXPAND. AddProductMethodSheet grows this well past its
-     original two-card content (a search field + results, a viewfinder, a
-     confirm card). Docked to the bottom edge, so it has to cap its own height
-     and scroll internally rather than push past the top of the viewport. */
-  max-height: calc(100dvh - var(--space-4xl) - var(--space-inset));
+  /* the tray can grow past the screen (search results, a viewfinder, a
+     confirm card), so it caps its height, clear of both screen edges, and
+     scrolls inside */
+  max-height: calc(100dvh - var(--space-4xl) - var(--space-4xl));
   overflow-y: auto;
   overscroll-behavior: contain;
-  /* a search results list is the thing most likely to push the tray into this
-     scroll state — an OS scrollbar cutting into the frosted sage surface
-     reads like a bug, so scroll is kept, the chrome is not. */
+  /* an OS scrollbar cutting into the frosted surface reads like a bug, so
+     scroll is kept, the chrome is not */
   scrollbar-width: none; /* Firefox */
   -ms-overflow-style: none; /* legacy Edge */
 }
@@ -90,63 +81,20 @@
   z-index: 1;
 }
 
-/* 40x5, border/glass, fully rounded */
-.grabber {
-  width: 40px;
-  height: 5px;
-  border-radius: var(--radius-full);
-  background: var(--color-border-glass);
-  /* the grabber is an affordance attached to the tray's top edge, not the
-     first item of a 20-gap content stack. */
-  margin-bottom: calc(var(--space-2xl) - var(--space-xl));
-  position: sticky;
-  top: 0;
-  z-index: 1;
-  flex: none;
-  touch-action: none;
-  cursor: grab;
-}
-
-/* A 5px bar is not a target. The hit area grows to 160 x 21 — 8 above, to the
-   tray's top edge, and 8 below, inside the 12 gap, so it never covers the
-   first line of a view. */
-.grabber::before {
-  content: "";
-  position: absolute;
-  inset: calc(-1 * var(--space-sm)) -60px;
+/* a sheet that closes with a label at its foot opens with its heading at its
+   top: both get the panel's 32, so the two ends balance */
+.tray[data-dismiss="label"] {
+  padding-block: var(--space-panel); /* 32 */
 }
 
 @media (min-width: 1024px) {
-  /* a docked sheet becomes a centred dialog */
-  .tray {
-    left: 50%;
-    right: auto;
-    bottom: auto;
-    /* Centred in the FULL viewport: `method-dialog` sits at y=274 in a 900 frame,
-       which is (900 − 352) / 2. */
-    top: 50%;
-    transform: translate(-50%, -50%);
+  .tray,
+  .tray[data-dismiss="label"] {
     max-height: calc(
       100dvh - var(--size-nav-height) - var(--nav-inset-bottom) -
         var(--space-2xl) - var(--space-4xl)
     );
-    overflow-y: auto;
-
-    width: 100%;
-    max-width: var(--width-card-focus); /* 640 */
     padding: var(--space-5xl);
-    border-radius: var(--radius-sheet) var(--radius-sheet) var(--radius-sheet-foot) var(--radius-sheet-foot);
-    box-shadow: 0 14px 30px rgb(15 10 30 / 0.35);
-  }
-
-  .grabber {
-    display: none;
-  }
-
-  /* 16 in from the dialog's corner, inside its 48 padding */
-  .close {
-    top: var(--space-xl);
-    right: var(--space-xl);
   }
 }
 

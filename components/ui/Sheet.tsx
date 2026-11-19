@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useRef } from "react";
+import { useCallback, useEffect, useLayoutEffect, useRef, useState } from "react";
 import * as Dialog from "@radix-ui/react-dialog";
 import styles from "./Sheet.module.css";
 import { CloseSmallIcon } from "./icons";
@@ -8,12 +8,8 @@ import { IconButton } from "./IconButton";
 import { useDialogFocus, useDialogPresence } from "@/lib/useModalDialog";
 
 /**
- * The modal tray — Figma `04 — Add product · method sheet` (576:1376) on mobile
- * and `04 — Add product · method dialog — desktop` (583:1786).
- *
- * ONE component, two shapes: a bottom sheet docked to the frame's bottom edge
- * below 1024, a centred dialog above it. That is the documented LUX recipe, not
- * a responsive convenience.
+ * The modal tray: one shape at every width, a dialog centred in the viewport.
+ * It closes with its ✕ or label, the scrim, or Escape.
  */
 export function Sheet({
   open,
@@ -23,6 +19,7 @@ export function Sheet({
   className,
   dismissLabel = "Done",
   dismiss = "label",
+  contentKey,
 }: {
   open: boolean;
   onClose: () => void;
@@ -34,64 +31,73 @@ export function Sheet({
    *  means something else (CHECK's basket says `Cancel`) */
   dismissLabel?: string;
   dismiss?: "label" | "corner";
+  /** names what the tray is showing; when it changes, the tray eases from its
+   *  old height to the new one instead of jumping */
+  contentKey?: string;
 }) {
   const trayRef = useRef<HTMLDivElement>(null);
+  /* the portal mounts the tray a render after this component, so the height
+     observer waits for the node itself rather than for `present` */
+  const [trayEl, setTrayEl] = useState<HTMLDivElement | null>(null);
+  const attachTray = useCallback((node: HTMLDivElement | null) => {
+    trayRef.current = node;
+    setTrayEl(node);
+  }, []);
+  const lastHeight = useRef<number | null>(null);
+  const heightAnim = useRef<Animation | null>(null);
+  const shownKey = useRef(contentKey);
 
   const { present, leaving } = useDialogPresence(open);
   const focus = useDialogFocus(open, trayRef);
 
-  /* The drag writes the tray's transform inline, frame by frame — state would
-     re-render the whole tray on every pointermove. */
-  const drag = useRef<{ startY: number; lastY: number; lastT: number; v: number } | null>(null);
-
-  /* a tray re-opened before its exit finished is the same node, still carrying
-     the drag's inline transform */
+  /* the tray's laid-out height, kept current so a content change knows where
+     it is easing from */
+  const easesHeight = contentKey !== undefined;
   useEffect(() => {
-    const tray = trayRef.current;
-    if (open && tray) {
-      tray.style.transform = "";
-      tray.style.transition = "";
-    }
-  }, [open]);
+    const tray = trayEl;
+    if (!tray || !easesHeight) return;
+    const record = () => {
+      if (!heightAnim.current) lastHeight.current = tray.getBoundingClientRect().height;
+    };
+    record();
+    const ro = new ResizeObserver(record);
+    ro.observe(tray);
+    return () => ro.disconnect();
+  }, [trayEl, easesHeight]);
 
-  function onGrabStart(e: React.PointerEvent<HTMLSpanElement>) {
-    if (leaving || e.button !== 0 || !trayRef.current) return;
-    e.currentTarget.setPointerCapture(e.pointerId);
-    drag.current = { startY: e.clientY, lastY: e.clientY, lastT: e.timeStamp, v: 0 };
-    trayRef.current.style.transition = "none";
-  }
-
-  function onGrabMove(e: React.PointerEvent<HTMLSpanElement>) {
-    const d = drag.current;
+  useLayoutEffect(() => {
     const tray = trayRef.current;
-    if (!d || !tray) return;
-    const dt = e.timeStamp - d.lastT;
-    if (dt > 0) d.v = (e.clientY - d.lastY) / dt;
-    d.lastY = e.clientY;
-    d.lastT = e.timeStamp;
-    /* down only — pulling up past the dock has nowhere to go */
-    tray.style.transform = `translateY(${Math.max(0, e.clientY - d.startY)}px)`;
-  }
-
-  function onGrabEnd(e: React.PointerEvent<HTMLSpanElement>) {
-    const d = drag.current;
-    const tray = trayRef.current;
-    drag.current = null;
-    if (!d || !tray) return;
-    const dy = Math.max(0, e.clientY - d.startY);
-    const dismiss =
-      e.type === "pointerup" && (dy > tray.offsetHeight / 4 || (d.v > 0.5 && dy > 16));
-    tray.style.transition =
-      "transform var(--duration-base) var(--ease-standard), opacity var(--duration-base) var(--ease-standard)";
-    if (dismiss) {
-      /* carry on from where the finger let go, rather than the leaving rule's
-         16px from the dock — the fade comes from `data-state="leaving"` */
-      tray.style.transform = "translateY(100%)";
-      onClose();
-    } else {
-      tray.style.transform = "";
-    }
-  }
+    const prev = shownKey.current;
+    shownKey.current = contentKey;
+    if (!tray || !open || prev === contentKey || lastHeight.current === null) return;
+    if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
+    /* a switch mid-ease starts from where the tray is now */
+    const running = heightAnim.current;
+    const from = running ? tray.getBoundingClientRect().height : lastHeight.current;
+    running?.cancel();
+    heightAnim.current = null;
+    const to = tray.getBoundingClientRect().height;
+    if (Math.abs(to - from) < 1) return;
+    const css = getComputedStyle(tray);
+    /* the browser may report the token in seconds */
+    const move = css.getPropertyValue("--duration-move").trim();
+    const anim = tray.animate(
+      { height: [`${from}px`, `${to}px`] },
+      {
+        duration: Number.parseFloat(move) * (move.endsWith("ms") ? 1 : 1000),
+        easing: css.getPropertyValue("--ease-in-out").trim(),
+      },
+    );
+    heightAnim.current = anim;
+    anim.finished.then(
+      () => {
+        if (heightAnim.current !== anim) return;
+        heightAnim.current = null;
+        lastHeight.current = tray.getBoundingClientRect().height;
+      },
+      () => {},
+    );
+  }, [contentKey, open]);
 
   if (!present) return null;
 
@@ -112,9 +118,10 @@ export function Sheet({
         />
         <Dialog.Content
           forceMount
-          ref={trayRef}
+          ref={attachTray}
           className={className ? `${styles.tray} ${className}` : styles.tray}
           data-tray="tray"
+          data-dismiss={dismiss}
           data-state={leaving ? "leaving" : undefined}
           inert={leaving}
           aria-describedby={undefined}
@@ -127,19 +134,7 @@ export function Sheet({
               e.preventDefault();
           }}
         >
-        {/* mobile only — the desktop dialog has no grabber. Pull it down to
-            close; see the doc comment. */}
-        <span
-          className={styles.grabber}
-          aria-hidden="true"
-          onPointerDown={onGrabStart}
-          onPointerMove={onGrabMove}
-          onPointerUp={onGrabEnd}
-          onPointerCancel={onGrabEnd}
-        />
-        {/* the dialog's name, as `aria-label` gave it before — a span, so it
-            adds no heading to the outline, and AFTER the grabber, which a
-            tablet rule in globals.css finds as the tray's first child */}
+        {/* the dialog's name — a span, so it adds no heading to the outline */}
         <Dialog.Title asChild>
           <span className="visually-hidden">{title}</span>
         </Dialog.Title>

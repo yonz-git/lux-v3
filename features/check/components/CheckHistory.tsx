@@ -33,7 +33,8 @@ export function CheckHistory() {
 
   function open(check: SavedCheck) {
     setAnswer("viewingCheck", check.id);
-    router.push("/check/results");
+    /* back on the results then returns here, not to the hub */
+    router.push("/check/results?from=history");
   }
 
   if (checks.length === 0) {

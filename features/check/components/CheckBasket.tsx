@@ -70,8 +70,7 @@ export function CheckBasketBar({
 }
 
 /**
- * The expanded basket — `bottom-sheet` (604:2103), a docked sheet on mobile and
- * a centred dialog on desktop, both from `Sheet`.
+ * The expanded basket — a centred dialog from `Sheet` at every width.
  */
 export function CheckBasketSheet({
   open,

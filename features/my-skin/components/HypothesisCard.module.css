@@ -1,9 +1,8 @@
 /* One hypothesis, § 07 + § 08. */
 
 .card {
-  /* --band is the one colour that changes with the confidence, so the pill and
-     the card's left edge read from it and cannot drift — the same device
-     `CompatCard.module.css` uses for its compatibility band. */
+  /* --band is the one colour that changes with the confidence; the pill reads
+     it — the same device `CompatCard.module.css` uses for its band */
   --band: var(--color-feedback-warning);
   --band-ink: var(--color-text-primary);
 
@@ -15,7 +14,6 @@
   border-radius: var(--radius-2xl);
   background: var(--color-surface-frost-light);
   border: var(--border-width-hairline) solid var(--color-border-subtle);
-  border-left: 3px solid var(--band);
   box-shadow: var(--shadow-frosted-row);
   -webkit-backdrop-filter: blur(var(--blur-card));
   backdrop-filter: blur(var(--blur-card));

@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useLayoutEffect, useRef, useState } from "react";
 import styles from "./AddProductMethodSheet.module.css";
 import { Sheet } from "@/components/ui/Sheet";
 import { CameraCapture } from "@/components/ui/CameraCapture";
@@ -8,6 +8,7 @@ import { ChatBubble } from "@/components/ui/ChatBubble";
 import { ProductCard } from "./ProductCard";
 import { ProductAccordionCard } from "./ProductAccordionCard";
 import { Button } from "@/components/ui/Button";
+import { IconButton } from "@/components/ui/IconButton";
 import { OptionRow } from "@/components/ui/OptionRow";
 import SegmentedToggle from "./SegmentedToggle";
 import { SearchField } from "@/components/ui/SearchField";
@@ -68,6 +69,62 @@ export function AddProductMethodSheet({
   const [confirmSource, setConfirmSource] = useState<ConfirmSource>("search");
   const [stage, setStage] = useState<ConfirmStage>("verify");
   const [subject, setSubject] = useState<"front" | "ingredients">("front");
+  /* what the search's results panel is showing; the tray eases its height
+     when it changes, as it does between views */
+  const [searchShape, setSearchShape] = useState("closed");
+
+  /* Every view change goes through `go`: the current view fades out, then
+     the next one mounts and fades in while the tray eases to its height
+     (`Sheet`'s `contentKey`). */
+  const viewRef = useRef<HTMLDivElement>(null);
+  const leavingView = useRef<Animation | null>(null);
+  const goingTo = useRef<View | null>(null);
+  const shownView = useRef(view);
+
+  function go(next: View) {
+    const el = viewRef.current;
+    /* already on its way there, or already there with nothing leaving */
+    if (goingTo.current === next || (goingTo.current === null && next === view)) return;
+    const opacity = el ? getComputedStyle(el).opacity : "1";
+    leavingView.current?.cancel();
+    leavingView.current = null;
+    goingTo.current = null;
+    if (!el || reducedMotion()) {
+      setView(next);
+      return;
+    }
+    const timing = { duration: token(el, "--duration-fade"), easing: tokenText(el, "--ease-in-out") };
+    /* turned back to the view that was leaving: it fades back in from where it is */
+    if (next === view) {
+      el.animate({ opacity: [opacity, "1"] }, timing);
+      return;
+    }
+    const out = el.animate({ opacity: [opacity, "0"] }, { ...timing, fill: "forwards" });
+    leavingView.current = out;
+    goingTo.current = next;
+    out.finished.then(
+      () => {
+        if (leavingView.current !== out) return;
+        leavingView.current = null;
+        goingTo.current = null;
+        setView(next);
+      },
+      () => {},
+    );
+  }
+
+  useLayoutEffect(() => {
+    const el = viewRef.current;
+    const prev = shownView.current;
+    shownView.current = view;
+    if (!el || prev === view) return;
+    for (const a of el.getAnimations()) a.cancel();
+    if (!open || reducedMotion()) return;
+    el.animate(
+      { opacity: ["0", "1"] },
+      { duration: token(el, "--duration-fade"), easing: tokenText(el, "--ease-in-out") },
+    );
+  }, [view, open]);
 
   const draft = answers.productDraft;
   const products = answers.products ?? [];
@@ -83,6 +140,9 @@ export function AddProductMethodSheet({
    *  the tray always reopens on the method chooser, with no draft left over
    *  from whichever branch was in progress. */
   function resetAndClose() {
+    leavingView.current?.cancel();
+    leavingView.current = null;
+    goingTo.current = null;
     setView("method");
     setConfirmSource("search");
     setStage("verify");
@@ -100,7 +160,7 @@ export function AddProductMethodSheet({
     setAnswer("productDraft", { product });
     setConfirmSource("search");
     setStage("verify");
-    setView("confirm");
+    go("confirm");
   }
 
   function toggleCapture() {
@@ -162,11 +222,13 @@ export function AddProductMethodSheet({
     <Sheet open={open} onClose={resetAndClose} title={title}
       dismiss="corner"
       className={styles.cornerRoom}
+      contentKey={`${view}|${searchShape}`}
     >
+      <div ref={viewRef} className={styles.view}>
       {view === "method" && (
         <MethodView
-          onSearch={() => setView("search")}
-          onScan={() => setView("scan")}
+          onSearch={() => go("search")}
+          onScan={() => go("scan")}
         />
       )}
 
@@ -175,6 +237,8 @@ export function AddProductMethodSheet({
           query={answers.productQuery ?? ""}
           onQueryChange={(v) => setAnswer("productQuery", v)}
           onChoose={chooseProduct}
+          onScan={() => go("scan")}
+          onShapeChange={setSearchShape}
         />
       )}
 
@@ -186,10 +250,11 @@ export function AddProductMethodSheet({
             setSubject(subject === "front" ? "ingredients" : "front")
           }
           onCapture={toggleCapture}
+          onSearch={() => go("search")}
           onContinue={() => {
             setConfirmSource("scan");
             setStage("verify");
-            setView("confirm");
+            go("confirm");
           }}
         />
       )}
@@ -213,8 +278,10 @@ export function AddProductMethodSheet({
           query={answers.productQuery ?? ""}
           onQueryChange={(v) => setAnswer("productQuery", v)}
           onChooseMore={chooseProduct}
+          onShapeChange={setSearchShape}
         />
       )}
+      </div>
     </Sheet>
   );
 }
@@ -287,10 +354,17 @@ function SearchView({
   query,
   onQueryChange,
   onChoose,
+  onScan,
+  onShapeChange,
 }: {
   query: string;
   onQueryChange: (v: string) => void;
   onChoose: (product: CatalogProduct) => void;
+  /** switch to the camera; the typed query is kept for coming back. Absent
+   *  inside the confirm view, which has no camera to switch to. */
+  onScan?: () => void;
+  /** told each time the results panel opens, closes or changes what it shows */
+  onShapeChange?: (shape: string) => void;
 }) {
   const { results, loading } = useOpenBeautyFactsSearch(query);
   const typed = query.trim() !== "";
@@ -300,12 +374,29 @@ function SearchView({
   const dropdown = useDialogPresence(typed, DROP_EXIT_MS);
   const shown = useHeldWhileClosing(typed, { results, loading, query });
 
+  const shape = !dropdown.present
+    ? "closed"
+    : dropdown.leaving
+      ? "leaving"
+      : shown.loading
+        ? "loading"
+        : `results:${shown.results.length}`;
+  useLayoutEffect(() => onShapeChange?.(shape), [shape, onShapeChange]);
+  useLayoutEffect(() => () => onShapeChange?.("closed"), [onShapeChange]);
+
   return (
     <div className={styles.searchView}>
       <SearchField
         value={query}
         onChange={onQueryChange}
         label="Search products by brand or name"
+        action={
+          onScan && {
+            label: "Take a photo instead",
+            icon: <CameraIcon />,
+            onClick: onScan,
+          }
+        }
       />
 
       <p role="status" aria-live="polite" className="visually-hidden">
@@ -367,12 +458,15 @@ function ScanView({
   subject,
   onToggleSubject,
   onCapture,
+  onSearch,
   onContinue,
 }: {
   captured: boolean;
   subject: "front" | "ingredients";
   onToggleSubject: () => void;
   onCapture: () => void;
+  /** switch to search; a captured photo is kept for coming back */
+  onSearch: () => void;
   onContinue: () => void;
 }) {
   return (
@@ -395,6 +489,11 @@ function ScanView({
               : "Make sure the whole list is in frame and in focus."
         }
         onCapture={onCapture}
+        aside={
+          <IconButton size="md" label="Search by name instead" onClick={onSearch}>
+            <SearchIcon />
+          </IconButton>
+        }
       />
 
       <button
@@ -437,6 +536,7 @@ function ConfirmView({
   query,
   onQueryChange,
   onChooseMore,
+  onShapeChange,
 }: {
   source: ConfirmSource;
   stage: ConfirmStage;
@@ -459,6 +559,7 @@ function ConfirmView({
   query: string;
   onQueryChange: (v: string) => void;
   onChooseMore: (product: CatalogProduct) => void;
+  onShapeChange: (shape: string) => void;
 }) {
   const isScan = source === "scan";
   const showsCard =
@@ -552,6 +653,7 @@ function ConfirmView({
             query={query}
             onQueryChange={onQueryChange}
             onChoose={onChooseMore}
+            onShapeChange={onShapeChange}
           />
         </div>
       )}
@@ -583,4 +685,19 @@ function ConfirmView({
       )}
     </div>
   );
+}
+
+function reducedMotion() {
+  return window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+}
+
+function tokenText(el: Element, name: string) {
+  return getComputedStyle(el).getPropertyValue(name).trim();
+}
+
+/** a duration token in ms; the browser may report it in seconds */
+function token(el: Element, name: string) {
+  const v = tokenText(el, name);
+  const n = Number.parseFloat(v);
+  return v.endsWith("ms") ? n : n * 1000;
 }

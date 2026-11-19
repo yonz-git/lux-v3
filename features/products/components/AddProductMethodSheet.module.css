@@ -100,6 +100,15 @@
    those cards are self-contained regardless of what they sit on.
    ------------------------------------------------------------------------- */
 
+/* the one box every view sits in, laid out as the tray lays out its own
+   children, so a view looks the same inside it */
+.view {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  width: 100%;
+}
+
 .searchView,
 /* the viewfinder, guide, captured label, copy, shutter row and shutter all
    moved to CameraCapture.module.css when the check-in became the third capture
@@ -338,11 +347,17 @@ button.trayAction.trayActionSmall {
   align-self: center;
 }
 
+/* The space below the last view equals the space above the first: 52, the
+   corner ✕'s 20 inset + its 20 + 12, at every width. The doubled class
+   outranks `Sheet`'s own padding whatever the bundle order. */
+.cornerRoom.cornerRoom {
+  padding-bottom: calc(var(--space-xl) + var(--size-icon-sm) + var(--space-md)); /* 52 */
+}
+
+/* the first view starts 12 below the corner ✕ (20 down, 20 tall), whatever
+   the tray's top padding is: 20 on mobile, 48 from 1024 */
 .cornerRoom > [aria-label="Close"] + * {
-  margin-top: calc(
-    var(--size-icon-sm) + var(--space-md) - var(--space-sm) - var(--space-xs) -
-      5px
-  ); /* 15 */
+  margin-top: calc(var(--size-icon-sm) + var(--space-md)); /* 32 */
 }
 
 @media (min-width: 1024px) {

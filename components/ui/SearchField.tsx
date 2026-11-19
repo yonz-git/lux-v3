@@ -1,27 +1,29 @@
 "use client";
 
-import { useId } from "react";
+import { useId, type ReactNode } from "react";
 import styles from "./SearchField.module.css";
 import { SearchIcon, CloseIcon } from "./icons";
+import { IconButton } from "./IconButton";
 
 /**
- * Search Field — Figma component 248:70, used verbatim by `04 — Search by name`.
- *
- * 50 tall, radius/full, `surface/frost-nav` fill with the frosted-row inner
- * shadow, a leading search glyph and a trailing clear button, both in
- * `text/muted`.
+ * Search Field: a pill with a leading search glyph and a trailing clear button
+ * once there is text, both in `text/muted`, and an optional round action at
+ * the end. The action stays at the end, so clear appearing never moves it.
  */
 export function SearchField({
   value,
   onChange,
   placeholder = "Search products",
   label,
+  action,
 }: {
   value: string;
   onChange: (value: string) => void;
   placeholder?: string;
   /** the accessible name — the field has no visible <label> in the design */
   label: string;
+  /** a glyph button at the field's end, e.g. switching to the camera */
+  action?: { label: string; icon: ReactNode; onClick: () => void };
 }) {
   const id = useId();
   return (
@@ -40,12 +42,22 @@ export function SearchField({
       {value !== "" && (
         <button
           type="button"
-          className={styles.clear}
+          className={styles.trailing}
           aria-label="Clear search"
           onClick={() => onChange("")}
         >
           <CloseIcon className={styles.icon} />
         </button>
+      )}
+      {action && (
+        <IconButton
+          size="md"
+          label={action.label}
+          className={styles.action}
+          onClick={action.onClick}
+        >
+          {action.icon}
+        </IconButton>
       )}
     </div>
   );

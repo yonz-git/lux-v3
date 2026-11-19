@@ -62,7 +62,7 @@ export function MyProducts() {
             className={styles.emptyCta}
             onClick={() => setSheetOpen(true)}
           >
-            Add products
+            Search product
           </Button>
         </div>
         <AddProductMethodSheet

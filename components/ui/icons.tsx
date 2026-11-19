@@ -182,10 +182,12 @@ export function MicIcon({ className }: IconProps) {
   );
 }
 
-/** The Storyboard image card's camera (`Regenerate`). */
+/** The Storyboard image card's camera (`Regenerate`). The box sits 0.75 low so
+ *  the glyph centres on its area, not its outline: the body is most of the
+ *  weight and sits below the bump, so outline-centred it reads low. */
 export function CameraIcon({ className }: IconProps) {
   return (
-    <Icon kind="glyph" box="0 0 18 18" size={20} className={className}>
+    <Icon kind="glyph" box="0 0.75 18 18" size={20} className={className}>
       <rect x="2" y="5" width="14" height="11" rx="2" {...ns} />
       <path d="M6 5V3.5A1.5 1.5 0 0 1 7.5 2h3A1.5 1.5 0 0 1 12 3.5V5" {...ns} />
       <circle cx="9" cy="10.5" r="2.5" {...ns} />

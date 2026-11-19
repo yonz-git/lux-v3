@@ -3208,3 +3208,12 @@ reduced-motion collapse sets `animation-duration: 0.01ms` and leaves
 from delays would still take 2.5 real seconds for a user who asked for no
 motion, holding them on a static logo. Built from keyframe percentages, the
 whole thing collapses with the duration and is over in a frame.
+
+## Every sheet is a centred dialog, on mobile too (19 Nov 2026)
+
+Asked for directly: on mobile the add-product sheet sat docked to the bottom
+edge, and searching in it felt uncomfortable. `Sheet` now has one shape at
+every width, the desktop dialog, centred in the viewport and inset from the
+screen's sides on mobile. The drag handle and its pull-to-close are gone with
+the dock; a sheet closes with its ✕ or label, the scrim, or Escape. Don't bring
+the bottom sheet back for mobile.

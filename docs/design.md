@@ -317,7 +317,7 @@ components:
     backgroundColor: "{colors.sheet}"
     textColor: "{colors.on-surface}"
     rounded: "{rounded.sheet}"
-    padding: 8px 8px 24px
+    padding: 20px
   sheet-close:
     backgroundColor: "{colors.glass}"
     textColor: "{colors.on-surface}"
@@ -527,7 +527,7 @@ Every translucent surface has a solid fallback under
 Everything a finger touches is round. Buttons, chips, tags, fields and the nav
 are full pills (`full`); round buttons are circles. Boxes are generously
 rounded and step down as they nest: the sheet is `sheet` (36) at the top and
-`sheet-foot` (44) at the bottom, following a phone's own corners; a panel
+`sheet-foot` (44) at the bottom; a panel
 inside it is `panel` (28); score cards are `2xl` (24); photos are `media`
 (22); option rows are `lg` (16). Nothing is square, and no corner is
 sharper than its container's.
@@ -557,7 +557,8 @@ radiogroup. `option-row` is for longer answers; selected firms the edge to
 optional hint in `body-sm`, then its answers 20 below — chips in a wrapping
 row 4 apart, or option rows 8 apart. Two questions on one step are two panels.
 **Sheet and panel.** Every overlay is the `sheet`: sage frost, 36/44 corners,
-floating `inset` in from the screen on mobile, a title row of the LUX orb
+a dialog centred in the screen at every width (`inset` from its sides on
+mobile, 640 wide at most), a title row of the LUX orb
 (50px) + `page-title` + a `sheet-close` glass circle, and a `panel` inside it.
 `panel` is also every card and readout.
 **Bottom nav (built).** `nav-bar` is a glass pill holding four `nav-item`

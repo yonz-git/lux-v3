@@ -9,6 +9,17 @@ export const metadata: Metadata = { title: metadataTitleFor("/check/results") };
 
 export const dynamic = "force-dynamic";
 
-export default function Page() {
-  return <CheckResults now={Date.now()} />;
+export default async function Page({
+  searchParams,
+}: {
+  searchParams: Promise<{ [key: string]: string | string[] | undefined }>;
+}) {
+  /* opened from the history list, back returns to it */
+  const { from } = await searchParams;
+  return (
+    <CheckResults
+      now={Date.now()}
+      backHref={from === "history" ? "/check/history" : "/check"}
+    />
+  );
 }

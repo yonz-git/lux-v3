@@ -1,5 +1,6 @@
 "use client";
 
+import type { ReactNode } from "react";
 import styles from "./CameraCapture.module.css";
 import { SuccessCheckIcon } from "./icons";
 
@@ -9,6 +10,7 @@ export function CameraCapture({
   title,
   helper,
   onCapture,
+  aside,
 }: {
   captured: boolean;
   /** what to point the camera at */
@@ -16,7 +18,17 @@ export function CameraCapture({
   /** the line under it, which should change once a photo exists */
   helper: string;
   onCapture: () => void;
+  /** a round control at the copy's right, centred on the title's first line.
+   *  The same width is kept free on the left, so the copy stays centred. */
+  aside?: ReactNode;
 }) {
+  const copy = (
+    <div className={styles.copy}>
+      <p className="t-h6">{title}</p>
+      <p className={`${styles.helper} t-body3`}>{helper}</p>
+    </div>
+  );
+
   return (
     <>
       <div className={styles.viewfinder} data-captured={captured}>
@@ -29,10 +41,14 @@ export function CameraCapture({
         )}
       </div>
 
-      <div className={styles.copy}>
-        <p className="t-h6">{title}</p>
-        <p className={`${styles.helper} t-body3`}>{helper}</p>
-      </div>
+      {aside ? (
+        <div className={styles.copyRow}>
+          {copy}
+          <div className={`${styles.aside} t-h6`}>{aside}</div>
+        </div>
+      ) : (
+        copy
+      )}
 
       <div className={styles.shutterRow}>
         <button

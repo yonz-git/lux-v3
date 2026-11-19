@@ -429,6 +429,19 @@
   line-height: 1.3333;
 }
 
+/* On a phone the heading shares the top row with the sheet's corner ✕ (both
+   start at the tray's 20 padding), so the caps centre on the ✕. From 480 the
+   tablet dialog's 48 padding puts the heading below it. */
+.head > .overline {
+  margin-top: calc((var(--size-icon-sm) - 1lh) / 2); /* token-exempt: centres the caps' line on the 20 ✕, a font metric, not a scaled token */
+}
+
+@media (min-width: 480px) {
+  .head > .overline {
+    margin-top: 0;
+  }
+}
+
 .thumb {
   transition-property: opacity, scale;
   transition-duration: var(--duration-slow);

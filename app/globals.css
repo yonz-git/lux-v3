@@ -1267,29 +1267,14 @@ main[tabindex="-1"]:focus-visible {
    because it is centred with a translate() of its own and an animated transform
    would fight it. */
 
-@keyframes lux-sheet-in {
-  from {
-    opacity: 0;
-    transform: translateY(16px);
-  }
-  to {
-    opacity: 1;
-    transform: translateY(0);
-  }
-}
-
 [data-tray="scrim"] {
   animation: lux-fade-in var(--duration-slow) var(--ease-standard) backwards;
 }
 
+/* the tray is centred by its transform, so it fades in place: a keyframe
+   that moved it would set `transform` and pull it off centre */
 [data-tray="tray"] {
-  animation: lux-sheet-in var(--duration-slow) var(--ease-standard) backwards;
-}
-
-@media (min-width: 1024px) {
-  [data-tray="tray"] {
-    animation-name: lux-fade-in;
-  }
+  animation: lux-fade-in var(--duration-slow) var(--ease-standard) backwards;
 }
 
 @keyframes lux-sheet-grow {
@@ -1309,17 +1294,9 @@ main[tabindex="-1"]:focus-visible {
 }
 
 [data-tray="tray"].sheet-grow {
-  /* the mobile tray's own corners — rounded on top, square where it docks */
-  --sheet-grow-radius: 28px 28px 0 0;
+  --sheet-grow-radius: var(--radius-3xl);
   animation: lux-sheet-grow var(--duration-slower) var(--ease-standard)
     backwards;
-}
-
-@media (min-width: 1024px) {
-  [data-tray="tray"].sheet-grow {
-    --sheet-grow-radius: var(--radius-3xl);
-    animation-name: lux-sheet-grow;
-  }
 }
 
 [data-tray="scrim"][data-state="leaving"],
@@ -1332,13 +1309,7 @@ main[tabindex="-1"]:focus-visible {
 }
 
 [data-tray="tray"][data-state="leaving"] {
-  transform: translateY(16px);
-}
-
-@media (min-width: 1024px) {
-  [data-tray="tray"][data-state="leaving"] {
-    transform: translate(-50%, -50%);
-  }
+  transform: translate(-50%, -50%);
 }
 
 @media (min-width: 480px) and (max-width: 1023.98px) {
@@ -1358,10 +1329,6 @@ main[tabindex="-1"]:focus-visible {
     border-radius: var(--radius-3xl);
     box-shadow: var(--shadow-sheet-desktop);
     animation-name: lux-fade-in;
-  }
-
-  [data-tray="tray"].sheet-dialog-tablet > span[aria-hidden="true"]:first-child {
-    display: none; /* the grabber */
   }
 
   [data-tray="tray"].sheet-dialog-tablet > button[aria-label="Close"] {

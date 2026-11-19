@@ -46,7 +46,15 @@ import { useCheckSearch } from "@/features/check/useCheckSearch";
 import SegmentedToggle from "@/features/products/components/SegmentedToggle";
 
 /** `Check results` (476:2841) at `/check/results`. */
-export function CheckResults({ now }: { now: number }) {
+export function CheckResults({
+  now,
+  backHref = "/check",
+}: {
+  now: number;
+  /** where back leads: the history list when the check was opened from it,
+   *  otherwise the CHECK hub */
+  backHref?: string;
+}) {
   const router = useRouter();
   const { answers, setAnswer } = useInvestigation();
   const { add } = useProductLibrary("seeded");
@@ -123,7 +131,7 @@ export function CheckResults({ now }: { now: number }) {
       title="Analysis results"
       centerHeading
       nav="check"
-      backHref="/check"
+      backHref={backHref}
       layout="card"
       tightTop
     >

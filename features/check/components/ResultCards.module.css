@@ -65,18 +65,6 @@
   gap: var(--space-md); /* 12 */
 }
 
-/* 4 wide, full height of the entry, radius/full. */
-.accent {
-  flex: none;
-  width: 4px;
-  border-radius: var(--radius-full);
-  background: color-mix(in srgb, var(--color-bg-symptom) 55%, transparent);
-}
-
-.accent[data-likelihood="high"] {
-  background: color-mix(in srgb, var(--color-bg-symptom) 80%, var(--color-text-primary));
-}
-
 .concernBody .likelihood[data-variant] {
   border-color: transparent;
 }
