@@ -40,7 +40,7 @@ lib/                 date.ts, demo.ts, pageTitles.ts, actives.ts
 - `features/<section>/*.ts` own data and derived values. Screens don't recompute.
 - `QuestionScreen`, `StepProgress` live in `my-skin` (they read `flow.ts`).
 - `lib/actives.ts` is shared by analysis and CHECK. CHECK's `SCORING` stays in `check.ts`.
-- `lib/pageTitles.ts` is the one shared module allowed to import a feature.
+- Shared modules allowed to import a feature: `lib/pageTitles.ts` (step titles), `lib/demo.ts` (the seeded profile both readouts open with) and `lib/store/` (the app-wide state that saves every section). `lib/actives.ts` imports a feature type only. Nothing else in `lib/` or `components/` imports a feature.
 
 ## Routes
 
