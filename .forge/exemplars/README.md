@@ -10,3 +10,9 @@ Status: PROPOSED by Claude, 2 Oct 2026. Awaiting the user's confirmation. The us
 | `../../../lux-scope-decision.md` §3 | The thesis writing | The tone of the narration: plain, specific, decision-led ("Complexity is not the currency. Judgement is."). | The shop-moment thesis is superseded by the investigation product in v3. |
 
 Reference inspiration (external, not the user's own work): motionsites.ai. Editorial mixed-type headlines (sans plus an italic serif accent word), text resolving from blur, floating glass cards fanning in over a slow-drifting background, slow camera push.
+
+
+## Case-study writing exemplar (confirmed by user, 6 Oct 2026)
+| File | What it is | Why it's good (what to copy) | What NOT to copy from it |
+|---|---|---|---|
+| https://simonpan.com/work/uber/ | Simon Pan, the Uber pickup redesign case study | It's a single unfolding narrative that starts from how the problem was seen. Every section ends on a decision, and the screens are big and flat. | The length, the senior team-scale framing, and the impact stats LUX doesn't have. |
