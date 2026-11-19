@@ -273,6 +273,19 @@
   text-align: center;
 }
 
+/* after an add, the search's heading — the sheet title role, centred on the
+   tray */
+.trayHeading {
+  color: var(--color-text-on-data);
+  text-align: center;
+}
+
+/* names the list below it, so it starts on the list's edge */
+.listLabel {
+  color: var(--color-text-on-data-secondary);
+  text-align: start;
+}
+
 /* --- added products (not in Figma — see the ConfirmView doc comment) -------
    The quick-add "Recent +" / "New addition +" rows that used to live under
    this list are GONE, along with the `.bucketRow` recipe they duplicated from
@@ -288,50 +301,6 @@
   display: flex;
   flex-direction: column;
   gap: var(--space-md);
-}
-
-/* THE SAME FROSTED CIRCLE AS STEP 01's "Other" FIELD — `StartInvestigation`'s
-   `.otherClear`, the clear button on the free-text description. The design
-   system has no clear/remove control at all, so both are composed from the
-   Chip's language sized down to 20: a hairline `border/subtle` ring on
-   `surface/frost-light`, glyph in `text/muted`. Keep the two in step; if one
-   moves, move the other.
-
-   Self-contained on ProductRow's own light card — not an on-data colour, even
-   though the row sits on the sage tray. */
-.removeButton {
-  position: relative;
-  flex: none;
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  width: 20px;
-  height: 20px;
-
-  border: none;
-  border-radius: var(--radius-full);
-  background: none;
-  color: var(--color-text-muted);
-  transition: color var(--duration-fast) var(--ease-hover);
-}
-
-.removeButton:hover {
-  color: var(--color-text-primary);
-}
-
-@media (hover: none) {
-  .removeButton:hover {
-    color: var(--color-text-muted);
-  }
-}
-
-/* The icon scaled by the same ratio as the button itself: 20/36 of the
-   CloseIcon's default 24, matching `.otherClearIcon`. `!important` used to be
-   required here because `icons.tsx` sized every glyph inline; it stopped, and
-   the default is now a zero-specificity `:where()` rule in `globals.css`. */
-.removeIcon {
-  width: calc(24px * 20 / 36);
-  height: calc(24px * 20 / 36);
 }
 
 .trayAction {

@@ -170,6 +170,8 @@
      --radius-bubble-tail. See Spec/Chat Bubble (47:12) on board 06 · Core. */
   --radius-bubble: 1.875rem; /* 30px */
   --radius-bubble-tail: 1px;
+  /* a chat bubble's top and bottom padding (14) */
+  --space-bubble-block: 0.875rem;
   /* ---- 05 Layout ---------------------------------------------------------- */
   --bp-mobile: 440px;
   --bp-tablet: 1024px;
@@ -192,6 +194,8 @@
   --width-content-max: 80rem; /* 1280px */
   /* ---- 06 Typography ------------------------------------------------------ */
   --font-family-sans: var(--font-figtree), "Figtree", system-ui, sans-serif;
+  /* headings only: the headline, page, screen and sheet titles (t-h4 and up) */
+  --font-family-display: var(--font-manrope), "Manrope", system-ui, sans-serif;
   --font-family-mono: ui-monospace, SFMono-Regular, Menlo, monospace;
   --font-weight-light: 300;
   --font-weight-regular: 400;
@@ -253,6 +257,7 @@
   --size-avatar: 2.5rem; /* 40px */
   --size-logo-mobile: 3.875rem; /* 62px */
   --size-logo-desktop: 5.125rem; /* 82px */
+  --size-orb-coach: 2.5rem; /* 40px, beside a chat bubble (CoachBubble) */
   --size-orb-sm: 3rem; /* 48px */
   --size-orb-md: 5rem; /* 80px */
   --size-orb-lg: 8.0625rem; /* 129px */
@@ -566,11 +571,15 @@
   --color-nav-item: rgb(255 255 255 / 0.12);
   --shadow-nav-bar: inset 0 1px 0 var(--color-rim-nav), 0 8px 24px rgb(46 42 63 / 0.06);
   --nav-inset-inline: var(--space-sm); /* "50% less side paddings": 16 -> 8 */
+  /* a hero's text to its main button (Welcome, the empty states): 118 at the
+     932 phone height, shrinking first on short screens; 100 from 1024 */
+  --space-hero-action: clamp(0px, 17vh - var(--space-4xl), 7.6875rem);
 }
 
 @media (min-width: 1024px) {
   :root {
     --nav-inset-bottom: var(--space-md); /* 12, half the Welcome board's 24 */
+    --space-hero-action: 6.25rem; /* 100 */
   }
 }
 

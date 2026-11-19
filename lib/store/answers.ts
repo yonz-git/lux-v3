@@ -144,8 +144,21 @@ export function withAreas(
   );
 }
 
-/** Every key an earlier build saved in the browser. Nothing is saved now: the
- *  prototype starts fresh on every visit, so these are only ever deleted. */
+/** Where the answers are saved between visits. */
+export const STORAGE_KEY = "lux.answers.v3";
+
+/** Mid-task state that a new visit must not reopen: drafts, queries, the
+ *  open check. Everything else is saved. */
+export const TRANSIENT_KEYS = [
+  "productDraft",
+  "scan",
+  "productQuery",
+  "checkBasket",
+  "checkQuery",
+  "viewingCheck",
+] as const satisfies readonly (keyof Answers)[];
+
+/** Every key an earlier build saved in the browser; deleted on load. */
 export const RETIRED_STORAGE_KEYS = [
   "lux.investigation.v1",
   "lux-start-other-description",
@@ -153,4 +166,3 @@ export const RETIRED_STORAGE_KEYS = [
   "lux.flow.v2",
   "lux.records.v2",
 ] as const;
-

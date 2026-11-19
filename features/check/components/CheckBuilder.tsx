@@ -161,8 +161,7 @@ export function CheckBuilder({ now }: { now: number }) {
   return (
     <>
       <HubScreen
-        title="Analyse product compatibility"
-        centerHeading
+        title="Products’ compatibility analysis"
         nav="check"
         backHref={answers.timing?.date ? "/investigation/timing" : "/check"}
         layout="card"
@@ -197,6 +196,7 @@ export function CheckBuilder({ now }: { now: number }) {
               setDismissed(false);
             }}
             label="Search products to analyse"
+            placeholder="Search for a product"
           />
 
           {/* the count is inside a panel a screen reader has to find, and the

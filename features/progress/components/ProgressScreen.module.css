@@ -152,41 +152,6 @@
   /* 376 / centring: now carried by `.ctaDesktop` inside `.checkInColumn`. */
 }
 
-/* ---------------------------------------------------------------------------
-   Progress — empty
-
-   orb -> 32 -> title -> 12 -> description -> 32 -> CTA, the block centred.
-   The spacers are named frames in the comp and there is no gap on the stack, so
-   these are the literal distances — unlike `My Products — empty`, where a 16
-   gap sits either side of a 16 spacer and the real distance is 48.
-   -------------------------------------------------------------------------- */
-
-.empty {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  text-align: center;
-  color: var(--color-text-primary);
-}
-
-.empty > svg,
-.empty > :global(.lux-orb) {
-  margin-bottom: var(--space-3xl); /* 32 */
-}
-
-.emptyText {
-  margin-top: var(--space-md); /* 12 */
-  color: var(--color-text-secondary);
-}
-
-/* full width of the column on mobile up to the nav pill's 380
-   (`--width-action-mobile`); the comp narrows it on desktop rather than
-   letting it span the whole 640 block */
-.emptyCta {
-  /* width is `Button`'s `width="action"` */
-  margin-top: var(--space-3xl); /* 32 */
-}
-
 @media (min-width: 1024px) {
   .profileColumn h2:global(.t-overline),
   .checkInColumn h2:global(.t-overline) {

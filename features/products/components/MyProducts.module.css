@@ -1,31 +1,6 @@
-/* My Products. Figma empty 579:1574 / 583:1863, filled 579:1607 / 583:1889.
-
-empty:  orb 129 -> 16 spacer -> title -> description -> 16 spacer -> CTA,
-the whole block centred, no card at either breakpoint.
-filled: heading (+ subtitle) -> 24 -> category rows 56 tall, gap 12 -> 16
--> add-more. */
-
-.empty {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: var(--space-lg); /* 16 */
-  text-align: center;
-  color: var(--color-text-primary);
-}
-
-.empty > svg,
-.empty > :global(.lux-orb) {
-  margin-bottom: var(--space-3xl); /* + the 16 gap = 48 */
-}
-
-.emptyCta {
-  margin-top: var(--space-3xl); /* + the 16 gap = 48 */
-}
-
-.emptyText {
-  color: var(--color-text-secondary);
-}
+/* My Products: heading -> 24 -> routine card -> category rows, gap 12. The
+   groups show 0 until a product is added. `Add your products` floats 12 above
+   the nav. */
 
 .categories {
   margin: 0;
@@ -62,7 +37,7 @@ filled: heading (+ subtitle) -> 24 -> category rows 56 tall, gap 12 -> 16
     "name count chevron"
     "meta meta  meta";
   align-items: center;
-  gap: var(--space-sm) var(--space-md);
+  gap: var(--space-md); /* 12, name to window too */
   width: 100%;
   min-height: 112px;
   padding: var(--space-lg) var(--space-xl);
@@ -205,12 +180,52 @@ filled: heading (+ subtitle) -> 24 -> category rows 56 tall, gap 12 -> 16
   --collapse-gap: var(--space-sm);
 }
 
-/* carried over from the deleted pushed view, which is also where the filled hub
-   was missing an add affordance entirely */
+/* fixed 12 above the nav and centred on it, rising in once the screen has
+   arrived */
 .addMore {
-  display: flex;
-  justify-content: center;
-  margin-top: var(--space-lg); /* 16 */
+  position: fixed;
+  left: 50%;
+  bottom: calc(
+    var(--nav-inset-bottom) + var(--size-nav-height) + var(--space-md)
+  );
+  translate: -50% 0;
+  z-index: var(--z-nav);
+  animation: add-rise var(--duration-slower) var(--ease-in-out) 400ms backwards;
+  transition:
+    opacity var(--duration-slow) var(--ease-in-out),
+    transform var(--duration-slower) var(--ease-in-out);
+}
+
+.addMore[data-hidden] {
+  opacity: 0;
+  transform: translateY(var(--space-md));
+  pointer-events: none;
+}
+
+@keyframes add-rise {
+  from {
+    opacity: 0;
+    transform: translateY(var(--space-md));
+  }
+}
+
+/* the screen's end clears the button as well as the nav */
+:global(.screen[data-layout="hub"]):has(~ .addMore) {
+  padding-bottom: calc(
+    var(--nav-inset-bottom) + var(--size-nav-height) + var(--space-md) +
+      var(--size-control-md) + var(--space-lg)
+  );
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .addMore {
+    animation: none;
+    transition: opacity var(--duration-slow) var(--ease-in-out);
+  }
+
+  .addMore[data-hidden] {
+    transform: none;
+  }
 }
 
 @media (prefers-reduced-transparency: reduce) {
@@ -234,10 +249,6 @@ filled: heading (+ subtitle) -> 24 -> category rows 56 tall, gap 12 -> 16
     display: flex;
     flex-direction: column;
     align-items: flex-start;
-    gap: var(--space-2xs);
-  }
-
-  .window {
-    margin-top: calc(var(--space-sm) - var(--space-2xs));
+    gap: var(--space-md); /* 12, name to window */
   }
 }

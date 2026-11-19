@@ -5,7 +5,8 @@ import styles from "./CheckBasket.module.css";
 import { Sheet } from "@/components/ui/Sheet";
 import { Button } from "@/components/ui/Button";
 import { Collapse, COLLAPSE_EXIT_MS } from "@/components/ui/Collapse";
-import { ChevronDownIcon, CloseIcon, PlusIcon } from "@/components/ui/icons";
+import { ChevronDownIcon, PlusIcon } from "@/components/ui/icons";
+import { CloseButton } from "@/components/ui/CloseButton";
 import { ProductThumb } from "@/features/products/components/ProductThumb";
 import {
   MAX_CHECK_PRODUCTS,
@@ -117,9 +118,9 @@ export function CheckBasketSheet({
       open={open}
       onClose={onClose}
       title="Products in this check"
-      dismissLabel="Cancel"
+      dismiss="corner"
       /* grows up out of the bar's edge — `.sheet-grow` in globals.css */
-      className="sheet-grow"
+      className={`sheet-grow ${styles.tray}`}
     >
       <h2 className={`${styles.sheetTitle} t-h4`}>Products in this check</h2>
 
@@ -142,14 +143,10 @@ export function CheckBasketSheet({
                 <span className={`${styles.itemLabel} t-body2`}>
                   {fullName(p)}
                 </span>
-                <button
-                  type="button"
-                  className={styles.remove}
-                  aria-label={`Remove ${fullName(p)} from this analysis`}
+                <CloseButton
+                  label={`Remove ${fullName(p)} from this analysis`}
                   onClick={() => leave(p.id)}
-                >
-                  <CloseIcon className={styles.removeIcon} />
-                </button>
+                />
               </span>
             </div>
           </Collapse>

@@ -5,7 +5,7 @@ import styles from "./CompatCard.module.css";
 import { Sheet } from "@/components/ui/Sheet";
 import { Tag } from "@/components/ui/Tag";
 import { CountUp } from "@/components/ui/CountUp";
-import { CloseIcon } from "@/components/ui/icons";
+import { CloseButton } from "@/components/ui/CloseButton";
 import { BAND_LABEL, type CheckAnalysis } from "@/features/check/check";
 import { type CatalogProduct, fullName } from "@/features/products/products";
 import { ProductThumb } from "@/features/products/components/ProductThumb";
@@ -123,16 +123,11 @@ function Names({ product }: { product: CatalogProduct }) {
 
 function RemoveButton({ name, onRemove }: { name: string; onRemove: () => void }) {
   return (
-    <button
-      type="button"
+    <CloseButton
+      label={`Remove ${name} from this analysis`}
       className={styles.remove}
-      /* the glyph is the whole control, so the name has to carry both the
-         action and which product it acts on */
-      aria-label={`Remove ${name} from this analysis`}
       onClick={onRemove}
-    >
-      <CloseIcon className={styles.removeIcon} />
-    </button>
+    />
   );
 }
 

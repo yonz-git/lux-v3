@@ -2,7 +2,8 @@
 
 import { useId, type ReactNode } from "react";
 import styles from "./SearchField.module.css";
-import { SearchIcon, CloseIcon } from "./icons";
+import { SearchIcon } from "./icons";
+import { CloseButton } from "./CloseButton";
 import { IconButton } from "./IconButton";
 
 /**
@@ -40,14 +41,7 @@ export function SearchField({
         autoComplete="off"
       />
       {value !== "" && (
-        <button
-          type="button"
-          className={styles.trailing}
-          aria-label="Clear search"
-          onClick={() => onChange("")}
-        >
-          <CloseIcon className={styles.icon} />
-        </button>
+        <CloseButton label="Clear search" className={styles.clear} onClick={() => onChange("")} />
       )}
       {action && (
         <IconButton

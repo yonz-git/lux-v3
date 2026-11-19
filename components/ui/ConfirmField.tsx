@@ -2,7 +2,8 @@
 
 import { useEffect, useRef, useState, type RefObject } from "react";
 import { TextField } from "./TextField";
-import { CloseSmallIcon, NoteIcon, SuccessCheckIcon } from "./icons";
+import { NoteIcon, SuccessCheckIcon } from "./icons";
+import { CloseButton } from "./CloseButton";
 import { IconButton } from "./IconButton";
 import styles from "./ConfirmField.module.css";
 
@@ -64,13 +65,7 @@ export function ConfirmField({
           >
             <NoteIcon className={styles.actionIcon} />
           </IconButton>
-          <IconButton
-            size="xs"
-            label={`Remove ${noun}`}
-            onClick={onRemove}
-          >
-            <CloseSmallIcon />
-          </IconButton>
+          <CloseButton label={`Remove ${noun}`} onClick={onRemove} />
         </div>
       </div>
     );
@@ -99,13 +94,7 @@ export function ConfirmField({
         >
           <SuccessCheckIcon className={styles.checkIcon} />
         </IconButton>
-        <IconButton
-          size="xs"
-          label={`Remove ${noun}`}
-          onClick={onRemove}
-        >
-          <CloseSmallIcon />
-        </IconButton>
+        <CloseButton label={`Remove ${noun}`} onClick={onRemove} />
       </div>
     </div>
   );

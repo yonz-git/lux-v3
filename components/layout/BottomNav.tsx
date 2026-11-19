@@ -7,32 +7,34 @@ import {
   CheckIcon,
   MySkinIcon,
   ProductsIcon,
-  ProgressIcon,
 } from "@/components/ui/icons";
+import { useInvestigation } from "@/lib/store/InvestigationProvider";
+import { hasInvestigation } from "@/features/progress/progress";
 
 /**
  * The bottom navigation, from Figma component set `Bottom-Nav-Bar` (410:258).
  *
  * `active` mirrors the component's Active property and reflects the section the
  * user is IN, not the screen they came from:
- *   my-skin  — the investigation flow: every `QuestionScreen`, `/investigation/*`
- *   progress — dashboards, progress, streaks, rituals
+ *   my-skin  — the investigation flow (every `QuestionScreen`,
+ *              `/investigation/*`) and progress, `/progress*`
  *   check    — the compatibility check, `/check*`
  *   products — product browse and detail
- *   none     — outside those four sections (welcome, intro, onboarding steps).
+ *   none     — outside those three sections (welcome, intro, onboarding steps).
  *              `none` is a deliberate state, not a fallback.
  */
 
-export type NavSection = "none" | "my-skin" | "progress" | "check" | "products";
+export type NavSection = "none" | "my-skin" | "check" | "products";
 
+/* My skin opens the questionnaire until there is a profile, then Progress */
 const items = [
   {
     id: "my-skin",
     label: "My skin",
     href: "/investigation/start",
+    profileHref: "/progress",
     Icon: MySkinIcon,
   },
-  { id: "progress", label: "Progress", href: "/progress", Icon: ProgressIcon },
   { id: "check", label: "Analysis", href: "/check", Icon: CheckIcon },
   { id: "products", label: "Products", href: "/products", Icon: ProductsIcon },
 ] as const;
@@ -53,6 +55,7 @@ export function BottomNav({
   style?: React.CSSProperties;
 }) {
   const navRef = useRef<HTMLElement>(null);
+  const hasProfile = hasInvestigation(useInvestigation().answers);
   /* the section the user just tapped, lit before its screen arrives */
   const [tapped, setTapped] = useState<NavSection | null>(null);
   const lit = tapped ?? active;
@@ -97,7 +100,10 @@ export function BottomNav({
       style={style}
       aria-label="Sections"
     >
-      {items.map(({ id, label, href, Icon }) => {
+      {items.map((entry) => {
+        const { id, label, Icon } = entry;
+        const href =
+          hasProfile && "profileHref" in entry ? entry.profileHref : entry.href;
         const isActive = lit === id;
         /* the active pill shows its word; a circle keeps it for the screen
            reader only */

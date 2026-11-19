@@ -90,25 +90,9 @@
   display: none;
 }
 
-/* a 44px touch target around a 24px glyph is offset by HALF the difference —
-   all of it would push the icon 10px inside the field's content edge */
-.trailing {
+/* the clear ✕ (CloseButton) sits on the field's content edge */
+.clear {
   flex: none;
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  width: var(--size-touch-target);
-  height: var(--size-touch-target);
-  margin: 0 calc((var(--size-icon-sm) - var(--size-touch-target)) / 2);
-  border-radius: var(--radius-full);
-  color: var(--color-text-muted);
-  transition: opacity var(--duration-hover) var(--ease-hover);
-}
-
-/* the trailing glyphs step down to icon/sm (20) so they read as secondary to
-   the leading search glyph; the 44 touch target is unchanged */
-.trailing .icon {
-  --icon-size: var(--size-icon-sm);
 }
 
 /* the round action sits as far from the field's end as from its top and
@@ -118,8 +102,8 @@
 }
 
 /* beside clear, the gap keeps the two 44 targets from overlapping */
-.trailing + .action {
-  margin-inline-start: var(--space-sm);
+.clear + .action {
+  margin-inline-start: var(--space-xl);
 }
 
 @media (prefers-reduced-transparency: reduce) {

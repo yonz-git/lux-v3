@@ -133,7 +133,6 @@ export function CheckResults({
   return (
     <HubScreen
       title="Analysis results"
-      centerHeading
       nav="check"
       backHref={backHref}
       layout="card"

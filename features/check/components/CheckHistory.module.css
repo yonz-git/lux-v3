@@ -81,30 +81,6 @@
   color: var(--color-icon-default);
 }
 
-/* the empty state — the handoff says to reuse the Check — no profile block */
-.empty {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: var(--space-lg);
-  text-align: center;
-  color: var(--color-text-primary);
-}
-
-.empty > svg,
-.empty > :global(.lux-orb) {
-  margin-bottom: var(--space-3xl); /* + the 16 gap = 48 */
-}
-
-.emptyText {
-  color: var(--color-text-secondary);
-}
-
-.emptyCta {
-  /* width is `Button`'s `width="action"` */
-  margin-top: var(--space-3xl); /* + the 16 gap = 48 */
-}
-
 @media (prefers-reduced-transparency: reduce) {
   .row {
     background: var(--color-panel);

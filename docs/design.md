@@ -1,7 +1,7 @@
 ---
 version: alpha
 name: LUX v3
-description: Glass over a pale sage canvas, one indigo, Figtree, round controls — the system every lux-v3 screen is built from.
+description: Glass over a pale sage canvas, one indigo, Figtree with Manrope headings, round controls — the system every lux-v3 screen is built from.
 colors:
   primary: "#313560"
   primary-start: "#485780"
@@ -36,13 +36,13 @@ colors:
   symptom: "#D3858A"
 typography:
   headline:
-    fontFamily: Figtree
+    fontFamily: Manrope
     fontSize: 36px
-    fontWeight: 300
+    fontWeight: 500
     lineHeight: 44px
     letterSpacing: -0.005em
   headline-emphasis:
-    fontFamily: Figtree
+    fontFamily: Manrope
     fontSize: 36px
     fontWeight: 700
     lineHeight: 44px
@@ -59,19 +59,19 @@ typography:
     lineHeight: 24px
     letterSpacing: 0.005em
   h2:
-    fontFamily: Figtree
+    fontFamily: Manrope
     fontSize: 28px
-    fontWeight: 400
+    fontWeight: 500
     lineHeight: 34px
   page-title:
-    fontFamily: Figtree
+    fontFamily: Manrope
     fontSize: 22px
-    fontWeight: 400
+    fontWeight: 500
     lineHeight: 28px
   h4:
-    fontFamily: Figtree
+    fontFamily: Manrope
     fontSize: 20px
-    fontWeight: 400
+    fontWeight: 500
     lineHeight: 24px
   panel-label:
     fontFamily: Figtree
@@ -129,7 +129,7 @@ typography:
     fontWeight: 400
     lineHeight: 16px
   overline:
-    fontFamily: Figtree
+    fontFamily: Manrope
     fontSize: 12px
     fontWeight: 600
     lineHeight: 16px
@@ -459,13 +459,14 @@ The compatibility bands map to them: Compatible = `success`, Risky =
 
 ## Typography
 
-Figtree is the only typeface: a friendly sans that stays soft at light
-weights and holds up at 12px, which is what lets a 36px Light headline feel calm rather than thin.
-Five weights are loaded (300–700). The hierarchy is carried by size and weight,
-not colour.
-`headline` (36/44 Light) opens a welcome or empty state, with its key words in
+Two typefaces. Headings (`headline`, `h2`, `page-title`, `h4`) are Manrope
+Medium; everything else, from panel labels and row titles down to body,
+labels and data, is Figtree, a friendly sans that holds up at 12px. Figtree
+loads five weights (300–700), Manrope is one variable file. The hierarchy is
+carried by size, weight and the change of face, not colour.
+`headline` (36/44 Medium) opens a welcome or empty state, with its key words in
 `headline-emphasis` (Bold, in `primary`), under a `kicker` (16/20). Every page
-`<h1>` is `page-title` (22/28 Regular), on every page and both breakpoints;
+`<h1>` is `page-title` (22/28 Medium), on every page and both breakpoints;
 sheet titles use it too. Inside panels, `panel-label` (18/22) names the panel,
 `overline` (12/16 SemiBold, tracked, capitals) labels a readout, and
 `metric-lg` / `metric-md` (Light, tabular figures) carry the number.

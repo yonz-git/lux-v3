@@ -5,8 +5,7 @@ import styles from "./StartInvestigation.module.css";
 import { QuestionScreen } from "./QuestionScreen";
 import { SymptomPlacer } from "./SymptomPlacer";
 import { Button } from "@/components/ui/Button";
-import { ChatBubble } from "@/components/ui/ChatBubble";
-import { Orb } from "@/components/ui/Orb";
+import { CoachBubble } from "@/components/ui/CoachBubble";
 import { CameraIcon } from "@/components/ui/icons";
 import { SelfieSheet } from "./SelfieSheet";
 
@@ -28,15 +27,11 @@ export function StartInvestigation() {
         What is currently happening to your skin?
       </h2>
 
-      <div className={styles.coach}>
-        {/* the chat's orb (`animateIn halo`, as ChatPanel's 50), at 40 */}
-        <Orb size="40px" animateIn halo className={styles.coachOrb} />
-        <ChatBubble from="ai" hug className={styles.coachBubble}>
-          <span id={instructionId}>
-            Pick a symptom, then tap where it shows on your face.
-          </span>
-        </ChatBubble>
-      </div>
+      <CoachBubble className={styles.coach} bubbleClassName={styles.coachBubble}>
+        <span id={instructionId}>
+          Pick a symptom, then tap where it shows on your face.
+        </span>
+      </CoachBubble>
 
       <SymptomPlacer describedBy={instructionId} summary />
 

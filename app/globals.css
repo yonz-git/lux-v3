@@ -188,13 +188,28 @@ main[tabindex="-1"]:focus-visible {
   margin: 0;
 }
 
+/* Headings and card overlines are set in the display font (Manrope); t-h5
+   and t-h6 label data (names, counts, dates) and stay in the body font. */
+.t-display1,
+.t-display2,
+.t-h1,
+.t-headline,
+.t-h2,
+.t-h3,
+.t-h3-h2,
+.t-h4,
+.t-h4-h3,
+.t-overline {
+  font-family: var(--font-family-display);
+}
+
 .t-display1,
 .t-display2,
 .t-h1,
 .t-headline {
   font-size: clamp(2.25rem, 2.0739rem + 0.7512vw, 2.75rem); /* 36 → 44 */
   line-height: 1.2222;
-  font-weight: var(--font-weight-light);
+  font-weight: var(--font-weight-medium);
   letter-spacing: -0.005em;
 }
 .t-headline b,
@@ -224,30 +239,23 @@ main[tabindex="-1"]:focus-visible {
 .t-h2 {
   font-size: clamp(1.75rem, 1.662rem + 0.3756vw, 2rem); /* 28 → 32 */
   line-height: 1.2143;
-  font-weight: var(--font-weight-regular);
+  font-weight: var(--font-weight-medium);
 }
 .t-h3,
 .t-h4-h3 {
   font-size: 1.375rem; /* 22 */
   line-height: 1.2727;
-  font-weight: var(--font-weight-regular);
+  font-weight: var(--font-weight-medium);
 }
 .t-h3-h2 {
   font-size: clamp(1.375rem, 1.331rem + 0.1878vw, 1.5rem); /* 22 → 24 */
   line-height: 1.2727;
-  font-weight: var(--font-weight-regular);
-}
-@media (min-width: 1024px) {
-  /* the Storyboard title: 13 × 1.745 ≈ 23, Medium — the size slides now, the
-     weight still steps */
-  .t-h3-h2 {
-    font-weight: var(--font-weight-medium);
-  }
+  font-weight: var(--font-weight-medium);
 }
 .t-h4 {
   font-size: 1.25rem; /* 20 */
   line-height: 1.2;
-  font-weight: var(--font-weight-regular);
+  font-weight: var(--font-weight-medium);
 }
 .t-h5 {
   font-size: 1.125rem; /* 18 */
@@ -517,6 +525,16 @@ main[tabindex="-1"]:focus-visible {
   box-shadow: inset 0 1px 0 var(--color-rim-panel);
   -webkit-backdrop-filter: blur(12px);
   backdrop-filter: blur(12px);
+}
+
+/* A card's own backdrop-filter cuts off the blur of a dropdown inside it, so
+   a calendar hanging past the card's edge showed what was behind it
+   unblurred. While a dropdown is open the card drops its blur (the tint
+   stays) and the dropdown blurs the page itself. A pseudo-element frost
+   instead rendered some cards greyer than others. */
+.canvas-card.canvas-card:has(.drop) {
+  -webkit-backdrop-filter: none;
+  backdrop-filter: none;
 }
 
 @media (prefers-reduced-transparency: reduce) {
@@ -1409,6 +1427,15 @@ main[tabindex="-1"]:focus-visible {
   opacity: 0;
   transform: translateY(-4px) scale(0.98);
   transition-duration: var(--duration-fast);
+}
+
+/* A card is its own stacking context (`isolation: isolate`), so a dropdown's
+   z-index only counts inside it, and the cards and buttons after it paint over
+   the part that hangs out. While a card holds an open dropdown, the card itself
+   rises above its neighbours. */
+.canvas-card.canvas-card:has(.drop),
+.panel:has(.drop) {
+  z-index: 1;
 }
 
 /* ============================================================================

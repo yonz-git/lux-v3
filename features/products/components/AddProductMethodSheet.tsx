@@ -16,7 +16,8 @@ import { ProductRow } from "./ProductList";
 import { ProductThumb } from "./ProductThumb";
 import { useInvestigation } from "@/lib/store/InvestigationProvider";
 import { DROP_EXIT_MS, useDialogPresence, useHeldWhileClosing } from "@/lib/useModalDialog";
-import { SearchIcon, CameraIcon, ChevronRightIcon, CloseIcon } from "@/components/ui/icons";
+import { SearchIcon, CameraIcon, ChevronRightIcon } from "@/components/ui/icons";
+import { CloseButton } from "@/components/ui/CloseButton";
 import {
   BUCKET_LIST_TITLE,
   DURATIONS,
@@ -45,7 +46,8 @@ type ConfirmSource = "search" | "scan";
  * the draft holds the answers (see `ProductDraft`), this holds what is on
  * screen, and it resets with the tray.
  *
- *   verify    is this the right product?         -> duration | rejected
+ *   verify    is this the right product?         -> duration | added | rejected
+ *             (straight to added when the tray was opened from a group)
  *   duration  how long have you used it?         -> added
  *   added     it went into <group>; add another  -> verify
  *   rejected  wrong product; search again        -> verify
@@ -55,9 +57,13 @@ type ConfirmStage = "verify" | "duration" | "added" | "rejected";
 export function AddProductMethodSheet({
   open,
   onClose,
+  duration,
 }: {
   open: boolean;
   onClose: () => void;
+  /** already answered — the tray was opened from a group, which IS the
+   *  answer — so the duration question is skipped */
+  duration?: Duration;
 }) {
   const { answers, setAnswer } = useInvestigation();
   const { add, remove: removeProduct } = useProductLibrary();
@@ -175,6 +181,10 @@ export function AddProductMethodSheet({
    *  commit it. The duration question comes next, and it is the answer that
    *  decides the group, so there is nothing to save until it exists. */
   function acceptDraft() {
+    if (duration) {
+      commit(duration);
+      return;
+    }
     setStage("duration");
   }
 
@@ -193,10 +203,15 @@ export function AddProductMethodSheet({
    */
   function addProduct() {
     if (!draft?.duration) return;
+    commit(draft.duration);
+  }
+
+  function commit(answer: Duration) {
     // the ENRICHED product, not the bare draft, so a saved product carries
     // whatever photo/ingredients Open Beauty Facts found and the hub's
     // thumbs and accordion cards show it too
-    add(enrichedProduct, draft.duration);
+    add(enrichedProduct, answer);
+    setAnswer("productDraft", (prev) => (prev ? { ...prev, duration: answer } : prev));
     setAnswer("productQuery", "");
     setStage("added");
   }
@@ -275,6 +290,7 @@ export function AddProductMethodSheet({
           onQueryChange={(v) => setAnswer("productQuery", v)}
           onChooseMore={chooseProduct}
           onShapeChange={setSearchShape}
+          onDone={resetAndClose}
         />
       )}
       </div>
@@ -533,6 +549,7 @@ function ConfirmView({
   onQueryChange,
   onChooseMore,
   onShapeChange,
+  onDone,
 }: {
   source: ConfirmSource;
   stage: ConfirmStage;
@@ -556,6 +573,8 @@ function ConfirmView({
   onQueryChange: (v: string) => void;
   onChooseMore: (product: CatalogProduct) => void;
   onShapeChange: (shape: string) => void;
+  /** closes the tray once the user has added what they came to add */
+  onDone: () => void;
 }) {
   const isScan = source === "scan";
   const showsCard =
@@ -640,11 +659,11 @@ function ConfirmView({
 
       {(stage === "added" || stage === "rejected") && (
         <div className={styles.confirmBlock}>
-          <p className={`${styles.confirmLabel} t-label`}>
+          <h2 className={`${styles.trayHeading} t-h4`}>
             {stage === "added"
               ? "Add another product"
               : "Search for a different product"}
-          </p>
+          </h2>
           <SearchView
             query={query}
             onQueryChange={onQueryChange}
@@ -656,7 +675,7 @@ function ConfirmView({
 
       {addedProducts.length > 0 && stage !== "verify" && (
         <div className={styles.confirmBlock}>
-          <p className={`${styles.confirmLabel} t-label`}>Added products</p>
+          <p className={`${styles.listLabel} t-label`}>Added products</p>
           <ul className={styles.addedList}>
             {addedProducts.map((p) => (
               <li key={p.id}>
@@ -664,20 +683,27 @@ function ConfirmView({
                   name={fullName(p)}
                   product={p}
                   trailing={
-                    <button
-                      type="button"
-                      className={`${styles.removeButton} tap-target`}
+                    <CloseButton
+                      label={`Remove ${fullName(p)}`}
                       onClick={() => onRemove(p.id)}
-                      aria-label={`Remove ${fullName(p)}`}
-                    >
-                      <CloseIcon className={styles.removeIcon} />
-                    </button>
+                    />
                   }
                 />
               </li>
             ))}
           </ul>
         </div>
+      )}
+
+      {stage === "added" && (
+        <Button
+          variant="secondary"
+          width="action"
+          className={styles.trayAction}
+          onClick={onDone}
+        >
+          Done
+        </Button>
       )}
     </div>
   );

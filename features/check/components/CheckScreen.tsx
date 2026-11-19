@@ -3,6 +3,7 @@
 import Link from "next/link";
 import styles from "./CheckScreen.module.css";
 import { HubScreen } from "@/components/layout/HubScreen";
+import { EmptyState } from "@/components/ui/EmptyState";
 import { Button } from "@/components/ui/Button";
 import { Orb } from "@/components/ui/Orb";
 import { ChatBubble } from "@/components/ui/ChatBubble";
@@ -59,22 +60,17 @@ export function CheckNoProfile() {
       subtitle="Product compatibility"
       nav="check"
       layout="plain"
-      center
+      center="empty"
       /* the same state of the same screen as `/check`, so the same top */
       tightTop
     >
-      <div className={styles.hero}>
-        <Orb animateIn />
-        <h2 className="t-h4-h3">No skin profile yet</h2>
-        <p className={`${styles.text} t-body3-body2`}>
-          Check how your products may suit your skin and work together in the
-          same routine.
-        </p>
-        {/* the handoff's transition map: → GETTING STARTED 01 */}
-        <Button width="action" href="/investigation/start" className={styles.cta}>
-          Create skin profile
-        </Button>
-      </div>
+      <EmptyState
+        title="No skin profile yet"
+        action={{ label: "Create skin profile", href: "/investigation/start" }}
+      >
+        Check how your products may suit your skin and work together in the
+        same routine.
+      </EmptyState>
     </HubScreen>
   );
 }

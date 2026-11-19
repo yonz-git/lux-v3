@@ -109,13 +109,50 @@
 }
 
 /* ---------------------------------------------------------------------------
-   The expanded sheet. `Sheet` owns the surface, padding, radius and the 20 gap;
-   everything here is its contents.
+   The expanded sheet. `Sheet` owns the surface, radius and the 20 gap; the
+   phone's block padding is set below.
    -------------------------------------------------------------------------- */
 
 .sheetTitle {
   width: 100%;
   color: var(--color-text-on-data);
+}
+
+/* On a phone the tray opens and closes on the panel's 32, not Sheet's 20, and
+   the corner ✕ comes down with it, so the title row keeps the ✕. From 1024
+   Sheet's 48 and its own ✕ position apply. Doubled: outranks `Sheet`'s
+   padding and ✕ whatever the bundle order. */
+.tray.tray {
+  padding-block: var(--space-panel); /* 32 */
+}
+
+.tray.tray > [aria-label="Close"] {
+  top: var(--space-panel);
+}
+
+@media (min-width: 1024px) {
+  .tray.tray {
+    padding-block: var(--space-5xl); /* 48 */
+  }
+
+  .tray.tray > [aria-label="Close"] {
+    top: var(--space-xl); /* 20 */
+  }
+}
+
+/* The title shares the top row with the corner ✕: its x-height centres on
+   the 20 ✕ and it stops short of it. From 1024 the tray's 48 padding puts
+   the title below. */
+.sheetTitle {
+  margin-top: calc((var(--size-icon-sm) - 1lh - 1cap + 1ex) / 2); /* token-exempt: font metrics that centre the x-height band on the 20 ✕, not a scaled token */
+  padding-inline-end: calc(var(--size-icon-sm) + var(--space-sm));
+}
+
+@media (min-width: 1024px) {
+  .sheetTitle {
+    margin-top: 0;
+    padding-inline-end: 0;
+  }
 }
 
 .basket {
@@ -164,39 +201,6 @@
   flex: 1;
   min-width: 0;
   color: var(--color-text-primary);
-}
-
-/* A 20 glyph needs a 44 target; the negative margin keeps the target from
-   driving the row height — the same trick HubScreen's back chevron uses. The
-   thumb is the tallest thing in the row now, so the row is 72. */
-.remove {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  flex: none;
-  width: var(--size-touch-target);
-  height: var(--size-touch-target);
-  margin: calc((var(--size-icon-sm) - var(--size-touch-target)) / 2);
-  padding: 0;
-  border-radius: var(--radius-full);
-  /* the label's ink (lux-v3) */
-  color: var(--color-icon-default);
-  transition: opacity var(--duration-fast) var(--ease-hover);
-}
-
-.remove:hover {
-  opacity: 0.7;
-}
-
-@media (hover: none) {
-  .remove:hover {
-    opacity: 1;
-  }
-}
-
-.removeIcon {
-  width: var(--size-icon-sm); /* 20 */
-  height: var(--size-icon-sm);
 }
 
 .addAnotherItem {

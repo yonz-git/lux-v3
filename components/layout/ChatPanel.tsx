@@ -3,8 +3,7 @@
 import type { ReactNode } from "react";
 import styles from "./ChatPanel.module.css";
 import { Orb } from "@/components/ui/Orb";
-import { CloseSmallIcon } from "@/components/ui/icons";
-import { IconButton } from "@/components/ui/IconButton";
+import { CloseButton } from "@/components/ui/CloseButton";
 
 /**
  * The conversation panel — Figma `chat-page / mobile` (270:96).
@@ -48,23 +47,9 @@ export function ChatPanel({
         </div>
 
         {onClose ? (
-          <IconButton
-            size="xs"
-            label={closeLabel}
-            className={styles.close}
-            onClick={onClose}
-          >
-            <CloseSmallIcon />
-          </IconButton>
+          <CloseButton label={closeLabel} className={styles.close} onClick={onClose} />
         ) : (
-          <IconButton
-            size="xs"
-            label={closeLabel}
-            className={styles.close}
-            href={closeHref ?? "/"}
-          >
-            <CloseSmallIcon />
-          </IconButton>
+          <CloseButton label={closeLabel} className={styles.close} href={closeHref ?? "/"} />
         )}
       </div>
 

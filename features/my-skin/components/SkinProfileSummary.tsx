@@ -1,11 +1,14 @@
 "use client";
 
 import { useState } from "react";
+import { useRouter } from "next/navigation";
+import { Sheet } from "@/components/ui/Sheet";
 import styles from "./SkinProfileSummary.module.css";
 import { HubScreen } from "@/components/layout/HubScreen";
+import { EmptyState } from "@/components/ui/EmptyState";
 import { Button } from "@/components/ui/Button";
-import { Orb } from "@/components/ui/Orb";
 import { SmallButton } from "@/components/ui/SmallButton";
+import { CoachBubble } from "@/components/ui/CoachBubble";
 import { EditToggle } from "@/components/ui/EditToggle";
 import { SymptomLocation } from "./SymptomLocation";
 import { LocationEditor } from "./LocationEditor";
@@ -23,7 +26,9 @@ import { COPY, isEmpty, recap } from "@/features/my-skin/profile";
  * and step 5 (Your products).
  */
 export function SkinProfileSummary({ now }: { now: number }) {
-  const { answers } = useInvestigation();
+  const { answers, reset } = useInvestigation();
+  const router = useRouter();
+  const [confirmReset, setConfirmReset] = useState(false);
   const [photoOpen, setPhotoOpen] = useState(false);
   const [editProfile, setEditProfile] = useState(false);
   const [editLocation, setEditLocation] = useState(false);
@@ -37,16 +42,14 @@ export function SkinProfileSummary({ now }: { now: number }) {
         nav="my-skin"
         backHref="/investigation/timing"
         layout="plain"
-        center
+        center="empty"
       >
-        <div className={styles.empty}>
-          <Orb animateIn />
-          <p className={`${styles.emptyTitle} t-h4-h3`}>{COPY.emptyTitle}</p>
-          <p className={`${styles.emptyBody} t-body3-body2`}>{COPY.emptyBody}</p>
-          <Button width="action" href="/investigation/start" className={styles.emptyCta}>
-            {COPY.emptyCta}
-          </Button>
-        </div>
+        <EmptyState
+          title={COPY.emptyTitle}
+          action={{ label: COPY.emptyCta, href: "/investigation/start" }}
+        >
+          {COPY.emptyBody}
+        </EmptyState>
       </HubScreen>
     );
   }
@@ -61,13 +64,13 @@ export function SkinProfileSummary({ now }: { now: number }) {
 
   return (
     <HubScreen
-      title={COPY.headlineLabel}
-      centerHeading
       nav="my-skin"
       backHref="/investigation/timing"
       layout="card"
       tightTop
     >
+      {/* no visible title: the cards name themselves */}
+      <h1 className="visually-hidden">{COPY.headlineLabel}</h1>
       <div className={styles.headline}>
         <Collapse smooth open={!editProfile}>
           <SkinProfileTiles
@@ -170,13 +173,38 @@ export function SkinProfileSummary({ now }: { now: number }) {
       <SelfieSheet open={photoOpen} onClose={() => setPhotoOpen(false)} />
 
       <div className={styles.actions}>
-        <p className={`${styles.ctaHelp} t-body3-body2`}>{COPY.ctaHelp}</p>
+        <CoachBubble>{COPY.ctaHelp}</CoachBubble>
         <div className={styles.cta}>
           <Button href="/products" fullWidth>
             {COPY.cta}
           </Button>
         </div>
       </div>
+
+      <div className={styles.startOver}>
+        <Button variant="secondary" size="md" onClick={() => setConfirmReset(true)}>
+          {COPY.startOver}
+        </Button>
+      </div>
+
+      <Sheet
+        open={confirmReset}
+        onClose={() => setConfirmReset(false)}
+        title={COPY.startOverTitle}
+        dismissLabel="Cancel"
+      >
+        <h2 className={`${styles.confirmTitle} t-h4`}>{COPY.startOverTitle}</h2>
+        <p className={`${styles.confirmBody} t-body3`}>{COPY.startOverBody}</p>
+        <Button
+          width="action"
+          onClick={() => {
+            reset();
+            router.push("/investigation/start");
+          }}
+        >
+          {COPY.startOverConfirm}
+        </Button>
+      </Sheet>
     </HubScreen>
   );
 }

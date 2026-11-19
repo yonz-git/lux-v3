@@ -103,6 +103,7 @@
   inset: 0;
   display: grid;
   place-items: center;
+  font-family: var(--font-family-sans); /* a number, not a heading */
   font-weight: var(--font-weight-light);
   font-variant-numeric: tabular-nums;
 }
@@ -139,37 +140,13 @@
   background: var(--band);
 }
 
-/* only while the results box is editing — a glass circle in the corner */
-.remove {
+/* only while the results box is editing — the ✕ in the card's corner, inset
+   by the card's 16. Parent + class, so it outranks the button's own
+   `position: relative` whatever the bundle order. */
+.card > .remove {
   position: absolute;
-  top: var(--space-sm);
-  right: var(--space-sm);
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  width: var(--size-control-sm); /* 36 */
-  height: var(--size-control-sm);
-  padding: 0;
-  border-radius: var(--radius-full);
-  border: var(--border-width-hairline) solid var(--color-border-glass);
-  background: var(--color-glass);
-  box-shadow: var(--shadow-glass);
-  color: var(--color-icon-default);
-  transition: background-color var(--duration-fast) var(--ease-hover);
-}
-
-.remove:hover {
-  background-color: var(--color-glass-strong);
-}
-
-@media (hover: none) {
-  .remove:hover {
-    background-color: var(--color-glass);
-  }
-}
-
-.removeIcon {
-  --icon-size: var(--size-icon-sm); /* 20 */
+  top: var(--space-lg);
+  right: var(--space-lg);
 }
 
 /* ---- the detail, in the sheet ----------------------------------------------- */

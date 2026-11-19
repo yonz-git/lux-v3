@@ -70,10 +70,10 @@ function Section({ title, children }: { title: string; children: ReactNode }) {
 }
 
 const TYPE: [string, string][] = [
-  ["t-headline", "headline · 36/44 Light"],
+  ["t-headline", "headline · 36/44 Manrope Medium"],
   ["t-brand", "wordmark · 20/24 Bold"],
-  ["t-h2", "28/34 Regular"],
-  ["t-h4-h3", "page title · 22/28 Regular"],
+  ["t-h2", "28/34 Manrope Medium"],
+  ["t-h4-h3", "page title · 22/28 Manrope Medium"],
   ["t-h5", "panel label · 18/22 Regular"],
   ["t-h6", "16/20 Medium"],
   ["t-body1", "18/24 Regular"],

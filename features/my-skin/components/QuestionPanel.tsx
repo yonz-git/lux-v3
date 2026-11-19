@@ -2,8 +2,7 @@
 
 import { useId, type ReactNode } from "react";
 import styles from "./QuestionPanel.module.css";
-import { ChatBubble } from "@/components/ui/ChatBubble";
-import { Orb } from "@/components/ui/Orb";
+import { CoachBubble } from "@/components/ui/CoachBubble";
 
 export function QuestionPanel({
   question,
@@ -24,17 +23,11 @@ export function QuestionPanel({
       className={className ? `panel ${styles.panel} ${className}` : `panel ${styles.panel}`}
     >
       <div className={styles.head}>
-        <div className={styles.ask}>
-          <span className={styles.orb} aria-hidden="true">
-            {/* the chat's orb, as step 1's coach wears it */}
-            <Orb size="40px" animateIn halo />
+        <CoachBubble>
+          <span id={id} role="heading" aria-level={2} className="t-body2-body1">
+            {question}
           </span>
-          <ChatBubble from="ai" hug className={styles.bubble}>
-            <span id={id} role="heading" aria-level={2} className="t-body2-body1">
-              {question}
-            </span>
-          </ChatBubble>
-        </div>
+        </CoachBubble>
         {hint && <p className={`${styles.hint} t-body3`}>{hint}</p>}
       </div>
       {children}

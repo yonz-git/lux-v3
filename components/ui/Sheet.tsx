@@ -3,8 +3,7 @@
 import { useCallback, useEffect, useLayoutEffect, useRef, useState } from "react";
 import * as Dialog from "@radix-ui/react-dialog";
 import styles from "./Sheet.module.css";
-import { CloseSmallIcon } from "./icons";
-import { IconButton } from "./IconButton";
+import { CloseButton } from "./CloseButton";
 import { useDialogFocus, useDialogPresence } from "@/lib/useModalDialog";
 
 /**
@@ -28,7 +27,7 @@ export function Sheet({
   /** added to the tray, for a caller that needs to adjust its own dialog */
   className?: string;
   /** the words on the tray's one way out — `Done` unless a caller's close
-   *  means something else (CHECK's basket says `Cancel`) */
+   *  means something else */
   dismissLabel?: string;
   dismiss?: "label" | "corner";
   /** names what the tray is showing; when it changes, the tray eases from its
@@ -142,14 +141,7 @@ export function Sheet({
             corner ✕ comes FIRST in the DOM, so Tab reaches the exit before
             the content, as it would reach a header's close. */}
         {dismiss === "corner" && (
-          <IconButton
-            size="xs"
-            label="Close"
-            className={styles.close}
-            onClick={onClose}
-          >
-            <CloseSmallIcon />
-          </IconButton>
+          <CloseButton label="Close" className={styles.close} onClick={onClose} />
         )}
         {children}
         {dismiss === "label" && (

@@ -40,26 +40,6 @@
   gap: var(--space-sm);
 }
 
-.ask {
-  display: flex;
-  align-items: flex-start;
-  justify-content: center;
-  gap: var(--space-sm);
-}
-
-/* the bubble's row hugs its bubble, so the pair has a width to centre */
-.ask > :last-child {
-  flex: 0 1 auto;
-  width: auto;
-  min-width: 0;
-}
-
-.orb {
-  flex: none;
-  display: inline-flex;
-  margin-top: var(--space-xs);
-}
-
 .hint {
   margin: 0;
   color: var(--color-text-secondary);

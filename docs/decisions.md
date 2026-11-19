@@ -3239,3 +3239,20 @@ One rule decides whether there is anything to show: `hasInvestigation()` in
 the check-in screens show `ProgressEmpty`, and `/check`, `/check/new` and
 `/check/results` show `CheckNoProfile`.
 
+
+## Progress moves into My skin (19 Nov 2026)
+
+Progress showed the same skin profile as the My skin recap and used the same
+`hasInvestigation()` gate, so the two tabs were one section split in two. Step
+one: the Progress tab is gone from `BottomNav` (three tabs: My skin, Analysis,
+Products) and `/progress*` screens light My skin. The My skin tab opens the
+questionnaire until there is a profile, then `/progress`.
+
+## Answers are saved between visits again (20 Nov 2026)
+
+A finished skin profile vanished on every reload, which made the prototype
+feel broken. `InvestigationProvider` now saves the answers to `localStorage`
+under `lux.answers.v3` and loads them on mount. Mid-task state
+(`TRANSIENT_KEYS`: product draft, scan, queries, check basket, the check being
+viewed) is not saved. This supersedes "The prototype starts fresh on every
+visit" for persistence; there is still no demo data.

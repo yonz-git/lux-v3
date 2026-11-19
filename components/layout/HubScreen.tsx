@@ -13,7 +13,6 @@ import { IconButton } from "@/components/ui/IconButton";
 export function HubScreen({
   title,
   subtitle,
-  centerHeading,
   backHref,
   action,
   layout = "card",
@@ -27,7 +26,6 @@ export function HubScreen({
 }: {
   title?: string;
   subtitle?: string;
-  centerHeading?: boolean;
   /** a pushed view's back chevron; a landing has none */
   backHref?: string;
   /** the header row's right-hand slot */
@@ -44,8 +42,10 @@ export function HubScreen({
    * the hero, which is not what the comp draws.
    */
   belowHeading?: ReactNode;
-  /** `true` centres the body between two equal flexible spacers. */
-  center?: boolean | "low";
+  /** `true` centres the body between two equal flexible spacers. `"empty"`
+   *  keeps the heading at the top and sets the body low, in Welcome's
+   *  proportions, so an empty state's button sits where Welcome's does. */
+  center?: boolean | "low" | "empty";
   /** Take the screen's top padding one step down the scale, 40 -> 32. */
   tightTop?: boolean;
   /** `grid` only: the desktop `grid-template-columns` (default `640px 1fr`). */
@@ -56,9 +56,10 @@ export function HubScreen({
 }) {
   const hasHeader = Boolean(backHref || action);
   const low = center === "low";
+  const empty = center === "empty";
 
   const heading = title ? (
-    <div className={styles.heading} data-center={centerHeading || undefined}>
+    <div className={styles.heading}>
       <h1 className="t-h4-h3">{title}</h1>
       {subtitle && <p className={`${styles.subtitle} t-body3-body2`}>{subtitle}</p>}
     </div>
@@ -70,7 +71,7 @@ export function HubScreen({
       data-layout="hub"
       data-center={center === true || undefined}
       /* `center="low"` reserves no nav on desktop at any height — globals.css */
-      data-low={low || undefined}
+      data-low={low || empty || undefined}
       data-tight-top={tightTop || undefined}
     >
       <div className={styles.shell} data-reveal>
@@ -95,6 +96,7 @@ export function HubScreen({
         {!low && belowHeading}
 
         {center === true && <div className={styles.flex} aria-hidden="true" />}
+        {empty && <div className={styles.aboveEmpty} aria-hidden="true" />}
 
         {low && (
           <div className={styles.above}>
@@ -118,7 +120,7 @@ export function HubScreen({
           {children}
         </div>
 
-        {center && <div className={low ? styles.below : styles.flex} aria-hidden="true" />}
+        {center && <div className={low || empty ? styles.below : styles.flex} aria-hidden="true" />}
 
         {footer && <div className={styles.footer}>{footer}</div>}
       </div>

@@ -5,7 +5,6 @@ import styles from "./MyProducts.module.css";
 import { HubScreen } from "@/components/layout/HubScreen";
 import { RoutineSummary } from "./RoutineSummary";
 import { Button } from "@/components/ui/Button";
-import { Orb } from "@/components/ui/Orb";
 import { ProductAccordionCard } from "./ProductAccordionCard";
 import { ThumbStack } from "./ThumbStack";
 import { EmptyBox } from "./ProductList";
@@ -22,19 +21,25 @@ import {
   BUCKET_WINDOW,
   UNSORTED_BUCKET,
   countIn,
+  durationFor,
   type BucketId,
   type SavedProduct,
 } from "@/features/products/products";
 
 /**
- * My Products — the PRODUCTS hub landing. ONE screen in two states:
- *   empty  Figma mobile 579:1574, desktop 583:1863
- *   filled Figma mobile 579:1607, desktop 583:1889
+ * My Products — the PRODUCTS hub landing (Figma mobile 579:1607, desktop
+ * 583:1889). With no products the groups show 0.
  */
 export function MyProducts() {
   const { answers } = useInvestigation();
   const { remove: removeProduct } = useProductLibrary();
   const [sheetOpen, setSheetOpen] = useState(false);
+  /* the group the tray was opened from, if any — its duration is then known */
+  const [addTo, setAddTo] = useState<BucketId | null>(null);
+  const openSheet = (bucket: BucketId | null) => {
+    setAddTo(bucket);
+    setSheetOpen(true);
+  };
   const products: SavedProduct[] = ownedProducts(answers);
 
   const categories = [
@@ -42,47 +47,13 @@ export function MyProducts() {
     ...(countIn(products, UNSORTED_BUCKET.id) > 0 ? [UNSORTED_BUCKET] : []),
   ];
 
-  if (products.length === 0) {
-    return (
-      <HubScreen
-        title="Products in use"
-        centerHeading
-        layout="plain"
-        center
-        tightTop
-      >
-        <div className={styles.empty}>
-          <Orb animateIn />
-          <h2 className="t-h4-h3">No products added yet</h2>
-          <p className={`${styles.emptyText} t-body3-body2`}>
-            Add products you use to check skin compatibility.
-          </p>
-          <Button
-            width="action"
-            className={styles.emptyCta}
-            onClick={() => setSheetOpen(true)}
-          >
-            Search product
-          </Button>
-        </div>
-        <AddProductMethodSheet
-          open={sheetOpen}
-          onClose={() => setSheetOpen(false)}
-        />
-      </HubScreen>
-    );
-  }
-
   return (
     <>
       <HubScreen
         title="Products in use"
-        centerHeading
         layout="card"
         tightTop
-        footer={
-          <Button href="/check/new">Start analysis</Button>
-        }
+        footer={<Button href="/check/new">Start analysis</Button>}
       >
         <RoutineSummary products={products} />
 
@@ -93,26 +64,31 @@ export function MyProducts() {
                 bucket={b.id}
                 products={products.filter((p) => p.bucket === b.id)}
                 onRemove={(id) => removeProduct(id)}
-                onAdd={() => setSheetOpen(true)}
+                onAdd={() => openSheet(b.id)}
               />
             </li>
           ))}
         </ul>
-
-        <div className={styles.addMore}>
-          <Button
-            variant="secondary"
-            size="md"
-            onClick={() => setSheetOpen(true)}
-          >
-            Add your products
-          </Button>
-        </div>
       </HubScreen>
 
+      {/* fixed above the nav, so it is on screen however long the groups run;
+          it steps aside while the tray it opens is up */}
+      <div
+        className={styles.addMore}
+        data-hidden={sheetOpen || undefined}
+        inert={sheetOpen}
+      >
+        <Button variant="secondary" size="md" onClick={() => openSheet(null)}>
+          Add your products
+        </Button>
+      </div>
+
+      {/* one tray, outside the screen, so it stays on "Product added" while
+          the groups re-render under it */}
       <AddProductMethodSheet
         open={sheetOpen}
         onClose={() => setSheetOpen(false)}
+        duration={addTo ? durationFor(addTo) : undefined}
       />
     </>
   );
@@ -179,7 +155,7 @@ function CategoryGroup({
         aria-label={`${BUCKET_LIST_TITLE[bucket]}, ${BUCKET_WINDOW[bucket]}, ${n} product${n === 1 ? "" : "s"}`}
       >
         <span className={styles.copy}>
-          <span className={`${styles.categoryName} t-h5`}>
+          <span className={`${styles.categoryName} t-h6`}>
             {BUCKET_LIST_TITLE[bucket]}
           </span>
           <span className={`${styles.window} t-label`}>

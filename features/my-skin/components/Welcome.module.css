@@ -105,10 +105,7 @@
   align-items: center;
   gap: 0.8125rem; /* matches desktop's button-to-disclaimer gap, tighter than the Figma-literal 24 (--space-2xl) */
   width: 100%;
-  /* bubble bottom to button top is 163 at the 957 design height, and shrinks
-     first on short viewports — less the 40 .hero now takes above it, so the
-     button lands exactly where it did */
-  margin-top: clamp(0px, 17vh - var(--space-4xl), 7.6875rem);
+  margin-top: var(--space-hero-action);
 }
 
 .cta {
@@ -160,9 +157,6 @@
 
   .actions {
     gap: 0.8125rem;
-    /* 23 gap + 94 spacer + 23 gap between the bubble and the CTA group,
-       less .hero's 40 offset */
-    margin-top: 6.25rem;
   }
 
   .cta {

@@ -54,11 +54,11 @@ lib/                 date.ts, pageTitles.ts, actives.ts
 | `/investigation/profile` | pushed, recap of steps 1–4 | `my-skin` |
 | `/investigation/products` | step 5/5 | `products` |
 | `/investigation/analysis` | pushed, retrospective analysis | `my-skin` |
-| `/products` | hub | `products` |
-| `/progress` | hub, default, empty until step 4 | `progress` |
-| `/progress/empty` | prototype empty state | `progress` |
-| `/progress/check-in` | pushed, check-in chat | `progress` |
-| `/progress/check-in/[date]` | pushed, only dynamic route | `progress` |
+| `/products` | hub, the three groups at 0 until a product is added | `products` |
+| `/progress` | hub, default, empty until step 4 | `my-skin` |
+| `/progress/empty` | prototype empty state | `my-skin` |
+| `/progress/check-in` | pushed, check-in chat | `my-skin` |
+| `/progress/check-in/[date]` | pushed, only dynamic route | `my-skin` |
 | `/check` | hub, default, titled `Analysis` | `check` |
 | `/check/no-profile` | prototype empty state | `check` |
 | `/check/new` | pushed, build a check | `check` |
@@ -97,15 +97,14 @@ lib/                 date.ts, pageTitles.ts, actives.ts
 ## State
 
 - Controls start empty. Nothing pre-selected.
-- Every visit starts fresh: nothing is saved between visits and there is no demo data. A reload empties everything.
+- Answers are saved in the browser (`STORAGE_KEY` in `answers.ts`), so a reload keeps the skin profile, products, checks and check-ins. There is no demo data.
 - Hubs and their pushed screens show their empty state until `hasInvestigation()` (`progress.ts`): `ProgressEmpty`, `CheckNoProfile`. Never a hollow screen.
 - Continue is gated by the step's `isComplete` in `flow.ts`. `QuestionScreen` owns the button.
 - Read with `useInvestigation()`.
 - Owned products: read with `ownedProducts()`, change with `useProductLibrary()`. Terms in `CONTEXT.md`.
 
-- Answers live in memory for one page load. Nothing is written to the browser; `RETIRED_STORAGE_KEYS` (`answers.ts`) are deleted on load, never read.
-- Navigate between screens with `Link` or `router`, never a full page load: it empties the visit.
-- Not resumable. No UI that promises resume.
+- `InvestigationProvider` loads the saved answers on mount and writes them after every change, minus `TRANSIENT_KEYS` (drafts, queries, the open check). `RETIRED_STORAGE_KEYS` are deleted on load, never read.
+- Navigate between screens with `Link` or `router`.
 - Toggles use the updater form: `setAnswer(key, (prev) => …)`.
 - Screens echo earlier answers. Guard for missing ones.
 
@@ -114,7 +113,7 @@ lib/                 date.ts, pageTitles.ts, actives.ts
 - Sizes are rem (16px = 1rem). Borders, hairlines, shadows, blur, breakpoints stay px.
 - Write new values as a token or rem, never px (except the kinds above).
 - Line heights: unitless ratios.
-- Font: Figtree. Values: `tokens.css`, `docs/design.md`.
+- Fonts: headings (`t-h4` and up, Medium) and card overlines (`t-overline`) Manrope via `--font-family-display`; everything else Figtree. Values: `tokens.css`, `docs/design.md`.
 - Every text uses a `t-*` class. No ad-hoc `font-size`.
 - `t-a-b` = a on mobile, b on desktop. Fluid: headline, `t-h2`, `t-h3-h2`, `t-body2-body1`, `t-body3-body2`.
 - Every page `<h1>` is `t-h4-h3`.
@@ -138,11 +137,13 @@ lib/                 date.ts, pageTitles.ts, actives.ts
 | `DateField` | `value?`, `onChange`, `id?`, `placeholder?` |
 | `SearchField` | `value`, `onChange`, `placeholder?`, `label` |
 | `ChatBubble` | `from: "ai" \| "user"`, `align?`, `full?` |
+| `CoachBubble` | `children`, `className?`, `bubbleClassName?` — orb beside an AI bubble, orb centred on the first line |
 | `Sheet` | `open`, `onClose`, `title`, `children` |
 | `Collapse` | `open`, `as?`, `appear?` |
 | `DataCard` | `as?`, `className?` |
 | `CameraCapture` | `captured`, `title`, `helper`, `onCapture` |
 | `Orb` | `size?`, `animateIn?`, `thinking?` |
+| `EmptyState` | `title`, `children` (body), `action: { label, href?, onClick? }` |
 
 - A control that looks like one of these IS one of these. Add a variant; never restyle it in a screen module.
 - Icons: `components/ui/icons.tsx`. Size via CSS or `--icon-size`. Never `width`/`height` in `icons.tsx`.
@@ -169,8 +170,8 @@ lib/                 date.ts, pageTitles.ts, actives.ts
 
 ### Empty states
 
-- `HubScreen layout="plain" center`: Orb → 32 → `t-h4-h3` title → 12 → body → 32 → action. No card.
-- Heading stays top; only the block centres.
+- `EmptyState` inside `HubScreen layout="plain" center="empty"`: Orb → 32 → `t-h5` title → 12 → body → `--space-hero-action` → action. No card. Never rebuild it in a screen.
+- `center="empty"` keeps the heading at the top and sets the block low in Welcome's proportions, so the button sits where Welcome's does.
 
 ### Selection controls
 

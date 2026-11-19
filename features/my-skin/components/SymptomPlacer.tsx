@@ -4,11 +4,11 @@ import { type CSSProperties, useEffect, useRef, useState } from "react";
 import styles from "./StartInvestigation.module.css";
 import { Chip } from "@/components/ui/Chip";
 import { IconButton } from "@/components/ui/IconButton";
+import { CloseButton } from "@/components/ui/CloseButton";
 import { TextField } from "@/components/ui/TextField";
 import { FaceDiagram, FACE_REGION_IDS } from "./FaceDiagram";
 import {
   PlusIcon,
-  CloseSmallIcon,
   NoteIcon,
   SuccessCheckIcon,
   ResetIcon,
@@ -285,13 +285,7 @@ export function SymptomPlacer({
               >
                 <SuccessCheckIcon className={styles.otherCheckIcon} />
               </IconButton>
-              <IconButton
-                size="xs"
-                label="Remove description"
-                onClick={closeOther}
-              >
-                <CloseSmallIcon />
-              </IconButton>
+              <CloseButton label="Remove description" onClick={closeOther} />
             </div>
           </div>
         ) : otherState === "confirmed" ? (
@@ -306,13 +300,7 @@ export function SymptomPlacer({
               >
                 <NoteIcon className={styles.otherActionIcon} />
               </IconButton>
-              <IconButton
-                size="xs"
-                label="Remove description"
-                onClick={closeOther}
-              >
-                <CloseSmallIcon />
-              </IconButton>
+              <CloseButton label="Remove description" onClick={closeOther} />
             </div>
           </div>
         ) : (

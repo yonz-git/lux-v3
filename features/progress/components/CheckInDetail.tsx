@@ -104,7 +104,7 @@ export function CheckInDetail({ date, now }: { date: string; now: number }) {
           </Tag>
         ) : undefined
       }
-      nav="progress"
+      nav="my-skin"
       layout="grid"
       gridColumns="440px 1fr 1fr"
     >

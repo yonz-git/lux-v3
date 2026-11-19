@@ -3,8 +3,7 @@
 import { useRouter } from "next/navigation";
 import styles from "./CheckHistory.module.css";
 import { HubScreen } from "@/components/layout/HubScreen";
-import { Button } from "@/components/ui/Button";
-import { Orb } from "@/components/ui/Orb";
+import { EmptyState } from "@/components/ui/EmptyState";
 import { ChevronRightIcon } from "@/components/ui/icons";
 import { useInvestigation } from "@/lib/store/InvestigationProvider";
 import {
@@ -42,19 +41,15 @@ export function CheckHistory() {
         nav="check"
         backHref="/check"
         layout="plain"
-        center
+        center="empty"
         tightTop
       >
-        <div className={styles.empty}>
-          <Orb animateIn />
-          <h2 className="t-h4-h3">No analyses yet</h2>
-          <p className={`${styles.emptyText} t-body3-body2`}>
-            Run a compatibility check and it will appear here.
-          </p>
-          <Button width="action" href="/check/new" className={styles.emptyCta}>
-            Start a check
-          </Button>
-        </div>
+        <EmptyState
+          title="No analyses yet"
+          action={{ label: "Start a check", href: "/check/new" }}
+        >
+          Run a compatibility check and it will appear here.
+        </EmptyState>
       </HubScreen>
     );
   }

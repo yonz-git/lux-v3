@@ -27,15 +27,13 @@
   margin-bottom: var(--space-2xl); /* 24 */
 }
 
+/* every page heading is centred, title and subtitle */
 .heading {
   display: flex;
   flex-direction: column;
+  align-items: center;
   gap: var(--space-xs); /* 4 */
   color: var(--color-text-primary);
-}
-
-.heading[data-center] {
-  align-items: center;
   text-align: center;
 }
 
@@ -75,6 +73,11 @@
   flex: 70 1 0;
 }
 
+/* `center="empty"`: Welcome's share above, under a heading that stays put */
+.aboveEmpty {
+  flex: 266 1 0;
+}
+
 .footer {
   display: flex;
   flex-direction: column;
@@ -98,6 +101,12 @@
   /* Welcome's desktop weights and top padding — see `.above` above. */
   .above {
     flex: 130 1 calc(var(--space-9xl) - var(--content-top));
+  }
+
+  /* under the desktop heading row, an equal share puts the button where
+     Welcome's sits at 1440 x 900 */
+  .aboveEmpty {
+    flex: 215 1 0;
   }
 
   .below {

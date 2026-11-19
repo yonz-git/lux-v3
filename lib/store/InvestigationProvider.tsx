@@ -9,7 +9,12 @@ import {
   useMemo,
   useState,
 } from "react";
-import { type Answers, RETIRED_STORAGE_KEYS } from "./answers";
+import {
+  type Answers,
+  RETIRED_STORAGE_KEYS,
+  STORAGE_KEY,
+  TRANSIENT_KEYS,
+} from "./answers";
 
 /** The investigation's answer store. */
 type Ctx = {
@@ -33,17 +38,35 @@ export function InvestigationProvider({
   const [answers, setAnswers] = useState<Answers>({});
   const [hydrated, setHydrated] = useState(false);
 
-  /* The prototype starts fresh on every visit: answers live in memory for
-     this page load only. Anything an earlier build saved is deleted, never
-     read. */
+  /* Answers are saved in this browser, so a finished skin profile (and the
+     products, checks and check-ins after it) survives a reload. A value that
+     is not an object is dropped, never repaired. */
   useEffect(() => {
     try {
       for (const key of RETIRED_STORAGE_KEYS) window.localStorage.removeItem(key);
+      const raw = window.localStorage.getItem(STORAGE_KEY);
+      const saved: unknown = raw ? JSON.parse(raw) : null;
+      if (saved && typeof saved === "object" && !Array.isArray(saved)) {
+        setAnswers(saved as Answers);
+      }
     } catch {
-      // storage unavailable (private mode) — nothing to clean up
+      // storage unavailable (private mode) or unreadable — start empty
     }
     setHydrated(true);
   }, []);
+
+  /* written after every change; mid-task state (`TRANSIENT_KEYS`) is left out
+     so a new visit does not reopen a half-finished add or check */
+  useEffect(() => {
+    if (!hydrated) return;
+    const kept: Answers = { ...answers };
+    for (const key of TRANSIENT_KEYS) delete kept[key];
+    try {
+      window.localStorage.setItem(STORAGE_KEY, JSON.stringify(kept));
+    } catch {
+      // storage full or unavailable — the visit still works in memory
+    }
+  }, [answers, hydrated]);
 
   useLayoutEffect(() => {
     if (hydrated) document.documentElement.setAttribute("data-store-ready", "");

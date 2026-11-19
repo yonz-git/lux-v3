@@ -153,6 +153,11 @@ export const COPY = {
   startedUnknown: "No start date given",
   /* ---- the hand-off ---- */
   cta: "Add your products",
+  startOver: "Start over",
+  startOverTitle: "Start over?",
+  startOverBody:
+    "This clears your skin profile, products, analyses and check-ins from this browser.",
+  startOverConfirm: "Clear and start over",
   ctaHelp:
     "Next, add the products you use so the investigation has something to compare against.",
   /* ---- the empty state ---- */

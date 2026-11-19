@@ -1,5 +1,5 @@
 import type { Metadata, Viewport } from "next";
-import { Figtree } from "next/font/google";
+import { Figtree, Manrope } from "next/font/google";
 import "./globals.css";
 import { InvestigationProvider } from "@/lib/store/InvestigationProvider";
 import { RouteAnnouncer } from "@/components/layout/RouteAnnouncer";
@@ -12,6 +12,13 @@ const figtree = Figtree({
   subsets: ["latin"],
   weight: ["300", "400", "500", "600", "700"],
   variable: "--font-figtree",
+  display: "swap",
+});
+
+/* the headings' font — a variable font, so every weight comes in one file */
+const manrope = Manrope({
+  subsets: ["latin"],
+  variable: "--font-manrope",
   display: "swap",
 });
 
@@ -33,7 +40,7 @@ export default function RootLayout({
   children: React.ReactNode;
 }) {
   return (
-    <html lang="en" className={figtree.variable}>
+    <html lang="en" className={`${figtree.variable} ${manrope.variable}`}>
       {/* The answer store wraps the WHOLE app, not just /investigation.
           The PRODUCTS hub (/products) reads the same products the add flow
           writes, and it is reached from the bottom nav rather than from inside

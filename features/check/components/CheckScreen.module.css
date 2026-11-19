@@ -19,10 +19,6 @@ spaced the way 00 Welcome is — see `.heroChat` and `.actions`.
   margin-bottom: var(--space-3xl); /* 32 */
 }
 
-.text {
-  color: var(--color-text-secondary);
-}
-
 /* The landing's one line of LUX speech, in a bubble — see the note in
    CheckScreen.tsx. Text stays LEFT-aligned inside the centred hero: every other
    bubble in the app sets its measure from the left edge, and `.hero`'s

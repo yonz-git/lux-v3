@@ -46,7 +46,7 @@ export function CheckIn({ now }: { now: number }) {
         closeHref="/progress"
         onSubmitted={() => router.push("/progress")}
       />
-      <BottomNav active="progress" />
+      <BottomNav active="my-skin" />
     </main>
   );
 }

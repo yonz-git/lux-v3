@@ -110,6 +110,14 @@ export function bucketFor(duration: Duration): BucketId {
   }
 }
 
+/** The duration answer a group stands for — `bucketFor` read backwards, for
+ *  an add that starts from a group and so already knows it. */
+export function durationFor(bucket: BucketId): Duration {
+  const duration = DURATIONS.find((d) => bucketFor(d) === bucket);
+  if (!duration) throw new Error(`no duration for ${bucket}`);
+  return duration;
+}
+
 /** A product in the catalogue — no duration yet, because that is the answer. */
 export type CatalogProduct = {
   id: string;

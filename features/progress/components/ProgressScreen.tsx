@@ -3,9 +3,9 @@
 import { useState } from "react";
 import styles from "./ProgressScreen.module.css";
 import { HubScreen } from "@/components/layout/HubScreen";
+import { EmptyState } from "@/components/ui/EmptyState";
 import { Button } from "@/components/ui/Button";
 import { DataCard } from "@/components/ui/DataCard";
-import { Orb } from "@/components/ui/Orb";
 import { SymptomLocation } from "@/features/my-skin/components/SymptomLocation";
 import { LocationEditor } from "@/features/my-skin/components/LocationEditor";
 import { EditToggle } from "@/components/ui/EditToggle";
@@ -57,7 +57,7 @@ export function ProgressScreen({ now }: { now: number }) {
 
   return (
     <HubScreen
-      nav="progress"
+      nav="my-skin"
       layout="grid"
       gridColumns="minmax(0, 640fr) minmax(0, 616fr)"
       tightTop
@@ -180,20 +180,16 @@ export function ProgressEmpty() {
     <HubScreen
       title="Progress"
       subtitle="Your skin investigation"
-      nav="progress"
+      nav="my-skin"
       layout="plain"
-      center
+      center="empty"
     >
-      <div className={styles.empty}>
-        <Orb animateIn />
-        <h2 className="t-h4-h3">No active investigation</h2>
-        <p className={`${styles.emptyText} t-body3-body2`}>
-          Start an investigation to track your skin&rsquo;s progress over time.
-        </p>
-        <Button width="action" href="/investigation/start" className={styles.emptyCta}>
-          Create skin profile
-        </Button>
-      </div>
+      <EmptyState
+        title="No active investigation"
+        action={{ label: "Create skin profile", href: "/investigation/start" }}
+      >
+        Start an investigation to track your skin&rsquo;s progress over time.
+      </EmptyState>
     </HubScreen>
   );
 }
