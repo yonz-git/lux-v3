@@ -14,7 +14,7 @@ export function IconButton({
   label: string;
   children: ReactNode;
   variant?: "glass" | "primary" | "outline" | "soft";
-  size?: "lg" | "md" | "xs";
+  size?: "lg" | "md" | "sm" | "xs";
   href?: string;
   /** React 19 passes `ref` as a prop; it lands on the <button> */
   ref?: Ref<HTMLButtonElement>;
@@ -23,9 +23,10 @@ export function IconButton({
     styles.button,
     styles[variant],
     size === "md" && styles.md,
+    size === "sm" && styles.sm,
     size === "xs" && styles.xs,
-    /* both small discs keep a 44 hit area round them */
-    (size === "md" || size === "xs") && "tap-target",
+    /* the small discs keep a 44 hit area round them */
+    size !== "lg" && "tap-target",
     "pressable",
     className,
   ]

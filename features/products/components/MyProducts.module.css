@@ -181,10 +181,12 @@
 }
 
 /* fixed 12 above the nav and centred on it, rising in once the screen has
-   arrived */
+   arrived; as wide as the footer's Start analysis — the screen's margins, up
+   to the action width */
 .addMore {
   position: fixed;
   left: 50%;
+  width: min(100% - 2 * var(--margin-mobile), var(--width-action-mobile));
   bottom: calc(
     var(--nav-inset-bottom) + var(--size-nav-height) + var(--space-md)
   );
@@ -213,7 +215,7 @@
 :global(.screen[data-layout="hub"]):has(~ .addMore) {
   padding-bottom: calc(
     var(--nav-inset-bottom) + var(--size-nav-height) + var(--space-md) +
-      var(--size-control-md) + var(--space-lg)
+      var(--size-button-lg) + var(--space-lg)
   );
 }
 
@@ -239,6 +241,10 @@
 @media (min-width: 1024px) {
   .category {
     display: flex;
+  }
+
+  .addMore {
+    width: var(--width-action); /* the desktop footer's width */
   }
 
   /* name + window travel together and take the slack, so the count and

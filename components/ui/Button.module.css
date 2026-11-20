@@ -4,6 +4,8 @@
             (0 8 18 brand @30%, and a white rim inset along the top). White
             label: 5.65:1 at the light end, 11.6:1 at the dark.
    SECONDARY `glass` (white @25%) + 1px `border/glass` + the inset rim.
+   TEXT     no material: the label alone in `text/brand`, at the same height
+            so it keeps the tap target. No underline; pressed dims it.
 
    Hover runs the gradient end for end — the registered `--grad-*` properties
    in globals.css are what let it cross-fade instead of snapping. Pressed is
@@ -18,7 +20,7 @@
   align-items: center;
   justify-content: center;
   gap: var(--space-sm);
-  min-height: var(--button-height, 56px);
+  min-height: var(--button-height, var(--size-button-lg));
   /* each size sets `--button-pad-x`; the borderless indigo adds the hairline
      back below, so both variants keep the same box */
   --button-pad-x: var(--space-2xl);
@@ -49,7 +51,7 @@
    The shine's ink is the label's own white; the specular streak is 1.5px with
    a near-white core, its shoulders the pill's gradient ends 65% toward white;
    the fixed edge light is only its 1px ring (no inner glow), lit stop 0.54. */
-.button:not(.secondary) {
+.button:not(.secondary, .text) {
   --shine-ink: #fff;
   --specular-width: 1.5px;
   --specular-core: 90%;
@@ -60,18 +62,18 @@
   --edge-ring: var(--edge-ring-all-round);
 }
 
-.button:not(.secondary) :global(.edge-light) {
+.button:not(.secondary, .text) :global(.edge-light) {
   box-shadow: none;
 }
 
-.button:not(.secondary) {
+.button:not(.secondary, .text) {
   border-width: 0;
   padding-inline: calc(var(--button-pad-x) + var(--border-width-hairline));
   background: linear-gradient(90deg, var(--grad-start), var(--grad-end));
   box-shadow: var(--shadow-brand-pill);
 }
 
-.button:not(.secondary) :global(.edge-light)::before {
+.button:not(.secondary, .text) :global(.edge-light)::before {
   display: none;
 }
 
@@ -115,6 +117,22 @@
 .secondary:hover:not(:disabled) {
   --grad-start: var(--color-button-bg-secondary-end);
   --grad-end: var(--color-button-bg-secondary-start);
+}
+
+.text {
+  color: var(--color-text-brand);
+  background: none;
+  border-color: transparent;
+  box-shadow: none;
+}
+
+/* no pill to darken, so pressed dims the word instead of the 14% overlay */
+.text::after {
+  display: none;
+}
+
+.text:active:not(:disabled) {
+  opacity: 0.7;
 }
 
 @media (hover: none) {

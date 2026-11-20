@@ -10,8 +10,8 @@ import { SkinProfileTiles } from "./SkinProfileTiles";
 import { ProductRow } from "@/features/products/components/ProductList";
 import { ProductDetails } from "@/features/products/components/ProductDetails";
 import { ProductThumb } from "@/features/products/components/ProductThumb";
-import { SmallButton } from "@/components/ui/SmallButton";
-import { Tag } from "@/components/ui/Tag";
+import { IconButton } from "@/components/ui/IconButton";
+import { PlusIcon, SuccessCheckIcon } from "@/components/ui/icons";
 import { CheckBasketBar, CheckBasketSheet } from "./CheckBasket";
 import { AddProductMethodSheet } from "@/features/products/components/AddProductMethodSheet";
 import { useInvestigation } from "@/lib/store/InvestigationProvider";
@@ -124,33 +124,26 @@ export function CheckBuilder({ now }: { now: number }) {
     return `Contains ${hidden.join(", ")}`;
   }
 
+  /* one toggle per row, the back button's glass circle: `+` picks the product
+     for this analysis, the filled mark shows it is picked, and pressing it
+     again takes it out */
   function trailingFor(p: CatalogProduct) {
+    const picked = basketIds.includes(p.id);
     return (
       <span className={styles.trailing}>
-        {basketIds.includes(p.id) ? (
-          <button
-            type="button"
-            className={`${styles.remove} tap-target`}
-            aria-label={`Remove ${fullName(p)} from this analysis`}
-            onClick={() => remove(p.id)}
-          >
-            <Tag variant="brand" size="sm" className={styles.added}>
-              Added
-            </Tag>
-          </button>
-        ) : (
-          <SmallButton
-            label="Add"
-            /* the `Added` tag's 12 text and 12 padding */
-            size="sm"
-            arrow={false}
-            specular={false}
-            className={`${styles.add} tap-target`}
-            disabled={full}
-            aria-label={`Add ${fullName(p)} to this analysis`}
-            onClick={() => add(p)}
-          />
-        )}
+        <IconButton
+          size="sm"
+          label={`Add ${fullName(p)} to this analysis`}
+          aria-pressed={picked}
+          disabled={!picked && full}
+          className={styles.pick}
+          onClick={() => (picked ? remove(p.id) : add(p))}
+        >
+          <span className={styles.pickGlyphs}>
+            <PlusIcon className={styles.plus} />
+            <SuccessCheckIcon className={styles.mark} />
+          </span>
+        </IconButton>
       </span>
     );
   }
@@ -161,7 +154,7 @@ export function CheckBuilder({ now }: { now: number }) {
   return (
     <>
       <HubScreen
-        title="Products’ compatibility analysis"
+        title="Compatibility analysis"
         nav="check"
         backHref={answers.timing?.date ? "/investigation/timing" : "/check"}
         layout="card"

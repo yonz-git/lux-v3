@@ -697,7 +697,7 @@ function ConfirmView({
 
       {stage === "added" && (
         <Button
-          variant="secondary"
+          variant="text"
           width="action"
           className={styles.trayAction}
           onClick={onDone}

@@ -14,6 +14,7 @@ import { ChevronDownIcon } from "@/components/ui/icons";
 import { useInvestigation } from "@/lib/store/InvestigationProvider";
 import { ownedProducts } from "@/features/products/library";
 import { useProductLibrary } from "@/features/products/useProductLibrary";
+import { MIN_CHECK_PRODUCTS } from "@/features/check/check";
 import {
   BUCKETS,
   BUCKET_LIST_TITLE,
@@ -53,7 +54,15 @@ export function MyProducts() {
         title="Products in use"
         layout="card"
         tightTop
-        footer={<Button href="/check/new">Start analysis</Button>}
+        footer={
+          /* an analysis compares products, so it is offered once there are
+             enough to compare; it eases in and out with the count */
+          <Collapse open={products.length >= MIN_CHECK_PRODUCTS} smooth>
+            <Button href="/check/new" width="full">
+              Start analysis
+            </Button>
+          </Collapse>
+        }
       >
         <RoutineSummary products={products} />
 
@@ -78,7 +87,7 @@ export function MyProducts() {
         data-hidden={sheetOpen || undefined}
         inert={sheetOpen}
       >
-        <Button variant="secondary" size="md" onClick={() => openSheet(null)}>
+        <Button variant="secondary" width="full" onClick={() => openSheet(null)}>
           Add your products
         </Button>
       </div>

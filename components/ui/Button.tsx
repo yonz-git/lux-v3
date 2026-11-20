@@ -16,7 +16,8 @@ export function Button({
   onPointerMove,
   ...rest
 }: ButtonHTMLAttributes<HTMLButtonElement> & {
-  variant?: "primary" | "secondary";
+  /** `text`: the label alone, no pill, for a quiet closing action */
+  variant?: "primary" | "secondary" | "text";
   size?: "lg" | "md" | "sm";
   /** @deprecated — `width="full"` */
   fullWidth?: boolean;
@@ -29,6 +30,7 @@ export function Button({
   const cls = [
     styles.button,
     variant === "secondary" && styles.secondary,
+    variant === "text" && styles.text,
     size !== "lg" && styles[size],
     width === "full" && styles.full,
     width === "action" && styles.action,

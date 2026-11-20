@@ -37,8 +37,8 @@ export function CheckBasketBar({
   const label = ready
     ? `${count} products · review & analyse`
     : count === 0
-      ? `Pick at least ${MIN_CHECK_PRODUCTS} products`
-      : `${count} of ${MIN_CHECK_PRODUCTS}, pick one more`;
+      ? `Select at least ${MIN_CHECK_PRODUCTS} products`
+      : `${count} of ${MIN_CHECK_PRODUCTS}, select one more`;
 
   const content = (
     <>
@@ -185,7 +185,7 @@ export function CheckBasketSheet({
           disabled CTA */}
       {!enough && (
         <p id="check-helper" className={`${styles.helper} t-caption`}>
-          Pick at least {MIN_CHECK_PRODUCTS} products
+          Select at least {MIN_CHECK_PRODUCTS} products
         </p>
       )}
     </Sheet>

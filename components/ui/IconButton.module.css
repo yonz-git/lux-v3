@@ -29,6 +29,12 @@
   box-shadow: var(--shadow-float);
 }
 
+/* the 26 disc — a list row's pick toggle; 44 target as below */
+.sm {
+  width: var(--size-round-sm);
+  height: var(--size-round-sm);
+}
+
 /* the 20 disc; its 44 target is `.tap-target` (IconButton.tsx) */
 .xs {
   width: var(--size-icon-sm); /* 20 */

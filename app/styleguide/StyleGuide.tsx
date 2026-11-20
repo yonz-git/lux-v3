@@ -267,6 +267,7 @@ export function StyleGuide() {
         <div className={styles.row}>
           <Button>Continue</Button>
           <Button variant="secondary">Secondary</Button>
+          <Button variant="text">Text</Button>
           <Button disabled>Disabled</Button>
           <Button size="md">Medium</Button>
           <Button size="md" variant="secondary" icon={<Icons.PlusIcon />}>

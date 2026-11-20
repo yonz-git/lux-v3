@@ -11,7 +11,7 @@ const HUB_TITLES: Record<string, string> = {
   "/progress/check-in": "Daily check-in",
   "/check": "Analysis",
   "/check/no-profile": "Analysis, no skin profile",
-  "/check/new": "Products’ compatibility analysis",
+  "/check/new": "Compatibility analysis",
   "/check/analyzing": "Analysing your products",
   "/check/results": "Analysis results",
   "/check/history": "Previous analyses",
