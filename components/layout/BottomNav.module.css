@@ -76,7 +76,7 @@
   justify-content: safe center;
   width: auto;
   padding: 0 var(--space-xl) 0 var(--space-chip-inline);
-  border-color: var(--color-border-brand-tint);
+  /* keeps the circles' white edge and rim */
   background-color: var(--color-nav-item-active);
   color: var(--color-text-brand);
 }

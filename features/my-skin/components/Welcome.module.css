@@ -98,7 +98,7 @@
 
 .cta {
   width: 100%;
-  max-width: var(--width-button-primary); /* 90% on a phone, 288 from 1024 */
+  max-width: var(--width-button-primary); /* the full column on a phone, 288 from 1024 */
 }
 
 

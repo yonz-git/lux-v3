@@ -284,7 +284,7 @@
   --size-button-lg: 3.5rem; /* 56px — `Button`'s default height */
   /* the large primary button: its height and widest (desktop values below) */
   --size-button-primary: 4rem; /* 64px on a phone */
-  --width-button-primary: 90%; /* of its column, on a phone */
+  --width-button-primary: 100%; /* the full column, on a phone */
   --space-button-sm-inline: 1.375rem; /* 22px */
   --size-control-lg: 3.875rem; /* 62px */
   /* the bar is 56 circles in 6 of padding and a 1px edge: 70 tall. Every
@@ -633,8 +633,8 @@
      only the screen's main button is solid brand. */
   --color-surface-brand-tint: color-mix(in srgb, var(--color-bg-brand) 14%, var(--color-glass));
   --color-border-brand-tint: color-mix(in srgb, var(--color-bg-brand) 45%, transparent);
-  /* the current nav item's fill: a periwinkle at 29% */
-  --color-nav-item-active: #5868d34a;
+  /* the current nav item's fill: a teal at 16% */
+  --color-nav-item-active: #46b0cb29;
   --shadow-nav-bar: inset 0 1px 0 var(--color-rim-nav), 0 8px 24px rgb(46 42 63 / 0.06);
   --nav-inset-inline: var(--space-sm); /* "50% less side paddings": 16 -> 8 */
   /* a hero's text to its main button (Welcome, the empty states): 118 at the
