@@ -187,6 +187,7 @@ main[tabindex="-1"]:focus-visible {
 .t-caption,
 .t-overline,
 .t-button,
+.t-button-primary,
 .t-button-md,
 .t-button-sm,
 .t-nav,
@@ -256,6 +257,7 @@ main[tabindex="-1"]:focus-visible {
 .t-caption,
 .t-overline,
 .t-button,
+.t-button-primary,
 .t-button-md,
 .t-button-sm {
   line-height: var(--line-height-text);
@@ -372,6 +374,11 @@ main[tabindex="-1"]:focus-visible {
    the flow's `Continue` still leads its screen */
 .t-button {
   font-size: var(--font-size-button); /* 15 */
+  font-weight: var(--font-weight-medium);
+}
+/* the large primary's label: 19.2 on a phone, 15 from 1024 */
+.t-button-primary {
+  font-size: var(--font-size-button-primary);
   font-weight: var(--font-weight-medium);
 }
 .t-button-md,

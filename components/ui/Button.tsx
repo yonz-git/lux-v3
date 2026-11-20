@@ -34,7 +34,7 @@ export function Button({
     size !== "lg" && styles[size],
     width === "full" && styles.full,
     width === "action" && styles.action,
-    size === "lg" ? "t-button" : "t-button-md",
+    size !== "lg" ? "t-button-md" : variant === "primary" ? "t-button-primary" : "t-button",
     className,
   ]
     .filter(Boolean)
