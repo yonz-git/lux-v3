@@ -26,6 +26,11 @@ type OBFProduct = {
  *  than adding a clamp the design doesn't draw for what was a short tagline. */
 const MAX_DESCRIPTION = 240;
 
+/** How many entries a search fetches per result it shows, and the least it
+ *  fetches — enough that the filter still leaves a full list. */
+const FETCH_FACTOR = 4;
+const MIN_FETCH = 20;
+
 function truncate(text: string): string {
   return text.length > MAX_DESCRIPTION
     ? `${text.slice(0, MAX_DESCRIPTION).trimEnd()}…`
@@ -44,23 +49,32 @@ function displaySize(quantity: string | undefined): string {
   return /\p{L}/u.test(size) ? size : "";
 }
 
-/** Skips a product with no barcode or name rather than rendering a blank row —
- *  both happen for entries the community hasn't finished filling in. */
+/** A real INCI list names several ingredients; a placeholder ("Hdhdh",
+ *  "water") does not. */
+const MIN_INGREDIENTS = 3;
+
+function isIngredientList(text: string): boolean {
+  return text.split(/[,;•]/).filter((part) => /\p{L}{2}/u.test(part)).length >= MIN_INGREDIENTS;
+}
+
+/** Skips an entry the community hasn't finished: no barcode, name, brand or
+ *  ingredient list. The checker reads the ingredients, so a product without
+ *  them has nothing to offer, and an unbranded one can't be told apart. */
 function toCatalogProduct(raw: OBFProduct): CatalogProduct | null {
   const name = raw.product_name?.trim();
-  if (!raw.code || !name) return null;
-
+  const brand = raw.brands?.split(",")[0]?.trim();
   const ingredients = (raw.ingredients_text_en || raw.ingredients_text || "").trim();
+  if (!raw.code || !name || !brand || !isIngredientList(ingredients)) return null;
 
   return {
     id: raw.code,
     name: displayName(name),
-    brand: raw.brands?.split(",")[0]?.trim() || "Unknown brand",
+    brand,
     size: displaySize(raw.quantity),
-    description: ingredients ? truncate(ingredients) : undefined,
+    description: truncate(ingredients),
     /* the UNCUT list — see `CatalogProduct.ingredients` on why the checker
        cannot read the truncated one */
-    ingredients: ingredients || undefined,
+    ingredients,
   };
 }
 
@@ -81,7 +95,9 @@ export async function searchOpenBeautyFacts(
   url.searchParams.set("search_simple", "1");
   url.searchParams.set("action", "process");
   url.searchParams.set("json", "1");
-  url.searchParams.set("page_size", String(pageSize));
+  /* asks for more than it shows: many entries have no brand or ingredients
+     and are dropped (see `toCatalogProduct`) */
+  url.searchParams.set("page_size", String(Math.max(pageSize * FETCH_FACTOR, MIN_FETCH)));
   url.searchParams.set("fields", FIELDS);
 
   const res = await fetch(url.toString(), { signal });
@@ -93,7 +109,7 @@ export async function searchOpenBeautyFacts(
     (data.products ?? [])
       .map(toCatalogProduct)
       .filter((p): p is CatalogProduct => p !== null)
-  );
+  ).slice(0, pageSize);
 }
 
 function dedupe(products: CatalogProduct[]): CatalogProduct[] {

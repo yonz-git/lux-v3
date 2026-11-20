@@ -25,6 +25,7 @@ export function useProductLibrary() {
   function add(product: CatalogProduct, duration: Duration) {
     const saved = savedProduct(product, duration, new Date());
     setAnswer("products", (prev) => withProduct(prev, saved));
+    return saved;
   }
 
   function remove(id: string) {

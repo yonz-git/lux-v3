@@ -58,16 +58,22 @@ export function AddProductMethodSheet({
   open,
   onClose,
   duration,
+  startOn = "method",
+  onAdded,
 }: {
   open: boolean;
   onClose: () => void;
+  /** the view it opens on, and returns to: `scan` for a photo button */
+  startOn?: "method" | "scan";
+  /** told about each product it saves, e.g. to put it in an analysis */
+  onAdded?: (product: SavedProduct) => void;
   /** already answered — the tray was opened from a group, which IS the
    *  answer — so the duration question is skipped */
   duration?: Duration;
 }) {
   const { answers, setAnswer } = useInvestigation();
   const { add, remove: removeProduct } = useProductLibrary();
-  const [view, setView] = useState<View>("method");
+  const [view, setView] = useState<View>(startOn);
   const [confirmSource, setConfirmSource] = useState<ConfirmSource>("search");
   const [stage, setStage] = useState<ConfirmStage>("verify");
   const [subject, setSubject] = useState<"front" | "ingredients">("front");
@@ -145,7 +151,7 @@ export function AddProductMethodSheet({
     leavingView.current?.cancel();
     leavingView.current = null;
     goingTo.current = null;
-    setView("method");
+    setView(startOn);
     setConfirmSource("search");
     setStage("verify");
     setSubject("front");
@@ -210,7 +216,8 @@ export function AddProductMethodSheet({
     // the ENRICHED product, not the bare draft, so a saved product carries
     // whatever photo/ingredients Open Beauty Facts found and the hub's
     // thumbs and accordion cards show it too
-    add(enrichedProduct, answer);
+    const saved = add(enrichedProduct, answer);
+    onAdded?.(saved);
     setAnswer("productDraft", (prev) => (prev ? { ...prev, duration: answer } : prev));
     setAnswer("productQuery", "");
     setStage("added");
