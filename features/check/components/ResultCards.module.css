@@ -101,8 +101,9 @@
   min-width: 0;
 }
 
+/* the name in the likelihood pill's red, as text */
 .concernName {
-  color: var(--color-text-on-data);
+  color: var(--color-text-symptom);
 }
 
 /* sits 2 under the name, inside the 8 gap — the comp pairs them tighter than

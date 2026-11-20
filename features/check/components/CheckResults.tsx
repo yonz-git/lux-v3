@@ -10,10 +10,14 @@ import { Orb } from "@/components/ui/Orb";
 import { SkinProfileTiles } from "./SkinProfileTiles";
 import { CompatCard, PendingCompatCard } from "./CompatCard";
 import { ProductThumb } from "@/features/products/components/ProductThumb";import { SummaryCard, IngredientsCard, NextStepsCard } from "./ResultCards";
+import { DataCard } from "@/components/ui/DataCard";
+import { EditToggle } from "@/components/ui/EditToggle";
 import { Button } from "@/components/ui/Button";
 import { OptionRow } from "@/components/ui/OptionRow";
 import { SearchField } from "@/components/ui/SearchField";
-import { ChevronRightIcon, PlusIcon } from "@/components/ui/icons";
+import { CameraIcon, ChevronRightIcon, PlusIcon } from "@/components/ui/icons";
+import { CloseButton } from "@/components/ui/CloseButton";
+import { AddProductMethodSheet } from "@/features/products/components/AddProductMethodSheet";
 import { Collapse } from "@/components/ui/Collapse";
 import { useInvestigation } from "@/lib/store/InvestigationProvider";
 import { useHeldWhileClosing } from "@/lib/useModalDialog";
@@ -22,6 +26,7 @@ import {
   MAX_CHECK_PRODUCTS,
   MIN_CHECK_PRODUCTS,
   analyseCheck,
+  compatibleFirst,
   checkSummary,
   ingredientsOfConcern,
   primaryConcern,
@@ -66,6 +71,8 @@ export function CheckResults({
   const [pending, setPending] = useState<CatalogProduct[] | null>(null);
   const [editing, setEditing] = useState(false);
   const [picking, setPicking] = useState(false);
+  /* the add tray, open on its camera from the picker's photo button */
+  const [scanning, setScanning] = useState(false);
   /* the product just added to the check that the user does not own, and the
      answer to the one question that files it — see `addProduct` */
   const [asking, setAsking] = useState<CatalogProduct | null>(null);
@@ -75,6 +82,7 @@ export function CheckResults({
   const [askedDuration, setAskedDuration] = useState<Duration | undefined>();
   const noteId = useId();
   const askId = useId();
+  const comparedId = useId();
 
   const check = resolveCheck(answers.viewingCheck, answers.checks);
   const products = check ? productsOf(check) : [];
@@ -95,9 +103,9 @@ export function CheckResults({
     pending !== null &&
     (pending.length !== products.length ||
       pending.some((p) => !products.some((x) => x.id === p.id)));
-  const shown = edited
-    ? results.filter((r) => list.some((p) => p.id === r.product.id))
-    : results;
+  const shown = compatibleFirst(
+    edited ? results.filter((r) => list.some((p) => p.id === r.product.id)) : results
+  );
   const added = list.filter((p) => !results.some((r) => r.product.id === p.id));
   const enough = list.length >= MIN_CHECK_PRODUCTS;
 
@@ -114,6 +122,15 @@ export function CheckResults({
       setAsking(p);
       setAskedDuration(undefined);
     }
+  }
+
+  /* from the photo tray, which has already saved it with its duration */
+  function addSaved(p: CatalogProduct) {
+    setPending((prev) => {
+      const now = prev ?? list;
+      return now.some((x) => x.id === p.id) ? now : [...now, p];
+    });
+    setPicking(false);
   }
 
   function keepUsing(p: CatalogProduct, duration: Duration) {
@@ -164,8 +181,8 @@ export function CheckResults({
         <SummaryCard
           label="Analysis summary"
           stats={[
-            { value: summary.products, label: "Products checked" },
-            { value: summary.ingredients, label: "Ingredients checked" },
+            { value: summary.products, label: "Products analysed" },
+            { value: summary.ingredients, label: "Ingredients analysed" },
             { value: summary.flagged, label: "Flagged ingredients" },
           ]}
         />
@@ -173,25 +190,21 @@ export function CheckResults({
 
       {/* 3 — the detail: ONE box, header + contents. See the note above. */}
       <div className={styles.block}>
-        <div className={styles.group}>
+        {/* the same box as the summary above it: overline, then contents */}
+        <DataCard aria-labelledby={comparedId}>
           <div className={styles.compared}>
-            {/* lux-v3 (Scores B, canvas): the box's name is an overline over
-                the grid, as the board draws it */}
-            <h2 className={`${styles.comparedLabel} t-overline`}>
+            <h2 id={comparedId} className={`${styles.comparedLabel} t-overline`}>
               Compatibility · {list.length} products
             </h2>
 
-            <button
-              type="button"
-              className={`${styles.edit} tap-target t-label`}
-              aria-pressed={editing}
+            <EditToggle
+              editing={editing}
+              subject="compared products"
               onClick={() => {
                 setEditing((e) => !e);
                 setPicking(false);
               }}
-            >
-              {editing ? "Done" : "Edit"}
-            </button>
+            />
           </div>
 
           {/* the entrance — the cards, their rings and scores, one after
@@ -284,7 +297,6 @@ export function CheckResults({
                 <Button
                   variant="secondary"
                   size="md"
-                  icon={<PlusIcon />}
                   onClick={() => setPicking(true)}
                 >
                   Add another product
@@ -296,6 +308,7 @@ export function CheckResults({
               <ProductPicker
                 inCheck={inCheck}
                 onPick={addProduct}
+                onPhoto={() => setScanning(true)}
                 onCancel={() => setPicking(false)}
               />
             )}
@@ -318,7 +331,7 @@ export function CheckResults({
               </div>
             )}
           </div>
-        </div>
+        </DataCard>
       </div>
 
       {/* 4 — the cause */}
@@ -358,6 +371,14 @@ export function CheckResults({
         <span className={styles.historyLabel}>View previous analyses</span>
         <ChevronRightIcon className={styles.historyArrow} />
       </Link>
+
+      {/* a portal, so its place in the tree does not matter */}
+      <AddProductMethodSheet
+        open={scanning}
+        onClose={() => setScanning(false)}
+        startOn="scan"
+        onAdded={addSaved}
+      />
     </HubScreen>
   );
 }
@@ -366,11 +387,14 @@ export function CheckResults({
 function ProductPicker({
   inCheck,
   onPick,
+  onPhoto,
   onCancel,
 }: {
   /** ids already in the check — never offered */
   inCheck: Set<string>;
   onPick: (p: CatalogProduct) => void;
+  /** opens the add tray on its camera */
+  onPhoto: () => void;
   onCancel: () => void;
 }) {
   const [query, setQuery] = useState("");
@@ -382,19 +406,16 @@ function ProductPicker({
     <div className={`${styles.picker} reveal-quick`}>
       <div className={styles.pickerHead}>
         <p className={`${styles.pickerTitle} t-label`}>Add a product</p>
-        <button
-          type="button"
-          className={`${styles.cancel} t-label tap-target`}
-          onClick={onCancel}
-        >
-          Cancel
-        </button>
+        <CloseButton label="Close product search" onClick={onCancel} />
       </div>
 
       <SearchField
         value={query}
         onChange={setQuery}
+        variant="clear"
+        placeholder="Search for a product"
         label="Search products to add to this analysis"
+        action={{ label: "Take a photo instead", icon: <CameraIcon />, onClick: onPhoto }}
       />
 
       {/* the count is inside a panel a screen reader has to find, so the result

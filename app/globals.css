@@ -447,9 +447,11 @@ main[tabindex="-1"]:focus-visible {
   );
 }
 
-/* a screen whose main button closes it rests that button on `--cta-bottom` */
+/* a screen whose main button closes it rests that button on `--cta-bottom`;
+   `data-cta-foot` is the same for a screen with no layout of its own (Welcome) */
 .screen[data-layout="flow"],
-.screen[data-layout="hub"][data-low] {
+.screen[data-layout="hub"][data-low],
+.screen[data-cta-foot] {
   padding-bottom: var(--cta-bottom);
 }
 

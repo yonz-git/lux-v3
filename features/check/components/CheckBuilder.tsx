@@ -12,7 +12,8 @@ import { ProductDetails } from "@/features/products/components/ProductDetails";
 import { ProductThumb } from "@/features/products/components/ProductThumb";
 import { IconButton } from "@/components/ui/IconButton";
 import { PickedIcon, PlusIcon } from "@/components/ui/icons";
-import { CheckBasketBar, CheckBasketSheet } from "./CheckBasket";
+import { CheckBasketBar, CheckBasketSheet, basketPrompt } from "./CheckBasket";
+import { CoachBubble } from "@/components/ui/CoachBubble";
 import { AddProductMethodSheet } from "@/features/products/components/AddProductMethodSheet";
 import { useInvestigation } from "@/lib/store/InvestigationProvider";
 import { DROP_EXIT_MS, useDialogPresence, useHeldWhileClosing } from "@/lib/useModalDialog";
@@ -168,6 +169,15 @@ export function CheckBuilder({ now }: { now: number }) {
           symptomsState={profile.status}
         />
 
+        {/* the goal, and how far along it is; keyed so a new line shines in */}
+        <CoachBubble className={styles.coach}>
+          <span aria-live="polite">
+            <span key={basket.length} className="shine-text shine-on-enter">
+              {basketPrompt(basket.length)}
+            </span>
+          </span>
+        </CoachBubble>
+
         {/* biome-ignore lint/a11y/noStaticElementInteractions: the handler catches
             Escape BUBBLING UP from the SearchField inside — the interactive
             element is the input, and this wrapper only closes the panel that
@@ -290,9 +300,9 @@ export function CheckBuilder({ now }: { now: number }) {
           </>
         )}
 
-        {/* keeps the last row clear of the docked bar, which is fixed and so
-            takes no space in the flow. Unconditional, because the bar is now
-            present from zero products. */}
+        {/* keeps the last row clear of the docked button, which is fixed and
+            so takes no space in the flow. Always there, so the page does not
+            change length when the button arrives. */}
         <div className={styles.barSpacer} aria-hidden="true" />
       </HubScreen>
 

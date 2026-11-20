@@ -135,7 +135,7 @@ lib/                 date.ts, pageTitles.ts, actives.ts
 | `Tag` | `children`, `variant?: "neutral" \| "brand"` |
 | `TextField` | input attrs + `ref?` |
 | `DateField` | `value?`, `onChange`, `id?`, `placeholder?` |
-| `SearchField` | `value`, `onChange`, `placeholder?`, `label` |
+| `SearchField` | `value`, `onChange`, `placeholder?`, `label`, `action?`, `variant?: "glass" \| "clear"` |
 | `ChatBubble` | `from: "ai" \| "user"`, `align?`, `full?` |
 | `CoachBubble` | `children`, `className?`, `bubbleClassName?` — orb beside an AI bubble, orb centred on the first line |
 | `Sheet` | `open`, `onClose`, `title`, `children` |

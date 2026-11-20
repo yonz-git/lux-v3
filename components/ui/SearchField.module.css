@@ -19,6 +19,15 @@
   backdrop-filter: blur(var(--blur-card));
 }
 
+/* `variant="clear"`: on a panel that is already glass, the pill keeps its
+   edge and nothing else */
+.clearField {
+  background: transparent;
+  box-shadow: none;
+  -webkit-backdrop-filter: none;
+  backdrop-filter: none;
+}
+
 /* The ring goes on the PILL, not the input inside it: a 2px outline drawn tight
    around a borderless input in the middle of a rounded field reads as a glitch.
    `.input` sets `outline: none` for exactly this reason, and 2px of offset lifts
@@ -99,11 +108,6 @@
    bottom: (56 - 32) / 2 = 12 from the outer edge, past the 1px border */
 .action {
   margin-inline-end: calc(var(--space-md) - var(--space-lg) - var(--border-width-hairline));
-}
-
-/* beside clear, the gap keeps the two 44 targets from overlapping */
-.clear + .action {
-  margin-inline-start: var(--space-xl);
 }
 
 @media (prefers-reduced-transparency: reduce) {

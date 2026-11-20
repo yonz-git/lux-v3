@@ -11,17 +11,10 @@
    card here is a regression.
 
    POSITIONING
-   The group is not simply centred: it sits low. Figma achieves that with fixed
-   spacers, which only work at one canvas height. Here the free space is split
-   between two zero-basis flex spacers whose grow factors are the exact Figma
-   distances above and below the content:
-
-   mobile   266 above : 70 below   (content 306..772 in the 0..842 region)
-   desktop  160 above : 185 below  (content 329..764 in the 120..900 region)
-
-   That reproduces the design exactly at the design heights and degrades
-   proportionally on shorter viewports, instead of pushing the CTA and the
-   disclaimer underneath the fixed nav. */
+   The group sits low: all the spare height goes above it, and the screen
+   reserves `--cta-bottom` below (`data-cta-foot`, globals.css), so the button
+   rests 120 above the nav at every width, as every main button does. The
+   disclaimer hangs under the button, out of flow. */
 
 /* `position: relative; z-index: 1` was load-bearing while the shader canvas was
    a positioned child of `.screen` at `z-index: 0`: it painted ABOVE in-flow
@@ -41,18 +34,9 @@
   gap: 0;
 }
 
-.spacerTop,
-.spacerBottom {
-  flex-shrink: 1;
-  flex-basis: 0;
-  width: 100%;
-}
-
 .spacerTop {
-  flex-grow: 266;
-}
-.spacerBottom {
-  flex-grow: 70;
+  flex: 1 0 0;
+  width: 100%;
 }
 
 .hero {
@@ -106,6 +90,7 @@
   gap: 0.8125rem; /* matches desktop's button-to-disclaimer gap, tighter than the Figma-literal 24 (--space-2xl) */
   width: 100%;
   margin-top: var(--space-hero-action);
+  position: relative;
 }
 
 .cta {
@@ -126,7 +111,10 @@
   }
 }
 
+/* under the button, out of flow, so the button is the group's foot */
 .disclaimer {
+  position: absolute;
+  top: calc(100% + 0.8125rem); /* the actions' gap */
   color: var(--color-text-secondary);
   text-align: center;
   max-width: 376px;
@@ -142,13 +130,6 @@
      every other desktop bubble gets; it still follows the question bubble. */
   .bubbleReply[data-from="ai"] {
     max-width: 380px;
-  }
-
-  .spacerTop {
-    flex-grow: 130;
-  }
-  .spacerBottom {
-    flex-grow: 215;
   }
 
   .hero {

@@ -12,7 +12,7 @@ export function Welcome() {
   const [returning] = useState(entrancePlayed);
 
   return (
-    <main className="screen">
+    <main className="screen" data-cta-foot>
       <div className={styles.welcome}>
         {/* the two spacers split the free space in the ratio Figma places above
             and below the group, so it sits low without fixed offsets */}
@@ -74,7 +74,6 @@ export function Welcome() {
           </p>
         </div>
 
-        <div className={styles.spacerBottom} aria-hidden="true" />
       </div>
 
       {/* Welcome sits before the flow, so no section is current. */}

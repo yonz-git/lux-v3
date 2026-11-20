@@ -182,9 +182,11 @@ export function SkinProfileSummary({ now }: { now: number }) {
       </div>
 
       <div className={styles.startOver}>
-        <Button variant="secondary" size="md" onClick={() => setConfirmReset(true)}>
-          {COPY.startOver}
-        </Button>
+        <SmallButton
+          label={COPY.startOver}
+          arrow={false}
+          onClick={() => setConfirmReset(true)}
+        />
       </div>
 
       <Sheet

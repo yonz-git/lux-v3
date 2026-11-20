@@ -100,7 +100,7 @@ export function SymptomTrend({
                   className={`${styles.eventPill} t-label-sm`}
                   style={pillStyle(xOf(latest.date))}
                 >
-                  {latest.name} · {shortDate(latest.date)}
+                  Product added · {shortDate(latest.date)}
                 </span>
               )}
 
@@ -178,7 +178,7 @@ export function SymptomTrend({
             ))}
             {events.map((e) => (
               <li key={`${e.date}-${e.name}`}>
-                {e.name} added on {shortDate(e.date)}
+                Product added on {shortDate(e.date)}
               </li>
             ))}
           </ul>

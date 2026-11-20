@@ -183,6 +183,11 @@ export function analyseCheck(basket: CatalogProduct[]): CheckAnalysis[] {
   return basket.map((p) => analyse(p, basket)).sort((a, b) => a.score - b.score);
 }
 
+/** The order the results show them in: the most compatible first. */
+export function compatibleFirst(analyses: CheckAnalysis[]): CheckAnalysis[] {
+  return [...analyses].sort((a, b) => b.score - a.score);
+}
+
 /** How many ingredients the analysing screen claims to be reading. */
 export function ingredientCount(basket: CatalogProduct[]): number {
   /* A stated number has to come from somewhere. This is the actives the

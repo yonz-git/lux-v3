@@ -5,6 +5,7 @@ import styles from "./MyProducts.module.css";
 import { HubScreen } from "@/components/layout/HubScreen";
 import { RoutineSummary } from "./RoutineSummary";
 import { Button } from "@/components/ui/Button";
+import { SmallButton } from "@/components/ui/SmallButton";
 import { ProductAccordionCard } from "./ProductAccordionCard";
 import { ThumbStack } from "./ThumbStack";
 import { EmptyBox } from "./ProductList";
@@ -197,9 +198,7 @@ function CategoryGroup({
             <EmptyBox
               compact
               action={
-                <Button variant="secondary" size="sm" onClick={onAdd}>
-                  Add product
-                </Button>
+                <SmallButton label="Add product" arrow={false} onClick={onAdd} />
               }
             >
               No products yet

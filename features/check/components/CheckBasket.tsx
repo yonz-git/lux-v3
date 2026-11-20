@@ -21,9 +21,17 @@ import { fullName, type CatalogProduct } from "@/features/products/products";
  * on `Check — selection · N products` (604:2103).
  */
 
+/** What the coach says above the search: the goal, then how far along it is. */
+export function basketPrompt(count: number) {
+  if (count === 0) return `Select at least ${MIN_CHECK_PRODUCTS} products`;
+  if (count < MIN_CHECK_PRODUCTS)
+    return `${count} of ${MIN_CHECK_PRODUCTS}, select one more`;
+  return `${count} selected, ready to analyse`;
+}
+
 /**
- * The docked pill above the nav — ALWAYS present, and it is the only thing on
- * the screen that states the goal.
+ * The docked button above the nav, once there is enough to compare; until
+ * then the coach's bubble states the goal and nothing docks here.
  */
 export function CheckBasketBar({
   count,
@@ -32,30 +40,11 @@ export function CheckBasketBar({
   count: number;
   onExpand: () => void;
 }) {
-  const ready = count >= MIN_CHECK_PRODUCTS;
+  if (count < MIN_CHECK_PRODUCTS) return null;
+  const label = `${count} products · review & analyse`;
 
-  const label = ready
-    ? `${count} products · review & analyse`
-    : count === 0
-      ? `Select at least ${MIN_CHECK_PRODUCTS} products`
-      : `${count} of ${MIN_CHECK_PRODUCTS}, select one more`;
-
-  if (!ready) {
-    return (
-      /* `rise-in` — the bar fades up as it appears (globals.css) */
-      <p className={`${styles.bar} rise-in`} aria-live="polite">
-        <span
-          key={label}
-          className={`${styles.barLabel} t-body2 shine-text shine-on-enter`}
-        >
-          {label}
-        </span>
-      </p>
-    );
-  }
-
-  /* once there is enough to compare, the bar is the screen's action: the
-     primary Button, with the up chevron saying the tray opens upward */
+  /* the primary Button, with the up chevron saying the tray opens upward;
+     `rise-in` fades it up as it appears (globals.css) */
   return (
     <div className={`${styles.dock} rise-in`}>
       <Button width="full" className={styles.dockButton} onClick={onExpand}>
@@ -113,13 +102,13 @@ export function CheckBasketSheet({
     <Sheet
       open={open}
       onClose={onClose}
-      title="Products in this check"
+      title="Products in this analysis"
       dismiss="corner"
       backdrop="blur"
       /* grows up out of the bar's edge — `.sheet-grow` in globals.css */
       className={`sheet-grow ${styles.tray}`}
     >
-      <h2 className={`${styles.sheetTitle} t-h4`}>Products in this check</h2>
+      <h2 className={`${styles.sheetTitle} t-h4`}>Products in this analysis</h2>
 
       <ul className={styles.basket}>
         {products.map((p, i) => (

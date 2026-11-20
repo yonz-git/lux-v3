@@ -7,9 +7,9 @@ import { CloseButton } from "./CloseButton";
 import { IconButton } from "./IconButton";
 
 /**
- * Search Field: a pill with a leading search glyph and a trailing clear button
- * once there is text, both in `text/muted`, and an optional round action at
- * the end. The action stays at the end, so clear appearing never moves it.
+ * Search Field: a pill with a leading search glyph and either a trailing
+ * clear button once there is text (in `text/muted`) or an optional round
+ * action at the end, never both.
  */
 export function SearchField({
   value,
@@ -17,6 +17,7 @@ export function SearchField({
   placeholder = "Search products",
   label,
   action,
+  variant = "glass",
 }: {
   value: string;
   onChange: (value: string) => void;
@@ -25,10 +26,12 @@ export function SearchField({
   label: string;
   /** a glyph button at the field's end, e.g. switching to the camera */
   action?: { label: string; icon: ReactNode; onClick: () => void };
+  /** `clear` drops the fill, for a field that sits on a panel already */
+  variant?: "glass" | "clear";
 }) {
   const id = useId();
   return (
-    <div className={styles.field}>
+    <div className={variant === "clear" ? `${styles.field} ${styles.clearField}` : styles.field}>
       <SearchIcon className={styles.icon} />
       <input
         id={id}
@@ -40,7 +43,9 @@ export function SearchField({
         onChange={(e) => onChange(e.target.value)}
         autoComplete="off"
       />
-      {value !== "" && (
+      {/* a field that ends in an action has no clear: one round control at
+          the end, never two side by side */}
+      {value !== "" && !action && (
         <CloseButton label="Clear search" className={styles.clear} onClick={() => onChange("")} />
       )}
       {action && (

@@ -56,13 +56,8 @@ the product box are the box's own padding. */
 }
 
 /* --- block 5, the compared-products box ------------------------------------- */
-.group {
-  display: flex;
-  flex-direction: column;
-  gap: var(--space-lg); /* 16 — overline to grid, as the board draws it */
-}
-
-/* the overline and `Edit`, level, over the grid */
+/* the box (`DataCard`, 16 to the grid) opens with the overline and its
+   `EditToggle`, level */
 .compared {
   display: flex;
   align-items: center;
@@ -74,25 +69,7 @@ the product box are the box's own padding. */
   flex: 1;
   min-width: 0;
   margin: 0;
-  color: var(--color-text-primary);
-}
-
-.edit {
-  flex: none;
-  padding: 0;
-  color: var(--color-text-primary);
-  border-radius: var(--radius-sm);
-  transition: opacity var(--duration-fast) var(--ease-hover);
-}
-
-.edit:hover {
-  opacity: 0.7;
-}
-
-@media (hover: none) {
-  .edit:hover {
-    opacity: 1;
-  }
+  color: var(--color-text-on-data-muted); /* the other boxes' overline */
 }
 
 /* the grid and the blocks under it, 8 apart */
@@ -165,23 +142,6 @@ surfaces doing one job. */
 
 .pickerTitle {
   color: var(--color-text-secondary);
-}
-
-.cancel {
-  padding: 0;
-  color: var(--color-text-primary);
-  border-radius: var(--radius-sm);
-  transition: opacity var(--duration-fast) var(--ease-hover);
-}
-
-.cancel:hover {
-  opacity: 0.7;
-}
-
-@media (hover: none) {
-  .cancel:hover {
-    opacity: 1;
-  }
 }
 
 .pickerList {

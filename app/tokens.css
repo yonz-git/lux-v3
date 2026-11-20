@@ -401,6 +401,9 @@
 
 :root {
   --color-bg-symptom: #b44148;
+  /* the symptom red as text: 80% of it in the ink, 5.3:1 on the data panel
+     (solid #b44148 measures 4.1–4.3, under AA) */
+  --color-text-symptom: color-mix(in srgb, var(--color-bg-symptom) 80%, var(--color-text-primary));
 }
 
 :root {
