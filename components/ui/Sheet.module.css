@@ -9,9 +9,9 @@
   background: var(--color-state-pressed-overlay);
 }
 
-/* `backdrop="blur"`: the page goes soft behind the tray; it fades in and out
-   with the scrim's own opacity */
-.scrim[data-backdrop="blur"] {
+/* every modal blurs the page behind it; the blur fades in and out with the
+   scrim's own opacity */
+.scrim {
   -webkit-backdrop-filter: blur(var(--blur-md));
   backdrop-filter: blur(var(--blur-md));
 }
@@ -106,7 +106,7 @@
 }
 
 @media (prefers-reduced-transparency: reduce) {
-  .scrim[data-backdrop="blur"] {
+  .scrim {
     -webkit-backdrop-filter: none;
     backdrop-filter: none;
   }

@@ -1,10 +1,13 @@
 /* Search Field — Figma 248:70. 50 tall, padding 12/16, gap 12, radius/full,
    fill surface/frost-nav (#dde8eb @83%) + the frosted-row inner shadow. */
 
+/* three columns, the two ends the same width, so the query centres on the
+   whole field whatever sits at either end */
 .field {
-  display: flex;
+  display: grid;
+  grid-template-columns: var(--size-round-md) minmax(0, 1fr) var(--size-round-md);
   align-items: center;
-  gap: var(--space-md);
+  column-gap: var(--space-md);
   width: 100%;
   /* Figma is 50 tall with padding 12/16 — min-height owns the box so the input's
      own line box can never push it past 50 */
@@ -69,12 +72,13 @@
 }
 
 .icon {
-  flex: none;
+  grid-column: 1;
+  justify-self: start;
   color: var(--color-text-muted);
 }
 
 .input {
-  flex: 1;
+  grid-column: 2;
   /* fills the pill's 50 so a tap anywhere on it lands in the field (HIG 44) */
   align-self: stretch;
   min-width: 0;
@@ -83,6 +87,8 @@
   outline: none;
   color: var(--color-text-primary);
   font-family: inherit;
+  /* the query and its placeholder centre in the field */
+  text-align: center;
 }
 
 .input:focus,
@@ -100,8 +106,10 @@
 }
 
 /* the clear ✕ (CloseButton) sits on the field's content edge */
-.clear {
-  flex: none;
+.clear,
+.action {
+  grid-column: 3;
+  justify-self: end;
 }
 
 /* the round action sits as far from the field's end as from its top and

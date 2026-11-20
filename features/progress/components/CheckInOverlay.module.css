@@ -17,8 +17,8 @@
   inset: 0;
   z-index: var(--z-overlay);
   background: var(--color-state-pressed-overlay);
-  /* the page goes soft behind the check-in, as behind a `Sheet` with
-     `backdrop="blur"`; it fades in and out with the scrim's opacity */
+  /* the page goes soft behind the check-in, as behind every `Sheet`; it
+     fades in and out with the scrim's opacity */
   -webkit-backdrop-filter: blur(var(--blur-md));
   backdrop-filter: blur(var(--blur-md));
 }
@@ -58,10 +58,10 @@
   flex-direction: column;
   align-items: center;
 
-  /* `.screen[data-layout="panel"]`'s padding, verbatim: 16 at the top (the
+  /* `.screen[data-layout="panel"]`'s padding, verbatim: 8 at the top (the
      panel screens sit 24 higher than every other screen), the mobile margin at
      the sides, and the nav's own clearance under it. */
-  padding: calc(var(--space-lg) + env(safe-area-inset-top))
+  padding: calc(var(--space-sm) + env(safe-area-inset-top))
     var(--margin-screen-right)
     calc(var(--nav-inset-bottom) + var(--size-nav-height) + var(--space-lg))
     var(--margin-screen-left);

@@ -52,7 +52,8 @@ The panel is NOT in the design system — there is no calendar component yet. */
   padding: var(--space-xl);
 
   border-radius: var(--radius-2xl);
-  background: #adc3c591;
+  /* the search dropdown's frost (`SearchDropdown`): #dbeded at 48% */
+  background: var(--color-surface-frost-nav);
   box-shadow: 0 6px 20px rgba(0, 0, 0, 0.12), var(--shadow-lg);
   -webkit-backdrop-filter: blur(var(--blur-card)) saturate(140%);
   backdrop-filter: blur(var(--blur-card)) saturate(140%);

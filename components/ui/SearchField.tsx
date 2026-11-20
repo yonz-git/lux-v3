@@ -14,7 +14,7 @@ import { IconButton } from "./IconButton";
 export function SearchField({
   value,
   onChange,
-  placeholder = "Search products",
+  placeholder = "Search for a product",
   label,
   action,
   variant = "glass",

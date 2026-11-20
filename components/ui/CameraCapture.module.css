@@ -69,11 +69,15 @@
 
 .copyRow > .copy {
   grid-column: 2;
+  /* from the row's top, as the aside is, so a one-line copy shorter than the
+     control is not centred away from it */
+  align-self: start;
 }
 
-/* the control's centre sits on the centre of the title's first line, measured
-   on the lowercase (x-height) band. The aside takes the title's type role, so
-   `lh`, `cap` and `ex` are the title's: the caps sit centred in the line, the
+/* the control's centre sits on the centre of the copy's first line (the
+   title's, or the helper's when there is no title), measured on the lowercase
+   (x-height) band. The aside takes that line's type role, so `lh`, `cap` and
+   `ex` are its own: the caps sit centred in the line, the
    baseline is a cap below their top, and the band's centre half an ex above
    the baseline. */
 .aside {

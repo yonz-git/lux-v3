@@ -466,8 +466,8 @@ main[tabindex="-1"]:focus-visible {
 
   /* THE TOP PAD IS A VARIABLE so the `data-tight-top` override below can move
      it in one place and both the shorthand here and the desktop `padding-top`
-     follow. The default is unchanged: 40, "everywhere", per AGENTS.md. */
-  --content-top: var(--space-4xl);
+     follow. The default is 20, the same as `data-tight-top`. */
+  --content-top: var(--space-xl); /* 20 */
 
   /* the fixed nav sits `--nav-inset-bottom` off the bottom and is 75 tall;
      16 of clearance above it is the same reservation the Figma screens make. */
@@ -478,14 +478,14 @@ main[tabindex="-1"]:focus-visible {
 }
 
 .screen[data-tight-top] {
-  --content-top: var(--space-3xl); /* 32 */
+  --content-top: var(--space-xl); /* 20 */
 }
-/* the flow screens open 24 from the top, as the step boards do */
+/* the flow screens open 12 from the top */
 .screen[data-layout="flow"] {
-  --content-top: var(--space-2xl);
+  --content-top: var(--space-md); /* 12 */
 }
 .screen[data-layout="panel"] {
-  --content-top: var(--space-lg); /* 16 */
+  --content-top: var(--space-sm); /* 8 */
 
   height: 100dvh;
 }
@@ -554,12 +554,11 @@ main[tabindex="-1"]:focus-visible {
 
   .screen {
     background: var(--gradient-canvas-desktop);
-    /* 120 top = 40 page padding + the 40 empty header row + the 40 spacer that
-       every desktop screen carries above its content.
+    /* 64 top, half the 120 it was.
        No bottom reservation: on desktop the nav floats over the content region
        rather than sitting in the layout flow, which is how the Figma frame is
        built, and it is what puts the hero at the right height. */
-    padding: var(--space-9xl) var(--margin-desktop) 0; /* 120 */
+    padding: var(--space-6xl) var(--margin-desktop) 0; /* 64 */
   }
 }
 

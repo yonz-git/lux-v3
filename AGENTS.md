@@ -74,7 +74,7 @@ lib/                 date.ts, pageTitles.ts, actives.ts
 - Nav id `check` is labelled `Analysis`. Don't rename the id.
 - Overlays (`Sheet`, not routes): selfie capture, products add tray, progress photo gallery.
 - Daily check-in: modal on `/progress` and route `/progress/check-in`. Both render `CheckInPanel`. Don't fork. Scrim doesn't close it.
-- Dialogs use Radix Dialog + `useDialogFocus` (`lib/useModalDialog.ts`).
+- Dialogs use Radix Dialog + `useDialogFocus` (`lib/useModalDialog.ts`). Every modal's scrim dims and blurs the page behind it (`--blur-md`).
 
 ### my-skin
 
@@ -145,7 +145,7 @@ lib/                 date.ts, pageTitles.ts, actives.ts
 | `Sheet` | `open`, `onClose`, `title`, `children` |
 | `Collapse` | `open`, `as?`, `appear?` |
 | `DataCard` | `as?`, `className?` |
-| `CameraCapture` | `captured`, `title`, `helper`, `onCapture` |
+| `CameraCapture` | `captured`, `title?`, `helper`, `onCapture`, `aside?` |
 | `Orb` | `size?`, `animateIn?`, `thinking?` |
 | `EmptyState` | `title`, `children` (body), `action: { label, href?, onClick? }` |
 

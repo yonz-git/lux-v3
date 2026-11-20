@@ -72,11 +72,11 @@ export function QuestionScreen({
    */
   contentGapDesktop?: number;
   nav?: NavSection;
-  /** take the screen's top padding 40 -> 32, as the hub screens do */
+  /** the hub screens' top padding (20) */
   tightTop?: boolean;
   /**
    * The screen's top padding at every width, in px, through `--content-top`
-   * (globals.css) — a flow screen's default is 24. Step 1 passes 8.
+   * (globals.css) — a flow screen's default is 12. Step 1 passes 4.
    */
   contentTop?: number;
 }) {

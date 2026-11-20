@@ -13,18 +13,18 @@ export function CameraCapture({
   aside,
 }: {
   captured: boolean;
-  /** what to point the camera at */
-  title: string;
+  /** what to point the camera at; leave it out when the helper says enough */
+  title?: string;
   /** the line under it, which should change once a photo exists */
   helper: string;
   onCapture: () => void;
-  /** a round control at the copy's right, centred on the title's first line.
+  /** a round control at the copy's right, centred on the copy's first line.
    *  The same width is kept free on the left, so the copy stays centred. */
   aside?: ReactNode;
 }) {
   const copy = (
     <div className={styles.copy}>
-      <p className="t-h6">{title}</p>
+      {title && <p className="t-h6">{title}</p>}
       <p className={`${styles.helper} t-body3`}>{helper}</p>
     </div>
   );
@@ -44,7 +44,9 @@ export function CameraCapture({
       {aside ? (
         <div className={styles.copyRow}>
           {copy}
-          <div className={`${styles.aside} t-h6`}>{aside}</div>
+          {/* takes the first line's type role, so its centring maths reads
+              that line's metrics */}
+          <div className={`${styles.aside} ${title ? "t-h6" : "t-body3"}`}>{aside}</div>
         </div>
       ) : (
         copy

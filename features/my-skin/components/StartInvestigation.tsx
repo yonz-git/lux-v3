@@ -20,7 +20,7 @@ export function StartInvestigation() {
       id="start"
       gapBeforeContinue={80}
       gapBeforeContinueMobile={56}
-      contentTop={8}
+      contentTop={4}
       tightTop
     >
       <h2 className={`${styles.question} t-h4-h3`}>

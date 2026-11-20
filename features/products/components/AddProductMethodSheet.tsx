@@ -82,7 +82,6 @@ export function AddProductMethodSheet({
   const [view, setView] = useState<View>(startOn);
   const [confirmSource, setConfirmSource] = useState<ConfirmSource>("search");
   const [stage, setStage] = useState<ConfirmStage>("verify");
-  const [subject, setSubject] = useState<"front" | "ingredients">("front");
   /* what the search's results panel is showing; the tray eases its height
      when it changes, as it does between views */
   const [searchShape, setSearchShape] = useState("closed");
@@ -160,7 +159,6 @@ export function AddProductMethodSheet({
     setView(startOn);
     setConfirmSource("search");
     setStage("verify");
-    setSubject("front");
     setAnswer("productQuery", "");
     setAnswer("scan", undefined);
     setAnswer("productDraft", undefined);
@@ -269,10 +267,6 @@ export function AddProductMethodSheet({
       {view === "scan" && (
         <ScanView
           captured={Boolean(answers.scan)}
-          subject={subject}
-          onToggleSubject={() =>
-            setSubject(subject === "front" ? "ingredients" : "front")
-          }
           onCapture={toggleCapture}
           onSearch={() => go("search")}
           onContinue={() => {
@@ -461,15 +455,11 @@ function SearchView({
  *  been "taken", and moves to the tray's confirm view. */
 function ScanView({
   captured,
-  subject,
-  onToggleSubject,
   onCapture,
   onSearch,
   onContinue,
 }: {
   captured: boolean;
-  subject: "front" | "ingredients";
-  onToggleSubject: () => void;
   onCapture: () => void;
   /** switch to search; a captured photo is kept for coming back */
   onSearch: () => void;
@@ -482,17 +472,10 @@ function ScanView({
           make it a component once a second appeared */}
       <CameraCapture
         captured={captured}
-        title={
-          subject === "front"
-            ? "Take a photo of the front of the product."
-            : "Take a photo of the ingredient list."
-        }
         helper={
           captured
             ? "Tap the shutter again to retake."
-            : subject === "front"
-              ? "Make sure the product name and brand are visible."
-              : "Make sure the whole list is in frame and in focus."
+            : "Make sure the product name and brand are visible."
         }
         onCapture={onCapture}
         aside={
@@ -501,16 +484,6 @@ function ScanView({
           </IconButton>
         }
       />
-
-      <button
-        type="button"
-        className={`${styles.scanAlt} t-label`}
-        onClick={onToggleSubject}
-      >
-        {subject === "front"
-          ? "Take photo of ingredient list instead"
-          : "Take photo of the front instead"}
-      </button>
 
       <Button width="action"
         className={styles.trayAction}
@@ -595,7 +568,7 @@ function ConfirmView({
       {stage === "verify" && draft && (
         <div className={styles.confirmBlock}>
           <p
-            className={`${styles.confirmLabel} t-h5`}
+            className={`${styles.confirmLabel} t-body2-body1`}
             id="add-product-confirm"
           >
             {isScan ? "Is this correct?" : "Is this the right product?"}

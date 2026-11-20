@@ -1,6 +1,6 @@
 /* The PRODUCTS hub shell.
 
-   Mobile: heading -> 24 -> body, or (a centred screen) heading -> flex ->
+   Mobile: heading -> 12 -> body, or (a centred screen) heading -> flex ->
            body -> flex -> footer, or (`center="low"`, `/check`) above, holding
            the heading -> body, the body's button on `--cta-bottom`. Nothing here is 392 wide by
            accident — it is 440 minus two margin/mobile.
@@ -24,7 +24,7 @@
   justify-content: space-between;
   width: 100%;
   height: var(--size-icon-md);
-  margin-bottom: var(--space-2xl); /* 24 */
+  margin-bottom: var(--space-lg); /* 16 */
 }
 
 /* every page heading is centred, title and subtitle */
@@ -49,15 +49,15 @@
 /* the heading is the body's first child on a card screen, so the 24 that
    separates it from the content lives here rather than on the heading. */
 .body > .heading + * {
-  margin-top: var(--space-2xl);
+  margin-top: var(--space-md); /* 12 */
 }
 
-/* On mobile a grid screen is just the stack, 24 below the page heading — the
+/* On mobile a grid screen is just the stack, 12 below the page heading — the
    same distance `card` gets from `.body > .heading + *`, but owed by the body
    itself because a grid screen's heading sits outside it. The gaps BETWEEN the
    blocks are not uniform (24/16/16/24/8), so they stay with the screen. */
 .body[data-layout="grid"] {
-  margin-top: var(--space-2xl); /* 24 */
+  margin-top: var(--space-md); /* 12 */
 }
 
 /* the two equal spacers that centre a hero block */
@@ -108,11 +108,11 @@
   }
 
   .header + .heading {
-    margin-top: var(--space-2xl); /* 24 — the same gap mobile gives it */
+    margin-top: var(--space-md); /* 12 */
   }
 
   .body[data-layout="card"] {
-    margin-top: var(--space-3xl); /* 32 */
+    margin-top: var(--space-lg); /* 16 */
     align-self: center;
     width: 100%;
     max-width: var(--width-card-form); /* 920 */
@@ -149,9 +149,9 @@
     gap: var(--gutter-desktop); /* 24 */
     align-items: start;
     width: 100%;
-    /* the comp puts a 32 spacer between the page heading and the columns,
-       where mobile uses 24 */
-    margin-top: var(--space-3xl); /* 32 */
+    /* a 16 spacer between the page heading and the columns,
+       where mobile uses 12 */
+    margin-top: var(--space-lg); /* 16 */
 
     /* The nav reservation is NOT here — `.screen[data-layout="hub"]` in
        globals.css now reserves for every hub screen whose body flows, which is

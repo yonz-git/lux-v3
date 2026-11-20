@@ -104,7 +104,6 @@ export function CheckBasketSheet({
       onClose={onClose}
       title="Products in this analysis"
       dismiss="corner"
-      backdrop="blur"
       /* grows up out of the bar's edge — `.sheet-grow` in globals.css */
       className={`sheet-grow ${styles.tray}`}
     >
