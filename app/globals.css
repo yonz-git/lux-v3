@@ -447,6 +447,12 @@ main[tabindex="-1"]:focus-visible {
   );
 }
 
+/* a screen whose main button closes it rests that button on `--cta-bottom` */
+.screen[data-layout="flow"],
+.screen[data-layout="hub"][data-low] {
+  padding-bottom: var(--cta-bottom);
+}
+
 @media (min-width: 1024px) {
   .screen[data-layout="flow"],
   .screen[data-layout="hub"],
@@ -471,7 +477,7 @@ main[tabindex="-1"]:focus-visible {
   }
 
   .screen[data-layout="hub"][data-low] {
-    padding-bottom: 0;
+    padding-bottom: var(--cta-bottom);
   }
 
   @media (max-height: 860px) {

@@ -171,7 +171,8 @@ lib/                 date.ts, pageTitles.ts, actives.ts
 ### Empty states
 
 - `EmptyState` inside `HubScreen layout="plain" center="empty"`: Orb → 32 → `t-h5` title → 12 → body → `--space-hero-action` → action. No card. Never rebuild it in a screen.
-- `center="empty"` keeps the heading at the top and sets the block low in Welcome's proportions, so the button sits where Welcome's does.
+- `center="empty"` keeps the heading at the top and sets the block low, its button on `--cta-bottom`.
+- A screen's main button rests on `--cta-bottom` (120 above the nav) at every width and height: flow Continue, `/check`, the empty states. Taller content pushes it down; never a per-screen offset.
 
 ### Selection controls
 

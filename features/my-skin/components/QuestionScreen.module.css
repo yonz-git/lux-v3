@@ -28,9 +28,11 @@
   margin-bottom: var(--space-2xl); /* 24 */
 }
 
-/* Continue follows the content; it is not pushed to the foot of the screen */
+/* takes the spare height, so Continue rests on `--cta-bottom` (the screen's
+   bottom padding); with tall content it shrinks to its minimum and Continue
+   follows the content */
 .spacer {
-  flex: none;
+  flex: 1 0 auto;
   /* 24, unless a screen asks for more (`gapBeforeContinueMobile`) */
   min-height: var(--continue-gap-mobile, var(--space-2xl));
 }
@@ -54,7 +56,6 @@
   }
 
   .card {
-    flex: none;
     align-self: center;
     width: 100%;
     max-width: var(--width-card-focus); /* 640 */

@@ -42,9 +42,9 @@ export function HubScreen({
    * the hero, which is not what the comp draws.
    */
   belowHeading?: ReactNode;
-  /** `true` centres the body between two equal flexible spacers. `"empty"`
-   *  keeps the heading at the top and sets the body low, in Welcome's
-   *  proportions, so an empty state's button sits where Welcome's does. */
+  /** `true` centres the body between two equal flexible spacers. `"low"`
+   *  and `"empty"` set the body at the foot, its button on `--cta-bottom`;
+   *  `"empty"` keeps the heading at the top. */
   center?: boolean | "low" | "empty";
   /** Take the screen's top padding one step down the scale, 40 -> 32. */
   tightTop?: boolean;
@@ -120,7 +120,7 @@ export function HubScreen({
           {children}
         </div>
 
-        {center && <div className={low || empty ? styles.below : styles.flex} aria-hidden="true" />}
+        {center === true && <div className={styles.flex} aria-hidden="true" />}
 
         {footer && <div className={styles.footer}>{footer}</div>}
       </div>

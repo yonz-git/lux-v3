@@ -90,7 +90,14 @@ spaced the way 00 Welcome is — see `.heroChat` and `.actions`.
   gap: 0.8125rem; /* Welcome's, off the scale there too */
   width: 100%;
   margin-top: clamp(0px, 17vh - var(--space-4xl), 7.6875rem);
-  margin-bottom: calc(var(--line-height-3xs) - var(--line-height-xs)); /* -6 */
+  position: relative;
+}
+
+/* hangs under the button, out of flow, so the button is the foot of the
+   screen's body and rests on `--cta-bottom` like every other main button */
+.actions .link {
+  position: absolute;
+  top: calc(100% + 0.8125rem); /* the gap above, Welcome's */
 }
 
 .hero.heroChat + .actions {

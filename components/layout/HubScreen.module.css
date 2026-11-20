@@ -2,7 +2,7 @@
 
    Mobile: heading -> 24 -> body, or (a centred screen) heading -> flex ->
            body -> flex -> footer, or (`center="low"`, `/check`) above, holding
-           the heading -> body -> below. Nothing here is 392 wide by
+           the heading -> body, the body's button on `--cta-bottom`. Nothing here is 392 wide by
            accident — it is 440 minus two margin/mobile.
    Desktop: `card` puts the heading and body inside one centred 920 frosted card,
             32 below the header; `plain` floats a 640 column on the gradient with
@@ -65,17 +65,15 @@
   flex: 1 1 0;
 }
 
+/* `center="low"` / `"empty"`: everything spare goes above the body, so its
+   button rests on `--cta-bottom` (the screen's bottom padding, globals.css);
+   when the body is too tall the space shrinks and the button follows it */
 .above {
-  flex: 266 1 calc(var(--space-4xl) - var(--content-top));
+  flex: 1 0 calc(var(--space-4xl) - var(--content-top));
 }
 
-.below {
-  flex: 70 1 0;
-}
-
-/* `center="empty"`: Welcome's share above, under a heading that stays put */
 .aboveEmpty {
-  flex: 266 1 0;
+  flex: 1 0 0;
 }
 
 .footer {
@@ -98,20 +96,9 @@
     align-items: stretch;
   }
 
-  /* Welcome's desktop weights and top padding — see `.above` above. */
+  /* Welcome's desktop top padding — see `.above` above */
   .above {
-    flex: 130 1 calc(var(--space-9xl) - var(--content-top));
-  }
-
-  /* under the desktop heading row, an equal share puts the button where
-     Welcome's sits at 1440 x 900 */
-  .aboveEmpty {
-    flex: 215 1 0;
-  }
-
-  .below {
-    flex: 215 1 0;
-    min-height: calc(var(--nav-inset-bottom) + var(--size-nav-height) + var(--space-lg));
+    flex-basis: calc(var(--space-9xl) - var(--content-top));
   }
 
   .header {

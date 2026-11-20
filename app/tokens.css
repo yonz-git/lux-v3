@@ -479,6 +479,12 @@
 
 :root {
   --nav-inset-bottom: var(--space-sm);
+  /* where a screen's main button rests: its bottom edge 120 above the nav, at
+     every width and height. A screen reserves this under its content and lets
+     a spacer push the button down to it; taller content pushes past it. */
+  --cta-bottom: calc(
+    var(--nav-inset-bottom) + var(--size-nav-height) + var(--space-9xl)
+  );
 }
 
 :root {
