@@ -3,6 +3,12 @@
 import { useEffect, useRef, useState } from "react";
 import { useRouter } from "next/navigation";
 import styles from "./CheckBuilder.module.css";
+import {
+  SearchDropdown,
+  SearchDropdownList,
+  SearchDropdownNote,
+  SearchDropdownRow,
+} from "@/components/ui/SearchDropdown";
 import { HubScreen } from "@/components/layout/HubScreen";
 import { Button } from "@/components/ui/Button";
 import { SearchField } from "@/components/ui/SearchField";
@@ -215,13 +221,15 @@ export function CheckBuilder({ now }: { now: number }) {
           </p>
 
           {dropdown.present && (
-            <div
-              className={`${styles.dropdown} drop`}
-              data-state={dropdown.leaving ? "leaving" : undefined}
-              inert={dropdown.leaving}
+            <SearchDropdown
+              placement="float"
+              leaving={dropdown.leaving}
+              heading={
+                !shown.loading && shown.results.length > 0 ? shown.resultsLabel : undefined
+              }
             >
               {shown.loading ? (
-                <p className={`${styles.dropdownNote} t-body3`}>Searching…</p>
+                <SearchDropdownNote>Searching…</SearchDropdownNote>
               ) : shown.results.length === 0 ? (
                 /* `Check — no results` (651:2510), a state of the panel rather
                    than a screen — and reached only once the search has actually
@@ -245,37 +253,19 @@ export function CheckBuilder({ now }: { now: number }) {
                   </Button>
                 </div>
               ) : (
-                <>
-                  <h2 className={`${styles.dropdownHead} t-label`}>{shown.resultsLabel}</h2>
-                  <div className={styles.scroll}>
-                    <ul className={styles.results}>
-                      {shown.results.map((p) => (
-                        <li key={p.id}>
-                          {/* deliberately NOT `ProductRow` — that is the frosted
-                              CARD recipe, and a card inside a panel is two
-                              surfaces doing one job. Same call the tray's
-                              dropdown makes. */}
-                          <div className={styles.result}>
-                            <ProductThumb product={p} />
-                            <span className={styles.resultCopy}>
-                              <span className={`${styles.resultName} t-h6`}>
-                                {fullName(p)}
-                              </span>
-                              {metaFor(p) && (
-                                <span className={`${styles.resultMeta} t-label-sm`}>
-                                  {metaFor(p)}
-                                </span>
-                              )}
-                            </span>
-                            {trailingFor(p)}
-                          </div>
-                        </li>
-                      ))}
-                    </ul>
-                  </div>
-                </>
+                <SearchDropdownList>
+                  {shown.results.map((p) => (
+                    <SearchDropdownRow
+                      key={p.id}
+                      leading={<ProductThumb product={p} />}
+                      title={fullName(p)}
+                      meta={metaFor(p) || undefined}
+                      trailing={trailingFor(p)}
+                    />
+                  ))}
+                </SearchDropdownList>
               )}
-            </div>
+            </SearchDropdown>
           )}
         </div>
 

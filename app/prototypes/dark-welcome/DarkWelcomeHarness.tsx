@@ -42,6 +42,7 @@ export function WelcomeStage() {
             <ChatBubble
               from="ai"
               align="center"
+              size="hero"
               className={`${styles.bubbleReply} edit-bubble`}
               entrance={false}
               aria-hidden

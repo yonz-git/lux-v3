@@ -115,12 +115,11 @@
   margin-top: 0;
 }
 
+/* centres the main action, which caps itself at `--width-button-primary` */
 .cta {
+  display: flex;
+  justify-content: center;
   width: 100%;
-  /* the nav pill's 380 on mobile — `--width-action-mobile`. `align-self`
-     because `.actions` stretches here and only centres on desktop. */
-  max-width: var(--width-action-mobile);
-  align-self: center;
 }
 
 /* `Start over`, quiet and apart from the page's main action */
@@ -183,10 +182,6 @@
 
   .actions {
     align-items: center;
-  }
-
-  .cta {
-    width: var(--width-action);
   }
 }
 

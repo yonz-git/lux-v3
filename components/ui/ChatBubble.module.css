@@ -71,6 +71,12 @@ than leaving a small sentence rattling in a box built for a larger one:
   padding: var(--space-md) var(--space-lg); /* 12 / 16 */
 }
 
+/* the orb's hero line on Welcome and `/check`: airier lines. (0,2,0), so it
+   outranks `.t-body2-body1` whichever stylesheet loads last */
+.bubble[data-size="hero"] {
+  line-height: var(--line-height-bubble-hero);
+}
+
 .bubble[data-from] {
   background: linear-gradient(
     135deg,

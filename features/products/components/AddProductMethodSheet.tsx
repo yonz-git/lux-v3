@@ -11,6 +11,12 @@ import { Button } from "@/components/ui/Button";
 import { IconButton } from "@/components/ui/IconButton";
 import { OptionRow } from "@/components/ui/OptionRow";
 import SegmentedToggle from "./SegmentedToggle";
+import {
+  SearchDropdown,
+  SearchDropdownList,
+  SearchDropdownNote,
+  SearchDropdownRow,
+} from "@/components/ui/SearchDropdown";
 import { SearchField } from "@/components/ui/SearchField";
 import { ProductRow } from "./ProductList";
 import { ProductThumb } from "./ProductThumb";
@@ -427,43 +433,24 @@ function SearchView({
       </p>
 
       {dropdown.present && (
-        <div
-          className={`${styles.dropdown} drop`}
-          data-state={dropdown.leaving ? "leaving" : undefined}
-          inert={dropdown.leaving}
-        >
+        <SearchDropdown placement="flow" leaving={dropdown.leaving}>
           {shown.loading ? (
-            <p className={`${styles.dropdownNote} t-body3`}>Searching…</p>
+            <SearchDropdownNote>Searching…</SearchDropdownNote>
           ) : shown.results.length === 0 ? (
-            <p className={`${styles.dropdownNote} t-body3`}>
-              No products match “{shown.query.trim()}”
-            </p>
+            <SearchDropdownNote>No products match “{shown.query.trim()}”</SearchDropdownNote>
           ) : (
-            <ul className={styles.results}>
+            <SearchDropdownList>
               {shown.results.map((p) => (
-                <li key={p.id}>
-                  {/* deliberately NOT `ProductRow` — that is the frosted CARD
-                      recipe, and a card inside a panel is two surfaces doing
-                      one job. A dropdown row is a hover target on the panel's
-                      own fill. */}
-                  <button
-                    type="button"
-                    className={styles.result}
-                    onClick={() => onChoose(p)}
-                  >
-                    <ProductThumb product={p} />
-                    <span className={styles.resultCopy}>
-                      {/* brand-led title, no size under it */}
-                      <span className={`${styles.resultName} t-h6`}>
-                        {fullName(p)}
-                      </span>
-                    </span>
-                  </button>
-                </li>
+                <SearchDropdownRow
+                  key={p.id}
+                  leading={<ProductThumb product={p} />}
+                  title={fullName(p)}
+                  onSelect={() => onChoose(p)}
+                />
               ))}
-            </ul>
+            </SearchDropdownList>
           )}
-        </div>
+        </SearchDropdown>
       )}
     </div>
   );

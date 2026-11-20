@@ -35,7 +35,7 @@ export function CheckScreen() {
           <div className="orb-hero">
             <Orb animateIn halo />
           </div>
-          <ChatBubble from="ai" align="center" full hug className={styles.intro}>
+          <ChatBubble from="ai" align="center" size="hero" full hug className={styles.intro}>
             <span className={styles.line}>Check how your products </span>
             <span className={styles.line}>may suit your skin and work </span>
             <span className={styles.line}>together in the same routine.</span>

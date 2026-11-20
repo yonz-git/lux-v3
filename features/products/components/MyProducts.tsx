@@ -59,7 +59,7 @@ export function MyProducts() {
           /* an analysis compares products, so it is offered once there are
              enough to compare; it eases in and out with the count */
           <Collapse open={products.length >= MIN_CHECK_PRODUCTS} smooth>
-            <Button href="/check/new" width="full">
+            <Button href="/check/new" width="action">
               Start analysis
             </Button>
           </Collapse>
@@ -88,7 +88,7 @@ export function MyProducts() {
         data-hidden={sheetOpen || undefined}
         inert={sheetOpen}
       >
-        <Button variant="secondary" width="full" onClick={() => openSheet(null)}>
+        <Button variant="secondary" width="action" onClick={() => openSheet(null)}>
           Add your products
         </Button>
       </div>

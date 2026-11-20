@@ -50,6 +50,13 @@
   align-self: center;
 }
 
+/* Continue: full width up to the primary's widest, centred */
+.footer .continue {
+  width: 100%;
+  max-width: var(--width-button-primary);
+  align-self: center;
+}
+
 @media (min-width: 1024px) {
   .shell {
     max-width: var(--width-content-max); /* 1280 */
@@ -74,8 +81,4 @@
   }
 
   /* Continue is `width/action`, centred — not stretched to the column */
-  .footer .continue {
-    width: var(--width-action);
-    align-self: center;
-  }
 }

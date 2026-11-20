@@ -175,7 +175,7 @@ export function SkinProfileSummary({ now }: { now: number }) {
       <div className={styles.actions}>
         <CoachBubble>{COPY.ctaHelp}</CoachBubble>
         <div className={styles.cta}>
-          <Button href="/products" fullWidth>
+          <Button href="/products" width="action">
             {COPY.cta}
           </Button>
         </div>

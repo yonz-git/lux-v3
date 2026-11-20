@@ -97,22 +97,10 @@
 }
 
 .cta {
-  --button-height: var(--size-control-lg); /* 62 */
   width: 100%;
-  max-width: 338px; /* the Welcome CTA is narrower than the content column */
+  max-width: var(--width-button-primary); /* 240, 288 from 1024 */
 }
 
-/* (0,2,0), so it outranks `.t-body2-body1` on the same element whichever
-   stylesheet loads last */
-.bubbleReply[data-from] {
-  line-height: 1.625; /* 26 on 16 */
-}
-
-@media (min-width: 1024px) {
-  .bubbleReply[data-from] {
-    line-height: 1.5556; /* 28 on 18 */
-  }
-}
 
 /* under the button, out of flow, so the button is the group's foot */
 .disclaimer {
@@ -141,10 +129,6 @@
 
   .actions {
     gap: 0.8125rem;
-  }
-
-  .cta {
-    max-width: var(--width-action);
   }
 
   .disclaimer {

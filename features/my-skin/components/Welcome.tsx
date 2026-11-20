@@ -36,6 +36,7 @@ export function Welcome() {
               <ChatBubble
                 from="ai"
                 align="center"
+                size="hero"
                 className="bubble-ask-exit"
                 entrance={false}
                 aria-hidden
@@ -47,6 +48,7 @@ export function Welcome() {
             <ChatBubble
               from="ai"
               align="center"
+              size="hero"
               className={returning ? styles.bubbleReply : `bubble-swap-in ${styles.bubbleReply}`}
               entrance={false}
               aria-hidden

@@ -152,18 +152,10 @@
 }
 
 /* a screen's one main action — `width="action"` (Button.tsx): full width up
-   to the nav pill's 380 on a phone, `--width-action` (376) from 1024, never
-   wider than its column. It was this rule, copied into ten screens. */
+   to `--width-button-primary`, never wider than its column (see below) */
 .action {
   display: flex;
   width: 100%;
-  max-width: var(--width-action-mobile); /* 380 */
-}
-
-@media (min-width: 1024px) {
-  .action {
-    max-width: var(--width-action); /* 376 */
-  }
 }
 
 .md {
@@ -179,6 +171,19 @@
   --button-pad-x: calc(
     var(--space-button-sm-inline) - var(--border-width-hairline)
   );
+}
+
+/* the large primary's own height, and a main action's size in either
+   material: 54.4 / 240 on a phone, 57.6 / 288 from 1024 (tokens.css). A main
+   action centres itself in whatever holds it. */
+.button:not(.secondary, .text, .md, .sm),
+.action:not(.text, .md, .sm) {
+  min-height: var(--button-height, var(--size-button-primary));
+}
+
+.action:not(.text) {
+  max-width: var(--width-button-primary);
+  margin-inline: auto;
 }
 
 /* the secondary's ends turn opaque here (tokens.css), so its frost goes too */

@@ -128,6 +128,7 @@ lib/                 date.ts, pageTitles.ts, actives.ts
 | Component | Props |
 | --- | --- |
 | `Button` | `variant?: "primary" \| "secondary" \| "text"`, `size?: "lg" \| "md" \| "sm"` (56/48/42), `width?: "hug" \| "full" \| "action"`, `href?`, `icon?` |
+| | large primary: `--size-button-primary` tall, a main action at most `--width-button-primary` wide (54.4/240 mobile, 57.6/288 desktop) |
 | `IconButton` | `label`, `variant?: "glass" \| "ring" \| "primary" \| "outline" \| "soft"`, `size?: "lg" \| "md" \| "sm" \| "xs"` (56/32/26/20), `href?`, `ref?` |
 | `SmallButton` | `label`, `arrow?`, `href?`, `className?` |
 | `EditToggle` | Edit/Save toggle |
@@ -137,7 +138,8 @@ lib/                 date.ts, pageTitles.ts, actives.ts
 | `TextField` | input attrs + `ref?` |
 | `DateField` | `value?`, `onChange`, `id?`, `placeholder?` |
 | `SearchField` | `value`, `onChange`, `placeholder?`, `label`, `action?`, `variant?: "glass" \| "clear"` |
-| `ChatBubble` | `from: "ai" \| "user"`, `align?`, `full?` |
+| `SearchDropdown` | `placement: "float" \| "flow"`, `leaving?`, `heading?`; children `SearchDropdownList` > `SearchDropdownRow` (`leading`, `title`, `meta?`, `trailing?`, `onSelect?`) or `SearchDropdownNote` |
+| `ChatBubble` | `from: "ai" \| "user"`, `align?`, `full?`, `size?: "default" \| "compact" \| "hero"` (hero = the orb's line on Welcome and `/check`) |
 | `CoachBubble` | `children`, `className?`, `bubbleClassName?` — orb beside an AI bubble, orb centred on the first line |
 | `Sheet` | `open`, `onClose`, `title`, `children` |
 | `Collapse` | `open`, `as?`, `appear?` |
@@ -175,7 +177,7 @@ lib/                 date.ts, pageTitles.ts, actives.ts
 - `center="empty"` keeps the heading at the top and sets the block low, its button on `--cta-bottom`.
 - Orb + chat bubble screens (Welcome, `/check`): the orb and bubble are one group, centred between the top and the button, at least 32 from each. Button stays on `--cta-bottom`.
 - A screen's main button rests on `--cta-bottom` (120 above the nav) at every width and height: flow Continue, `/check`, the empty states. Taller content pushes it down; never a per-screen offset.
-- Welcome and the flow steps (Continue) rest lower, on `--cta-bottom-flow` (64 above the nav).
+- Welcome, the flow steps (Continue) and `/check` rest lower, on `--cta-bottom-flow` (64 above the nav).
 
 ### Selection controls
 

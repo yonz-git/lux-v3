@@ -29,7 +29,8 @@ export function ChatBubble({
   /** span the whole content column instead of hugging the text */
   full?: boolean;
   hug?: boolean;
-  size?: "default" | "compact";
+  /** `hero`: the orb's line on Welcome and `/check`, with airier lines */
+  size?: "default" | "compact" | "hero";
   entrance?: boolean;
   /** applied to the bubble itself, not the row — e.g. an entrance animation */
   className?: string;
@@ -111,7 +112,7 @@ export function ChatBubble({
           .join(" ")}
         data-from={from}
         data-full={full ? "true" : undefined}
-        data-size={size === "compact" ? "compact" : undefined}
+        data-size={size === "default" ? undefined : size}
       >
         <span ref={textRef} className={`${styles.text} shine-text shine-on-enter`}>
           {children}

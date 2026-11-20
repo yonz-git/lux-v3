@@ -231,6 +231,9 @@
   --line-height-4xl: 3.75rem; /* 60px */
   --line-height-5xl: 4.75rem; /* 76px */
   --line-height-6xl: 6rem; /* 96px */
+  /* the orb's hero bubble (`ChatBubble size="hero"`): 26 on 16, 28 on 18
+     from 1024 */
+  --line-height-bubble-hero: 1.625;
   --tracking-tight: -0.0781rem; /* -1.25px */
   --tracking-snug: -0.0625rem; /* -1px */
   --tracking-normal: 0rem; /* 0px */
@@ -252,6 +255,9 @@
   /* the segmented toggle's pill and `Button size="sm"`: one indigo `Add product` */
   --size-button-sm: 2.625rem; /* 42px */
   --size-button-lg: 3.5rem; /* 56px — `Button`'s default height */
+  /* the large primary button: its height and widest (desktop values below) */
+  --size-button-primary: 3.4rem; /* 54.4px */
+  --width-button-primary: 15rem; /* 240px */
   --space-button-sm-inline: 1.375rem; /* 22px */
   --size-control-lg: 3.875rem; /* 62px */
   /* the bar is 56 circles in 6 of padding and a 1px edge: 70 tall. Every
@@ -491,8 +497,8 @@
   --cta-bottom: calc(
     var(--nav-inset-bottom) + var(--size-nav-height) + var(--space-9xl)
   );
-  /* Welcome and the flow steps rest their button lower: 64 above the nav,
-     not 120 */
+  /* Welcome, the flow steps and `/check` rest their button lower: 64 above
+     the nav, not 120 */
   --cta-bottom-flow: calc(
     var(--nav-inset-bottom) + var(--size-nav-height) + var(--space-6xl)
   );
@@ -604,6 +610,9 @@
   :root {
     --nav-inset-bottom: var(--space-md); /* 12, half the Welcome board's 24 */
     --space-hero-action: 6.25rem; /* 100 */
+    --line-height-bubble-hero: 1.5556;
+    --size-button-primary: 3.6rem; /* 57.6px */
+    --width-button-primary: 18rem; /* 288px */
   }
 }
 
