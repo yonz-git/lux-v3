@@ -280,18 +280,16 @@ export function CheckInDetail({ date, now }: { date: string; now: number }) {
                   <li key={p.id} className={styles.product}>
                     <ProductThumb product={p} />
                     <span className={styles.productText}>
-                      <span className={styles.productHead}>
-                        <span className={`${styles.productName} t-h6`}>
-                          {fullName(p)}
-                        </span>
-                        <Tag className={styles.productGroup}>
-                          {BUCKET_TAG[p.bucket]}
-                        </Tag>
+                      <span className={`${styles.productName} t-h6`}>
+                        {fullName(p)}
                       </span>
                       <span className={`${styles.productMeta} t-label-sm`}>
                         Added {formatAdded(p.addedOn)}
                       </span>
                     </span>
+                    <Tag className={styles.productGroup}>
+                      {BUCKET_TAG[p.bucket]}
+                    </Tag>
                   </li>
                 ))}
               </ul>

@@ -65,17 +65,22 @@ export function SmallButton({
   ]
     .filter(Boolean)
     .join(" ");
+  /* the md label centres on its x-height; the alignment check measures caps */
+  const exempt =
+    size === "sm"
+      ? undefined
+      : "label centred on the x-height, not the caps (SmallButton.module.css)";
 
   // a disabled control must not stay a link — links are not disableable
   if (href && !rest.disabled) {
     return (
-      <Link href={href} className={cls}>
+      <Link href={href} className={cls} data-align-exempt={exempt}>
         {content}
       </Link>
     );
   }
   return (
-    <button type="button" className={cls} {...rest}>
+    <button type="button" className={cls} data-align-exempt={exempt} {...rest}>
       {content}
     </button>
   );

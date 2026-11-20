@@ -631,10 +631,11 @@ function ConfirmView({
               />
             ))}
           </div>
-          {/* the tray's own primary action. Disabled until the question is
+          {/* the tray's own action. Disabled until the question is
               answered, for the same reason Continue is on every step: there is
               no group to file the product under until it is. */}
           <Button
+            variant="secondary"
             size="sm"
             className={`${styles.trayAction} ${styles.trayActionSmall}`}
             disabled={!draft.duration}

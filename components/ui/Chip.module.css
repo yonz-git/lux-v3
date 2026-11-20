@@ -72,9 +72,9 @@
 }
 
 .chip[data-selected="true"][data-muted] {
-  --chip-edge: color-mix(in srgb, var(--color-bg-brand) 45%, transparent);
+  --chip-edge: var(--color-border-brand-tint);
   color: var(--color-text-brand);
-  background-color: color-mix(in srgb, var(--color-bg-brand) 14%, var(--color-glass));
+  background-color: var(--color-surface-brand-tint);
 }
 
 .chip[data-selected="true"][data-muted]::before {

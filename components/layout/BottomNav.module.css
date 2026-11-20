@@ -45,7 +45,9 @@
   box-shadow: inset 0 1px 0 var(--color-rim-nav);
   color: var(--color-bg-brand);
   text-decoration: none;
-  transition: background-color var(--duration-base) var(--ease-hover);
+  transition-property: background-color, border-color, color;
+  transition-duration: var(--duration-base);
+  transition-timing-function: var(--ease-hover);
 }
 
 .item:hover {
@@ -58,8 +60,13 @@
   }
 }
 
-/* the section you are in — the primary action's gradient and lift. It sizes
-   to its word; the bar hugs, so there is no slack for it to take. */
+.item[data-active="true"]:hover {
+  background-color: var(--color-nav-item-active);
+}
+
+/* the section you are in — the brand as a tint, not the primary action's
+   solid gradient, so it never competes with the screen's main button. It
+   sizes to its word; the bar hugs, so there is no slack for it to take. */
 .item[data-active="true"] {
   flex: none;
   /* while the pill grows out of a circle (the morph in BottomNav.tsx) its
@@ -68,16 +75,10 @@
   overflow: hidden;
   justify-content: safe center;
   width: auto;
-  border-width: 0;
-  padding: 0 calc(var(--space-xl) + var(--border-width-hairline)) 0
-    calc(var(--space-chip-inline) + var(--border-width-hairline));
-  background-image: linear-gradient(
-    90deg,
-    var(--color-gradient-brand-start),
-    var(--color-gradient-brand-end)
-  );
-  box-shadow: var(--shadow-brand-pill);
-  color: var(--color-text-on-brand);
+  padding: 0 var(--space-xl) 0 var(--space-chip-inline);
+  border-color: var(--color-border-brand-tint);
+  background-color: var(--color-nav-item-active);
+  color: var(--color-text-brand);
 }
 
 @media (max-width: 359px) {

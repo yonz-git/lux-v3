@@ -230,15 +230,12 @@ col-2  616 fill    symptoms, severity, products */
   min-width: 0;
 }
 
-/* the name and its group pill share the first line, wrapping under a long name */
-.productHead {
-  display: flex;
-  flex-wrap: wrap;
-  align-items: center;
-  gap: var(--space-xs) var(--space-sm); /* 4 / 8 */
+/* the group pill closes the row, right-aligned and centred on it */
+.productGroup {
+  flex: none;
 }
 
-.productHead .productGroup[data-variant] {
+.product .productGroup[data-variant] {
   background: color-mix(in srgb, #000e71 38%, transparent);
   color: var(--color-text-on-brand);
 }

@@ -625,6 +625,13 @@
   --color-border-nav: rgb(255 255 255 / 0.4);
   --color-rim-nav: rgb(255 255 255 / 0.5);
   --color-nav-item: rgb(255 255 255 / 0.12);
+  /* a selection that is not an action: the brand as a tint on glass, with a
+     half-strength brand edge. The current nav item and a muted selected chip;
+     only the screen's main button is solid brand. */
+  --color-surface-brand-tint: color-mix(in srgb, var(--color-bg-brand) 14%, var(--color-glass));
+  --color-border-brand-tint: color-mix(in srgb, var(--color-bg-brand) 45%, transparent);
+  /* the current nav item's fill: a periwinkle at 29% */
+  --color-nav-item-active: #5868d34a;
   --shadow-nav-bar: inset 0 1px 0 var(--color-rim-nav), 0 8px 24px rgb(46 42 63 / 0.06);
   --nav-inset-inline: var(--space-sm); /* "50% less side paddings": 16 -> 8 */
   /* a hero's text to its main button (Welcome, the empty states): 118 at the

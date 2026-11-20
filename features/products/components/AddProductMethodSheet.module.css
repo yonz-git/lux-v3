@@ -208,7 +208,7 @@
   align-self: center;
 }
 
-/* `Add product` on the duration stage is the primary `Button` at
+/* `Add product` on the duration stage is the secondary `Button` at
    `size="sm"` (42, the verify stage's toggle pill), hugging its label and centred at both breakpoints.
    `button.` + two classes outranks the shared rule above whatever the bundle
    order; the height and padding are `Button`'s own. */
