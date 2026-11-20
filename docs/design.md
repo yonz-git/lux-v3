@@ -130,9 +130,9 @@ typography:
     lineHeight: 16px
   overline:
     fontFamily: Manrope
-    fontSize: 12px
-    fontWeight: 600
-    lineHeight: 16px
+    fontSize: 14.4px
+    fontWeight: 800
+    lineHeight: 1.4286
     letterSpacing: 0.12em
   metric-lg:
     fontFamily: Figtree
@@ -468,7 +468,7 @@ carried by size, weight and the change of face, not colour.
 `headline-emphasis` (Bold, in `primary`), under a `kicker` (16/20). Every page
 `<h1>` is `page-title` (22/28 Medium), on every page and both breakpoints;
 sheet titles use it too. Inside panels, `panel-label` (18/22) names the panel,
-`overline` (12/16 SemiBold, tracked, capitals) labels a readout, and
+`overline` (14.4 ExtraBold, tracked, capitals) labels a readout, and
 `metric-lg` / `metric-md` (Light, tabular figures) carry the number.
 Body copy is `body` (16/22); `body-sm` (14/20) supports it. Controls have
 their own styles so their widths stay stable: `chip` (16/20 Regular), `label`

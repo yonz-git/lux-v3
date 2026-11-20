@@ -44,6 +44,8 @@
   --color-bg-brand-hover: #242750;
   /* the routine card's dark teal base; the products hub's count badge too */
   --color-bg-routine: #005461;
+  /* the skin profile tiles' outlined answer pills: ink and stroke */
+  --color-ink-profile-pill: #106a7f;
   /* the routine card and the symptom trend card: five soft lights over the
      dark teal, 5% darker overall */
   --gradient-routine: linear-gradient(#0000000d, #0000000d),
@@ -204,9 +206,12 @@
      If you see SemiBold or Bold rendering anywhere, that is drift. */
   --font-weight-semibold: 600;
   --font-weight-bold: 700;
+  /* card overlines only (`t-overline`) */
+  --font-weight-extrabold: 800;
   --font-size-3xs: 0.75rem; /* 12px */
   --font-size-2xs: 0.8125rem; /* 13px */
   --font-size-xs: 0.875rem; /* 14px */
+  --font-size-overline: 0.9rem; /* 14.4px, card overlines only */
   --font-size-sm: 1rem; /* 16px */
   --font-size-md: 1.125rem; /* 18px */
   --font-size-lg: 1.25rem; /* 20px */

@@ -311,9 +311,9 @@ main[tabindex="-1"]:focus-visible {
   font-weight: var(--font-weight-regular);
 }
 .t-overline {
-  font-size: 0.875rem; /* 14 */
+  font-size: var(--font-size-overline); /* 14.4 */
   line-height: 1.4286;
-  font-weight: var(--font-weight-semibold, 600);
+  font-weight: var(--font-weight-extrabold);
   letter-spacing: 0.12em;
   text-transform: uppercase;
 }
