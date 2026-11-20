@@ -62,8 +62,12 @@
 }
 
 .tileValue {
-  display: inline-flex;
-  align-items: center;
+  /* a block, not a flex box, so the line box can be trimmed to the x-height
+     and centred on it (`text-box` skips flex boxes): the answers are mostly
+     lowercase, and centred on the line box they sat 0.7 low */
+  display: inline-block;
+  align-content: center;
+  text-box: trim-both ex alphabetic;
   max-width: 100%;
   min-height: 32px;
   /* a one-word answer wider than its tile (`Combination` at 320 under the

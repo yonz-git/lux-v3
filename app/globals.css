@@ -337,7 +337,7 @@ main[tabindex="-1"]:focus-visible {
 .t-label,
 .t-nav {
   font-size: var(--font-size-xs); /* 14 */
-  font-weight: var(--font-weight-medium);
+  font-weight: var(--font-weight-semibold);
 }
 /* an option row's label: `t-label` on a phone, `t-h6`'s size from 1024 */
 .t-label-h6 {

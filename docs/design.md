@@ -350,9 +350,9 @@ components:
     rounded: "{rounded.full}"
     size: 56px
   nav-item-active:
-    backgroundColor: "#46B0CB29"
+    backgroundColor: "#40456B12"
     borderColor: "{colors.nav-edge}"
-    textColor: "{colors.primary}"
+    textColor: "#144F5F"
     typography: "{typography.label}"
     rounded: "{rounded.full}"
     padding: 0 20px 0 18px
@@ -602,8 +602,9 @@ mobile, 640 wide at most), a title row of the LUX orb
 **Bottom nav (built).** `nav-bar` is a glass pill holding four `nav-item`
 glass circles (My skin, Progress, Analysis, Products); the current section is
 `nav-item-active`, which stretches into a pill with its glyph and `label`.
-It is a tint on glass (`--color-nav-item-active`, #46b0cb at 16%, the
-circles' own white edge and rim, indigo ink), never the solid brand: the solid
+It is a tint on glass (`--color-nav-item-active`, #40456b at 7%, the
+circles' own white edge and rim, deep-teal ink `--color-nav-item-active-ink`
+#144f5f, label SemiBold), never the solid brand: the solid
 indigo pill belongs to the screen's one main action, and the nav must not
 compete with it. The others show the glyph only and carry the section name as their
 accessible name. With a section active the bar runs the phone's width, 8 in

@@ -637,8 +637,9 @@
      only the screen's main button is solid brand. */
   --color-surface-brand-tint: color-mix(in srgb, var(--color-bg-brand) 14%, var(--color-glass));
   --color-border-brand-tint: color-mix(in srgb, var(--color-bg-brand) 45%, transparent);
-  /* the current nav item's fill: a teal at 16% */
-  --color-nav-item-active: #46b0cb29;
+  /* the current nav item: a faint indigo wash under deep-teal ink */
+  --color-nav-item-active: #40456b12;
+  --color-nav-item-active-ink: #144f5f;
   --shadow-nav-bar: inset 0 1px 0 var(--color-rim-nav), 0 8px 24px rgb(46 42 63 / 0.06);
   --nav-inset-inline: var(--space-sm); /* "50% less side paddings": 16 -> 8 */
   /* a hero's text to its main button (Welcome, the empty states): 118 at the

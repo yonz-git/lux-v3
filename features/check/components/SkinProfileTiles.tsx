@@ -58,6 +58,7 @@ export function SkinProfileTiles({
                 key={value}
                 className={`${styles.tileValue} t-body3`}
                 data-tone={isActive(label, value) ? "symptom" : undefined}
+                data-align-exempt="centred on the x-height, not the caps (SkinProfileTiles.module.css)"
               >
                 {value}
               </dd>
