@@ -12,6 +12,7 @@ import { IconButton } from "@/components/ui/IconButton";
  */
 export function HubScreen({
   title,
+  titleClassName = "t-h4-h3",
   subtitle,
   backHref,
   action,
@@ -24,7 +25,10 @@ export function HubScreen({
   footer,
   children,
 }: {
-  title?: string;
+  /** a string, or a page's own composed title (Progress puts the orb in it) */
+  title?: ReactNode;
+  /** the title's classes — the hub title role, unless a page designs its own */
+  titleClassName?: string;
   subtitle?: string;
   /** a pushed view's back chevron; a landing has none */
   backHref?: string;
@@ -60,7 +64,7 @@ export function HubScreen({
 
   const heading = title ? (
     <div className={styles.heading}>
-      <h1 className="t-h4-h3">{title}</h1>
+      <h1 className={titleClassName}>{title}</h1>
       {subtitle && <p className={`${styles.subtitle} t-body2`}>{subtitle}</p>}
     </div>
   ) : null;

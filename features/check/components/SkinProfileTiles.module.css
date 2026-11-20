@@ -11,12 +11,6 @@
   color: var(--color-text-primary);
 }
 
-@media (min-width: 1024px) {
-  .card {
-    padding: var(--space-panel); /* 32 */
-  }
-}
-
 /* the overline and, on the recap only, its `Edit` at the far end. The 36 button
    is the row's height when present; without it the row is the overline's. */
 .head {
@@ -28,7 +22,7 @@
 
 .overline {
   margin: 0;
-  color: var(--color-text-secondary);
+  color: var(--color-text-overline-indigo);
 }
 
 /* two tiles a row at every width; `minmax(0, 1fr)` keeps a long answer from

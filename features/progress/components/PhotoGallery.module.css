@@ -18,6 +18,10 @@
   color: var(--color-text-on-data-muted);
 }
 
+.overline {
+  color: var(--color-text-overline-indigo);
+}
+
 /* `t-overline` at its own size, matching every card overline (lux-v3) */
 
 .empty {

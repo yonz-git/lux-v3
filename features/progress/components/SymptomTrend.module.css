@@ -26,6 +26,17 @@
 .title {
   margin: 0;
   color: var(--color-text-primary);
+  /* lighter than the other cards' 800: white on the dark card reads heavier */
+  font-weight: var(--font-weight-semibold); /* 600 */
+}
+
+/* one line from 430, so its lines can close up to half the size; below 430
+   it wraps beside the day pill and keeps the heading line height, or its two
+   lines would sit on each other */
+@media (min-width: 430px) {
+  .title {
+    line-height: var(--line-height-overline-tight);
+  }
 }
 
 /* `Day 16` — a hairline pill in the card's own ink, no fill */

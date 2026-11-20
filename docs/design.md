@@ -352,7 +352,7 @@ components:
   nav-item-active:
     backgroundColor: "#40456B12"
     borderColor: "{colors.nav-edge}"
-    textColor: "#144F5F"
+    textColor: "#5962A3"
     typography: "{typography.label}"
     rounded: "{rounded.full}"
     padding: 0 20px 0 18px
@@ -477,10 +477,11 @@ labels and data, is Figtree, a friendly sans that holds up at 12px. Figtree
 loads five weights (300–700), Manrope is one variable file. The hierarchy is
 carried by size, weight and the change of face, not colour.
 
-**Two line heights.** Headings, titles and figures sit on
-`--line-height-heading` (1.2); running text, item names (`t-h6`), labels and
-controls on `--line-height-text` (1.4). An item name is body-sized and wraps
-beside body text, so it takes the body's leading. No role and no screen sets any other.
+**Two line heights.** Headings, titles and figures, item names (`t-h6`) and
+card overlines (`t-overline`) sit on `--line-height-heading` (1.2); running
+text, labels and controls on `--line-height-text` (1.4). A heading never takes
+the text leading. The trend card's one-line title is the single exception,
+closed up to 0.5 from 430.
 
 **One job, one role.** Each kind of text has one style everywhere:
 
@@ -490,7 +491,7 @@ beside body text, so it takes the body's leading. No role and no screen sets any
 | Every page `<h1>`, a wait state's title | `page-title` (`t-h4-h3`) 22 |
 | Sheet and tray titles | `h4` 20 |
 | A card's headline, an empty state's title | `panel-label` (`t-h5`) 18 |
-| A card's section label | `overline` 14.4 ExtraBold caps, same size at every width |
+| A card's section label | `overline` 14.4 ExtraBold caps, trimmed to the capitals, same size at every width (SemiBold in white on the dark trend card) |
 | A list's or sub-section's heading ("Your products", "Recommendation") | `label` 14 Medium, secondary |
 | A product or item name, wherever it appears | `row-title` (`t-h6`) 16 Medium |
 | The brand or meta line under a name | `label-sm` 12 Medium, muted |
@@ -604,8 +605,8 @@ mobile, 640 wide at most), a title row of the LUX orb
 glass circles (My skin, Progress, Analysis, Products); the current section is
 `nav-item-active`, which stretches into a pill with its glyph and `label`.
 It is a tint on glass (`--color-nav-item-active`, #40456b at 7%, the
-circles' own white edge and rim, deep-teal ink `--color-nav-item-active-ink`
-#144f5f, label SemiBold), never the solid brand: the solid
+circles' own white edge and rim, indigo ink `--color-nav-item-active-ink`
+(`--color-text-ink`, #5962a3), label SemiBold), never the solid brand: the solid
 indigo pill belongs to the screen's one main action, and the nav must not
 compete with it. The others show the glyph only and carry the section name as their
 accessible name. With a section active the bar runs the phone's width, 8 in

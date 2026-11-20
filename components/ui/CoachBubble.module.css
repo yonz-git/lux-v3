@@ -14,11 +14,19 @@
   min-width: 0;
 }
 
+/* `wide`: a full bubble set back to hugging its text, so its ceiling is the
+   column, not the chat bubble's 322 / 586 */
+.wide {
+  --bubble-width: fit-content;
+}
+
 /* The orb's centre sits on the centre of the bubble's first line: the bubble's
    top padding plus half a line, less half the orb. The orb carries the
-   bubble's text role so `lh` is the bubble's line height at every width. */
+   bubble's text size and line height, so `lh` is the bubble's line. */
 .orb {
   flex: none;
   display: inline-flex;
+  font-size: var(--font-size-bubble);
+  line-height: var(--line-height-text);
   margin-top: calc(var(--space-bubble-block) + 0.5lh - var(--size-orb-coach) / 2); /* token-exempt: centres the orb on the first line, a font metric, not a scaled token */
 }

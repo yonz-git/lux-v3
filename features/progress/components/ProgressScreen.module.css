@@ -35,7 +35,7 @@
 
 .faceLabel {
   /* `t-overline` at its own size, as on the trend card (lux-v3) */
-  color: var(--color-text-on-data-muted);
+  color: var(--color-text-overline-indigo);
 }
 
 /* the overline and its `Edit` / `Save` on one row — the recap's `.blockHead` */
@@ -48,6 +48,12 @@
 
 .faceHead > .faceLabel {
   margin: 0;
+}
+
+/* LUX opens the page: the coach's orb and bubble, centred on the page; the
+   24 to the cards is HubScreen's */
+.coach {
+  margin-top: var(--space-2xl); /* 24 on the screen's 20: 44 from the top */
 }
 
 /* mobile: col-1's wrapper is invisible to layout, like `.checkInColumn` */

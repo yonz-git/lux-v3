@@ -57,9 +57,13 @@
 }
 
 /* the text wrapper the shine paints on — block, so the gradient spans the
-   bubble's content box and the band crosses every line at once */
+   bubble's content box and the band crosses every line at once. Every
+   bubble's words are one size and medium (500), whatever its text role or
+   `size` — only the line height differs (hero's airier lines). */
 .text {
   display: block;
+  font-size: var(--font-size-bubble); /* 16, 19.2 from 1024 */
+  font-weight: var(--font-weight-medium);
 }
 
 /* The compact bubble — `/chat` only, see ChatBubble.tsx.

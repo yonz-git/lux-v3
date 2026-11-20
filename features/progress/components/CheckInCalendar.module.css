@@ -14,6 +14,10 @@
 
 .month {
   color: var(--color-text-on-data);
+  font-weight: var(--font-weight-bold); /* 700 */
+  /* trimmed to its capitals and baseline, as the cards' overlines, so it
+     centres on the arrows by its letters */
+  text-box: trim-both cap alphabetic;
 }
 
 .arrows {

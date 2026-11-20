@@ -6,11 +6,10 @@
   flex-direction: column;
   gap: var(--space-lg); /* 16 */
 
-  /* padding spacing/xl on mobile, spacing/2xl on desktop — the ONLY thing that
-     changes between the breakpoints. The handoff is explicit that the desktop
-     cards are clones of the verified mobile ones, so nothing inside them steps
-     up: card internals stay at the mobile type scale and only the page title,
-     subtitle and AI bubble grow. */
+  /* 24 at every width, as every card in the app. The desktop cards are clones
+     of the verified mobile ones, so nothing inside them steps up: card
+     internals stay at the mobile type scale and only the page title, subtitle
+     and AI bubble grow. */
   padding: var(--space-gutter); /* 24 */
   border-radius: var(--radius-panel); /* 28 */
 
@@ -24,12 +23,6 @@
   /* the ink by default, so everything inside opts DOWN to on-data-secondary or
      on-data-muted rather than each value having to opt up */
   color: var(--color-text-on-data);
-}
-
-@media (min-width: 1024px) {
-  .card {
-    padding: var(--space-panel); /* 32 */
-  }
 }
 
 @media (prefers-reduced-transparency: reduce) {

@@ -203,14 +203,11 @@
 }
 
 @media (min-width: 1024px) {
-  /* DataCard's desktop padding, so the edges still meet the routine card's */
+  /* the row's sides stay DataCard's 24, so the edges still meet the routine
+     card's */
   .category {
     display: flex;
-    padding: var(--space-2xl) var(--space-panel);
-  }
-
-  .panel {
-    padding: 0 var(--space-panel) var(--space-panel);
+    padding: var(--space-2xl) var(--space-gutter);
   }
 
   /* name + window travel together and take the slack, so the count and

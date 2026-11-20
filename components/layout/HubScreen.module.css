@@ -67,6 +67,12 @@
   margin-top: var(--space-md); /* 12 */
 }
 
+/* under a page heading a grid opens onto cards, so it stands off as a card
+   screen does: 24 at every width */
+.heading ~ .body[data-layout="grid"] {
+  margin-top: var(--space-2xl); /* 24 */
+}
+
 /* the two equal spacers that centre a hero block */
 .flex {
   flex: 1 1 0;

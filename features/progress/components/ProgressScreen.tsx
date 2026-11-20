@@ -4,6 +4,7 @@ import { useState } from "react";
 import styles from "./ProgressScreen.module.css";
 import { HubScreen } from "@/components/layout/HubScreen";
 import { EmptyState } from "@/components/ui/EmptyState";
+import { CoachBubble } from "@/components/ui/CoachBubble";
 import { Button } from "@/components/ui/Button";
 import { DataCard } from "@/components/ui/DataCard";
 import { SymptomLocation } from "@/features/my-skin/components/SymptomLocation";
@@ -57,6 +58,14 @@ export function ProgressScreen({ now }: { now: number }) {
 
   return (
     <HubScreen
+      /* the page's heading for assistive tech; on screen LUX says it */
+      title="What we know about your skin"
+      titleClassName="visually-hidden"
+      belowHeading={
+        <CoachBubble className={styles.coach} wide>
+          Here is all that we know about your skin.
+        </CoachBubble>
+      }
       nav="my-skin"
       layout="grid"
       gridColumns="minmax(0, 640fr) minmax(0, 616fr)"
@@ -171,6 +180,10 @@ export function ProgressScreen({ now }: { now: number }) {
   );
 }
 
+/* the empty hub's heading */
+const HUB_TITLE = "Progress";
+const HUB_SUBTITLE = "Your skin investigation";
+
 /**
  * `Progress — empty`, at `/progress/empty`. The orb hero, the same block
  * `My Products — empty` uses and the one the CHECK empty states follow.
@@ -178,8 +191,8 @@ export function ProgressScreen({ now }: { now: number }) {
 export function ProgressEmpty() {
   return (
     <HubScreen
-      title="Progress"
-      subtitle="Your skin investigation"
+      title={HUB_TITLE}
+      subtitle={HUB_SUBTITLE}
       nav="my-skin"
       layout="plain"
       center="empty"

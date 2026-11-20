@@ -42,7 +42,7 @@
 @property --shine-ink {
   syntax: "<color>";
   inherits: true;
-  initial-value: #2e2a3f;
+  initial-value: #5962a3; /* --color-text-ink: a registered default can't read a token */
 }
 
 @property --specular-angle {
@@ -224,7 +224,8 @@ main[tabindex="-1"]:focus-visible {
   font-family: var(--font-family-display);
 }
 
-/* the heading line height */
+/* the heading line height — every heading role, the item name and the card
+   overline included */
 .t-display1,
 .t-display2,
 .t-h1,
@@ -236,14 +237,15 @@ main[tabindex="-1"]:focus-visible {
 .t-h3-h2,
 .t-h4,
 .t-h5,
+.t-h6,
+.t-overline,
 .t-metric1,
 .t-metric2,
 .t-metric3 {
   line-height: var(--line-height-heading);
 }
 
-/* the text line height */
-.t-h6,
+/* the text line height — text, labels and controls, never a heading */
 .t-body1,
 .t-body2,
 .t-body2-body1,
@@ -256,7 +258,6 @@ main[tabindex="-1"]:focus-visible {
 .t-nav,
 .t-label-sm,
 .t-caption,
-.t-overline,
 .t-button,
 .t-button-primary,
 .t-button-md,
@@ -360,9 +361,12 @@ main[tabindex="-1"]:focus-visible {
 }
 .t-overline {
   font-size: var(--font-size-overline); /* 14.4 */
-  font-weight: var(--font-weight-extrabold);
+  font-weight: var(--font-weight-extrabold); /* 800 */
   letter-spacing: var(--tracking-overline);
   text-transform: uppercase;
+  /* all capitals, so the box is trimmed to them: the card's padding reaches
+     the letters, not the line height's leading above them */
+  text-box: trim-both cap alphabetic;
 }
 
 /* the chip label */

@@ -55,9 +55,12 @@
     var(--color-bg-routine);
   --color-bg-bubble-ai: #dbeded;
   --color-bg-bubble-user: #cadfdf;
-  --color-text-primary: var(--color-neutral-800);
+  /* the dark text, primary and muted alike, is one indigo ink — the light
+     cards' overlines too */
+  --color-text-ink: #5962a3;
+  --color-text-primary: var(--color-text-ink);
   --color-text-secondary: var(--color-neutral-600);
-  --color-text-muted: #575763;
+  --color-text-muted: var(--color-text-ink);
   --color-text-on-brand: var(--color-neutral-0);
   --color-text-brand: var(--color-indigo-700);
   --color-text-disabled: #8b9698;
@@ -244,6 +247,7 @@
   --font-size-h3-h2: clamp(1.375rem, 1.331rem + 0.1878vw, 1.5rem); /* 22 → 24 */
   --font-size-body2-body1: clamp(1rem, 0.956rem + 0.1878vw, 1.125rem); /* 16 → 18 */
   --font-size-body3-body2: clamp(0.875rem, 0.831rem + 0.1878vw, 1rem); /* 14 → 16 */
+  --font-size-bubble: 1rem; /* 16 on a phone, 19.2 from 1024 — every chat bubble's words */
   --font-size-button: 0.9375rem; /* 15 */
   /* the large primary's label: 16 on a phone, `--font-size-button` (15)
      from 1024 */
@@ -258,6 +262,7 @@
   /* the orb's hero bubble (`ChatBubble size="hero"`): 26 on 16 at every
      width */
   --line-height-bubble-hero: 1.625;
+  --line-height-overline-tight: 0.5; /* the trend card's one-line title */
   --tracking-tight: -0.0781rem; /* -1.25px */
   --tracking-snug: -0.0625rem; /* -1px */
   --tracking-normal: 0rem; /* 0px */
@@ -440,19 +445,24 @@
   --color-bg-symptom: #b44148;
   /* the symptom red as text: 80% of it in the ink, 5.3:1 on the data panel
      (solid #b44148 measures 4.1–4.3, under AA) */
-  --color-text-symptom: color-mix(in srgb, var(--color-bg-symptom) 80%, var(--color-text-primary));
+  --color-text-symptom: color-mix(in srgb, var(--color-bg-symptom) 80%, var(--color-neutral-800));
   /* the soft symptom pill: a red tint on the pale glass, a red hairline and
      red ink — step 1's muted symptom chip and the profile's symptom state */
   --color-bg-symptom-soft: color-mix(in srgb, var(--color-bg-symptom) 16%, #dbeded57);
   --color-border-symptom-soft: color-mix(in srgb, var(--color-bg-symptom) 45%, transparent);
-  --color-text-symptom-soft: color-mix(in srgb, var(--color-bg-symptom) 75%, var(--color-text-primary));
+  --color-text-symptom-soft: color-mix(in srgb, var(--color-bg-symptom) 75%, var(--color-neutral-800));
 
   /* the teal of the filled answer pills, and its soft pill in the same mix
      as the symptom's: the profile's answers */
   --color-bg-answer: #106a7f;
   --color-bg-answer-soft: color-mix(in srgb, var(--color-bg-answer) 16%, #dbeded57);
   --color-border-answer-soft: color-mix(in srgb, var(--color-bg-answer) 45%, transparent);
-  --color-text-answer-soft: color-mix(in srgb, var(--color-bg-answer) 75%, var(--color-text-primary));
+  --color-text-answer-soft: color-mix(in srgb, var(--color-bg-answer) 75%, var(--color-neutral-800));
+
+  /* a card's overline on the light panels, in the ink's indigo — the skin
+     profile, symptoms and location, and the progress gallery. The dark trend
+     card keeps its white overline. */
+  --color-text-overline-indigo: var(--color-text-ink);
 }
 
 :root {
@@ -654,9 +664,10 @@
      only the screen's main button is solid brand. */
   --color-surface-brand-tint: color-mix(in srgb, var(--color-bg-brand) 14%, var(--color-glass));
   --color-border-brand-tint: color-mix(in srgb, var(--color-bg-brand) 45%, transparent);
-  /* the current nav item: a faint indigo wash under deep-teal ink */
+  /* the current nav item: a faint indigo wash under the text's indigo ink,
+     as the cards' overlines */
   --color-nav-item-active: #40456b12;
-  --color-nav-item-active-ink: #144f5f;
+  --color-nav-item-active-ink: var(--color-text-ink);
   --shadow-nav-bar: inset 0 1px 0 var(--color-rim-nav), 0 8px 24px rgb(46 42 63 / 0.06);
   --nav-inset-inline: var(--space-sm); /* "50% less side paddings": 16 -> 8 */
   /* a hero's text to its main button (Welcome, the empty states): 118 at the
@@ -666,6 +677,7 @@
 
 @media (min-width: 1024px) {
   :root {
+    --font-size-bubble: 1.2rem; /* 19.2 */
     --nav-inset-bottom: max(var(--space-md), env(safe-area-inset-bottom)); /* 12, half the Welcome board's 24 */
     --space-hero-action: 6.25rem; /* 100 */
     --size-button-primary: 3.6rem; /* 57.6px */
