@@ -171,6 +171,8 @@
   --icon-size: var(--size-icon-2xs); /* 12 in the 26 disc */
 
   display: grid;
+  /* out to the border edge, so the 26 picked disc centres on the button */
+  margin: calc(-1 * var(--border-width-hairline));
   place-items: center;
 }
 
@@ -179,9 +181,10 @@
   transition: opacity var(--duration-fade) var(--ease-in-out);
 }
 
-/* the tick sits inside a 28 box, so one step up matches the `+`'s ink */
+/* the picked glyph is the whole disc, border included */
 .pickGlyphs .mark {
-  --icon-size: var(--size-icon-xs); /* 16 */
+  --icon-size: var(--size-round-sm); /* 26 */
+  color: var(--color-bg-brand);
 }
 
 .pick[aria-pressed="true"] .plus,

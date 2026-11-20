@@ -127,7 +127,7 @@ lib/                 date.ts, pageTitles.ts, actives.ts
 | Component | Props |
 | --- | --- |
 | `Button` | `variant?: "primary" \| "secondary" \| "text"`, `size?: "lg" \| "md" \| "sm"` (56/48/42), `width?: "hug" \| "full" \| "action"`, `href?`, `icon?` |
-| `IconButton` | `label`, `variant?: "glass" \| "primary" \| "outline" \| "soft"`, `size?: "lg" \| "md" \| "sm" \| "xs"` (56/32/26/20), `href?`, `ref?` |
+| `IconButton` | `label`, `variant?: "glass" \| "ring" \| "primary" \| "outline" \| "soft"`, `size?: "lg" \| "md" \| "sm" \| "xs"` (56/32/26/20), `href?`, `ref?` |
 | `SmallButton` | `label`, `arrow?`, `href?`, `className?` |
 | `EditToggle` | Edit/Save toggle |
 | `Chip` | `label`, `selected`, `control?: "checkbox" \| "radio"`, `onToggle` |

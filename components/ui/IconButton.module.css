@@ -51,6 +51,20 @@
   backdrop-filter: blur(10px);
 }
 
+/* a toggle's glass disc: once pressed it clears, so the pressed glyph (a
+   filled disc, `PickedIcon`) is the whole button; it fades with the state */
+.glass.ring {
+  transition:
+    background-color var(--duration-fade) var(--ease-in-out),
+    border-color var(--duration-fade) var(--ease-in-out),
+    opacity var(--duration-base) var(--ease-standard);
+}
+
+.button.glass.ring[aria-pressed="true"] {
+  background-color: transparent;
+  border-color: transparent;
+}
+
 .primary {
   color: #fff;
   background: var(--gradient-brand); /* lux-v2's */

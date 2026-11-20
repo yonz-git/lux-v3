@@ -11,7 +11,7 @@ import { ProductRow } from "@/features/products/components/ProductList";
 import { ProductDetails } from "@/features/products/components/ProductDetails";
 import { ProductThumb } from "@/features/products/components/ProductThumb";
 import { IconButton } from "@/components/ui/IconButton";
-import { PlusIcon, SuccessCheckIcon } from "@/components/ui/icons";
+import { PickedIcon, PlusIcon } from "@/components/ui/icons";
 import { CheckBasketBar, CheckBasketSheet } from "./CheckBasket";
 import { AddProductMethodSheet } from "@/features/products/components/AddProductMethodSheet";
 import { useInvestigation } from "@/lib/store/InvestigationProvider";
@@ -133,6 +133,7 @@ export function CheckBuilder({ now }: { now: number }) {
       <span className={styles.trailing}>
         <IconButton
           size="sm"
+          variant="ring"
           label={`Add ${fullName(p)} to this analysis`}
           aria-pressed={picked}
           disabled={!picked && full}
@@ -141,7 +142,7 @@ export function CheckBuilder({ now }: { now: number }) {
         >
           <span className={styles.pickGlyphs}>
             <PlusIcon className={styles.plus} />
-            <SuccessCheckIcon className={styles.mark} />
+            <PickedIcon className={styles.mark} />
           </span>
         </IconButton>
       </span>

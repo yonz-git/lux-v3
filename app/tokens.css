@@ -269,6 +269,7 @@
   --border-width-thin: 1.5px;
   --border-width-thick: 2px;
   --border-width-focus: 2px;
+  --stroke-icon-bold: 2px; /* a glyph that marks a state (the pick tick); icons draw at 1.4 */
   /* ---- 08 Elevation ------------------------------------------------------- */
   --blur-sm: 8px;
   --blur-md: 10px;

@@ -1,4 +1,4 @@
-import type { CSSProperties, ReactNode } from "react";
+import { useId, type CSSProperties, type ReactNode } from "react";
 
 type IconProps = { className?: string };
 
@@ -373,6 +373,31 @@ export function SuccessCheckIcon({ className }: IconProps) {
   return (
     <Icon box="-1.5 -2 28 28" size={28} className={className}>
       <path d="M5 13L10 18L20 6" {...ns} />
+    </Icon>
+  );
+}
+
+/**
+ * A picked toggle: a filled disc with the tick cut out of it, so what is
+ * behind shows through the tick. Drawn at the disc's own size; the tick is
+ * `SuccessCheckIcon`'s at 16 in a 26 disc, at `--stroke-icon-bold`.
+ */
+export function PickedIcon({ className }: IconProps) {
+  const id = useId();
+  return (
+    <Icon box="0 0 26 26" size={26} fill className={className}>
+      <mask id={id}>
+        <rect width="26" height="26" fill="#fff" />
+        <path
+          d="M8.7 13.6L11.6 16.4L17.3 9.6"
+          fill="none"
+          stroke="#000"
+          strokeLinecap="round"
+          strokeLinejoin="round"
+          style={{ strokeWidth: "var(--stroke-icon-bold)" }}
+        />
+      </mask>
+      <circle cx="13" cy="13" r="13" mask={`url(#${id})`} />
     </Icon>
   );
 }

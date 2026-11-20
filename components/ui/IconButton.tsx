@@ -13,7 +13,7 @@ export function IconButton({
 }: Omit<ButtonHTMLAttributes<HTMLButtonElement>, "children"> & {
   label: string;
   children: ReactNode;
-  variant?: "glass" | "primary" | "outline" | "soft";
+  variant?: "glass" | "ring" | "primary" | "outline" | "soft";
   size?: "lg" | "md" | "sm" | "xs";
   href?: string;
   /** React 19 passes `ref` as a prop; it lands on the <button> */
@@ -21,7 +21,8 @@ export function IconButton({
 }) {
   const cls = [
     styles.button,
-    styles[variant],
+    /* `ring` is the glass disc that clears when pressed, for a filled glyph */
+    variant === "ring" ? `${styles.glass} ${styles.ring}` : styles[variant],
     size === "md" && styles.md,
     size === "sm" && styles.sm,
     size === "xs" && styles.xs,
