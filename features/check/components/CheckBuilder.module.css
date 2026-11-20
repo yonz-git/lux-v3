@@ -157,7 +157,7 @@
    sit on top of the last row. This reserves its height plus the gap it keeps
    from the nav, on top of the nav reservation the screen already carries. */
 .barSpacer {
-  height: calc(54px + var(--space-md));
+  height: calc(var(--size-button-lg) + var(--space-md));
 }
 
 /* the row's pick control: a `+` that becomes a tick. Both glyphs

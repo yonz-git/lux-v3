@@ -9,6 +9,13 @@
   background: var(--color-state-pressed-overlay);
 }
 
+/* `backdrop="blur"`: the page goes soft behind the tray; it fades in and out
+   with the scrim's own opacity */
+.scrim[data-backdrop="blur"] {
+  -webkit-backdrop-filter: blur(var(--blur-md));
+  backdrop-filter: blur(var(--blur-md));
+}
+
 .tray {
   position: fixed;
   z-index: var(--z-sheet);
@@ -99,6 +106,11 @@
 }
 
 @media (prefers-reduced-transparency: reduce) {
+  .scrim[data-backdrop="blur"] {
+    -webkit-backdrop-filter: none;
+    backdrop-filter: none;
+  }
+
   .tray {
     background: linear-gradient(var(--color-surface-data), var(--color-surface-data)),
       var(--color-bg-canvas);

@@ -5,7 +5,7 @@ import styles from "./CheckBasket.module.css";
 import { Sheet } from "@/components/ui/Sheet";
 import { Button } from "@/components/ui/Button";
 import { Collapse, COLLAPSE_EXIT_MS } from "@/components/ui/Collapse";
-import { ChevronDownIcon, PlusIcon } from "@/components/ui/icons";
+import { ChevronDownIcon } from "@/components/ui/icons";
 import { CloseButton } from "@/components/ui/CloseButton";
 import { ProductThumb } from "@/features/products/components/ProductThumb";
 import {
@@ -40,33 +40,29 @@ export function CheckBasketBar({
       ? `Select at least ${MIN_CHECK_PRODUCTS} products`
       : `${count} of ${MIN_CHECK_PRODUCTS}, select one more`;
 
-  const content = (
-    <>
-      <span
-        key={label}
-        className={`${styles.barLabel} t-body2 shine-text shine-on-enter`}
-      >
-        {label}
-      </span>
-      {/* the comp rotates a chevron-down 180°; an up chevron is the same glyph
-          and says "this opens upward" without a transform to maintain */}
-      {ready && <ChevronDownIcon className={styles.barChevron} />}
-    </>
-  );
-
   if (!ready) {
     return (
       /* `rise-in` — the bar fades up as it appears (globals.css) */
-      <p className={`${styles.bar} rise-in`} data-quiet aria-live="polite">
-        {content}
+      <p className={`${styles.bar} rise-in`} aria-live="polite">
+        <span
+          key={label}
+          className={`${styles.barLabel} t-body2 shine-text shine-on-enter`}
+        >
+          {label}
+        </span>
       </p>
     );
   }
 
+  /* once there is enough to compare, the bar is the screen's action: the
+     primary Button, with the up chevron saying the tray opens upward */
   return (
-    <button type="button" className={`${styles.bar} rise-in`} onClick={onExpand}>
-      {content}
-    </button>
+    <div className={`${styles.dock} rise-in`}>
+      <Button width="full" className={styles.dockButton} onClick={onExpand}>
+        {label}
+      </Button>
+      <ChevronDownIcon className={styles.barChevron} />
+    </div>
   );
 }
 
@@ -119,6 +115,7 @@ export function CheckBasketSheet({
       onClose={onClose}
       title="Products in this check"
       dismiss="corner"
+      backdrop="blur"
       /* grows up out of the bar's edge — `.sheet-grow` in globals.css */
       className={`sheet-grow ${styles.tray}`}
     >
@@ -154,12 +151,7 @@ export function CheckBasketSheet({
 
         {!full && (
           <li className={styles.addAnotherItem}>
-            <Button
-              variant="secondary"
-              size="md"
-              icon={<PlusIcon />}
-              onClick={onAddAnother}
-            >
+            <Button variant="secondary" size="md" onClick={onAddAnother}>
               Add another product
             </Button>
           </li>

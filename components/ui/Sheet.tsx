@@ -18,6 +18,7 @@ export function Sheet({
   className,
   dismissLabel = "Done",
   dismiss = "label",
+  backdrop = "dim",
   contentKey,
 }: {
   open: boolean;
@@ -30,6 +31,9 @@ export function Sheet({
    *  means something else */
   dismissLabel?: string;
   dismiss?: "label" | "corner";
+  /** what the page behind does: `dim` darkens it; `blur` also blurs it, for
+   *  a tray that should take the page's focus completely */
+  backdrop?: "dim" | "blur";
   /** names what the tray is showing; when it changes, the tray eases from its
    *  old height to the new one instead of jumping */
   contentKey?: string;
@@ -111,6 +115,7 @@ export function Sheet({
           forceMount
           className={styles.scrim}
           data-tray="scrim"
+          data-backdrop={backdrop}
           /* overrides Radix's own `data-state="open"`/`"closed"`: the CSS keys
              the exit off `leaving` */
           data-state={leaving ? "leaving" : undefined}

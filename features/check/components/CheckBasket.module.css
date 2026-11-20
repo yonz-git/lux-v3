@@ -8,7 +8,9 @@
    sum so it tracks the nav tokens rather than a magic number.
    -------------------------------------------------------------------------- */
 
-.bar {
+/* both states sit in the same place, the nav's width, 12 above it */
+.bar,
+.dock {
   position: fixed;
   left: 50%;
   transform: translateX(-50%);
@@ -17,18 +19,23 @@
   );
   z-index: var(--z-sticky);
 
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: var(--space-md); /* 12 */
-
   width: var(--size-nav-width-mobile); /* 392 on the comp; the nav's 380 + the
      12 the comp's 392 exceeds it by is page-level — matching the nav width
      keeps the bar and the pill beneath it on one edge, which reads better than
      the comp's 6px overhang either side. See AGENTS.md. */
   max-width: calc(100vw - (var(--margin-mobile) * 2));
-  min-height: 54px;
-  padding: 0.875rem var(--space-xl); /* 14 / 20 */
+}
+
+/* Below two products the bar states the goal instead of offering an action, so
+   it renders as a <p> on the panel's glass and must not look pressable. At the
+   Button's height, so the swap to the Button keeps the same box. */
+.bar {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: var(--size-button-lg); /* 56 */
+  margin: 0;
+  padding: 0 var(--space-xl); /* 20 */
 
   border-radius: var(--radius-full);
   /* lux-v3: the panel's glass, floating — a 30% frost, the panel edge and
@@ -39,62 +46,43 @@
   -webkit-backdrop-filter: blur(16px);
   backdrop-filter: blur(16px);
 
-  color: var(--color-text-on-data);
+  color: var(--color-text-on-data-secondary);
   /* the label's shine paints from this, not from `color` — the surface's own
      ink, per `.shine-text` in globals.css */
-  --shine-ink: var(--color-text-on-data);
-  text-align: center;
-  transition: opacity var(--duration-fast) var(--ease-hover);
-}
-
-.bar:hover {
-  opacity: 0.9;
-}
-
-/* Below two products the bar states the goal instead of offering an action, so
-   it renders as a <p> and must not look pressable — no hover, and the label
-   steps back to on-data-secondary. It still carries the full surface: the point
-   is that the SAME element fills up as you add. */
-.bar[data-quiet] {
-  margin: 0;
-  color: var(--color-text-on-data-secondary);
   --shine-ink: var(--color-text-on-data-secondary);
-  cursor: default;
-}
-
-.bar[data-quiet]:hover {
-  opacity: 1;
-}
-
-@media (hover: none) {
-  .bar:hover {
-    opacity: 1;
-  }
+  text-align: center;
 }
 
 .barLabel {
-  flex: 1;
   min-width: 0;
   font-size: 1.0938rem; /* 17.5 */
-  /* the chevron's 24 plus an 8 gap, reserved on BOTH sides — so a long label
-     wraps before it reaches the arrow, and the words stay centred on the pill
-     whether or not the arrow is there */
-  padding-inline: calc(var(--size-icon-md) + var(--space-sm));
 }
 
-/* points UP, because the sheet opens upward */
+/* the label keeps clear of the chevron on BOTH sides, so it stays centred on
+   the pill and a long one wraps before it reaches the arrow */
+.dockButton {
+  --button-pad-x: calc(var(--space-xl) + var(--size-icon-md) + var(--space-sm));
+}
+
+/* points UP, because the sheet opens upward; drawn over the Button, so a
+   click on it still lands on the Button. Centred by auto margins, not a
+   translate: chevrons carry `scale: 0.6` (globals.css), which shrinks a
+   translate inside `transform` and left the glyph 5px low. */
 .barChevron {
   position: absolute;
-  top: 50%;
-  right: var(--space-xl); /* 20 — the bar's own side padding */
+  inset-block: 0;
+  right: var(--space-xl); /* 20 */
+  margin-block: auto;
   width: var(--size-icon-md);
   height: var(--size-icon-md);
-  transform: translateY(-50%) rotate(180deg);
-  color: var(--color-icon-on-data);
+  rotate: 180deg;
+  color: var(--color-text-on-brand);
+  pointer-events: none;
 }
 
 @media (min-width: 1024px) {
-  .bar {
+  .bar,
+  .dock {
     width: var(--size-nav-width-desktop); /* 598 */
     max-width: none;
   }
@@ -116,42 +104,39 @@
 .sheetTitle {
   width: 100%;
   color: var(--color-text-on-data);
+  text-align: center;
 }
 
-/* On a phone the tray opens and closes on the panel's 32, not Sheet's 20, and
-   the corner ✕ comes down with it, so the title row keeps the ✕. From 1024
-   Sheet's 48 and its own ✕ position apply. Doubled: outranks `Sheet`'s
+/* The tray opens and closes on 48, not Sheet's 20, and on a phone the corner
+   ✕ comes down with it, so the title row keeps the ✕. From 1024 Sheet's 48
+   and its own ✕ position apply. Doubled: outranks `Sheet`'s
    padding and ✕ whatever the bundle order. */
 .tray.tray {
-  padding-block: var(--space-panel); /* 32 */
+  padding-block: var(--space-5xl); /* 48 */
 }
 
 .tray.tray > [aria-label="Close"] {
-  top: var(--space-panel);
+  top: var(--space-5xl);
 }
 
 @media (min-width: 1024px) {
-  .tray.tray {
-    padding-block: var(--space-5xl); /* 48 */
-  }
-
   .tray.tray > [aria-label="Close"] {
     top: var(--space-xl); /* 20 */
   }
 }
 
 /* The title shares the top row with the corner ✕: its x-height centres on
-   the 20 ✕ and it stops short of it. From 1024 the tray's 48 padding puts
-   the title below. */
+   the 20 ✕, and it keeps the ✕'s room on BOTH sides so it stays centred on
+   the tray. From 1024 the tray's 48 padding puts the title below. */
 .sheetTitle {
   margin-top: calc((var(--size-icon-sm) - 1lh - 1cap + 1ex) / 2); /* token-exempt: font metrics that centre the x-height band on the 20 ✕, not a scaled token */
-  padding-inline-end: calc(var(--size-icon-sm) + var(--space-sm));
+  padding-inline: calc(var(--size-icon-sm) + var(--space-sm));
 }
 
 @media (min-width: 1024px) {
   .sheetTitle {
     margin-top: 0;
-    padding-inline-end: 0;
+    padding-inline: 0;
   }
 }
 
