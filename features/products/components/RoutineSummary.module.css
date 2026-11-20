@@ -6,9 +6,9 @@
   display: flex;
   flex-direction: column;
   gap: var(--space-md);
-  /* the hub body sets no gap between its blocks; the list's own 16 between
-     groups, so the card reads as the first of them, set apart only by kind */
-  margin-bottom: var(--space-lg);
+  /* the summary stands apart from the list it sums up: 20 here against the
+     list's own 12 between groups */
+  margin-bottom: var(--space-xl);
 }
 
 /* `.card.card` (0,2,0) outranks DataCard's panel fill and its
@@ -46,7 +46,7 @@
   align-content: center;
   text-box: trim-both ex alphabetic;
   box-sizing: border-box;
-  height: 28px;
+  height: var(--size-tag);
   padding: 0 var(--space-md);
   border-radius: var(--radius-full);
   border: var(--border-width-hairline) solid rgb(255 255 255 / 0.35);

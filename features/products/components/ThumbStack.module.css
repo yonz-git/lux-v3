@@ -16,8 +16,8 @@
   align-items: center;
   justify-content: center;
   overflow: hidden;
-  width: 40px;
-  height: 40px;
+  width: var(--size-thumb-sm);
+  height: var(--size-thumb-sm);
   border-radius: var(--radius-sm);
   background: var(--color-bg-surface-frost);
   box-shadow:

@@ -1,6 +1,7 @@
-/* My Products: heading -> 24 -> routine card -> category rows, gap 12. The
-   groups show 0 until a product is added. `Add your products` floats 12 above
-   the nav. */
+/* My Products: heading -> 12 -> routine card -> 20 -> category groups, 12
+   apart -> 24 -> `Add your products`. The groups are the routine card's panel
+   (same radius, edge and side padding), so every left and right edge on the
+   page is one line. The groups show 0 until a product is added. */
 
 .categories {
   margin: 0;
@@ -16,9 +17,9 @@
   flex-direction: column;
   gap: var(--space-sm);
 
-  /* lux-v3: the 30% panel at the score cards' 24 radius (app/globals.css) */
-  border-radius: var(--radius-2xl); /* 24 */
-  border: var(--border-width-hairline) solid #ffffff1f;
+  /* the routine card's panel: its 28 radius and its edge */
+  border-radius: var(--radius-panel);
+  border: var(--border-width-hairline) solid var(--color-border-panel);
   background: var(--color-panel);
   box-shadow: inset 0 1px 0 var(--color-rim-panel);
   -webkit-backdrop-filter: blur(12px);
@@ -29,18 +30,21 @@
   --collapse-gap: var(--space-sm);
 }
 
-/* 56 tall, padding 16/18, gap 12. */
+/* Two rows: name, count and chevron; then the age pill with the thumbs at the
+   far end. The second row is always a thumb well tall, so a group with
+   products is the same height as an empty one. Side padding is the routine
+   card's (DataCard), so the names start on the overline's edge. */
 .category {
   display: grid;
   grid-template-columns: minmax(0, 1fr) auto auto;
+  grid-template-rows: auto var(--size-thumb-sm);
   grid-template-areas:
     "name count chevron"
     "meta meta  meta";
   align-items: center;
   gap: var(--space-md); /* 12, name to window too */
   width: 100%;
-  min-height: 112px;
-  padding: var(--space-lg) var(--space-xl);
+  padding: var(--space-lg) var(--space-gutter);
   text-align: left;
 
   /* no fill of its own — `.group` above is the surface. The radius stays so
@@ -67,7 +71,7 @@
   align-items: center;
   gap: var(--space-sm);
   box-sizing: border-box;
-  height: 28px;
+  height: var(--size-tag);
   padding: 0 var(--space-md) 0 calc(var(--space-sm) + 1px);
   border-radius: var(--radius-full);
   border: var(--border-width-hairline) solid var(--color-border-glass);
@@ -116,8 +120,8 @@
   align-content: center;
   text-align: center;
   text-box: trim-both cap alphabetic;
-  min-width: calc(28px * 0.9);
-  height: calc(28px * 0.9);
+  min-width: var(--size-tag);
+  height: var(--size-tag);
   padding: 0 var(--space-xs);
   border-radius: var(--radius-full);
   background: var(--color-bg-routine);
@@ -145,6 +149,9 @@
   width: var(--size-icon-sm);
   height: var(--size-icon-sm);
   color: var(--color-text-primary);
+  /* the chevron draws at 0.6 of its 20 box (globals.css), 4 in from each
+     side; pulled out by those 4 its ink ends on the routine card's edge */
+  margin-inline-end: calc(-1 * var(--space-xs));
   transition: transform var(--duration-base) var(--ease-standard);
 }
 
@@ -152,12 +159,12 @@
   transform: rotate(180deg);
 }
 
-/* the group's cards, INSIDE the group's box — 8 in from three sides, with the
-   row's own gap above. */
+/* the group's cards, inside the group's box on the row's own side padding,
+   with the row's gap above */
 .panel {
   display: flex;
   flex-direction: column;
-  padding: 0 var(--space-xl) var(--space-xl);
+  padding: 0 var(--space-gutter) var(--space-gutter);
 }
 
 /* 8 between cards, not the list's 12 — inside the box every gap is the box's
@@ -196,8 +203,14 @@
 }
 
 @media (min-width: 1024px) {
+  /* DataCard's desktop padding, so the edges still meet the routine card's */
   .category {
     display: flex;
+    padding: var(--space-2xl) var(--space-panel);
+  }
+
+  .panel {
+    padding: 0 var(--space-panel) var(--space-panel);
   }
 
   /* name + window travel together and take the slack, so the count and

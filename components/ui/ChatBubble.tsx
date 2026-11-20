@@ -105,7 +105,7 @@ export function ChatBubble({
         className={[
           styles.bubble,
           /* still a `t-*` class either way — rule 3 holds for both sizes */
-          size === "compact" ? "t-body3" : "t-body2-body1",
+          size === "compact" ? "t-body3" : "t-body2",
           entrance ? "bubble-enter" : null,
           className,
         ]

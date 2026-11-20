@@ -254,8 +254,8 @@
      running text, labels and controls the other. */
   --line-height-heading: 1.2;
   --line-height-text: 1.4;
-  /* the orb's hero bubble (`ChatBubble size="hero"`): 26 on 16, 28 on 18
-     from 1024 */
+  /* the orb's hero bubble (`ChatBubble size="hero"`): 26 on 16 at every
+     width */
   --line-height-bubble-hero: 1.625;
   --tracking-tight: -0.0781rem; /* -1.25px */
   --tracking-snug: -0.0625rem; /* -1px */
@@ -615,6 +615,8 @@
   --size-tab: 3.5rem; /* pill tabs (57 in the ref)                  */
   --size-slider: 4rem; /* slide-to-start track                       */
   --size-pill: 2.25rem; /* the small time pill (17.7 × 1.745 ≈ 31, raised to the control floor) */
+  --size-tag: 1.75rem; /* 28 — read-only tags: a count badge, an age or total pill */
+  --size-thumb-sm: 2.5rem; /* 40 — the small product well (ThumbStack) */
 }
 
 :root {
@@ -647,7 +649,6 @@
   :root {
     --nav-inset-bottom: max(var(--space-md), env(safe-area-inset-bottom)); /* 12, half the Welcome board's 24 */
     --space-hero-action: 6.25rem; /* 100 */
-    --line-height-bubble-hero: 1.5556;
     --size-button-primary: 3.6rem; /* 57.6px */
     --width-button-primary: 18rem; /* 288px */
     --font-size-button-primary: var(--font-size-button); /* 15 */

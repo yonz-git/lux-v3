@@ -73,7 +73,7 @@ than leaving a small sentence rattling in a box built for a larger one:
 
 /* the orb's hero line on Welcome and `/check`, and the check-in's turns:
    airier lines. (0,2,0), so it
-   outranks `.t-body2-body1` whichever stylesheet loads last */
+   outranks `.t-body2` whichever stylesheet loads last */
 .bubble[data-size="hero"] {
   line-height: var(--line-height-bubble-hero);
 }

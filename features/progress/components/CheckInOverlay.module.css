@@ -78,3 +78,12 @@
       max(var(--space-sheet-float), env(safe-area-inset-left));
   }
 }
+
+/* on desktop the panel sits on the window's vertical centre: the nav's
+   clearance top and bottom, so it never runs under the nav */
+@media (min-width: 1024px) {
+  .overlay {
+    justify-content: center;
+    padding-top: calc(var(--nav-inset-bottom) + var(--size-nav-height) + var(--space-lg) + env(safe-area-inset-top));
+  }
+}
