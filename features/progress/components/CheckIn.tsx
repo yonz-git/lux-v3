@@ -15,6 +15,7 @@ import { CameraCapture } from "@/components/ui/CameraCapture";
 import { CameraIcon, NoteIcon } from "@/components/ui/icons";
 import { ConfirmField } from "@/components/ui/ConfirmField";
 import { useInvestigation } from "@/lib/store/InvestigationProvider";
+import { CheckInPhotoArt } from "./CheckInPhotoArt";
 import { ProgressEmpty } from "./ProgressScreen";
 import { useToday } from "@/lib/useToday";
 import { useHeldWhileClosing } from "@/lib/useModalDialog";
@@ -129,6 +130,18 @@ export function CheckInPanel({
       block: "nearest",
     });
   }, [choice]);
+
+  const photoRef = useRef<HTMLDivElement>(null);
+  useEffect(() => {
+    if (!photo || camera) return;
+    const timer = window.setTimeout(() => {
+      photoRef.current?.scrollIntoView({
+        behavior: prefersReducedMotion() ? "auto" : "smooth",
+        block: "nearest",
+      });
+    }, 300);
+    return () => window.clearTimeout(timer);
+  }, [photo, camera]);
 
   const turn3Ref = useRef<HTMLDivElement>(null);
   useEffect(() => {
@@ -297,18 +310,25 @@ export function CheckInPanel({
                 )}
               </Collapse>
 
-              {photo && (
-                <p className={`${styles.captured} t-caption`} role="status">
-                  Photo captured.{" "}
+              {/* the photo, sent: the user's message on the right, the same
+                  picture the gallery files under today */}
+              <Collapse open={photo}>
+                <div className={styles.photoMessage} ref={photoRef}>
+                  <figure className={styles.photo}>
+                    <CheckInPhotoArt seed={today} className={styles.photoArt} />
+                    <figcaption className="visually-hidden">
+                      Your photo for today
+                    </figcaption>
+                  </figure>
                   <button
                     type="button"
-                    className={styles.remove}
+                    className={`${styles.remove} t-caption`}
                     onClick={() => setPhoto(false)}
                   >
-                    Remove
+                    Remove photo
                   </button>
-                </p>
-              )}
+                </div>
+              </Collapse>
             </div>
           </Collapse>
         </div>

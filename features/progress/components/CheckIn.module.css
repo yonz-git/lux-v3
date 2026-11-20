@@ -9,20 +9,19 @@
    blocks, plus the two extras buttons, which have no component and are composed
    from the frosted-row recipe below. */
 
-/* The whole exchange. 20 between TURNS, 12 inside one — a question and its own
-   pills belong together more tightly than one turn belongs to the next, and
-   without that difference the chat reads as six unrelated blocks on one gap.
-   Measured against the frame: bubble to its pills 12, pills to the next bubble
-   20. The 24 above the first turn comes from HubScreen's `.body > .heading + *`. */
+/* The whole exchange. 32 between TURNS, 12 inside one — a question and its own
+   pills belong together far more tightly than one turn belongs to the next, so
+   each answer row reads as closing its turn before the next question starts.
+   The 24 above the first turn comes from HubScreen's `.body > .heading + *`. */
 .chat {
   display: flex;
   flex-direction: column;
-  gap: var(--space-xl); /* 20 */
+  gap: var(--space-3xl); /* 32 */
 }
 
-/* turn 3 grows in with `Collapse` — the 20 above is declared on it */
+/* turn 3 grows in with `Collapse` — the 32 above is declared on it */
 .chat > :global(.collapse) {
-  --collapse-gap: var(--space-xl);
+  --collapse-gap: var(--space-3xl);
 }
 
 .turn {
@@ -66,11 +65,32 @@
   width: 100%;
 }
 
-/* The line under the two buttons once a photo exists. It replaces an inline
-   preview: the capture is a placeholder, so a "preview" would be an empty box
-   claiming to be the user's photo. A sentence says the true thing. */
-.captured {
-  color: var(--color-text-secondary);
+/* The photo once taken: the user's message, so it sits on the right with the
+   user bubble's corners — the tail corner top-right — and `Remove photo`
+   under it on the same edge. */
+.photoMessage {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: var(--space-sm); /* 8 */
+}
+
+.photo {
+  margin: 0;
+  width: var(--size-chat-photo);
+  aspect-ratio: 1 / 1;
+  overflow: hidden;
+  border-radius: var(--radius-bubble);
+  border-top-right-radius: var(--radius-bubble-tail);
+  border: var(--border-width-hairline) solid var(--color-border-panel);
+  box-shadow: var(--shadow-sm);
+}
+
+.photoArt {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
 }
 
 .remove {

@@ -630,6 +630,7 @@
   --size-pill: 2.25rem; /* the small time pill (17.7 × 1.745 ≈ 31, raised to the control floor) */
   --size-tag: 1.75rem; /* 28 — read-only tags: a count badge, an age or total pill */
   --size-thumb-sm: 2.5rem; /* 40 — the small product well (ThumbStack) */
+  --size-chat-photo: 10rem; /* 160 — a photo sent in a chat, as the user's message */
   /* Optical lift for a title-case label: half the capital over the x-height,
      added as bottom padding, raises a centred line by a quarter of it, to the
      midpoint of the capital and lowercase bands. Resolves in the label's font. */
