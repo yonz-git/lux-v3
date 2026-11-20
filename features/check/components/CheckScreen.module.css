@@ -1,7 +1,7 @@
 /* Check — start (601:1952) / Check — no profile — desktop (606:2183).
 
-`/check`: above (the heading) -> hero -> actions -> below -> nav, placed and
-spaced the way 00 Welcome is — see `.heroChat` and `.actions`.
+`/check`: hero area (the orb and bubble, centred) -> actions -> nav, the
+button on `--cta-bottom` as on 00 Welcome — see `.heroArea` and `.actions`.
 `/check/no-profile`: heading -> flex -> hero -> flex -> nav. */
 
 .hero {
@@ -51,9 +51,20 @@ spaced the way 00 Welcome is — see `.heroChat` and `.actions`.
   }
 }
 
+/* takes the height the button leaves and centres the orb and bubble in it,
+   never closer than 32 to the top or to the button */
+.heroArea {
+  flex: 1 0 auto;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  padding-block: var(--space-3xl); /* 32 */
+}
+
 .heroChat {
   gap: var(--space-xl); /* 20 */
-  margin-top: var(--space-4xl); /* 40 — Welcome's nudge */
+  /* the shift moves the group without changing the space it takes */
+  margin-block: var(--hero-shift) calc(-1 * var(--hero-shift));
 }
 
 .heroChat > svg,
@@ -80,16 +91,14 @@ spaced the way 00 Welcome is — see `.heroChat` and `.actions`.
   margin-top: var(--space-3xl); /* 32 */
 }
 
-/* `/check`'s two actions — Welcome's `.actions`, number for number (see
-   `.heroChat`): 13 between the button and the link, and on a phone the same
-   viewport-scaled drop under the bubble, less the 40 `.heroChat` took above. */
+/* `/check`'s two actions — Welcome's `.actions`: 13 between the button and
+   the link. The gap above is `.heroArea`'s. */
 .actions {
   display: flex;
   flex-direction: column;
   align-items: center;
   gap: 0.8125rem; /* Welcome's, off the scale there too */
   width: 100%;
-  margin-top: clamp(0px, 17vh - var(--space-4xl), 7.6875rem);
   position: relative;
 }
 
@@ -100,18 +109,12 @@ spaced the way 00 Welcome is — see `.heroChat` and `.actions`.
   top: calc(100% + 0.8125rem); /* the gap above, Welcome's */
 }
 
-.hero.heroChat + .actions {
+.heroArea + .actions {
   animation-delay: 400ms;
 }
 
 .actions .cta {
   margin-top: 0;
-}
-
-@media (min-width: 1024px) {
-  .actions {
-    margin-top: calc(6.25rem - var(--line-height-md)); /* 72 */
-  }
 }
 
 /* `link · View previous checks` — Body 3 in text/brand, centred, no underline

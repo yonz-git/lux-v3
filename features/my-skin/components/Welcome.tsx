@@ -14,9 +14,9 @@ export function Welcome() {
   return (
     <main className="screen" data-cta-foot>
       <div className={styles.welcome}>
-        {/* the two spacers split the free space in the ratio Figma places above
-            and below the group, so it sits low without fixed offsets */}
-        <div className={styles.spacerTop} aria-hidden="true" />
+        {/* two equal spacers centre the orb and bubble, as one, in the space
+            above the button whatever the bubble's height */}
+        <div className={styles.spacer} aria-hidden="true" />
 
         <div className={returning ? `${styles.hero} reveal` : styles.hero}>
           <h1 className="visually-hidden">How is your skin feeling today?</h1>
@@ -57,6 +57,8 @@ export function Welcome() {
             </ChatBubble>
           </div>
         </div>
+
+        <div className={styles.spacer} aria-hidden="true" />
 
         <div className={returning ? `${styles.actions} reveal` : styles.actions}>
           <Button

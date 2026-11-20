@@ -33,7 +33,7 @@ export function WelcomeStage() {
   return (
     <main className="screen edit-screen">
       <div className={styles.welcome}>
-        <div className={styles.spacerTop} aria-hidden="true" />
+        <div className={styles.spacer} aria-hidden="true" />
 
         <div className={`${styles.hero} reveal`}>
           <h1 className="visually-hidden">How is your skin feeling today?</h1>
@@ -52,6 +52,8 @@ export function WelcomeStage() {
           </div>
         </div>
 
+        <div className={styles.spacer} aria-hidden="true" />
+
         <div className={`${styles.actions} reveal`}>
           <Button className={`${styles.cta} edit-button`} href="/investigation/start">
             Create skin profile
@@ -60,8 +62,6 @@ export function WelcomeStage() {
             Lux does not provide medical diagnoses.
           </p>
         </div>
-
-        <div className={styles.spacerBottom} aria-hidden="true" />
       </div>
 
       <BottomNav active="none" className="edit-nav" />

@@ -11,8 +11,9 @@
    card here is a regression.
 
    POSITIONING
-   The group sits low: all the spare height goes above it, and the screen
-   reserves `--cta-bottom` below (`data-cta-foot`, globals.css), so the button
+   The orb and bubble are centred, as one, between the top and the button:
+   two equal spacers share the spare height. The screen reserves
+   `--cta-bottom` below (`data-cta-foot`, globals.css), so the button
    rests 120 above the nav at every width, as every main button does. The
    disclaimer hangs under the button, out of flow. */
 
@@ -34,8 +35,10 @@
   gap: 0;
 }
 
-.spacerTop {
+/* never closer than 32 to the top or to the button */
+.spacer {
   flex: 1 0 0;
+  min-height: var(--space-3xl); /* 32 */
   width: 100%;
 }
 
@@ -45,7 +48,8 @@
   align-items: center;
   gap: var(--space-xl); /* Figma 19 — orb to the bubble stack */
   width: 100%;
-  margin-top: var(--space-4xl);
+  /* the shift moves the group without changing the space it takes */
+  margin-block: var(--hero-shift) calc(-1 * var(--hero-shift));
 }
 
 /* the question and reply bubbles share this one grid cell so they overlap
@@ -89,7 +93,6 @@
   align-items: center;
   gap: 0.8125rem; /* matches desktop's button-to-disclaimer gap, tighter than the Figma-literal 24 (--space-2xl) */
   width: 100%;
-  margin-top: var(--space-hero-action);
   position: relative;
 }
 

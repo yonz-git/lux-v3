@@ -175,6 +175,25 @@
   border-color: var(--color-bg-brand);
 }
 
+/* a position slider: its name and value above, the track below */
+.slider {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-xs);
+}
+
+.sliderHead {
+  display: flex;
+  justify-content: space-between;
+  gap: var(--space-sm);
+  color: var(--color-text-secondary);
+}
+
+.range {
+  width: 100%;
+  accent-color: var(--color-bg-brand);
+}
+
 .export {
   min-height: 50vh;
   resize: vertical;

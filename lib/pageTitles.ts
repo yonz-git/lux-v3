@@ -22,6 +22,7 @@ const HUB_TITLES: Record<string, string> = {
   /* step 1 framed beside a panel for tuning it by hand — a dev tool, in no
      nav section */
   "/tweak": "Tweak a screen",
+  "/tweak/welcome": "Tweak a screen",
 };
 
 /**

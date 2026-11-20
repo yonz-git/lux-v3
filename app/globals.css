@@ -455,6 +455,12 @@ main[tabindex="-1"]:focus-visible {
   padding-bottom: var(--cta-bottom);
 }
 
+/* Welcome and the flow steps rest it lower, on their own token */
+.screen[data-layout="flow"],
+.screen[data-cta-foot] {
+  --cta-bottom: var(--cta-bottom-flow);
+}
+
 @media (min-width: 1024px) {
   .screen[data-layout="flow"],
   .screen[data-layout="hub"],

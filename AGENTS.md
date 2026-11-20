@@ -67,6 +67,7 @@ lib/                 date.ts, pageTitles.ts, actives.ts
 | `/check/history` | pushed | `check` |
 | `/styleguide` | dev tool | `none` |
 | `/tweak` | dev tool, step 1 framed with a tuning panel | `none` |
+| `/tweak/welcome` | dev tool, Welcome framed with a tuning panel | `none` |
 
 - Flow step = has a progress track. Hub landing: no track, no back. Pushed view: back, no track.
 - `TOTAL_STEPS` = 5. Profile and analysis are not steps. Don't add them to `STEPS`.
@@ -172,7 +173,9 @@ lib/                 date.ts, pageTitles.ts, actives.ts
 
 - `EmptyState` inside `HubScreen layout="plain" center="empty"`: Orb → 32 → `t-h5` title → 12 → body → `--space-hero-action` → action. No card. Never rebuild it in a screen.
 - `center="empty"` keeps the heading at the top and sets the block low, its button on `--cta-bottom`.
+- Orb + chat bubble screens (Welcome, `/check`): the orb and bubble are one group, centred between the top and the button, at least 32 from each. Button stays on `--cta-bottom`.
 - A screen's main button rests on `--cta-bottom` (120 above the nav) at every width and height: flow Continue, `/check`, the empty states. Taller content pushes it down; never a per-screen offset.
+- Welcome and the flow steps (Continue) rest lower, on `--cta-bottom-flow` (64 above the nav).
 
 ### Selection controls
 

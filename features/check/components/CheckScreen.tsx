@@ -28,15 +28,19 @@ export function CheckScreen() {
       center="low"
       tightTop
     >
-      <div className={`${styles.hero} ${styles.heroChat}`}>
-        <div className="orb-hero">
-          <Orb animateIn halo />
+      {/* the orb and its bubble move as one, centred in the space above the
+          button whatever the bubble's height */}
+      <div className={styles.heroArea}>
+        <div className={`${styles.hero} ${styles.heroChat}`}>
+          <div className="orb-hero">
+            <Orb animateIn halo />
+          </div>
+          <ChatBubble from="ai" align="center" full hug className={styles.intro}>
+            <span className={styles.line}>Check how your products </span>
+            <span className={styles.line}>may suit your skin and work </span>
+            <span className={styles.line}>together in the same routine.</span>
+          </ChatBubble>
         </div>
-        <ChatBubble from="ai" align="center" full hug className={styles.intro}>
-          <span className={styles.line}>Check how your products </span>
-          <span className={styles.line}>may suit your skin and work </span>
-          <span className={styles.line}>together in the same routine.</span>
-        </ChatBubble>
       </div>
 
       <div className={styles.actions}>

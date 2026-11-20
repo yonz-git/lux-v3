@@ -8,13 +8,16 @@ import { CloseSmallIcon } from "@/components/ui/icons";
 import styles from "./Tweak.module.css";
 
 /**
- * Tweak — step 1 (`/investigation/start`) in a frame, with a panel for tuning
- * it by hand.
+ * Tweak — a screen in a frame, with a panel for tuning it by hand. `/tweak`
+ * frames step 1 (`/investigation/start`), `/tweak/welcome` the Welcome screen;
+ * each keeps its own saved tweaks.
  */
 
-const SRC = "/investigation/start";
 const WIDTHS = [375, 430, 768, 1024, 1440] as const;
 const STORE = "lux.tweak.v2";
+/* step 1's tweaks keep the original key, so nothing saved is lost */
+const storeFor = (src: string) =>
+  src === "/investigation/start" ? STORE : `${STORE}:${src}`;
 const DESKTOP = "(min-width: 1024px)";
 
 const GROUPS: { name: string; props: string[] }[] = [
@@ -269,9 +272,9 @@ function buildCss(changes: Changes, tokens: Record<string, string>, important: b
   return out.join("\n\n");
 }
 
-function load(): Saved | null {
+function load(store: string): Saved | null {
   try {
-    const raw = localStorage.getItem(STORE);
+    const raw = localStorage.getItem(store);
     return raw ? (JSON.parse(raw) as Saved) : null;
   } catch {
     return null;
@@ -280,7 +283,9 @@ function load(): Saved | null {
 
 /* ========================================================================== */
 
-export function Tweak() {
+export function Tweak({ src = "/investigation/start" }: { src?: string }) {
+  const SRC = src;
+  const store = storeFor(src);
   const frameRef = useRef<HTMLIFrameElement>(null);
   const stageRef = useRef<HTMLDivElement>(null);
   const selectedRef = useRef<Element | null>(null);
@@ -291,7 +296,7 @@ export function Tweak() {
 
   const [width, setWidth] = useState<number>(430);
   const [stage, setStage] = useState({ w: 0, h: 0 });
-  const [tab, setTab] = useState<"element" | "tokens" | "export">("element");
+  const [tab, setTab] = useState<"element" | "position" | "tokens" | "export">("element");
   const [picking, setPicking] = useState(false);
   const [picked, setPicked] = useState(0); // bumps on every pick
   const [only, setOnly] = useState(false);
@@ -311,22 +316,22 @@ export function Tweak() {
      first render's empty state would be written over what was saved */
   const [restored, setRestored] = useState(false);
   useEffect(() => {
-    const saved = load();
+    const saved = load(store);
     if (saved) {
       setChanges(saved.changes ?? {});
       setTokens(saved.tokens ?? {});
       if (saved.width) setWidth(saved.width);
     }
     setRestored(true);
-  }, []);
+  }, [store]);
   useEffect(() => {
     if (!restored) return;
     try {
-      localStorage.setItem(STORE, JSON.stringify({ changes, tokens, width }));
+      localStorage.setItem(store, JSON.stringify({ changes, tokens, width }));
     } catch {
       /* private window: the tweaks just do not survive a reload */
     }
-  }, [restored, changes, tokens, width]);
+  }, [restored, store, changes, tokens, width]);
 
   /* the frame scales down to fit the stage, never up. The stage only changes
      size with the window (the panel is fixed), so a resize listener does it */
@@ -605,6 +610,21 @@ export function Tweak() {
     });
   };
 
+  /* the Position tab: the orb + bubble shift and where the main button rests,
+     both in px on the slider and written as rem tokens */
+  const remOf = (px: number) => `${Math.round((px / 16) * 10000) / 10000}rem`;
+  const pxOf = (value: string | undefined) => {
+    const m = value?.trim().match(/^(-?\d*\.?\d+)(px|rem)$/);
+    return m ? parseFloat(m[1]) * (m[2] === "rem" ? 16 : 1) : null;
+  };
+  const heroShift = pxOf(tokens["--hero-shift"]) ?? 0;
+  const mainEl = doc()?.querySelector("main");
+  const restingCta = mainEl && win() ? parseFloat(win()!.getComputedStyle(mainEl).paddingBottom) : 198;
+  /* Welcome and the flow steps rest their button on their own token */
+  const ctaToken =
+    src === "/" || src.startsWith("/investigation/") ? "--cta-bottom-flow" : "--cta-bottom";
+  const ctaBottom = pxOf(tokens[ctaToken]) ?? Math.round(restingCta);
+
   const setToken = (name: string, value: string) => {
     setTokens((t) => {
       const next = { ...t };
@@ -622,7 +642,7 @@ export function Tweak() {
   const exportCss = useMemo(() => {
     const body = buildCss(changes, tokens, false);
     return body ? `/* ${SRC}, tweaked */\n\n${body}\n` : "";
-  }, [changes, tokens]);
+  }, [SRC, changes, tokens]);
 
   const changeCount =
     Object.values(changes).reduce((n, r) => n + Object.keys(r.props).length, 0) +
@@ -685,15 +705,17 @@ export function Tweak() {
 
       <aside className={styles.panel} aria-label="Tweaks">
         <div className={styles.tabs} role="radiogroup" aria-label="Panel">
-          {(["element", "tokens", "export"] as const).map((t) => (
+          {(["element", "position", "tokens", "export"] as const).map((t) => (
             <Chip
               key={t}
               label={
                 t === "element"
                   ? "Element"
-                  : t === "tokens"
-                    ? "Tokens"
-                    : `Export${changeCount ? ` (${changeCount})` : ""}`
+                  : t === "position"
+                    ? "Position"
+                    : t === "tokens"
+                      ? "Tokens"
+                      : `Export${changeCount ? ` (${changeCount})` : ""}`
               }
               control="radio"
               size="compact"
@@ -831,6 +853,57 @@ export function Tweak() {
                 Pick an element on the screen, or choose a component from the list.
               </p>
             )}
+          </div>
+        )}
+
+        {tab === "position" && (
+          <div className={styles.body}>
+            <label className={styles.slider}>
+              <span className={`${styles.sliderHead} t-label-sm`}>
+                <span>Orb and bubble, up or down</span>
+                <span className={styles.code}>{heroShift > 0 ? "+" : ""}{Math.round(heroShift)}px</span>
+              </span>
+              <input
+                type="range"
+                className={styles.range}
+                min={-240}
+                max={240}
+                step={1}
+                value={heroShift}
+                onChange={(e) => {
+                  const v = Number(e.target.value);
+                  setToken("--hero-shift", v === 0 ? "" : remOf(v));
+                }}
+              />
+            </label>
+            <label className={styles.slider}>
+              <span className={`${styles.sliderHead} t-label-sm`}>
+                <span>Main button, distance from the bottom</span>
+                <span className={styles.code}>{Math.round(ctaBottom)}px</span>
+              </span>
+              <input
+                type="range"
+                className={styles.range}
+                min={80}
+                max={480}
+                step={1}
+                value={ctaBottom}
+                onChange={(e) => setToken(ctaToken, remOf(Number(e.target.value)))}
+              />
+            </label>
+            <p className={`${styles.meta} t-label-sm`}>
+              The orb and bubble move together; 0 is centred above the button.
+              The button distance is `{ctaToken}`. Both show in Export.
+            </p>
+            <SmallButton
+              label="Reset position"
+              arrow={false}
+              disabled={tokens["--hero-shift"] == null && tokens[ctaToken] == null}
+              onClick={() => {
+                setToken("--hero-shift", "");
+                setToken(ctaToken, "");
+              }}
+            />
           </div>
         )}
 

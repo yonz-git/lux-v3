@@ -106,7 +106,7 @@ export function HubScreen({
         )}
 
         <div
-          className={styles.body}
+          className={low ? `${styles.body} ${styles.bodyFill}` : styles.body}
           data-layout={layout}
           data-reveal
           data-reveal-stagger

@@ -65,12 +65,19 @@
   flex: 1 1 0;
 }
 
-/* `center="low"` / `"empty"`: everything spare goes above the body, so its
-   button rests on `--cta-bottom` (the screen's bottom padding, globals.css);
-   when the body is too tall the space shrinks and the button follows it */
+/* `center="low"`: the body takes the spare height, so its button rests on
+   `--cta-bottom` (the screen's bottom padding, globals.css) and the screen
+   centres its hero in the space above it; when the body is too tall the
+   button follows it down */
 .above {
-  flex: 1 0 calc(var(--space-4xl) - var(--content-top));
+  flex: 0 0 auto;
 }
+
+.bodyFill {
+  flex: 1 0 auto;
+}
+
+/* `center="empty"`: everything spare goes above the body */
 
 .aboveEmpty {
   flex: 1 0 0;
@@ -94,11 +101,6 @@
   .shell {
     max-width: var(--width-content-max); /* 1280 */
     align-items: stretch;
-  }
-
-  /* Welcome's desktop top padding — see `.above` above */
-  .above {
-    flex-basis: calc(var(--space-9xl) - var(--content-top));
   }
 
   .header {
