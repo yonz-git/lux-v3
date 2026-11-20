@@ -34,8 +34,7 @@
   border-radius: var(--radius-full);
   background: var(--color-bg-brand);
   color: var(--color-text-on-brand);
-  font-size: var(--font-size-xs);
-  line-height: 1;
+  line-height: 1; /* the digit centres in the disc */
 }
 
 .name {

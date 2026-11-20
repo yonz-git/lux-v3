@@ -172,10 +172,6 @@
   font-variant-numeric: tabular-nums;
 }
 
-.month {
-  line-height: 1rem;
-}
-
 .dayTrack {
   position: relative;
   margin: 0 calc(var(--trend-plot-end) + var(--trend-inset)) 0 var(--trend-inset);
@@ -190,7 +186,7 @@
 
 .day[data-today] {
   color: var(--color-bg-brand);
-  font-weight: var(--font-weight-semibold);
+  font-weight: var(--font-weight-medium);
 }
 
 @media (prefers-reduced-transparency: reduce) {

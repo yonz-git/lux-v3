@@ -151,17 +151,3 @@
      that would be quietly wrong. */
   /* 376 / centring: now carried by `.ctaDesktop` inside `.checkInColumn`. */
 }
-
-@media (min-width: 1024px) {
-  .profileColumn h2:global(.t-overline),
-  .checkInColumn h2:global(.t-overline) {
-    font-size: 1rem; /* 16 */
-    line-height: 1.375;
-  }
-
-  .profileColumn h2:global(.t-h5),
-  .checkInColumn h2:global(.t-h5) {
-    font-size: 1.25rem; /* 20 */
-    line-height: 1.3;
-  }
-}

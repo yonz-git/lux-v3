@@ -39,8 +39,8 @@ function Detail({ label, value }: { label: string; value?: string }) {
   if (!value) return null;
   return (
     <div className={styles.detail}>
-      <dt className={`${styles.detailLabel} t-label-sm`}>{label}</dt>
-      <dd className={`${styles.detailValue} t-body3`}>{value}</dd>
+      <dt className={`${styles.detailLabel} t-body3`}>{label}</dt>
+      <dd className={`${styles.detailValue} t-label`}>{value}</dd>
     </div>
   );
 }

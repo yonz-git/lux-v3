@@ -450,7 +450,7 @@ function ProductPicker({
                 <ProductThumb product={p} size="sm" />
                 <span className={styles.pickCopy}>
                   {/* brand-led title, no size under it */}
-                  <span className={`${styles.pickName} t-label`}>{fullName(p)}</span>
+                  <span className={`${styles.pickName} t-h6`}>{fullName(p)}</span>
                 </span>
                 <PlusIcon className={styles.pickPlus} />
               </button>

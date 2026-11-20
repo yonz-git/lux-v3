@@ -82,7 +82,7 @@ export function HypothesisCard({
             >
               <ul className={styles.points}>
                 {s.items.map((item) => (
-                  <li key={item} className="t-body3">
+                  <li key={item} className="t-body2">
                     {item}
                   </li>
                 ))}

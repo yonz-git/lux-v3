@@ -126,7 +126,7 @@ export function CheckBasketSheet({
               )}
               <span className={styles.item}>
                 <ProductThumb product={p} />
-                <span className={`${styles.itemLabel} t-body2`}>
+                <span className={`${styles.itemLabel} t-h6`}>
                   {fullName(p)}
                 </span>
                 <CloseButton

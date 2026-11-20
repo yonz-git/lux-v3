@@ -39,112 +39,123 @@ typography:
     fontFamily: Manrope
     fontSize: 36px
     fontWeight: 500
-    lineHeight: 44px
+    lineHeight: 1.2
     letterSpacing: -0.005em
   headline-emphasis:
     fontFamily: Manrope
     fontSize: 36px
     fontWeight: 700
-    lineHeight: 44px
+    lineHeight: 1.2
     letterSpacing: -0.005em
   kicker:
     fontFamily: Figtree
     fontSize: 16px
     fontWeight: 400
-    lineHeight: 20px
+    lineHeight: 1.4
   wordmark:
     fontFamily: Figtree
     fontSize: 20px
     fontWeight: 700
-    lineHeight: 24px
+    lineHeight: 1.2
     letterSpacing: 0.005em
   h2:
     fontFamily: Manrope
     fontSize: 28px
     fontWeight: 500
-    lineHeight: 34px
+    lineHeight: 1.2
   page-title:
     fontFamily: Manrope
     fontSize: 22px
     fontWeight: 500
-    lineHeight: 28px
+    lineHeight: 1.2
   h4:
     fontFamily: Manrope
     fontSize: 20px
     fontWeight: 500
-    lineHeight: 24px
+    lineHeight: 1.2
   panel-label:
     fontFamily: Figtree
     fontSize: 18px
     fontWeight: 400
-    lineHeight: 22px
+    lineHeight: 1.2
   row-title:
     fontFamily: Figtree
     fontSize: 16px
     fontWeight: 500
-    lineHeight: 20px
+    lineHeight: 1.2
   body-lg:
     fontFamily: Figtree
     fontSize: 18px
     fontWeight: 400
-    lineHeight: 24px
+    lineHeight: 1.4
   body:
     fontFamily: Figtree
     fontSize: 16px
     fontWeight: 400
-    lineHeight: 22px
+    lineHeight: 1.4
   body-sm:
     fontFamily: Figtree
     fontSize: 14px
     fontWeight: 400
-    lineHeight: 20px
+    lineHeight: 1.4
   chip:
     fontFamily: Figtree
     fontSize: 16px
     fontWeight: 400
-    lineHeight: 20px
+    lineHeight: 1.4
   label:
     fontFamily: Figtree
     fontSize: 14px
     fontWeight: 500
-    lineHeight: 20px
+    lineHeight: 1.4
   button:
     fontFamily: Figtree
     fontSize: 15px
     fontWeight: 500
-    lineHeight: 20px
+    lineHeight: 1.4
   button-sm:
     fontFamily: Figtree
     fontSize: 14px
     fontWeight: 500
-    lineHeight: 20px
+    lineHeight: 1.4
+  label-h6:
+    fontFamily: Figtree
+    fontSize: 14px → 16px from 1024
+    fontWeight: 500
+    lineHeight: 1.4
   label-sm:
     fontFamily: Figtree
     fontSize: 12px
     fontWeight: 500
-    lineHeight: 16px
+    lineHeight: 1.4
   caption:
     fontFamily: Figtree
     fontSize: 12px
     fontWeight: 400
-    lineHeight: 16px
+    lineHeight: 1.4
   overline:
     fontFamily: Manrope
     fontSize: 14.4px
     fontWeight: 800
-    lineHeight: 1.4286
+    lineHeight: 1.4
     letterSpacing: 0.12em
   metric-lg:
     fontFamily: Figtree
     fontSize: 56px
     fontWeight: 300
-    lineHeight: 60px
+    lineHeight: 1.2
     fontFeature: '"tnum"'
   metric-md:
     fontFamily: Figtree
     fontSize: 40px
     fontWeight: 300
-    lineHeight: 40px
+    lineHeight: 1.2
+    fontFeature: '"tnum"'
+  metric-sm:
+    fontFamily: Figtree
+    fontSize: 20px
+    fontWeight: 300
+    lineHeight: 1.2
     fontFeature: '"tnum"'
 rounded:
   none: 0px
@@ -464,27 +475,46 @@ Medium; everything else, from panel labels and row titles down to body,
 labels and data, is Figtree, a friendly sans that holds up at 12px. Figtree
 loads five weights (300–700), Manrope is one variable file. The hierarchy is
 carried by size, weight and the change of face, not colour.
-`headline` (36/44 Medium) opens a welcome or empty state, with its key words in
-`headline-emphasis` (Bold, in `primary`), under a `kicker` (16/20). Every page
-`<h1>` is `page-title` (22/28 Medium), on every page and both breakpoints;
-sheet titles use it too. Inside panels, `panel-label` (18/22) names the panel,
-`overline` (14.4 ExtraBold, tracked, capitals) labels a readout, and
-`metric-lg` / `metric-md` (Light, tabular figures) carry the number.
-Body copy is `body` (16/22); `body-sm` (14/20) supports it. Controls have
-their own styles so their widths stay stable: `chip` (16/20 Regular), `label`
-(14/20 Medium) for tabs, nav and row labels, `button` (15/20 Medium) and
-`button-sm` (14/20 Medium). `label-sm` and `caption` (12/16) are the floor —
-nothing smaller, ever.
+
+**Two line heights.** Headings, titles and figures sit on
+`--line-height-heading` (1.2); running text, labels and controls on
+`--line-height-text` (1.4). No role and no screen sets any other.
+
+**One job, one role.** Each kind of text has one style everywhere:
+
+| Job | Role |
+| --- | --- |
+| Welcome's line | `headline` 36 → 44, key words `headline-emphasis` |
+| Every page `<h1>`, a wait state's title | `page-title` (`t-h4-h3`) 22 |
+| Sheet and tray titles | `h4` 20 |
+| A card's headline, an empty state's title | `panel-label` (`t-h5`) 18 |
+| A card's section label | `overline` 14.4 ExtraBold caps, same size at every width |
+| A list's or sub-section's heading ("Your products", "Recommendation") | `label` 14 Medium, secondary |
+| A product or item name, wherever it appears | `row-title` (`t-h6`) 16 Medium |
+| The brand or meta line under a name | `label-sm` 12 Medium, muted |
+| Reading text: summaries, advice, card bodies, empty-state bodies | `body` (`t-body2`) 16 |
+| Supporting text: hints, notes, empty notes inside a card | `body-sm` (`t-body3`) 14 |
+| A read-only key over its value | `body-sm` muted over `label` |
+| Form labels | `label` 14 Medium |
+| Pills, tags, chart axes | `label-sm` / `caption` 12 |
+| Figures | `metric-lg` 56, `metric-md` 40, `metric-sm` 20 (a score in a ring), Light, tabular |
+
+Controls have their own styles so their widths stay stable: `chip` (16
+Regular), `label` (14 Medium) for tabs and nav, `label-h6` (14 → 16) for an
+option row, `button` (15 Medium) and `button-sm` (14 Medium). `label-sm` and
+`caption` (12) are the floor; FaceDiagram's labels, which scale with the
+diagram, stop at `--font-size-floor` (11).
 In code each style is a `t-*` class (`t-headline`, `t-h4-h3`, `t-body2`,
-`t-chip`…); a screen never writes a font-size. Headings balance their lines
-and prose avoids orphans automatically.
+`t-chip`…); a screen never writes a font-size, weight or line height, and
+never resizes a role at a breakpoint. A size that has to change with the
+width is its own `t-a-b` role. Headings balance their lines and prose avoids
+orphans automatically.
 **Units (31 Oct 2026):** every size is rem (16px = 1rem), so the whole ramp
-follows the reader's browser text size, and every line height is a unitless
-ratio of its size. The px pairs above are the sizes at the default 16px root.
-Five roles are FLUID — they slide between 375 and 1440 wide with
-`clamp(min, rem + vw, max)`: `headline` 36 → 44, `t-h2` 28 → 32, `t-h3-h2`
-22 → 24, `t-body2-body1` 16 → 18, `t-body3-body2` 14 → 16. Every other role,
-page titles included, stays one size.
+follows the reader's browser text size. The px sizes above are at the
+default 16px root. Five roles are FLUID — they slide between 375 and 1440
+wide with `clamp(min, rem + vw, max)`: `headline` 36 → 44, `t-h2` 28 → 32,
+`t-h3-h2` 22 → 24, `t-body2-body1` 16 → 18, `t-body3-body2` 14 → 16. Every
+other role, page titles included, stays one size.
 
 ## Layout
 

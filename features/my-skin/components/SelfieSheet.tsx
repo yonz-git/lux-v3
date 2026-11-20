@@ -22,7 +22,7 @@ export function SelfieSheet({
       {/* `Sheet` uses the title for its aria-label only, so the visible
           heading is rendered here — WHITE-on-sage `text/on-data`, as every
           other thing inside the tray is. */}
-      <h2 className={`${styles.question} t-h6`}>{title}</h2>
+      <h2 className={`${styles.question} t-h4`}>{title}</h2>
 
       <div className={styles.viewfinder} data-captured={captured}>
         <span className={styles.guide} aria-hidden="true" />

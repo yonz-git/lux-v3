@@ -53,7 +53,7 @@ export function CheckAnalyzing() {
             05 — Investigating, which this screen was cloned from. */}
         <Orb className="reveal-hero" thinking />
 
-        <h1 className={`${styles.title} t-h4`}>
+        <h1 className={`${styles.title} t-h4-h3`}>
           LUX is analysing…
         </h1>
 
@@ -63,7 +63,7 @@ export function CheckAnalyzing() {
           label="Analysing your products"
         />
 
-        <p className={`${styles.description} t-body3`}>
+        <p className={`${styles.description} t-body2`}>
           Analysing {basket.length}{" "}
           {basket.length === 1 ? "product" : "products"} and{" "}
           {ingredientCount(basket)} ingredients against your skin profile

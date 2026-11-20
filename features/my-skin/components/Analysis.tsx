@@ -161,7 +161,7 @@ function Hypotheses({ analysis }: { analysis: AnalysisResult }) {
           >
             <ul className={styles.plain}>
               {alsoConsidered.map((h) => (
-                <li key={h.id} className="t-body3">
+                <li key={h.id} className="t-body2">
                   {subject(h)}, {CONFIDENCE_LABEL[h.confidence].toLowerCase()}
                 </li>
               ))}
@@ -177,7 +177,7 @@ function Hypotheses({ analysis }: { analysis: AnalysisResult }) {
           </h2>
           <ul className={styles.plain}>
             {analysis.cleared.map((h) => (
-              <li key={h.id} className="t-body3">
+              <li key={h.id} className="t-body2">
                 {ruledOut(h)}
               </li>
             ))}
@@ -193,7 +193,7 @@ function Hypotheses({ analysis }: { analysis: AnalysisResult }) {
           <h2 id="next-heading" className={`${styles.nextTitle} t-h6`}>
             Pause {fullName(pause.product)} for four weeks?
           </h2>
-          <p className={`${styles.nextBody} t-body3`}>
+          <p className={`${styles.nextBody} t-body2`}>
             Keep everything else the same, so there is only one change to read.
           </p>
           <div className={styles.actions}>
@@ -238,7 +238,7 @@ function NoConclusion({ analysis }: { analysis: AnalysisResult }) {
 
       {gap ? (
         <div className={styles.gap}>
-          <p className={`${styles.nextBody} t-body3`}>{gap.body}</p>
+          <p className={`${styles.nextBody} t-body2`}>{gap.body}</p>
           {/* a gap with no destination is answered inline — see `Gap.href` */}
           {gap.href && gap.action ? (
             <Button href={gap.href}>{gap.action}</Button>
@@ -297,7 +297,7 @@ function Confirmations({ headed = true }: { headed?: boolean }) {
       ) : null}
       {ambiguous.map((e) => (
         <div key={e.product.id} className={styles.confirmRow}>
-          <p className={`${styles.confirmName} t-body3`}>
+          <p className={`${styles.confirmName} t-body2`}>
             {fullName(e.product)}, did you start it around the reaction?
           </p>
           <div className={styles.confirmChips}>

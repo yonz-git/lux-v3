@@ -23,7 +23,7 @@ export function EmptyState({
     <div className={styles.empty}>
       <Orb animateIn className={styles.orb} />
       <h2 className={`${styles.title} t-h5`}>{title}</h2>
-      <p className={`${styles.body} t-body3-body2`}>{children}</p>
+      <p className={`${styles.body} t-body2`}>{children}</p>
       <Button
         width="action"
         href={action.href}

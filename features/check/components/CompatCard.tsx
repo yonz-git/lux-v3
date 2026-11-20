@@ -104,7 +104,7 @@ function ScoreRing({ score, countDelay }: { score?: number; countDelay?: number 
         )}
       </svg>
       {score !== undefined && (
-        <span className={`${styles.score} t-h4`}>
+        <span className={`${styles.score} t-metric3`}>
           {countDelay === undefined ? score : <CountUp value={score} delay={countDelay} />}
         </span>
       )}
@@ -115,8 +115,8 @@ function ScoreRing({ score, countDelay }: { score?: number; countDelay?: number 
 function Names({ product }: { product: CatalogProduct }) {
   return (
     <span className={styles.names}>
-      <span className={`${styles.name} t-label`}>{product.name}</span>
-      <span className={`${styles.brand} t-caption`}>{product.brand}</span>
+      <span className={`${styles.name} t-h6`}>{product.name}</span>
+      <span className={`${styles.brand} t-label-sm`}>{product.brand}</span>
     </span>
   );
 }
@@ -147,7 +147,7 @@ function CompatDetail({ analysis }: { analysis: CheckAnalysis }) {
         <ScoreRing score={score} />
         <span className={styles.detailNames}>
           <h2 className={`${styles.detailName} t-h5`}>{product.name}</h2>
-          <span className={`${styles.brand} t-caption`}>{product.brand}</span>
+          <span className={`${styles.brand} t-label-sm`}>{product.brand}</span>
         </span>
       </div>
 
@@ -174,7 +174,7 @@ function CompatDetail({ analysis }: { analysis: CheckAnalysis }) {
 
       <div className={styles.recommendation}>
         <p className={`${styles.recTitle} t-label`}>Recommendation</p>
-        <p className={`${styles.recBody} t-body3`}>{recommendation}</p>
+        <p className={`${styles.recBody} t-body2`}>{recommendation}</p>
       </div>
     </div>
   );

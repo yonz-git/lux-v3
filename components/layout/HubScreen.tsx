@@ -61,7 +61,7 @@ export function HubScreen({
   const heading = title ? (
     <div className={styles.heading}>
       <h1 className="t-h4-h3">{title}</h1>
-      {subtitle && <p className={`${styles.subtitle} t-body3-body2`}>{subtitle}</p>}
+      {subtitle && <p className={`${styles.subtitle} t-body2`}>{subtitle}</p>}
     </div>
   ) : null;
 

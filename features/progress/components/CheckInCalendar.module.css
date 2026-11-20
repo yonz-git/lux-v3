@@ -89,7 +89,7 @@
   background: var(--color-glass-strong);
   border-color: var(--color-bg-brand); /* 1.5 */
   color: var(--color-bg-brand);
-  font-weight: var(--font-weight-semibold);
+  font-weight: var(--font-weight-medium);
 }
 
 .day[data-today][data-checked-in] {

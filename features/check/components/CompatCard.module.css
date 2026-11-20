@@ -103,9 +103,6 @@
   inset: 0;
   display: grid;
   place-items: center;
-  font-family: var(--font-family-sans); /* a number, not a heading */
-  font-weight: var(--font-weight-light);
-  font-variant-numeric: tabular-nums;
 }
 
 /* the names take the slack, so the pills sit level along the cards' foot

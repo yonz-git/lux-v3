@@ -132,7 +132,7 @@ export function SymptomLocation({
           <dl className={styles.meta}>
             {started && (
               <div className={styles.pair}>
-                <dt className={`${styles.metaLabel} t-label-sm`}>
+                <dt className={`${styles.metaLabel} t-body3`}>
                   {COPY.startedLabel}
                 </dt>
                 <dd className={`${styles.metaValue} t-label`}>{started}</dd>
@@ -140,7 +140,7 @@ export function SymptomLocation({
             )}
             {otherNote && (
               <div className={styles.pair}>
-                <dt className={`${styles.metaLabel} t-label-sm`}>
+                <dt className={`${styles.metaLabel} t-body3`}>
                   {COPY.locationOtherLabel}
                 </dt>
                 <dd className={`${styles.metaValue} t-label`}>{otherNote}</dd>

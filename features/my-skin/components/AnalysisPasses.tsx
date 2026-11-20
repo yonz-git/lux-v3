@@ -14,7 +14,7 @@ export function AnalysisPasses() {
     <div className={styles.hero}>
       <Orb className="reveal-hero" thinking />
 
-      <p className={`${styles.title} t-h4`}>Comparing your timeline…</p>
+      <p className={`${styles.title} t-h4-h3`}>Comparing your timeline…</p>
 
       <PassList passes={ANALYSIS_PASSES} label="Analysing your products" />
     </div>

@@ -113,11 +113,12 @@ lib/                 date.ts, pageTitles.ts, actives.ts
 
 - Sizes are rem (16px = 1rem). Borders, hairlines, shadows, blur, breakpoints stay px.
 - Write new values as a token or rem, never px (except the kinds above).
-- Line heights: unitless ratios.
+- Line heights: two tokens only. `--line-height-heading` (1.2) for headings, titles, figures; `--line-height-text` (1.4) for text, labels, controls. Set by the role, never in a module.
 - Fonts: headings (`t-h4` and up, Medium) and card overlines (`t-overline`) Manrope via `--font-family-display`; everything else Figtree. Values: `tokens.css`, `docs/design.md`.
 - Every text uses a `t-*` class. No ad-hoc `font-size`.
-- `t-a-b` = a on mobile, b on desktop. Fluid: headline, `t-h2`, `t-h3-h2`, `t-body2-body1`, `t-body3-body2`.
+- `t-a-b` = a on mobile, b on desktop. Fluid: headline, `t-h2`, `t-h3-h2`, `t-body2-body1`, `t-body3-body2`. Stepped: `t-label-h6`.
 - Every page `<h1>` is `t-h4-h3`.
+- One job, one role (table in `docs/design.md` § Typography): item names `t-h6`, meta under them `t-label-sm`, reading text `t-body2`, sheet titles `t-h4`, card section labels `t-overline`. Never resize a role at a breakpoint in a module; a size that changes is a `t-a-b` role.
 - Headings `text-wrap: balance`, prose `pretty`, controls neither. No `text-wrap` in modules.
 - Bind semantic colour tokens. Never primitives (`--color-indigo-*` …).
 - Digits that stack: `tabular-nums`, by role.

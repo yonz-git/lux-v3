@@ -75,7 +75,7 @@ export function IngredientsCard({
                 <p className={`${styles.foundIn} t-label-sm`}>
                   Found in: {c.foundIn.map(fullName).join(", ")}
                 </p>
-                <p className={`${styles.concernText} t-body3`}>
+                <p className={`${styles.concernText} t-body2`}>
                   {c.description}
                 </p>
                 <Tag
@@ -144,7 +144,7 @@ export function NextStepsCard({
           )}
         </div>
         {description && (
-          <p className={`${styles.emphasisText} t-body3`}>{description}</p>
+          <p className={`${styles.emphasisText} t-body2`}>{description}</p>
         )}
       </div>
 
@@ -176,7 +176,7 @@ export function NextStepsCard({
                     ))}
                   </div>
                 )}
-                <p className={`${styles.stepText} t-body3`}>{step.body}</p>
+                <p className={`${styles.stepText} t-body2`}>{step.body}</p>
               </div>
             </li>
           ))}

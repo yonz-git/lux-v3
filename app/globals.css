@@ -114,7 +114,8 @@ textarea {
 /* LINING FIGURES WHERE DIGITS STACK. */
 
 .t-metric1,
-.t-metric2 {
+.t-metric2,
+.t-metric3 {
   font-variant-numeric: tabular-nums;
 }
 
@@ -147,17 +148,29 @@ main[tabindex="-1"]:focus-visible {
 }
 
 /* ============================================================================
-   TYPE RAMP — the existing class names, the reference's sizes and weights.
-   The names stay because every screen already carries them.
+   TYPE RAMP — one class per job; values live in tokens.css.
 
-     headline   36/44 Light, emphasis Bold in brand   "Next-level AI video"
-     kicker     16/20 Regular, secondary              "Welcome to"
-     sheet title 22/28 Regular                        "AI Assistant"
-     panel label 18/22 Regular                        "Prompt"
-     body        16/22 Regular                        the prompt text
-     chip        16/20 Regular                        "9:16", "1080p"
-     tab/button  14/20 Medium                         "Featured", "Start"
-     wordmark    20/24 Bold                           "LUX"
+   Two families: Manrope for headings (`t-h4` and up, the headline) and card
+   overlines; Figtree for everything else. Two line heights: headings, titles
+   and figures on `--line-height-heading`, running text, labels and controls on
+   `--line-height-text`.
+
+     headline    36 → 44 Medium        Welcome's line
+     h2          28 → 32 Medium        a section heading on a wide screen
+     h4-h3       22 Medium             every page <h1>
+     h4          20 Medium             sheet and tray titles
+     h5          18 Regular            a card's headline, an empty state's title
+     h6          16 Medium             a row or item title: product names
+     body1       18 Regular            the chat panel's lead
+     body2       16 Regular            reading text: summaries, advice, notes
+     body3       14 Regular            supporting text: hints, empty notes,
+                                       read-only labels
+     label       14 Medium             form labels, list headings, small actions
+     label-h6    14 → 16 Medium        an option row's label
+     label-sm    12 Medium             meta under a title, pills and tags
+     caption     12 Regular            fine print
+     overline    14.4 ExtraBold caps   a card's section label
+     metric1/2/3 56 / 40 / 20 Light    figures
    ========================================================================== */
 
 .t-h1,
@@ -179,12 +192,18 @@ main[tabindex="-1"]:focus-visible {
 .t-nav,
 .t-metric1,
 .t-metric2,
+.t-metric3,
 .t-display1,
 .t-display2,
 .t-h4-h3,
 .t-h3-h2,
 .t-body2-body1,
-.t-body3-body2 {
+.t-body3-body2,
+.t-label-h6,
+.t-kicker,
+.t-headline,
+.t-brand,
+.t-chip {
   margin: 0;
 }
 
@@ -203,153 +222,179 @@ main[tabindex="-1"]:focus-visible {
   font-family: var(--font-family-display);
 }
 
+/* the heading line height */
+.t-display1,
+.t-display2,
+.t-h1,
+.t-headline,
+.t-brand,
+.t-h2,
+.t-h3,
+.t-h4-h3,
+.t-h3-h2,
+.t-h4,
+.t-h5,
+.t-h6,
+.t-metric1,
+.t-metric2,
+.t-metric3 {
+  line-height: var(--line-height-heading);
+}
+
+/* the text line height */
+.t-body1,
+.t-body2,
+.t-body2-body1,
+.t-body3,
+.t-body3-body2,
+.t-kicker,
+.t-chip,
+.t-label,
+.t-label-h6,
+.t-nav,
+.t-label-sm,
+.t-caption,
+.t-overline,
+.t-button,
+.t-button-md,
+.t-button-sm {
+  line-height: var(--line-height-text);
+}
+
 .t-display1,
 .t-display2,
 .t-h1,
 .t-headline {
-  font-size: clamp(2.25rem, 2.0739rem + 0.7512vw, 2.75rem); /* 36 → 44 */
-  line-height: 1.2222;
+  font-size: var(--font-size-headline);
   font-weight: var(--font-weight-medium);
-  letter-spacing: -0.005em;
+  letter-spacing: var(--tracking-headline);
 }
 .t-headline b,
 .t-headline strong {
-  font-weight: 700;
+  font-weight: var(--font-weight-bold);
   color: var(--color-bg-brand);
 }
 .t-kicker {
-  margin: 0;
-  font-size: 1rem; /* 16 */
-  line-height: 1.25;
+  font-size: var(--font-size-sm); /* 16 */
   font-weight: var(--font-weight-regular);
   color: var(--color-text-secondary);
 }
-.t-headline {
-  margin: 0;
-  text-wrap: balance;
-}
 .t-brand {
-  margin: 0;
-  font-size: 1.25rem; /* 20 */
-  line-height: 1.2;
-  font-weight: 700;
-  letter-spacing: 0.005em;
+  font-size: var(--font-size-lg); /* 20 */
+  font-weight: var(--font-weight-bold);
+  letter-spacing: var(--tracking-brand);
 }
 
 .t-h2 {
-  font-size: clamp(1.75rem, 1.662rem + 0.3756vw, 2rem); /* 28 → 32 */
-  line-height: 1.2143;
+  font-size: var(--font-size-h2);
   font-weight: var(--font-weight-medium);
 }
 .t-h3,
 .t-h4-h3 {
-  font-size: 1.375rem; /* 22 */
-  line-height: 1.2727;
+  font-size: var(--font-size-h3);
   font-weight: var(--font-weight-medium);
 }
 .t-h3-h2 {
-  font-size: clamp(1.375rem, 1.331rem + 0.1878vw, 1.5rem); /* 22 → 24 */
-  line-height: 1.2727;
+  font-size: var(--font-size-h3-h2);
   font-weight: var(--font-weight-medium);
 }
 .t-h4 {
-  font-size: 1.25rem; /* 20 */
-  line-height: 1.2;
+  font-size: var(--font-size-lg); /* 20 */
   font-weight: var(--font-weight-medium);
 }
 .t-h5 {
-  font-size: 1.125rem; /* 18 */
-  line-height: 1.2222;
+  font-size: var(--font-size-md); /* 18 */
   font-weight: var(--font-weight-regular);
 }
 .t-h6 {
-  font-size: 1rem; /* 16 */
-  line-height: 1.25;
+  font-size: var(--font-size-sm); /* 16 */
   font-weight: var(--font-weight-medium);
 }
 
 .t-body1 {
-  font-size: 1.125rem; /* 18 */
-  line-height: 1.3333;
+  font-size: var(--font-size-md); /* 18 */
   font-weight: var(--font-weight-regular);
 }
 .t-body2 {
-  font-size: 1rem; /* 16 */
-  line-height: 1.375;
+  font-size: var(--font-size-sm); /* 16 */
   font-weight: var(--font-weight-regular);
 }
 .t-body2-body1 {
-  font-size: clamp(1rem, 0.956rem + 0.1878vw, 1.125rem); /* 16 → 18 */
-  line-height: 1.375;
+  font-size: var(--font-size-body2-body1);
   font-weight: var(--font-weight-regular);
 }
 .t-body3 {
-  font-size: 0.875rem; /* 14 */
-  line-height: 1.4286;
+  font-size: var(--font-size-xs); /* 14 */
   font-weight: var(--font-weight-regular);
 }
 .t-body3-body2 {
-  font-size: clamp(0.875rem, 0.831rem + 0.1878vw, 1rem); /* 14 → 16 */
-  line-height: 1.4286;
+  font-size: var(--font-size-body3-body2);
   font-weight: var(--font-weight-regular);
 }
 
 .t-label,
 .t-nav {
-  font-size: 0.875rem; /* 14 */
-  line-height: 1.4286;
+  font-size: var(--font-size-xs); /* 14 */
   font-weight: var(--font-weight-medium);
 }
+/* an option row's label: `t-label` on a phone, `t-h6`'s size from 1024 */
+.t-label-h6 {
+  font-size: var(--font-size-xs); /* 14 */
+  font-weight: var(--font-weight-medium);
+}
+@media (min-width: 1024px) {
+  .t-label-h6 {
+    font-size: var(--font-size-sm); /* 16 */
+  }
+}
 .t-label-sm {
-  font-size: 0.75rem; /* 12 */
-  line-height: 1.3333;
+  font-size: var(--font-size-3xs); /* 12 */
   font-weight: var(--font-weight-medium);
 }
 .t-caption {
-  font-size: 0.75rem; /* 12 */
-  line-height: 1.3333;
+  font-size: var(--font-size-3xs); /* 12 */
   font-weight: var(--font-weight-regular);
 }
 .t-overline {
   font-size: var(--font-size-overline); /* 14.4 */
-  line-height: 1.4286;
   font-weight: var(--font-weight-extrabold);
-  letter-spacing: 0.12em;
+  letter-spacing: var(--tracking-overline);
   text-transform: uppercase;
 }
 
-/* the chip label — the reference's 16.5 Regular */
+/* the chip label */
 .t-chip {
-  margin: 0;
-  font-size: 1rem; /* 16 */
-  line-height: 1.25;
+  font-size: var(--font-size-sm); /* 16 */
   font-weight: var(--font-weight-regular);
 }
 
-/* buttons — `Start` and the tabs are 14.3 Medium; the full-width pill takes
-   one step more so the flow's `Continue` still leads its screen */
+/* buttons — the full-width pill takes one step more than the small ones so
+   the flow's `Continue` still leads its screen */
 .t-button {
-  font-size: 0.9375rem; /* 15 */
-  line-height: 1.3333;
+  font-size: var(--font-size-button); /* 15 */
   font-weight: var(--font-weight-medium);
 }
 .t-button-md,
 .t-button-sm {
-  font-size: 0.875rem; /* 14 */
-  line-height: 1.4286;
+  font-size: var(--font-size-xs); /* 14 */
   font-weight: var(--font-weight-medium);
 }
 
-/* the metric ramp — the big figures on data cards */
-.t-metric1 {
-  font-size: var(--font-size-4xl);
-  line-height: var(--line-height-4xl);
+/* the metric ramp — figures on data cards, in the body font */
+.t-metric1,
+.t-metric2,
+.t-metric3 {
+  font-family: var(--font-family-sans);
   font-weight: var(--font-weight-light);
 }
+.t-metric1 {
+  font-size: var(--font-size-4xl); /* 56 */
+}
 .t-metric2 {
-  font-size: var(--font-size-3xl);
-  line-height: var(--line-height-2xl);
-  font-weight: var(--font-weight-light);
+  font-size: var(--font-size-3xl); /* 40 */
+}
+.t-metric3 {
+  font-size: var(--font-size-lg); /* 20 */
 }
 
 /* Typographic wrapping — applied BY ROLE, the same way tabular figures are. */
@@ -362,6 +407,7 @@ main[tabindex="-1"]:focus-visible {
 .t-h6,
 .t-h4-h3,
 .t-h3-h2,
+.t-headline,
 .t-display1,
 .t-display2 {
   text-wrap: balance;

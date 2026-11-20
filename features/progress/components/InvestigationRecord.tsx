@@ -23,7 +23,7 @@ export function InvestigationRecord({
         Investigation record
       </h2>
 
-      <p className={`${styles.summary} t-body3`}>{finding.summary}</p>
+      <p className={`${styles.summary} t-body2`}>{finding.summary}</p>
 
       {finding.pausing ? (
         <>

@@ -252,15 +252,6 @@ col-2  616 fill    symptoms, severity, products */
 }
 
 @media (min-width: 1024px) {
-  .card :global(.t-label-sm),
-  .card :global(.t-caption),
-  .dayTag.dayTag {
-    font-size: var(--font-size-xs);
-    line-height: var(--line-height-xs);
-  }
-}
-
-@media (min-width: 1024px) {
   /* the 16s become the grid's own 24 gutter */
   .card + .card,
   .card + .col1,

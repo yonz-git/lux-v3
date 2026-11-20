@@ -26,7 +26,7 @@ export function OptionRow({
       className={styles.row}
       onClick={onSelect}
     >
-      <span className={`${styles.label} t-label`}>{label}</span>
+      <span className={`${styles.label} t-label-h6`}>{label}</span>
       <span className={styles.selector} data-shape={control} aria-hidden="true">
         {control === "checkbox" && selected && (
           /* aria-hidden on the svg itself, as every glyph in `icons.tsx` is.

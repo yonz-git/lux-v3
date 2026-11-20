@@ -196,7 +196,7 @@ export function SkinProfileSummary({ now }: { now: number }) {
         dismissLabel="Cancel"
       >
         <h2 className={`${styles.confirmTitle} t-h4`}>{COPY.startOverTitle}</h2>
-        <p className={`${styles.confirmBody} t-body3`}>{COPY.startOverBody}</p>
+        <p className={`${styles.confirmBody} t-body2`}>{COPY.startOverBody}</p>
         <Button
           width="action"
           onClick={() => {

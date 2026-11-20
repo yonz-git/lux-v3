@@ -49,7 +49,7 @@ export function SafetyNotice({ show }: { show: boolean }) {
             <p id={labelId} className={`${styles.label} t-overline`}>
               {SAFETY_NOTICE.label}
             </p>
-            <p className={`${styles.body} t-body3-body2`}>
+            <p className={`${styles.body} t-body2`}>
               {SAFETY_NOTICE.body}
             </p>
           </section>

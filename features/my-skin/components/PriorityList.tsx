@@ -19,7 +19,7 @@ export function PriorityList({ entries }: { entries: PriorityEntry[] }) {
               <span className={styles.head}>
                 {/* aria-hidden: the ordinal is already carried by the <ol>, and
                     a screen reader reading "1. 1. CeraVe…" is noise. */}
-                <span className={styles.rank} aria-hidden="true">
+                <span className={`${styles.rank} t-body3`} aria-hidden="true">
                   {i + 1}
                 </span>
                 <span className={styles.name}>{fullName(entry.product)}</span>
@@ -56,7 +56,7 @@ function Section({
       <p className={`${styles.sectionTitle} t-overline`}>{title}</p>
       <ul className={styles.reasons} data-muted={muted ? "true" : undefined}>
         {items.map((r) => (
-          <li key={r} className="t-body3">
+          <li key={r} className="t-body2">
             {r}
           </li>
         ))}

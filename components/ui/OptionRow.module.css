@@ -63,13 +63,6 @@
 }
 
 @media (min-width: 1024px) {
-  /* Size=Desktop swaps the label style: `Label` (Medium 14/20) -> `H6`
-     (Medium 16/24). */
-  .label {
-    font-size: var(--font-size-sm);
-    line-height: 1.5; /* 24 on 16 */
-  }
-
   .row {
     min-height: 58px;
   }

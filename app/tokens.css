@@ -231,6 +231,22 @@
   --line-height-4xl: 3.75rem; /* 60px */
   --line-height-5xl: 4.75rem; /* 76px */
   --line-height-6xl: 6rem; /* 96px */
+  /* The type roles' sizes that sit between the steps above; `a-b` roles grow
+     from a at 375 to b at 1440. */
+  --font-size-headline: clamp(2.25rem, 2.0739rem + 0.7512vw, 2.75rem); /* 36 → 44 */
+  --font-size-h2: clamp(1.75rem, 1.662rem + 0.3756vw, 2rem); /* 28 → 32 */
+  --font-size-h3: 1.375rem; /* 22 */
+  --font-size-h3-h2: clamp(1.375rem, 1.331rem + 0.1878vw, 1.5rem); /* 22 → 24 */
+  --font-size-body2-body1: clamp(1rem, 0.956rem + 0.1878vw, 1.125rem); /* 16 → 18 */
+  --font-size-body3-body2: clamp(0.875rem, 0.831rem + 0.1878vw, 1rem); /* 14 → 16 */
+  --font-size-button: 0.9375rem; /* 15 */
+  /* the smallest any label may shrink to (HIG): FaceDiagram's labels scale
+     with the diagram down to this */
+  --font-size-floor: 0.6875rem; /* 11 */
+  /* Two line heights for every role: headings, titles and figures share one,
+     running text, labels and controls the other. */
+  --line-height-heading: 1.2;
+  --line-height-text: 1.4;
   /* the orb's hero bubble (`ChatBubble size="hero"`): 26 on 16, 28 on 18
      from 1024 */
   --line-height-bubble-hero: 1.625;
@@ -240,6 +256,9 @@
   --tracking-wide: 0.0444rem; /* 0.71px */
   --tracking-wider: 0.1044rem; /* 1.67px */
   --tracking-widest: 0.875rem; /* 14px */
+  --tracking-headline: -0.005em;
+  --tracking-brand: 0.005em;
+  --tracking-overline: 0.12em;
   /* ---- 07 Size ------------------------------------------------------------ */
   --size-icon-2xs: 0.75rem; /* 12px — the glyph in the 20 and 26 `IconButton` discs */
   --size-icon-xs: 1rem; /* 16px */

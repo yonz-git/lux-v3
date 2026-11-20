@@ -424,11 +424,6 @@
   }
 }
 
-.head > .overline {
-  font-size: 1.125rem; /* 18 */
-  line-height: 1.3333;
-}
-
 /* On a phone the heading shares the top row with the sheet's corner ✕ (both
    start at the tray's 20 padding), so the caps centre on the ✕. From 480 the
    tablet dialog's 48 padding puts the heading below it. */
