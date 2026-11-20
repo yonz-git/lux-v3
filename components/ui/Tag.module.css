@@ -18,6 +18,25 @@
   color: #fff;
 }
 
+/* the soft pills: a tint on the glass, a hairline and ink of the same hue,
+   medium — as the skin profile's answers and symptom state */
+.tag[data-variant="answer"],
+.tag[data-variant="symptom"] {
+  font-weight: var(--font-weight-medium);
+}
+
+.tag[data-variant="answer"] {
+  background: var(--color-bg-answer-soft);
+  border-color: var(--color-border-answer-soft);
+  color: var(--color-text-answer-soft);
+}
+
+.tag[data-variant="symptom"] {
+  background: var(--color-bg-symptom-soft);
+  border-color: var(--color-border-symptom-soft);
+  color: var(--color-text-symptom-soft);
+}
+
 /* `size="sm"` — 8 a side (Tag.tsx) */
 .tag[data-size="sm"] {
   padding: 0 var(--space-sm);

@@ -1,6 +1,7 @@
 import styles from "./Tag.module.css";
 
-/** Tag — Figma component set 256:85. `Style=Neutral | Brand`. */
+/** Tag — Figma component set 256:85. `Style=Neutral | Brand`, plus the soft
+ *  `answer` (teal) and `symptom` (red) pills the skin profile uses. */
 export function Tag({
   children,
   variant = "neutral",
@@ -9,7 +10,7 @@ export function Tag({
   ...rest
 }: {
   children: React.ReactNode;
-  variant?: "neutral" | "brand";
+  variant?: "neutral" | "brand" | "answer" | "symptom";
   size?: "default" | "sm";
   className?: string;
 } & React.ComponentPropsWithoutRef<"span">) {

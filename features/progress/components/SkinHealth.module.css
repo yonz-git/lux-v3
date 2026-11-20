@@ -1,0 +1,187 @@
+/* Skin health — see SkinHealth.tsx.
+
+   heading row (title, window toggle) -> 24 -> the reading card -> 16 -> two
+   tiles -> 16 -> the reading line. Every card is DataCard (24 in, 16 between
+   its blocks); nothing here sets a type size, only the gaps and the chart. */
+
+.page {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-lg); /* 16 */
+  width: 100%;
+}
+
+/* the title at the left, the toggle at the right, on one centre line */
+.header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-md); /* 12 */
+  margin-top: var(--space-3xl); /* 32 */
+  margin-bottom: var(--space-sm); /* 8 on the page's 16: 24 to the first card */
+}
+
+.toggle {
+  flex: none;
+}
+
+/* ---- the reading card ---------------------------------------------------- */
+
+.label {
+  display: flex;
+  align-items: center;
+  gap: var(--space-sm); /* 8 */
+  margin: 0;
+  color: var(--color-text-muted);
+}
+
+.liveDot {
+  flex: none;
+  width: var(--space-sm);
+  height: var(--space-sm);
+  border-radius: var(--radius-full);
+  background: var(--color-feedback-success);
+}
+
+/* the score and its `/ 10` on one baseline */
+.score {
+  display: flex;
+  align-items: baseline;
+  gap: var(--space-xs); /* 4 */
+  margin: 0;
+  color: var(--color-text-primary);
+}
+
+.unit {
+  color: var(--color-text-secondary);
+}
+
+.verdict {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: var(--space-sm); /* 8 */
+  color: var(--color-text-primary);
+}
+
+.verdict > p {
+  margin: 0;
+}
+
+.none {
+  margin: 0;
+  color: var(--color-text-secondary);
+}
+
+.chart {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-sm); /* 8 */
+}
+
+.plot {
+  position: relative;
+  height: var(--size-health-chart); /* 120 */
+}
+
+/* the start, middle and today, as faint dashed rules */
+.grid {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  left: var(--x);
+  border-left: var(--border-width-hairline) dashed var(--color-border-glass);
+}
+
+.line {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  overflow: visible;
+  color: var(--color-text-ink);
+}
+
+.dot {
+  position: absolute;
+  box-sizing: border-box;
+  width: var(--size-chart-dot);
+  height: var(--size-chart-dot);
+  border-radius: var(--radius-full);
+  border: var(--border-width-thin) solid var(--color-text-on-brand);
+  background: var(--color-bg-brand);
+  transform: translate(-50%, -50%);
+  transition:
+    left var(--duration-move) var(--ease-in-out),
+    top var(--duration-move) var(--ease-in-out);
+}
+
+.ticks {
+  display: flex;
+  justify-content: space-between;
+  color: var(--color-text-muted);
+  font-variant-numeric: tabular-nums;
+}
+
+/* ---- the two tiles ------------------------------------------------------- */
+
+.tiles {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: var(--space-lg); /* 16, as between the cards */
+}
+
+.tileLabel {
+  display: flex;
+  align-items: center;
+  gap: var(--space-sm); /* 8 */
+  margin: 0;
+  color: var(--color-text-muted);
+}
+
+.tileIcon {
+  flex: none;
+  width: var(--size-icon-sm);
+  height: var(--size-icon-sm);
+}
+
+.tileValue {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  gap: var(--space-xs); /* 4 */
+  margin: 0;
+  color: var(--color-text-primary);
+}
+
+/* ---- the reading line ---------------------------------------------------- */
+
+.insight {
+  display: flex;
+  align-items: center;
+  gap: var(--space-md); /* 12 */
+}
+
+.insightIcon {
+  flex: none;
+  display: grid;
+  place-items: center;
+  width: var(--size-thumb-sm); /* 40 */
+  height: var(--size-thumb-sm);
+  border-radius: var(--radius-full);
+  border: var(--border-width-hairline) solid var(--color-border-answer-soft);
+  background: var(--color-bg-answer-soft);
+  color: var(--color-text-answer-soft);
+}
+
+.insightIcon svg {
+  width: var(--size-icon-sm);
+  height: var(--size-icon-sm);
+}
+
+.insightText {
+  flex: 1;
+  min-width: 0;
+  margin: 0;
+  color: var(--color-text-primary);
+}

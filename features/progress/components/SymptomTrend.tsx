@@ -15,6 +15,7 @@ import {
   trendReading,
 } from "@/features/progress/progress";
 import { formatShort, fromIso, sameDay, toIso } from "@/lib/date";
+import { smoothPath } from "@/features/progress/trendPath";
 
 export function SymptomTrend({
   checkIns,
@@ -186,19 +187,6 @@ export function SymptomTrend({
       )}
     </DataCard>
   );
-}
-
-/** A smooth line through the points, each segment eased with horizontal
- *  control points so it never overshoots a band. */
-function smoothPath(pts: [number, number][]): string {
-  return pts
-    .map(([x, y], i) => {
-      if (i === 0) return `M${x} ${y}`;
-      const [x0, y0] = pts[i - 1];
-      const dx = (x - x0) / 2;
-      return `C${x0 + dx} ${y0} ${x - dx} ${y} ${x} ${y}`;
-    })
-    .join(" ");
 }
 
 /** The pill centres on its line, and holds to the plot's edge near either end

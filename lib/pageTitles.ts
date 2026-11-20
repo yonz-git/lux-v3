@@ -9,6 +9,7 @@ const HUB_TITLES: Record<string, string> = {
   "/progress": "Progress",
   "/progress/empty": "Progress, no check-ins yet",
   "/progress/check-in": "Daily check-in",
+  "/progress/health": "Skin health",
   "/check": "Analysis",
   "/check/no-profile": "Analysis, no skin profile",
   "/check/new": "Compatibility analysis",

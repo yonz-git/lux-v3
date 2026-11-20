@@ -298,6 +298,53 @@ export function checkInsFor(a: Answers, view: ProgressView): CheckIn[] {
   return recorded.reduce(recordCheckIn, []);
 }
 
+/* SKIN HEALTH — `/progress/health`
+
+   The latest reading over a chosen window, the range and the count inside it,
+   and the one-line reading. Every figure comes from the user's check-ins; a
+   window never reaches back before the investigation started. */
+
+/** The screen's three windows. One check-in a day, so the shortest is a week. */
+export const HEALTH_WINDOWS = [
+  { label: "Week", days: 7 },
+  { label: "Month", days: 30 },
+  { label: "All", days: null },
+] as const;
+
+/** The window's first day: `days` back from today, or the start for `All`. */
+export function windowStart(view: ProgressView, days: number | null): Date {
+  if (days === null) return view.start;
+  const from = addDays(view.today, 1 - days);
+  return daysBetween(view.start, from) >= 0 ? from : view.start;
+}
+
+/** The check-ins from `from` to today, oldest first. */
+export function checkInsSince(list: CheckIn[], from: Date): CheckIn[] {
+  return list.filter((c) => {
+    const day = fromIso(c.date);
+    return day !== null && daysBetween(from, day) >= 0;
+  });
+}
+
+/** The lowest and highest severity in a list, or null when it is empty. */
+export function severityRange(
+  list: CheckIn[]
+): { low: number; high: number } | null {
+  if (list.length === 0) return null;
+  const values = list.map((c) => c.severity);
+  return { low: Math.min(...values), high: Math.max(...values) };
+}
+
+/** Turn 1's answer, as the pill under the latest reading says it. */
+export function directionLabel(
+  direction: CheckIn["direction"]
+): string | null {
+  if (direction === "better") return "Better than last time";
+  if (direction === "same") return "Same as last time";
+  if (direction === "worse") return "Worse than last time";
+  return null;
+}
+
 /* CHECK-IN DETAIL — `Check-in detail` (556:1330 / 557:1353)
 
    The historical record for ONE day, opened from the Progress calendar. The

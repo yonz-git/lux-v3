@@ -59,6 +59,7 @@ lib/                 date.ts, pageTitles.ts, actives.ts
 | `/progress/empty` | prototype empty state | `my-skin` |
 | `/progress/check-in` | pushed, check-in chat | `my-skin` |
 | `/progress/check-in/[date]` | pushed, only dynamic route | `my-skin` |
+| `/progress/health` | pushed, latest reading over Week / Month / All | `my-skin` |
 | `/check` | hub, default, titled `Analysis` | `check` |
 | `/check/no-profile` | prototype empty state | `check` |
 | `/check/new` | pushed, build a check | `check` |
@@ -135,7 +136,7 @@ lib/                 date.ts, pageTitles.ts, actives.ts
 | `EditToggle` | Edit/Save toggle |
 | `Chip` | `label`, `selected`, `control?: "checkbox" \| "radio"`, `onToggle` |
 | `OptionRow` | `control: "radio" \| "checkbox"`, `label`, `selected`, `onSelect` |
-| `Tag` | `children`, `variant?: "neutral" \| "brand"` |
+| `Tag` | `children`, `variant?: "neutral" \| "brand" \| "answer" \| "symptom"` (the last two: soft teal / red pills, medium) |
 | `TextField` | input attrs + `ref?` |
 | `DateField` | `value?`, `onChange`, `id?`, `placeholder?` |
 | `SearchField` | `value`, `onChange`, `placeholder?`, `label`, `action?`, `variant?: "glass" \| "clear"` |
