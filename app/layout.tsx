@@ -31,6 +31,9 @@ export const metadata: Metadata = {
 export const viewport: Viewport = {
   width: "device-width",
   initialScale: 1,
+  /* the page runs under the notch and home indicator; the screen padding and
+     the nav keep content out of them with `env(safe-area-inset-*)` */
+  viewportFit: "cover",
   themeColor: "#d3e4e7",
 };
 

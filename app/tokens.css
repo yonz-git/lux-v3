@@ -180,6 +180,10 @@
   --margin-mobile: 1.5rem; /* 24px */
   --margin-tablet: 2.5rem; /* 40px */
   --margin-desktop: 5rem; /* 80px */
+  /* a screen's side margins: the mobile margin, or the device's safe area
+     where that is wider (an iPhone on its side) */
+  --margin-screen-left: max(var(--margin-mobile), env(safe-area-inset-left));
+  --margin-screen-right: max(var(--margin-mobile), env(safe-area-inset-right));
   --columns-mobile: 4;
   --columns-tablet: 8;
   --columns-desktop: 12;
@@ -273,6 +277,7 @@
   --size-round-sm: 1.625rem; /* 26px — `IconButton size="sm"` */
   /* the segmented toggle's pill and `Button size="sm"`: one indigo `Add product` */
   --size-button-sm: 2.625rem; /* 42px */
+  --size-small-button: 2.8rem; /* 44.8px — `SmallButton`'s height */
   --size-button-lg: 3.5rem; /* 56px — `Button`'s default height */
   /* the large primary button: its height and widest (desktop values below) */
   --size-button-primary: 3.4rem; /* 54.4px */
@@ -509,7 +514,9 @@
 }
 
 :root {
-  --nav-inset-bottom: var(--space-sm);
+  /* the nav's gap to the bottom edge, never inside the home indicator's
+     safe area */
+  --nav-inset-bottom: max(var(--space-sm), env(safe-area-inset-bottom));
   /* where a screen's main button rests: its bottom edge 120 above the nav, at
      every width and height. A screen reserves this under its content and lets
      a spacer push the button down to it; taller content pushes past it. */
@@ -627,7 +634,7 @@
 
 @media (min-width: 1024px) {
   :root {
-    --nav-inset-bottom: var(--space-md); /* 12, half the Welcome board's 24 */
+    --nav-inset-bottom: max(var(--space-md), env(safe-area-inset-bottom)); /* 12, half the Welcome board's 24 */
     --space-hero-action: 6.25rem; /* 100 */
     --line-height-bubble-hero: 1.5556;
     --size-button-primary: 3.6rem; /* 57.6px */

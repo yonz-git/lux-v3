@@ -518,6 +518,12 @@ other role, page titles included, stays one size.
 
 ## Layout
 
+**Safe area.** The page runs edge to edge (`viewport-fit=cover`). Screen
+side margins are `--margin-screen-left/right` (24, or the device's safe area
+where wider), the top padding adds `env(safe-area-inset-top)`, and the nav's
+gap to the bottom edge, `--nav-inset-bottom`, never falls inside the home
+indicator's area. On a device without insets nothing changes.
+
 The spacing scale runs 2 · 4 · 8 · 12 · 16 · 20 · 24 · 32 · 40 · 48 · 64 · 80 ·
 96 · 120, written in rem (0.125rem … 7.5rem) so spacing grows with the
 reader's text size. Pills in a row sit `--space-pill-gap` (4) apart, app-wide. Reach for the five roles first; they are the gaps the references

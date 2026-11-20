@@ -79,19 +79,16 @@ export function MyProducts() {
             </li>
           ))}
         </ul>
-      </HubScreen>
 
-      {/* fixed above the nav, so it is on screen however long the groups run;
-          it steps aside while the tray it opens is up */}
-      <div
-        className={styles.addMore}
-        data-hidden={sheetOpen || undefined}
-        inert={sheetOpen}
-      >
-        <Button variant="secondary" width="action" onClick={() => openSheet(null)}>
-          Add your products
-        </Button>
-      </div>
+        {/* under the groups it adds to, in the small pill */}
+        <div className={styles.addMore}>
+          <SmallButton
+            label="Add your products"
+            arrow={false}
+            onClick={() => openSheet(null)}
+          />
+        </div>
+      </HubScreen>
 
       {/* one tray, outside the screen, so it stays on "Product added" while
           the groups re-render under it */}

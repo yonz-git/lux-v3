@@ -464,8 +464,10 @@ main[tabindex="-1"]:focus-visible {
 
   /* the fixed nav sits `--nav-inset-bottom` off the bottom and is 75 tall;
      16 of clearance above it is the same reservation the Figma screens make. */
-  padding: var(--content-top) var(--margin-mobile)
-    calc(var(--nav-inset-bottom) + var(--size-nav-height) + var(--space-lg));
+  padding: calc(var(--content-top) + env(safe-area-inset-top))
+    var(--margin-screen-right)
+    calc(var(--nav-inset-bottom) + var(--size-nav-height) + var(--space-lg))
+    var(--margin-screen-left);
 }
 
 .screen[data-tight-top] {

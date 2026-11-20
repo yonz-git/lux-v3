@@ -180,54 +180,11 @@
   --collapse-gap: var(--space-sm);
 }
 
-/* fixed 12 above the nav and centred on it, rising in once the screen has
-   arrived; as wide as the footer's Start analysis — the screen's margins, up
-   to the action width */
+/* 24 under the groups, centred */
 .addMore {
-  position: fixed;
-  left: 50%;
-  width: min(100% - 2 * var(--margin-mobile), var(--width-action-mobile));
-  bottom: calc(
-    var(--nav-inset-bottom) + var(--size-nav-height) + var(--space-md)
-  );
-  translate: -50% 0;
-  z-index: var(--z-nav);
-  animation: add-rise var(--duration-slower) var(--ease-in-out) 400ms backwards;
-  transition:
-    opacity var(--duration-slow) var(--ease-in-out),
-    transform var(--duration-slower) var(--ease-in-out);
-}
-
-.addMore[data-hidden] {
-  opacity: 0;
-  transform: translateY(var(--space-md));
-  pointer-events: none;
-}
-
-@keyframes add-rise {
-  from {
-    opacity: 0;
-    transform: translateY(var(--space-md));
-  }
-}
-
-/* the screen's end clears the button as well as the nav */
-:global(.screen[data-layout="hub"]):has(~ .addMore) {
-  padding-bottom: calc(
-    var(--nav-inset-bottom) + var(--size-nav-height) + var(--space-md) +
-      var(--size-button-lg) + var(--space-lg)
-  );
-}
-
-@media (prefers-reduced-motion: reduce) {
-  .addMore {
-    animation: none;
-    transition: opacity var(--duration-slow) var(--ease-in-out);
-  }
-
-  .addMore[data-hidden] {
-    transform: none;
-  }
+  display: flex;
+  justify-content: center;
+  margin-top: var(--space-2xl);
 }
 
 @media (prefers-reduced-transparency: reduce) {
@@ -241,10 +198,6 @@
 @media (min-width: 1024px) {
   .category {
     display: flex;
-  }
-
-  .addMore {
-    width: var(--width-action); /* the desktop footer's width */
   }
 
   /* name + window travel together and take the slack, so the count and

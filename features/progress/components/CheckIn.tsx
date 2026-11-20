@@ -8,6 +8,7 @@ import { ChatPanel } from "@/components/layout/ChatPanel";
 import { ChatBubble } from "@/components/ui/ChatBubble";
 import { Chip } from "@/components/ui/Chip";
 import { Button } from "@/components/ui/Button";
+import { SmallButton } from "@/components/ui/SmallButton";
 import { Collapse } from "@/components/ui/Collapse";
 import { Sheet } from "@/components/ui/Sheet";
 import { CameraCapture } from "@/components/ui/CameraCapture";
@@ -258,9 +259,9 @@ export function CheckInPanel({
               </ChatBubble>
 
               <div className={styles.extras} data-reveal>
-                <Button
-                  variant="secondary"
-                  size="md"
+                <SmallButton
+                  label="Add a note"
+                  arrow={false}
                   icon={<NoteIcon />}
                   aria-pressed={note !== null}
                   onClick={() => {
@@ -270,19 +271,15 @@ export function CheckInPanel({
                       closeNote();
                     }
                   }}
-                >
-                  Add a note
-                </Button>
+                />
 
-                <Button
-                  variant="secondary"
-                  size="md"
+                <SmallButton
+                  label={photo ? "Retake photo" : "Take a photo"}
+                  arrow={false}
                   icon={<CameraIcon />}
                   aria-pressed={photo}
                   onClick={() => setCamera(true)}
-                >
-                  {photo ? "Retake photo" : "Take a photo"}
-                </Button>
+                />
               </div>
 
               <Collapse open={noteOpen}>

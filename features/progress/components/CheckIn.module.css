@@ -52,7 +52,7 @@
 .extras {
   display: flex;
   flex-wrap: wrap;
-  gap: var(--space-md); /* 12 */
+  gap: var(--space-sm); /* 8 */
 }
 
 /* The capture OVERLAY's body — `Sheet` owns the tray, the scrim and `Done`, so

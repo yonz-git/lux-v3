@@ -19,7 +19,7 @@ type Props = {
 } & Omit<ButtonHTMLAttributes<HTMLButtonElement>, "className">;
 
 /**
- * Small Button — the reference's glass pill at control height (36): the Storyboard's
+ * Small Button — the glass pill at `--size-small-button` (44.8): the Storyboard's
  * time pill (`00:00`) and the chips' material, holding a worded action such as
  * `Save & exit` or `Update photo`. Label `t-button-sm` (14 Medium) in the
  * app's ink; a leading icon takes the brand indigo, the way every glyph

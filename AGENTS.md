@@ -155,7 +155,8 @@ lib/                 date.ts, pageTitles.ts, actives.ts
 ## Rules
 
 - Buttons: hover reverses the gradient; disabled = opacity 0.4. `@property` initial values must match the tokens.
-- Bottom nav: fixed, same on every screen, 4 items. Offset is `--nav-inset-bottom`, never a literal. `surface/frost-nav`, opaque `bg/nav` fallback, dark ink. Height ≥ 56.
+- Bottom nav: fixed, same on every screen, 4 items. Offset is `--nav-inset-bottom`, never a literal. It includes the home indicator's safe area.
+- Safe area: `viewport-fit=cover`. Screen sides use `--margin-screen-left/right`, the top adds `env(safe-area-inset-top)`. A new full-screen surface does the same. `surface/frost-nav`, opaque `bg/nav` fallback, dark ink. Height ≥ 56.
 - Chat bubbles: opaque, no border, one tail corner.
 - Fixed-height row with a border: `min-height`, no vertical padding.
 - Gradient + border: `background-origin: border-box`.
