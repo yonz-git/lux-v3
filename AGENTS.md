@@ -140,7 +140,7 @@ lib/                 date.ts, pageTitles.ts, actives.ts
 | `DateField` | `value?`, `onChange`, `id?`, `placeholder?` |
 | `SearchField` | `value`, `onChange`, `placeholder?`, `label`, `action?`, `variant?: "glass" \| "clear"` |
 | `SearchDropdown` | `placement: "float" \| "flow"`, `leaving?`, `heading?`; children `SearchDropdownList` > `SearchDropdownRow` (`leading`, `title`, `meta?`, `trailing?`, `onSelect?`) or `SearchDropdownNote` |
-| `ChatBubble` | `from: "ai" \| "user"`, `align?`, `full?`, `size?: "default" \| "compact" \| "hero"` (hero = the orb's line on Welcome and `/check`) |
+| `ChatBubble` | `from: "ai" \| "user"`, `align?`, `full?`, `size?: "default" \| "compact" \| "hero"` (hero = the orb's line on Welcome and `/check`, and the check-in's turns) |
 | `CoachBubble` | `children`, `className?`, `bubbleClassName?` — orb beside an AI bubble, orb centred on the first line |
 | `Sheet` | `open`, `onClose`, `title`, `children` |
 | `Collapse` | `open`, `as?`, `appear?` |

@@ -29,7 +29,8 @@ export function ChatBubble({
   /** span the whole content column instead of hugging the text */
   full?: boolean;
   hug?: boolean;
-  /** `hero`: the orb's line on Welcome and `/check`, with airier lines */
+  /** `hero`: the orb's line on Welcome and `/check`, and the check-in's
+   *  turns, with airier lines */
   size?: "default" | "compact" | "hero";
   entrance?: boolean;
   /** applied to the bubble itself, not the row — e.g. an entrance animation */

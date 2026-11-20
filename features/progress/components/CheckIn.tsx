@@ -193,7 +193,7 @@ export function CheckInPanel({
         <div className={styles.chat}>
           {/* ---- turn 1 — how is it today, relative to last time ------------ */}
           <div className={styles.turn}>
-            <ChatBubble from="ai" size="compact" hug>How is your skin doing today?</ChatBubble>
+            <ChatBubble from="ai" size="hero" hug>How is your skin doing today?</ChatBubble>
 
             <div
               className={styles.options}
@@ -218,7 +218,7 @@ export function CheckInPanel({
           {/* ---- turn 2 — what specifically changed ------------------------- */}
           {choice && (
             <div className={styles.turn} ref={turn2Ref}>
-              <ChatBubble from="ai" size="compact" hug>
+              <ChatBubble from="ai" size="hero" hug>
                   {changeReply(choice.direction)}
                 </ChatBubble>
 
@@ -255,7 +255,7 @@ export function CheckInPanel({
           {/* ---- turn 3 — optional note and photo --------------------------- */}
           <Collapse open={askedExtras}>
             <div className={styles.turn} ref={turn3Ref}>
-              <ChatBubble from="ai" size="compact" hug>
+              <ChatBubble from="ai" size="hero" hug>
                 Would you like to add any notes or take a photo?
               </ChatBubble>
 
