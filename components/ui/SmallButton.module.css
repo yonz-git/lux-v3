@@ -1,6 +1,6 @@
 /* Small Button — the secondary pill at 44.8 tall. See SmallButton.tsx.
    The secondary gradient (`Button`'s `.secondary`, step 1's `Undo`) inside
-   the 1px indigo edge, the inset rim, radius full. Hover exchanges the
+   a soft indigo edge, the inset rim, radius full. Hover exchanges the
    gradient's ends; pressed is the shared `pressable` overlay; disabled is
    the whole control at 0.4. */
 
@@ -14,14 +14,14 @@
   gap: var(--space-xs);
   min-height: var(--size-small-button);
   padding: 0 var(--space-lg);
-  border: var(--border-width-hairline) solid var(--color-border-button-secondary);
+  border: var(--border-width-hairline) solid var(--color-border-small-button);
   border-radius: var(--radius-full);
   color: var(--color-text-primary);
   background: linear-gradient(90deg, var(--grad-start), var(--grad-end)) padding-box;
   box-shadow: var(--shadow-glass);
-  /* the `Undo`'s frost, as `Button`'s `.secondary` */
-  -webkit-backdrop-filter: blur(var(--blur-card)) saturate(160%);
-  backdrop-filter: blur(var(--blur-card)) saturate(160%);
+  /* frost without the saturation boost, which tinted the page behind blue */
+  -webkit-backdrop-filter: blur(var(--blur-card));
+  backdrop-filter: blur(var(--blur-card));
   text-decoration: none;
   white-space: nowrap;
   cursor: pointer;

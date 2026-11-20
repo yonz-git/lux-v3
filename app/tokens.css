@@ -83,6 +83,7 @@
   --color-border-glass: rgb(255 255 255 / 0.3);
   --color-border-highlight: rgba(255, 255, 255, 0.9);
   --color-border-button-secondary: var(--color-bg-brand);
+  --color-border-small-button: #35396a6b; /* the small pill's edge: the brand indigo at 42% */
   --color-bg-glass: rgba(255, 255, 255, 0.5);
   --color-bg-glass-strong: rgba(255, 255, 255, 0.72);
   /* SOLID nav background — the prefers-reduced-transparency fallback for
