@@ -79,6 +79,7 @@
   -webkit-backdrop-filter: blur(var(--blur-sm));
   backdrop-filter: blur(var(--blur-sm));
   color: var(--color-text-answer-soft);
+  font-weight: var(--font-weight-medium); /* 500, over the text role's regular */
 }
 
 @media (prefers-reduced-transparency: reduce) {
