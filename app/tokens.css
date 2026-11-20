@@ -244,9 +244,9 @@
   --font-size-body2-body1: clamp(1rem, 0.956rem + 0.1878vw, 1.125rem); /* 16 → 18 */
   --font-size-body3-body2: clamp(0.875rem, 0.831rem + 0.1878vw, 1rem); /* 14 → 16 */
   --font-size-button: 0.9375rem; /* 15 */
-  /* the large primary's label: 19.2 on a phone, `--font-size-button` (15)
+  /* the large primary's label: 16 on a phone, `--font-size-button` (15)
      from 1024 */
-  --font-size-button-primary: 1.2rem;
+  --font-size-button-primary: 1rem;
   /* the smallest any label may shrink to (HIG): FaceDiagram's labels scale
      with the diagram down to this */
   --font-size-floor: 0.6875rem; /* 11 */
@@ -605,6 +605,7 @@
   --space-gutter: var(--space-2xl); /* 24 — screen edge; panel's side padding */
   --space-panel: var(--space-3xl); /* 32 — panel's top padding to its label  */
   --space-section: var(--space-5xl); /* 48 — headline block to the next block  */
+  --space-sheet-float: 3vw; /* a phone modal's clearance from every screen edge */
   /* ---- control sizes ------------------------------------------------------ */
   --size-round: 3.5rem; /* every round button: back, ✕, +, mic, send  */
   --size-chip: 2.75rem; /* 44px */

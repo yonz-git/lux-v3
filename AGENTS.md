@@ -129,7 +129,7 @@ lib/                 date.ts, pageTitles.ts, actives.ts
 | Component | Props |
 | --- | --- |
 | `Button` | `variant?: "primary" \| "secondary" \| "text"`, `size?: "lg" \| "md" \| "sm"` (56/48/42), `width?: "hug" \| "full" \| "action"`, `href?`, `icon?` |
-| | large primary: `--size-button-primary` tall, a main action at most `--width-button-primary` wide (mobile: 64 tall, its full column, label 19.2 `t-button-primary`; desktop: 57.6/288, label 15) |
+| | large primary: `--size-button-primary` tall, a main action at most `--width-button-primary` wide (mobile: 64 tall, its full column, label 16 `t-button-primary`; desktop: 57.6/288, label 15) |
 | `IconButton` | `label`, `variant?: "glass" \| "ring" \| "primary" \| "outline" \| "soft"`, `size?: "lg" \| "md" \| "sm" \| "xs"` (56/32/26/20), `href?`, `ref?` |
 | `SmallButton` | `label`, `arrow?`, `href?`, `className?` |
 | `EditToggle` | Edit/Save toggle |

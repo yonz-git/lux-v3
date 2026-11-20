@@ -66,3 +66,15 @@
     calc(var(--nav-inset-bottom) + var(--size-nav-height) + var(--space-lg))
     var(--margin-screen-left);
 }
+
+/* on a phone the panel takes the whole screen over the nav (`ChatPanel
+   modal`), floating `--space-sheet-float` in from every edge, or the safe
+   area where that is deeper */
+@media (max-width: 1023.98px) {
+  .overlay {
+    padding: max(var(--space-sheet-float), env(safe-area-inset-top))
+      max(var(--space-sheet-float), env(safe-area-inset-right))
+      max(var(--space-sheet-float), env(safe-area-inset-bottom))
+      max(var(--space-sheet-float), env(safe-area-inset-left));
+  }
+}

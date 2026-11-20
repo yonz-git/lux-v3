@@ -172,6 +172,7 @@ export function CheckInPanel({
         closeHref={closeHref}
         onClose={onClose}
         closeLabel="Close check-in"
+        modal={onClose !== undefined}
         heading={heading ?? <h1 className="visually-hidden">Daily Check-in</h1>}
         footer={
           <Button width="action"

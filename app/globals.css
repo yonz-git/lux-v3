@@ -376,7 +376,7 @@ main[tabindex="-1"]:focus-visible {
   font-size: var(--font-size-button); /* 15 */
   font-weight: var(--font-weight-medium);
 }
-/* the large primary's label: 19.2 on a phone, 15 from 1024 */
+/* the large primary's label: 16 on a phone, 15 from 1024 */
 .t-button-primary {
   font-size: var(--font-size-button-primary);
   font-weight: var(--font-weight-medium);

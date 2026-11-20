@@ -110,6 +110,14 @@
   display: none; /* Chrome, Safari, Chromium Edge */
 }
 
+/* MODAL, on a phone: as wide and tall as the frame around it allows (the
+   overlay keeps `--space-sheet-float` clear on every side) */
+@media (max-width: 1023.98px) {
+  .panel[data-modal] {
+    max-width: none;
+  }
+}
+
 /* DESKTOP */
 
 @media (min-width: 1024px) {

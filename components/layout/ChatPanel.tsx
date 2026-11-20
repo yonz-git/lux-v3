@@ -20,6 +20,7 @@ export function ChatPanel({
   heading,
   footer,
   bodyProps,
+  modal,
   children,
 }: {
   /** where the X goes — the screen's own way out, not a shared destination */
@@ -32,10 +33,18 @@ export function ChatPanel({
   footer?: ReactNode;
   /** forwarded to the scrolling body — a ref, a label, an aria role */
   bodyProps?: React.HTMLAttributes<HTMLDivElement>;
+  /** a modal on a phone: the panel takes the whole screen, still floating,
+   *  inside `--space-sheet-float` and over the nav; from 1024 it is the
+   *  floating panel as usual */
+  modal?: boolean;
   children: ReactNode;
 }) {
   return (
-    <div className={styles.panel} data-reveal>
+    <div
+      className={styles.panel}
+      data-modal={modal || undefined}
+      data-reveal
+    >
       {heading}
 
       <div className={styles.header}>
