@@ -71,8 +71,8 @@
   overflow-wrap: anywhere;
   padding: 0 var(--space-md); /* 12 */
   border-radius: var(--radius-full);
-  border: var(--border-width-hairline) solid var(--color-ink-profile-pill);
-  background-color: transparent;
+  border: var(--border-width-hairline) solid #869ea626;
+  background-color: #106a7fe3;
   background-origin: border-box;
   background-image: linear-gradient(
     135deg,
@@ -83,12 +83,12 @@
   box-shadow: inset 0 1px 0 #ffffff0d, var(--shadow-sm);
   -webkit-backdrop-filter: blur(1px);
   backdrop-filter: blur(1px);
-  color: var(--color-ink-profile-pill);
-  font-weight: var(--font-weight-semibold);
+  color: var(--color-text-on-brand);
 }
 
 @media (prefers-reduced-transparency: reduce) {
   .tileValue {
+    background-color: #106a7f;
     -webkit-backdrop-filter: none;
     backdrop-filter: none;
   }
@@ -97,7 +97,6 @@
 .tileValue[data-tone="symptom"] {
   border-color: transparent;
   background-color: transparent;
-  color: var(--color-text-on-brand);
   background-image: linear-gradient(
     135deg,
     color-mix(in srgb, var(--color-bg-symptom) 88%, transparent) 35%,

@@ -44,8 +44,6 @@
   --color-bg-brand-hover: #242750;
   /* the routine card's dark teal base; the products hub's count badge too */
   --color-bg-routine: #005461;
-  /* the skin profile tiles' outlined answer pills: ink and stroke */
-  --color-ink-profile-pill: #106a7f;
   /* the routine card and the symptom trend card: five soft lights over the
      dark teal, 5% darker overall */
   --gradient-routine: linear-gradient(#0000000d, #0000000d),
