@@ -62,70 +62,41 @@
 }
 
 .tileValue {
-  /* a block, not a flex box, so the line box can be trimmed to the x-height
-     and centred on it (`text-box` skips flex boxes): the answers are mostly
-     lowercase, and centred on the line box they sat 0.7 low */
+  /* a block, not a flex box, so the line box can be trimmed (`text-box` skips
+     flex boxes). Each answer is title case: a capital, then lowercase. Centred
+     on the capitals the lowercase sits low; centred on the x-height the
+     capital rides high. The eye reads the midpoint of the two bands, so the
+     line is trimmed to the capitals and lifted by a 2 bottom padding, which
+     centring splits into 1 up. */
   display: inline-block;
   align-content: center;
-  text-box: trim-both ex alphabetic;
+  text-box: trim-both cap alphabetic;
   max-width: 100%;
   min-height: 32px;
   /* a one-word answer wider than its tile (`Combination` at 320 under the
      1.4.12 spacing overrides) breaks inside the pill rather than spilling */
   overflow-wrap: anywhere;
-  padding: 0 var(--space-md); /* 12 */
+  padding: 0 var(--space-md) var(--space-2xs); /* 12, 2 */
   border-radius: var(--radius-full);
-  border: var(--border-width-hairline) solid #869ea626;
-  background-color: #106a7fe3;
-  background-origin: border-box;
-  background-image: linear-gradient(
-    135deg,
-    transparent 35%,
-    color-mix(in srgb, var(--color-face-pill-selected-deep) 20%, transparent)
-      100%
-  );
-  box-shadow: inset 0 1px 0 #ffffff0d, var(--shadow-sm);
-  -webkit-backdrop-filter: blur(1px);
-  backdrop-filter: blur(1px);
-  color: var(--color-text-on-brand);
+  /* the soft answer pill: a teal tint on the pale glass, a teal hairline and
+     teal ink — the symptom state below is the same pill in red */
+  border: var(--border-width-hairline) solid var(--color-border-answer-soft);
+  background-color: var(--color-bg-answer-soft);
+  -webkit-backdrop-filter: blur(var(--blur-sm));
+  backdrop-filter: blur(var(--blur-sm));
+  color: var(--color-text-answer-soft);
 }
 
 @media (prefers-reduced-transparency: reduce) {
   .tileValue {
-    background-color: #106a7f;
     -webkit-backdrop-filter: none;
     backdrop-filter: none;
   }
 }
 
 .tileValue[data-tone="symptom"] {
-  border-color: transparent;
-  background-color: transparent;
-  background-image: linear-gradient(
-    135deg,
-    color-mix(in srgb, var(--color-bg-symptom) 88%, transparent) 35%,
-    color-mix(
-        in srgb,
-        color-mix(in srgb, var(--color-bg-symptom) 80%, var(--color-text-primary))
-          92%,
-        transparent
-      )
-      100%
-  );
-  box-shadow: inset 0 1px 0 rgb(255 255 255 / 0.28), var(--shadow-sm);
-  -webkit-backdrop-filter: blur(var(--blur-sm)) saturate(140%);
-  backdrop-filter: blur(var(--blur-sm)) saturate(140%);
-}
-
-@media (prefers-reduced-transparency: reduce) {
-  .tileValue[data-tone="symptom"] {
-    background-image: linear-gradient(
-      135deg,
-      var(--color-bg-symptom) 35%,
-      color-mix(in srgb, var(--color-bg-symptom) 80%, var(--color-text-primary))
-        100%
-    );
-    -webkit-backdrop-filter: none;
-    backdrop-filter: none;
-  }
+  /* the soft symptom pill, as step 1's muted symptom chip */
+  border-color: var(--color-border-symptom-soft);
+  background-color: var(--color-bg-symptom-soft);
+  color: var(--color-text-symptom-soft);
 }

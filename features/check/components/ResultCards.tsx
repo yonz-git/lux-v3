@@ -66,18 +66,9 @@ export function IngredientsCard({
             className={styles.concernItem}
             style={{ "--i": i } as CSSProperties}
           >
-            {/* a 1px border/glass divider between entries, as on every data
-                card — see SkinProfile */}
-            {i > 0 && <div className={styles.divider} />}
-            <div className={styles.concern}>
-              <div className={styles.concernBody}>
-                <p className={`${styles.concernName} t-h6`}>{c.name}</p>
-                <p className={`${styles.foundIn} t-label-sm`}>
-                  Found in: {c.foundIn.map(fullName).join(", ")}
-                </p>
-                <p className={`${styles.concernText} t-body2`}>
-                  {c.description}
-                </p>
+            {/* pill, name, where, why: the likelihood leads, as the verdict
+                pill does in the box below */}
+            <div className={styles.concernBody}>
                 <Tag
                   className={`${styles.likelihood} ${
                     c.likelihood === "high"
@@ -87,7 +78,13 @@ export function IngredientsCard({
                 >
                   {LIKELIHOOD_LABEL[c.likelihood]}
                 </Tag>
-              </div>
+                <p className={`${styles.concernName} t-h6`}>{c.name}</p>
+                <p className={`${styles.foundIn} t-label-sm`}>
+                  Found in: {c.foundIn.map(fullName).join(", ")}
+                </p>
+                <p className={`${styles.concernText} t-body2`}>
+                  {c.description}
+                </p>
             </div>
           </li>
         ))}
@@ -134,14 +131,18 @@ export function NextStepsCard({
       <p className={`${styles.sectionLabel} t-overline`}>{label}</p>
 
       <div className={styles.emphasis} data-band={badgeBand}>
+        {/* the verdict pill first, then the title on the full width beside
+            the thumb — read top-down, the box says how bad before what */}
         <div className={styles.emphasisHead}>
           {art}
-          <p className={`${styles.emphasisTitle} t-h6`}>{title}</p>
-          {badge && (
-            <Tag className={styles.badge} data-band={badgeBand}>
-              {badge}
-            </Tag>
-          )}
+          <div className={styles.emphasisCopy}>
+            {badge && (
+              <Tag className={styles.badge} data-band={badgeBand}>
+                {badge}
+              </Tag>
+            )}
+            <p className={`${styles.emphasisTitle} t-h6`}>{title}</p>
+          </div>
         </div>
         {description && (
           <p className={`${styles.emphasisText} t-body2`}>{description}</p>

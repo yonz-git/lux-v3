@@ -478,8 +478,9 @@ loads five weights (300–700), Manrope is one variable file. The hierarchy is
 carried by size, weight and the change of face, not colour.
 
 **Two line heights.** Headings, titles and figures sit on
-`--line-height-heading` (1.2); running text, labels and controls on
-`--line-height-text` (1.4). No role and no screen sets any other.
+`--line-height-heading` (1.2); running text, item names (`t-h6`), labels and
+controls on `--line-height-text` (1.4). An item name is body-sized and wraps
+beside body text, so it takes the body's leading. No role and no screen sets any other.
 
 **One job, one role.** Each kind of text has one style everywhere:
 

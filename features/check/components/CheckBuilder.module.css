@@ -1,9 +1,8 @@
 /* Check — add products (602:1972) and its selection / no-results states.
 
    title -> 24 (HubScreen) -> skin-profile -> 20 -> coach -> 20 -> Search
-   Field -> 20 -> list.
-   The 24 above the strip is HubScreen's `.heading + *` rule; everything below
-   is this screen's. */
+   Field -> 32 -> list. The 24 above the strip is HubScreen's card-screen
+   `.heading + *` rule; everything below is this screen's. */
 
 .coach {
   margin-top: var(--space-xl); /* 20 */

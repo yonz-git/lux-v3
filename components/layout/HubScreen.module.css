@@ -46,10 +46,17 @@
   flex-direction: column;
 }
 
-/* the heading is the body's first child on a card screen, so the 24 that
-   separates it from the content lives here rather than on the heading. */
+/* the heading is the body's first child on a card or plain screen, so the
+   gap that separates it from the content lives here rather than on the
+   heading. */
 .body > .heading + * {
   margin-top: var(--space-md); /* 12 */
+}
+
+/* a card screen opens straight onto a card, so its title stands a step
+   further off: 24, one more than the 20 its blocks keep between them */
+.body[data-layout="card"] > .heading + * {
+  margin-top: var(--space-2xl); /* 24 */
 }
 
 /* On mobile a grid screen is just the stack, 12 below the page heading — the

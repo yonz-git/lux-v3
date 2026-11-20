@@ -152,8 +152,9 @@ main[tabindex="-1"]:focus-visible {
 
    Two families: Manrope for headings (`t-h4` and up, the headline) and card
    overlines; Figtree for everything else. Two line heights: headings, titles
-   and figures on `--line-height-heading`, running text, labels and controls on
-   `--line-height-text`.
+   and figures on `--line-height-heading`; running text, item names, labels
+   and controls on `--line-height-text`. An item name (`t-h6`) is body-sized
+   and wraps beside body text, so it shares the body's leading.
 
      headline    36 → 44 Medium        Welcome's line
      h2          28 → 32 Medium        a section heading on a wide screen
@@ -235,7 +236,6 @@ main[tabindex="-1"]:focus-visible {
 .t-h3-h2,
 .t-h4,
 .t-h5,
-.t-h6,
 .t-metric1,
 .t-metric2,
 .t-metric3 {
@@ -243,6 +243,7 @@ main[tabindex="-1"]:focus-visible {
 }
 
 /* the text line height */
+.t-h6,
 .t-body1,
 .t-body2,
 .t-body2-body1,

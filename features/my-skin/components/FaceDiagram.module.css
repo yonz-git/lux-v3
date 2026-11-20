@@ -12,6 +12,18 @@
 
   container-type: inline-size;
 
+  /* every pill on the card — a place or a symptom on the face, or a location
+     chip under it: 28 (the HIG minimum control) up to 30, an even height so a
+     centred pill lands on whole pixels. `cqw` resolves where it is used: the
+     diagram and the chip row both span this card's content box. */
+  --face-pill-h: round(nearest, clamp(28px, 9cqw, 30px), 2px);
+  /* and the face pills' side padding, from the pill's edge to the label: up
+     to 8 */
+  --face-pill-pad: calc(
+    clamp(3px, 1.8cqw, calc(var(--space-sm) - var(--border-width-hairline))) +
+      var(--border-width-hairline)
+  );
+
   border-radius: var(--radius-3xl);
   overflow: hidden;
   /* the grain (`::after`) paints between this card's fill and its content */
@@ -150,7 +162,7 @@
   inset: 0;
   pointer-events: none;
   /* the symptom pill's height — `.symptom` and the leaders' clip share it. */
-  --callout-h: round(nearest, clamp(18px, 6cqw, 24px), 2px);
+  --callout-h: var(--face-pill-h);
   transition: opacity var(--duration-base) var(--ease-standard);
 }
 
@@ -212,7 +224,7 @@
   display: inline-flex;
   align-items: center;
   min-height: var(--callout-h);
-  padding: 0 clamp(4px, 1.8cqw, var(--space-sm));
+  padding: 0 var(--face-pill-pad);
   font-size: clamp(var(--font-size-floor), 3cqw, var(--font-size-3xs));
   line-height: var(--line-height-text);
   white-space: nowrap;
@@ -243,7 +255,10 @@
 
 .symptomLabel {
   display: block;
+  /* trimmed to the capitals, then lifted to the midpoint of the capital and
+     lowercase bands, as the profile pills (SkinProfileTiles `.tileValue`) */
   text-box: trim-both cap alphabetic;
+  padding-bottom: var(--space-optical-lift);
 }
 
 /* non-negotiable 11: the opaque chip it was */
@@ -319,8 +334,8 @@
      carries a 1px border, so the vertical padding becomes a min-height and the
      horizontal padding loses the border width — the pill lands on the same box
      it had when it was borderless. */
-  min-height: clamp(28px, 9cqw, 30px); /* 28 is the HIG minimum control */
-  padding: 0 clamp(3px, 1.8cqw, calc(var(--space-sm) - var(--border-width-hairline)))
+  min-height: var(--face-pill-h);
+  padding: 0 calc(var(--face-pill-pad) - var(--border-width-hairline))
     var(--border-width-hairline);
   font-size: clamp(var(--font-size-floor), 3.6cqw, var(--font-size-3xs));
   line-height: var(--line-height-text);
@@ -619,12 +634,18 @@
 }
 
 .readOnlyChip {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  /* ceilings follow step 1's smaller location chip, 34 and 12 */
-  min-height: clamp(24px, 8.7cqw, 34px);
-  padding: 0 clamp(6px, 3cqw, var(--space-md)); /* 12 ceiling */
+  /* a block, not a flex box, so the line box can be trimmed to the capitals
+     (`text-box` skips flex boxes) and lifted by a 2 bottom padding, which
+     centring splits into 1 up — as the skin-profile pills
+     (SkinProfileTiles `.tileValue`) */
+  display: inline-block;
+  align-content: center;
+  text-align: center;
+  text-box: trim-both cap alphabetic;
+  /* the face pills' height; the padding ceiling follows step 1's smaller
+     location chip, 12 */
+  min-height: var(--face-pill-h);
+  padding: 0 clamp(6px, 3cqw, var(--space-md)) var(--space-2xs); /* 12 ceiling, 2 */
   font-size: clamp(var(--font-size-floor), 3.4cqw, var(--font-size-xs));
   line-height: var(--line-height-text);
   border-radius: var(--radius-full);

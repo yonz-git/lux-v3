@@ -441,6 +441,18 @@
   /* the symptom red as text: 80% of it in the ink, 5.3:1 on the data panel
      (solid #b44148 measures 4.1–4.3, under AA) */
   --color-text-symptom: color-mix(in srgb, var(--color-bg-symptom) 80%, var(--color-text-primary));
+  /* the soft symptom pill: a red tint on the pale glass, a red hairline and
+     red ink — step 1's muted symptom chip and the profile's symptom state */
+  --color-bg-symptom-soft: color-mix(in srgb, var(--color-bg-symptom) 16%, #dbeded57);
+  --color-border-symptom-soft: color-mix(in srgb, var(--color-bg-symptom) 45%, transparent);
+  --color-text-symptom-soft: color-mix(in srgb, var(--color-bg-symptom) 75%, var(--color-text-primary));
+
+  /* the teal of the filled answer pills, and its soft pill in the same mix
+     as the symptom's: the profile's answers */
+  --color-bg-answer: #106a7f;
+  --color-bg-answer-soft: color-mix(in srgb, var(--color-bg-answer) 16%, #dbeded57);
+  --color-border-answer-soft: color-mix(in srgb, var(--color-bg-answer) 45%, transparent);
+  --color-text-answer-soft: color-mix(in srgb, var(--color-bg-answer) 75%, var(--color-text-primary));
 }
 
 :root {
@@ -618,6 +630,10 @@
   --size-pill: 2.25rem; /* the small time pill (17.7 × 1.745 ≈ 31, raised to the control floor) */
   --size-tag: 1.75rem; /* 28 — read-only tags: a count badge, an age or total pill */
   --size-thumb-sm: 2.5rem; /* 40 — the small product well (ThumbStack) */
+  /* Optical lift for a title-case label: half the capital over the x-height,
+     added as bottom padding, raises a centred line by a quarter of it, to the
+     midpoint of the capital and lowercase bands. Resolves in the label's font. */
+  --space-optical-lift: calc((1cap - 1ex) / 2);
 }
 
 :root {

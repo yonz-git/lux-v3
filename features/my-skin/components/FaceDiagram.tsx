@@ -64,8 +64,11 @@ const MIDDLE_ROW = seatY(181 / 300);
    the edge passes `Cheeks (L)` 41% of the way along, and has to be 17 clear of
    that pill's centre there */
 const MIDDLE_ROW_STEP = (50 / 300) * FACE_ZOOM;
-/* one pill plus air — the pill is at most 24px tall (see `.symptom`) */
+/* the least distance between two callouts down one edge, as a fraction of the
+   box: one pill plus air. `useCalloutPitch` raises it to the pill's measured
+   height plus `CALLOUT_AIR` where the box is too short for this */
 const CALLOUT_PITCH = 30 / 300;
+const CALLOUT_AIR = 4; /* px, --space-xs */
 /* the rails follow the drawing's map too, so the stack still spans the head */
 const CALLOUT_TOP = seatY(14 / 300);
 const CALLOUT_BOTTOM = seatY(286 / 300);
@@ -78,7 +81,7 @@ const NECK_X = { left: seatX(136 / 392), right: seatX(257 / 392) };
 
 const mean = (ns: number[]) => ns.reduce((a, b) => a + b, 0) / ns.length;
 
-function layoutCallouts(places: SymptomPlaces): Callout[] {
+function layoutCallouts(places: SymptomPlaces, pitch: number): Callout[] {
   const items = SYMPTOMS.flatMap((symptom) => {
     const areas = places[symptom] ?? [];
     const regions = REGIONS.filter((r) => areas.includes(r.id));
@@ -133,12 +136,12 @@ function layoutCallouts(places: SymptomPlaces): Callout[] {
       .filter((c) => c.side === side)
       .sort((a, b) => a.y - b.y);
     column.forEach((c, i) => {
-      const floor = i === 0 ? CALLOUT_TOP : column[i - 1].y + CALLOUT_PITCH;
+      const floor = i === 0 ? CALLOUT_TOP : column[i - 1].y + pitch;
       c.y = Math.max(c.y, floor);
     });
     for (let i = column.length - 1; i >= 0; i--) {
       const ceiling =
-        i === column.length - 1 ? CALLOUT_BOTTOM : column[i + 1].y - CALLOUT_PITCH;
+        i === column.length - 1 ? CALLOUT_BOTTOM : column[i + 1].y - pitch;
       column[i].y = Math.min(column[i].y, ceiling);
     }
   }
@@ -147,6 +150,33 @@ function layoutCallouts(places: SymptomPlaces): Callout[] {
 }
 
 const pct = (n: number) => `${n * 100}%`;
+
+/**
+ * The callouts' pitch for the box they sit in. The pill keeps a 28px floor
+ * (`--face-pill-h`) while the box shrinks with the screen, so on a narrow
+ * screen a pitch of 10% of the box would stack the pills on each other.
+ */
+function useCalloutPitch(shown: boolean) {
+  const ref = useRef<HTMLDivElement>(null);
+  const [pitch, setPitch] = useState(CALLOUT_PITCH);
+  useEffect(() => {
+    const box = ref.current;
+    if (!box) return;
+    const measure = () => {
+      const pill = box.querySelector<HTMLElement>('[data-part="callout"]');
+      const height = box.clientHeight;
+      if (!pill || height === 0) return;
+      setPitch(
+        Math.max(CALLOUT_PITCH, (pill.offsetHeight + CALLOUT_AIR) / height),
+      );
+    };
+    measure();
+    const observer = new ResizeObserver(measure);
+    observer.observe(box);
+    return () => observer.disconnect();
+  }, [shown]);
+  return { ref, pitch };
+}
 
 /* How far the shine closes on the pointer each frame. It trails rather than
    sticks, so it reads as light gliding over the lines instead of a cursor
@@ -284,7 +314,11 @@ export function FaceDiagram(props: FaceDiagramProps) {
   const glint = props.readOnly !== true ? (props.glint ?? 0) : 0;
   const shine = useLineShine();
   /* each instance owns its filter, under an id stable across SSR */
-  const callouts = layoutCallouts(props.callouts ?? {});
+  const hasCallouts = Object.values(props.callouts ?? {}).some(
+    (areas) => (areas?.length ?? 0) > 0,
+  );
+  const calloutPitch = useCalloutPitch(hasCallouts);
+  const callouts = layoutCallouts(props.callouts ?? {}, calloutPitch.pitch);
 
   const [hover, setHover] = useState<Lit>(null);
   const [pinned, setPinned] = useState<Lit>(null);
@@ -449,6 +483,7 @@ export function FaceDiagram(props: FaceDiagramProps) {
             Decorative: the list after the diagram says the same in words. */}
         {callouts.length > 0 && (
           <div
+            ref={calloutPitch.ref}
             className={styles.callouts}
             data-hidden={props.calloutsHidden || undefined}
             data-focus={focused || undefined}

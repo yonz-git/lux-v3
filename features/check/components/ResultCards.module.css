@@ -40,29 +40,24 @@
 .concerns {
   display: flex;
   flex-direction: column;
-  gap: var(--space-lg); /* 16 */
+  gap: var(--space-sm); /* 8, the score cards' gap */
   margin: 0;
   padding: 0;
   width: 100%;
   list-style: none;
 }
 
-.concernItem {
-  display: flex;
-  flex-direction: column;
-  gap: var(--space-lg);
-}
-
-/* border/glass, never border/subtle — a divider on a data card */
-.divider {
-  height: var(--border-width-hairline);
-  background: var(--color-border-glass);
-}
-
-.concern {
-  display: flex;
-  align-items: stretch;
-  gap: var(--space-md); /* 12 */
+/* Each entry, and each numbered step below, is a tile on the card: the score
+   cards' surface (CompatCard `.card`) — the 30% panel, its edge and top rim,
+   24 radius, 16 in. A list of separate findings reads as separate things in
+   boxes; a divider between loose paragraphs read as one long text. */
+.concernItem,
+.step {
+  padding: var(--space-lg); /* 16 */
+  border-radius: var(--radius-2xl); /* 24 */
+  border: var(--border-width-hairline) solid var(--color-border-panel);
+  background: var(--color-panel);
+  box-shadow: inset 0 1px 0 var(--color-rim-panel);
 }
 
 .concernBody .likelihood[data-variant] {
@@ -129,7 +124,7 @@
   width: 100%;
   padding: calc(var(--space-xl) - var(--emphasis-border));
   border: var(--emphasis-border) solid var(--band, transparent);
-  border-radius: var(--radius-lg);
+  border-radius: var(--radius-2xl); /* 24, the tiles' */
   /* lux-v3: glass inside the panel, dark ink (the deep tier is gone) */
   background: var(--color-glass-strong);
   box-shadow: var(--shadow-glass);
@@ -168,9 +163,14 @@
   width: 100%;
 }
 
-/* takes the slack so the pill keeps its size and the title wraps instead */
-.emphasisTitle {
-  flex-grow: 1;
+/* the pill over the title, beside the thumb — the title gets the row's whole
+   width instead of sharing it with the pill */
+.emphasisCopy {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: var(--space-sm); /* 8 */
+  flex: 1;
   min-width: 0;
 }
 
@@ -183,7 +183,7 @@
 .steps {
   display: flex;
   flex-direction: column;
-  gap: var(--space-lg); /* 16 */
+  gap: var(--space-sm); /* 8, as the entries above */
   margin: 0;
   padding: 0;
   width: 100%;
@@ -237,8 +237,8 @@
 }
 
 .stepArt .thumb {
-  width: 40px;
-  height: 40px;
+  width: var(--size-thumb-sm);
+  height: var(--size-thumb-sm);
   border-radius: var(--radius-sm);
 }
 
