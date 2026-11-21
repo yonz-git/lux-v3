@@ -100,7 +100,6 @@ Multi-select options:
 
 - Rosacea
 - Eczema
-- Perioral dermatitis
 - Psoriasis
 - Other
 - None

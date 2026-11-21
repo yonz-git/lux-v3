@@ -1,6 +1,6 @@
-/* IconButton — VidGen's circles. Every value is the reference's own:
+/* IconButton — the reference's circles. Every value is the reference's own:
    56 round; glass = white @50%, 1px white @55% edge, inset white @80% rim;
-   primary = lux-v2's brand gradient + `shadow/brand-vg`; outline = 1px ink
+   primary = lux-v2's brand gradient + `shadow/brand-pill`; outline = 1px ink
    @18%, no fill; soft = #eeecf5 lilac. */
 
 .button {
@@ -20,24 +20,55 @@
     opacity var(--duration-base) var(--ease-standard);
 }
 
+.md {
+  width: var(--size-round-md);
+  height: var(--size-round-md);
+}
+
+.glass.md {
+  box-shadow: var(--shadow-float);
+}
+
+/* the 26 disc — a list row's pick toggle; 44 target as below */
 .sm {
-  width: var(--size-touch-target);
-  height: var(--size-touch-target);
+  width: var(--size-round-sm);
+  height: var(--size-round-sm);
+}
+
+/* the 20 disc; its 44 target is `.tap-target` (IconButton.tsx) */
+.xs {
+  width: var(--size-icon-sm); /* 20 */
+  height: var(--size-icon-sm);
 }
 
 .glass {
   color: var(--color-bg-brand);
   background: var(--color-glass);
   border-color: var(--color-border-glass);
-  box-shadow: var(--shadow-glass);
+  background-clip: padding-box;
+  box-shadow: none;
   -webkit-backdrop-filter: blur(10px);
   backdrop-filter: blur(10px);
+}
+
+/* a toggle's glass disc: once pressed it clears, so the pressed glyph (a
+   filled disc, `PickedIcon`) is the whole button; it fades with the state */
+.glass.ring {
+  transition:
+    background-color var(--duration-fade) var(--ease-in-out),
+    border-color var(--duration-fade) var(--ease-in-out),
+    opacity var(--duration-base) var(--ease-standard);
+}
+
+.button.glass.ring[aria-pressed="true"] {
+  background-color: transparent;
+  border-color: transparent;
 }
 
 .primary {
   color: #fff;
   background: var(--gradient-brand); /* lux-v2's */
-  box-shadow: var(--shadow-brand-vg);
+  box-shadow: var(--shadow-brand-pill);
 }
 
 .outline {

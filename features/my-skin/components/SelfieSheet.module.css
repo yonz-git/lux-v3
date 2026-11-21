@@ -2,15 +2,7 @@
    Figma mobile 487:834 / desktop 490:1041.
    viewfinder 392x400: surface/data + the frosted-data effect + radius/2xl —
    it stands in for a camera feed. Guide oval 190x250, 2px effect/rim-highlight
-   at 90%.
-
-   ⚠️ EVERY PIECE OF TEXT HERE IS `text/on-data`. The frame drew these on the
-   light canvas; inside `Sheet` they sit on the sage tray, which takes the
-   on-data colours — the same treatment `AddProductMethodSheet`'s scan view
-   already uses for the identical viewfinder.
-
-   The tray is itself a centred flex column with a 20 gap, so nothing here
-   lays out the stack — only the blocks inside it. */
+   at 90%. */
 
 .question {
   color: var(--color-text-on-data);
@@ -29,25 +21,11 @@
 
   border-radius: var(--radius-2xl);
   background: var(--color-surface-data);
-  /* ⚠️ NOT IN FIGMA — AN INNER SHADOW, NOT THE DROP, asked for directly 13 Sep
-     2026. The frame gives this well `surface/frosted-data`, a lift under the
-     box; inside the tray that read as a second card floating over the first.
-     It now takes `surface/frosted-row`, the inset the step's own face diagram
-     card (`FaceDiagram.module.css` `.card`) wears right behind it, so the
-     viewfinder reads as a recess cut into the tray — the same object as the
-     box it was opened from. ⚠️ `CameraCapture`'s viewfinder (the check-in photo
-     and the PRODUCTS scan view) still carries the drop; this is the selfie's
-     own copy of the recipe. */
   box-shadow: var(--shadow-frosted-row);
   -webkit-backdrop-filter: blur(var(--blur-card));
   backdrop-filter: blur(var(--blur-card));
 }
 
-/* ⚠️ THE GUIDE IS A PORTRAIT OVAL — never let it take its width from the
-   viewfinder. Sizing BOTH axes as a percentage made it stretch into a wide
-   ellipse the moment the viewfinder was wider than it is tall, which is exactly
-   what happened on desktop. Height drives it and aspect-ratio derives the width,
-   so the face shape survives any container size. */
 .guide {
   height: calc(250 / 400 * 100%);
   aspect-ratio: 190 / 250;
@@ -58,33 +36,10 @@
   border-radius: 50%;
 }
 
-/* ⚠️ WHITE, MATCHING `.guide`'s OVAL — asked for directly, and the same call
-   already made on `CameraCapture`'s copy of this label. It binds
-   `effect/rim-highlight` (white @90%), the SAME token the oval above and
-   `.shutterCore` below use, rather than a bare `#fff`: the guide and its label
-   are one object and should move together.
-
-   ⚠️ IT DUPLICATES A RULE THAT LIVES IN TWO FILES, WHICH IS THE COST THIS
-   SCREEN ACCEPTED. `components/ui/CameraCapture.module.css` carries the same
-   `.captured` for the check-in overlay and the PRODUCTS scan view; the doc
-   comment on SelfieSheet.tsx explains why this sheet was deliberately NOT
-   folded into that component (its viewfinder is 392x400 with a portrait OVAL
-   guide, against the shared 392x300 with a rounded rectangle). So a change to
-   the label has to be made twice, on purpose. Keep them in step.
-
-   ⚠️ IT FAILS AA — NON-NEGOTIABLE 17's EXACT CASE, same as the shared copy.
-   `surface/data` is rgba(125, 167, 169, 0.44) and composites too light for
-   white text at any alpha; measured here it lands near 1.8:1 where AA wants
-   4.5. `text/on-data` (#2e2a3f) was passing. A chosen design value overriding a
-   measured one, flagged in the file that carries it rather than silently
-   reverted. Do not copy the move onto `.question` or `.helper`, which stay
-   dark. */
 .captured {
   position: absolute;
   bottom: var(--space-xl);
   color: var(--color-effect-rim-highlight);
-  /* the tick beside the words, 15 Sep 2026 — CameraCapture.module.css's
-     `.captured` took the same change; keep them in step */
   display: inline-flex;
   align-items: center;
   gap: var(--space-xs); /* 4 */
@@ -114,9 +69,6 @@
   background: var(--color-bg-glass);
   box-shadow: var(--shadow-md);
 
-  /* ⚠️ `duration/slow` on `ease/hover`, asked for directly 15 Sep 2026 ("make
-     the hover smooth") — the same change, and the same reason, as
-     CameraCapture.module.css's shutter */
   transition: opacity var(--duration-slow) var(--ease-hover);
 }
 
@@ -131,8 +83,6 @@
 }
 
 .shutterCore {
-  /* ⚠️ flex:none, or the shutter's 8px padding plus its 1px border shrink the
-     core to 54 — a flex child's width is a basis, not a floor. */
   flex: none;
   width: 56px;
   height: 56px;
@@ -172,19 +122,6 @@
   }
 }
 
-/* ⚠️ NOT IN FIGMA — THE DESKTOP DIALOG, asked for directly 13 Sep 2026.
-   Two changes, scoped to this sheet through `Sheet`'s `className`:
-
-   1. TALLER, SO `Done` IS ON SCREEN WITHOUT SCROLLING. `Sheet`'s guard stops
-      the tray above the nav (100dvh − nav − 64), and on a shorter browser
-      window the selfie tray (~662 tall) scrolled inside itself with `Done`
-      out of sight. The tray sits at `--z-sheet` over the nav, so it may use
-      the viewport minus 24 each side; the viewfinder gives up height before
-      the tray has to scroll (322 is everything in the tray but the well).
-
-   2. THE MOBILE TRAY'S FILL — `surface/data` + `--blur-card` — instead of the
-      light desktop frost every other `Sheet` dialog takes. Two classes, so it
-      outranks `Sheet`'s single-class desktop rule whatever the bundle order. */
 @media (min-width: 1024px) {
   .tray.tray {
     max-height: calc(100dvh - var(--space-2xl) * 2);

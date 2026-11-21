@@ -1,20 +1,17 @@
-/* ⚠️ lux-v3, 1 Oct 2026 — the search pill is VidGen GLASS, 56 tall. */
-
 /* Search Field — Figma 248:70. 50 tall, padding 12/16, gap 12, radius/full,
-   fill surface/frost-nav (#dde8eb @83%) + the frosted-row inner shadow.
+   fill surface/frost-nav (#dde8eb @83%) + the frosted-row inner shadow. */
 
-   ⚠️ NO BORDER. The field is the same frosted surface as the nav pill, and like
-   the nav pill it carries an inner shadow instead of a stroke — that is what
-   separates it from a frosted ROW, which does have a 1px border/subtle. */
-
+/* three columns, the two ends the same width, so the query centres on the
+   whole field whatever sits at either end */
 .field {
-  display: flex;
+  display: grid;
+  grid-template-columns: var(--size-round-md) minmax(0, 1fr) var(--size-round-md);
   align-items: center;
-  gap: var(--space-md);
+  column-gap: var(--space-md);
   width: 100%;
   /* Figma is 50 tall with padding 12/16 — min-height owns the box so the input's
      own line box can never push it past 50 */
-  min-height: var(--size-field); /* 56, a VidGen control */
+  min-height: var(--size-field); /* 56, a LUX control */
   padding: 0 var(--space-lg);
 
   border-radius: var(--radius-full);
@@ -25,6 +22,15 @@
   backdrop-filter: blur(var(--blur-card));
 }
 
+/* `variant="clear"`: on a panel that is already glass, the pill keeps its
+   edge and nothing else */
+.clearField {
+  background: transparent;
+  box-shadow: none;
+  -webkit-backdrop-filter: none;
+  backdrop-filter: none;
+}
+
 /* The ring goes on the PILL, not the input inside it: a 2px outline drawn tight
    around a borderless input in the middle of a rounded field reads as a glitch.
    `.input` sets `outline: none` for exactly this reason, and 2px of offset lifts
@@ -33,14 +39,6 @@
   position: relative;
 }
 
-/* ⚠️ NOT IN FIGMA — the ring is the primary button's gradient
-   (`gradient/brand`) at 30%, asked for directly on 13 Sep 2026: the solid
-   `border/focus` read too heavy around a frosted pill. An outline cannot take a
-   gradient, so it is a masked ring on `::after`. ⚠️ It sits ON the pill's own
-   edge (inset 0), not 2px outside it: offset, the pill's edge and the ring read
-   as two borders. The outline stays, TRANSPARENT, so forced-colors mode still
-   draws a system ring. ⚠️ At 30% this ring is well under 3:1 against the
-   canvas — it is a softer focus indicator by choice. */
 .field::after {
   content: "";
   position: absolute;
@@ -74,12 +72,13 @@
 }
 
 .icon {
-  flex: none;
+  grid-column: 1;
+  justify-self: start;
   color: var(--color-text-muted);
 }
 
 .input {
-  flex: 1;
+  grid-column: 2;
   /* fills the pill's 50 so a tap anywhere on it lands in the field (HIG 44) */
   align-self: stretch;
   min-width: 0;
@@ -88,15 +87,10 @@
   outline: none;
   color: var(--color-text-primary);
   font-family: inherit;
+  /* the query and its placeholder centre in the field */
+  text-align: center;
 }
 
-/* ⚠️ (0,2,0), SO LOAD ORDER CANNOT LOSE IT — 4 Oct 2026, the inner input
-   drew the global indigo box (`:focus-visible`, globals.css) inside the pill
-   when it took focus in the add tray. `.input`'s `outline: none` and that
-   rule are both (0,1,0), so which won depended on which stylesheet the page
-   happened to load last, and on a route that loads the tray lazily the
-   global came second. The pill's own ring (`.field:focus-within`) is still
-   the indicator. */
 .input:focus,
 .input:focus-visible {
   outline: none;
@@ -111,23 +105,17 @@
   display: none;
 }
 
-/* a 44px touch target around a 24px glyph is offset by HALF the difference —
-   all of it would push the icon 10px inside the field's content edge */
-.clear {
-  flex: none;
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  width: var(--size-touch-target);
-  height: var(--size-touch-target);
-  margin: 0 calc((var(--size-icon-sm) - var(--size-touch-target)) / 2);
-  border-radius: var(--radius-full);
+/* the clear ✕ (CloseButton) sits on the field's content edge */
+.clear,
+.action {
+  grid-column: 3;
+  justify-self: end;
 }
 
-/* the clear glyph steps down to icon/sm (20) so it reads as secondary to the
-   leading search glyph; the 44 touch target is unchanged */
-.clear .icon {
-  --icon-size: var(--size-icon-sm);
+/* the round action sits as far from the field's end as from its top and
+   bottom: (56 - 32) / 2 = 12 from the outer edge, past the 1px border */
+.action {
+  margin-inline-end: calc(var(--space-md) - var(--space-lg) - var(--border-width-hairline));
 }
 
 @media (prefers-reduced-transparency: reduce) {

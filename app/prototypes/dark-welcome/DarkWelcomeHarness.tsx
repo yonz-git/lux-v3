@@ -10,25 +10,6 @@ import { Button } from "@/components/ui/Button";
 import { BottomNav } from "@/components/layout/BottomNav";
 import { CanvasShader } from "@/components/layout/CanvasShader";
 
-/* ⚠️ PROTOTYPE SURFACE — three dark directions for 00 Welcome. NOT IN FIGMA.
-
-   HOW A FLIP RE-THEMES EVERYTHING
-   - The theme is an attribute on <html> (`data-proto-theme`), and every token
-     override lives on `:root[data-proto-theme=…]` in themes.css.
-   - The living canvas reads its ramp ONCE per mount, from <html>'s computed
-     style. So the harness mounts its OWN CanvasShader, keyed on the flip, and
-     writes the attribute SYNCHRONOUSLY in the handler, before the state change
-     that re-keys it — a layout effect would run after the child's effect has
-     already read the old ramp. It sits later in the DOM than the root layout's
-     AppCanvas at the same z-index, so it paints over it.
-   - The first mount waits on a layout effect that has set the attribute.
-
-   WHY NOT `<Welcome />`
-   Welcome reads `entrancePlayed`, a module flag set by LogoEntrance. Deep-linked
-   here it plays first-run choreography aimed at an entrance that is not mounted.
-   This is Welcome's RETURNING composition, copied — the real Orb, ChatBubble,
-   Button, BottomNav and Welcome.module.css, with the settled layout. */
-
 /* Round 2 — "more indigo like ours, a bit more mysterious, not as dark, a nice
    gradient". All three are mid-value indigo grounds built from LUX's own
    figure family (`gradient/brand` #657792 -> #39386f, `bg/brand-soft`
@@ -52,7 +33,7 @@ export function WelcomeStage() {
   return (
     <main className="screen edit-screen">
       <div className={styles.welcome}>
-        <div className={styles.spacerTop} aria-hidden="true" />
+        <div className={styles.spacer} aria-hidden="true" />
 
         <div className={`${styles.hero} reveal`}>
           <h1 className="visually-hidden">How is your skin feeling today?</h1>
@@ -61,6 +42,7 @@ export function WelcomeStage() {
             <ChatBubble
               from="ai"
               align="center"
+              size="hero"
               className={`${styles.bubbleReply} edit-bubble`}
               entrance={false}
               aria-hidden
@@ -71,6 +53,8 @@ export function WelcomeStage() {
           </div>
         </div>
 
+        <div className={styles.spacer} aria-hidden="true" />
+
         <div className={`${styles.actions} reveal`}>
           <Button className={`${styles.cta} edit-button`} href="/investigation/start">
             Create skin profile
@@ -79,8 +63,6 @@ export function WelcomeStage() {
             Lux does not provide medical diagnoses.
           </p>
         </div>
-
-        <div className={styles.spacerBottom} aria-hidden="true" />
       </div>
 
       <BottomNav active="none" className="edit-nav" />
@@ -110,7 +92,7 @@ export function DarkWelcomeHarness() {
 
   const setActive = useCallback((index: number) => {
     if (index < 0 || index >= VARIANTS.length) return;
-    applyTheme(index); /* before the re-key — see the note above */
+    applyTheme(index);
     const url = new URL(window.location.href);
     url.searchParams.set("v", String(index + 1));
     window.history.replaceState(null, "", url);

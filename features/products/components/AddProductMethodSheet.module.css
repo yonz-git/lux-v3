@@ -23,50 +23,25 @@
 /* 70 tall on mobile / 78 on desktop, padding 14/18, gap 12, radius/lg.
    surface/data-strong on a sage tray, with the frosted-row inner shadow — a
    translucent surface with no inner shadow reads flat. NO border: the tray's
-   cards sit on sage, where border/subtle would be invisible anyway.
-   ⚠️ NEEDS ITS OWN BACKDROP BLUR, same as every other frosted surface in the
-   file (rule 9) — `surface/data-strong` at 62% with no blur just reads as a
-   flat, slightly darker rectangle on the tray rather than frosted glass. The
-   tray's own blur only softens what is BEHIND the tray, not what is behind
-   this card. */
+   cards sit on sage, where border/subtle would be invisible anyway. */
 .method {
   display: flex;
   align-items: center;
   gap: var(--space-md);
   width: 100%;
-  /* 14/18 stays 14 here: a method card sits on sage and carries NO border, so
-     there is nothing to subtract */
   min-height: 70px;
-  padding: 14px 18px;
+  padding: var(--space-lg) var(--space-xl);
   text-align: left;
 
   /* lux-v3: a glass tile at 24 — the chips' material on the sheet's frost */
   border-radius: var(--radius-2xl); /* 24 */
-  /* ⚠️ A FAINT EDGE, NOT THE GLASS ONE — 3 Oct 2026, asked for directly:
-     the white `border/glass` (55%) and the white top rim (`--shadow-glass`)
-     went ("remove the white borders around"), then a 12% white hairline was
-     asked back. */
   border: var(--border-width-hairline) solid #ffffff1f;
-  /* (v2) ⚠️ `surface/data-deep`, NOT `-data-strong` — BY EXPLICIT REQUEST, and the
-     same swap the basket sheet's rows and `ResultCards`' emphasis block take.
-     A 62% sage card on the 44% sage tray is two steps of one hue with almost
-     nothing between them; the darker sage separates the cards from the tray.
-     `#4f838f @85%` as of 8 Sep 2026, which is what lifts the white above from
-     ~1.6:1 to 3.77:1 — better, still short of AA. See globals.css. */
   background: var(--color-glass);
 
   transition: background-color var(--duration-fast) var(--ease-hover);
 }
 
-/* hover LIGHTENS by one step, and the step is now WITHIN the opaque scale.
-
-   ⚠️ IT USED TO HOVER TO `surface/data-strong` AND THAT BROKE ON 8 Sep 2026.
-   That was a real step while `data-deep` was a 62% sage; once `data-deep` went
-   opaque `#407375`, `-strong` (#7da7a9 @62%) composited far lighter, so hover
-   was a jump rather than a step — and it dropped this list's white label from
-   5.35:1 to about 2.4:1. The hover would have been the one state that failed.
-   `surface/data-deep-hover` is the same hue two lightness steps up, still
-   opaque, white at 4.71:1. */
+/* hover LIGHTENS by one step, and the step is now WITHIN the opaque scale. */
 .method:hover {
   background: var(--color-glass-strong);
 }
@@ -125,6 +100,15 @@
    those cards are self-contained regardless of what they sit on.
    ------------------------------------------------------------------------- */
 
+/* the one box every view sits in, laid out as the tray lays out its own
+   children, so a view looks the same inside it */
+.view {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  width: 100%;
+}
+
 .searchView,
 /* the viewfinder, guide, captured label, copy, shutter row and shutter all
    moved to CameraCapture.module.css when the check-in became the third capture
@@ -140,121 +124,7 @@
   gap: var(--space-lg);
 }
 
-/* --- the search dropdown (NOT IN FIGMA — see SearchView's doc comment) -----
-   One panel hanging off the search pill, replacing the free-standing
-   `ProductRow` cards that used to sit in a capped `.searchResultsScroll`
-   region. Shared by both search instances: the tray's top-level search view
-   and the confirm view's embedded "search again" / "add another" field.
-
-   ⚠️ IN FLOW, NOT ABSOLUTELY POSITIONED. The mobile tray is docked to the
-   bottom edge and sized by its content, so an overlaid panel would open past
-   the bottom of the viewport. In flow the tray grows upward to hold it. The
-   negative top margin is what buys the overlay READING — it eats half the
-   view's 16 gap so the panel sits 8 under the pill and hangs off it, rather
-   than floating as an unrelated block. */
-.dropdown {
-  /* narrower than the bar it hangs from, the way a menu is */
-  margin: calc(var(--space-sm) - var(--space-lg)) var(--space-sm) 0;
-  padding: var(--space-sm);
-
-  border-radius: var(--radius-2xl);
-  background: var(--color-surface-frost-light);
-  /* the frosted inner shadow (rule 9 — a translucent fill without it reads
-     flat) PLUS a real drop shadow, because this panel is meant to read as
-     sitting ABOVE the tray's content rather than in it */
-  box-shadow: var(--shadow-frosted-row), var(--shadow-lg);
-  -webkit-backdrop-filter: blur(var(--blur-card));
-  backdrop-filter: blur(var(--blur-card));
-
-  /* caps itself and scrolls internally so a long list can never grow the tray
-     far enough to push the search field out of reach — the job
-     `.searchResultsScroll` used to do, moved onto the panel. Scrollbar hidden
-     the same way `.tray` hides its own: the scroll stays, the OS chrome
-     doesn't. */
-  max-height: 296px;
-  overflow-y: auto;
-  scrollbar-width: none;
-  -ms-overflow-style: none;
-}
-
-.dropdown::-webkit-scrollbar {
-  display: none;
-}
-
-.results {
-  margin: 0;
-  padding: 0;
-  list-style: none;
-  display: flex;
-  flex-direction: column;
-  gap: var(--space-2xs);
-}
-
-/* A row on the panel's own fill — no card of its own. 48 thumb + 8/12 padding
-   is a 64-tall row; it grows when a two-line name wraps, same as ProductRow. */
-.result {
-  display: flex;
-  align-items: center;
-  gap: var(--space-md);
-  width: 100%;
-  padding: var(--space-sm) var(--space-md);
-  text-align: left;
-
-  border-radius: var(--radius-md);
-  transition: background-color var(--duration-fast) var(--ease-hover);
-}
-
-.result:hover {
-  background: var(--color-state-hover-overlay);
-}
-
-@media (hover: none) {
-  .result:hover {
-    background: none;
-  }
-}
-
-.resultCopy {
-  flex: 1;
-  min-width: 0;
-  display: flex;
-  flex-direction: column;
-  gap: var(--space-2xs);
-}
-
-/* Open Beauty Facts names run long and arbitrary — clamped rather than left to
-   wrap a dropdown row to four lines. */
-.resultName {
-  color: var(--color-text-primary);
-  display: -webkit-box;
-  -webkit-box-orient: vertical;
-  -webkit-line-clamp: 2;
-  line-clamp: 2;
-  overflow: hidden;
-}
-
-.resultMeta {
-  color: var(--color-text-muted);
-  overflow: hidden;
-  text-overflow: ellipsis;
-  white-space: nowrap;
-}
-
-/* "Searching…" / "No products match …" — the panel's own one-line states.
-   `EmptyBox` would be a second frosted card inside a frosted panel. */
-.dropdownNote {
-  padding: var(--space-lg) var(--space-md);
-  color: var(--color-text-muted);
-  text-align: center;
-}
-
-@media (prefers-reduced-transparency: reduce) {
-  .dropdown {
-    background: var(--color-bg-surface-frost);
-    -webkit-backdrop-filter: none;
-    backdrop-filter: none;
-  }
-}
+/* the search dropdown is `SearchDropdown` (components/ui) */
 
 /* --- scan ------------------------------------------------------------------ */
 
@@ -264,41 +134,12 @@
 }
 
 
-
-
-
-
-
-
-
-
-
-.scanAlt {
-  padding: var(--space-sm) 0;
-  color: var(--color-text-on-data-secondary);
-  border-radius: var(--radius-sm);
-  transition: opacity var(--duration-fast) var(--ease-hover);
-}
-
-.scanAlt:hover {
-  opacity: 0.7;
-}
-
-@media (hover: none) {
-  .scanAlt:hover {
-    opacity: 1;
-  }
-}
-
 /* --- confirm ----------------------------------------------------------------- */
 
 .confirmView {
   gap: var(--space-2xl);
 }
 
-/* The duration radios. `OptionRow` is a self-contained light card, so it needs
-   no on-data adjustment to sit on the sage tray — see the section note above.
-   12 between rows, matching every other option group in the app. */
 .durationOptions {
   display: flex;
   flex-direction: column;
@@ -316,28 +157,17 @@
   text-align: center;
 }
 
-.confirmAnswers {
-  display: flex;
-  gap: var(--space-md);
+/* after an add, the search's heading — the sheet title role, centred on the
+   tray */
+.trayHeading {
+  color: var(--color-text-on-data);
+  text-align: center;
 }
 
-.confirmAnswer {
-  flex: 1;
-  min-width: 0;
-}
-
-/* ⚠️ THE PAIR SHARES THE APP'S ACTION COLUMN ON DESKTOP, for the reason
-   `.trayAction` states below: every primary action in the app measures
-   `--width-action` centred, and stretched across the 544 of tray content these
-   two were the last buttons that did not. The token goes on the ROW, not on
-   each button — the two of them together are the one action slot, so they
-   split 376 with the row's own 12 gap between them and stay flush with the
-   `Add product` button the duration stage puts in the same place. */
-@media (min-width: 1024px) {
-  .confirmAnswers {
-    width: var(--width-action);
-    align-self: center;
-  }
+/* names the list below it, so it starts on the list's edge */
+.listLabel {
+  color: var(--color-text-on-data-secondary);
+  text-align: start;
 }
 
 /* --- added products (not in Figma — see the ConfirmView doc comment) -------
@@ -357,102 +187,37 @@
   gap: var(--space-md);
 }
 
-/* THE SAME FROSTED CIRCLE AS STEP 01's "Other" FIELD — `StartInvestigation`'s
-   `.otherClear`, the clear button on the free-text description. The design
-   system has no clear/remove control at all, so both are composed from the
-   Chip's language sized down to 20: a hairline `border/subtle` ring on
-   `surface/frost-light`, glyph in `text/muted`. Keep the two in step; if one
-   moves, move the other.
-
-   Self-contained on ProductRow's own light card — not an on-data colour, even
-   though the row sits on the sage tray. */
-.removeButton {
-  position: relative;
-  flex: none;
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  width: 20px;
-  height: 20px;
-
-  /* ⚠️ A BARE ✕, NO CIRCLE — 16 Sep 2026, asked for directly ("remove the
-     circle around the x"). It was a 20px frosted disc with a hairline ring.
-     The radius stays so the focus outline still draws round. */
-  border: none;
-  border-radius: var(--radius-full);
-  background: none;
-  color: var(--color-text-muted);
-  transition: color var(--duration-fast) var(--ease-hover);
-}
-
-/* ⚠️ THE 44 TOUCH TARGET SURVIVES THE SHRINK, as a transparent ::after rather
-   than as the button's own box. `.otherClear` is a bare 20px control and that
-   is under the minimum everywhere; this row is the one place in the tray where
-   a tap DESTROYS something, so the hit area is kept and only the visible circle
-   is 20. Same principle as `Sheet`'s back chevron — the glyph keeps its size,
-   the hit area overhangs into space that is padding anyway. */
-.removeButton::after {
-  content: "";
-  position: absolute;
-  inset: calc((20px - var(--size-touch-target)) / 2);
-}
-
-.removeButton:hover {
-  color: var(--color-text-primary);
-}
-
-@media (hover: none) {
-  .removeButton:hover {
-    color: var(--color-text-muted);
-  }
-}
-
-/* The icon scaled by the same ratio as the button itself: 20/36 of the
-   CloseIcon's default 24, matching `.otherClearIcon`. `!important` used to be
-   required here because `icons.tsx` sized every glyph inline; it stopped, and
-   the default is now a zero-specificity `:where()` rule in `globals.css`. */
-.removeIcon {
-  width: calc(24px * 20 / 36);
-  height: calc(24px * 20 / 36);
-}
-
-
-/* ⚠️ THE TRAY'S PRIMARY ACTION OWNS ITS OWN WIDTH — `Continue` on the capture
-   view and `Add product` on the confirm view. Full width on mobile, and
-   `--width-action` centred on desktop, which is what every other primary action
-   in the app measures; stretched across the tray they were the one button that
-   did not match.
-
-   ⚠️ NOT `Button`'s `fullWidth` PROP. That applies `Button.module.css`'s own
-   `.full`, and a caller's module class competes with it at equal specificity —
-   so which one wins comes down to bundle order rather than intent. The same
-   reason `QuestionScreen` gives for owning Continue's width instead of passing
-   `fullWidth`. Dropping the prop leaves exactly one rule in charge.
-
-   `align-self` because the views are stretch columns: without it a button
-   narrower than the tray sits against the left edge.
-
-   ⚠️ CAPPED AT THE NAV PILL'S 380 ON MOBILE TOO, 13 Sep 2026 — asked for
-   directly; see `--width-action-mobile` in globals.css. */
 .trayAction {
-  width: 100%;
-  max-width: var(--width-action-mobile);
+  /* width is `Button`'s `width="action"` */
   align-self: center;
+}
+
+/* `Add product` on the duration stage is the secondary `Button` at
+   `size="sm"` (42, the verify stage's toggle pill), hugging its label and centred at both breakpoints.
+   `button.` + two classes outranks the shared rule above whatever the bundle
+   order; the height and padding are `Button`'s own. */
+button.trayAction.trayActionSmall {
+  align-self: center;
+}
+
+/* The space below the last view equals the space above the first: 52, the
+   corner ✕'s 20 inset + its 20 + 12, at every width. The doubled class
+   outranks `Sheet`'s own padding whatever the bundle order. */
+.cornerRoom.cornerRoom {
+  padding-bottom: calc(var(--space-xl) + var(--size-icon-sm) + var(--space-md)); /* 52 */
+}
+
+/* the first view starts 12 below the corner ✕ (20 down, 20 tall), whatever
+   the tray's top padding is: 20 on mobile, 48 from 1024 */
+.cornerRoom > [aria-label="Close"] + * {
+  margin-top: calc(var(--size-icon-sm) + var(--space-md)); /* 32 */
 }
 
 @media (min-width: 1024px) {
-  .trayAction {
-    width: var(--width-action);
-    align-self: center;
+  .cornerRoom > [aria-label="Close"] + * {
+    margin-top: calc(
+      var(--space-xl) + var(--size-icon-sm) + var(--space-md) -
+        var(--space-5xl)
+    ); /* 4 */
   }
-}
-
-/* ⚠️ NOT IN FIGMA — `Add product` on the duration stage is the secondary
-   `Button` at `size="md"` (48) with a plus, hugging its label and centred at
-   both breakpoints: step 1's `Take a photo` recipe, asked for directly 13 Sep
-   2026. `button.` + two classes outranks the shared rule above whatever the
-   bundle order; the height and padding are `Button`'s own now. */
-button.trayAction.trayActionSmall {
-  width: auto;
-  align-self: center;
 }

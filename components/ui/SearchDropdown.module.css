@@ -1,0 +1,128 @@
+/* The search dropdown — see SearchDropdown.tsx. */
+
+.panel {
+  display: flex;
+  flex-direction: column;
+  padding: var(--space-sm);
+
+  border-radius: var(--radius-2xl);
+  /* the nav's frost: #dbeded at 48%, blurred 8 */
+  background: var(--color-surface-frost-nav);
+  -webkit-backdrop-filter: blur(var(--blur-sm));
+  backdrop-filter: blur(var(--blur-sm));
+  /* the frosted inner shadow PLUS a real drop shadow: the panel sits ABOVE
+     what is under it */
+  box-shadow: var(--shadow-frosted-row), var(--shadow-lg);
+}
+
+/* over the page, 8 under the field and inset 8 either side; never past the
+   fold on a short screen */
+.panel[data-placement="float"] {
+  position: absolute;
+  top: calc(100% + var(--space-sm));
+  right: var(--space-sm);
+  left: var(--space-sm);
+  z-index: var(--z-overlay);
+  max-height: min(22.5rem, 50dvh); /* 360 */
+}
+
+/* in the tray's column, tucked 8 under the field (its column's 16 gap, less
+   8) and inset 8; capped so a long list never pushes the field out of reach */
+.panel[data-placement="flow"] {
+  margin: calc(var(--space-sm) - var(--space-lg)) var(--space-sm) 0;
+  max-height: 18.5rem; /* 296 */
+}
+
+@media (prefers-reduced-transparency: reduce) {
+  .panel {
+    background: var(--color-bg-nav);
+    -webkit-backdrop-filter: none;
+    backdrop-filter: none;
+  }
+}
+
+.heading {
+  flex: none;
+  padding: var(--space-xs) var(--space-md) var(--space-sm);
+  color: var(--color-text-secondary);
+}
+
+/* the rows scroll inside the panel, under the heading; the scroll stays, the
+   OS scrollbar doesn't */
+.scroll {
+  flex: 1;
+  min-height: 0;
+  overflow-y: auto;
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+  overscroll-behavior: contain;
+}
+
+.scroll::-webkit-scrollbar {
+  display: none;
+}
+
+.note {
+  padding: var(--space-lg) var(--space-md);
+  color: var(--color-text-secondary);
+  text-align: center;
+}
+
+.list {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2xs);
+}
+
+/* 48 thumb + 8 padding is a 64-tall row; a two-line name grows it */
+.row {
+  display: flex;
+  align-items: center;
+  gap: var(--space-md);
+  width: 100%;
+  padding: var(--space-sm) var(--space-md);
+  border-radius: var(--radius-md);
+  text-align: left;
+}
+
+button.row {
+  transition: background-color var(--duration-fast) var(--ease-hover);
+}
+
+button.row:hover {
+  background: var(--color-state-hover-overlay);
+}
+
+@media (hover: none) {
+  button.row:hover {
+    background: none;
+  }
+}
+
+.copy {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2xs);
+}
+
+/* product names run long; two lines, then clipped */
+.title {
+  color: var(--color-text-primary);
+  display: -webkit-box;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 2;
+  line-clamp: 2;
+  overflow: hidden;
+}
+
+.meta {
+  color: var(--color-text-muted);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}

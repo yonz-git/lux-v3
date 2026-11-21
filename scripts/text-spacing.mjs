@@ -1,37 +1,4 @@
-/**
- * The text-spacing check — `npm run spacing`.
- *
- * ⚠️ WCAG 1.4.12 (AA) IS THE ONE SUCCESS CRITERION NOTHING ELSE HERE CAN SEE.
- * A user may override line-height to 1.5×, letter-spacing to 0.12em,
- * word-spacing to 0.16em and paragraph spacing to 2em — and nothing may be lost
- * or clipped when they do. `npm run build`, `tsc` and axe all say nothing about
- * it, because the failure only exists once those overrides are applied to a
- * live layout at a real width. So this drives a real browser and applies them.
- *
- * ⚠️ IT RUNS TWICE AND REPORTS THE DIFFERENCE, WHICH IS THE WHOLE DESIGN. A
- * bare "does anything overflow" pass reports ~80 boxes in this app and every
- * one of them is a false positive: the transparent 44px hit areas
- * (`.tap-target`, `Chip`'s `::after`) are absolutely positioned pseudo-elements
- * that legitimately extend past their box and count toward `scrollHeight`.
- * Only a box that overflows WITH the overrides and not WITHOUT them is a
- * 1.4.12 failure. The baseline pass is what makes the result readable.
- *
- * Reports two kinds:
- *   CLIPPED   the box hides its overflow — text is actually gone
- *   OVERFLOW  the text spills out of its box — it collides with what is beside it
- *
- * ⚠️ IT NEEDS A RUNNING SERVER AND A CHROME, so it is NOT part of the
- * before-you-ship list the way `npm run vocab` is. Run it when a screen's
- * layout changes:
- *
- *   npm run build && npx next start -p 3100 &
- *   "/Applications/Google Chrome.app/Contents/MacOS/Google Chrome" \
- *     --headless=new --remote-debugging-port=9222 --user-data-dir=/tmp/lux-cdp &
- *   npm run spacing
- *
- * `BASE` and `CDP_PORT` override the two addresses. No dependencies: Node's own
- * `WebSocket` speaks CDP.
- */
+/** The text-spacing check — `npm run spacing`. */
 const PORT = process.env.CDP_PORT || 9222;
 const BASE = process.env.BASE || "http://127.0.0.1:3100";
 
@@ -134,12 +101,6 @@ async function pass(send, applyOverride) {
     for (const route of ROUTES) {
       await send("Page.navigate", { url: BASE + route });
       await new Promise((r) => setTimeout(r, 700));
-      /* ⚠️ WAIT FOR THE STORE, OR THE PASS IS EMPTY. Until `data-store-ready`
-         lands on <html>, everything in `.screen` but the nav is
-         `visibility: hidden` (globals.css), and the probe skips hidden boxes —
-         so a page that never hydrates (Next's dev server refuses its scripts
-         to an origin it does not allow, e.g. 127.0.0.1 for a localhost
-         server) reports CLEAN while checking nothing. Poll, then refuse. */
       let ready = false;
       for (let i = 0; i < 40 && !ready; i++) {
         const r = await send("Runtime.evaluate", {

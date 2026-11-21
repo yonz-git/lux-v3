@@ -1,5 +1,3 @@
-/* ⚠️ lux-v3, 1 Oct 2026 — the field is VidGen GLASS, the chips' material. */
-
 /* Hand-composed in Figma as `other-input` (02c/03a) and the 03c date field —
    the same frosted-row recipe as a selectable row, minus the selected border. */
 
@@ -9,20 +7,9 @@
   min-height: var(--size-field);
   padding: 0 var(--space-xl);
 
-  /* ⚠️ NO RESET FOR `input` IN globals.css (only `button` gets one), so the UA
-     default border shows through the frosted recipe unless zeroed here —
-     SearchField's `.input` does the same. */
   border: var(--border-width-hairline) solid var(--color-border-glass);
-  /* a pill, as every lux-v3 field is (canvas boards, 1 Oct 2026) */
+  /* a pill, as every lux-v3 field is (canvas boards */
   border-radius: var(--radius-full);
-  /* ⚠️ THE DATE PICKER'S FROST, asked for directly 14 Sep 2026 ("make the text
-     fields frosty too"): a sage `#98b4b6` at 72%, a `#fff9` top light inside,
-     and a 120px blur — `DateField`'s `.panel` recipe, over the row's own
-     shadow rather than `shadow/lg`, since a field sits in the flow and does
-     not float. It was `surface/frost-light` over a 28px blur. NOT IN FIGMA
-     and no token; the reduced-transparency fallback below is unchanged.
-     ⚠️ The blur only reaches the page behind when no ancestor has its own
-     `backdrop-filter` — see `.card::before` in QuestionScreen.module.css. */
   background: var(--color-glass);
   box-shadow: var(--shadow-glass);
   -webkit-backdrop-filter: blur(10px);
@@ -36,16 +23,6 @@
   color: var(--color-text-muted);
 }
 
-/* ⚠️ NOT IN FIGMA — `SearchField`'s FOCUS RING, asked for directly 13 Sep
-   2026 ("just like the search bar"). The global `border/focus` outline drew
-   a solid 2px indigo frame around a frosted field and read far heavier than
-   the search pill's. This is that pill's recipe verbatim — `gradient/brand`
-   at 30%, masked to a `border-width/focus` ring sitting ON the field's edge —
-   so the two inputs answer focus the same way. It lives on the wrapper
-   because an `<input>` has no `::after`; see TextField.tsx.
-   ⚠️ The outline stays, TRANSPARENT, so forced-colors mode still draws a
-   system ring. ⚠️ At 30% the ring is under 3:1 against the canvas — the same
-   softer indicator `SearchField` already chose, not a new compromise. */
 .wrap {
   position: relative;
   display: block;

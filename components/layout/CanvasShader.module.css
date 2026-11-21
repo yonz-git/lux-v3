@@ -1,34 +1,6 @@
 /* The living canvas — every route, mounted once in app/layout.tsx.
    The reasoning, the palette clamp and the contrast measurement live in the
-   doc comment on CanvasShader.tsx. This file is only the placement.
-
-   ⚠️ IT SITS BEHIND `.screen`, AND `.screen` STEPS ASIDE ONLY ONCE IT HAS
-   DRAWN. `.screen` keeps `background: var(--gradient-canvas-mobile/-desktop)`
-   until the component stamps `data-canvas-ready` on <html>, which is what turns
-   that background transparent (globals.css). No WebGL, a lost context or a
-   failed compile never sets it, so the token gradient stays and nothing looks
-   broken.
-
-   ⚠️ `fixed`, NOT `absolute` — it has to match `.screen`'s
-   `background-attachment: fixed`, or the shader would scroll on a screen taller
-   than the viewport while the fallback beneath it stayed put.
-
-   ⚠️ `z-index: -1`, NOT 0 — AND THAT IS WHAT FREES EVERY SCREEN FROM RAISING
-   ITS OWN CONTENT. It used to be a positioned child of `.screen` at 0, which
-   paints ABOVE in-flow content, so each caller had to lift its body into a
-   stacking context of its own (`.welcome`, `[data-shader] .shell`). As a direct
-   child of <body> at -1 it paints after the root background and before
-   everything else, on every route, with nothing asked of the screen.
-
-   ⚠️ `100lvh`, NOT `inset: 0` — THE BOX MUST NOT FOLLOW THE BROWSER TOOLBAR.
-   On a phone the layout viewport changes height on every frame the toolbar
-   slides in or out while scrolling (and when the keyboard opens), and a
-   viewport-sized fixed box followed it. Each change reallocated a
-   ~1.2MP buffer and cleared it, which painted black (see the ResizeObserver
-   note in CanvasShader.tsx) — the canvas flickered black for the whole
-   gesture. The LARGE viewport never changes with the toolbar, so the box sits
-   still and the part under a visible toolbar is simply covered. `100%` stays
-   first as the fallback for a browser without `lvh`. */
+   doc comment on CanvasShader.tsx. This file is only the placement. */
 .shader {
   position: fixed;
   top: 0;
@@ -52,18 +24,6 @@
   opacity: 1;
 }
 
-/* ⚠️ DURING THE LOGO ENTRANCE THE CANVAS DRAWS WITH NO FADE — asked for
-   directly, 12 Sep 2026: the new background has to be there when the logo first
-   appears, not arrive as the veil lifts. While `data-entrance-hold` is set,
-   Welcome is at opacity 0 and the veil goes transparent (globals.css,
-   LogoEntrance.module.css), so this canvas IS the logo's background; its usual
-   480ms fade-in would put the flat body colour under the logo's first frames.
-
-   ⚠️ IT IS NOT RAISED, AND IT BRIEFLY WAS — lifted to just under
-   `--z-entrance` so it would cover Welcome itself. A screenshot caught the held
-   orb (a `will-change: transform` layer) showing through it while the veil was
-   up, so Welcome is hidden by opacity instead and the canvas stays at -1.
-   `:global` covers only the attribute; the class stays local. */
 :global(html[data-entrance-hold]) .shader {
   transition: none;
 }

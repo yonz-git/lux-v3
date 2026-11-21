@@ -21,13 +21,7 @@ import styles from "./StyleGuide.module.css";
 
 /**
  * `/styleguide` — the design system rendered live, from the real tokens and
- * the real components. It is what Figma was for until 1 Oct 2026: the place
- * to SEE the system before changing it. Nothing here is a copy — the swatches
- * are read from the stylesheets at runtime, and every component is the one the
- * screens import — so it cannot drift from what ships.
- *
- * ⚠️ It lives beside its route rather than in `features/` because it belongs
- * to no nav section and no screen imports it.
+ * the real components.
  */
 
 /** every custom property declared on `:root`, in source order, deduplicated */
@@ -76,23 +70,26 @@ function Section({ title, children }: { title: string; children: ReactNode }) {
 }
 
 const TYPE: [string, string][] = [
-  ["t-headline", "headline · 36/44 Light"],
-  ["t-brand", "wordmark · 20/24 Bold"],
-  ["t-h2", "28/34 Regular"],
-  ["t-h4-h3", "page title · 22/28 Regular"],
-  ["t-h5", "panel label · 18/22 Regular"],
-  ["t-h6", "16/20 Medium"],
-  ["t-body1", "18/24 Regular"],
-  ["t-body2", "body · 16/22 Regular"],
-  ["t-kicker", "kicker · 16/20 Regular"],
-  ["t-chip", "chip · 16/20 Regular"],
-  ["t-body3", "14/20 Regular"],
-  ["t-label", "tab · 14/20 Medium"],
-  ["t-button", "button · 15/20 Medium"],
-  ["t-label-sm", "12/16 Medium"],
-  ["t-caption", "12/16 Regular"],
-  ["t-overline", "12/16 SemiBold, tracked"],
-  ["t-metric1", "metric · 56/60 Light"],
+  ["t-headline", "headline · 36 → 44 Manrope Medium · 1.2"],
+  ["t-brand", "wordmark · 20 Bold · 1.2"],
+  ["t-h2", "28 → 32 Manrope Medium · 1.2"],
+  ["t-h4-h3", "page title · 22 Manrope Medium · 1.2"],
+  ["t-h4", "sheet title · 20 Manrope Medium · 1.2"],
+  ["t-h5", "card headline · 18 Regular · 1.2"],
+  ["t-h6", "item name · 16 Medium · 1.2"],
+  ["t-body1", "18 Regular · 1.4"],
+  ["t-body2", "reading text · 16 Regular · 1.4"],
+  ["t-kicker", "kicker · 16 Regular · 1.4"],
+  ["t-chip", "chip · 16 Regular · 1.4"],
+  ["t-body3", "supporting text · 14 Regular · 1.4"],
+  ["t-label", "label · 14 Medium · 1.4"],
+  ["t-label-h6", "option row · 14 → 16 Medium · 1.4"],
+  ["t-button", "button · 15 Medium · 1.4"],
+  ["t-label-sm", "meta, pills · 12 Medium · 1.4"],
+  ["t-caption", "fine print · 12 Regular · 1.4"],
+  ["t-overline", "card section · 14.4 Manrope ExtraBold caps · 1.4"],
+  ["t-metric1", "metric · 56 Light · 1.2"],
+  ["t-metric3", "score · 20 Light · 1.2"],
 ];
 
 const GRADIENTS = [
@@ -101,7 +98,6 @@ const GRADIENTS = [
   ["--gradient-brand", "brand — the primary action"],
   ["--surface-sheet", "sheet — the tray's sage frost"],
 ];
-
 
 export function StyleGuide() {
   const colours = useRootTokens("--color-");
@@ -163,7 +159,7 @@ export function StyleGuide() {
 
       <Section title="Boxes — sheet and panel">
         <div className={styles.boxes}>
-          <div className={`vg-sheet ${styles.sheetDemo}`}>
+          <div className={`sheet ${styles.sheetDemo}`}>
             <div className={styles.sheetHead}>
               <h3 className={`t-h4-h3 ${styles.sheetTitle}`}>
                 {/* the chat panel's own orb — ChatPanel's header, 50px with the halo */}
@@ -174,7 +170,7 @@ export function StyleGuide() {
                 <Icons.CloseIcon />
               </IconButton>
             </div>
-            <div className={`vg-panel ${styles.panelDemo}`}>
+            <div className={`panel ${styles.panelDemo}`}>
               <p className={`t-h5 ${styles.panelLabel}`}>
                 <Icons.SparkleIcon />
                 Daily check-in
@@ -274,6 +270,7 @@ export function StyleGuide() {
         <div className={styles.row}>
           <Button>Continue</Button>
           <Button variant="secondary">Secondary</Button>
+          <Button variant="text">Text</Button>
           <Button disabled>Disabled</Button>
           <Button size="md">Medium</Button>
           <Button size="md" variant="secondary" icon={<Icons.PlusIcon />}>

@@ -1,24 +1,4 @@
-/* `Symptoms and location` — the face beside its list. See SymptomLocation.tsx.
-   ⚠️ NOT IN FIGMA, 15 Sep 2026, asked for directly.
-
-   Both callers are `canvas-card`s (PROGRESS's face card, the recap's
-   location block), so the ink is `text/on-data*` — the same dark tiers the
-   tiles card and the gallery use on that surface (non-negotiable 17).
-
-   DIAGRAM LEFT, LIST RIGHT, WRAPPING BY BASIS — no media query. The face's
-   basis IS the 392 it is drawn at, and it does not grow; the list wants 180
-   and takes every pixel over that. Where the row fits (PROGRESS's 592 column:
-   392 + 16 + 184; the recap's 776: 392 + 16 + 368) they sit side by side;
-   where it does not (a phone's 400, the recap's paired ~356) the list drops
-   under the face at full width, and the face shrinks below 392 only when the
-   line itself is narrower than that. `margin-inline: auto` centres a face
-   that is alone on its line, and costs nothing beside the list, which grows
-   into the slack.
-   ⚠️ IT WAS `flex: 1 1 300px` FOR ONE ROUND (15 Sep 2026) and the review
-   measured the face at 348: with both columns growing 1:1 from 300 and 180,
-   the 96 of slack split evenly and the face never reached its cap. The basis
-   has to be the drawn width, with no grow, for the list to be the one that
-   flexes. */
+/* `Symptoms and location` — the face beside its list. See SymptomLocation.tsx. */
 
 .readout {
   display: flex;
@@ -26,11 +6,6 @@
   /* stretch, not start: the list column takes the face's height, so the meta
      block can sit on the column's foot — see `.meta` */
   align-items: stretch;
-  /* ⚠️ 24 BETWEEN FACE AND LIST, 16 BETWEEN THE WRAPPED ROWS — asked for
-     directly 15 Sep 2026 ("add more space in between"): at 16 the hanging
-     dot sat 4px off the diagram's fill. With the list's basis at 160 the row
-     still fits PROGRESS's 592 (392 + 24 + 160 = 576) and the list lands at
-     176. */
   gap: var(--space-lg) var(--space-2xl); /* 16 / 24 */
 }
 
@@ -39,35 +14,14 @@
   min-width: 0;
   max-width: 392px;
   margin-inline: auto;
+  margin-block: var(--space-lg); /* 16 */
 }
 
-/* ⚠️ THE LIST OWNS ITS FULL COLUMN, AND THE DOT HANGS OUTSIDE IT. The rows'
-   text, the dividers, the meta labels and their values all start at ONE x —
-   the column's own edge, which is the card overline's x when the list has
-   wrapped under the face — and the 8px mark sits to the LEFT of that edge, in
-   the gap that already exists there: the 16 between face and list on
-   desktop, the card's padding on a phone. That is how a reference list hangs
-   its bullets. ⚠️ TWO ROUNDS TO GET HERE (15 Sep 2026): first an `auto 1fr`
-   grid with the dot in column one (the rules started at the dot and overhung
-   the text), then a 16 padding on the column with the dot in it (one edge on
-   desktop, but a 16 indent off the overline on a phone, and the text column
-   shrank to 168 so the places line filled 76% of it). No padding now: the
-   text column is the whole 184. */
 .legend {
   display: flex;
   flex: 1 1 160px;
   flex-direction: column;
   min-width: 0;
-  /* ⚠️ 20 IN FROM THE COLUMN'S EDGE AFTER ALL — asked for directly 15 Sep 2026
-     ("give more left side space"), reversing the "no padding" call above. The
-     text, the rules and the meta all move in together, and the hanging dot
-     (-12) now sits 8 INSIDE the column instead of in the card's padding, where
-     on a phone it crowded the card's rim. The text column is 20 narrower. */
-  /* ⚠️ 28, NOT 20 — 16 Sep 2026, asked for directly ("align the dots to the
-     diagram"). The drawn diagram sits 12 inside `FaceDiagram`'s own `.card`
-     padding, so with the dot at -16 (`.mark`) a 16 + 12 padding puts the
-     dot's left edge on the diagram's left edge once the list has wrapped
-     under the face; the 8 between dot and name is unchanged. */
   padding-left: calc(var(--space-lg) + var(--space-md)); /* 28 */
   color: var(--color-text-on-data);
 }
@@ -76,9 +30,7 @@
 
 /* A ruled list: one hairline between rows in the ink at 14%, no fills. The
    rule is a `border-top` on every row but the first — a content-driven box,
-   so the 1px is not measured against any design height (non-negotiable 9).
-   ⚠️ 14% is chosen by eye against the canvas card's tint; `border/subtle` is
-   drawn for the frosted rows and reads too pale here, `border/glass` is white. */
+   so the 1px is not measured against any design height (non-negotiable 9). */
 .rows {
   margin: 0;
   padding: 0;
@@ -95,10 +47,6 @@
   display: flex;
   flex-direction: column;
   min-width: 0;
-  /* ⚠️ 16 above and below — asked for directly 15 Sep 2026 ("add more space
-     in between"), and the round-3 review's biggest gap (11 of air around a
-     rule against the reference's ~35). It was 10. The top is a variable so
-     the mark below can find the name's line. */
   --row-top: var(--space-lg);
   padding-block: var(--row-top) var(--space-lg);
 }
@@ -121,10 +69,6 @@
    pill's, so the two read as one material. */
 .mark {
   position: absolute;
-  /* ⚠️ -16, NOT -12 — 16 Sep 2026, asked for directly ("increase the space
-     between the dot and the text to double"): the 8px dot's right edge now
-     sits 8 from the name, where it was 4. Still inside the card's 22.4 / 24
-     padding. */
   left: calc(-1 * var(--space-lg)); /* -16 */
   top: calc(var(--row-top) + 6px);
   width: 8px;
@@ -164,17 +108,6 @@
 
 /* ---- hover — the diagram's own reading aid, from the words ---------------- */
 
-/* ⚠️ MIRRORS `FaceDiagram`'s HOVER: the lit row's mark brightens under the
-   same soft glow its pill takes, and while anything is lit the other rows
-   fade back, on the same `duration/slow`. The row's own ink does not move —
-   the mark is the one thing that changes (bar.md, 6). The lit state arrives
-   from either side (the row under the pointer, or the face's own hover
-   reported back), so it is a data attribute rather than `:hover`. ⚠️ NO
-   `hover: hover` GUARD, deliberately: the rows take the same
-   `onPointerEnter` / `onPointerLeave` pair the diagram's pills take, so a tap
-   on a phone lights a pair the way a tap on a pill does, and the next tap
-   anywhere on the face moves it — the diagram's own reading-aid behaviour,
-   not a hover state that sticks. */
 .row[data-lit] .mark {
   filter: brightness(1.12) drop-shadow(0 0 6px rgb(255 255 255 / 0.36));
 }
@@ -186,26 +119,13 @@
 
 /* ---- the meta pairs — the start date and the typed `Other` --------------- */
 
-/* ⚠️ ON THE COLUMN'S FOOT, NOT UNDER THE LAST ROW. `margin-top: auto` in
-   the stretched column drops the pairs to the bottom, level with the
-   diagram's own foot, so the column is composed top AND bottom instead of
-   dying a third of the way down beside a 590px picture (the round-1 review:
-   "the column dies at y≈508 with ~118 of nothing beneath it"). Where the
-   list has wrapped under the face the column is its content's height and
-   the auto margin collapses to the 24 minimum. ⚠️ NO RULE ABOVE IT — it
-   carried one for a round and the review called it the templated move: the
-   reference draws a rule only BETWEEN two rows, and a rule above a footer is
-   structure the whitespace already carries. Label over value in the list's
-   own two sizes (bar.md, 1). */
 .meta {
   display: flex;
   flex-direction: column;
   gap: var(--space-md); /* 12 */
   margin: auto 0 0;
   /* 9.6 — the minimum under the last row, which adds its own 16 below: 25.6
-     from the last places line to `Started on`. ⚠️ It was 24 (40 in all) until
-     16 Sep 2026, then cut 20% twice, each asked for directly ("20% less
-     space", "20% more less"): 40 → 32 → 25.6. */
+     from the last places line to `Started on`. */
   padding-top: calc(var(--space-lg) * 0.6);
 }
 

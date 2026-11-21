@@ -17,29 +17,19 @@
   inset: 0;
   z-index: var(--z-overlay);
   background: var(--color-state-pressed-overlay);
+  /* the page goes soft behind the check-in, as behind every `Sheet`; it
+     fades in and out with the scrim's opacity */
+  -webkit-backdrop-filter: blur(var(--blur-md));
+  backdrop-filter: blur(var(--blur-md));
 }
 
-/* ⚠️ THE OVERLAY FADES IN AND OUT AS ONE OBJECT — ADDED 12 Sep 2026. Before
-   this it had no motion of its own at either end, while `ChatPanel`'s
-   `data-reveal` faded its CONTENTS up over 320ms: the orb and the first bubble
-   arrived gently inside a panel that had snapped in around them, and the whole
-   thing left in a single frame. The panel is the object the user is dismissing,
-   so the panel is what moves.
+@media (prefers-reduced-transparency: reduce) {
+  .scrim {
+    -webkit-backdrop-filter: none;
+    backdrop-filter: none;
+  }
+}
 
-   ⚠️ WRITTEN AS A TRANSITION PLUS `@starting-style`, NOT AS AN ANIMATION, AND
-   THAT IS WHAT MAKES IT LEGAL HERE. A rule that NAMES an animation may not live
-   in a CSS Module — the module localizes the keyframes name and it resolves to
-   nothing (AGENTS.md, motion). `@starting-style` names nothing: it is the
-   mount-time start value for the transition already declared, so the entrance
-   and the exit are one mechanism and both stay in the file that owns this
-   surface. A browser without it simply gets the old instant entrance and still
-   gets the exit.
-
-   ⚠️ NO TRANSFORM AT EITHER END, UNLIKE `Sheet`'s TRAY. The tray is a bottom
-   sheet and rising 16px is where it comes from; this is a near-full-height
-   panel inset 16 from the top, and sliding it would read as the screen itself
-   moving. Exit runs at `duration/base` against the entrance's `duration/slow`
-   for the reason written out on the tray's exit in globals.css. */
 .scrim,
 .overlay {
   opacity: 1;
@@ -59,12 +49,6 @@
   transition-duration: var(--duration-base);
 }
 
-/* ⚠️ `--z-overlay` (300), NOT `--z-sheet` (400), AND THE ORDER MATTERS. It has
-   to clear `--z-nav` (200), because a dashboard's nav showing through the
-   check-in would offer a way out the conversation cannot survive. It must stay
-   BELOW `--z-sheet`, because the photo capture is a `Sheet` opened from inside
-   this overlay: at equal z-index the tray would paint under the panel that
-   opened it. */
 .overlay {
   position: fixed;
   inset: 0;
@@ -74,9 +58,32 @@
   flex-direction: column;
   align-items: center;
 
-  /* `.screen[data-layout="panel"]`'s padding, verbatim: 16 at the top (the
+  /* `.screen[data-layout="panel"]`'s padding, verbatim: 8 at the top (the
      panel screens sit 24 higher than every other screen), the mobile margin at
      the sides, and the nav's own clearance under it. */
-  padding: var(--space-lg) var(--margin-mobile)
-    calc(var(--nav-inset-bottom) + var(--size-nav-height) + var(--space-lg));
+  padding: calc(var(--space-sm) + env(safe-area-inset-top))
+    var(--margin-screen-right)
+    calc(var(--nav-inset-bottom) + var(--size-nav-height) + var(--space-lg))
+    var(--margin-screen-left);
+}
+
+/* on a phone the panel takes the whole screen over the nav (`ChatPanel
+   modal`), floating `--space-sheet-float` in from every edge, or the safe
+   area where that is deeper */
+@media (max-width: 1023.98px) {
+  .overlay {
+    padding: max(var(--space-sheet-float), env(safe-area-inset-top))
+      max(var(--space-sheet-float), env(safe-area-inset-right))
+      max(var(--space-sheet-float), env(safe-area-inset-bottom))
+      max(var(--space-sheet-float), env(safe-area-inset-left));
+  }
+}
+
+/* on desktop the panel sits on the window's vertical centre: the nav's
+   clearance top and bottom, so it never runs under the nav */
+@media (min-width: 1024px) {
+  .overlay {
+    justify-content: center;
+    padding-top: calc(var(--nav-inset-bottom) + var(--size-nav-height) + var(--space-lg) + env(safe-area-inset-top));
+  }
 }

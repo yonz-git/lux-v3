@@ -1,7 +1,7 @@
 /* The ingredients dropdown — see IngredientsDisclosure.tsx. No surface, no
    radius, no border: a second frosted box inside a frosted card would read as a
    card within a card, which is the nesting rule this app keeps for the reverse
-   case. Lifted from ProductDetails.module.css, 16 Sep 2026. */
+   case. */
 
 .inci {
   display: flex;
@@ -39,7 +39,6 @@
   }
 }
 
-/* ⚠️ icon-xs (16) AGAINST A CARD'S icon-sm (20) — see the TSX */
 .chevron {
   flex: none;
   width: var(--size-icon-xs);

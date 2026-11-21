@@ -7,121 +7,13 @@ import styles from "./CanvasShader.module.css";
 /**
  * The living canvas — every route, mounted once as `AppCanvas` in
  * app/layout.tsx.
- *
- * ⚠️ NOT IN FIGMA. Figma paints every screen with `gradient/canvas-mobile` /
- * `-desktop`, a static three-stop linear gradient. This replaces it with a
- * WebGL fragment shader that moves the same stops around. It started as an
- * experiment and was CHOSEN AS THE MAIN BACKGROUND on 14 Sep 2026, asked for
- * directly ("use this as the main bg"): the `film` variant, 10% darker, with
- * the logo lift and the pointer light described on `FRAG_FILM`. Figma still
- * paints the static gradient, so it is owed a frame there — see
- * docs/archive/figma-catchup.md.
- *
- * ⚠️ IT WAS OPT-IN PER SCREEN UNTIL 12 Sep 2026, AND THIS COMMENT USED TO FORBID
- * WHAT HAPPENED NEXT. Welcome and `/check` each rendered their own canvas; it
- * was then asked for directly on every route. It is mounted once in the root
- * layout rather than per screen, so it survives navigation instead of
- * rebuilding its context and fading in again on each one. The contrast bound
- * below is STRUCTURAL — a floor on the colour — so it carries to every route,
- * but the measurements quoted were taken on Welcome and `/check`, and the field
- * can put the floor colour higher up a screen than the linear gradient ever
- * did. Text on bare canvas lighter than `text/secondary` wants measuring.
- *
- * Placement: it sits BEHIND `.screen` at z-index -1, and `.screen` goes
- * transparent only once it has drawn — see CanvasShader.module.css.
- *
- * ⚠️ TWO VARIANTS. `film` is the default and the main background. `flow` is the
- * original drift; nothing renders it now, and it is kept so going back is one
- * word in `AppCanvas`. `film` —
- * asked for on 12 Sep 2026 with monopo.vn as the reference — keeps the same
- * five tokens and the same floor but trades the drift for that site's
- * language: larger, slower forms held in the darker part of the ramp, and film
- * grain. Its own notes sit on `FRAG_FILM`. The reference is a DARK site and
- * this is not; it cannot be without breaking the floor below.
- *
- * ⚠️ THE RAMP WAS ONLY EVER WIDENED UPWARDS, FOR CONTRAST — AND ON 14 Sep 2026
- * THE WHOLE OF IT MOVED DOWN, asked for directly: "darken the bg colors 10%".
- * Roughly 200 lines of `globals.css` derive colours by sampling this gradient
- * at an element's own position, and the darkest value any of them assumes is
- * `--color-gradient-canvas-end-mobile`. The disclaimer on Welcome is
- * `text/secondary` (#4b4b57) sitting on BARE canvas: 4.75:1 on the old floor
- * #acc5cc, and **3.84:1 on the new floor #9bb1b8 — it FAILS AA now.** Contrast
- * was deferred when this was asked for ("we will fix those later"), so the
- * failure is recorded, not fixed. Do not go darker without deciding it first.
- *
- * Every stop is its token value x0.9 per sRGB channel. The four canvas tokens
- * are overridden on `:root` in globals.css, so `.screen`'s fallback gradient
- * moves with the shader. The two borrowed stops are scaled HERE, by
- * `BORROWED_STOP_SCALE`, because `bg/nav` and `bg/progress-track` also fill
- * the search field, the snackbar, the step track and more, none of which were
- * asked to move:
- *
- *     bg/progress-track   #ecf8f9 -> #d4dfe0   (lightest — highlight cores only)
- *     bg/nav              #dbeded -> #c5d5d5   (the signature LUX cyan)
- *     canvas-start        #dce7ea -> #c6d0d3
- *     canvas-mid          #cedee2 -> #b9c8cb
- *     canvas-end-mobile   #acc5cc -> #9bb1b8   (the floor — NOTHING goes below it)
- *
- * ⚠️ THE WORST CASE IS STILL STRUCTURAL RATHER THAN A MEASUREMENT — it is just
- * a failing one now. Because the floor is the darkest colour the ramp can emit,
- * no amount of retuning the noise can put anything darker under a glyph — the
- * disclaimer cannot drop below 3.84:1 however the field moves. Moving the ramp
- * further DOWNWARDS lowers that bound again, which is the whole reason it is
- * written as a floor rather than a stop.
- *
- * and they are read from the CSS custom properties at runtime, so retuning the
- * tokens retunes the shader. Do not hardcode a colour here, and do not move
- * the ramp without re-measuring the disclaimer.
- *
- * ⚠️ THE CLAMP BOUNDS THE COLOUR, NOT THE PLACE — AND THAT COSTS SOMETHING. The
- * linear gradient only reaches its darkest stop at the BOTTOM of the screen, so
- * an element halfway up has always sat on something lighter than the floor. The
- * shader can put the floor colour anywhere, so any given element can now see a
- * darker background than it used to. Measured on the disclaimer, shader off vs
- * on, sampling its own rows beside the glyphs:
- *
- *     mobile 440    5.24:1 -> 5.11:1
- *     desktop 1440  5.81:1 -> 4.97:1
- *
- * measured on the narrower first ramp and the lighter canvas. The floor bound
- * above is what actually holds it: 3.84:1 is the worst any retune can reach.
- *
- * ⚠️ AXE CANNOT CHECK ANY OF THIS — `color-contrast` degrades to INCOMPLETE on
- * a gradient background, and a canvas element is fully opaque to it. Same
- * standing as the rest of the canvas: measure by hand.
- *
- * INTENT. A vertical term still carries most of the value — light at the top,
- * the floor at the bottom — so the screen reads as the same composition Figma
- * drew. A domain-warped noise field only perturbs it.
- *
- * The drift runs at 0.130 of a noise unit per second, roughly 3x where it
- * started, which is slow enough to never draw the eye off the orb and fast
- * enough to be visibly alive while you read the screen. Motion board 04b's
- * "LUX motion is calm. Nothing snaps" is about transitions arriving and
- * settling; this is ambient and continuous, which the board does not cover, so
- * it is a decided-here value rather than a token.
- *
- * FALLBACK. `.screen` keeps its CSS gradient until the first real draw stamps
- * `data-canvas-ready` on <html>. No WebGL context, a lost context, or a failed
- * compile never sets it (or removes it), and the token gradient is simply what
- * you see.
- * `prefers-reduced-motion` draws one frame and never schedules another.
  */
 
 /* Five LUX tokens, lightest to darkest — see the palette note above. The two
    at the top are NOT canvas tokens: they are `bg/progress-track` and `bg/nav`,
    pulled in to widen the ramp for contrast. They are on the SAFE side —
    lighter can only help dark text — and the floor is set by the last stop
-   alone, which is what holds the 3.84:1 bound.
-
-   ⚠️ NOT `bg/frost-light` (#f4feff), WHICH IS THE OBVIOUS PICK AND THE WRONG
-   ONE. It is the lightest token in the app and it gave the most range, but at
-   (244,254,255) it is very nearly achromatic — mixing toward it desaturated
-   every highlight and the whole canvas read as smoke grey rather than LUX.
-   `bg/nav` (#dbeded) is the app's signature cyan and `bg/progress-track`
-   (#ecf8f9) is a paler version of the same hue, so the ramp gains its range
-   without losing the colour. Range beat hue on the first attempt; it should
-   not. */
+   alone, which is what holds the 3.84:1 bound. */
 const RAMP_TOKENS = [
   "--color-bg-progress-track", /* #ecf8f9, drawn x0.9 */
   "--color-bg-nav", /* #dbeded — the signature LUX cyan, drawn x0.9 */
@@ -130,12 +22,6 @@ const RAMP_TOKENS = [
   "--color-gradient-canvas-end-mobile", /* #9bb1b8 — the floor */
 ] as const;
 
-/* ⚠️ THE 10% DARKENING, FOR THE TWO STOPS THIS FILE BORROWS — 14 Sep 2026. The
-   canvas tokens carry it themselves (overridden on `:root` in globals.css);
-   these two fill other components, so they are scaled here instead, to the
-   same x0.9. Keep the two in step: a stop left light re-opens the pale cores.
-   ⚠️ 15 Sep 2026: the canvas was then brightened 14% ("make the bg 14%
-   brighter"), so this is x0.9 x1.14 = x1.026 now, in step with globals.css. */
 const BORROWED_STOP_SCALE = 1.026;
 const BORROWED_STOPS: ReadonlySet<string> = new Set([
   "--color-bg-progress-track",
@@ -147,21 +33,8 @@ const BORROWED_STOPS: ReadonlySet<string> = new Set([
    a phone and a 1440 desktop at the same budget. 1.6M ~= 1440x1110. */
 const MAX_PIXELS = 1_600_000;
 
-/* ⚠️ 60, NOT THE 30 THIS STARTED AT. At the original drift a half-rate loop was
-   free — nothing moved fast enough to show the missing frames. The drift is now
-   ~3x that and the motion is the point, so 30fps reads as a faint stutter on a
-   field with no edges to hide it. The octave cut above paid for the extra
-   frames: this shader is 4 simplex evaluations per pixel where it used to be 7,
-   so it costs less per second at 60fps than the old one did at 30. */
 const FRAME_MS = 1000 / 60;
 
-/* ⚠️ A FRAME THAT IS EARLY BY ROUNDING STILL COUNTS. rAF timestamps are
-   coarsened (100µs in Chromium, ~1ms in Safari and Firefox), so on a 60Hz
-   display consecutive frames measure 16.6 or 16.7ms — and a strict
-   `now - last < FRAME_MS` skipped every frame that rounded down, drawing one
-   in three a whole frame late: the stutter the 60 above exists to remove.
-   Frames within FRAME_SLACK_MS of the interval draw, and on a faster display
-   the remainder is carried so 120Hz lands on every other frame evenly. */
 const FRAME_SLACK_MS = 1;
 
 const VERT = `
@@ -241,16 +114,8 @@ float snoise(vec3 v) {
   return 42.0 * dot(m * m, vec4(dot(p0, x0), dot(p1, x1), dot(p2, x2), dot(p3, x3)));
 }
 
-/* Five stops, blended with overlapping smoothsteps so no seam is visible
-   between them. Order is lightest -> darkest.
-
-   ⚠️ THE WINDOWS OVERLAP BY ROUGHLY HALF THEIR WIDTH, AND THAT IS WHAT STOPS IT
-   LOOKING PATCHY. Narrow windows make each stop own a slice of "k" outright, so
-   the field resolves into five flat regions with visible edges between them —
-   patches. Wide, overlapping windows mean two or three stops are always in play
-   at once and the colour never stops changing, which reads as shading. Widen
-   them further and the ramp collapses toward its own average; do not narrow
-   them to "sharpen" it. */
+/* Five stops, lightest to darkest. The windows overlap by about half their
+   width; narrower ones show as flat patches. */
 vec3 ramp(float k) {
   vec3 c = mix(u_ramp[0], u_ramp[1], smoothstep(0.00, 0.34, k));
   c      = mix(c,         u_ramp[2], smoothstep(0.12, 0.56, k));
@@ -270,12 +135,7 @@ float hash12(vec2 p) {
 `;
 
 const FRAG_FLOW = `${COMMON}
-/* ⚠️ ONE DOMINANT OCTAVE PLUS A WHISPER, NOT A FULL FBM. Three octaves at
-   0.5/0.25/0.125 put as much energy in the small detail as in the large forms,
-   and on a palette this narrow that detail cannot read as shading — it reads as
-   PATCHES. The second octave is kept at a quarter of the first purely to stop
-   the field looking like a single smooth blob; anything above ~0.25 brings the
-   blotching straight back. There is deliberately no third. */
+/* One dominant octave plus a faint second; more detail reads as patches. */
 float field(vec3 p) { return snoise(p) * 0.80 + snoise(p * 2.10 + 9.3) * 0.20; }
 
 void main() {
@@ -314,57 +174,6 @@ void main() {
 }
 `;
 
-/* ⚠️ THE FILM VARIANT — EVERY ROUTE, AND NOT IN FIGMA. monopo.vn's language
-   translated onto LUX's light ground rather than copied off its dark one.
-
-   WHAT CARRIES THE LOOK, since none of it is the colour:
-     · scale — a heavily warped octave at ~0.95, so a form is most of a phone
-       screen;
-     · grain — static, like the flow variant's dither but ~16x louder, because
-       the reference reads as film and a moving grain is not calm.
-
-   ⚠️ IT STARTED WITH A GLASS SPHERE, A LAVENDER ACCENT AND A HARDER SWING TO
-   THE PALE END, AND ALL THREE WERE CUT THE SAME DAY — asked for directly: "tone
-   down the colours, less white, the big circle is not needed" — and then
-   "even less white". So `k` is now held in the DARKER 55% OF THE RAMP
-   (0.45..1.00): the lightest a core can get is roughly `canvas-start` into
-   `canvas-mid`, the two pale stops (`bg/progress-track`, `bg/nav`) barely
-   register, and the noise swing is softened so the forms sit in the canvas's
-   own mid tones. It was 0.30 for an hour and still read as too white. Do not
-   restore the range to "add life" — that is exactly the white that was
-   removed.
-
-   ⚠️ THE FLOOR STILL HOLDS, AND STRUCTURALLY. Every colour is a mix of the five
-   ramp stops, all at or above the #9bb1b8 floor per channel, EXCEPT the grain,
-   which can dip a few levels under it — so the last line clamps each channel to
-   the floor after the grain is added, and the disclaimer's 3.84:1 bound holds
-   (short of AA since the 14 Sep darkening — see the palette note). Holding `k`
-   higher moves the field TOWARD that floor — the bound is still structural,
-   but the disclaimer now sits much nearer it far more of the time.
-
-   ⚠️ THE POINTER WARP IS INTERACTIVE_ROUTES' ALONE — Welcome, asked for as
-   "subtle and only on welcome", and the check landing since 13 Sep 2026. Around
-   the cursor the field is pulled in (a soft bulge) and dragged along by the
-   pointer's recent velocity, both falling off over about a quarter of the short
-   side. u_pull fades it in on those routes and back out when you leave the
-   route or the window; touch never drives it, and reduced motion never runs the
-   loop that eases it.
-
-   ⚠️ IT WAS MADE MORE VISIBLE TWICE ON 14 Sep 2026 — asked for directly,
-   "slightly more" and then "a bit more": the bulge went 0.22 to 0.32 to 0.42,
-   the falloff 0.06 to 0.08 to 0.10, the drag gain 6 to 8 to 10 (cap 0.12 to
-   0.16 to 0.20), and it now carries a LIGHT as well — up to 20% (12% for an
-   hour) toward the pale cyan stop under the cursor. Before that it moved only
-   where the field was sampled; on a field this low in contrast a pure warp was
-   barely readable. The light only ever mixes TOWARD a lighter stop, so the
-   floor still holds.
-
-   ⚠️ u_lift BRIGHTENS THE WHOLE FIELD WHILE THE LOGO ENTRANCE HOLDS — asked for
-   directly the same day, "slightly brighter at the beginning when the main
-   logos show up", after the canvas was darkened 10%. It is x1.07 at 1, which
-   gives back about two thirds of that darkening, and it eases to 0 once
-   data-entrance-hold comes off (see the frame loop). Brighter only, and
-   Welcome is at opacity 0 while it is up, so no text sits on it. */
 const FRAG_FILM = `${COMMON}
 uniform vec2  u_pointer; /* shader units: centred, y up, over the short side */
 uniform vec2  u_drag;    /* eased pointer velocity, already scaled by u_pull */
@@ -383,9 +192,7 @@ void main() {
   p -= dp * fall * 0.42 * u_pull;
   p -= u_drag * fall;
 
-  /* ⚠️ ROTATED, FOR ONE REASON. A single simplex octave at this contrast shows
-     the lattice it is built on — the forms came out as soft RECTANGLES square
-     to the screen. Turning the domain ~34deg rounds them off. */
+  /* rotated ~34deg so the simplex lattice does not show as rectangles */
   p = mat2(0.83, -0.56, 0.56, 0.83) * p;
   vec2 q = vec2(
     snoise(vec3(p * 0.70,       t * 0.060)),
@@ -394,14 +201,9 @@ void main() {
   float n = snoise(vec3(p * 0.95 + q * 0.60, t * 0.080 + 3.7)) * 0.85
           + snoise(vec3(p * 1.90 + q * 0.30 + 9.3, t * 0.080)) * 0.15;
 
-  /* the darker 55% of the ramp only — see "less white" above */
+  /* the darker 55% of the ramp only */
   float v = clamp((1.0 - vy) * 0.30 + n * 0.60 + 0.40, 0.0, 1.0);
-  /* ⚠️ AN EASE-OUT, SO THE LIGHT CORES SHRINK WITHOUT GETTING ANY DARKER —
-     asked for directly, "make the white parts take less space". The lightest
-     value, v = 0, still maps to 0, but a field sitting halfway (0.5) now lands
-     at 0.75, so only the very peaks of the noise reach the pale end and
-     everything around them falls to the mid tones. NO BACKTICKS in here: this
-     comment is inside a JS template literal and one ends the string. */
+  /* eased so the light cores shrink without getting darker */
   v = 1.0 - (1.0 - v) * (1.0 - v);
   float k = 0.45 + 0.55 * v;
 
@@ -411,7 +213,7 @@ void main() {
   /* the logo entrance — brighter only, see u_lift above */
   col = min(col * (1.0 + 0.07 * u_lift), vec3(1.0));
   col += (hash12(gl_FragCoord.xy) - 0.5) * (8.0 / 255.0);
-  col = max(col, u_ramp[4]); /* the floor — see the note above */
+  col = max(col, u_ramp[4]); /* the floor */
 
   gl_FragColor = vec4(col, 1.0);
 }
@@ -437,16 +239,7 @@ function parseHex(value: string): [number, number, number] | null {
   return [((n >> 16) & 255) / 255, ((n >> 8) & 255) / 255, (n & 255) / 255];
 }
 
-/**
- * The one canvas the app renders, behind every route.
- *
- * ⚠️ ONLY WELCOME AND THE `/check` LANDING ANSWER THE POINTER — the two
- * screens that float an orb and one bubble on bare canvas with no card. `/check`
- * was added 13 Sep 2026, asked for directly; its sub-routes stay still. The
- * canvas persists across navigation, so the route reaches it as a PROP the
- * shader fades in and out — never as a remount, which would rebuild the WebGL
- * context on every route change.
- */
+/** The one canvas the app renders, behind every route. */
 const INTERACTIVE_ROUTES = new Set(["/", "/check"]);
 
 export function AppCanvas() {
@@ -462,7 +255,6 @@ export function CanvasShader({
 }: {
   /** `film` is the main background — see the variant note at the top */
   variant?: "flow" | "film";
-  /** fade in the pointer warp — `film` only; see the note on FRAG_FILM */
   interactive?: boolean;
 }) {
   const ref = useRef<HTMLCanvasElement>(null);
@@ -523,7 +315,6 @@ export function CanvasShader({
     const uRes = gl.getUniformLocation(prog, "u_res");
     const uTime = gl.getUniformLocation(prog, "u_time");
 
-    /* read the palette from the tokens, once — see the palette note above */
     const cs = getComputedStyle(document.documentElement);
     const ramp: number[] = [];
     for (const token of RAMP_TOKENS) {
@@ -602,10 +393,6 @@ export function CanvasShader({
       return true;
     };
 
-    /* ⚠️ `data-ready` IS SET BY THE FIRST REAL DRAW, NOT BY THE EFFECT. Setting
-       it before a draw at a known size fades in whatever the buffer happens to
-       hold — and with `u_res` still (0,0) that is `gl_FragCoord / 0`, a
-       screenful of NaN. Nothing may reveal this canvas until it has content. */
     const draw = (seconds: number) => {
       if (width === 0) return;
       gl.uniform1f(uTime, seconds);
@@ -627,10 +414,6 @@ export function CanvasShader({
     let last = 0;
     const start = performance.now();
 
-    /* ⚠️ NO `resize()` IN HERE. Reading `clientWidth` forces a layout flush, so
-       sizing per frame meant 30 forced reflows a second for a canvas that only
-       changes size when the window does. The ResizeObserver below owns it, and
-       redraws in the same frame it resizes. */
     const loop = (now: number) => {
       raf = requestAnimationFrame(loop);
       const elapsed = now - last;
@@ -682,34 +465,13 @@ export function CanvasShader({
     sync();
     motion.addEventListener("change", sync);
 
-    /* clientWidth/Height drive the buffer, so watch the box, not the window.
-       ⚠️ THIS IS THE ONLY THING THAT EVER CALLS `resize()` AFTER MOUNT — the
-       frame loop deliberately does not (see the note on `loop`). An earlier
-       version only re-sized here when the loop was STOPPED, so a window resize
-       during the animation never reached the buffer and the canvas kept
-       rendering at its mount size. It also fires once on observe, which is the
-       safety net for mounting before the stylesheet has given the canvas a
-       size.
-
-       ⚠️ IT DRAWS EVERY TIME, NOT ONLY WHEN THE LOOP IS STOPPED — that guard was
-       the mobile black flicker (14 Sep 2026). Assigning `canvas.width/height`
-       clears the buffer, and with `alpha: false` a cleared buffer is OPAQUE
-       BLACK. Observers are delivered after the frame's rAF and before its
-       paint, so the loop had already drawn into the old buffer and the frame
-       painted black; a throttle-skipped frame made it two. Drawing here fills
-       the new buffer before it is ever shown. */
+    /* clientWidth/Height drive the buffer, so watch the box, not the window. */
     const ro = new ResizeObserver(() => {
       if (!resize()) return;
       draw(motion.matches ? 0 : (performance.now() - start) / 1000);
     });
     ro.observe(canvas);
 
-    /* ⚠️ A LOST CONTEXT IS THE ONE FAILURE THAT IS WORSE THAN NO SHADER. The
-       canvas is opaque and `.screen` is transparent over it, so a lost context
-       shows as a sheet of WHITE behind every screen while the DOM is perfectly
-       fine. Dropping both flags fades the canvas out and hands `.screen` its
-       token gradient back, so the worst case is the Figma design rather than a
-       white page. */
     const onLost = (event: Event) => {
       event.preventDefault();
       cancelAnimationFrame(raf);
@@ -732,15 +494,6 @@ export function CanvasShader({
       gl.deleteProgram(prog);
       gl.deleteShader(vs);
       gl.deleteShader(fs);
-      /* ⚠️ DO NOT `loseContext()` HERE, however tidy it looks — IT IS WHAT MADE
-         THE SCREEN WHITE. A canvas hands out ONE context object per type for
-         its whole life, so `getContext` on a remount returns the very context
-         this cleanup killed. React Strict Mode (on by default in dev) runs
-         mount → cleanup → mount, and `loseContext()` is ASYNCHRONOUS: the
-         second mount got the still-live context, compiled and drew correctly —
-         and then the loss scheduled by the first cleanup landed on it. The
-         browser reclaims the context with the element; this call only ever
-         poisons the next mount. */
     };
   }, [variant]);
 

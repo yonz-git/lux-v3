@@ -1,21 +1,8 @@
-/* The undo snackbar — ⚠️ NOT IN FIGMA. The design system has no toast, no
-   snackbar and no transient message of any kind; `--z-toast` (500) is the only
-   trace of one, reserved in the token scale and never used until now. See
-   `docs/decisions.md`, "Removing something is undoable".
-
-   It is drawn as a SIBLING OF THE NAV rather than as a new surface: the app has
-   exactly one recipe for a thing that floats over a screen — the frosted pill —
-   and inventing a second one for a message that lives six seconds would be the
-   drift this file exists to prevent. Same fill, same rim, same shadow, same
-   blur, same radius. What differs is the height (content-driven, not 75) and
-   the position (directly above the nav, in the clearance every `.screen`
-   already reserves). */
-
 .region {
   position: fixed;
   /* the same reservation `.screen` makes for the nav, so the bar lands in the
      gap the layout already keeps clear rather than over the last row of the
-     page. ⚠️ Never write these numbers — see non-negotiable 6. */
+     page. */
   bottom: calc(
     var(--nav-inset-bottom) + var(--size-nav-height) + var(--space-lg)
   );
@@ -44,17 +31,7 @@
   display: flex;
   align-items: center;
   gap: var(--space-md);
-  /* ⚠️ NO FIXED HEIGHT, DELIBERATELY. A removed product's name can take two
-     lines at 380, and it takes more of them under a user's own text-spacing
-     overrides — WCAG 1.4.12. The bar grows; nothing is clipped and nothing is
-     truncated. */
   padding: var(--space-sm) var(--space-sm) var(--space-sm) var(--space-xl);
-  /* ⚠️ `2xl`, NOT `full`, AND IT IS THE ONE PLACE THIS SURFACE DEPARTS FROM THE
-     NAV. Every other floating thing in LUX is a pill because every other one is
-     a fixed height. This bar is content-height, so `full` resolves against
-     whatever it grew to: on two lines it draws 26px lozenge ends that crowd the
-     first and last words. `2xl` is the radius the app already uses for a
-     surface that holds a block of text. */
   border-radius: var(--radius-2xl);
 
   /* the nav's glass, verbatim — same fill, same hand-dialled rim, same pair of
@@ -75,24 +52,6 @@
   }
 }
 
-/* ⚠️ THE EXIT IS A TRANSITION IN THIS MODULE, NOT ONE OF THE `reveal-*` HOOKS.
-   Those name a keyframes animation, which a CSS Module localizes into nothing
-   (motion section of AGENTS.md) — so an exit written that way would have to
-   live in `globals.css` as a fourth global class, and it is not a reveal. A
-   transition carries no name, so it is safe here, and it is the better shape
-   anyway: the pointer arriving mid-fade cancels the state and the bar comes
-   back UP from wherever it had got to, rather than restarting a fade-in from
-   zero. `duration/slow` is board 04b's overlay timing; the component's
-   `EXIT_MS` unmounts on the same number.
-
-   ⚠️ AND IT ENTERS THE SAME WAY IT LEAVES — changed 13 Sep 2026. It used to
-   fade in on `.reveal-quick`, a keyframe, under a React `key` that changed on
-   every `show()`: a second removal inside the hold deleted the bar in one
-   frame and faded a new one up from nothing in the same spot. The bar now
-   stays mounted across replacements (only the message is keyed) and enters
-   with `@starting-style`, rising 8px out of the nav's clearance on
-   `duration/base`; it leaves down the same 8px on `duration/slow`.
-   `translate`, not `transform` — `.region` centres itself with a transform. */
 .bar {
   transition:
     opacity var(--duration-base) var(--ease-standard),

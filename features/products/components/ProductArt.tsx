@@ -1,63 +1,7 @@
 import type { CatalogProduct } from "@/features/products/products";
 import styles from "./ProductArt.module.css";
 
-/**
- * ⚠️ NOT IN FIGMA — the product picture that replaces the camera glyph.
- *
- * Every image well in the file (`ProductThumb` 48x48 and 36x36, `ProductCard`'s
- * 352x140, `ThumbStack`) was drawn in the comps as a camera glyph on
- * `bg/surface-frost`, because the design system has no product imagery. That
- * reads as "no photo yet" ONCE; down a list it identifies nothing, which is the
- * one thing a thumbnail exists to do.
- *
- * ⚠️ IT IS A PHOTOGRAPH NOW, AS OF 26 Sep 2026 — asked for directly. From the
- * glyph's removal until then it was a DRAWN VESSEL: nine SVG silhouettes
- * tinted per brand. The drawings were replaced by eight transparent product
- * cut-outs in `public/images/products/`, made from the reference photographs
- * the user supplied plus one generated render. The two paired shots were split
- * into single bottles, because a well shows ONE product.
- *
- * ⚠️ THE PHOTO IS CHOSEN BY PACKAGING TYPE, NOT BY PRODUCT. There are eight
- * pictures and an unbounded list (every live Open Beauty Facts result lands
- * here too), so `artFor` still decides the product's FORM exactly as the
- * drawings did — the `ART` table for the catalogue, `formFor` from the
- * product's own words for everything else — and the form picks from its own
- * few photos by the stable `hash` of the id. A tub is a jar and a serum is a
- * dropper on every screen. ⚠️ **Two products of one form can share a photo** —
- * the drawings could vary tint and label per brand, eight photographs cannot.
- * That is a known loss of identity down a long list, and the fix is more
- * photographs, not a return to the drawings.
- *
- * ⚠️ IT IS NOT A BRAND MARK, AND IT MUST NOT READ AS THE PRODUCT IN THE ROW.
- * A CeraVe row showing another house's bottle is a picture of the wrong
- * product; it is only honest while the packaging carries no house name. So
- * the house names were painted out of the source photographs and generic
- * words set in their place, in Figtree: `pump-milky` and `bottle-milky` read
- * "hydrator", both `cylinder-*` read "RETINOL", `dropper-green` reads
- * "ORGANIC SERUM", and `jar-olive` lost its mark with nothing in its place.
- * `pump-grey` and `bottle-brown` never carried one. **A new photograph must be
- * cleaned the same way before it goes in.** At 40px none of the words can be
- * read; what matters is that no logo SHAPE is left to read as a mark.
- *
- * ⚠️ STILL ONE KIND OF PICTURE FOR EVERY ROW. A real Open Beauty Facts
- * photograph used to win over the fallback, and a column mixing the two read
- * worse than either alone; see lib/openBeautyFacts.ts, which still does not
- * request the image fields. Every product, catalogue or live, gets one of these.
- *
- * ⚠️ `object-fit: contain`, NOT `cover`. The wells are different shapes — a
- * square and a 352x140 letterbox — and a cover crop would cut the cap off every
- * bottle in the letterbox. The cut-outs are transparent, so the well's own
- * opaque fill stays the ground, the same thing the drawings relied on.
- */
-
-/**
- * The packaging types. One per silhouette, not per product.
- *
- * ⚠️ NINE, NOT THE ORIGINAL FIVE. Five covered the thirteen fixture products
- * and nothing else, which was fine while the catalogue WAS the search. Now that
- * `/check/new` and the add tray both search Open Beauty Facts live, the list is
- * whatever the database holds — masks, mists, sticks, ointments.
- */
+/** The packaging types. One per silhouette, not per product. */
 type Form =
   | "tub"
   | "pump"
@@ -154,10 +98,6 @@ function formFor(name: string): Form {
   if (/cream|butter|jar|\btub\b|\bpot\b|moistur/.test(n)) return "tub";
   if (/treatment|repair|night|\bpm\b|complex/.test(n)) return "airless";
   if (/lotion|milk|emulsion|fluid/.test(n)) return "pump";
-  /* ⚠️ THE FALLBACK IS HASHED, NOT A FIXED FORM. Returning one form for
-     anything unrecognised — most of a live search — would draw every such row
-     the same. Spreading the unknowns over all nine keeps a list legible as a
-     list of different things, and it is stable per product. */
   return FORMS[hash(n) % FORMS.length];
 }
 
@@ -167,13 +107,10 @@ function photoFor(product: CatalogProduct): string {
   return `${DIR}/${options[hash(product.id) % options.length]}.webp`;
 }
 
-/** The picture, at whatever size the well gives it. Decorative: every well is
+/**
+ * The picture, at whatever size the well gives it. Decorative: every well is
  *  `aria-hidden` and the product's name is always printed beside it.
- *
- *  ⚠️ NOT `loading="lazy"`. A group on the PRODUCTS hub opens with `Collapse`,
- *  and a lazy image inside a closed panel has not been fetched, so the bottles
- *  popped in after the panel had already slid open. The eight files are a few
- *  KB each and repeat on every screen; eager is cheaper than the pop. */
+ */
 export function ProductArt({
   product,
   className,

@@ -1,9 +1,4 @@
-/* The skin profile as four tiles — see SkinProfileTiles.tsx.
-
-   lux-v3 (1 Oct 2026): the panel (the global `canvas-card`, app/vidgen.css)
-   at DataCard's padding and radius, a `t-overline`, then four tiles two a row,
-   each a label over its glass pills. The v2 recipe (a 1.4rem card, an 18px
-   overline over a fading rule, outlined deep-teal pills) is in `git log -p`. */
+/* The skin profile as four tiles — see SkinProfileTiles.tsx. */
 
 .card {
   position: relative;
@@ -16,15 +11,18 @@
   color: var(--color-text-primary);
 }
 
-@media (min-width: 1024px) {
-  .card {
-    padding: var(--space-panel); /* 32 */
-  }
+/* the overline and, on the recap only, its `Edit` at the far end. The 36 button
+   is the row's height when present; without it the row is the overline's. */
+.head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-md);
 }
 
 .overline {
   margin: 0;
-  color: var(--color-text-secondary);
+  color: var(--color-text-overline-indigo);
 }
 
 /* two tiles a row at every width; `minmax(0, 1fr)` keeps a long answer from
@@ -36,10 +34,7 @@
   margin: 0;
 }
 
-/* the label takes the first line and the pills flow after it, wrapping.
-   ⚠️ `align-content: flex-start` IS LOAD-BEARING: the grid stretches a
-   one-pill tile to its neighbour's height, and a wrapping flexbox would share
-   that height between its lines. */
+/* the label takes the first line and the pills flow after it, wrapping. */
 .tile {
   display: flex;
   flex-flow: row wrap;
@@ -60,85 +55,43 @@
   color: var(--color-text-muted);
 }
 
-/* ⚠️ A READING, NOT A CONTROL: 32 tall, where every chip is 44. No hover,
-   no press. */
 .tileValue {
-  display: inline-flex;
-  align-items: center;
+  /* a block, not a flex box, so the line box can be trimmed (`text-box` skips
+     flex boxes). Each answer is title case: a capital, then lowercase. Centred
+     on the capitals the lowercase sits low; centred on the x-height the
+     capital rides high. The eye reads the midpoint of the two bands, so the
+     line is trimmed to the capitals and lifted by a 2 bottom padding, which
+     centring splits into 1 up. */
+  display: inline-block;
+  align-content: center;
+  text-box: trim-both cap alphabetic;
   max-width: 100%;
   min-height: 32px;
   /* a one-word answer wider than its tile (`Combination` at 320 under the
      1.4.12 spacing overrides) breaks inside the pill rather than spilling */
   overflow-wrap: anywhere;
-  padding: 0 var(--space-md); /* 12 */
+  padding: 0 var(--space-md) var(--space-2xs); /* 12, 2 */
   border-radius: var(--radius-full);
-  /* ⚠️ THE FACE DIAGRAM'S PICKED PILL, 4 Oct 2026, asked for directly ("try
-     the teal-green pills like in the face diagram"). Every value here is an
-     answer the user gave, which is what a lit region on the face is too, so
-     it takes that pill's recipe (`.region[data-selected="true"]` in
-     FaceDiagram.module.css): the deeper teal at 89% with a 1px backdrop
-     blur, the faint `#869ea626` hairline, a 5% white light along the top,
-     `shadow/sm` for its lift, the 20% diagonal shade to the lower right, and
-     white ink. Still a reading, not a control: no hover, no press. The shade
-     is a background layer here rather than the region's `::before`, since
-     nothing on this pill fades it in or out. */
-  border: var(--border-width-hairline) solid #869ea626;
-  /* #106a7f since 29 Oct 2026: #13758c at 89% gave white 4.43–4.49:1 */
-  background-color: #106a7fe3;
-  background-origin: border-box;
-  background-image: linear-gradient(
-    135deg,
-    transparent 35%,
-    color-mix(in srgb, var(--color-face-pill-selected-deep) 20%, transparent)
-      100%
-  );
-  box-shadow: inset 0 1px 0 #ffffff0d, var(--shadow-sm);
-  -webkit-backdrop-filter: blur(1px);
-  backdrop-filter: blur(1px);
-  color: var(--color-text-on-brand);
+  /* the soft answer pill: a teal tint on the pale glass, a teal hairline and
+     teal ink — the symptom state below is the same pill in red */
+  border: var(--border-width-hairline) solid var(--color-border-answer-soft);
+  background-color: var(--color-bg-answer-soft);
+  -webkit-backdrop-filter: blur(var(--blur-sm));
+  backdrop-filter: blur(var(--blur-sm));
+  color: var(--color-text-answer-soft);
+  font-weight: var(--font-weight-medium); /* 500, over the text role's regular */
 }
 
 @media (prefers-reduced-transparency: reduce) {
   .tileValue {
-    background-color: #106a7f;
     -webkit-backdrop-filter: none;
     backdrop-filter: none;
   }
 }
 
-/* ⚠️ THE ROSE PILL — `Ongoing` under `Symptoms state` (see the .tsx). The face
-   diagram's symptom callout (`.symptom` in FaceDiagram.module.css): rose at
-   88% running to a darker 92% on the diagonal, a 28% white light along the
-   top, `shadow/sm`, frosted behind, white ink. Its rose hairline replaces the
-   teal one. */
 .tileValue[data-tone="symptom"] {
-  border-color: transparent;
-  background-color: transparent;
-  background-image: linear-gradient(
-    135deg,
-    color-mix(in srgb, var(--color-bg-symptom) 88%, transparent) 35%,
-    color-mix(
-        in srgb,
-        color-mix(in srgb, var(--color-bg-symptom) 80%, var(--color-text-primary))
-          92%,
-        transparent
-      )
-      100%
-  );
-  box-shadow: inset 0 1px 0 rgb(255 255 255 / 0.28), var(--shadow-sm);
-  -webkit-backdrop-filter: blur(var(--blur-sm)) saturate(140%);
-  backdrop-filter: blur(var(--blur-sm)) saturate(140%);
-}
-
-@media (prefers-reduced-transparency: reduce) {
-  .tileValue[data-tone="symptom"] {
-    background-image: linear-gradient(
-      135deg,
-      var(--color-bg-symptom) 35%,
-      color-mix(in srgb, var(--color-bg-symptom) 80%, var(--color-text-primary))
-        100%
-    );
-    -webkit-backdrop-filter: none;
-    backdrop-filter: none;
-  }
+  /* the soft symptom pill, as step 1's muted symptom chip */
+  border-color: var(--color-border-symptom-soft);
+  background-color: var(--color-bg-symptom-soft);
+  color: var(--color-text-symptom-soft);
 }

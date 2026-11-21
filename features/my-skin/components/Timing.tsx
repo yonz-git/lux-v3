@@ -8,26 +8,8 @@ import { Chip } from "@/components/ui/Chip";
 import { DateField } from "@/components/ui/DateField";
 import { useInvestigation } from "@/lib/store/InvestigationProvider";
 
-/**
- * 03c — Timing. Figma mobile 488:851, desktop 491:1031. Step 5/6.
- *
- * ⚠️ THE STATUS GROUP IS RADIO CHIPS AS OF lux-v3 (1 Oct 2026) — drawn that
- * way on the canvas boards, and the build follows them. It was radio ROWS,
- * on the argument that `Chip`'s `control="radio"` is scoped to the check-in's
- * ordinal scale and that these four are states, not a scale. That scope
- * still stands everywhere else; this group is the second, declared caller.
- * It is single-select, so the chips are `role="radio"` inside a real
- * `role="radiogroup"`, and the shape no longer carries the cardinality —
- * the screen reader does.
- *
- * The date uses `DateField`, not a native <input type="date">: the native popup
- * is drawn by the browser and cannot be styled, so it rendered as a stock white
- * Chrome calendar in the middle of the LUX flow.
- *
- * Both fields are required, so Continue stays disabled until the date and the
- * status are answered.
- */
-const STATUS = ["Ongoing", "Improving", "Resolved", "Getting worse"];
+/** 03c — Timing. Figma mobile 488:851, desktop 491:1031. Step 5/6. */
+export const STATUS = ["Ongoing", "Improving", "Resolved", "Getting worse"];
 
 export function Timing() {
   const { answers, setAnswer } = useInvestigation();

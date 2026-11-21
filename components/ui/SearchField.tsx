@@ -1,38 +1,37 @@
 "use client";
 
-import { useId } from "react";
+import { useId, type ReactNode } from "react";
 import styles from "./SearchField.module.css";
-import { SearchIcon, CloseIcon } from "./icons";
+import { SearchIcon } from "./icons";
+import { CloseButton } from "./CloseButton";
+import { IconButton } from "./IconButton";
 
 /**
- * Search Field — Figma component 248:70, used verbatim by `04 — Search by name`.
- *
- * 50 tall, radius/full, `surface/frost-nav` fill with the frosted-row inner
- * shadow, a leading search glyph and a trailing clear button, both in
- * `text/muted`.
- *
- * ⚠️ THIS IS THE ONLY INPUT COMPONENT THE DESIGN SYSTEM HAS, and it is
- * search-specific. `TextField` (the "Other" field, 02c/03a) is a separate
- * hand-composed recipe. Do not reach for this one for general text entry.
- *
- * The clear button only exists while there is something to clear — the comp
- * shows it because the comp shows a typed query.
+ * Search Field: a pill with a leading search glyph and either a trailing
+ * clear button once there is text (in `text/muted`) or an optional round
+ * action at the end, never both.
  */
 export function SearchField({
   value,
   onChange,
-  placeholder = "Search products",
+  placeholder = "Search for a product",
   label,
+  action,
+  variant = "glass",
 }: {
   value: string;
   onChange: (value: string) => void;
   placeholder?: string;
   /** the accessible name — the field has no visible <label> in the design */
   label: string;
+  /** a glyph button at the field's end, e.g. switching to the camera */
+  action?: { label: string; icon: ReactNode; onClick: () => void };
+  /** `clear` drops the fill, for a field that sits on a panel already */
+  variant?: "glass" | "clear";
 }) {
   const id = useId();
   return (
-    <div className={styles.field}>
+    <div className={variant === "clear" ? `${styles.field} ${styles.clearField}` : styles.field}>
       <SearchIcon className={styles.icon} />
       <input
         id={id}
@@ -44,15 +43,20 @@ export function SearchField({
         onChange={(e) => onChange(e.target.value)}
         autoComplete="off"
       />
-      {value !== "" && (
-        <button
-          type="button"
-          className={styles.clear}
-          aria-label="Clear search"
-          onClick={() => onChange("")}
+      {/* a field that ends in an action has no clear: one round control at
+          the end, never two side by side */}
+      {value !== "" && !action && (
+        <CloseButton label="Clear search" className={styles.clear} onClick={() => onChange("")} />
+      )}
+      {action && (
+        <IconButton
+          size="md"
+          label={action.label}
+          className={styles.action}
+          onClick={action.onClick}
         >
-          <CloseIcon className={styles.icon} />
-        </button>
+          {action.icon}
+        </IconButton>
       )}
     </div>
   );

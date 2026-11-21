@@ -8,67 +8,6 @@ import { SiriOrb } from "./siri-orb";
  * than recreated: the frosted sphere is a radial gradient behind a four-layer
  * neumorphic filter, and the mark inside is the real brand lockup. Do not
  * redraw it by hand.
- *
- * ⚠️ THE MARK IS THE MASTER SYMBOL'S OWN PATHS AS OF 13 Sep 2026 — `LUX_SYMBOL`
- * from LuxLogo.tsx, drawn through ONE transform onto this 129 grid — and no
- * longer the chat-ball export's copy of them. Asked for directly, so the
- * entrance's symbol lands on this mark to the pixel (see "THE HAND-OFF" in
- * globals.css). The export's mark was the same two small strokes at 0.3374 and
- * a centre stroke drawn ~12% flatter; the transform below keeps the export's
- * footprint (58 wide, centred on 65,65) so nothing else about the orb moved.
- * The three gradients keep the export's coordinates verbatim and reach the
- * transformed paths through `gradientTransform`, the inverse of that one
- * transform — so the ink is still the chat-ball's, only the geometry is the
- * master's.
- *
- * ⚠️ EACH STROKE IS `<g class><g transform><path/></g></g>`, AND THE ORDER OF
- * THOSE TWO WRAPPERS IS LOAD-BEARING. The Spiral Assemble and thinking tracks
- * translate in 129-grid units (`translate(-20px, -13px)`); on the path, inside
- * the 0.342 transform, that would be a 7px move. The animated `<g>` sits
- * OUTSIDE the transform so the keyframes mean what they always meant.
- *
- * Size comes from the `size/orb-*` tokens: sm 48, md 80, lg 129, xl 140.
- *
- * `animateIn` plays the "Spiral Assemble" entrance (Figma 670:31, Brand page) on
- * the sphere as it appears — see `.orb-assemble` in globals.css.
- *
- * `halo` wraps the orb in an ambient line of light travelling along its rim —
- * see `.orb-halo` in globals.css. 00 Welcome and the CHECK landing only, and
- * ⚠️ NOT IN FIGMA. ⚠️ IT RUNS IN THE DEFAULT STATE and hover does nothing: it
- * was hover-only until 5 Sep 2026, which meant it never existed at all on
- * touch. The wrapper survives because the clipped SVG cannot hang the light off
- * itself — it is no longer a hit region, and it never transforms.
- *
- * ⚠️ WELCOME'S ORB IS HANDED ITS MARK BY THE ENTRANCE, AND `animateIn` TOO.
- * `<Orb animateIn halo className="orb-from-entrance">` there, and the rules
- * under "The orb's side of the hand-off" in globals.css: the orb grows from
- * 0.04 behind the entrance's symbol (the grow replaces `.reveal-hero`'s fade
- * by specificity) while its mark Spiral-Assembles into exactly the spot the
- * symbol is arriving at, and the symbol fades over it on the way.
- *
- * ⚠️ A CALLER THAT SPACES THE ORB WITH `> svg` MUST ALSO MATCH `> .orb-halo`,
- * or the wrapper breaks the selector and the orb silently loses its margin.
- * CheckScreen.module.css records the trap.
- *
- * The timeline has THREE tracks and the mark is three paths, so each track
- * drives one part: mark1 <- L, mark2 <- U, mark3 <- X, with the authored
- * 0 / 120 / 240ms stagger. The sphere assembles underneath them.
- *
- * ⚠️ The sphere sits inside a filter with a FIXED region and the whole group is
- * clipped to 129x129, so nothing may travel far. Distances are scaled to the
- * orb (~0.33 of the wordmark's) and the sphere itself does not translate at all.
- *
- * ⚠️ DESIGN TRIAL, 12 Sep 2026 — NOT IN FIGMA. `ORB_RENDERER` swaps the whole
- * orb for `SiriOrb` (21st.dev `siri-orb`, blurred conic gradients) on every
- * screen at once. Set it back to "svg" to restore the Figma export. It replaced
- * a WebGL shader orb tried and rejected the same day. The trial orb is a
- * `span.lux-orb`, not an `svg`, so every `> svg` spacing rule also matches
- * `> :global(.lux-orb)`. The brand mark sits on top as its own SVG on the 129
- * grid, so it keeps its L → U → X entrance and thinking pulse; the sphere's
- * `orb-assemble` has no equivalent, so the wrapper takes `.reveal-hero`.
- * It floats — a slow drift, breath and near-circle morph (`.lux-orb-float`,
- * `.siri-orb--lux` in globals.css). `halo` puts `.orb-halo` on the float layer
- * INSIDE `.lux-orb` rather than around it, so the rim light floats with it.
  */
 const ORB_RENDERER: "svg" | "siri" = "siri";
 
@@ -100,19 +39,9 @@ const MARK_STROKES = [
    canvas it floats on rather than glowing over it. Mapped by how much of the
    sphere each slot paints:
    - c3, the BODY (the large radial + one wedge): `bg/bubble-ai` #dbeded, the
-     light blue
+   light blue
    - c1, the two LARGE wedges: `gradient/canvas` mobile end #9bb1b8 at 45% — a
-     deeper grey-blue that gives the sphere form without shading it. ⚠️ It was
-     #acc5cc until the canvas was darkened 10% on 14 Sep 2026; the wedges read
-     the token, so they moved with it (globals.css, the canvas override)
-   - c2, the two SMALL wedges: `gradient/brand` start #657792 at 30% — the
-     button's indigo as a faint tint (22% until asked for "a tiny bit more")
-   ⚠️ THE DARK TWO ARE TRANSLUCENT ON PURPOSE. At full strength they covered
-   the light body and the orb read dark; at these alphas they tint it. The body
-   itself is `.siri-orb--lux` in globals.css.
-   ⚠️ `contrast` and `saturation` are pinned to 1 below. The component's own
-   contrast(1.8) saturate(1.2) would push every token off its value — #657792
-   toward a saturated blue, #9bb1b8 toward white. */
+   deeper grey-blue that gives the sphere form without shading it. */
 const LUX_ORB_COLORS = {
   c1: "color-mix(in srgb, var(--color-gradient-canvas-end-mobile) 45%, transparent)",
   c2: "color-mix(in srgb, var(--color-gradient-brand-start) 30%, transparent)",
@@ -145,15 +74,6 @@ export function Orb({
    * in globals.css — the keyframes MUST live there, not in a module.
    */
   thinking?: boolean;
-  /**
-   * ⚠️ NOT IN FIGMA. Wrap the orb in the ambient rim light — 00 Welcome and the
-   * CHECK landing only. It has to be a wrapper: the sphere fills its 129x129
-   * viewBox to within 8px and the group is clipped to that box, so a light
-   * straddling the edge has nowhere to go INSIDE the SVG. That is now the only
-   * reason it exists — it was the hover region and it carried a hover scale, and
-   * both are gone. See `.orb-halo` in globals.css; the keyframes MUST live
-   * there, not in a module.
-   */
   halo?: boolean;
 }) {
   /* The brand mark — the master symbol's three paths on the 129 grid, shared
@@ -172,9 +92,6 @@ export function Orb({
           }
         >
           <g transform={MASTER_TO_ORB}>
-            {/* ⚠️ NOT IN FIGMA — the lockup's depth, inside the transform so
-                it is in master units and matches the entrance's symbol. See
-                "THE DEPTH" in LuxLogo.tsx. */}
             <path d={m.stroke.d} fill={`url(#${m.gradient})`} filter="url(#lux_orb_mark_depth)" />
           </g>
         </g>

@@ -1,0 +1,29 @@
+/* The empty state — see EmptyState.tsx. */
+
+.empty {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  color: var(--color-text-primary);
+}
+
+.orb {
+  margin-bottom: var(--space-3xl); /* 32 */
+}
+
+.title {
+  color: var(--color-text-primary);
+}
+
+.body {
+  margin-top: var(--space-md); /* 12 */
+  color: var(--color-text-secondary);
+}
+
+/* as far below the text as Welcome's button is below its bubble, never
+   closer than 32 */
+.action {
+  /* width is `Button`'s `width="action"` */
+  margin-top: max(var(--space-3xl), var(--space-hero-action));
+}

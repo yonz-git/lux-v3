@@ -1,24 +1,4 @@
-/**
- * The lux-v3 icon set — VIDGEN'S GLYPHS, 1 Oct 2026.
- *
- * Every path below that has a VidGen counterpart is copied from
- * ~/Claude/vidgen/index.html or ~/Claude/vidgen-studio/index.html with its own
- * viewBox, so the drawing is the reference's and not a redraw by eye. The few
- * LUX needs that VidGen never draws (search, the success tick, the note pencil,
- * the four nav marks) are kept and drawn to the same weight.
- *
- * ⚠️ ONE STROKE AT EVERY SIZE. Each line uses `vectorEffect="non-scaling-stroke"`
- * at 1.4px, so a glyph drawn in a 13 box and one drawn in a 22 box come out the
- * same weight however large `--icon-size` makes them — the references draw
- * every glyph at 1.3–1.6 on screen, never scaled.
- *
- * ⚠️ NO `width` / `height` HERE. Size comes from `:where(svg[data-lux-icon])`
- * in globals.css; a glyph whose reference size is not `md` (24) sets
- * `--icon-default` inline — the size it is drawn at in VidGen — and a caller's
- * `--icon-size` or any class still overrides it (non-negotiable 14).
- */
-
-import type { CSSProperties, ReactNode } from "react";
+import { useId, type CSSProperties, type ReactNode } from "react";
 
 type IconProps = { className?: string };
 
@@ -34,12 +14,12 @@ function Icon({
 }: {
   box: string;
   /**
-   * Which size family the glyph belongs to — `vidgen.css` scales by it:
+   * Which size family the glyph belongs to — `globals.css` scales by it:
    * `close` and `chevron` draw at 60% of their box, `glyph` at 85%, and an
    * unset kind (plus, minus, arrows, the nav set) at full size.
    */
   kind?: "close" | "chevron" | "glyph";
-  /** the size VidGen draws it at; omitted = `--size-icon-md` (24) */
+  /** the size the reference draws it at; omitted = `--size-icon-md` (24) */
   size?: number;
   className?: string;
   fill?: boolean;
@@ -77,16 +57,16 @@ const ns = { vectorEffect: "non-scaling-stroke" as const };
    NAVIGATION AND DIRECTION
    --------------------------------------------------------------------------- */
 
-/** The back button's arrow — VidGen Welcome `.back`. */
+/** The back button's arrow — the reference Welcome `.back`. */
 export function ArrowLeftIcon({ className }: IconProps) {
   return (
-    <Icon box="0 0 14 12" size={16} className={className}>
+    <Icon box="0.25 0 14 12" size={16} className={className}>
       <path d="M13 6H1.5M6 1.5 1.5 6 6 10.5" {...ns} />
     </Icon>
   );
 }
 
-/** The slide-to-start knob's arrow — VidGen Welcome `.knob`. */
+/** The slide-to-start knob's arrow — the reference Welcome `.knob`. */
 export function ArrowRightIcon({ className }: IconProps) {
   return (
     <Icon box="0 0 14 12" size={16} className={className}>
@@ -108,7 +88,7 @@ export function DoubleChevronIcon({ className }: IconProps) {
 /* The chevrons are the Storyboard's `.nav` pair, extended to a down twin. */
 export function ChevronLeftIcon({ className }: IconProps) {
   return (
-    <Icon kind="chevron" box="0 0 5 7" size={16} className={className}>
+    <Icon kind="chevron" box="0.1 0 5 7" size={16} className={className}>
       <path d="M4 .8 1.2 3.5 4 6.2" {...ns} />
     </Icon>
   );
@@ -116,7 +96,7 @@ export function ChevronLeftIcon({ className }: IconProps) {
 
 export function ChevronRightIcon({ className }: IconProps) {
   return (
-    <Icon kind="chevron" box="0 0 5 7" size={16} className={className}>
+    <Icon kind="chevron" box="-0.1 0 5 7" size={16} className={className}>
       <path d="M1 .8l2.8 2.7L1 6.2" {...ns} />
     </Icon>
   );
@@ -130,7 +110,7 @@ export function ChevronDownIcon({ className }: IconProps) {
   );
 }
 
-/** The hamburger — VidGen Assistant. */
+/** The hamburger — the reference Assistant. */
 export function MenuIcon({ className }: IconProps) {
   return (
     <Icon kind="glyph" box="0 0 20 14" size={20} className={className}>
@@ -168,7 +148,19 @@ export function CloseIcon({ className }: IconProps) {
   );
 }
 
-/** The bell — VidGen Assistant's notifications button. */
+/**
+ * The small dismiss's ✕ — the `Other` field's and `ConfirmField`'s, and a
+ * tray's corner.
+ */
+export function CloseSmallIcon({ className }: IconProps) {
+  return (
+    <Icon box="256 256 512 512" size={12} fill className={className}>
+      <path d="m466.8 512l-90.5-90.5a32 32 0 0 1 45.2-45.2l90.5 90.5l90.5-90.5a32 32 0 1 1 45.2 45.2L557.2 512l90.5 90.5a32 32 0 1 1-45.2 45.2L512 557.2l-90.5 90.5a32 32 0 0 1-45.2-45.2z" />
+    </Icon>
+  );
+}
+
+/** The bell — the reference Assistant's notifications button. */
 export function BellIcon({ className }: IconProps) {
   return (
     <Icon kind="glyph" box="0 0 22 22" size={22} className={className}>
@@ -190,10 +182,12 @@ export function MicIcon({ className }: IconProps) {
   );
 }
 
-/** The Storyboard image card's camera (`Regenerate`). */
+/** The Storyboard image card's camera (`Regenerate`). The box sits 0.75 low so
+ *  the glyph centres on its area, not its outline: the body is most of the
+ *  weight and sits below the bump, so outline-centred it reads low. */
 export function CameraIcon({ className }: IconProps) {
   return (
-    <Icon kind="glyph" box="0 0 18 18" size={20} className={className}>
+    <Icon kind="glyph" box="0 0.75 18 18" size={20} className={className}>
       <rect x="2" y="5" width="14" height="11" rx="2" {...ns} />
       <path d="M6 5V3.5A1.5 1.5 0 0 1 7.5 2h3A1.5 1.5 0 0 1 12 3.5V5" {...ns} />
       <circle cx="9" cy="10.5" r="2.5" {...ns} />
@@ -218,6 +212,15 @@ export function TrashIcon({ className }: IconProps) {
   );
 }
 
+/** A counter-clockwise arrow — reset, step 1's face card. */
+export function ResetIcon({ className }: IconProps) {
+  return (
+    <Icon kind="glyph" box="0 0 24 24" size={20} className={className}>
+      <path d="M4.252 4v5H9M5.07 8a8 8 0 1 1-.818 6" strokeWidth={2} {...ns} />
+    </Icon>
+  );
+}
+
 /** The four corner marks before the Storyboard's `Image` label. */
 export function FrameIcon({ className }: IconProps) {
   return (
@@ -227,11 +230,7 @@ export function FrameIcon({ className }: IconProps) {
   );
 }
 
-/**
- * A pencil, for the check-in's "Add a note". ⚠️ NOT A VIDGEN GLYPH — the
- * references have no pencil (`ExpandIcon` is what they label Edit, and a
- * diagonal arrow does not say "write"). Drawn to the set's weight.
- */
+/** A pencil, for the check-in's "Add a note". */
 export function NoteIcon({ className }: IconProps) {
   return (
     <Icon kind="glyph" box="0 0 20 20" size={20} className={className}>
@@ -241,7 +240,21 @@ export function NoteIcon({ className }: IconProps) {
   );
 }
 
-/** ⚠️ NOT A VIDGEN GLYPH — the references have no search. */
+/** A pen with two sparkles, for `EditToggle`'s round Edit. */
+export function EditSparkleIcon({ className }: IconProps) {
+  return (
+    <Icon box="0 -0.5 16 16" size={16} fill className={className}>
+      <path d="m5.801 2.217l-.015-.004l-.765-.249a1.6 1.6 0 0 1-.618-.381a1.6 1.6 0 0 1-.381-.617L3.773.201A.3.3 0 0 0 3.503 0h-.015a.3.3 0 0 0-.285.201l-.249.765a1.57 1.57 0 0 1-.984.998l-.595.193h-.002l-.172.055a.304.304 0 0 0-.146.46a.3.3 0 0 0 .146.11l.767.249l.083.03l.007.003a1.6 1.6 0 0 1 .528.349a1.55 1.55 0 0 1 .381.62l.249.765q.032.09.111.146A.3.3 0 0 0 3.502 5h.004c.061 0 .121-.02.171-.056a.3.3 0 0 0 .111-.146l.249-.765a1.57 1.57 0 0 1 .999-.998l.765-.249a.302.302 0 0 0 0-.569" />
+      <path
+        fillRule="evenodd"
+        clipRule="evenodd"
+        d="M14.234 1.766a2.62 2.62 0 0 0-3.707 0L7.636 4.657l.502.163c.188.064.335.168.463.287l1.148-1.148l2.293 2.293l-6.386 6.386a1.96 1.96 0 0 1-.896.511l-2.567.659l.659-2.567c.087-.339.263-.648.511-.896l1.744-1.744a1.2 1.2 0 0 1-.283-.448l-.168-.514l-1.999 1.999a2.96 2.96 0 0 0-.773 1.355l-.869 3.385a.5.5 0 0 0 .609.609l3.385-.869c.513-.131.98-.398 1.355-.772l7.872-7.872a2.62 2.62 0 0 0 0-3.707zm-.707 3l-.779.779l-2.293-2.293l.779-.779a1.622 1.622 0 0 1 2.293 2.293"
+      />
+      <path d="m7.829 5.771l-.612-.199v.002a1.26 1.26 0 0 1-.799-.799l-.199-.612a.24.24 0 0 0-.228-.161a.24.24 0 0 0-.228.161l-.199.612a1.27 1.27 0 0 1-.787.798l-.612.199a.23.23 0 0 0-.117.088a.242.242 0 0 0 .117.368l.583.189v.003l.024.008a1.26 1.26 0 0 1 .8.8l.2.612a.24.24 0 0 0 .224.161h.007a.24.24 0 0 0 .228-.161l.199-.612a1.26 1.26 0 0 1 .799-.799l.612-.199a.23.23 0 0 0 .117-.088a.242.242 0 0 0-.117-.368z" />
+    </Icon>
+  );
+}
+
 export function SearchIcon({ className }: IconProps) {
   return (
     <Icon kind="glyph" box="0 0 24 24" size={20} className={className}>
@@ -352,14 +365,39 @@ export function InfoIcon({ className }: IconProps) {
 }
 
 /* ---------------------------------------------------------------------------
-   LUX-ONLY GLYPHS — no VidGen counterpart, kept and re-weighted
+   LUX-ONLY GLYPHS — no reference counterpart, kept and re-weighted
    --------------------------------------------------------------------------- */
 
 /** The success tick (product added). */
 export function SuccessCheckIcon({ className }: IconProps) {
   return (
-    <Icon box="0 0 28 28" size={28} className={className}>
+    <Icon box="-1.5 -2 28 28" size={28} className={className}>
       <path d="M5 13L10 18L20 6" {...ns} />
+    </Icon>
+  );
+}
+
+/**
+ * A picked toggle: a filled disc with the tick cut out of it, so what is
+ * behind shows through the tick. Drawn at the disc's own size; the tick is
+ * `SuccessCheckIcon`'s at 16 in a 26 disc, at `--stroke-icon-bold`.
+ */
+export function PickedIcon({ className }: IconProps) {
+  const id = useId();
+  return (
+    <Icon box="0 0 26 26" size={26} fill className={className}>
+      <mask id={id}>
+        <rect width="26" height="26" fill="#fff" />
+        <path
+          d="M8.7 13.6L11.6 16.4L17.3 9.6"
+          fill="none"
+          stroke="#000"
+          strokeLinecap="round"
+          strokeLinejoin="round"
+          style={{ strokeWidth: "var(--stroke-icon-bold)" }}
+        />
+      </mask>
+      <circle cx="13" cy="13" r="13" mask={`url(#${id})`} />
     </Icon>
   );
 }
@@ -368,8 +406,8 @@ export function SuccessCheckIcon({ className }: IconProps) {
 export function ProgressIcon({ className }: IconProps) {
   return (
     <Icon box="0 0 24 24" className={className}>
-      <path d="M4 15.25L9 10.25L12.5 13.75L19.25 7" {...ns} />
-      <circle cx="19.25" cy="7" r="1.6" fill="currentColor" stroke="none" />
+      <path d="M4 16.55L9 11.55L12.5 15.05L19.25 8.3" {...ns} />
+      <circle cx="19.25" cy="8.3" r="1.6" fill="currentColor" stroke="none" />
     </Icon>
   );
 }

@@ -1,163 +1,23 @@
 /* Check — add products (602:1972) and its selection / no-results states.
 
-   title -> 24 (HubScreen) -> skin-profile -> 20 -> Search Field -> 20 -> list.
-   The 24 above the strip is HubScreen's `.heading + *` rule; everything below
-   is this screen's. */
+   title -> 24 (HubScreen) -> skin-profile -> 20 -> coach -> 20 -> Search
+   Field -> 32 -> list. The 24 above the strip is HubScreen's card-screen
+   `.heading + *` rule; everything below is this screen's. */
 
-/* ⚠️ THE ANCHOR FOR THE RESULTS PANEL. `position: relative` makes the panel's
-   absolute offsets its own; the `z-index: 1` is the rule every block that opens
-   a popover in this app carries, so the panel's layering does not depend on
-   nothing else on the screen ever creating a stacking context. */
+.coach {
+  margin-top: var(--space-xl); /* 20 */
+}
+
 .search {
   position: relative;
   z-index: 1;
   margin-top: var(--space-xl); /* 20 */
 }
 
-/* --- the search dropdown (NOT IN FIGMA — see CheckBuilder's doc comment) ----
-   The same panel the PRODUCTS tray hangs off its search pill
-   (`AddProductMethodSheet.module.css .dropdown`) — frost-light + the frosted
-   inner shadow + a real drop shadow, tucked 8 under the pill and inset 8 either
-   side, capped and scrolling internally.
+/* the search dropdown is `SearchDropdown` (components/ui) */
 
-   ⚠️ AND HERE IT IS ABSOLUTELY POSITIONED, WHERE THE TRAY'S IS IN FLOW. That
-   is not drift: the tray is DOCKED TO THE BOTTOM EDGE and hugs its content, so
-   an overlaid panel there would open past the bottom of the viewport. This is a
-   full page that scrolls, so a panel in flow would push the screen's own
-   content down and make the page grow and shrink on every keystroke. Floating
-   it leaves the page exactly where it was — "Your products" stays put
-   underneath — and the panel takes its own scroll. */
-.dropdown {
-  position: absolute;
-  top: calc(100% + var(--space-sm)); /* 8 under the pill */
-  right: var(--space-sm);
-  left: var(--space-sm);
-  z-index: var(--z-overlay);
-
-  display: flex;
-  flex-direction: column;
-  /* caps itself so it can never run past the fold on a short viewport; the
-     rows below the cap are reached by the panel's own scroll, never the
-     page's */
-  max-height: min(360px, 50dvh);
-  padding: var(--space-sm);
-
-  border-radius: var(--radius-2xl);
-  /* ⚠️ THE SEARCH FIELD'S OWN FILL — `surface/frost-nav`, the frosted pill the
-     field and the nav bar share — where the tray's panel is `frost-light`. Two
-     reasons, and they point the same way. It reads as the pill's own output
-     rather than as a separate white card dropped on the page; and frost-light
-     at 55% let the page's list straight through, which frost-light is fine for
-     in the tray (a uniform sage tray with nothing written on it) and is not
-     here, where the panel floats over the user's own products — measured at
-     1440, four rows of "BHA Exfoliant", "Retinol B3 Serum", "Foaming Cleanser"
-     were legible THROUGH the results.
-
-     ⚠️ AND IT IS `bg/nav`, THE SOLID COUNTERPART — not `surface/frost-nav`
-     itself. Same colour, no alpha, which is the only difference between the two
-     tokens; the field can be translucent because it sits on the page's own
-     background, and this panel cannot because it sits on the page's own LIST.
-     At 87.8% + blur(28) the ghost was faint rather than gone — "Retinol B3
-     Serum" and "Foaming Cleanser" still read between the result rows at 1440,
-     which is the same two-lists-in-one-place problem in a quieter voice. Over
-     these backdrops the two composite to within a point of each other, so the
-     panel and the pill read as one surface.
-
-     NO BORDER, for the same reason the field has none: it is the nav pill's
-     surface, and that surface carries an inner shadow instead of a stroke. */
-  background: var(--color-bg-nav);
-  /* the frosted inner shadow (rule 9) PLUS a real drop shadow: this panel sits
-     ABOVE the page's own rows */
-  box-shadow: var(--shadow-frosted-row), var(--shadow-lg);
-}
-
-/* stays put while the rows scroll under it — the count is what tells you
-   whether the list ended where you can see it end */
-.dropdownHead {
-  flex: none;
-  padding: var(--space-xs) var(--space-md) var(--space-sm);
-  color: var(--color-text-secondary);
-}
-
-/* the scrolling region is INSIDE the panel, not the panel itself, so the
-   heading above it does not scroll away. Scrollbar hidden the way the tray and
-   the sheet hide theirs: the scroll stays, the OS chrome doesn't. */
-.scroll {
-  flex: 1;
-  min-height: 0;
-  overflow-y: auto;
-  scrollbar-width: none;
-  -ms-overflow-style: none;
-  overscroll-behavior: contain;
-}
-
-.scroll::-webkit-scrollbar {
-  display: none;
-}
-
-.results {
-  margin: 0;
-  padding: 0;
-  list-style: none;
-  display: flex;
-  flex-direction: column;
-  gap: var(--space-2xs);
-}
-
-/* ⚠️ A ROW ON THE PANEL'S OWN FILL — NOT `ProductRow`. That is the frosted CARD
-   recipe, and a card inside a panel is two surfaces doing one job; the tray's
-   dropdown made the same call. Unlike the tray's, the row itself is NOT a
-   button — the action here is `Add`, which lives in its own slot and has an
-   `Added` state, so there is nothing for a whole-row hover to promise. */
-.result {
-  display: flex;
-  align-items: center;
-  gap: var(--space-md);
-  width: 100%;
-  padding: var(--space-sm) var(--space-md);
-  border-radius: var(--radius-md);
-}
-
-.resultCopy {
-  flex: 1;
-  min-width: 0;
-  display: flex;
-  flex-direction: column;
-  gap: var(--space-2xs);
-}
-
-/* Open Beauty Facts names run long and arbitrary — clamped rather than left to
-   wrap a dropdown row to four lines. */
-.resultName {
-  color: var(--color-text-primary);
-  display: -webkit-box;
-  -webkit-box-orient: vertical;
-  -webkit-line-clamp: 2;
-  line-clamp: 2;
-  overflow: hidden;
-}
-
-.resultMeta {
-  color: var(--color-text-muted);
-  overflow: hidden;
-  text-overflow: ellipsis;
-  white-space: nowrap;
-}
-
-/* "Searching…" — the panel's one-line waiting state. */
-.dropdownNote {
-  padding: var(--space-lg) var(--space-md);
-  color: var(--color-text-secondary);
-  text-align: center;
-}
-
-/* ⚠️ NOT IN FIGMA — the comp has one unlabelled list because it only ever shows
-   search results. With "Your products" above the catalogue search, the list
-   changes meaning between the two and has to say which it is. `Label` in
-   text/secondary is the section-label treatment `Check results` already uses
-   for "Risky ingredients", so this is not a new style. */
 .sectionLabel {
-  margin-top: var(--space-xl); /* 20 */
+  margin-top: var(--space-3xl); /* 32 */
   color: var(--color-text-secondary);
 }
 
@@ -201,76 +61,37 @@
    sit on top of the last row. This reserves its height plus the gap it keeps
    from the nav, on top of the nav reservation the screen already carries. */
 .barSpacer {
-  height: calc(54px + var(--space-md));
+  height: calc(var(--size-button-lg) + var(--space-md));
 }
 
-/* ⚠️ NOT IN FIGMA — the trailing slot on a result row, sized once so the
-   `Add` → `Added` swap does not resize the control or shift the row's right
-   edge. 76 is the wider of the two at their Figma paddings ("Added" in
-   Label Small + 12 either side).
-
-   ⚠️ ONE HEIGHT FOR BOTH STATES, AND IT IS NEITHER COMPONENT'S OWN. Sizing the
-   slot to the taller of the pair (the Small Button's size/control-sm, 36) only
-   sized the BOX: `Add` kept the Small Button's 8/16 padding and stood 38 tall
-   while `Added` sat at the Tag's 26, so the two states of one control were
-   visibly different heights down the list. Matching them at the Tag's 26 fixed
-   that and read too short for a tap target, so the pair sits at **30** — 26
-   +15%, chosen by eye on the running screen.
-
-   ⚠️ 30 IS A LITERAL AND HAS TO BE. It is off the spacing scale and there is no
-   size/control step between sm (36) and nothing; --space-* is for gaps, not
-   control heights. Written once here as `--slot-h` so the three rules below
-   cannot drift apart. Both children keep their own fill, radius and type — only
-   the box they sit in is shared. */
+/* the row's pick control: a `+` that becomes a tick. Both glyphs
+   are drawn in one cell and cross-fade, so the swap eases instead of snapping. */
 .trailing {
-  --slot-h: 30px;
-
   flex: none;
   display: flex;
-  width: 54px;
-  min-height: var(--slot-h);
 }
 
-.trailing > * {
-  width: 100%;
-  min-height: var(--slot-h);
+.pickGlyphs {
+  --icon-size: var(--size-icon-2xs); /* 12 in the 26 disc */
+
+  display: grid;
+  /* out to the border edge, so the 26 picked disc centres on the button */
+  margin: calc(-1 * var(--border-width-hairline));
+  place-items: center;
 }
 
-/* ⚠️ TWO CLASSES DEEP ON PURPOSE, BOTH OF THEM. `.trailing > *` is one class,
-   and so are Small Button's own `.button` and Tag's `.tag` — at equal
-   specificity the winner is module load order, which is not something this file
-   gets to decide. Naming each child outranks its component's rule, so the
-   height lands whichever way the bundler orders them. The Small Button also
-   needs its vertical padding gone: 8 + a 22 line-height is 38, and a min-height
-   cannot pull a box back below its content. Side padding stays 16 on the
-   button, 12 on the tag. */
-.trailing .add {
-  min-height: var(--slot-h);
-  padding-block: 0;
+.pickGlyphs > * {
+  grid-area: 1 / 1;
+  transition: opacity var(--duration-fade) var(--ease-in-out);
 }
 
-.trailing .added {
-  min-height: var(--slot-h);
+/* the picked glyph is the whole disc, border included */
+.pickGlyphs .mark {
+  --icon-size: var(--size-round-sm); /* 26 */
+  color: var(--color-bg-brand);
 }
 
-/* The button wrapping the `Added` tag — same hover recipe as CheckBasket's
-   own remove control (opacity 0.7, reset under `hover: none` so a tap does not
-   leave the state stuck). Radius matches the tag's own pill so the hover
-   affordance doesn't draw a squared-off box around a round one. */
-.trailing .remove {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  border-radius: var(--radius-full);
-  transition: opacity var(--duration-fast) var(--ease-hover);
-}
-
-.trailing .remove:hover {
-  opacity: 0.7;
-}
-
-@media (hover: none) {
-  .trailing .remove:hover {
-    opacity: 1;
-  }
+.pick[aria-pressed="true"] .plus,
+.pick[aria-pressed="false"] .mark {
+  opacity: 0;
 }

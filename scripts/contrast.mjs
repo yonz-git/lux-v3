@@ -1,29 +1,4 @@
-/**
- * The contrast check — `npm run contrast`.
- *
- * ⚠️ AXE CANNOT DO THIS ON LUX, AND A CLEAN AXE RUN IS NOT EVIDENCE. Every
- * screen sits on the canvas gradient under translucent glass, so axe's
- * `color-contrast` degrades to INCOMPLETE rather than failing. This measures
- * what is actually painted: for every element holding its own text it records
- * the text colour (alpha × every ancestor's opacity), hides ALL text, takes a
- * screenshot, and reads the pixels under that element's text boxes. The
- * contrast is the text colour composited over each pixel against the pixel;
- * the reported figure is the 10th-percentile worst, so a stray border pixel
- * does not fail a label but a gradient that darkens under half a word does.
- *
- * Thresholds are WCAG 1.4.3 (AA): 4.5:1, or 3:1 for large text (24px, or
- * 18.66px at 700). Disabled controls are exempt by the criterion and skipped.
- * Placeholders and text drawn inside an <svg> are not measured.
- *
- * Needs a running server and a Chrome, like `npm run spacing`:
- *
- *   npx next dev -p 3220 &        # BASE must be an origin the dev server allows
- *   "/Applications/Google Chrome.app/Contents/MacOS/Google Chrome" \
- *     --headless=new --remote-debugging-port=9222 --user-data-dir=/tmp/lux-cdp &
- *   BASE=http://localhost:3220 npm run contrast
- *
- * No dependencies: Node's own `WebSocket` speaks CDP and `zlib` inflates the PNG.
- */
+/** The contrast check — `npm run contrast`. */
 import { inflateSync } from "node:zlib";
 
 const PORT = process.env.CDP_PORT || 9222;

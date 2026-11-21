@@ -6,17 +6,6 @@
    the list's own rhythm while staying outside the <dl>, which is why the gap
    lives on this wrapper rather than on the <dl>. */
 
-/* ⚠️ VALUES SIT BESIDE THEIR LABELS, NOT AT THE FAR EDGE — 16 Sep 2026, asked
-   for directly ("it's weird to have to jump the view to read the info"). The
-   rows were `space-between`, which put a card's width between `Brand` and
-   `CeraVe`. Now a two-column grid: the labels take the widest label's width
-   and every value starts on one left edge 16 after it. ⚠️ It lined up after
-   the ingredients chevron for a turn the same day and was moved back closer,
-   asked for directly ("about 15px space in between" — 16, the scale's step).
-   Each row's `div` is `display: contents` so its term and value land in the
-   columns. */
-/* ⚠️ 16 BETWEEN THE ROWS AND THE INGREDIENTS TOGGLE, NOT THE ROWS' 8 — 16 Sep
-   2026, asked for directly ("more space between size and ingredients"). */
 .details {
   display: flex;
   flex-direction: column;
@@ -47,5 +36,3 @@
   color: var(--color-text-primary);
 }
 
-/* the ingredients dropdown lives in IngredientsDisclosure.module.css since
-   16 Sep 2026 — shared with the add tray's confirm card */

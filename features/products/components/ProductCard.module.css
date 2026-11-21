@@ -7,9 +7,7 @@
   flex-direction: column;
   align-items: flex-start;
   gap: var(--space-md);
-  /* ⚠️ 10% MORE, asked for directly 15 Sep 2026 ("make it breathe more"): 22,
-     `space/xl` loosened rather than a new number */
-  padding: calc(var(--space-xl) * 1.1);
+  padding: var(--space-2xl);
 
   border-radius: var(--radius-2xl);
   background: var(--color-surface-frost-light);
@@ -35,8 +33,6 @@
   border-radius: var(--radius-lg);
   /* OPAQUE — it stands in for a photograph */
   background: var(--color-bg-surface-frost);
-  /* ⚠️ A SLIGHT DROP SHADOW, `shadow/sm`, asked for directly 15 Sep 2026 for
-     every product picture in the app — the one well that is not `ProductThumb` */
   box-shadow: var(--shadow-sm);
 }
 
@@ -48,7 +44,6 @@
   width: 100%;
   height: 100%;
 }
-
 
 .name {
   color: var(--color-text-primary);

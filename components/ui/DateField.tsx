@@ -19,23 +19,7 @@ import {
   toIso,
 } from "@/lib/date";
 
-/**
- * A date field with a LUX-styled calendar.
- *
- * ⚠️ WHY THIS IS NOT `<input type="date">`. The native control's popup is drawn
- * by the browser and cannot be styled at all — no token, class or pseudo-element
- * reaches inside it. It rendered as a stock white Chrome calendar with a blue
- * selected day in the middle of the LUX flow. The only way to make the calendar
- * look like the product is to own it.
- *
- * The trigger matches Figma's `date-field` (52 tall, frost-light + border/subtle
- * + radius/lg + the frosted-row inner shadow, value in Body 2, chevron-down on
- * the right). The design system has NO calendar component — this is composed
- * from tokens and belongs in Figma eventually.
- *
- * Keyboard: arrows move by day/week, PageUp/PageDown by month, Home/End to the
- * ends of the week, Enter/Space selects, Escape closes and returns focus.
- */
+/** A date field with a LUX-styled calendar. */
 export function DateField({
   value,
   onChange,

@@ -1,15 +1,5 @@
-/* A list of named steps ticking off. ⚠️ NOT IN FIGMA — no frame draws one; both
-   analysing screens drew a bar. See `docs/archive/figma-catchup.md`. */
+/* A list of named steps ticking off. */
 
-/* ⚠️ `fit-content`, NOT `width: 100%` — THE BOX HUGS THE LINES OR THE BLOCK
-   READS OFF-CENTRE. Both callers centre this list in a centred hero, and at
-   `width: 100%` the box took the whole cap (420 on desktop) while the longest
-   line only ever measures about 300. A centred box of left-aligned text that
-   never reaches its own right edge puts the INK left of centre — measured on
-   `/check/analyzing` at 1127: the box centred exactly, the lines sat 60px left
-   of the title and the description above and below them. The max-width is the
-   WRAP cap now rather than the width: a line longer than it still wraps there,
-   and anything shorter leaves no dead column beside it. */
 .list {
   display: flex;
   flex-direction: column;
@@ -21,15 +11,6 @@
   text-align: left;
 }
 
-/* ⚠️ THE `ol` MARGIN RESET IS `:where()`, AT ZERO SPECIFICITY, AND THAT IS
-   LOAD-BEARING. A caller passes `className` to set the interval above the list
-   — `CheckAnalyzing`'s `.passes` does — and that is one class, the same
-   specificity as `.list`. CSS Modules load after each other in import order, so
-   at a tie the LAST sheet wins: this one did, silently, and the 32 the check's
-   analysing screen asks for above the list computed to 0 with the rule sitting
-   right there looking correct. It is the same failure AGENTS.md records for the
-   focus ring and for `icons.tsx`, and the same fix. `:where()` still beats the
-   UA sheet's `1em 0`, so the reset holds where nobody overrides it. */
 :where(.list) {
   margin: 0;
 }
@@ -39,10 +20,6 @@
   align-items: flex-start;
   gap: var(--space-md);
   color: var(--color-text-muted);
-  /* ⚠️ A COLOUR AND AN OPACITY TRANSITION, NOT AN ANIMATION. A named
-     `@keyframes` written in a CSS Module compiles to a scoped name with no
-     matching keyframes and silently does nothing — AGENTS.md, motion. A
-     transition carries no name, so it is safe here. */
   transition:
     color var(--duration-base) var(--ease-standard),
     opacity var(--duration-base) var(--ease-standard);
@@ -71,12 +48,6 @@
 
 .tick {
   --icon-size: var(--size-icon-sm);
-  /* ⚠️ INDIGO, NOT `feedback/success` GREEN — asked for directly 15 Sep 2026
-     ("the check icons that are green, use one of the indigo"). `bg/brand`, the
-     app's one indigo for selection and the primary button's dark end. A done
-     pass is progress, not a verdict, so it does not need the feedback hue —
-     and on CHECK green sits too close to the results' own verdict colours.
-     Both callers take it: CHECK's `Analyzing` and the investigation's passes. */
   color: var(--color-bg-brand);
 }
 

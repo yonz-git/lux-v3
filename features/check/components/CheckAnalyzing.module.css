@@ -1,16 +1,8 @@
 /* Check — analyzing (605:2163).
 
-   orb -> 32 -> status-title -> 32 -> the passes -> 16 -> status-description.
-   The gaps are explicit spacer frames in the comp with no gap on the stack, so
-   these are the literal distances.
-
-   ⚠️ THE COMP'S `analysis-bar` IS NOT DRAWN ANY MORE. It sat in the 20-gap slot
-   under the title, and the pass list that replaced it does not fit that slot:
-   a bar is one 8px rule, the list is five lines of text, and at 20 it sat close
-   enough to the heading to read as part of it. The interval is 32 — the same
-   step as orb -> title — so the title has air on both sides and the list reads
-   as its own block. ⚠️ NOT IN FIGMA, on the catch-up list with the bar itself;
-   see `CheckAnalyzing.tsx` for why the bar went. */
+orb -> 32 -> status-title -> 32 -> the passes -> 16 -> status-description.
+The gaps are explicit spacer frames in the comp with no gap on the stack, so
+these are the literal distances. */
 
 .hero {
   display: flex;
@@ -27,7 +19,7 @@
 /* The list is `components/ui/PassList` and owns its own type, spacing and
    ticks; this is only the interval above it. */
 .passes {
-  margin-top: var(--space-3xl); /* 32 — was the comp's 20; see the note above */
+  margin-top: var(--space-3xl);
 }
 
 .description {

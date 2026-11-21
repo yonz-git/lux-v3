@@ -8,6 +8,7 @@
     "start": "next start",
     "lint": "biome lint",
     "typecheck": "tsc --noEmit",
+    "test": "node --import ./scripts/test-resolve.mjs --test \"features/**/*.test.ts\" \"lib/**/*.test.ts\"",
     "vocab": "node scripts/vocab.mjs",
     "spacing": "node scripts/text-spacing.mjs",
     "contrast": "node scripts/contrast.mjs",

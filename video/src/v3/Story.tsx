@@ -17,11 +17,13 @@ import REC from "../faceRec.json";
  *     frame and fades while the face card (the same recorded pixels, as its
  *     own layer) lands as the hero, at ≤1.9× so it stays sharp.
  * 4 · The step-1 interaction, recorded from the live app, plays as the hero:
- *     the face card with the symptom chips and the Save / Reset / Reset all
- *     bar UNDER it, exactly as the app lays them out (they sat in a column
- *     beside the face until 2 Oct 2026; the app never drew that). The skin
- *     profile that followed, and the chips flying into it, were cut 3 Oct
- *     2026 (asked for); beat 5 follows the face directly.
+ *     the symptom chips OVER the face card, exactly as the app lays them out
+ *     since 1 Nov 2026 (there is no Save bar now: the app saves as you tap).
+ *     The take ends on an eased scroll down to the app's Your symptoms card,
+ *     which is where the answers now read back (the callout lines stay hidden
+ *     while a symptom is being placed). The skin profile that followed, and
+ *     the chips flying into it, were cut 3 Oct 2026 (asked for); beat 5
+ *     follows the face directly.
  */
 
 const W = 1920;
@@ -43,8 +45,8 @@ const T0 = 560; /* the first recorded tap */
 const HOLD = 6;
 /* the interaction plays 2× its recorded speed: the same taps, less waiting.
    Since 3 Oct 2026 it is the longer take (asked for: two symptoms whose
-   places overlap, so more lines show): Redness on both cheeks, forehead and
-   nose; Itching on both cheeks, forehead and chin. */
+   places overlap): Redness on both cheeks, forehead and nose; Itching on both
+   cheeks, forehead and chin. */
 const SPEED = 2;
 
 /* ── the recording: one recorded frame per film frame, with a short hold
@@ -64,6 +66,8 @@ const PROFILE = taps[taps.length - 1].w + Math.round((REC.frames - 1 - taps[taps
 /* beat 5 starts here (Story2), as the face leaves */
 export const P5 = PROFILE + 20;
 export const STORY_END = P5 + 30;
+/* the take's last 106 frames are the scroll (56) and its hold (50) */
+const SCROLL_FROM = REC.frames - 106;
 const recSrc = (n: number) => `app/face/${String(n).padStart(3, "0")}.jpg`;
 
 /* ── the phone and the push ── */
@@ -72,12 +76,10 @@ const PY = 98;
 const PS = 1.02;
 const SCREEN_LEFT = PX - (SCREEN_W * PS) / 2 - 1;
 const SCREEN_TOP = PY + 11;
-/* the hero region of the recording, in screen px: the face card and the chip
-   rows. Inside the phone (A) and as the hero (B), 890 film px tall from a
-   1196 px source, so never upscaled */
-/* it stops under the chips: the Save / Reset / Reset all bar is cropped out
-   (3 Oct 2026, asked for) so the face and chips get the room */
-const REG = { x: 12, y: 201, w: 366, h: 598 };
+/* the hero region of the recording, in screen px: the chip rows and the face
+   card. Inside the phone (A) and as the hero (B), 890 film px tall from a
+   1012 px source, so never upscaled */
+const REG = { x: 18, y: 184, w: 354, h: 506 };
 const A = { x: SCREEN_LEFT + REG.x * PS, y: SCREEN_TOP + REG.y * PS, w: REG.w * PS };
 const HERO_H = 890;
 const HERO_W = HERO_H * (REG.w / REG.h);
@@ -194,6 +196,9 @@ export const Story: React.FC = () => {
   const k = R.w / REG.w;
 
   const faceLeave = e(f, PROFILE + 2, PROFILE + 26);
+  /* once the page scrolls, the face passes under the region's top edge: a
+     longer feather there, so it dissolves rather than being cut */
+  const topFade = 4 + 8 * interpolate(rec, [SCROLL_FROM, SCROLL_FROM + 56], [0, 1], clamp);
 
   /* ── the profile ── */
 
@@ -262,7 +267,7 @@ export const Story: React.FC = () => {
             opacity: 1 - faceLeave,
             translate: `0 ${-40 * faceLeave}px`,
             scale: 1 + 0.03 * faceLeave,
-            maskImage: "linear-gradient(to right, transparent, black 3%, black 97%, transparent), linear-gradient(to bottom, transparent, black 2%, black 98%, transparent)",
+            maskImage: `linear-gradient(to right, transparent, black 1.6%, black 98.4%, transparent), linear-gradient(to bottom, transparent, black ${topFade}%, black 96%, transparent)`,
             maskComposite: "intersect",
           }}
         >
@@ -273,7 +278,7 @@ export const Story: React.FC = () => {
       <Caption text="Tap **where** it shows up" at={MAP_CAP} out={PROFILE - 10} />
 
       {/* the taps, on the recorded controls */}
-      {f >= T0 - 10 && f < PROFILE && taps.filter((t) => t.label !== "save").map((t) => <Tap key={t.w} f={f} at={t.w} {...onHero(t.rect!)} />)}
+      {f >= T0 - 10 && f < PROFILE && taps.map((t) => <Tap key={t.w} f={f} at={t.w} {...onHero(t.rect!)} />)}
 
     </AbsoluteFill>
   );

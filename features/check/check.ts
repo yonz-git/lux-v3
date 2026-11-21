@@ -3,49 +3,19 @@
  *
  * Figma: `HANDOFF — CHECK` (613:2434) on page `06. Screen Designs`, mobile row
  * y=8800. 8 screens x 2 breakpoints.
- *
- * ⚠️ CHECK IS NOT AN INVESTIGATION STEP. No progress track and no `Save & exit`
- * anywhere in it — that pair is the signature of the investigation flow. CHECK
- * is a standalone compatibility check off the Check tab, and it keeps its own
- * state here rather than in `lib/flow.ts`.
- *
- * ⚠️ THE SCORING IS A MODEL, NOT A LOOKUP, AND IT IS DELIBERATELY SIMPLE. There
- * is no ingredient API behind this prototype, so something has to produce the
- * numbers the design shows. The alternative — hardcoding the comp's five scores
- * — would mean any product the user actually picks scores nothing, which is the
- * one thing a compatibility checker must not do.
- *
- * So: every catalogue product declares the actives it contains (that vocabulary
- * is `lib/actives.ts` now — see the note above `SCORING`), each active carries a
- * penalty against THIS user's skin, and the score is what is left of 98.
- * Nothing is 100 — no formula is perfect for anyone.
- *
- * The weights are tuned so the five products on `Check results` (476:2841) come
- * out at exactly the scores the comp draws — 94 / 98 / 62 / 45 / 71 — which is
- * also what pins the band boundaries the handoff derived. That is a check on the
- * model, not a coincidence to preserve at all costs: change a weight and the
- * demo check moves with it, which is correct.
  */
 import type { CatalogProduct } from "@/features/products/products";
-import { fullName, productById } from "@/features/products/products";
+import { fullName } from "@/features/products/products";
 import type { IsoDate } from "@/lib/date";
 import type { ActiveId } from "@/lib/actives";
 import { ACTIVES, activesOf, conflicts } from "@/lib/actives";
 
-/* ---------------------------------------------------------------------------
-   Bands — RESOLVED in the handoff, derived from the only evidence in the file.
+/* Bands — RESOLVED in the handoff, derived from the only evidence in the file.
 
    >= 80  Compatible  score in feedback/success, and NO pill: the absence of a
-                      pill IS the signal
+   pill IS the signal
    50-79  Risky       score and pill in feedback/warning
-   <= 49  Avoid       score and pill in feedback/error
-
-   ⚠️ THE PILL TEXT IS THE CARRIER, NOT THE COLOUR. feedback/warning and
-   feedback/error share a hue and differ only in lightness, so "Risky" and
-   "Avoid" are not distinguishable by colour alone. Every row therefore states
-   its band in text — visibly on the two that carry a pill, and in an
-   aria-label on every row including the compatible ones.
-   -------------------------------------------------------------------------- */
+   <= 49  Avoid       score and pill in feedback/error */
 
 export type CompatBand = "compatible" | "risky" | "avoid";
 
@@ -76,24 +46,7 @@ export function worstBand(results: CheckAnalysis[]): CompatBand {
 export const MIN_CHECK_PRODUCTS = 2;
 export const MAX_CHECK_PRODUCTS = 8;
 
-/* ---------------------------------------------------------------------------
-   Scoring — CHECK's half of the ingredient model
-
-   ⚠️ THE VOCABULARY MOVED TO `lib/actives.ts` AND THE WEIGHTS STAYED HERE.
-   What an ingredient is called, what it does to skin, which INCI words mean it
-   and which pairs should not share a routine are now shared with `my-skin`'s
-   analysis — two sections use them, so by the placement rule in AGENTS.md they
-   are no longer this file's.
-
-   The penalties are, and must remain. They are tuned so the five products on
-   `Check results` (476:2841) come out at exactly the scores the comp draws —
-   94 / 98 / 62 / 45 / 71 — which is the right shape for a compatibility SCORE
-   and the wrong basis for a causal CLAIM. The analysis reasons about which
-   product is associated with a reaction that already happened; a number tuned
-   against a comp has no business behind a sentence like that, so it cannot
-   reach one. Same for `advice`: it is prospective how-to-use copy, which is
-   this section's question and not the other's.
-   -------------------------------------------------------------------------- */
+/* Scoring — CHECK's half of the ingredient model */
 
 type Scoring = {
   /** points off, for a sensitive + acne-prone profile */
@@ -134,12 +87,7 @@ const SCORING: Record<ActiveId, Scoring> = {
 /** Nothing scores 100 — no formula is perfect for anyone. */
 const BASE_SCORE = 98;
 
-/** Which of `product`'s actives clash with something else in the basket.
- *
- *  ⚠️ THE PAIR LIST IS SHARED; THIS TIE-BREAK IS NOT. `conflicts()` in
- *  `lib/actives.ts` says whether two actives are a pair. Deciding WHICH HALF of
- *  the pair to report it against needs the penalties, which is a scoring
- *  concern and stays here. */
+/** Which of `product`'s actives clash with something else in the basket. */
 function conflictsFor(
   product: CatalogProduct,
   basket: CatalogProduct[]
@@ -162,19 +110,7 @@ function conflictsFor(
   return found;
 }
 
-/**
- * The ingredient words a product should be findable by on `/check/new`.
- *
- * ⚠️ THIS LIVES HERE, NOT IN `products.ts`, EVEN THOUGH `lib/actives.ts` WOULD
- * NOW TAKE IT. `products.ts` cannot import the actives model without a cycle, so
- * the search takes these as a parameter instead. Keeping it in CHECK is also the
- * honest split: searching by what a product CONTAINS is a compatibility
- * question, which is why the check builder passes this and the PRODUCTS add tray
- * does not. The analysis has no search to feed.
- *
- * Both the label and the id are returned, so "salicylic acid", "BHA" and
- * "salicylic-acid" all find the same product.
- */
+/** The ingredient words a product should be findable by on `/check/new`. */
 export function checkSearchTerms(product: CatalogProduct): string[] {
   return activesOf(product).flatMap((id) => [ACTIVES[id].name, id]);
 }
@@ -247,6 +183,11 @@ export function analyseCheck(basket: CatalogProduct[]): CheckAnalysis[] {
   return basket.map((p) => analyse(p, basket)).sort((a, b) => a.score - b.score);
 }
 
+/** The order the results show them in: the most compatible first. */
+export function compatibleFirst(analyses: CheckAnalysis[]): CheckAnalysis[] {
+  return [...analyses].sort((a, b) => b.score - a.score);
+}
+
 /** How many ingredients the analysing screen claims to be reading. */
 export function ingredientCount(basket: CatalogProduct[]): number {
   /* A stated number has to come from somewhere. This is the actives the
@@ -259,22 +200,7 @@ export function ingredientCount(basket: CatalogProduct[]): number {
    What the analysing screen says it is doing
    -------------------------------------------------------------------------- */
 
-/**
- * The passes `/check/analyzing` names while it waits.
- *
- * ⚠️ EACH LINE NAMES WORK THIS FILE ACTUALLY DOES, IN ORDER, and that is the
- * only reason the screen is allowed to list them: `activesOf` reading each
- * product (1), `analyse` scoring it against the profile (2), the 10-point
- * `risky` cut that produces the ingredient tags (3), `conflictsFor` finding
- * pairs across the basket (4), and `routineAdvice` turning all of it into
- * something to do (5). If a step is removed from the model, its line goes too —
- * a progress list narrating work the app is not doing is a claim.
- *
- * ⚠️ FIVE, NOT THE ANALYSIS'S SIX. The two screens share the component and the
- * shape, not the content: CHECK has no timeline to compare and no tolerated set
- * to subtract from, so it must not claim those passes. Matching the counts for
- * symmetry would be inventing work.
- */
+/** The passes `/check/analyzing` names while it waits. */
 export const CHECK_PASSES = [
   "Reading the ingredients in each product",
   "Scoring each one against your skin profile",
@@ -291,11 +217,6 @@ export type SavedCheck = {
   id: string;
   /** ISO date the check was run */
   date: IsoDate;
-  /** ⚠️ THE PRODUCTS, NOT THEIR IDS. A checked product can be a live Open
-   *  Beauty Facts result that is not in `CATALOG`, so an id is no longer enough
-   *  to get one back. The SCORES are still not stored — that rule is about
-   *  derived values, and every number on `/check/results` still comes out of
-   *  `analyse()` on read. */
   products: CatalogProduct[];
 };
 
@@ -314,61 +235,9 @@ export function productsOf(check: SavedCheck): CatalogProduct[] {
   return check.products;
 }
 
-/** The seeded checks are authored by catalogue id, because that is what is
- *  readable in a fixture; they are resolved to products once, here. */
-function demoCheck(id: string, date: IsoDate, ids: string[]): SavedCheck {
-  return {
-    id,
-    date,
-    products: ids.map(productById).filter((p): p is CatalogProduct => Boolean(p)),
-  };
-}
 
-/* ---------------------------------------------------------------------------
-   The demo check
-
-   ⚠️ SAME CALL AS `/progress` — see lib/progress.ts. The Check tab is a
-   readout section too, and `Check — previous checks` with nothing in it
-   demonstrates nothing. The history is seeded so the section is walkable from a
-   cold start; running a real check prepends to it and the seed stays below.
-
-   The five products and the date are the comp's own (`Check results` 476:2841,
-   `Check — previous checks` 652:2554). The scores are NOT stored — they come
-   back out of `analyse()`, so the seeded check and a user's check are read the
-   same way and neither can drift from the model.
-   -------------------------------------------------------------------------- */
-
-export const DEMO_CHECKS: SavedCheck[] = [
-  demoCheck("demo-1", "2026-08-18", [
-    "the-ordinary-niacinamide",
-    "lrp-retinol-b3-serum",
-    "paulas-choice-bha-exfoliant",
-    "cerave-moisturizing-cream-16",
-    "cerave-foaming-cleanser",
-  ]),
-  demoCheck("demo-2", "2026-08-11", [
-    "lrp-retinol-b3-serum",
-    "the-ordinary-niacinamide",
-  ]),
-  demoCheck("demo-3", "2026-08-02", [
-    "cerave-moisturizing-cream-16",
-    "cerave-am-lotion-spf30",
-  ]),
-];
-
-/* ---------------------------------------------------------------------------
-   THE INGREDIENT-MAJOR VIEW — `Ingredients of concern` on `06 — Results`
-   (549:1139), and the synthesis blocks that now open `Check results` too.
-
-   ⚠️ THIS IS THE SAME MODEL READ THE OTHER WAY UP, NOT A SECOND ONE. A results
-   card is product-major: "here is your product, here is what it costs you". An
-   `Ingredients of concern` entry is ingredient-major: "here is the ingredient,
-   here is which of your products it is in". `06 — Results` is the investigation
-   asking WHAT IS CAUSING THIS, so it leads with the cause; `Check results` was
-   asking DO THESE WORK TOGETHER, so it led with the products — and had no
-   answer at all to "so what do I do?". Inverting the index costs nothing and
-   gives both screens the half they were missing.
-   -------------------------------------------------------------------------- */
+/* THE INGREDIENT-MAJOR VIEW — `Ingredients of concern` on `06 — Results`
+   (549:1139), and the synthesis blocks that now open `Check results` too. */
 
 export type Likelihood = "high" | "moderate";
 
@@ -386,14 +255,7 @@ export type IngredientConcern = {
   likelihood: Likelihood;
 };
 
-/**
- * The actives worth naming, worst first, each with the products it was found in.
- *
- * ⚠️ THE MILD ONES ARE LEFT OUT. Niacinamide costs 4 points and belongs in a
- * score, not in a list headed "of concern" — the same 10-point line
- * `analyse()` uses for its ingredient tags, so a product's tags and this list
- * can never disagree about what counts.
- */
+/** The actives worth naming, worst first, each with the products it was found in. */
 export function ingredientsOfConcern(
   basket: CatalogProduct[]
 ): IngredientConcern[] {
@@ -458,38 +320,6 @@ export function primaryConcern(
 /**
  * The routine advice for a CHECK — every pair in the set that should not share
  * a routine, said once, plus the one rule that always applies.
- *
- * ⚠️ THE PAIRS ARE THE WHOLE POINT OF A COMPATIBILITY CHECK, and they were only
- * reachable by opening an accordion. Surfacing them at the top is the "what do
- * I do?" the screen never answered.
- *
- * ⚠️ A STEP, NOT A SENTENCE — AND NOT IN FIGMA. This returned `string[]`, and
- * `NextStepsCard` rendered each one as a `t-body3` line: two paragraphs of the
- * same size, colour and weight as the description above them, both opening
- * "Do not use", each naming two products at full brand-and-name length. Walked
- * at 440 it reads as a footnote to the emphasis block rather than as the
- * actions the card is titled for, and the card's own overline promises
- * otherwise.
- *
- * Three things change, and each is why the shape had to:
- *
- *   — the ACTION leads. "Keep X and Y on alternate nights" is the same fact as
- *     "Do not use X and Y in the same routine", said as the thing to do. The
- *     prohibition moves into the body, where the reason lives.
- *   — the title drops the BRAND. `fullName` is right in a list of products the
- *     user is identifying; in a sentence naming two of them it spends most of a
- *     mobile line on "La Roche-Posay" and "The Ordinary". The thumbs carry the
- *     brand — that is what the per-brand tint in `ProductArt` is for.
- *   — the pair comes with its PRODUCTS, so the card can draw them. A conflict
- *     IS a pair of products; two thumbs and a `+` say that before the sentence
- *     is read.
- *
- * ⚠️ THE PAUSED PRODUCT'S PAIRS SAY SO. When the worst product is in the Avoid
- * band the card's emphasis block tells the user to pause it — so a step telling
- * them to alternate it against something else is advice about a routine it is
- * no longer in. It still has to be listed (the pause is two weeks, not
- * forever), so the body names the condition instead of pretending the conflict
- * is live.
  */
 export type NextStep = {
   /** stable across renders — the two product ids, sorted */
@@ -528,9 +358,6 @@ export function routineAdvice(basket: CatalogProduct[]): NextStep[] {
     }
   }
 
-  /* ⚠️ ALWAYS LAST, AND ALWAYS PRESENT — including on a clean check, which is
-     the case the card used to answer with silence. It is the only advice that
-     does not depend on what is in the basket. */
   steps.push({
     id: "one-at-a-time",
     title: "Bring anything back one product at a time",
@@ -541,28 +368,13 @@ export function routineAdvice(basket: CatalogProduct[]): NextStep[] {
   return steps;
 }
 
-/* ---------------------------------------------------------------------------
-   The elimination schedule — `check-in-schedule` on 549:1175.
+/* The elimination schedule — `check-in-schedule` on 549:1175.
 
-   Week 1, 2 and 4 from the day the results were produced. The comp's Aug 18 /
-   Aug 25 / Sep 8 are exactly +7 / +14 / +28 from an 11 Aug reading, so the
-   offsets are the design's, not invented.
-   -------------------------------------------------------------------------- */
+   Week 1, 2 and 4 from the day the results were produced. */
 
 export const ELIMINATION_WEEKS = 4;
 
 export type ScheduleNode = { week: number; date: Date; note?: string };
-
-export function eliminationSchedule(from: Date): ScheduleNode[] {
-  const at = (days: number) =>
-    new Date(from.getFullYear(), from.getMonth(), from.getDate() + days);
-
-  return [
-    { week: 1, date: at(7), note: "First check-in: note any changes" },
-    { week: 2, date: at(14) },
-    { week: ELIMINATION_WEEKS, date: at(28), note: "Final assessment" },
-  ];
-}
 
 /** "Aug 18, 2026" — the schedule's date format. */
 export function formatScheduleDate(d: Date): string {

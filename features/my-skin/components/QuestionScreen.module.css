@@ -1,12 +1,3 @@
-/* The shared shell for the investigation question screens — lux-v3, from the
-   canvas boards (1 Oct 2026; LUX v3 artifact, "First pages").
-
-   mobile:  padding 24 -> header row -> 16 -> track -> 24 -> centred title ->
-            24 -> the step's panels, 24 apart -> 24 -> Continue (56) -> nav.
-   desktop: not drawn on the canvas. The same column at `width/card-focus`
-            (640), centred, with no card round it — each question is already
-            its own panel, and frost round frost does not read. */
-
 .shell {
   flex: 1;
   width: 100%;
@@ -16,14 +7,14 @@
 }
 
 .progressWrap {
-  padding-top: var(--space-lg); /* 16 */
+  padding-top: var(--space-sm); /* 8 */
 }
 
 .card {
   display: flex;
   flex-direction: column;
   flex: 1;
-  margin-top: var(--content-gap, var(--space-2xl)); /* 24 by default */
+  margin-top: var(--content-gap, var(--space-md)); /* 12 by default */
 }
 
 .content {
@@ -37,30 +28,32 @@
   margin-bottom: var(--space-2xl); /* 24 */
 }
 
-/* Continue follows the content; it is not pushed to the foot of the screen */
+/* takes the spare height, so Continue rests on `--cta-bottom` (the screen's
+   bottom padding); with tall content it shrinks to its minimum and Continue
+   follows the content */
 .spacer {
-  flex: none;
-  min-height: var(--space-2xl);
+  flex: 1 0 auto;
+  /* 24, unless a screen asks for more (`gapBeforeContinueMobile`) */
+  min-height: var(--continue-gap-mobile, var(--space-2xl));
 }
 
 /* Continue, plus whatever sits above it — `04a — Long-term products · filled`
    stacks a secondary "Done" over Continue with a 12 gap (Figma `footer-actions`,
    578:1557). With no `footer` child this collapses to Continue alone. */
 .footer {
-  /* the action lands after the blocks — see HubScreen.module.css's `.footer`
-     for the number; a delay only, the animation is global (15 Sep 2026) */
   animation-delay: 400ms;
   display: flex;
   flex-direction: column;
   gap: var(--space-md);
-  /* ⚠️ NOT IN FIGMA — THE NAV PILL'S WIDTH ON MOBILE, asked for directly
-     13 Sep 2026. Continue ran the 392 column and overhung the 380 nav under it
-     by 6 each side; the cap goes on the FOOTER so a stacked secondary above it
-     shares the edge too. `align-self` because `.card` stretches its children
-     and a capped stretch item sits against the left. See `--width-action-mobile`
-     in globals.css. */
   width: 100%;
   max-width: var(--width-action-mobile);
+  align-self: center;
+}
+
+/* Continue: full width up to the primary's widest, centred */
+.footer .continue {
+  width: 100%;
+  max-width: var(--width-button-primary);
   align-self: center;
 }
 
@@ -70,11 +63,10 @@
   }
 
   .card {
-    flex: none;
     align-self: center;
     width: 100%;
     max-width: var(--width-card-focus); /* 640 */
-    margin-top: var(--content-gap-desktop, var(--space-4xl));
+    margin-top: var(--content-gap-desktop, var(--space-xl)); /* 20 */
   }
 
   .spacer {
@@ -89,8 +81,4 @@
   }
 
   /* Continue is `width/action`, centred — not stretched to the column */
-  .footer .continue {
-    width: var(--width-action);
-    align-self: center;
-  }
 }

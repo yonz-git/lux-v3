@@ -15,15 +15,13 @@
   gap: var(--space-md); /* 12 */
   width: 100%;
   /* rule 12: Figma padding minus the border, so a one-line date lands on 74 */
-  padding: calc(var(--space-lg) - var(--border-width-hairline))
-    calc(18px - var(--border-width-hairline));
+  padding: var(--space-lg) 18px;
   text-align: left;
 
-  /* lux-v3: the 30% panel at the score cards' 24 radius (app/vidgen.css) */
+  /* lux-v3: the 30% panel at the score cards' 24 radius (app/globals.css) */
   border-radius: var(--radius-2xl); /* 24 */
-  border: var(--border-width-hairline) solid var(--color-border-panel);
-  background: var(--color-panel);
-  box-shadow: inset 0 1px 0 var(--color-rim-panel);
+  background: var(--color-panel-data);
+  box-shadow: var(--shadow-frosted-row);
   -webkit-backdrop-filter: blur(12px);
   backdrop-filter: blur(12px);
   transition: opacity var(--duration-fast) var(--ease-hover);
@@ -60,7 +58,7 @@
    sharing would mean a component whose only job is a background colour. */
 .pill {
   flex: none;
-  padding: 5px 14px;
+  padding: 0.3125rem 0.875rem;
   border-radius: var(--radius-full);
   color: var(--color-text-on-brand);
   white-space: nowrap;
@@ -79,37 +77,6 @@
   width: var(--size-icon-sm); /* 20 */
   height: var(--size-icon-sm);
   color: var(--color-icon-default);
-}
-
-/* the empty state — the handoff says to reuse the Check — no profile block */
-.empty {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: var(--space-lg);
-  text-align: center;
-  color: var(--color-text-primary);
-}
-
-.empty > svg,
-.empty > :global(.lux-orb) {
-  margin-bottom: var(--space-3xl); /* + the 16 gap = 48 */
-}
-
-.emptyText {
-  color: var(--color-text-secondary);
-}
-
-.emptyCta {
-  width: 100%;
-  max-width: var(--width-action-mobile); /* the nav pill's 380 */
-  margin-top: var(--space-3xl); /* + the 16 gap = 48 */
-}
-
-@media (min-width: 1024px) {
-  .emptyCta {
-    width: var(--width-action);
-  }
 }
 
 @media (prefers-reduced-transparency: reduce) {
