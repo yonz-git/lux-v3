@@ -16,10 +16,20 @@
 .card.card {
   position: relative;
   isolation: isolate;
-  border-color: rgb(255 255 255 / 0.2);
-  box-shadow: inset 0 1px 0 rgb(255 255 255 / 0.25);
-  background: var(--gradient-routine);
+  background: none;
   color: #fff;
+}
+
+/* the deep teal at 80%, on its own layer so the text keeps full strength */
+.card.card::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  border-radius: inherit;
+  background: var(--gradient-routine);
+  opacity: 0.8;
+  pointer-events: none;
 }
 
 /* the overline left, the total's pill right, centred on one line */

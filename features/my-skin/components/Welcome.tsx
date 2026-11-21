@@ -51,6 +51,7 @@ export function Welcome() {
               size="hero"
               className={returning ? styles.bubbleReply : `bubble-swap-in ${styles.bubbleReply}`}
               entrance={false}
+              hug
               aria-hidden
             >
               <span className={styles.line}>I can help identify possible </span>

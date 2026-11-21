@@ -71,9 +71,8 @@
   border-radius: var(--radius-full);
   border: var(--border-width-thin) solid transparent;
   font-variant-numeric: tabular-nums;
-  /* the unremarkable days sit back at 85% so the checked-in discs carry the
-     card; on-data-muted would drop them below the weekday header */
-  color: var(--color-text-secondary);
+  /* every plain day, past or to come, is the ink; the discs carry the card */
+  color: var(--color-text-primary);
 }
 
 /* the accent on a data card is indigo bg/brand — the handoff's rule for
@@ -81,11 +80,6 @@
 .day[data-checked-in] {
   background: var(--color-bg-brand);
   color: var(--color-text-on-brand);
-}
-
-/* a day still to come steps back to the muted ink (Calendar A) */
-.day[data-future] {
-  color: var(--color-text-muted);
 }
 
 .day[data-today] {

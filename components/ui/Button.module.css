@@ -174,8 +174,7 @@
 }
 
 /* the large primary's own height, and a main action's size in either
-   material: 64 tall / its full column on a phone, 57.6 / 288 from 1024
-   (tokens.css). A main
+   material: 57.6 tall, 288 wide at most, at every width (tokens.css). A main
    action centres itself in whatever holds it. */
 .button:not(.secondary, .text, .md, .sm),
 .action:not(.text, .md, .sm) {

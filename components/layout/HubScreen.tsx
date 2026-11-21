@@ -13,6 +13,7 @@ import { IconButton } from "@/components/ui/IconButton";
 export function HubScreen({
   title,
   titleClassName = "t-h4-h3",
+  titleHidden,
   subtitle,
   backHref,
   action,
@@ -29,6 +30,8 @@ export function HubScreen({
   title?: ReactNode;
   /** the title's classes — the hub title role, unless a page designs its own */
   titleClassName?: string;
+  /** the page keeps its `<h1>` for screen readers but shows no heading */
+  titleHidden?: boolean;
   subtitle?: string;
   /** a pushed view's back chevron; a landing has none */
   backHref?: string;
@@ -62,12 +65,14 @@ export function HubScreen({
   const low = center === "low";
   const empty = center === "empty";
 
-  const heading = title ? (
+  const heading = !title ? null : titleHidden ? (
+    <h1 className="visually-hidden">{title}</h1>
+  ) : (
     <div className={styles.heading}>
       <h1 className={titleClassName}>{title}</h1>
       {subtitle && <p className={`${styles.subtitle} t-body2`}>{subtitle}</p>}
     </div>
-  ) : null;
+  );
 
   return (
     <main

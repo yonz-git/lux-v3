@@ -61,7 +61,7 @@ export function CheckNoProfile() {
   return (
     <HubScreen
       title="Analysis"
-      subtitle="Product compatibility"
+      titleHidden
       nav="check"
       layout="plain"
       center="empty"

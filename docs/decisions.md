@@ -3256,3 +3256,30 @@ under `lux.answers.v3` and loads them on mount. Mid-task state
 (`TRANSIENT_KEYS`: product draft, scan, queries, check basket, the check being
 viewed) is not saved. This supersedes "The prototype starts fresh on every
 visit" for persistence; there is still no demo data.
+
+## One text colour on data surfaces (21 Nov 2026)
+
+`--color-text-on-data-secondary` and `-muted` were `#354446`, a sage-tinted
+grey. They now point at `--color-text-ink` (`#5962a3`), so body text and labels
+on data cards match the rest of the app. This supersedes the `#354446` choice
+in "the on-data text tiers" above.
+`--color-text-secondary` (was the grey `#4b4b57`) points at the ink too, so
+plain text across the app is one colour.
+
+## The symptom trend card goes light (21 Nov 2026)
+
+The trend card on Progress was the deep teal `--gradient-routine` with white
+text. It is now the plain `DataCard` glass, like the other Progress cards. Its
+one-line reading under the title ("From moderate to mild in 2 days") is gone;
+Skin health still shows it. The Day pill no longer adds height to the heading
+row, so the overline sits on the same line as the cards beside it.
+Its text, line, dot and pills are the light-surface styles the chart already
+had; the bands are the ink at 5% and 10% (`--color-trend-band*`). The routine
+card on Products keeps the deep teal.
+
+## Regular text draws at 500 (21 Nov 2026)
+
+Text at 400 read too faint on the glass surfaces. `--font-weight-regular` is
+now 500, so every role and the body that used Regular draws at Medium. Light
+(300, the metric figures) is unchanged.
+

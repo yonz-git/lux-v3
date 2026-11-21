@@ -12,7 +12,6 @@ import {
   trendDays,
   trendEvents,
   trendHeight,
-  trendReading,
 } from "@/features/progress/progress";
 import { formatShort, fromIso, sameDay, toIso } from "@/lib/date";
 import { smoothPath } from "@/features/progress/trendPath";
@@ -40,7 +39,6 @@ export function SymptomTrend({
   const days = trendDays(today);
   const index = new Map(days.map((d, i) => [toIso(d), i]));
   const shown = checkIns.filter((c) => index.has(c.date));
-  const reading = trendReading(shown);
   const events = trendEvents(products, days);
   const latest = events.at(-1);
 
@@ -63,7 +61,7 @@ export function SymptomTrend({
     >
       <div className={styles.head}>
         <h2 id={titleId} className={`${styles.title} t-overline`}>
-          Symptoms · last {TREND_DAYS} days
+          Progress
         </h2>
         {day !== undefined && (
           <span className={`${styles.dayPill} t-label-sm`}>
@@ -73,7 +71,6 @@ export function SymptomTrend({
         )}
       </div>
 
-      {reading && <p className={`${styles.reading} t-h5`}>{reading}</p>}
 
       {points.length === 0 ? (
         <p className={`${styles.empty} t-body3`}>
@@ -101,7 +98,8 @@ export function SymptomTrend({
                   className={`${styles.eventPill} t-label-sm`}
                   style={pillStyle(xOf(latest.date))}
                 >
-                  Product added · {shortDate(latest.date)}
+                  <span className="visually-hidden">Product added, </span>
+                  {shortDate(latest.date)}
                 </span>
               )}
 

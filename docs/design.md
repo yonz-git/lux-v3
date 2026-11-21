@@ -491,7 +491,7 @@ closed up to 0.5 from 430.
 | Every page `<h1>`, a wait state's title | `page-title` (`t-h4-h3`) 22 |
 | Sheet and tray titles | `h4` 20 |
 | A card's headline, an empty state's title | `panel-label` (`t-h5`) 18 |
-| A card's section label | `overline` 14.4 ExtraBold caps, trimmed to the capitals, same size at every width (SemiBold in white on the dark trend card) |
+| A card's section label | `overline` 14.4 ExtraBold caps, trimmed to the capitals, same size at every width |
 | A list's or sub-section's heading ("Your products", "Recommendation") | `label` 14 Medium, secondary |
 | A product or item name, wherever it appears | `row-title` (`t-h6`) 16 Medium |
 | The brand or meta line under a name | `label-sm` 12 Medium, muted |

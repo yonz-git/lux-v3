@@ -25,7 +25,7 @@
 }
 
 .chips button[data-selected="true"] {
-  background: var(--color-bg-symptom);
+  background: transparent;
   color: var(--color-text-on-brand);
   border-width: 0;
   padding: 0 calc(var(--space-lg) + var(--border-width-hairline));
@@ -36,16 +36,11 @@
   /* `Chip` insets the shade by the hairline to cover the border; with no
      border it would hang 1px outside the pill */
   inset: 0;
-  background: linear-gradient(
-    135deg,
-    transparent 35%,
-    color-mix(in srgb, var(--color-bg-symptom) 80%, var(--color-text-primary))
-      100%
-  );
+  background: var(--gradient-symptom-pill);
 }
 
 .chips button[data-selected="true"]:hover:not(:disabled) {
-  background: var(--color-bg-symptom);
+  background: transparent;
   box-shadow: var(--shadow-pill-light);
 }
 

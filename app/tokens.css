@@ -53,13 +53,20 @@
     radial-gradient(90% 80% at 90% 105%, #60a8ba52, #0000 65%),
     radial-gradient(70% 60% at 80% -10%, #37617547, #0000 70%),
     var(--color-bg-routine);
+  /* the symptom trend card: brushed silver with a little violet in it, one
+     soft sheen across it */
+  --gradient-trend: linear-gradient(125deg, #e6e7ef 0%, #d3d5e3 34%, #e4e5ee 52%,
+      #cfd2e0 76%, #d9dbe7 100%);
+  /* the trend chart's three severity bands, the middle one a step stronger */
+  --color-trend-band: color-mix(in srgb, var(--color-text-ink) 5%, transparent);
+  --color-trend-band-mid: color-mix(in srgb, var(--color-text-ink) 10%, transparent);
   --color-bg-bubble-ai: #dbeded;
   --color-bg-bubble-user: #cadfdf;
   /* the dark text, primary and muted alike, is one indigo ink — the light
      cards' overlines too */
-  --color-text-ink: #5962a3;
+  --color-text-ink: #0f1438;
   --color-text-primary: var(--color-text-ink);
-  --color-text-secondary: var(--color-neutral-600);
+  --color-text-secondary: var(--color-text-ink); /* one text colour across the app */
   --color-text-muted: var(--color-text-ink);
   --color-text-on-brand: var(--color-neutral-0);
   --color-text-brand: var(--color-indigo-700);
@@ -68,10 +75,9 @@
   --color-text-warning: #c24e47;
   --color-text-error: #82302b;
   --color-text-on-data: var(--color-text-primary);
-  /* sage-tinted rather than gray: secondary text on a coloured surface takes
-     that surface's hue, and a neutral gray reads as dirt on this one. */
-  --color-text-on-data-secondary: #354446;
-  --color-text-on-data-muted: #354446;
+  /* one text colour: secondary text on a coloured surface is the ink too */
+  --color-text-on-data-secondary: var(--color-text-ink);
+  --color-text-on-data-muted: var(--color-text-ink);
   --color-icon-default: var(--color-neutral-800);
   --color-icon-secondary: var(--color-neutral-600);
   --color-icon-muted: var(--color-neutral-400);
@@ -206,7 +212,7 @@
   --font-family-display: var(--font-manrope), "Manrope", system-ui, sans-serif;
   --font-family-mono: ui-monospace, SFMono-Regular, Menlo, monospace;
   --font-weight-light: 300;
-  --font-weight-regular: 400;
+  --font-weight-regular: 500; /* the body weight: 400 read too faint on the glass */
   --font-weight-medium: 500;
   /* 600/700 exist as tokens but are NOT in the LUX type ramp — do not use them.
      If you see SemiBold or Bold rendering anywhere, that is drift. */
@@ -249,9 +255,8 @@
   --font-size-body3-body2: clamp(0.875rem, 0.831rem + 0.1878vw, 1rem); /* 14 → 16 */
   --font-size-bubble: 1rem; /* 16 on a phone, 19.2 from 1024 — every chat bubble's words */
   --font-size-button: 0.9375rem; /* 15 */
-  /* the large primary's label: 16 on a phone, `--font-size-button` (15)
-     from 1024 */
-  --font-size-button-primary: 1rem;
+  /* the large primary's label: `--font-size-button` (15) at every width */
+  --font-size-button-primary: var(--font-size-button);
   /* the smallest any label may shrink to (HIG): FaceDiagram's labels scale
      with the diagram down to this */
   --font-size-floor: 0.6875rem; /* 11 */
@@ -288,9 +293,9 @@
   --size-button-sm: 2.625rem; /* 42px */
   --size-small-button: 2.8rem; /* 44.8px — `SmallButton`'s height */
   --size-button-lg: 3.5rem; /* 56px — `Button`'s default height */
-  /* the large primary button: its height and widest (desktop values below) */
-  --size-button-primary: 4rem; /* 64px on a phone */
-  --width-button-primary: 100%; /* the full column, on a phone */
+  /* the large primary button: its height and widest, the same at every width */
+  --size-button-primary: 3.6rem; /* 57.6px */
+  --width-button-primary: 18rem; /* 288px at every width */
   --space-button-sm-inline: 1.375rem; /* 22px */
   --size-control-lg: 3.875rem; /* 62px */
   /* the bar is 56 circles in 6 of padding and a 1px edge: 70 tall. Every
@@ -448,6 +453,18 @@
   --color-text-symptom: color-mix(in srgb, var(--color-bg-symptom) 80%, var(--color-neutral-800));
   /* the soft symptom pill: a red tint on the pale glass, a red hairline and
      red ink — step 1's muted symptom chip and the profile's symptom state */
+  /* a picked symptom's pill: the symptom red, deepening toward the ink at the
+     far corner, a little translucent so the glass behind shows */
+  --gradient-symptom-pill: linear-gradient(
+    135deg,
+    color-mix(in srgb, var(--color-bg-symptom) 88%, transparent) 35%,
+    color-mix(
+        in srgb,
+        color-mix(in srgb, var(--color-bg-symptom) 80%, var(--color-text-primary)) 92%,
+        transparent
+      )
+      100%
+  );
   --color-bg-symptom-soft: color-mix(in srgb, var(--color-bg-symptom) 16%, #dbeded57);
   --color-border-symptom-soft: color-mix(in srgb, var(--color-bg-symptom) 45%, transparent);
   --color-text-symptom-soft: color-mix(in srgb, var(--color-bg-symptom) 75%, var(--color-neutral-800));
@@ -653,6 +670,7 @@
   /* the question panel — "this is also too white and bright": fill 55% -> 30%,
      a softer edge and rim, so the canvas shows through as frost */
   --color-panel: rgb(244 254 255 / 0.3);
+  --color-panel-data: #e6f0f04d; /* every card: pale sage at 30% */
   --color-border-panel: rgb(255 255 255 / 0.45);
   --color-rim-panel: rgb(255 255 255 / 0.6);
   /* NAV B, the round-button bar — "the nav bar needs to be more transparent
@@ -682,9 +700,6 @@
     --font-size-bubble: 1.2rem; /* 19.2 */
     --nav-inset-bottom: max(var(--space-md), env(safe-area-inset-bottom)); /* 12, half the Welcome board's 24 */
     --space-hero-action: 6.25rem; /* 100 */
-    --size-button-primary: 3.6rem; /* 57.6px */
-    --width-button-primary: 18rem; /* 288px */
-    --font-size-button-primary: var(--font-size-button); /* 15 */
   }
 }
 

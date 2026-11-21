@@ -76,7 +76,7 @@ export function QuestionScreen({
   tightTop?: boolean;
   /**
    * The screen's top padding at every width, in px, through `--content-top`
-   * (globals.css) — a flow screen's default is 12. Step 1 passes 4.
+   * (globals.css) — a flow screen's default is 12. Step 1 passes 8.
    */
   contentTop?: number;
 }) {

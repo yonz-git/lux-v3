@@ -25,9 +25,8 @@
   /* lux-v3: the 30% panel at 24 (app/globals.css), as the PRODUCTS hub's
      groups and the score cards. The v2 two-layer mint is in `git log -p`. */
   border-radius: var(--radius-2xl); /* 24 */
-  border: var(--border-width-hairline) solid var(--color-border-panel);
-  background: var(--color-panel);
-  box-shadow: inset 0 1px 0 var(--color-rim-panel);
+  background: var(--color-panel-data);
+  box-shadow: var(--shadow-frosted-row);
   -webkit-backdrop-filter: blur(12px);
   backdrop-filter: blur(12px);
 }
@@ -139,9 +138,8 @@
   padding: var(--space-3xl) 0;
 
   border-radius: var(--radius-2xl);
-  border: var(--border-width-hairline) solid var(--color-border-panel);
-  background: var(--color-panel);
-  box-shadow: inset 0 1px 0 var(--color-rim-panel);
+  background: var(--color-panel-data);
+  box-shadow: var(--shadow-frosted-row);
   -webkit-backdrop-filter: blur(12px);
   backdrop-filter: blur(12px);
 }

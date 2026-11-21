@@ -53,6 +53,7 @@ export function MyProducts() {
     <>
       <HubScreen
         title="Products in use"
+        titleHidden
         layout="card"
         tightTop
         footer={
