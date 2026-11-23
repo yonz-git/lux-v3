@@ -53,13 +53,6 @@
     radial-gradient(90% 80% at 90% 105%, #60a8ba52, #0000 65%),
     radial-gradient(70% 60% at 80% -10%, #37617547, #0000 70%),
     var(--color-bg-routine);
-  /* the symptom trend card: brushed silver with a little violet in it, one
-     soft sheen across it */
-  --gradient-trend: linear-gradient(125deg, #e6e7ef 0%, #d3d5e3 34%, #e4e5ee 52%,
-      #cfd2e0 76%, #d9dbe7 100%);
-  /* the trend chart's three severity bands, the middle one a step stronger */
-  --color-trend-band: color-mix(in srgb, var(--color-text-ink) 5%, transparent);
-  --color-trend-band-mid: color-mix(in srgb, var(--color-text-ink) 10%, transparent);
   --color-bg-bubble-ai: #dbeded;
   --color-bg-bubble-user: #cadfdf;
   /* the dark text, primary and muted alike, is one indigo ink — the light

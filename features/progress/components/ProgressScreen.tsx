@@ -182,7 +182,6 @@ export function ProgressScreen({ now }: { now: number }) {
 
 /* the empty hub's heading */
 const HUB_TITLE = "Progress";
-const HUB_SUBTITLE = "Your skin investigation";
 
 /**
  * `Progress — empty`, at `/progress/empty`. The orb hero, the same block
@@ -192,7 +191,7 @@ export function ProgressEmpty() {
   return (
     <HubScreen
       title={HUB_TITLE}
-      subtitle={HUB_SUBTITLE}
+      titleHidden
       nav="my-skin"
       layout="plain"
       center="empty"

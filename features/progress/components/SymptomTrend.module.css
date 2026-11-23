@@ -1,5 +1,5 @@
-/* TREND C — see SymptomTrend.tsx. The card is `DataCard`, in the app's ink;
-   everything here is the chart inside it.
+/* TREND C — see SymptomTrend.tsx. The card is `DataCard` on the deep teal
+   `--gradient-routine`, in white; everything here is the chart inside it.
 
    The chart is 184 tall: a 24 row for the event pill, 14 of lead-in where the
    event line rises to meet it, then three 44 bands (132). Band names sit in a
@@ -26,6 +26,8 @@
 .title {
   margin: 0;
   color: var(--color-text-primary);
+  /* lighter than the other cards' 800: white on the dark card reads heavier */
+  font-weight: var(--font-weight-semibold); /* 600 */
 }
 
 /* one line from 430, so its lines can close up to half the size; below 430
@@ -204,17 +206,54 @@
   }
 }
 
+/* the deep teal card, white ink on it */
 .card.card {
   position: relative;
   isolation: isolate;
+  box-shadow: inset 0 1px 0 rgb(255 255 255 / 0.25);
+  background: var(--gradient-routine);
+  color: #fff;
+}
+
+.card .title,
+.card .empty,
+.card .bandLabels,
+.card .days,
+.card .day[data-today] {
+  color: #fff;
+}
+
+.card .bandLabels,
+.card .days {
+  color: rgb(255 255 255 / 0.9);
+}
+
+.card .dayPill,
+.card .eventPill {
+  border-color: rgb(255 255 255 / 0.35);
+  background: rgb(255 255 255 / 0.08);
+  color: #fff;
 }
 
 .card .bands > span {
-  background: var(--color-trend-band);
+  background: rgb(255 255 255 / 0.06);
 }
 
 .card .bands > span:nth-child(2) {
-  background: var(--color-trend-band-mid);
+  background: rgb(255 255 255 / 0.14);
+}
+
+.card .line {
+  color: #fff;
+}
+
+.card .dot {
+  border-color: #005461;
+  background: #fff;
+}
+
+.card .eventLine {
+  border-left-color: rgb(255 255 255 / 0.6);
 }
 
 .bands > span,
