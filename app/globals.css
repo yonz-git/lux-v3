@@ -42,7 +42,7 @@
 @property --shine-ink {
   syntax: "<color>";
   inherits: true;
-  initial-value: #0f1438; /* --color-text-ink: a registered default can't read a token */
+  initial-value: #25294a; /* --color-text-ink: a registered default can't read a token */
 }
 
 @property --specular-angle {
@@ -484,6 +484,10 @@ main[tabindex="-1"]:focus-visible {
 
 .screen[data-tight-top] {
   --content-top: var(--space-xl); /* 20 */
+}
+/* a hub with no visible heading opens lower, so its first card has air above */
+.screen[data-title-hidden] {
+  --content-top: var(--space-4xl); /* 40 */
 }
 /* the flow screens open 12 from the top */
 .screen[data-layout="flow"] {

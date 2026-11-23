@@ -43,7 +43,7 @@
   border: var(--border-width-hairline) solid var(--color-border-nav);
   background-color: var(--color-nav-item);
   box-shadow: inset 0 1px 0 var(--color-rim-nav);
-  color: var(--color-bg-brand);
+  color: var(--color-text-ink);
   text-decoration: none;
   transition-property: background-color, border-color, color;
   transition-duration: var(--duration-base);

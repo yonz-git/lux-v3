@@ -84,6 +84,7 @@ export function HubScreen({
       /* `/check`'s orb + bubble hero rests its button as Welcome does */
       data-hero={low || undefined}
       data-tight-top={tightTop || undefined}
+      data-title-hidden={(title && titleHidden) || undefined}
     >
       <div className={styles.shell} data-reveal>
         {hasHeader && (

@@ -82,11 +82,11 @@
   cursor: not-allowed;
 }
 
-/* the glyph wears the brand indigo, the way the reference's do on glass */
+/* the glyph wears the text ink, as every icon does */
 .icon {
   display: inline-flex;
   flex: none;
-  color: var(--color-bg-brand);
+  color: var(--color-text-ink);
   --icon-size: var(--size-icon-sm);
 }
 

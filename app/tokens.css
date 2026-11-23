@@ -64,12 +64,12 @@
   --color-bg-bubble-user: #cadfdf;
   /* the dark text, primary and muted alike, is one indigo ink — the light
      cards' overlines too */
-  --color-text-ink: #0f1438;
+  --color-text-ink: #25294a;
   --color-text-primary: var(--color-text-ink);
   --color-text-secondary: var(--color-text-ink); /* one text colour across the app */
   --color-text-muted: var(--color-text-ink);
   --color-text-on-brand: var(--color-neutral-0);
-  --color-text-brand: var(--color-indigo-700);
+  --color-text-brand: var(--color-text-ink);
   --color-text-disabled: #8b9698;
   --color-text-success: var(--color-green-500);
   --color-text-warning: #c24e47;
@@ -78,7 +78,7 @@
   /* one text colour: secondary text on a coloured surface is the ink too */
   --color-text-on-data-secondary: var(--color-text-ink);
   --color-text-on-data-muted: var(--color-text-ink);
-  --color-icon-default: var(--color-neutral-800);
+  --color-icon-default: var(--color-text-ink);
   --color-icon-secondary: var(--color-neutral-600);
   --color-icon-muted: var(--color-neutral-400);
   --color-icon-brand: var(--color-indigo-700);

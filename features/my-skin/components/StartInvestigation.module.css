@@ -311,13 +311,10 @@
   }
 }
 
-a.takePhoto,
-button.takePhoto {
+/* the photo pill, centred under the face */
+button.addProduct {
   margin-top: var(--space-lg);
   align-self: center;
-  box-shadow:
-    0 4px 12px -2px rgba(46, 36, 71, 0.1),
-    0 1px 2px rgba(46, 36, 71, 0.05);
 }
 
 @media (min-width: 1024px) {
@@ -326,19 +323,6 @@ button.takePhoto {
     max-width: var(--width-symptom-placer);
     width: 100%;
     margin-inline: auto;
-  }
-
-  /* Match Continue's desktop footprint (QuestionScreen.module.css
-     `.footer .continue`) — 280 centred, not the full
-     824 card width `fullWidth` gives it on mobile. Element+class beats
-     Button.module.css's single `.full` class on specificity, so this wins
-     regardless of import order. */
-  /* it hugs its label at both breakpoints now — the old fixed 180 was there to
-     stop the full-width mobile bar stretching across the desktop card, and
-     there is no bar any more */
-  a.takePhoto,
-  button.takePhoto {
-    align-self: center;
   }
 }
 

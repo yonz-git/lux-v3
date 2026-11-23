@@ -36,8 +36,6 @@ export function YourProducts() {
     <>
       <QuestionScreen
         id="products"
-        contentGap={12}
-        contentGapDesktop={32}
         nav="products"
         tightTop
       >

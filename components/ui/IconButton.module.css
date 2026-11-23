@@ -42,7 +42,7 @@
 }
 
 .glass {
-  color: var(--color-bg-brand);
+  color: var(--color-text-ink);
   background: var(--color-glass);
   border-color: var(--color-border-glass);
   background-clip: padding-box;
@@ -78,7 +78,7 @@
 }
 
 .soft {
-  color: var(--color-bg-brand);
+  color: var(--color-text-ink);
   background: #eeecf5;
 }
 

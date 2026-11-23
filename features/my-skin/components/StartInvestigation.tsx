@@ -4,7 +4,7 @@ import { type CSSProperties, useId, useState } from "react";
 import styles from "./StartInvestigation.module.css";
 import { QuestionScreen } from "./QuestionScreen";
 import { SymptomPlacer } from "./SymptomPlacer";
-import { Button } from "@/components/ui/Button";
+import { SmallButton } from "@/components/ui/SmallButton";
 import { CoachBubble } from "@/components/ui/CoachBubble";
 import { CameraIcon } from "@/components/ui/icons";
 import { SelfieSheet } from "./SelfieSheet";
@@ -35,17 +35,15 @@ export function StartInvestigation() {
 
       <SymptomPlacer describedBy={instructionId} summary />
 
-      <Button
-        variant="secondary"
-        size="md"
-        onClick={() => setPhotoOpen(true)}
+      <SmallButton
+        label="Take a photo"
         icon={<CameraIcon />}
-        className={styles.takePhoto}
+        arrow={false}
+        onClick={() => setPhotoOpen(true)}
+        className={styles.addProduct}
         data-motion="rise-self"
         style={{ "--rise-delay": "320ms" } as CSSProperties}
-      >
-        Take a photo
-      </Button>
+      />
 
       <SelfieSheet open={photoOpen} onClose={() => setPhotoOpen(false)} />
     </QuestionScreen>

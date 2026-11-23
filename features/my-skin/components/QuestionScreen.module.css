@@ -14,7 +14,7 @@
   display: flex;
   flex-direction: column;
   flex: 1;
-  margin-top: var(--content-gap, var(--space-md)); /* 12 by default */
+  margin-top: var(--content-gap, var(--space-2xl)); /* 24 by default */
 }
 
 .content {
@@ -66,7 +66,7 @@
     align-self: center;
     width: 100%;
     max-width: var(--width-card-focus); /* 640 */
-    margin-top: var(--content-gap-desktop, var(--space-xl)); /* 20 */
+    margin-top: var(--content-gap-desktop, var(--space-3xl)); /* 32 */
   }
 
   .spacer {
