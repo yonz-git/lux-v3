@@ -8,6 +8,7 @@ const HUB_TITLES: Record<string, string> = {
   "/products": "Products in use",
   "/myskin": "Progress",
   "/myskin/empty": "Progress, no check-ins yet",
+  "/myskin/case-study": "Progress, case study",
   "/myskin/check-in": "Daily check-in",
   "/myskin/health": "Skin health",
   "/analyses": "Analysis",

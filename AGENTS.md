@@ -57,6 +57,7 @@ lib/                 date.ts, pageTitles.ts, actives.ts
 | `/products` | hub, the three groups at 0 until a product is added | `products` |
 | `/myskin` | hub, default, empty until step 4 | `my-skin` |
 | `/myskin/empty` | prototype empty state | `my-skin` |
+| `/myskin/case-study` | staged: filled profile, a week of check-ins with photos; saved answers untouched | `my-skin` |
 | `/myskin/check-in` | pushed, check-in chat | `my-skin` |
 | `/myskin/check-in/[date]` | pushed, only dynamic route | `my-skin` |
 | `/myskin/health` | pushed, latest reading over Week / Month / All | `my-skin` |
