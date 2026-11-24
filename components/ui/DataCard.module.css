@@ -23,6 +23,14 @@
   color: var(--color-text-on-data);
 }
 
+/* `tone="calendar"`: the check-in calendar's own fill. Before the media query
+   below, so the solid fallback still wins when transparency is reduced. */
+.calendar {
+  background: var(--gradient-calendar-card);
+  -webkit-backdrop-filter: blur(var(--blur-card));
+  backdrop-filter: blur(var(--blur-card));
+}
+
 @media (prefers-reduced-transparency: reduce) {
   .card {
     background: #eef6f7;

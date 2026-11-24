@@ -145,7 +145,7 @@ lib/                 date.ts, pageTitles.ts, actives.ts
 | `CoachBubble` | `children`, `className?`, `bubbleClassName?` — orb beside an AI bubble, orb centred on the first line |
 | `Sheet` | `open`, `onClose`, `title`, `children` |
 | `Collapse` | `open`, `as?`, `appear?` |
-| `DataCard` | `as?`, `className?` |
+| `DataCard` | `as?`, `tone?: "default" \| "calendar"` (calendar = `--gradient-calendar-card`, the face diagram's teal), `className?` |
 | `CameraCapture` | `captured`, `title?`, `helper`, `onCapture`, `aside?` |
 | `Orb` | `size?`, `animateIn?`, `thinking?` |
 | `EmptyState` | `title`, `children` (body), `action: { label, href?, onClick? }` |

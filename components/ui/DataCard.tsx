@@ -7,17 +7,22 @@ import styles from "./DataCard.module.css";
  */
 export function DataCard({
   as: Tag = "section",
+  tone = "default",
   className,
   children,
   ...rest
 }: {
   as?: ElementType;
+  /** the fill: every card's pale sage, or the face diagram's teal (the check-in calendar) */
+  tone?: "default" | "calendar";
   className?: string;
   children?: ReactNode;
 } & Record<string, unknown>) {
   return (
     <Tag
-      className={[styles.card, className].filter(Boolean).join(" ")}
+      className={[styles.card, tone === "calendar" && styles.calendar, className]
+        .filter(Boolean)
+        .join(" ")}
       {...rest}
     >
       {children}

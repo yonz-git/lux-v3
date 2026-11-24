@@ -664,6 +664,25 @@
      a softer edge and rim, so the canvas shows through as frost */
   --color-panel: rgb(244 254 255 / 0.3);
   --color-panel-data: #e6f0f04d; /* every card: pale sage at 30% */
+  /* the face diagram's card: a teal halo with a dark pool in its middle, a
+     darker foot and a light lift over it */
+  --face-card-rim: radial-gradient(65% 55% at 88% 6%, #7ca0b400, #c4deec00 72%),
+    radial-gradient(60% 45% at 8% 100%, #51778738, #6c939259 70%),
+    radial-gradient(45% 40% at 0% 40%, #6ea0c800, #6ea0c800 70%);
+  --face-card-tint: linear-gradient(165deg, #34566824 0%, #26333e00 100%);
+  --face-card-halo: var(--face-card-rim),
+    radial-gradient(70% 60% at 45% 52%, #122a369e, #06101a00 78%),
+    var(--face-card-tint);
+  --face-card-foot: linear-gradient(transparent 58%, #060e1617 100%);
+  --face-card-lift: linear-gradient(#98c7cf47, #98c7cf47);
+  --gradient-face-card: var(--face-card-lift), var(--face-card-foot),
+    var(--face-card-halo);
+  /* the check-in calendar: the face card with its middle pool faint, so the
+     dates read across the whole grid */
+  --gradient-calendar-card: var(--face-card-lift), var(--face-card-foot),
+    var(--face-card-rim),
+    radial-gradient(70% 60% at 45% 52%, #122a3626, #06101a00 78%),
+    var(--face-card-tint);
   --color-border-panel: rgb(255 255 255 / 0.45);
   --color-rim-panel: rgb(255 255 255 / 0.6);
   /* NAV B, the round-button bar — "the nav bar needs to be more transparent
