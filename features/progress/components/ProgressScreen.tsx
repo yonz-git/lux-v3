@@ -4,7 +4,7 @@ import { useState } from "react";
 import styles from "./ProgressScreen.module.css";
 import { HubScreen } from "@/components/layout/HubScreen";
 import { EmptyState } from "@/components/ui/EmptyState";
-import { CoachBubble } from "@/components/ui/CoachBubble";
+import { Orb } from "@/components/ui/Orb";
 import { Button } from "@/components/ui/Button";
 import { DataCard } from "@/components/ui/DataCard";
 import { SymptomLocation } from "@/features/my-skin/components/SymptomLocation";
@@ -58,14 +58,10 @@ export function ProgressScreen({ now }: { now: number }) {
 
   return (
     <HubScreen
-      /* the page's heading for assistive tech; on screen LUX says it */
-      title="What we know about your skin"
-      titleClassName="visually-hidden"
-      belowHeading={
-        <CoachBubble className={styles.coach} wide>
-          Here is all that we know about your skin.
-        </CoachBubble>
-      }
+      leading={<Orb size="40px" animateIn halo />}
+      title="Welcome back"
+      subtitle="Here is all that we know about your skin."
+      headingAlign="start"
       nav="my-skin"
       layout="grid"
       gridColumns="minmax(0, 640fr) minmax(0, 616fr)"

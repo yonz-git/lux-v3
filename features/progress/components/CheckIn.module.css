@@ -80,8 +80,8 @@
   width: var(--size-chat-photo);
   aspect-ratio: 1 / 1;
   overflow: hidden;
-  border-radius: var(--radius-bubble);
-  border-top-right-radius: var(--radius-bubble-tail);
+  /* a photo, rounded as every photo in the app, not a chat bubble */
+  border-radius: var(--radius-lg); /* 16 */
   border: var(--border-width-hairline) solid var(--color-border-panel);
   box-shadow: var(--shadow-sm);
 }

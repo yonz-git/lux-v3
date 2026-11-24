@@ -23,7 +23,7 @@
   align-items: center;
   justify-content: space-between;
   width: 100%;
-  height: var(--size-icon-md);
+  min-height: var(--size-icon-md);
   margin-bottom: var(--space-lg); /* 16 */
 }
 
@@ -35,6 +35,12 @@
   gap: var(--space-xs); /* 4 */
   color: var(--color-text-primary);
   text-align: center;
+}
+
+/* a heading set to the start edge, as My skin's "Welcome back" */
+.heading[data-align="start"] {
+  align-items: flex-start;
+  text-align: start;
 }
 
 .subtitle {

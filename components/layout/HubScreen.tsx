@@ -17,6 +17,8 @@ export function HubScreen({
   subtitle,
   backHref,
   action,
+  leading,
+  headingAlign = "center",
   layout = "card",
   nav = "products",
   belowHeading,
@@ -37,6 +39,10 @@ export function HubScreen({
   backHref?: string;
   /** the header row's right-hand slot */
   action?: ReactNode;
+  /** the header row's left-hand slot on a landing (no back chevron), e.g. the orb */
+  leading?: ReactNode;
+  /** the page heading's alignment: centred, or set to the start edge */
+  headingAlign?: "center" | "start";
   layout?: "card" | "plain" | "grid";
   /** the bottom-nav section this screen belongs to */
   nav?: NavSection;
@@ -61,14 +67,14 @@ export function HubScreen({
   footer?: ReactNode;
   children?: ReactNode;
 }) {
-  const hasHeader = Boolean(backHref || action);
+  const hasHeader = Boolean(backHref || action || leading);
   const low = center === "low";
   const empty = center === "empty";
 
   const heading = !title ? null : titleHidden ? (
     <h1 className="visually-hidden">{title}</h1>
   ) : (
-    <div className={styles.heading}>
+    <div className={styles.heading} data-align={headingAlign}>
       <h1 className={titleClassName}>{title}</h1>
       {subtitle && <p className={`${styles.subtitle} t-body2`}>{subtitle}</p>}
     </div>
@@ -95,7 +101,7 @@ export function HubScreen({
                 <ArrowLeftIcon />
               </IconButton>
             ) : (
-              <span />
+              (leading ?? <span />)
             )}
             {action}
           </div>
