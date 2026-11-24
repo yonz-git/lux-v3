@@ -1,6 +1,6 @@
 // Record step 1's real face-diagram motion, frame by frame, for Story.tsx:
 // the entrance, then two symptoms picked and their places tapped (the app saves
-// as it goes, since 29 Oct 2026), then an eased scroll down to the Your symptoms
+// as it goes), then an eased scroll down to the Your symptoms
 // card — the app's own CSS animations, paused and stepped at 30fps so every
 // frame is exact.
 //
@@ -9,7 +9,7 @@
 //     --remote-debugging-port=9333 --user-data-dir=/tmp/cdp --hide-scrollbars about:blank
 //   node video/scripts/rec-step1.mjs /tmp/face
 // then copy /tmp/face/*.jpg to video/public/app/face/ and events.json to
-// video/src/faceRec.json. SCROLL (131) puts the coach bubble at y 107, where
+// video/src/faceRec.json. SCROLL (70) puts the coach bubble at y 157, where
 // the crop in video/public/app/face/coach.png sits.
 //
 // The coach row (the chat orb and its bubble) is measured, then HIDDEN for
@@ -48,14 +48,14 @@ await send("Page.addScriptToEvaluateOnNewDocument", {
 await send("Emulation.setDeviceMetricsOverride", { width: 390, height: 844, deviceScaleFactor: 2, mobile: true });
 await send("Page.navigate", { url: "http://localhost:3030/" });
 await sleep(2500);
-await ev(`localStorage.removeItem("lux.flow.v2"); true`);
+await ev(`localStorage.removeItem("lux.answers.v3"); true`);
 await send("Page.navigate", { url: "http://localhost:3030/investigation/start" });
 for (let i = 0; i < 80; i++) {
   if (await ev(`document.documentElement.hasAttribute("data-store-ready")`)) break;
   await sleep(250);
 }
 await sleep(3500);
-const SCROLL = Number(process.env.SCROLL ?? 131);
+const SCROLL = Number(process.env.SCROLL ?? 70);
 await ev(`document.documentElement.style.paddingTop='34px'; document.documentElement.style.scrollBehavior='auto'; window.scrollTo(0, ${SCROLL}); 1`);
 await sleep(800);
 
@@ -93,7 +93,7 @@ const click = async (txt, frames, label) => {
 
 /* the coach row: measured, then hidden for the take */
 const coach = {
-  orb: await rectOf(`document.querySelector("[class*=__coachOrb]")`),
+  orb: await rectOf(`document.querySelector("[class*=CoachBubble-module][class*=__orb]")`),
   bubble: await rectOf(`document.querySelector("[class*=__coachBubble]")`),
 };
 await ev(`(()=>{const s=document.createElement("style");s.textContent="[class*=__coach]{visibility:hidden!important}";document.head.appendChild(s);return 1})()`);
@@ -120,7 +120,7 @@ await click("Chin / jaw", 30, "place");
 /* 3 · down to the Your symptoms card: every frame moves the scroll and the
    clock together, so whatever rises into view rises at its own speed */
 const ease = (x) => (x < 0.5 ? 4 * x * x * x : 1 - Math.pow(-2 * x + 2, 3) / 2);
-const TO = Number(process.env.SCROLL_TO ?? 440);
+const TO = Number(process.env.SCROLL_TO ?? 390);
 const CLOCK = `(()=>{ window.__vt ??= 0; window.__seen ??= new WeakMap();
   for (const a of document.getAnimations()) {
     if (a.effect?.getComputedTiming?.().iterations === Infinity) continue;

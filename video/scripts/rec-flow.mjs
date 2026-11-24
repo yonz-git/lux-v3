@@ -15,19 +15,52 @@ const HERE = path.dirname(new URL(import.meta.url).pathname);
 const PUBLIC = path.join(HERE, "../public/mockups");
 const REC = path.join(HERE, "../src/mockup/rec");
 
-/* the demo answers steps 1–4 would have written, so the analysis has a flare to read */
-const SEED = {
-  start: { Redness: ["Cheeks (L)", "Cheeks (R)", "Chin / jaw"], Itching: ["Chin / jaw"] },
-  "skin-type": "Combination",
-  tendencies: ["Sensitive"],
-  conditions: ["None"],
-  timing: { status: "Ongoing", date: new Date(Date.now() - 8 * 864e5).toISOString().slice(0, 10) },
-};
+/* The app ships no demo data, so a take that needs a filled-in profile writes
+   one to the app's saved answers before the page loads: steps 1–4, the five
+   demo products (demo-products.json, copied from the catalogue) and nine
+   check-ins over the 15 days before the recording day. `flare` is how many
+   days before the recording day step 4's date falls: 8 gives the analysis its
+   three explanations, 15 lines the start up with the first check-in. */
+const STORAGE_KEY = "lux.answers.v3";
+const PRODUCTS = JSON.parse(fs.readFileSync(path.join(HERE, "demo-products.json"), "utf8"));
+const DAY = 864e5;
+const iso = (ms) => new Date(ms).toISOString().slice(0, 10);
+const CHECK_IN_DAYS = [0, 1, 3, 4, 5, 7, 9, 10, 12];
+const SEVERITY = [9, 9, 7, 5, 7, 5, 3, 3, 1];
+const NOTE = "Patches on cheeks seem slightly less red than yesterday. Still itchy in the evening.";
 
-/* each flow: the route, whether the flow answers are seeded, a scroll to
-   start from, and the take. Steps: hold n · click text [nth] n · scroll y n ·
-   scrollTo text offset n. A click's text matches the control's own text from
-   its start, so "Long-term products" finds the row with its counts after it. */
+function seed(flare) {
+  const now = Date.now();
+  const first = now - 15 * DAY;
+  const checkIns = CHECK_IN_DAYS.map((d, i) => {
+    const before = i === 0 ? 5 : SEVERITY[i - 1];
+    const direction = SEVERITY[i] < before ? "better" : SEVERITY[i] > before ? "worse" : "same";
+    const word = direction === "better" ? "Less" : "More";
+    return {
+      date: iso(first + d * DAY),
+      severity: SEVERITY[i],
+      direction,
+      changes: direction === "same" ? ["No change"] : [`${word} redness`, `${word} itching`],
+      photo: "captured",
+      ...(d === 3 ? { note: NOTE } : {}),
+    };
+  });
+  return {
+    start: { Redness: ["Cheeks (L)", "Cheeks (R)", "Chin / jaw"], Itching: ["Chin / jaw"] },
+    "skin-type": "Combination",
+    tendencies: ["Sensitive"],
+    conditions: ["None"],
+    timing: { status: "Ongoing", date: iso(now - flare * DAY) },
+    products: PRODUCTS,
+    checkIns,
+  };
+}
+
+/* each flow: the route, the seed's flare day (false for an empty app), a
+   scroll to start from, and the take. Steps: hold n · click text [nth] n ·
+   scroll y n · scrollTo text offset n. A click's text matches the control's
+   own text from its start, so "Long-term products" finds the row with its
+   counts after it. */
 const FLOWS = {
   map: {
     url: "/investigation/start",
@@ -45,7 +78,7 @@ const FLOWS = {
   },
   products: {
     url: "/products",
-    seed: false,
+    seed: 8,
     scroll: 0,
     take: [
       ["hold", 30],
@@ -58,7 +91,7 @@ const FLOWS = {
   },
   analysis: {
     url: "/investigation/analysis",
-    seed: true,
+    seed: 8,
     scroll: 0,
     take: [
       ["hold", 30],
@@ -73,11 +106,11 @@ const FLOWS = {
   },
   track: {
     url: "/progress",
-    seed: true,
+    seed: 15,
     scroll: 0,
     take: [
       ["hold", 30],
-      ["scrollTo", "Symptoms · last 14 days", 80, 50],
+      ["scrollTo", "Progress", 80, 50],
       ["hold", 70],
       ["scroll", 99999, 45],
       ["hold", 12],
@@ -87,7 +120,7 @@ const FLOWS = {
   },
   subtraction: {
     url: "/investigation/analysis",
-    seed: true,
+    seed: 8,
     scroll: 230,
     take: [
       ["hold", 30],
@@ -155,9 +188,9 @@ for (const name of names) {
   await send("Page.navigate", { url: "http://localhost:3030/" });
   await sleep(2000);
   await ev(
-    flow.seed
-      ? `localStorage.setItem("lux.flow.v2", JSON.stringify({ savedAt: Date.now(), answers: ${JSON.stringify(SEED)} })); 1`
-      : `localStorage.removeItem("lux.flow.v2"); 1`,
+    flow.seed === false
+      ? `localStorage.removeItem("${STORAGE_KEY}"); 1`
+      : `localStorage.setItem("${STORAGE_KEY}", ${JSON.stringify(JSON.stringify(seed(flow.seed)))}); 1`,
   );
   await send("Page.navigate", { url: `http://localhost:3030${flow.url}` });
   for (let i = 0; i < 80; i++) {

@@ -2,7 +2,7 @@ import { AbsoluteFill, Easing, Img, interpolate, staticFile, useCurrentFrame } f
 import { LuxLogoMark, LuxLogoWord } from "../components/Logo";
 import { Orb } from "../components/Orb";
 import { Headline } from "../components/Type";
-import { C, clamp, EASE_IN_OUT, EASE_OUT, FIGTREE } from "../theme";
+import { C, cardShadow, clamp, EASE_IN_OUT, EASE_OUT, FIGTREE, MANROPE, overline } from "../theme";
 import { FiveTile, P5, Tap } from "./Story";
 
 /**
@@ -78,25 +78,31 @@ const GROUPS = [
   { label: "Recent", sub: "1–4 weeks", age: 2, items: ["bottle-brown", "dropper-green"] },
   { label: "New addition", sub: "< 1 week", age: 1, items: ["bottle-milky"] },
 ];
-const ROW_W = 860;
-const ROW_H = 150;
-const ROW_GAP = 26;
+/* the Products hub's category card (MyProducts' .category) in its own CSS px,
+   drawn at K5: 342 × 112, padding 16 24, radius 24, 12 between cards */
+const K5 = 2;
+const ROW_W = 342 * K5;
+const ROW_H = 112 * K5;
+const ROW_GAP = 12 * K5;
 /* beat 5's caption (65) + 60 + the three rows, centred as one block */
 const ROWS_CAP_TOP = Math.round((1080 - (65 + 60 + 3 * ROW_H + 2 * ROW_GAP)) / 2);
 const ROWS_TOP = ROWS_CAP_TOP + 125;
-const BTN = { w: 420, h: 92, y: ROWS_TOP + 3 * ROW_H + 2 * ROW_GAP - BTN_LIFT + 44 };
+/* the large primary at the same scale: 288 × 57.6, label 15 */
+const BTN = { w: 288 * K5, h: 57.6 * K5, y: ROWS_TOP + 3 * ROW_H + 2 * ROW_GAP - BTN_LIFT + 44 };
 /* centred (asked for 3 Oct 2026; it sat 110 left of centre until then).
    Beat 6's orb and bubble still fit to the right: the bubble ends at 1860 */
 const ROWS_X = W / 2 - ROW_W / 2;
 const AXIS_X = ROWS_X - 60;
-const SLOT = 112;
-const rowMidY = (i: number) => ROWS_TOP + i * (ROW_H + ROW_GAP) + ROW_H / 2;
-/* each product's slot, right-aligned before the count badge */
+const SLOT = 40 * K5;
+const rowTop = (i: number) => ROWS_TOP + i * (ROW_H + ROW_GAP);
+const rowMidY = (i: number) => rowTop(i) + ROW_H / 2;
+/* each product's thumb: 40 square, 28 apart so they overlap, the last one
+   on the card's right padding, 56 below the card's top */
 const slotOf: Record<string, { x: number; y: number; group: number }> = {};
 GROUPS.forEach((g, gi) =>
   g.items.forEach((p, j) => {
-    const right = ROWS_X + ROW_W - 40 - 56 - 28;
-    slotOf[p] = { x: right - (g.items.length - j - 0.5) * (SLOT + 14), y: rowMidY(gi), group: gi };
+    const left = 318 - 40 - (g.items.length - 1 - j) * 28;
+    slotOf[p] = { x: ROWS_X + (left + 20) * K5, y: rowTop(gi) + (56 + 20) * K5, group: gi };
   }),
 );
 /* the familiar row they come back as, bottom of frame, in their row order */
@@ -127,15 +133,16 @@ const GHOST_X = W / 2 - GROUP_W / 2 + FOUR_W + GHOST_GAP + (R7.size * GHOST_S) /
 /* ── 8 · the app's symptom trend card, in its own CSS px, drawn at TS ── */
 /* smaller since 3 Oct 2026, so the progress gallery fits under it */
 const TS = 1.25;
-const TC = { w: 616, h: 344 };
+const TC = { w: 616, h: 276 };
 /* centred under the two line caption now that the row is gone */
-const TREND = { x: W / 2 - (TC.w * TS) / 2, y: 226 };
+const TREND = { x: W / 2 - (TC.w * TS) / 2, y: 262 };
 /* PROGRESS's gallery card under it, same width, same scale */
 const GAL = { x: TREND.x, y: TREND.y + TC.h * TS + 24 };
-const colX = (k: number) => 104.5 + k * 35.7;
+/* the line's track: 482 wide from x 96, fourteen days 37 apart */
+const colX = (k: number) => 96 + (k * 482) / 13;
 /* the live card's line, Sep 20 → 29 (columns 1–10), card px */
 const VALS: [number, number][] = [
-  [1, 184], [2, 212], [3, 185], [4, 198], [5, 212], [6, 228], [7, 241], [8, 241], [9, 251], [10, 265],
+  [1, 125], [2, 153], [3, 126], [4, 139], [5, 153], [6, 169], [7, 182], [8, 182], [9, 192], [10, 206],
 ];
 const KNOTS = VALS.map(([k, y]) => [colX(k), y] as [number, number]);
 /* the same smoothing the old chart used, sampled densely */
@@ -186,6 +193,9 @@ export const Story2: React.FC = () => {
   const regroup = (i: number) => e(f, P7 + 4 + i * 3, P7 + 22 + i * 3, 0, 1, EASE_OUT);
   const labelIn = e(f, P7 + 44, P7 + 60, 0, 1, EASE_OUT);
   const strike = e(f, P7 + 64, P7 + 82, 0, 1, EASE_OUT);
+  /* with the strike, the paused bottle is ringed in the Avoid red and grows a little */
+  const flag = e(f, P7 + 64, P7 + 82, 0, 1, EASE_IN_OUT);
+  const FLAG_GROW = 1.1;
   const leave = e(f, P7 + 90, P7 + 130);
   const close = e(f, P7 + 100, P7 + 140);
   const pausedPill = e(f, P7 + 124, P7 + 140, 0, 1, EASE_OUT);
@@ -238,7 +248,7 @@ export const Story2: React.FC = () => {
         x = lerp(x, GHOST_X, leave);
         /* up and over the row, never through it */
         y = R7.y - 210 * Math.sin(Math.PI * leave);
-        size = lerp(size, R7.size * GHOST_S, leave);
+        size = lerp(size * lerp(1, FLAG_GROW, flag), R7.size * GHOST_S, leave);
         o = 1 - 0.55 * leave;
         filt = `grayscale(${0.8 * leave}) blur(${leave * 1.2}px)`;
       } else {
@@ -291,65 +301,67 @@ export const Story2: React.FC = () => {
                 width: ROW_W,
                 height: ROW_H,
                 boxSizing: "border-box",
-                padding: "0 40px",
-                borderRadius: 36,
-                background: C.panel,
-                border: `1.5px solid ${C.panelEdge}`,
-                boxShadow: `inset 0 1.5px 0 ${C.panelRim}, 0 30px 50px -34px rgba(44, 69, 70, 0.38)`,
+                borderRadius: 24 * K5,
+                background: C.card,
+                boxShadow: cardShadow(K5),
                 backdropFilter: "blur(16px)",
-                display: "flex",
-                alignItems: "center",
                 fontFamily: FIGTREE,
+                color: C.ink,
                 opacity: k * (1 - 0.5 * dim) * (1 - rowsOut) * (1 - anDim),
               }}
             >
-              <div>
-                <div style={{ fontSize: 44, fontWeight: 400, color: C.ink, lineHeight: 1.1 }}>{g.label}</div>
-                {/* the window as the app draws it since 3 Oct 2026: a glass pill
-                    with a three-bar age meter (MyProducts' `.window`, ×2.2) */}
-                <div
-                  style={{
-                    display: "inline-flex",
-                    alignItems: "center",
-                    gap: 13,
-                    height: 54,
-                    marginTop: 12,
-                    padding: "0 26px 0 20px",
-                    borderRadius: 999,
-                    border: `1.5px solid ${C.panelEdge}`,
-                    background: C.glass,
-                    boxShadow: `inset 0 1.5px 0 ${C.panelRim}`,
-                    fontSize: 28,
-                    fontWeight: 500,
-                    color: "#4b4b57",
-                    whiteSpace: "nowrap",
-                  }}
-                >
-                  <span style={{ display: "inline-flex", alignItems: "flex-end", gap: 4, height: 26 }}>
-                    {[1, 2, 3].map((b) => (
-                      <span key={b} style={{ width: 9, height: [13, 20, 26][b - 1], borderRadius: 4, background: b <= g.age ? "#39386f" : "rgba(57, 56, 111, 0.18)" }} />
-                    ))}
-                  </span>
-                  {g.sub}
-                </div>
-              </div>
+              {/* t-h6: 16 / 500, at the card's 24 inset, 20 from its top */}
+              <div style={{ position: "absolute", left: 24 * K5, top: 20 * K5, fontSize: 16 * K5, fontWeight: 500, lineHeight: 1.2 }}>{g.label}</div>
+              {/* the window pill (t-label 14 / 600), its three-bar age meter */}
               <div
                 style={{
-                  marginLeft: "auto",
-                  width: 56,
-                  height: 56,
-                  borderRadius: 28,
+                  position: "absolute",
+                  left: 24 * K5,
+                  top: 62 * K5,
+                  display: "inline-flex",
+                  alignItems: "center",
+                  gap: 6 * K5,
+                  height: 28 * K5,
+                  boxSizing: "border-box",
+                  padding: `0 ${12 * K5}px 0 ${9 * K5}px`,
+                  borderRadius: 999,
+                  background: C.glass,
+                  boxShadow: `inset 0 ${K5}px 0 ${C.panelRim}`,
+                  fontSize: 14 * K5,
+                  fontWeight: 600,
+                  whiteSpace: "nowrap",
+                }}
+              >
+                <span style={{ display: "inline-flex", alignItems: "flex-end", gap: 2 * K5, height: 12 * K5 }}>
+                  {[1, 2, 3].map((b) => (
+                    <span key={b} style={{ width: 4 * K5, height: [6, 9, 12][b - 1] * K5, borderRadius: 2 * K5, background: b <= g.age ? "#39386f" : "rgba(57, 56, 111, 0.18)" }} />
+                  ))}
+                </span>
+                {g.sub}
+              </div>
+              {/* the count (t-h6 in a 28 disc) and the chevron, top right */}
+              <div
+                style={{
+                  position: "absolute",
+                  left: 262 * K5,
+                  top: 16 * K5,
+                  width: 28 * K5,
+                  height: 28 * K5,
+                  borderRadius: 14 * K5,
                   background: C.routine,
                   color: "#fff",
                   display: "flex",
                   alignItems: "center",
                   justifyContent: "center",
-                  fontSize: 30,
+                  fontSize: 16 * K5,
                   fontWeight: 500,
                 }}
               >
                 {g.items.length}
               </div>
+              <svg width={12 * K5} height={12 * K5} viewBox="0 0 12 12" style={{ position: "absolute", left: 306 * K5, top: 24 * K5 }}>
+                <path d="M1.5 3.5L6 8l4.5-4.5" fill="none" stroke={C.ink} strokeWidth={1.3} strokeLinecap="round" strokeLinejoin="round" />
+              </svg>
             </div>
           );
         })}
@@ -401,9 +413,9 @@ export const Story2: React.FC = () => {
                   right: W - AXIS_X + 28,
                   top: l.y - 20,
                   fontFamily: FIGTREE,
-                  fontSize: 32,
+                  fontSize: 26.4,
                   lineHeight: "40px",
-                  fontWeight: l.bold ? 700 : 300,
+                  fontWeight: l.bold ? 700 : 500,
                   color: l.bold ? C.primary : C.ink,
                   opacity: k,
                   translate: `${(1 - k) * 14}px 0`,
@@ -437,8 +449,8 @@ export const Story2: React.FC = () => {
               alignItems: "center",
               justifyContent: "center",
               fontFamily: FIGTREE,
-              fontSize: 34,
-              fontWeight: 400,
+              fontSize: 15 * K5,
+              fontWeight: 500,
               opacity: btnIn * (1 - anDim),
               filter: `blur(${(1 - btnIn) * 8}px)`,
             }}
@@ -520,7 +532,8 @@ export const Story2: React.FC = () => {
                 position: "absolute",
                 left: r7x(1) - 200,
                 width: 400,
-                top: R7.y + R7.size / 2 + 22,
+                /* moves down with the bottle's growth and ring, keeping its gap */
+                top: R7.y + R7.size / 2 + 22 + ((FLAG_GROW - 1) * R7.size / 2 + 6 + 3) * flag,
                 textAlign: "center",
                 fontFamily: FIGTREE,
                 fontSize: 32,
@@ -588,6 +601,22 @@ export const Story2: React.FC = () => {
           return <FiveTile key={p} photo={p} x={t.x} y={t.y} size={t.size} style={{ opacity: t.o, filter: t.filt || undefined }} />;
         })}
 
+      {/* the paused bottle's Avoid ring, drawing itself around the tile as the name is struck */}
+      {f >= P7 + 64 && f < P7 + 130 && (() => {
+        const t = tile(PAUSED);
+        const pad = 6;
+        const box = t.size + pad * 2;
+        return (
+          <svg
+            width={box}
+            height={box}
+            style={{ position: "absolute", left: t.x - box / 2, top: t.y - box / 2, overflow: "visible", opacity: t.o * (1 - leave) }}
+          >
+            <rect x={1.5} y={1.5} width={box - 3} height={box - 3} rx={t.size * 0.24 + pad} fill="none" stroke={AVOID} strokeWidth={3} strokeLinecap="round" pathLength={1} strokeDasharray={`${flag} 1`} />
+          </svg>
+        );
+      })()}
+
       {/* beat 5's caption, drawn after the five */}
       <Caption text="Add what you use, and **when** you started it" at={P5 + 10} out={P6 - 12} top={ROWS_CAP_TOP - OPEN_UP * (1 - open5)} />
 
@@ -646,7 +675,7 @@ const TrendCard: React.FC<{ t: number }> = ({ t }) => {
         position: "relative",
         width: TC.w,
         height: TC.h,
-        borderRadius: 24,
+        borderRadius: 28,
         /* the app's --gradient-routine (tokens.css) */
         background: `linear-gradient(#0000000d, #0000000d), radial-gradient(45% 45% at 100% 100%, #00303c3d, #0000 70%), radial-gradient(60% 55% at 0 0, #d0b4b81f, #a0353500 70%), radial-gradient(110% 90% at 0 35%, #567e88, #0000 60%), radial-gradient(90% 80% at 90% 105%, #60a8ba52, #0000 65%), radial-gradient(70% 60% at 80% -10%, #37617547, #0000 70%), ${C.routine}`,
         boxShadow: "inset 0 1px 0 rgba(255,255,255,0.25), 0 30px 60px -30px rgba(30,60,66,0.55)",
@@ -654,24 +683,23 @@ const TrendCard: React.FC<{ t: number }> = ({ t }) => {
         color: white,
       }}
     >
-      <div style={{ position: "absolute", left: 33, top: 33, fontSize: 15, fontWeight: 500, letterSpacing: "0.14em", lineHeight: "22px" }}>SYMPTOMS · LAST 14 DAYS</div>
-      <div style={{ position: "absolute", right: 33, top: 33, height: 22, padding: "0 12px", borderRadius: 11, border: "1px solid rgba(255,255,255,0.45)", background: "rgba(255,255,255,0.12)", fontSize: 12.5, lineHeight: "20px", boxSizing: "border-box", display: "flex", alignItems: "center" }}>Day 16</div>
-      <div style={{ position: "absolute", left: 33, top: 71, fontSize: 18, lineHeight: "22px" }}>From severe to mild in 10 days</div>
+      <div style={{ position: "absolute", left: 24, top: 22, fontSize: 14.4, ...overline, fontWeight: 600, lineHeight: "14.4px" }}>Progress</div>
+      <div style={{ position: "absolute", right: 24, top: 18, height: 23, padding: "0 12px", borderRadius: 11.5, border: "1px solid rgba(255,255,255,0.45)", background: "rgba(255,255,255,0.12)", fontSize: 12, fontWeight: 500, lineHeight: "20px", boxSizing: "border-box", display: "flex", alignItems: "center" }}>{VALS.length} check-ins</div>
       {[
-        ["Severe", 169],
-        ["Moderate", 213],
-        ["Mild", 257],
+        ["Severe", 110],
+        ["Moderate", 154],
+        ["Mild", 198],
       ].map(([label, y], i) => (
-        <div key={label} style={{ position: "absolute", left: 33, top: (y as number) - 11, fontSize: 12, lineHeight: "22px", opacity: 0.9 * tw(t, i * 1.8, 9.6), translate: `${-6 * (1 - tw(t, i * 1.8, 9.6))}px 0` }}>{label}</div>
+        <div key={label} style={{ position: "absolute", left: 24, top: (y as number) - 11, fontSize: 12, fontWeight: 500, lineHeight: "22px", opacity: 0.9 * tw(t, i * 1.8, 9.6), translate: `${-6 * (1 - tw(t, i * 1.8, 9.6))}px 0` }}>{label}</div>
       ))}
-      <div style={{ position: "absolute", left: 97, top: 147, width: 480, height: 132, borderRadius: 8, overflow: "hidden" }}>
+      <div style={{ position: "absolute", left: 88, top: 88, width: 498, height: 132, borderRadius: 8, overflow: "hidden" }}>
         {[0.07, 0.163, 0.07].map((a, i) => (
           <div key={i} style={{ position: "absolute", left: 0, right: 0, top: i * 44, height: 44, background: `rgba(255,255,255,${a})`, transformOrigin: "left center", scale: `${tw(t, i * 1.8, 14.4)} 1`, opacity: tw(t, i * 1.8, 14.4) }} />
         ))}
       </div>
-      <div style={{ position: "absolute", left: 33, top: 292, fontSize: 11.5, lineHeight: "22px", opacity: 0.9 * tw(t, 9, 9.6), translate: `0 ${4 * (1 - tw(t, 9, 9.6))}px` }}>Sep–Oct</div>
+      <div style={{ position: "absolute", left: 24, top: 236, fontSize: 12, fontWeight: 500, lineHeight: "16.8px", opacity: 0.9 * tw(t, 9, 9.6), translate: `0 ${4 * (1 - tw(t, 9, 9.6))}px` }}>Sep–Oct</div>
       {dates.map((d, k) => (
-        <div key={k} style={{ position: "absolute", left: colX(k) - 15, width: 30, top: 292, textAlign: "center", fontSize: 11.5, lineHeight: "22px", fontWeight: k === 13 ? 600 : 400, opacity: (k === 13 ? 1 : 0.9) * tw(t, 9 + k * 0.75, 9.6), translate: `0 ${4 * (1 - tw(t, 9 + k * 0.75, 9.6))}px` }}>{d}</div>
+        <div key={k} style={{ position: "absolute", left: colX(k) - 15, width: 30, top: 236, textAlign: "center", fontSize: 12, lineHeight: "16.8px", fontWeight: k === 13 ? 600 : 500, opacity: (k === 13 ? 1 : 0.9) * tw(t, 9 + k * 0.75, 9.6), translate: `0 ${4 * (1 - tw(t, 9 + k * 0.75, 9.6))}px` }}>{d}</div>
       ))}
     </div>
   );
@@ -680,17 +708,18 @@ const TrendCard: React.FC<{ t: number }> = ({ t }) => {
 /* ── 6 · the results page ─────────────────────────────────────────────────
    Rebuilt from the live Analysis results (asked for 3 Oct 2026: "elaborate
    to this page, add motions"). The panel is laid out in the reference
-   screenshot's own px and drawn at RK; the compatibility cards at 1:1.
+   screenshot's own px and drawn at K6; the compatibility cards at 2×.
    ⚠️ Every brand here is made up (Clearwell, Lumen Lab, Serave): the app's
    demo data names real ones. */
-/* narrower than the app's desktop panel (1646) and drawn larger, so its
-   copy reads at video size; 0.86 since the third step joined (Nov 2026) */
-const RK = 0.86;
-/* the steps breathe as the app spaces them: 20 between a title, its pair and
-   its reason (4 Oct 2026, asked for; they were 3 and 0 apart) */
-const RP = { w: 1380, h: 1000 };
-const RIN = RP.w - 132;
-const RPOS = { x: W / 2 - (RP.w * RK) / 2, y: 170 };
+/* the panel is the app's NextStepsCard at phone width (342 × 1003 at 390),
+   drawn at the product rows' scale so it is their width; the page scrolls
+   through it under the caption, as it would on the phone */
+const K6 = K5;
+const NW = 342;
+const NPOS = { x: W / 2 - (NW * K6) / 2, y: 180 };
+/* two scrolls: step 1's top (303) up to 205, then step 2's (546) up to 195 */
+const NSCROLL1 = NPOS.y + 303 * K6 - 205;
+const NSCROLL2 = NPOS.y + 546 * K6 - 195;
 const TRAVEL = 860;
 /* the app's feedback/error, /warning and /success */
 const AVOID = "#82302B";
@@ -718,29 +747,6 @@ const ProductTile: React.FC<{ photo: string; size: number; style?: React.CSSProp
   </div>
 );
 
-const Disc: React.FC<{ n: number; k: number; x: number; y: number }> = ({ n, k, x, y }) => (
-  <div
-    style={{
-      position: "absolute",
-      left: x - 24,
-      top: y - 24,
-      width: 48,
-      height: 48,
-      borderRadius: 24,
-      background: C.primary,
-      color: "#fff",
-      fontSize: 24,
-      display: "flex",
-      alignItems: "center",
-      justifyContent: "center",
-      opacity: k,
-      scale: 0.6 + 0.4 * k,
-    }}
-  >
-    {n}
-  </div>
-);
-
 /** text that fades up 12 px as it arrives */
 const Up: React.FC<{ k: number; style: React.CSSProperties; children: React.ReactNode }> = ({ k, style, children }) => (
   <div style={{ position: "absolute", opacity: k, translate: `0 ${(1 - k) * 12}px`, ...style }}>{children}</div>
@@ -752,14 +758,13 @@ const ScoreCard: React.FC<{ score: number; name: string; brand?: string; band: s
   return (
     <div
       style={{
-        width: 400,
-        height: 400,
+        width: 188 * 2,
+        height: 201 * 2,
         boxSizing: "border-box",
-        padding: "34px 34px 30px",
-        borderRadius: 32,
-        background: C.panel,
-        border: `1.5px solid ${C.panelEdge}`,
-        boxShadow: `inset 0 1.5px 0 ${C.panelRim}, 0 40px 70px -34px rgba(44, 69, 70, 0.4)`,
+        padding: 32,
+        borderRadius: 48,
+        background: C.card,
+        boxShadow: cardShadow(2, "0 40px 70px -34px rgba(44, 69, 70, 0.4)"),
         fontFamily: FIGTREE,
         color: C.ink,
         display: "flex",
@@ -774,7 +779,7 @@ const ScoreCard: React.FC<{ score: number; name: string; brand?: string; band: s
           <circle cx={64} cy={64} r={R} fill="none" stroke="rgba(255,255,255,0.7)" strokeWidth={9} />
           <circle cx={64} cy={64} r={R} fill="none" stroke={color} strokeWidth={9} strokeLinecap="round" strokeDasharray={`${CIRC * (score / 100) * ring} ${CIRC}`} transform="rotate(-90 64 64)" />
         </svg>
-        <div style={{ position: "absolute", inset: 0, display: "flex", alignItems: "center", justifyContent: "center", fontSize: 46, fontWeight: 300, fontVariantNumeric: "tabular-nums" }}>
+        <div style={{ position: "absolute", inset: 0, display: "flex", alignItems: "center", justifyContent: "center", fontSize: 40, fontWeight: 300, fontVariantNumeric: "tabular-nums" }}>
           {Math.round(score * ring)}
         </div>
       </div>
@@ -782,8 +787,8 @@ const ScoreCard: React.FC<{ score: number; name: string; brand?: string; band: s
         <ProductTile photo={photo} size={96} style={{ left: 0, top: 0 }} />
       </div>
       </div>
-      <div style={{ fontSize: 30, fontWeight: 500, lineHeight: 1.2, marginTop: 26 }}>{name}</div>
-      {brand && <div style={{ fontSize: 24, fontWeight: 400, marginTop: 6, color: C.inkMuted }}>{brand}</div>}
+      <div style={{ fontSize: 32, fontWeight: 500, lineHeight: 1.2, marginTop: 24 }}>{name}</div>
+      {brand && <div style={{ fontSize: 24, fontWeight: 500, lineHeight: 1.4, marginTop: 4, color: C.inkMuted }}>{brand}</div>}
       <div
         style={{
           marginTop: "auto",
@@ -791,17 +796,18 @@ const ScoreCard: React.FC<{ score: number; name: string; brand?: string; band: s
           display: "inline-flex",
           alignItems: "center",
           gap: 10,
-          height: 46,
+          height: 48,
           padding: "0 20px",
-          borderRadius: 23,
+          borderRadius: 24,
           fontSize: 24,
+          fontWeight: 500,
           background: C.glassStrong,
           border: `1.5px solid ${C.glassEdge}`,
           opacity: bandK,
           translate: `0 ${(1 - bandK) * 10}px`,
         }}
       >
-        <span style={{ width: 14, height: 14, borderRadius: 7, background: color }} />
+        <span style={{ width: 16, height: 16, borderRadius: 8, background: color }} />
         {band}
       </div>
     </div>
@@ -818,13 +824,47 @@ const CARDS = [
 ];
 /* all five on one line: the 400 card drawn at CARD_K */
 const CARD_K = 0.82;
-const CARD_W = 400 * CARD_K;
+const CARD_W = 188 * 2 * CARD_K;
 const CARD_GAP = 18;
 const CARDS_X = W / 2 - (5 * CARD_W + 4 * CARD_GAP) / 2;
 /* the caption and the cards as one block centred on the frame (4 Oct 2026,
    asked for: the caption sat at the top with the cards well below it) */
 const COMPAT_CAP_TOP = 255;
 const COMPAT_Y = COMPAT_CAP_TOP + 175;
+
+/** text that fades up 12 px as it arrives, in the flow */
+const UpIn: React.FC<{ k: number; style?: React.CSSProperties; children: React.ReactNode }> = ({ k, style, children }) => (
+  <div style={{ position: "relative", opacity: k, translate: `0 ${(1 - k) * 12}px`, ...style }}>{children}</div>
+);
+
+/** one step of NextStepsCard at phone width (ResultCards.module.css): a tile
+    of its own (padding 16, radius 24), the number in a 24 disc, then a 226
+    column of the title (balanced, as .t-h6), an optional pair of 40 thumbs and
+    the reason (pretty, as .t-body2), 8 apart */
+const Step: React.FC<{
+  n: number;
+  k: number;
+  titleK: number;
+  textK: number;
+  title: string;
+  text: string;
+  pair?: { a: string; b: string; k: number; slide: number; plus: number };
+}> = ({ n, k, titleK, textK, title, text, pair }) => (
+  <div style={{ position: "relative", padding: "16px 16px 16px 52px", borderRadius: 24, background: C.card, boxShadow: cardShadow(1, "none"), opacity: k, translate: `0 ${(1 - k) * 10}px` }}>
+    <div style={{ position: "absolute", left: 16, top: 17, width: 24, height: 24, borderRadius: 12, background: C.primary, color: "#fff", fontSize: 12, fontWeight: 500, display: "flex", alignItems: "center", justifyContent: "center" }}>{n}</div>
+    <div style={{ display: "flex", flexDirection: "column", gap: 8, width: 226 }}>
+      <UpIn k={titleK} style={{ fontSize: 16, fontWeight: 500, lineHeight: "19.2px", textWrap: "balance" }}>{title}</UpIn>
+      {pair && (
+        <div style={{ position: "relative", height: 40 }}>
+          <ProductTile photo={pair.a} size={40} style={{ left: -13 * (1 - pair.slide), top: 0, borderRadius: 8, opacity: pair.k }} />
+          <div style={{ position: "absolute", left: 48, top: 10, width: 9, height: 20, fontSize: 14, fontWeight: 600, lineHeight: "20px", textAlign: "center", opacity: pair.plus }}>+</div>
+          <ProductTile photo={pair.b} size={40} style={{ left: 65 + 13 * (1 - pair.slide), top: 0, borderRadius: 8, opacity: pair.k }} />
+        </div>
+      )}
+      <UpIn k={textK} style={{ fontSize: 16, fontWeight: 500, lineHeight: "22.4px", textWrap: "pretty" }}>{text}</UpIn>
+    </div>
+  </div>
+);
 
 const ResultsPage: React.FC<{ t: number; out: number }> = ({ t, out }) => {
   /* the page scrolls: the scores leave upward as the advice comes up under them */
@@ -833,11 +873,7 @@ const ResultsPage: React.FC<{ t: number; out: number }> = ({ t, out }) => {
   /* everything on the advice card runs from n */
   const n = t - NEXT_AT;
   const panelIn = ee(t, 150, 186);
-  const body = { fontSize: 28, lineHeight: "40px", color: C.inkSecondary, width: 1170 } as const;
-  const title = { fontSize: 34, lineHeight: "40px", color: C.ink, whiteSpace: "nowrap" } as const;
   /* each step's two tiles slide together round the + */
-  const pair1 = ee(n, 80, 104, EASE_IN_OUT);
-  const pair2 = ee(n, 126, 150, EASE_IN_OUT);
   const border = ee(n, 18, 52, EASE_IN_OUT);
   const pill = ee(n, 44, 58);
   return (
@@ -845,7 +881,7 @@ const ResultsPage: React.FC<{ t: number; out: number }> = ({ t, out }) => {
       {/* compatibility first: the cards rise and their rings draw */}
       {t < 200 && (
         <div style={{ position: "absolute", inset: 0, translate: `0 ${ty}px`, opacity: 1 - ee(t, 150, 190, (x) => x) }}>
-          <Up k={ee(t, 8, 26)} style={{ left: CARDS_X, top: COMPAT_Y, fontSize: 28, fontWeight: 500, letterSpacing: "0.2em", color: C.ink }}>
+          <Up k={ee(t, 8, 26)} style={{ left: CARDS_X, top: COMPAT_Y, fontSize: 14.4 * 2 * CARD_K, ...overline, color: C.ink }}>
             COMPATIBILITY · 5 PRODUCTS
           </Up>
           {CARDS.map((c, i) => {
@@ -869,79 +905,65 @@ const ResultsPage: React.FC<{ t: number; out: number }> = ({ t, out }) => {
         </div>
       )}
 
-      {/* what to do next, coming up from under the scores */}
+      {/* what to do next, coming up from under the scores: the app's
+          NextStepsCard at phone width, in its own CSS px, drawn at K6. Once
+          step 1 has been read the page scrolls on, under the caption. */}
+      <div style={{ position: "absolute", inset: 0, maskImage: "linear-gradient(to bottom, transparent 130px, #000 175px)", WebkitMaskImage: "linear-gradient(to bottom, transparent 130px, #000 175px)" }}>
       <div
         style={{
           position: "absolute",
-          left: RPOS.x,
-          top: RPOS.y + TRAVEL + ty,
-          width: RP.w,
-          height: RP.h,
+          left: NPOS.x,
+          top: NPOS.y + TRAVEL + ty - NSCROLL1 * ee(n, 70, 98, EASE_IN_OUT) - (NSCROLL2 - NSCROLL1) * ee(n, 150, 180, EASE_IN_OUT),
+          width: NW,
           transformOrigin: "0 0",
-          scale: RK,
+          scale: K6,
           opacity: panelIn,
           boxSizing: "border-box",
-          borderRadius: 60,
-          background: C.panel,
-          border: `2px solid ${C.panelEdge}`,
-          boxShadow: `inset 0 2px 0 ${C.panelRim}, 0 50px 90px -40px rgba(44, 69, 70, 0.4)`,
+          padding: 24,
+          borderRadius: 28,
+          background: C.card,
+          boxShadow: cardShadow(1, "0 40px 70px -34px rgba(44, 69, 70, 0.4)"),
+          color: C.ink,
+          display: "flex",
+          flexDirection: "column",
         }}
       >
-        <Up k={ee(n, 12, 28)} style={{ left: 66, top: 56, fontSize: 30, fontWeight: 500, letterSpacing: "0.2em", color: C.ink }}>WHAT TO DO NEXT</Up>
+        <UpIn k={ee(n, 12, 28)} style={{ fontSize: 14.4, ...overline, lineHeight: "10.4px", height: 10.4 }}>What to do next</UpIn>
 
         {/* the pause: its outline draws itself, then the reason */}
-        <div style={{ position: "absolute", left: 66, top: 116, width: RIN, height: 252, borderRadius: 40, background: `rgba(255,255,255,${0.3 * border})` }}>
-          <svg width={RIN} height={252} style={{ position: "absolute", inset: 0, overflow: "visible" }}>
-            <rect x={2} y={2} width={RIN - 4} height={248} rx={38} fill="none" stroke={AVOID} strokeWidth={4} pathLength={1} strokeDasharray={`${border} 1`} />
+        <div style={{ position: "relative", marginTop: 16, padding: 20, borderRadius: 24, background: `rgba(255,255,255,${0.4 * border})`, boxShadow: `inset 0 1px 0 rgba(255,255,255,${0.8 * border})` }}>
+          <svg width="100%" height="100%" style={{ position: "absolute", inset: 0, overflow: "visible" }}>
+            <rect x={1} y={1} width={292} height="calc(100% - 2px)" rx={23} fill="none" stroke={AVOID} strokeWidth={2} pathLength={1} strokeDasharray={`${border} 1`} />
           </svg>
-          <ProductTile photo="bottle-milky" size={96} style={{ left: 39, top: 30, opacity: ee(n, 28, 44), scale: 0.85 + 0.15 * ee(n, 28, 44) }} />
-          <Up k={ee(n, 32, 48)} style={{ ...title, left: 159, top: 58 }}>Pause Clearwell BHA Exfoliant</Up>
-          <div
-            style={{
-              position: "absolute",
-              left: RIN - 149,
-              top: 53,
-              height: 50,
-              padding: "0 26px",
-              borderRadius: 25,
-              background: AVOID,
-              color: "#fff",
-              fontSize: 25,
-              display: "flex",
-              alignItems: "center",
-              opacity: pill,
-              scale: 0.8 + 0.2 * pill,
-            }}
-          >
-            Avoid
+          <div style={{ display: "flex", gap: 12 }}>
+            <div style={{ position: "relative", width: 48, height: 48, alignSelf: "center", flex: "none" }}>
+              <ProductTile photo="bottle-milky" size={48} style={{ left: 0, top: 0, borderRadius: 12, opacity: ee(n, 28, 44), scale: 0.85 + 0.15 * ee(n, 28, 44) }} />
+            </div>
+            <div style={{ display: "flex", flexDirection: "column", alignItems: "flex-start", gap: 8, width: 194 }}>
+              <div style={{ height: 26, padding: "0 12px", borderRadius: 13, background: AVOID, color: "#fff", fontSize: 12, fontWeight: 500, display: "flex", alignItems: "center", opacity: pill, scale: 0.8 + 0.2 * pill }}>
+                Avoid
+              </div>
+              <UpIn k={ee(n, 32, 48)} style={{ fontSize: 16, fontWeight: 500, lineHeight: "19.2px", textWrap: "balance" }}>Pause Clearwell BHA Exfoliant</UpIn>
+            </div>
           </div>
-          <Up k={ee(n, 48, 66)} style={{ ...body, left: 39, top: 142, color: C.ink }}>
+          <UpIn k={ee(n, 48, 66)} style={{ marginTop: 12, fontSize: 16, fontWeight: 500, lineHeight: "22.4px", textWrap: "pretty" }}>
             It contains Salicylic Acid (BHA), the biggest problem for your skin profile in this set. Leave it out for two weeks and see whether the flare settles.
-          </Up>
+          </UpIn>
         </div>
 
-        {/* step 1: the pair, brought together */}
-        <Disc n={1} k={ee(n, 70, 82)} x={89} y={416} />
-        <Up k={ee(n, 74, 90)} style={{ ...title, left: 137, top: 396 }}>Keep Retinol B3 Serum and Niacinamide 10% + Zinc 1% on alternate nights</Up>
-        <ProductTile photo="dropper-green" size={72} style={{ left: 137 - 36 * (1 - pair1), top: 450, opacity: ee(n, 80, 92) }} />
-        <div style={{ position: "absolute", left: 209, top: 450, width: 44, height: 72, display: "flex", alignItems: "center", justifyContent: "center", fontSize: 30, lineHeight: 1, color: C.ink, opacity: ee(n, 96, 106) }}>+</div>
-        <ProductTile photo="pump-milky" size={72} style={{ left: 253 + 36 * (1 - pair1), top: 450, opacity: ee(n, 80, 92) }} />
-        <Up k={ee(n, 94, 110)} style={{ ...body, left: 137, top: 536 }}>Retinol and Niacinamide irritate in the same routine. One tonight, the other tomorrow.</Up>
-
-        {/* step 2: the same */}
-        <Disc n={2} k={ee(n, 116, 128)} x={89} y={626} />
-        <Up k={ee(n, 120, 136)} style={{ ...title, left: 137, top: 606 }}>Keep BHA Exfoliant and Retinol B3 Serum on alternate nights</Up>
-        <ProductTile photo="bottle-milky" size={72} style={{ left: 137 - 36 * (1 - pair2), top: 660, opacity: ee(n, 126, 138) }} />
-        <div style={{ position: "absolute", left: 209, top: 660, width: 44, height: 72, display: "flex", alignItems: "center", justifyContent: "center", fontSize: 30, lineHeight: 1, color: C.ink, opacity: ee(n, 142, 152) }}>+</div>
-        <ProductTile photo="dropper-green" size={72} style={{ left: 253 + 36 * (1 - pair2), top: 660, opacity: ee(n, 126, 138) }} />
-        <Up k={ee(n, 140, 156)} style={{ ...body, left: 137, top: 746 }}>
-          Salicylic Acid 2% and Retinol irritate in the same routine, so this pair settles itself while BHA Exfoliant is out, and matters again the day it comes back.
-        </Up>
-
-        {/* step 3 */}
-        <Disc n={3} k={ee(n, 166, 178)} x={89} y={876} />
-        <Up k={ee(n, 170, 186)} style={{ ...title, left: 137, top: 856 }}>Bring anything back one product at a time</Up>
-        <Up k={ee(n, 178, 194)} style={{ ...body, left: 137, top: 904 }}>Two at once and a reaction cannot be traced to either of them.</Up>
+        {/* the three steps, each its own tile */}
+        <div style={{ display: "flex", flexDirection: "column", gap: 8, marginTop: 16 }}>
+          <Step n={1} k={ee(n, 88, 100)} titleK={ee(n, 92, 108)} textK={ee(n, 112, 128)} pair={{ a: "dropper-green", b: "pump-milky", k: ee(n, 98, 110), slide: ee(n, 98, 122, EASE_IN_OUT), plus: ee(n, 114, 124) }}
+            title="Keep Retinol B3 Serum and Niacinamide 10% + Zinc 1% on alternate nights"
+            text="Retinol and Niacinamide irritate in the same routine. One tonight, the other tomorrow." />
+          <Step n={2} k={ee(n, 168, 180)} titleK={ee(n, 172, 186)} textK={ee(n, 188, 202)} pair={{ a: "bottle-milky", b: "dropper-green", k: ee(n, 176, 188), slide: ee(n, 176, 196, EASE_IN_OUT), plus: ee(n, 190, 198) }}
+            title="Keep BHA Exfoliant and Retinol B3 Serum on alternate nights"
+            text="Salicylic Acid 2% and Retinol irritate in the same routine, so this pair settles itself while BHA Exfoliant is out, and matters again the day it comes back." />
+          <Step n={3} k={ee(n, 200, 212)} titleK={ee(n, 204, 216)} textK={ee(n, 210, 224)}
+            title="Bring anything back one product at a time"
+            text="Two at once and a reaction cannot be traced to either of them." />
+        </div>
+      </div>
       </div>
     </AbsoluteFill>
   );
@@ -970,7 +992,7 @@ const Analysing: React.FC<{ t: number }> = ({ t }) => {
   const done = Math.floor((t - 44) / AN_STEP);
   return (
     <AbsoluteFill style={{ opacity: inn * (1 - out), fontFamily: FIGTREE }}>
-      <div style={{ position: "absolute", left: 0, right: 0, top: 548, textAlign: "center", fontSize: 46, fontWeight: 500, color: C.ink, translate: `0 ${(1 - inn) * 12}px` }}>
+      <div style={{ position: "absolute", left: 0, right: 0, top: 548, textAlign: "center", fontFamily: MANROPE, fontSize: 41.3, fontWeight: 500, color: C.ink, translate: `0 ${(1 - inn) * 12}px` }}>
         LUX is analysing…
       </div>
       <div style={{ position: "absolute", left: 0, right: 0, top: 648, display: "flex", justifyContent: "center" }}>
@@ -984,7 +1006,7 @@ const Analysing: React.FC<{ t: number }> = ({ t }) => {
             const opacity = state === "waiting" ? 0.45 : state === "active" ? 0.45 + 0.55 * k : 1;
             const color = state === "done" ? C.inkSecondary : state === "active" ? C.ink : C.inkMuted;
             return (
-              <div key={line} style={{ display: "flex", alignItems: "center", gap: 18, fontSize: 30, lineHeight: "40px", color, opacity }}>
+              <div key={line} style={{ display: "flex", alignItems: "center", gap: 18, fontSize: 30, fontWeight: 500, lineHeight: "40px", color, opacity }}>
                 <svg width={32} height={32} viewBox="0 0 28 28" style={{ flex: "none", opacity: tick > 0 ? 1 : 0 }}>
                   <path d="M5 13L10 18L20 6" fill="none" stroke={C.primary} strokeWidth={2.4} strokeLinecap="round" strokeLinejoin="round" pathLength={1} strokeDasharray={`${tick} 1`} />
                 </svg>
@@ -998,41 +1020,70 @@ const Analysing: React.FC<{ t: number }> = ({ t }) => {
   );
 };
 
+/** the app's frosted photo pill (PhotoGallery .date / .day): t-label-sm in
+    white on an 18% frost, blurred and darkened behind, an all-round edge ring */
+const PhotoPill: React.FC<{ style: React.CSSProperties; children: React.ReactNode }> = ({ style, children }) => (
+  <div
+    style={{
+      position: "absolute",
+      padding: "2px 8px",
+      borderRadius: 999,
+      background: "rgba(244, 254, 255, 0.05)",
+      backdropFilter: "blur(8px) saturate(1.4) brightness(0.8)",
+      WebkitBackdropFilter: "blur(8px) saturate(1.4) brightness(0.8)",
+      boxShadow: "inset 0 0 0 1px rgba(255, 255, 255, 0.45), inset 0 2px 12px rgba(255, 255, 255, 0.12), inset 0 1px 1px rgba(255, 255, 255, 0.25)",
+      color: "#fff",
+      fontSize: 12,
+      fontWeight: 500,
+      lineHeight: 1.4,
+      textShadow: "0 1px 2px rgba(0, 0, 0, 0.25)",
+      whiteSpace: "nowrap",
+      ...style,
+    }}
+  >
+    {children}
+  </div>
+);
+
 /** PROGRESS's "Progress gallery" card (ProgressScreen's galleryDesktop) at
     its own CSS size, 616 wide: overline, count, four square photos and the
     chevron. The four are ONE Unsplash photo's cheek (free licence, photo
-    1730288951113-9cc087c14b83) with its redness graded down in steps; a day
-    pill on each says when. ⚠️ The day pills are NOT the app's; added so the
-    improvement reads in a video. */
+    1730288951113-9cc087c14b83) with its redness graded down in steps. Each
+    carries the app's two frosted photo pills (PhotoGallery's .date and .day):
+    the date top-left, the day count bottom-right. */
 const GalleryCard: React.FC<{ t: number }> = ({ t }) => {
-  const DAYS = ["Day 1", "Day 5", "Day 10", "Day 14"];
+  const DAYS = [
+    { date: "Sep 17", day: "Day 1" },
+    { date: "Sep 21", day: "Day 5" },
+    { date: "Sep 26", day: "Day 10" },
+    { date: "Sep 30", day: "Day 14" },
+  ];
   return (
     <div
       style={{
         position: "relative",
         width: TC.w,
-        height: 216,
-        borderRadius: 24,
+        height: 211,
+        borderRadius: 28,
         background: "rgba(214, 232, 236, 0.82)",
-        border: `1px solid ${C.panelEdge}`,
-        boxShadow: `inset 0 1px 0 ${C.panelRim}, 0 30px 60px -30px rgba(44, 69, 70, 0.4)`,
+        boxShadow: cardShadow(1, "0 30px 60px -30px rgba(44, 69, 70, 0.4)"),
         fontFamily: FIGTREE,
         color: C.ink,
       }}
     >
-      <div style={{ position: "absolute", left: 33, top: 30, fontSize: 15, fontWeight: 500, letterSpacing: "0.14em", lineHeight: "22px" }}>PROGRESS GALLERY</div>
-      <div style={{ position: "absolute", right: 33, top: 30, fontSize: 14, lineHeight: "22px" }}>9 photos</div>
+      <div style={{ position: "absolute", left: 24, top: 24, fontSize: 14.4, ...overline, lineHeight: "14.4px" }}>Progress gallery</div>
+      <div style={{ position: "absolute", right: 24, top: 24, fontSize: 12, fontWeight: 500, lineHeight: "16.8px" }}>{VALS.length} photos</div>
       {DAYS.map((d, i) => {
         const k = tw(t, i * 7, 14);
         return (
           <div
-            key={d}
+            key={d.day}
             style={{
               position: "absolute",
-              left: 33 + i * 128,
-              top: 70,
-              width: 118,
-              height: 118,
+              left: 24 + i * 134,
+              top: 62,
+              width: 120,
+              height: 120,
               borderRadius: 16,
               overflow: "hidden",
               border: "1px solid rgba(255,255,255,0.5)",
@@ -1041,13 +1092,17 @@ const GalleryCard: React.FC<{ t: number }> = ({ t }) => {
             }}
           >
             <Img src={staticFile(`app/gallery/stage${i}.jpg`)} style={{ width: "100%", height: "100%", objectFit: "cover" }} />
-            <div style={{ position: "absolute", left: 7, bottom: 7, height: 20, padding: "0 8px", borderRadius: 10, background: "rgba(244,254,255,0.82)", fontSize: 11, lineHeight: "20px", color: C.ink }}>{d}</div>
+            <PhotoPill style={{ left: 8, top: 8 }}>{d.date}</PhotoPill>
+            <PhotoPill style={{ right: 8, bottom: 8 }}>{d.day}</PhotoPill>
           </div>
         );
       })}
-      <svg width={20} height={20} viewBox="0 0 24 24" style={{ position: "absolute", left: 556, top: 119, opacity: tw(t, 28, 10) }}>
-        <path d="M9 6l6 6-6 6" fill="none" stroke={C.ink} strokeWidth={1.6} strokeLinecap="round" strokeLinejoin="round" />
-      </svg>
+      {/* the strip's "more" button: an 11 chevron centred in a 33 target */}
+      <div style={{ position: "absolute", left: TC.w - 24 - 33, top: 105, width: 33, height: 33, opacity: tw(t, 28, 10), display: "flex", alignItems: "center", justifyContent: "center" }}>
+        <svg width={11} height={11} viewBox="0 0 12 12">
+          <path d="M4 1.5L8.5 6 4 10.5" fill="none" stroke={C.ink} strokeWidth={1.3} strokeLinecap="round" strokeLinejoin="round" />
+        </svg>
+      </div>
     </div>
   );
 };

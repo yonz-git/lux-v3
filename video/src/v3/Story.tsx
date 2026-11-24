@@ -79,7 +79,7 @@ const SCREEN_TOP = PY + 11;
 /* the hero region of the recording, in screen px: the chip rows and the face
    card. Inside the phone (A) and as the hero (B), 890 film px tall from a
    1012 px source, so never upscaled */
-const REG = { x: 18, y: 184, w: 354, h: 506 };
+const REG = { x: 18, y: 234, w: 354, h: 506 };
 const A = { x: SCREEN_LEFT + REG.x * PS, y: SCREEN_TOP + REG.y * PS, w: REG.w * PS };
 const HERO_H = 890;
 const HERO_W = HERO_H * (REG.w / REG.h);
@@ -89,7 +89,7 @@ const B = { x: W / 2 - HERO_W / 2, y: 160, w: HERO_W };
    comes out of it (4 Oct 2026, asked for), from a still of the same screen */
 const COACH = REC.coach;
 const ORB_SPOT = { x: SCREEN_LEFT + (COACH.orb.x + COACH.orb.w / 2) * PS, y: SCREEN_TOP + (COACH.orb.y + COACH.orb.h / 2) * PS };
-const COACH_BOX = { x: 24, y: 100, w: 342, h: 86, split: 74 }; /* = the crop in public/app/face/coach.png */
+const COACH_BOX = { x: 24, y: 150, w: 342, h: 86, split: 74 }; /* = the crop in public/app/face/coach.png */
 
 /* a recorded rect (screen px) as a film rect on the hero */
 const kH = HERO_W / REG.w;
@@ -144,7 +144,7 @@ export const FiveTile: React.FC<{ photo: string; x: number; y: number; size: num
       width: size,
       height: size,
       borderRadius: size * 0.24,
-      background: "rgba(255,255,255,0.664)",
+      background: "#EEF6F7",
       border: "1px solid rgba(255,255,255,0.7975)",
       boxShadow: `inset 0 1px 0 ${C.panelRim}, inset 0 1px 0 ${C.panelRim}, 0 28px 44px -20px rgba(44,69,70,0.38), 0 28px 44px -20px rgba(44,69,70,0.38)`,
       display: "flex",
