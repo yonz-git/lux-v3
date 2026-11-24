@@ -77,12 +77,7 @@ export function CheckInCalendar({
   const monthLabel = formatMonth(view);
 
   return (
-    <DataCard
-      tone="calendar"
-      className={className}
-      aria-labelledby="calendar-title"
-      data-motion
-    >
+    <DataCard className={className} aria-labelledby="calendar-title" data-motion>
       <div className={styles.header}>
         {/* aria-live so paging the month is announced — the grid below it
             changes wholesale and nothing else says which month you are on. */}
