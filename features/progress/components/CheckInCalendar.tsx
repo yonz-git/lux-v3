@@ -77,7 +77,12 @@ export function CheckInCalendar({
   const monthLabel = formatMonth(view);
 
   return (
-    <DataCard className={className} aria-labelledby="calendar-title" data-motion>
+    <DataCard
+      tone="calendar"
+      className={className}
+      aria-labelledby="calendar-title"
+      data-motion
+    >
       <div className={styles.header}>
         {/* aria-live so paging the month is announced — the grid below it
             changes wholesale and nothing else says which month you are on. */}
@@ -90,6 +95,7 @@ export function CheckInCalendar({
         </h2>
         <div className={styles.arrows}>
           <IconButton
+            variant="plain"
             size="md"
             label={`Previous month, ${formatMonth(addMonths(view, -1))}`}
             onClick={() => setView((v) => addMonths(v, -1))}
@@ -97,6 +103,7 @@ export function CheckInCalendar({
             <ChevronLeftIcon className={styles.arrowIcon} />
           </IconButton>
           <IconButton
+            variant="plain"
             size="md"
             disabled={atLatestMonth}
             label={`Next month, ${formatMonth(addMonths(view, 1))}`}

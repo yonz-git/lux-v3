@@ -16,7 +16,7 @@ import { formatDay, formatShort, fromIso } from "@/lib/date";
  */
 
 /** How many photos the card shows before the gallery. */
-const LATEST = 4;
+const LATEST = 4; /* the strip's four slots in PhotoGallery.module.css */
 
 const TITLE = "Progress gallery";
 

@@ -13,7 +13,7 @@ export function IconButton({
 }: Omit<ButtonHTMLAttributes<HTMLButtonElement>, "children"> & {
   label: string;
   children: ReactNode;
-  variant?: "glass" | "ring" | "primary" | "outline" | "soft";
+  variant?: "glass" | "ring" | "primary" | "outline" | "soft" | "plain";
   size?: "lg" | "md" | "sm" | "xs";
   href?: string;
   /** React 19 passes `ref` as a prop; it lands on the <button> */

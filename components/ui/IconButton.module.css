@@ -82,6 +82,12 @@
   background: #eeecf5;
 }
 
+/* the glyph alone: no disc, edge or shadow */
+.plain {
+  color: var(--color-text-ink);
+  background: transparent;
+}
+
 @media (hover: hover) {
   .glass:hover:not(:disabled) {
     background-color: var(--color-glass-strong);

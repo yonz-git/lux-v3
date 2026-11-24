@@ -29,9 +29,11 @@
   color: var(--color-text-on-data-secondary);
 }
 
-/* the whole row, so the photos share the card's width */
+/* four equal slots and the arrow: a photo always takes a quarter of the row,
+   so one photo stays thumbnail-sized (`LATEST` in PhotoGallery.tsx is 4) */
 .strip {
-  display: flex;
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr)) auto;
   align-items: center;
   gap: var(--space-sm); /* 8 */
   width: 100%;
@@ -47,7 +49,6 @@
 
 .thumb {
   position: relative;
-  flex: 1 1 0;
   min-width: 0;
   aspect-ratio: 1 / 1;
   overflow: hidden;
@@ -92,7 +93,8 @@
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  flex: none;
+  /* the last column, however many photos come before it */
+  grid-column: -2;
   width: var(--size-control-sm);
   height: var(--size-control-sm);
   margin-inline-start: var(--space-xs); /* + the strip's 8: 12 after the photos */
