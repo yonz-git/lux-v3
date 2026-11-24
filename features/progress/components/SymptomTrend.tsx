@@ -20,18 +20,13 @@ export function SymptomTrend({
   checkIns,
   today,
   products,
-  day,
   className,
 }: {
+  /** every check-in since the start, oldest first; the pill counts them */
   checkIns: CheckIn[];
   today: Date;
   /** the routine, for the product-start marks — `ownedProducts()` */
   products: readonly { name: string; addedOn: string }[];
-  /**
-   * Which day of the investigation today is — `Day 16`, a quiet pill at the
-   * title's right end.
-   */
-  day?: number;
   className?: string;
 }) {
   const titleId = useId();
@@ -62,10 +57,9 @@ export function SymptomTrend({
         <h2 id={titleId} className={`${styles.title} t-overline`}>
           Progress
         </h2>
-        {day !== undefined && (
+        {checkIns.length > 0 && (
           <span className={`${styles.dayPill} t-label-sm`}>
-            Day {day}
-            <span className="visually-hidden"> of your investigation</span>
+            {checkIns.length} {checkIns.length === 1 ? "check-in" : "check-ins"}
           </span>
         )}
       </div>

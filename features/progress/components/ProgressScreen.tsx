@@ -25,7 +25,6 @@ import { ownedProducts } from "@/features/products/library";
 import {
   checkInsFor,
   hasInvestigation,
-  dayNumber,
   faceLocations,
   lastCheckInLabel,
   photoDiary,
@@ -117,7 +116,6 @@ export function ProgressScreen({ now }: { now: number }) {
           checkIns={checkIns}
           today={today}
           products={ownedProducts(answers)}
-          day={dayNumber(start, today)}
         />
 
         {/* § 09 — only when the user actually saved a finding. */}
