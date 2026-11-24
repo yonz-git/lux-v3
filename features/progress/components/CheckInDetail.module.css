@@ -16,7 +16,7 @@ header -> 24 -> date -> symptoms -> 16 -> severity -> 16 -> notes
 20 and its heading carries no subtitle; page-level whitespace adapts, and
 every other hub screen in the app opens on 24.)
 
-DESKTOP — the same 1280 dashboard grid /progress uses, NOT a page card:
+DESKTOP — the same 1280 dashboard grid /myskin uses, NOT a page card:
 col-1  640 fixed   photos, notes
 col-2  616 fill    symptoms, severity, products */
 

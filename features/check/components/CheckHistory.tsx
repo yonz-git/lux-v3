@@ -16,7 +16,7 @@ import {
 } from "@/features/check/check";
 
 /**
- * `Check — previous checks` (652:2554) at `/check/history`.
+ * `Check — previous checks` (652:2554) at `/analyses/history`.
  *
  * The destination for "View previous analyses" on the Analysis landing — the handoff
  * added this screen precisely so that link was no longer dangling.
@@ -31,7 +31,7 @@ export function CheckHistory() {
   function open(check: SavedCheck) {
     setAnswer("viewingCheck", check.id);
     /* back on the results then returns here, not to the hub */
-    router.push("/check/results?from=history");
+    router.push("/analyses/results?from=history");
   }
 
   if (checks.length === 0) {
@@ -39,14 +39,14 @@ export function CheckHistory() {
       <HubScreen
         title="Previous analyses"
         nav="check"
-        backHref="/check"
+        backHref="/analyses"
         layout="plain"
         center="empty"
         tightTop
       >
         <EmptyState
           title="No analyses yet"
-          action={{ label: "Start a check", href: "/check/new" }}
+          action={{ label: "Start a check", href: "/analyses/new" }}
         >
           Run a compatibility check and it will appear here.
         </EmptyState>
@@ -58,7 +58,7 @@ export function CheckHistory() {
     <HubScreen
       title="Previous analyses"
       nav="check"
-      backHref="/check"
+      backHref="/analyses"
       layout="card"
       tightTop
     >

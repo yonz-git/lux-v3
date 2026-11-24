@@ -1,8 +1,8 @@
 /* Check — start (601:1952) / Check — no profile — desktop (606:2183).
 
-`/check`: hero area (the orb and bubble, centred) -> actions -> nav, the
+`/analyses`: hero area (the orb and bubble, centred) -> actions -> nav, the
 button on `--cta-bottom` as on 00 Welcome — see `.heroArea` and `.actions`.
-`/check/no-profile`: heading -> flex -> hero -> flex -> nav. */
+`/analyses/no-profile`: heading -> flex -> hero -> flex -> nav. */
 
 .hero {
   display: flex;
@@ -91,7 +91,7 @@ button on `--cta-bottom` as on 00 Welcome — see `.heroArea` and `.actions`.
   margin-top: var(--space-3xl); /* 32 */
 }
 
-/* `/check`'s two actions — Welcome's `.actions`: 13 between the button and
+/* `/analyses`'s two actions — Welcome's `.actions`: 13 between the button and
    the link. The gap above is `.heroArea`'s. */
 .actions {
   display: flex;

@@ -104,7 +104,7 @@ The system that came out of these is `docs/design.md`.
 - `Snackbar` — undo bar.
 - `SafetyNotice` — the warning callout (needs a non-colour signal).
 - `PassList` + `CheckAnalyzing` — the analysing / loading state.
-- Empty states (`/progress/empty`, `/check/no-profile`, `My Products — empty`).
+- Empty states (`/myskin/empty`, `/analyses/no-profile`, `My Products — empty`).
 - Focus ring, disabled, hover and pressed states for every control.
 - Error and success colours — the refs have no feedback colours.
 

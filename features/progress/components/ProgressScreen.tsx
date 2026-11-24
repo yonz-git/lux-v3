@@ -34,7 +34,7 @@ import {
 } from "@/features/progress/progress";
 
 /**
- * PROGRESS — the nav's first section, at `/progress`. ONE screen in two states:
+ * PROGRESS — the nav's first section, at `/myskin`. ONE screen in two states:
  *   empty  Figma mobile 551:1196, desktop 551:1231
  *   active Figma mobile 552:1236, desktop 554:1252
  * documented by `HANDOFF — INVESTIGATION & PROGRESS` (559:1376).
@@ -180,7 +180,7 @@ export function ProgressScreen({ now }: { now: number }) {
 const HUB_TITLE = "Progress";
 
 /**
- * `Progress — empty`, at `/progress/empty`. The orb hero, the same block
+ * `Progress — empty`, at `/myskin/empty`. The orb hero, the same block
  * `My Products — empty` uses and the one the CHECK empty states follow.
  */
 export function ProgressEmpty() {

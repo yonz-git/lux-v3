@@ -11,7 +11,7 @@ import { dayNumber, type CheckIn } from "@/features/progress/progress";
 import { formatDay, formatShort, fromIso } from "@/lib/date";
 
 /**
- * `Progress gallery` on `/progress` — a card of the latest check-in photos —
+ * `Progress gallery` on `/myskin` — a card of the latest check-in photos —
  * and the gallery sheet it opens.
  */
 
@@ -180,7 +180,7 @@ export function PhotoGallery({
               <li key={p.date} className={styles.slide}>
                 {/* the photo leads to its record — the check-in it was taken at */}
                 <Link
-                  href={`/progress/check-in/${p.date}`}
+                  href={`/myskin/check-in/${p.date}`}
                   className={`${styles.tile} pressable`}
                   aria-label={
                     n >= 1

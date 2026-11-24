@@ -1,12 +1,14 @@
-import { CheckAnalyzing } from "@/features/check/components/CheckAnalyzing";
+import { CheckIn } from "@/features/progress/components/CheckIn";
 import type { Metadata } from "next";
 import { metadataTitleFor } from "@/lib/pageTitles";
 
 /* The route's own `<title>`, product name included — see `metadataTitleFor`.
    Shared with `RouteAnnouncer`, so the tab label and the sentence a screen
    reader hears on navigation cannot drift apart. */
-export const metadata: Metadata = { title: metadataTitleFor("/check/analyzing") };
+export const metadata: Metadata = { title: metadataTitleFor("/myskin/check-in") };
+
+export const dynamic = "force-dynamic";
 
 export default function Page() {
-  return <CheckAnalyzing />;
+  return <CheckIn now={Date.now()} />;
 }

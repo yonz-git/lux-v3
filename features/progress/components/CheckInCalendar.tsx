@@ -175,7 +175,7 @@ export function CheckInCalendar({
                   >
                     {isCheckedIn ? (
                       <Link
-                        href={`/progress/check-in/${iso}`}
+                        href={`/myskin/check-in/${iso}`}
                         className={`${styles.day} t-label pressable`}
                         data-checked-in
                         data-just-checked={justChecked || undefined}

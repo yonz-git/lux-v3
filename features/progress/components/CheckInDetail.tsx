@@ -33,7 +33,7 @@ import {
 
 /**
  * `Check-in detail` — Figma 556:1330 (mobile) / 557:1353 (desktop), at
- * `/progress/check-in/<iso date>`.
+ * `/myskin/check-in/<iso date>`.
  *
  * The historical record for ONE day, opened from the Progress calendar. The
  * handoff placed it in the PROGRESS section from the start — "a historical
@@ -96,7 +96,7 @@ export function CheckInDetail({ date, now }: { date: string; now: number }) {
     <HubScreen
       title={title}
       subtitle="Check-in record"
-      backHref="/progress"
+      backHref="/myskin"
       action={
         dayTag ? (
           <Tag className={styles.dayTag}>

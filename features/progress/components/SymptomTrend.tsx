@@ -36,13 +36,12 @@ export function SymptomTrend({
 }) {
   const titleId = useId();
 
-  const days = trendDays(today);
+  const days = trendDays(today, checkIns);
   const index = new Map(days.map((d, i) => [toIso(d), i]));
   const shown = checkIns.filter((c) => index.has(c.date));
   const events = trendEvents(products, days);
-  const latest = events.at(-1);
 
-  /* 0..1 across the plot, the first day at 0 and today at 1 */
+  /* 0..1 across the plot, the window's first day at 0 and its last at 1 */
   const xOf = (iso: string) => (index.get(iso) ?? 0) / (TREND_DAYS - 1);
 
   const points = shown.map((c) => ({
@@ -93,16 +92,6 @@ export function SymptomTrend({
             </div>
 
             <div className={styles.plot}>
-              {latest && (
-                <span
-                  className={`${styles.eventPill} t-label-sm`}
-                  style={pillStyle(xOf(latest.date))}
-                >
-                  <span className="visually-hidden">Product added, </span>
-                  {shortDate(latest.date)}
-                </span>
-              )}
-
               <div className={styles.field}>
                 <div className={styles.bands}>
                   <span style={{ "--i": 0 } as CSSProperties} />
@@ -111,14 +100,6 @@ export function SymptomTrend({
                 </div>
 
                 <div className={styles.track}>
-                  {events.map((e) => (
-                    <span
-                      key={`${e.date}-${e.name}`}
-                      className={styles.eventLine}
-                      style={{ left: `${xOf(e.date) * 100}%` }}
-                    />
-                  ))}
-
                   {points.length > 1 && (
                     <svg
                       className={styles.line}
@@ -185,14 +166,6 @@ export function SymptomTrend({
       )}
     </DataCard>
   );
-}
-
-/** The pill centres on its line, and holds to the plot's edge near either end
- *  rather than hanging off the card. */
-function pillStyle(x: number): CSSProperties {
-  if (x < 0.25) return { left: 0 };
-  if (x > 0.75) return { right: 0 };
-  return { left: `${x * 100}%`, transform: "translateX(-50%)" };
 }
 
 /** "Sep", or "Sep–Oct" when the fortnight crosses a month */

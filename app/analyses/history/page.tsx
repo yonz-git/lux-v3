@@ -1,13 +1,12 @@
-import { ProgressEmpty } from "@/features/progress/components/ProgressScreen";
+import { CheckHistory } from "@/features/check/components/CheckHistory";
 import type { Metadata } from "next";
 import { metadataTitleFor } from "@/lib/pageTitles";
 
-/** `Progress — empty` (551:1196 / 551:1231). */
 /* The route's own `<title>`, product name included — see `metadataTitleFor`.
    Shared with `RouteAnnouncer`, so the tab label and the sentence a screen
    reader hears on navigation cannot drift apart. */
-export const metadata: Metadata = { title: metadataTitleFor("/progress/empty") };
+export const metadata: Metadata = { title: metadataTitleFor("/analyses/history") };
 
 export default function Page() {
-  return <ProgressEmpty />;
+  return <CheckHistory />;
 }

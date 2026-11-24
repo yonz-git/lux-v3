@@ -1,13 +1,14 @@
-import { CheckNoProfile } from "@/features/check/components/CheckScreen";
+import { CheckBuilder } from "@/features/check/components/CheckBuilder";
 import type { Metadata } from "next";
 import { metadataTitleFor } from "@/lib/pageTitles";
 
-/** `Check — no profile` (— / 606:2183). */
 /* The route's own `<title>`, product name included — see `metadataTitleFor`.
    Shared with `RouteAnnouncer`, so the tab label and the sentence a screen
    reader hears on navigation cannot drift apart. */
-export const metadata: Metadata = { title: metadataTitleFor("/check/no-profile") };
+export const metadata: Metadata = { title: metadataTitleFor("/analyses/new") };
+
+export const dynamic = "force-dynamic";
 
 export default function Page() {
-  return <CheckNoProfile />;
+  return <CheckBuilder now={Date.now()} />;
 }

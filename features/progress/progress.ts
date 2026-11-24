@@ -123,11 +123,20 @@ export function trendHeight(severity: number): number {
   return (i + (clamped - band.from) / (band.to - band.from)) / TREND_BANDS.length;
 }
 
-/** The window's days, oldest first, ending today. */
-export function trendDays(today: Date): Date[] {
-  return Array.from({ length: TREND_DAYS }, (_, i) =>
-    addDays(today, i - (TREND_DAYS - 1))
-  );
+/**
+ * The window's days, oldest first. It opens on the first check-in while the
+ * check-ins span less than the window, so a new investigation reads from the
+ * left and fills in day by day; after that it is the last `TREND_DAYS`, ending
+ * today.
+ */
+export function trendDays(today: Date, checkIns: readonly CheckIn[] = []): Date[] {
+  const latestStart = addDays(today, -(TREND_DAYS - 1));
+  const first = checkIns
+    .map((c) => fromIso(c.date))
+    .filter((d): d is Date => d !== null && daysBetween(d, today) >= 0)
+    .sort((a, b) => a.getTime() - b.getTime())[0];
+  const start = first && daysBetween(latestStart, first) > 0 ? first : latestStart;
+  return Array.from({ length: TREND_DAYS }, (_, i) => addDays(start, i));
 }
 
 /** The one-line reading over the chart — "From moderate to mild in 10 days". */
@@ -184,7 +193,7 @@ export function latestCheckIn(list: CheckIn[]): CheckIn | null {
 
 /**
  * Each symptom and the places marked for it — what the face card on
- * `/progress` draws as callouts: a pill at the face's edge per symptom, with a
+ * `/myskin` draws as callouts: a pill at the face's edge per symptom, with a
  * line to each of its places.
  */
 export function symptomPlaces(a: Answers): SymptomPlaces {
@@ -286,7 +295,7 @@ export function recordCheckIn(current: CheckIn[], entry: CheckIn): CheckIn[] {
   );
 }
 
-/** What `/progress` plots: the user's own check-ins since the start, oldest first. */
+/** What `/myskin` plots: the user's own check-ins since the start, oldest first. */
 export function checkInsFor(a: Answers, view: ProgressView): CheckIn[] {
   const recorded = (a.checkIns ?? []).filter((c) => {
     const day = fromIso(c.date) ?? view.today;
@@ -298,7 +307,7 @@ export function checkInsFor(a: Answers, view: ProgressView): CheckIn[] {
   return recorded.reduce(recordCheckIn, []);
 }
 
-/* SKIN HEALTH — `/progress/health`
+/* SKIN HEALTH — `/myskin/health`
 
    The latest reading over a chosen window, the range and the count inside it,
    and the one-line reading. Every figure comes from the user's check-ins; a

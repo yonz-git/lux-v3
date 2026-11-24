@@ -8,7 +8,7 @@ export async function generateMetadata({
   params: Promise<{ date: string }>;
 }): Promise<Metadata> {
   const { date } = await params;
-  return { title: metadataTitleFor(`/progress/check-in/${date}`) };
+  return { title: metadataTitleFor(`/myskin/check-in/${date}`) };
 }
 
 export default async function Page({

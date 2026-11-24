@@ -10,6 +10,15 @@ const nextConfig = {
     // $HOME as the workspace root.
     root: import.meta.dirname,
   },
+  // the hubs' old addresses, kept working for saved links
+  async redirects() {
+    return [
+      { source: "/progress", destination: "/myskin", permanent: true },
+      { source: "/progress/:path*", destination: "/myskin/:path*", permanent: true },
+      { source: "/check", destination: "/analyses", permanent: true },
+      { source: "/check/:path*", destination: "/analyses/:path*", permanent: true },
+    ];
+  },
 };
 
 export default nextConfig;

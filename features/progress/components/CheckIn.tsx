@@ -33,7 +33,7 @@ import {
   severityAfter,
 } from "@/features/progress/progress";
 
-/** The daily check-in — `Check-in chat` (555:1268), at `/progress/check-in`. */
+/** The daily check-in — `Check-in chat` (555:1268), at `/myskin/check-in`. */
 export function CheckIn({ now }: { now: number }) {
   const router = useRouter();
   const { answers } = useInvestigation();
@@ -45,8 +45,8 @@ export function CheckIn({ now }: { now: number }) {
     <main className="screen" data-layout="panel">
       <CheckInPanel
         now={now}
-        closeHref="/progress"
-        onSubmitted={() => router.push("/progress")}
+        closeHref="/myskin"
+        onSubmitted={() => router.push("/myskin")}
       />
       <BottomNav active="my-skin" />
     </main>
@@ -65,7 +65,7 @@ export function CheckInPanel({
   heading,
 }: {
   now: number;
-  /** the route form — the X is a link back to `/progress` */
+  /** the route form — the X is a link back to `/myskin` */
   closeHref?: string;
   /** the overlay form — the X closes the overlay, going nowhere */
   onClose?: () => void;

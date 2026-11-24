@@ -39,15 +39,15 @@ export type Answers = Partial<{
   /** what the tray's search field currently has typed in it */
   productQuery: string;
 
-  /** the products in the basket being built on /check/new. */
+  /** the products in the basket being built on /analyses/new. */
   checkBasket: CatalogProduct[];
-  /** what /check/new's search field has typed in it */
+  /** what /analyses/new's search field has typed in it */
   checkQuery: string;
   /** checks the user has actually run, newest first. The seeded history in
    *  lib/check.ts sits BELOW these rather than in here — a demo row is not
    *  something the user did. */
   checks: SavedCheck[];
-  /** which check /check/results is showing; absent means the newest */
+  /** which check /analyses/results is showing; absent means the newest */
   viewingCheck: string;
 
   /**

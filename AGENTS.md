@@ -55,17 +55,17 @@ lib/                 date.ts, pageTitles.ts, actives.ts
 | `/investigation/products` | step 5/5 | `products` |
 | `/investigation/analysis` | pushed, retrospective analysis | `my-skin` |
 | `/products` | hub, the three groups at 0 until a product is added | `products` |
-| `/progress` | hub, default, empty until step 4 | `my-skin` |
-| `/progress/empty` | prototype empty state | `my-skin` |
-| `/progress/check-in` | pushed, check-in chat | `my-skin` |
-| `/progress/check-in/[date]` | pushed, only dynamic route | `my-skin` |
-| `/progress/health` | pushed, latest reading over Week / Month / All | `my-skin` |
-| `/check` | hub, default, titled `Analysis` | `check` |
-| `/check/no-profile` | prototype empty state | `check` |
-| `/check/new` | pushed, build a check | `check` |
-| `/check/analyzing` | pushed | `check` |
-| `/check/results` | pushed | `check` |
-| `/check/history` | pushed | `check` |
+| `/myskin` | hub, default, empty until step 4 | `my-skin` |
+| `/myskin/empty` | prototype empty state | `my-skin` |
+| `/myskin/check-in` | pushed, check-in chat | `my-skin` |
+| `/myskin/check-in/[date]` | pushed, only dynamic route | `my-skin` |
+| `/myskin/health` | pushed, latest reading over Week / Month / All | `my-skin` |
+| `/analyses` | hub, default, titled `Analysis` | `check` |
+| `/analyses/no-profile` | prototype empty state | `check` |
+| `/analyses/new` | pushed, build a check | `check` |
+| `/analyses/analyzing` | pushed | `check` |
+| `/analyses/results` | pushed | `check` |
+| `/analyses/history` | pushed | `check` |
 | `/styleguide` | dev tool | `none` |
 | `/tweak` | dev tool, step 1 framed with a tuning panel | `none` |
 | `/tweak/welcome` | dev tool, Welcome framed with a tuning panel | `none` |
@@ -74,7 +74,7 @@ lib/                 date.ts, pageTitles.ts, actives.ts
 - `TOTAL_STEPS` = 5. Profile and analysis are not steps. Don't add them to `STEPS`.
 - Nav id `check` is labelled `Analysis`. Don't rename the id.
 - Overlays (`Sheet`, not routes): selfie capture, products add tray, progress photo gallery.
-- Daily check-in: modal on `/progress` and route `/progress/check-in`. Both render `CheckInPanel`. Don't fork. Scrim doesn't close it.
+- Daily check-in: modal on `/myskin` and route `/myskin/check-in`. Both render `CheckInPanel`. Don't fork. Scrim doesn't close it.
 - Dialogs use Radix Dialog + `useDialogFocus` (`lib/useModalDialog.ts`). Every modal's scrim dims and blurs the page behind it (`--blur-md`).
 
 ### my-skin
@@ -141,7 +141,7 @@ lib/                 date.ts, pageTitles.ts, actives.ts
 | `DateField` | `value?`, `onChange`, `id?`, `placeholder?` |
 | `SearchField` | `value`, `onChange`, `placeholder?`, `label`, `action?`, `variant?: "glass" \| "clear"` |
 | `SearchDropdown` | `placement: "float" \| "flow"`, `leaving?`, `heading?`; children `SearchDropdownList` > `SearchDropdownRow` (`leading`, `title`, `meta?`, `trailing?`, `onSelect?`) or `SearchDropdownNote` |
-| `ChatBubble` | `from: "ai" \| "user"`, `align?`, `full?`, `size?: "default" \| "compact" \| "hero"` (hero = the orb's line on Welcome and `/check`, and the check-in's turns) |
+| `ChatBubble` | `from: "ai" \| "user"`, `align?`, `full?`, `size?: "default" \| "compact" \| "hero"` (hero = the orb's line on Welcome and `/analyses`, and the check-in's turns) |
 | `CoachBubble` | `children`, `className?`, `bubbleClassName?` — orb beside an AI bubble, orb centred on the first line |
 | `Sheet` | `open`, `onClose`, `title`, `children` |
 | `Collapse` | `open`, `as?`, `appear?` |
@@ -178,9 +178,9 @@ lib/                 date.ts, pageTitles.ts, actives.ts
 
 - `EmptyState` inside `HubScreen layout="plain" center="empty"`: Orb → 32 → `t-h5` title → 12 → body → `--space-hero-action` → action. No card. Never rebuild it in a screen.
 - `center="empty"` keeps the heading at the top and sets the block low, its button on `--cta-bottom`.
-- Orb + chat bubble screens (Welcome, `/check`): the orb and bubble are one group, centred between the top and the button, at least 32 from each. Button stays on `--cta-bottom`.
-- A screen's main button rests on `--cta-bottom` (120 above the nav) at every width and height: flow Continue, `/check`, the empty states. Taller content pushes it down; never a per-screen offset.
-- Welcome, the flow steps (Continue) and `/check` rest lower, on `--cta-bottom-flow` (64 above the nav).
+- Orb + chat bubble screens (Welcome, `/analyses`): the orb and bubble are one group, centred between the top and the button, at least 32 from each. Button stays on `--cta-bottom`.
+- A screen's main button rests on `--cta-bottom` (120 above the nav) at every width and height: flow Continue, `/analyses`, the empty states. Taller content pushes it down; never a per-screen offset.
+- Welcome, the flow steps (Continue) and `/analyses` rest lower, on `--cta-bottom-flow` (64 above the nav).
 
 ### Selection controls
 

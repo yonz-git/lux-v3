@@ -110,7 +110,7 @@ function conflictsFor(
   return found;
 }
 
-/** The ingredient words a product should be findable by on `/check/new`. */
+/** The ingredient words a product should be findable by on `/analyses/new`. */
 export function checkSearchTerms(product: CatalogProduct): string[] {
   return activesOf(product).flatMap((id) => [ACTIVES[id].name, id]);
 }
@@ -200,7 +200,7 @@ export function ingredientCount(basket: CatalogProduct[]): number {
    What the analysing screen says it is doing
    -------------------------------------------------------------------------- */
 
-/** The passes `/check/analyzing` names while it waits. */
+/** The passes `/analyses/analyzing` names while it waits. */
 export const CHECK_PASSES = [
   "Reading the ingredients in each product",
   "Scoring each one against your skin profile",

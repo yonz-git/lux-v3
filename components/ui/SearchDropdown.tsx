@@ -3,9 +3,9 @@ import styles from "./SearchDropdown.module.css";
 
 /**
  * Search Dropdown: the frosted panel that hangs off a `SearchField` with what
- * the search found. The PRODUCTS add tray and `/check/new` both use it.
+ * the search found. The PRODUCTS add tray and `/analyses/new` both use it.
  *
- * `float` sits over the page under the field (`/check/new`); `flow` takes its
+ * `float` sits over the page under the field (`/analyses/new`); `flow` takes its
  * place in the tray's column, tucked up under the field. The panel caps its
  * height and scrolls inside, under an optional heading that stays put.
  * Mount it while the presence hook says so, and pass `leaving` while it exits.

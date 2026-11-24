@@ -12,7 +12,7 @@ import { hasInvestigation } from "@/features/progress/progress";
 import { useInvestigation } from "@/lib/store/InvestigationProvider";
 
 /**
- * CHECK — the Check tab landing, at `/check`: `Check — start` (601:1952, and
+ * CHECK — the Check tab landing, at `/analyses`: `Check — start` (601:1952, and
  * its desktop twin). Documented by `HANDOFF — CHECK` (613:2434).
  */
 export function CheckScreen() {
@@ -44,10 +44,10 @@ export function CheckScreen() {
       </div>
 
       <div className={styles.actions}>
-        <Button width="action" href="/check/new" className={styles.cta}>
+        <Button width="action" href="/analyses/new" className={styles.cta}>
           Start analysis
         </Button>
-        <Link href="/check/history" className={`${styles.link} t-body3 tap-target`}>
+        <Link href="/analyses/history" className={`${styles.link} t-body3 tap-target`}>
           <span className={styles.linkLabel}>View previous analyses</span>
           <ChevronRightIcon className={styles.linkArrow} />
         </Link>
@@ -56,7 +56,7 @@ export function CheckScreen() {
   );
 }
 
-/** `Check — no profile`, at `/check/no-profile`. */
+/** `Check — no profile`, at `/analyses/no-profile`. */
 export function CheckNoProfile() {
   return (
     <HubScreen
@@ -65,7 +65,7 @@ export function CheckNoProfile() {
       nav="check"
       layout="plain"
       center="empty"
-      /* the same state of the same screen as `/check`, so the same top */
+      /* the same state of the same screen as `/analyses`, so the same top */
       tightTop
     >
       <EmptyState

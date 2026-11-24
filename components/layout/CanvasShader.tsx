@@ -240,7 +240,7 @@ function parseHex(value: string): [number, number, number] | null {
 }
 
 /** The one canvas the app renders, behind every route. */
-const INTERACTIVE_ROUTES = new Set(["/", "/check"]);
+const INTERACTIVE_ROUTES = new Set(["/", "/analyses"]);
 
 export function AppCanvas() {
   const pathname = usePathname();

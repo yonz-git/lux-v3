@@ -559,12 +559,12 @@
   --cta-bottom: calc(
     var(--nav-inset-bottom) + var(--size-nav-height) + var(--space-9xl)
   );
-  /* Welcome, the flow steps and `/check` rest their button lower: 64 above
+  /* Welcome, the flow steps and `/analyses` rest their button lower: 64 above
      the nav, not 120 */
   --cta-bottom-flow: calc(
     var(--nav-inset-bottom) + var(--size-nav-height) + var(--space-6xl)
   );
-  /* moves the orb + bubble group of Welcome and `/check` off the centre of the
+  /* moves the orb + bubble group of Welcome and `/analyses` off the centre of the
      space above the button: positive is down. Tuned at `/tweak/welcome`. */
   --hero-shift: 0rem;
 }

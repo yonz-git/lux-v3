@@ -17,8 +17,8 @@ import { hasInvestigation } from "@/features/progress/progress";
  * `active` mirrors the component's Active property and reflects the section the
  * user is IN, not the screen they came from:
  *   my-skin  — the investigation flow (every `QuestionScreen`,
- *              `/investigation/*`) and progress, `/progress*`
- *   check    — the compatibility check, `/check*`
+ *              `/investigation/*`) and progress, `/myskin*`
+ *   check    — the compatibility check, `/analyses*`
  *   products — product browse and detail
  *   none     — outside those three sections (welcome, intro, onboarding steps).
  *              `none` is a deliberate state, not a fallback.
@@ -32,10 +32,10 @@ const items = [
     id: "my-skin",
     label: "My skin",
     href: "/investigation/start",
-    profileHref: "/progress",
+    profileHref: "/myskin",
     Icon: MySkinIcon,
   },
-  { id: "check", label: "Analysis", href: "/check", Icon: CheckIcon },
+  { id: "check", label: "Analysis", href: "/analyses", Icon: CheckIcon },
   { id: "products", label: "Products", href: "/products", Icon: ProductsIcon },
 ] as const;
 

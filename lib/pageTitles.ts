@@ -6,16 +6,16 @@ export const APP_NAME = "LUX";
 const HUB_TITLES: Record<string, string> = {
   "/": "Welcome",
   "/products": "Products in use",
-  "/progress": "Progress",
-  "/progress/empty": "Progress, no check-ins yet",
-  "/progress/check-in": "Daily check-in",
-  "/progress/health": "Skin health",
-  "/check": "Analysis",
-  "/check/no-profile": "Analysis, no skin profile",
-  "/check/new": "Compatibility analysis",
-  "/check/analyzing": "Analysing your products",
-  "/check/results": "Analysis results",
-  "/check/history": "Previous analyses",
+  "/myskin": "Progress",
+  "/myskin/empty": "Progress, no check-ins yet",
+  "/myskin/check-in": "Daily check-in",
+  "/myskin/health": "Skin health",
+  "/analyses": "Analysis",
+  "/analyses/no-profile": "Analysis, no skin profile",
+  "/analyses/new": "Compatibility analysis",
+  "/analyses/analyzing": "Analysing your products",
+  "/analyses/results": "Analysis results",
+  "/analyses/history": "Previous analyses",
   "/investigation/analysis": "Analysis",
   "/investigation/profile": "What we know about your skin",
   /* the design system rendered live — a dev tool, in no nav section */
@@ -37,7 +37,7 @@ export function titleFor(pathname: string): string | null {
   return HUB_TITLES[pathname] ?? null;
 }
 
-const CHECK_IN_DETAIL = /^\/progress\/check-in\/[^/]+$/;
+const CHECK_IN_DETAIL = /^\/myskin\/check-in\/[^/]+$/;
 
 /** The same title with the product name on it, for a page's `metadata` export. */
 export function metadataTitleFor(pathname: string): string {

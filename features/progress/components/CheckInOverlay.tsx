@@ -6,7 +6,7 @@ import styles from "./CheckInOverlay.module.css";
 import { CheckInPanel } from "./CheckIn";
 import { useDialogFocus, useDialogPresence } from "@/lib/useModalDialog";
 
-/** The daily check-in opened OVER `/progress`, rather than navigated to. */
+/** The daily check-in opened OVER `/myskin`, rather than navigated to. */
 export function CheckInOverlay({
   open,
   now,

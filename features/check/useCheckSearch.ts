@@ -8,8 +8,8 @@ import { useOpenBeautyFactsSearch } from "@/features/products/useOpenBeautyFacts
 import { checkSearchTerms } from "@/features/check/check";
 
 /**
- * The search BOTH of CHECK's product pickers run — `/check/new`'s floating
- * dropdown and the compared-products box's inline picker on `/check/results`.
+ * The search BOTH of CHECK's product pickers run — `/analyses/new`'s floating
+ * dropdown and the compared-products box's inline picker on `/analyses/results`.
  */
 export function useCheckSearch(query: string): {
   /** live first, then anything the ingredient index found that it did not hold */

@@ -9,7 +9,7 @@ import { COPY } from "@/features/my-skin/profile";
 /**
  * `Symptoms and location` — the read-only face diagram with a LIST of each
  * symptom and its places beside it, and the episode's start date under the
- * list. Drawn on `/progress` and on the profile recap
+ * list. Drawn on `/myskin` and on the profile recap
  * (`/investigation/profile`); it is the one place the location answer is
  * read back, so the two screens share it rather than each pairing the face
  * with its own copy of the `Other` line.

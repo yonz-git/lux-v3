@@ -519,7 +519,7 @@ main[tabindex="-1"]:focus-visible {
   padding-bottom: var(--cta-bottom);
 }
 
-/* Welcome, the flow steps and `/check` rest it lower, on their own token */
+/* Welcome, the flow steps and `/analyses` rest it lower, on their own token */
 .screen[data-layout="flow"],
 .screen[data-layout="hub"][data-hero],
 .screen[data-cta-foot] {

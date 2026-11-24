@@ -122,7 +122,7 @@ function Hypotheses({ analysis }: { analysis: AnalysisResult }) {
         ? { pausing, reviewOn: toIso(addDays(today, OBSERVATION_WEEKS * 7)) }
         : {}),
     }));
-    router.push(pausing ? "/progress/check-in" : "/progress");
+    router.push(pausing ? "/myskin/check-in" : "/myskin");
   }
 
   return (

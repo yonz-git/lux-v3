@@ -87,7 +87,7 @@ export function HubScreen({
       data-center={center === true || undefined}
       /* `center="low"` reserves no nav on desktop at any height — globals.css */
       data-low={low || empty || undefined}
-      /* `/check`'s orb + bubble hero rests its button as Welcome does */
+      /* `/analyses`'s orb + bubble hero rests its button as Welcome does */
       data-hero={low || undefined}
       data-tight-top={tightTop || undefined}
       data-title-hidden={(title && titleHidden) || undefined}

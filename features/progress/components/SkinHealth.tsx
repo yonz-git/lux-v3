@@ -36,7 +36,7 @@ import {
 } from "@/features/progress/progress";
 
 /**
- * Skin health, at `/progress/health` — the latest reading over a chosen
+ * Skin health, at `/myskin/health` — the latest reading over a chosen
  * window: the score with its word and turn 1's direction, the line, the
  * range and the count of check-ins, and the one-line reading. A pushed view
  * of Progress, on the readout surface (DataCard).
@@ -229,7 +229,7 @@ export function SkinHealth({ now }: { now: number }) {
             {latest && (
               <IconButton
                 size="md"
-                href={`/progress/check-in/${latest.date}`}
+                href={`/myskin/check-in/${latest.date}`}
                 label="Open the latest check-in"
               >
                 <ChevronRightIcon />

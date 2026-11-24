@@ -14,7 +14,7 @@ import { toIso } from "@/lib/date";
  *  cannot leave before it has finished ticking or hang after it has. */
 const ANALYSIS_MS = passesDuration(CHECK_PASSES.length);
 
-/** `Check — analyzing` (605:2163) at `/check/analyzing`. */
+/** `Check — analyzing` (605:2163) at `/analyses/analyzing`. */
 export function CheckAnalyzing() {
   const router = useRouter();
   const { answers, setAnswer } = useInvestigation();
@@ -29,7 +29,7 @@ export function CheckAnalyzing() {
      behaviour. */
   useEffect(() => {
     if (basket.length === 0) {
-      router.replace("/check/new");
+      router.replace("/analyses/new");
       return;
     }
 
@@ -40,14 +40,14 @@ export function CheckAnalyzing() {
         ...(prev ?? []),
       ]);
       setAnswer("viewingCheck", id);
-      router.replace("/check/results");
+      router.replace("/analyses/results");
     }, ANALYSIS_MS);
 
     return () => clearTimeout(timer);
   }, []);
 
   return (
-    <HubScreen nav="check" backHref="/check/new" layout="plain" center tightTop>
+    <HubScreen nav="check" backHref="/analyses/new" layout="plain" center tightTop>
       <div className={styles.hero}>
         {/* the orb IS the AI doing the work — the handoff's deviation #1 for
             05 — Investigating, which this screen was cloned from. */}

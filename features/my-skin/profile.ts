@@ -136,7 +136,7 @@ export const COPY = {
   /** the figure's accessible name — the well holds a drawing, not a face */
   photoCaption: "The photo you added",
   photoUpdate: "Update photo",
-  /** The face card's heading, on this screen and on `/progress`. */
+  /** The face card's heading, on this screen and on `/myskin`. */
   locationLabel: "Symptoms and location",
   /** The label over step 1's typed description. */
   locationOtherLabel: "Other",

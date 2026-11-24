@@ -60,7 +60,7 @@ export function MyProducts() {
           /* an analysis compares products, so it is offered once there are
              enough to compare; it eases in and out with the count */
           <Collapse open={products.length >= MIN_CHECK_PRODUCTS} smooth>
-            <Button href="/check/new" width="action">
+            <Button href="/analyses/new" width="action">
               Start analysis
             </Button>
           </Collapse>

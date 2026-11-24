@@ -15,7 +15,7 @@ import {
 import { fullName, type CatalogProduct } from "@/features/products/products";
 
 /**
- * The basket on `/check/new` — the products going into this check.
+ * The basket on `/analyses/new` — the products going into this check.
  *
  * Figma: `tray-bar` on `Check — tray collapsed` (650:2513) and `bottom-sheet`
  * on `Check — selection · N products` (604:2103).

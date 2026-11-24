@@ -50,10 +50,10 @@ import {
 import { useCheckSearch } from "@/features/check/useCheckSearch";
 import SegmentedToggle from "@/features/products/components/SegmentedToggle";
 
-/** `Check results` (476:2841) at `/check/results`. */
+/** `Check results` (476:2841) at `/analyses/results`. */
 export function CheckResults({
   now,
-  backHref = "/check",
+  backHref = "/analyses",
 }: {
   now: number;
   /** where back leads: the history list when the check was opened from it,
@@ -64,7 +64,7 @@ export function CheckResults({
   const { answers, setAnswer } = useInvestigation();
   const { add } = useProductLibrary();
   /* the skin profile card's values, from PROGRESS's own view — the same
-     derivation `/check/new` and `/progress` use, so the three cannot disagree */
+     derivation `/analyses/new` and `/myskin` use, so the three cannot disagree */
   const profile = progressView(answers, useToday(now));
   /* null = untouched, so the box is showing exactly the check that was run. An
      array = the user has removed something and nothing has been analysed yet. */
@@ -324,7 +324,7 @@ export function CheckResults({
                   className={styles.rerunButton}
                   disabled={!enough}
                   aria-describedby={noteId}
-                  onClick={() => leaveWith("/check/analyzing")}
+                  onClick={() => leaveWith("/analyses/analyzing")}
                 >
                   Re-run analysis
                 </Button>
@@ -367,7 +367,7 @@ export function CheckResults({
         />
       </div>
 
-      <Link href="/check/history" className={`${styles.historyLink} t-body3 tap-target`}>
+      <Link href="/analyses/history" className={`${styles.historyLink} t-body3 tap-target`}>
         <span className={styles.historyLabel}>View previous analyses</span>
         <ChevronRightIcon className={styles.historyArrow} />
       </Link>
@@ -419,7 +419,7 @@ function ProductPicker({
       />
 
       {/* the count is inside a panel a screen reader has to find, so the result
-          of typing is announced — the same line `/check/new` and the tray use */}
+          of typing is announced — the same line `/analyses/new` and the tray use */}
       <p role="status" aria-live="polite" className="visually-hidden">
         {!searching
           ? ""

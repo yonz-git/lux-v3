@@ -648,7 +648,7 @@ canvas board were moved onto this vocabulary, with no new shape:
   gallery cards, the recap's blocks (`canvas-card` is the panel now), the
   calendar (its sheet-sage override is gone);
 - every row that is a box is the `panel` at 24 — the Products hub's groups,
-  `/check/new`'s product rows, `/check/history`'s rows; a card inside one of
+  `/analyses/new`'s product rows, `/analyses/history`'s rows; a card inside one of
   those boxes is `glass` at 16;
 - the skin profile's answers are read-only `glass` pills, 32 tall (a control
   is 44), dark ink; card overlines are `overline` at its own size;

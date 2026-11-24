@@ -622,7 +622,7 @@ export function Tweak({ src = "/investigation/start" }: { src?: string }) {
   const restingCta = mainEl && win() ? parseFloat(win()!.getComputedStyle(mainEl).paddingBottom) : 198;
   /* Welcome and the flow steps rest their button on their own token */
   const ctaToken =
-    src === "/" || src === "/check" || src.startsWith("/investigation/")
+    src === "/" || src === "/analyses" || src.startsWith("/investigation/")
       ? "--cta-bottom-flow"
       : "--cta-bottom";
   const ctaBottom = pxOf(tokens[ctaToken]) ?? Math.round(restingCta);

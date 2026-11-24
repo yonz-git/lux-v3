@@ -34,7 +34,7 @@ import {
   fullName,
 } from "@/features/products/products";
 
-/** `/check/new` — build the check. */
+/** `/analyses/new` — build the check. */
 export function CheckBuilder({ now }: { now: number }) {
   const router = useRouter();
   const { answers, setAnswer } = useInvestigation();
@@ -164,7 +164,7 @@ export function CheckBuilder({ now }: { now: number }) {
       <HubScreen
         title="Compatibility analysis"
         nav="check"
-        backHref={answers.timing?.date ? "/investigation/timing" : "/check"}
+        backHref={answers.timing?.date ? "/investigation/timing" : "/analyses"}
         layout="card"
         tightTop
       >
@@ -306,7 +306,7 @@ export function CheckBuilder({ now }: { now: number }) {
         onAddAnother={() => setSheetOpen(false)}
         onSubmit={() => {
           setSheetOpen(false);
-          router.push("/check/analyzing");
+          router.push("/analyses/analyzing");
         }}
       />
 

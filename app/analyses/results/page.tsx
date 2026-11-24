@@ -5,7 +5,7 @@ import { metadataTitleFor } from "@/lib/pageTitles";
 /* The route's own `<title>`, product name included — see `metadataTitleFor`.
    Shared with `RouteAnnouncer`, so the tab label and the sentence a screen
    reader hears on navigation cannot drift apart. */
-export const metadata: Metadata = { title: metadataTitleFor("/check/results") };
+export const metadata: Metadata = { title: metadataTitleFor("/analyses/results") };
 
 export const dynamic = "force-dynamic";
 
@@ -19,7 +19,7 @@ export default async function Page({
   return (
     <CheckResults
       now={Date.now()}
-      backHref={from === "history" ? "/check/history" : "/check"}
+      backHref={from === "history" ? "/analyses/history" : "/analyses"}
     />
   );
 }

@@ -1,4 +1,4 @@
-/* The check-in as an overlay on `/progress` — see CheckInOverlay.tsx.
+/* The check-in as an overlay on `/myskin` — see CheckInOverlay.tsx.
 
    No panel geometry lives here. `ChatPanel` owns the surface (375 mobile / 450
    desktop, the 36 radius, its gradient); this file only reproduces the FRAME

@@ -1,7 +1,7 @@
 /* The PRODUCTS hub shell.
 
    Mobile: heading -> 12 -> body, or (a centred screen) heading -> flex ->
-           body -> flex -> footer, or (`center="low"`, `/check`) above, holding
+           body -> flex -> footer, or (`center="low"`, `/analyses`) above, holding
            the heading -> body, the body's button on `--cta-bottom`. Nothing here is 392 wide by
            accident — it is 440 minus two margin/mobile.
    Desktop: `card` puts the heading and body inside one centred 920 frosted card,
