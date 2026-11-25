@@ -194,7 +194,7 @@ export function CheckResults({
         <DataCard aria-labelledby={comparedId}>
           <div className={styles.compared}>
             <h2 id={comparedId} className={`${styles.comparedLabel} t-overline`}>
-              Compatibility · {list.length} products
+              Compatibility
             </h2>
 
             <EditToggle
