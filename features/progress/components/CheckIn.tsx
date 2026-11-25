@@ -322,10 +322,11 @@ export function CheckInPanel({
                   </figure>
                   <button
                     type="button"
-                    className={`${styles.remove} t-caption`}
+                    className={`${styles.remove} t-label-sm`}
+                    aria-label="Delete photo"
                     onClick={() => setPhoto(false)}
                   >
-                    Remove photo
+                    Delete
                   </button>
                 </div>
               </Collapse>
