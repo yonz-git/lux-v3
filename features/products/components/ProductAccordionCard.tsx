@@ -39,7 +39,7 @@ export function ProductAccordionCard({
       >
         <ProductThumb product={product} size={compact && !open ? "sm" : "md"} />
         <span className={styles.copy}>
-          <span className={`${styles.name} t-h6`}>
+          <span className={`${styles.name} t-label-h6`}>
             {fullName(product)}
           </span>
         </span>
