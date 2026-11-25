@@ -8,135 +8,91 @@
    sum so it tracks the nav tokens rather than a magic number.
    -------------------------------------------------------------------------- */
 
-.bar {
+/* the docked button: the nav's width, 12 above it */
+.dock {
   position: fixed;
   left: 50%;
   transform: translateX(-50%);
   bottom: calc(
     var(--nav-inset-bottom) + var(--size-nav-height) + var(--space-md)
   );
-  /* ⚠️ BELOW THE NAV. The bar is not a modal — only `Sheet` outranks the nav. */
   z-index: var(--z-sticky);
 
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: var(--space-md); /* 12 */
-
-  width: var(--size-nav-width-mobile); /* 392 on the comp; the nav's 380 + the
-     12 the comp's 392 exceeds it by is page-level — matching the nav width
-     keeps the bar and the pill beneath it on one edge, which reads better than
-     the comp's 6px overhang either side. See AGENTS.md. */
+  width: var(--size-nav-width-mobile); /* matches the nav pill's edge */
   max-width: calc(100vw - (var(--margin-mobile) * 2));
-  min-height: 54px;
-  padding: 14px var(--space-xl); /* 14 / 20 */
-
-  border-radius: var(--radius-full);
-  /* ⚠️ HALF THE FILL AND A REAL FROST — 16 Sep 2026, asked for directly ("give
-     less opacity and make it frosted"). `surface/data-strong` is 62%, which
-     read as a solid slab with the blur behind it doing nothing visible; mixed
-     to half (≈31%) the page shows through, and `saturate` keeps what shows
-     through from going grey. The reduced-transparency fallback below still
-     composites the full token, so that path is unchanged. */
-  /* lux-v3: the panel's glass, floating — a 30% frost, the panel edge and
-     rim, and the nav's soft drop (app/vidgen.css). The v2 sage is history. */
-  border: var(--border-width-hairline) solid var(--color-border-panel);
-  background: var(--color-panel);
-  box-shadow: var(--shadow-nav-vg);
-  -webkit-backdrop-filter: blur(16px);
-  backdrop-filter: blur(16px);
-
-  color: var(--color-text-on-data);
-  /* the label's shine paints from this, not from `color` — the surface's own
-     ink, per `.shine-text` in globals.css */
-  --shine-ink: var(--color-text-on-data);
-  /* ⚠️ CENTRED IN BOTH STATES, asked for directly 15 Sep 2026 — the goal line
-     first, then the ready line ("align center too"). The chevron is taken out
-     of the flow (`.barChevron`) so it cannot pull the words off centre. */
-  text-align: center;
-  transition: opacity var(--duration-fast) var(--ease-hover);
 }
 
-.bar:hover {
-  opacity: 0.9;
+/* the label keeps clear of the chevron on BOTH sides, so it stays centred on
+   the pill and a long one wraps before it reaches the arrow */
+.dockButton {
+  --button-pad-x: calc(var(--space-xl) + var(--size-icon-md) + var(--space-sm));
 }
 
-/* Below two products the bar states the goal instead of offering an action, so
-   it renders as a <p> and must not look pressable — no hover, and the label
-   steps back to on-data-secondary. It still carries the full surface: the point
-   is that the SAME element fills up as you add. */
-.bar[data-quiet] {
-  margin: 0;
-  color: var(--color-text-on-data-secondary);
-  --shine-ink: var(--color-text-on-data-secondary);
-  cursor: default;
-}
-
-.bar[data-quiet]:hover {
-  opacity: 1;
-}
-
-@media (hover: none) {
-  .bar:hover {
-    opacity: 1;
-  }
-}
-
-.barLabel {
-  flex: 1;
-  min-width: 0;
-  /* ⚠️ 1.5px OVER `t-body2`'s 16 — asked for directly 16 Sep 2026. Off the
-     type ramp (non-negotiable 3); the class keeps the weight and the 26 line. */
-  font-size: 17.5px;
-  /* the chevron's 24 plus an 8 gap, reserved on BOTH sides — so a long label
-     wraps before it reaches the arrow, and the words stay centred on the pill
-     whether or not the arrow is there */
-  padding-inline: calc(var(--size-icon-md) + var(--space-sm));
-}
-
-/* points UP, because the sheet opens upward */
+/* points UP, because the sheet opens upward; drawn over the Button, so a
+   click on it still lands on the Button. Centred by auto margins, not a
+   translate: chevrons carry `scale: 0.6` (globals.css), which shrinks a
+   translate inside `transform` and left the glyph 5px low. */
 .barChevron {
-  /* ⚠️ ABSOLUTE, NOT A FLEX ITEM — asked for directly 15 Sep 2026 ("don't
-     count the up arrow"). In the row it took 24 + the 12 gap off the label's
-     width, so the centred words sat 18 left of the pill's middle. Pinned to
-     the bar's own right padding and vertically centred, it no longer takes
-     part in the layout; `.bar` is `position: fixed`, so it is the containing
-     block. */
   position: absolute;
-  top: 50%;
-  right: var(--space-xl); /* 20 — the bar's own side padding */
+  inset-block: 0;
+  right: var(--space-xl); /* 20 */
+  margin-block: auto;
   width: var(--size-icon-md);
   height: var(--size-icon-md);
-  transform: translateY(-50%) rotate(180deg);
-  color: var(--color-icon-on-data);
+  rotate: 180deg;
+  color: var(--color-text-on-brand);
+  pointer-events: none;
 }
 
 @media (min-width: 1024px) {
-  .bar {
-    /* ⚠️ THE NAV'S 598, NOT THE CARD COLUMN'S 640 — asked for directly
-       15 Sep 2026 ("match the width of the element to the nav bar"). On a
-       phone the two already shared `size/nav-width-mobile`. */
+  .dock {
     width: var(--size-nav-width-desktop); /* 598 */
     max-width: none;
   }
 }
 
-@media (prefers-reduced-transparency: reduce) {
-  .bar {
-    background: var(--color-panel);
-    -webkit-backdrop-filter: none;
-    backdrop-filter: none;
-  }
-}
-
 /* ---------------------------------------------------------------------------
-   The expanded sheet. `Sheet` owns the surface, padding, radius and the 20 gap;
-   everything here is its contents.
+   The expanded sheet. `Sheet` owns the surface, radius and the 20 gap; the
+   phone's block padding is set below.
    -------------------------------------------------------------------------- */
 
 .sheetTitle {
   width: 100%;
   color: var(--color-text-on-data);
+  text-align: center;
+}
+
+/* The tray opens and closes on 48, not Sheet's 20, and on a phone the corner
+   ✕ comes down with it, so the title row keeps the ✕. From 1024 Sheet's 48
+   and its own ✕ position apply. Doubled: outranks `Sheet`'s
+   padding and ✕ whatever the bundle order. */
+.tray.tray {
+  padding-block: var(--space-5xl); /* 48 */
+}
+
+.tray.tray > [aria-label="Close"] {
+  top: var(--space-5xl);
+}
+
+@media (min-width: 1024px) {
+  .tray.tray > [aria-label="Close"] {
+    top: var(--space-xl); /* 20 */
+  }
+}
+
+/* The title shares the top row with the corner ✕: its x-height centres on
+   the 20 ✕, and it keeps the ✕'s room on BOTH sides so it stays centred on
+   the tray. From 1024 the tray's 48 padding puts the title below. */
+.sheetTitle {
+  margin-top: calc((var(--size-icon-sm) - 1lh - 1cap + 1ex) / 2); /* token-exempt: font metrics that centre the x-height band on the 20 ✕, not a scaled token */
+  padding-inline: calc(var(--size-icon-sm) + var(--space-sm));
+}
+
+@media (min-width: 1024px) {
+  .sheetTitle {
+    margin-top: 0;
+    padding-inline: 0;
+  }
 }
 
 .basket {
@@ -168,20 +124,12 @@
   color: var(--color-text-on-data-muted);
 }
 
-/* ⚠️ 72 TALL, NOT THE COMP'S 50 — the row carries a 48 product thumb now (see
-   CheckBasket.tsx), and 12 + 48 + 12 is 72. The padding is unchanged; only the
-   tallest thing inside it is new. Same proportion the add-product tray's own
-   result rows already have. */
 .item {
   display: flex;
   align-items: center;
   gap: var(--space-md); /* 12 */
-  padding: 12px var(--space-lg); /* 12 / 16 */
+  padding: 0.75rem var(--space-lg); /* 12 / 16 */
   border-radius: var(--radius-lg);
-  /* ⚠️ `surface/data-deep`, NOT `-data-strong` — BY EXPLICIT REQUEST, and the
-     same swap `ResultCards`' emphasis block takes. A 62% sage row on the 44%
-     sage tray is two steps of one hue with almost nothing between them; the
-     darker sage separates the rows from the tray they sit on. */
   /* lux-v3: GLASS ON THE SHEET, DARK INK — the deep-sage tier with white
      ink (3.77:1, never AA) is gone; the row is the chips' material. */
   border: var(--border-width-hairline) solid var(--color-border-glass);
@@ -192,64 +140,9 @@
 .itemLabel {
   flex: 1;
   min-width: 0;
-  /* ⚠️ WHITE ON A SAGE ROW, BY EXPLICIT REQUEST — AND IT DOES NOT MEET AA. The
-     row sits on `surface/data-deep` (`#4f838f @85%`), which composites over the
-     tray to #5a8b96, where white measures **3.77:1** against 4.5:1.
-
-     ⚠️ THE NUMBERS IT CAME THROUGH: 1.64–2.13:1 on `surface/data-strong` (which
-     is why globals.css redefined `text/on-data` dark in the first place), then
-     ~2.9:1 on the 62% `-deep`, now 3.77:1. All three are composites over
-     whatever sits behind the tray, so all three are ranges rather than numbers.
-
-     ⚠️ THE INK IS NOT THE WAY OUT — it measures 3.67:1 on the same fill, BELOW
-     the white. The surface sits where the two inks cross over; see the table on
-     `--color-surface-data-deep` in globals.css.
-
-     Named via `text/on-data-inverse` rather than a raw `#fff` so the
-     surface-and-ink pairing stays greppable and the module does not reach into
-     the primitives block (non-negotiable 2).
-     ⚠️ SUPERSEDED, lux-v3: the row is glass now and takes the app's ink. */
   color: var(--color-text-primary);
 }
 
-/* A 20 glyph needs a 44 target; the negative margin keeps the target from
-   driving the row height — the same trick HubScreen's back chevron uses. The
-   thumb is the tallest thing in the row now, so the row is 72. */
-.remove {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  flex: none;
-  width: var(--size-touch-target);
-  height: var(--size-touch-target);
-  margin: calc((var(--size-icon-sm) - var(--size-touch-target)) / 2);
-  padding: 0;
-  border-radius: var(--radius-full);
-  /* the label's ink (lux-v3) */
-  color: var(--color-icon-default);
-  transition: opacity var(--duration-fast) var(--ease-hover);
-}
-
-.remove:hover {
-  opacity: 0.7;
-}
-
-@media (hover: none) {
-  .remove:hover {
-    opacity: 1;
-  }
-}
-
-.removeIcon {
-  width: var(--size-icon-sm); /* 20 */
-  height: var(--size-icon-sm);
-}
-
-/* ⚠️ NOT IN FIGMA — `Add another product` is the secondary `Button` at
-   `size="md"` (48) with a plus, hugging its label and centred under the rows:
-   step 1's `Take a photo` recipe, asked for directly 13 Sep 2026. It was a
-   56-tall full-width deep-sage row with a border/glass stroke, then briefly a
-   36-tall `SmallButton` that read too small. */
 .addAnotherItem {
   display: flex;
   justify-content: center;
@@ -271,36 +164,9 @@
 /* The same `width/action` every other primary action in the app takes, rather
    than stretching across the tray. No centring needed here — `Sheet`'s tray is
    a flex column with `align-items: center`, so a child that is not full width
-   is already on the axis.
-
-   ⚠️ THE CAP IS UNCONDITIONAL, NOT DESKTOP-ONLY — that was the bug. `Sheet`'s
-   tray is `left: 0; right: 0` until 1024, so between a phone and that
-   breakpoint it is as wide as the VIEWPORT, and a `width: 100%` CTA grew with
-   it: measured at a 988 window the button was ~948 while `Start analysis` —
-   the same primary action one section over — was 392, because `HubScreen`
-   caps its mobile column. Every screen-level action in LUX is bounded; the one
-   inside the tray was not.
-
-   `max-width` rather than `width` so a narrow phone is unaffected — at 416 and
-   below the tray's content box is under 376 and the button fills it outright.
-   Between there and 440 (the Figma canvas, content box 400) the cap leaves a
-   12 gutter either side of a CTA the rows still span; that is the price of
-   having no breakpoint between mobile and 1024 to hang this on, and 12 is
-   cheaper than the ~570 of overshoot it replaces. Non-negotiable 12 forbids a
-   440 media query, so the cap is unconditional.
-
-   ⚠️ 380 BELOW 1024, 376 FROM IT — 13 Sep 2026. Below the breakpoint the cap
-   is `--width-action-mobile`, the nav pill's width, like every other action in
-   the app on a phone; the 376 it used to be is the desktop value. */
+   is already on the axis. */
 .submit {
-  width: 100%;
-  max-width: var(--width-action-mobile);
-}
-
-@media (min-width: 1024px) {
-  .submit {
-    max-width: var(--width-action);
-  }
+  /* width is `Button`'s `width="action"` */
 }
 
 /* sits directly under the disabled CTA, so the reason is next to the control it

@@ -27,32 +27,10 @@
   border-radius: var(--radius-lg);
 }
 
-/* ⚠️ WHITE, AND IT IS THE ONE PIECE OF TEXT IN HERE THAT IS — asked for
-   directly, so the label matches the dashed guide it sits inside. It binds
-   `effect/rim-highlight` (white @90%), the SAME token as `.guide`'s border and
-   `.shutterCore`'s fill, rather than a bare `#fff`: the guide and the label are
-   one object, so they move together if that token ever does.
-
-   ⚠️ IT FAILS AA, AND THAT IS NON-NEGOTIABLE 17's EXACT CASE. `surface/data` is
-   rgba(125, 167, 169, 0.44) and composites too light for white text at any
-   alpha — measured over the check-in panel's ground, white @90% lands at
-   ~1.8:1 against the fill behind it, where AA wants 4.5. `text/on-data`
-   (#2e2a3f) was passing. This is a chosen design value overriding a measured
-   one, logged the way the other two opt-outs are: flagged in the file that
-   carries it. Do not silently revert it — and do not copy the move onto
-   `.copy` or `.helper`, which stay dark.
-
-   ⚠️ IT MOVES ALL THREE CALLERS, because the recipe is shared: the check-in's
-   photo overlay, `SelfieSheet` on investigation step 1, and the PRODUCTS add
-   tray's scan view. All three draw this label on the same `surface/data`
-   viewfinder, so they were never going to differ — but if only the check-in
-   was meant to change, this rule is the wrong place and it needs a caller-level
-   override instead. */
 .captured {
   position: absolute;
   bottom: var(--space-lg);
   color: var(--color-effect-rim-highlight);
-  /* the tick beside the words, 15 Sep 2026 — see CameraCapture.tsx */
   display: inline-flex;
   align-items: center;
   gap: var(--space-xs); /* 4 */
@@ -79,6 +57,37 @@
   color: var(--color-text-on-data-secondary);
 }
 
+/* copy centred between two equal columns: the aside on the right, an empty
+   twin on the left */
+.copyRow {
+  display: grid;
+  grid-template-columns: var(--size-round-md) minmax(0, 1fr) var(--size-round-md);
+  align-items: center;
+  column-gap: var(--space-md);
+  width: 100%;
+}
+
+.copyRow > .copy {
+  grid-column: 2;
+  /* from the row's top, as the aside is, so a one-line copy shorter than the
+     control is not centred away from it */
+  align-self: start;
+}
+
+/* the control's centre sits on the centre of the copy's first line (the
+   title's, or the helper's when there is no title), measured on the lowercase
+   (x-height) band. The aside takes that line's type role, so `lh`, `cap` and
+   `ex` are its own: the caps sit centred in the line, the
+   baseline is a cap below their top, and the band's centre half an ex above
+   the baseline. */
+.aside {
+  grid-column: 3;
+  align-self: start;
+  display: flex;
+  justify-content: center;
+  margin-top: calc((1lh + 1cap - 1ex - var(--size-round-md)) / 2); /* token-exempt: font metrics that centre the control on the x-height band, not a scaled token */
+}
+
 .shutterRow {
   display: flex;
   justify-content: center;
@@ -96,11 +105,6 @@
   background: var(--color-bg-glass);
   box-shadow: var(--shadow-md);
 
-  /* ⚠️ `duration/slow` ON `ease/hover` — asked for directly 15 Sep 2026 ("make
-     the hover smooth"), twice. The duration went 120 → 320 first and the fade
-     still snapped: `ease/standard` lands half its change in the first fifth of
-     any duration. The curve was the fix (globals.css `--ease-hover`). Still a
-     fade and nothing else: LUX does not scale a control. */
   transition: opacity var(--duration-slow) var(--ease-hover);
 }
 

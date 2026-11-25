@@ -4,101 +4,6 @@
  * Exported verbatim from the brand master rather than redrawn: every path, every
  * gradient coordinate and every stop is the supplied artwork. Do not hand-tune
  * the geometry — retune it in the brand file and re-export.
- *
- * ⚠️ IT SHIPS AS TWO COMPONENTS, NOT ONE, AND THAT IS THE WHOLE POINT. The
- * entrance (`components/layout/LogoEntrance.tsx`) drifts the symbol in from its
- * left and the wordmark in from its right, so the two halves have to be
- * independently transformable. A single `<svg>` with two `<g>`s would have done
- * it too, but then every drift distance is in USER UNITS and cannot be
- * expressed against the element's own width — which is what keeps the gesture
- * the same size relative to the logo at 320 and at 1440. Two elements, two CSS
- * transforms, percentages that resolve against each element's own box.
- *
- * THE TWO VIEWBOXES TILE THE MASTER EXACTLY, WHICH IS WHAT MAKES THE LOCKUP
- * REASSEMBLE FOR FREE. The master is `0 0 538 173`:
- *
- *   mark  `0   0 209 173`   the symbol (spans x 0..169.3) PLUS the 39.7 of
- *                           clear space the master leaves before the L
- *   word  `209 0 329 173`   the wordmark (L, U, X — spans x 209..538)
- *
- * Laid out as two flex items at 209/538 and 329/538 of a shared width, with NO
- * gap, they render at one scale, one height, and land pixel-for-pixel on the
- * master. The gap lives inside the mark's box rather than in a CSS `gap` so the
- * two shares always sum to 1 and the lockup cannot drift as the stage resizes.
- *
- * ⚠️ THE GRADIENTS ARE `userSpaceOnUse`, SO SPLITTING THE BOX DID NOT MOVE THEM.
- * A viewBox offset maps user space to the viewport; it does not renumber user
- * space. `lux_logo_word_l` and `lux_logo_word_x` were byte-identical in the
- * master (same coordinates, same four stops) and are ONE definition here,
- * referenced twice — a de-duplication, not a redraw.
- *
- * ⚠️ THE LIGHT — added 12 Sep 2026, asked for directly, after
- * reactbits.dev/text-animations/gradient-text "with our own colours". That
- * component clips a `300%`-wide CSS gradient to text and slides its
- * `background-position`; a path cannot take `background-clip: text`, so this
- * is the same construction in SVG. Over each half's master fill sits a `<rect>`
- * two masters wide, filled with a periodic gradient (`LightStops`) and clipped
- * to the half's own paths through a `<clipPath>` of `<use>`s — the geometry is
- * referenced, never copied. `.lux-logo-light` in `globals.css` slides it one
- * period on a `linear` loop. The `<g>` is `.lux-logo-light-layer` so a caller
- * can fade the whole light without touching the fills — the entrance does, as
- * the symbol travels to the orb.
- *
- *   ⚠️ IT IS DRAWN IN MASTER SPACE, ON PURPOSE. Both viewBoxes are windows onto
- *   the master's `0..538`, so a rect at `x=0` sliding by one master width
- *   shows the SAME light in both halves at the same instant — one pass across
- *   the lockup, continuous through the seam. A rect sized to each half would
- *   move at two speeds and break at the L.
- *
- *   ⚠️ THE MASTER'S FILLS ARE STILL UNDERNEATH. They are the export, they are
- *   what shows if the light is ever cut, and they are what a screenshot of the
- *   still logo should be compared against. The light is a layer, not a retune
- *   of the ramp.
- *
- *   ⚠️ THE STOPS ARE `var()` IN `style`, NOT `stop-color` ATTRIBUTES, because a
- *   presentation attribute cannot take a custom property. It is the one place
- *   the logo binds a token, and it is the point: the sweep is the brand's own
- *   indigo, steel and highlight, and it re-hues with them.
- *
- * ⚠️ THE DEPTH — NOT IN FIGMA, added 13 Sep 2026, asked for directly ("a
- * darker shadow gradient around the logos on the edge, no border line, a
- * subtle 3D feel — like the chat box but more visible"). `LogoDepthFilter`
- * below: the edge darkens inward all the way round, heavier along the lower
- * edges, with a faint light along the upper ones and a soft lift under the
- * shape. No stroke anywhere — the edge is a falloff, the way `ChatPanel`'s is.
- * The three dark layers were cut 40% the same day ("too dark"); the crest of
- * light was not. Then every blur and offset was spread 15% ("spread 15%
- * more"), and the two regions grew to keep the lift unclipped. Then the two
- * inner edge layers — rim and underside — came down another 30%; the lift
- * and the crest did not.
- *
- *   ⚠️ IT WRAPS THE LIGHT, NOT JUST THE FILLS. The light layer covers the
- *   whole glyph, so shading applied under it would be painted over; the filter
- *   sits on one `<g>` round both.
- *
- *   ⚠️ IT IS IN MASTER UNITS, AND THE ORB USES THE SAME RECIPE. `Orb` puts it
- *   on each stroke INSIDE its master→orb transform, so the shading scales with
- *   the mark and the entrance's symbol still lands on the orb's to the pixel —
- *   a shaded symbol fading over a flat mark would be the pop the hand-off
- *   exists to avoid. Each svg defines its own copy under its own id, because a
- *   `url(#…)` into the entrance's svg dies when the entrance leaves the DOM.
- *
- *   ⚠️ BOTH SVGS ARE `overflow: visible`. The word's viewBox is tight to the
- *   glyphs (the L's foot and the X's legs touch y 173), so the lift under them
- *   would be cut off at the box edge.
- *
- * ⚠️ EVERY ID IS PREFIXED. `Orb` already puts `lux_orb_*` gradients in the
- * document and Welcome renders both at once; SVG ids are document-global, so an
- * unprefixed `paint0_linear` from the export would collide with whatever else
- * shipped one and the fills would silently take the wrong ramp.
- *
- * ⚠️ BOTH HALVES ARE DECORATIVE — `aria-hidden`, AND NOT `role="img"` LIKE THE
- * ORB. `Orb` names itself "Lux" because it is the only thing on screen standing
- * for the AI. These are halves of a lockup: naming them would announce the
- * brand twice, in two pieces, in whatever order the DOM happens to hold them.
- * Their only caller is the entrance, which sits over a page that already has
- * its own `<h1>`. A caller that needs the lockup to carry an accessible name
- * should name the element it puts them in, not these.
  */
 
 /** the four stops the symbol and the U share, and the master's only other ramp */
@@ -157,16 +62,7 @@ function LightStops() {
  * entrance draws it at lockup scale through `LuxLogoMark`; the orb
  * (`components/ui/Orb.tsx`) draws the SAME three paths through one transform
  * onto its 129 grid, so the entrance's symbol lands on the orb's mark to the
- * pixel. ⚠️ Until 13 Sep 2026 the orb carried its own export of the mark
- * (Figma `chat-ball-3x`), whose centre stroke was a slightly flatter drawing —
- * a 2px difference the hand-off could only fade across. One geometry now;
- * do not paste a second copy anywhere.
- *
- * The strokes are in the export's order — `lower` is the master's first path,
- * `upper` its second — and each carries the name the orb's gradients and
- * entrance tracks go by. `bbox` is the union of the three, measured with
- * `getBBox()` (x 0..169.45, y 30.84..141.09 of the 209 x 173 box), and is what
- * the orb centres.
+ * pixel.
  */
 export const LUX_SYMBOL = {
   viewBox: { width: 209, height: 173 },
@@ -405,8 +301,6 @@ export function LuxLogoWord({ className }: LogoPartProps) {
         <linearGradient id="lux_logo_word_light" x1="0" y1="0" x2="1" y2="0">
           <LightStops />
         </linearGradient>
-        {/* ⚠️ ONE DEFINITION, TWO USERS — the L and the X carried byte-identical
-            gradients in the master (same coordinates, same three offsets). */}
         <linearGradient
           id="lux_logo_word_ramp"
           x1="377.044"

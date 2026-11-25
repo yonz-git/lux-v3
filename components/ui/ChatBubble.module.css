@@ -46,7 +46,7 @@
        12/20/14/20 and 12/9/12/9  the two 00 Welcome bubbles; the desktop one's
        9px side padding is clearly a mistake.
      Flagged in Figma rather than reproduced here. */
-  padding: 14px 18px;
+  padding: var(--space-bubble-block) 1.125rem;
 
   border-radius: var(--radius-bubble);
   box-shadow: var(--shadow-chat-bubble);
@@ -57,36 +57,31 @@
 }
 
 /* the text wrapper the shine paints on — block, so the gradient spans the
-   bubble's content box and the band crosses every line at once */
+   bubble's content box and the band crosses every line at once. Every
+   bubble's words are one size and medium (500), whatever its text role or
+   `size` — only the line height differs (hero's airier lines). */
 .text {
   display: block;
+  font-size: var(--font-size-bubble); /* 16, 19.2 from 1024 */
+  font-weight: var(--font-weight-medium);
 }
 
 /* The compact bubble — `/chat` only, see ChatBubble.tsx.
 
-   The text drops a step, 16/26 -> 14/22, so the padding drops with it rather
-   than leaving a small sentence rattling in a box built for a larger one:
-   14/18 x 14/16 = 12.25/15.75, which rounds to 12/16.
-
-   ⚠️ AND THAT LANDS IT ON THE SPACING SCALE, WHICH 14/18 NEVER WAS. `md` is 12
-   and `lg` is 16, so the compact bubble is the one that can name its padding in
-   tokens; the default keeps the raw 14/18 because that is the value 29 of the
-   43 bubbles in Figma are drawn at. Do not "fix" the default to match this. */
+The text drops a step, 16/26 -> 14/22, so the padding drops with it rather
+than leaving a small sentence rattling in a box built for a larger one:
+14/18 x 14/16 = 12.25/15.75, which rounds to 12/16. */
 .bubble[data-size="compact"] {
   padding: var(--space-md) var(--space-lg); /* 12 / 16 */
 }
 
-/* ⚠️ NOT IN FIGMA — EACH BUBBLE DARKENS TOWARD ITS LOWER RIGHT, asked for
-   directly 13 Sep 2026. The same diagonal the selected pills took that day
-   (`.chip::before`), so the app's light catches everything from the top-left.
-   The fill holds flat for the first 35%, then runs to itself mixed 17% toward
-   `text/primary` (8%, then 10%, before landing here the same day — each asked
-   for, because the lower mixes were too faint to see) — a shade of the SAME
-   hue, not a second colour, and still
-   OPAQUE (a mix of two opaque colours is opaque), so the "never translucent"
-   rule at the foot of this file stands. `--bubble-fill` is the one value each
-   sender sets; the gradient is written once. Text on the dark end still clears
-   AA by a wide margin (`text/primary` is ~7:1 on these fills before the 8%). */
+/* the orb's hero line on Welcome and `/analyses`, and the check-in's turns:
+   airier lines. (0,2,0), so it
+   outranks `.t-body2` whichever stylesheet loads last */
+.bubble[data-size="hero"] {
+  line-height: var(--line-height-bubble-hero);
+}
+
 .bubble[data-from] {
   background: linear-gradient(
     135deg,
@@ -110,27 +105,12 @@
     /* wider ceiling for the conversational turns on the question screens;
        short prompts such as Welcome's still hug their text */
     max-width: min(100%, 586px);
-    /* the desktop bubbles are 14/22 — same vertical, wider sides.
-       ⚠️ PRODUCTS' desktop bubbles keep the mobile 14/18 instead. That is a real
-       inconsistency between the two sections in Figma, not a transcription slip;
-       22 is kept here because it is what the nine GETTING STARTED desktop frames
-       were verified against, and 4px of side padding on a full-width bubble does
-       not move anything. Resolve it in Figma rather than forking the component. */
-    padding: 14px 22px;
+    /* the desktop bubbles are 14/22 — same vertical, wider sides. */
+    padding: var(--space-bubble-block) 1.375rem;
   }
 
-  /* ⚠️ THE COMPACT BUBBLE DOES NOT TAKE THE DESKTOP STEP-UP. The 22 exists
-     because the GETTING STARTED bubbles get wider as their column does; the
-     `/chat` panel is 375 at BOTH breakpoints (there is no desktop frame for
-     it), so a bubble inside it has no more room on desktop and widening its
-     padding would just eat the line. */
   .bubble[data-size="compact"] {
     padding: var(--space-md) var(--space-lg); /* 12 / 16 */
   }
 }
 
-/* No prefers-reduced-transparency fallback: as of the 18 Aug design-system pass
-   bubbles are OPAQUE (bg/bubble-ai #EDF8FB, bg/bubble-user #BDD1D2). They were
-   built on surface/frost-light @55%, which let the canvas gradient through, so
-   a bubble low on the screen rendered darker than one near the top. Do not put
-   a translucent surface back on a bubble. */

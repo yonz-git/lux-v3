@@ -1,21 +1,3 @@
-/* NAV B — the round-button bar, lux-v3 (1 Oct 2026, picked on the design
-   canvas). Replaces the v2 frosted pill of four icon-over-label items.
-
-   BAR     a thin glass pill: white @10%, a 1px white @40% edge, a white @50%
-           rim along the top, 16 blur. 6 of padding round 56 circles, so 70
-           tall — `--size-nav-height`, which every `.screen` reservation reads.
-   ITEM    a 56 glass circle (white @12%) with the section's glyph in indigo.
-   ACTIVE  the brand gradient pill with the glyph and the word in white; it
-           sizes to its word.
-
-   The bar is fixed `--nav-inset-bottom` off the bottom and HUGS its items,
-   centred, at every width. ⚠️ It used to span the phone 8 in from each side
-   whenever a section was active, with the pill taking the slack; on 3 Oct 2026
-   that was cut, asked for directly ("it should be contained like in
-   desktop"), because at tablet and phone widths the pill stretched into a
-   long slab. `--nav-inset-inline` survives only as the floor it never
-   crosses on a narrow screen. */
-
 .nav {
   position: fixed;
   bottom: var(--nav-inset-bottom);
@@ -35,7 +17,7 @@
   border-radius: var(--radius-full);
   border: var(--border-width-hairline) solid var(--color-border-nav);
   background: var(--color-nav-bar);
-  box-shadow: var(--shadow-nav-vg);
+  box-shadow: var(--shadow-nav-bar);
   -webkit-backdrop-filter: blur(16px);
   backdrop-filter: blur(16px);
 }
@@ -61,9 +43,11 @@
   border: var(--border-width-hairline) solid var(--color-border-nav);
   background-color: var(--color-nav-item);
   box-shadow: inset 0 1px 0 var(--color-rim-nav);
-  color: var(--color-bg-brand);
+  color: var(--color-text-ink);
   text-decoration: none;
-  transition: background-color var(--duration-base) var(--ease-hover);
+  transition-property: background-color, border-color, color;
+  transition-duration: var(--duration-base);
+  transition-timing-function: var(--ease-hover);
 }
 
 .item:hover {
@@ -76,8 +60,13 @@
   }
 }
 
-/* the section you are in — the primary action's gradient and lift. It sizes
-   to its word; the bar hugs, so there is no slack for it to take. */
+.item[data-active="true"]:hover {
+  background-color: var(--color-nav-item-active);
+}
+
+/* the section you are in — the brand as a tint, not the primary action's
+   solid gradient, so it never competes with the screen's main button. It
+   sizes to its word; the bar hugs, so there is no slack for it to take. */
 .item[data-active="true"] {
   flex: none;
   /* while the pill grows out of a circle (the morph in BottomNav.tsx) its
@@ -87,22 +76,11 @@
   justify-content: safe center;
   width: auto;
   padding: 0 var(--space-xl) 0 var(--space-chip-inline);
-  border-color: transparent;
-  /* non-negotiable 10 */
-  background-origin: border-box;
-  background-image: linear-gradient(
-    90deg,
-    var(--color-gradient-brand-start),
-    var(--color-gradient-brand-end)
-  );
-  box-shadow: var(--shadow-brand-vg);
-  color: var(--color-text-on-brand);
+  /* keeps the circles' white edge and rim */
+  background-color: var(--color-nav-item-active);
+  color: var(--color-nav-item-active-ink);
 }
 
-/* ⚠️ THE 320 FLOOR: three circles, the bar's padding and `Products`' pill come
-   to 7 more than a 320 screen leaves inside the inset, so the pill poked out
-   of the bar. Below 360 its sides close to 12 each, which fits the longest
-   word with 1 to spare. Every wider phone keeps the full 18 / 20. */
 @media (max-width: 359px) {
   .item[data-active="true"] {
     padding: 0 var(--space-md);
@@ -111,6 +89,12 @@
 
 .icon {
   --icon-size: 22px; /* the canvas draws the set at 22 inside a 56 circle */
+}
+
+/* the bottle is the set's one narrow glyph: 10 of ink in its 22 box, where the
+   others fill ~16, so its pill read 1.8 right of centre. */
+.item[data-active="true"][data-nav-id="products"] .icon {
+  margin-left: calc(-1 * var(--space-xs));
 }
 
 .label {

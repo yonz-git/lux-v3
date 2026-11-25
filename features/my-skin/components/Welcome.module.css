@@ -11,27 +11,11 @@
    card here is a regression.
 
    POSITIONING
-   The group is not simply centred: it sits low. Figma achieves that with fixed
-   spacers, which only work at one canvas height. Here the free space is split
-   between two zero-basis flex spacers whose grow factors are the exact Figma
-   distances above and below the content:
-
-     mobile   266 above : 70 below   (content 306..772 in the 0..842 region)
-     desktop  160 above : 185 below  (content 329..764 in the 120..900 region)
-
-   That reproduces the design exactly at the design heights and degrades
-   proportionally on shorter viewports, instead of pushing the CTA and the
-   disclaimer underneath the fixed nav.
-
-   ⚠️ DESKTOP'S SPLIT IS NOT THE FIGMA-LITERAL 209/136 — see the comment on
-   .spacerTop/.spacerBottom below. It's retuned so the gap above the floating
-   nav matches mobile's, since mobile gets a separate nav reservation
-   (`.screen`'s padding-bottom) that desktop never had.
-
-   The internal rhythm is hand-tuned in Figma rather than taken from the spacing
-   scale (23 / 94 / 13 on desktop, 19 / 163 / 13 on mobile — button-to-disclaimer
-   detuned from the Figma-literal 24 to match desktop's 13), so those are
-   written as literals rather than snapped to the nearest token. */
+   The orb and bubble are centred, as one, between the top and the button:
+   two equal spacers share the spare height. The screen reserves
+   `--cta-bottom` below (`data-cta-foot`, globals.css), so the button
+   rests 120 above the nav at every width, as every main button does. The
+   disclaimer hangs under the button, out of flow. */
 
 /* `position: relative; z-index: 1` was load-bearing while the shader canvas was
    a positioned child of `.screen` at `z-index: 0`: it painted ABOVE in-flow
@@ -51,42 +35,25 @@
   gap: 0;
 }
 
-.spacerTop,
-.spacerBottom {
-  flex-shrink: 1;
-  flex-basis: 0;
+/* never closer than 32 to the top or to the button */
+.spacer {
+  flex: 1 0 0;
+  min-height: var(--space-3xl); /* 32 */
   width: 100%;
 }
 
-.spacerTop {
-  flex-grow: 266;
-}
-.spacerBottom {
-  flex-grow: 70;
-}
-
-/* ⚠️ THE HERO SITS 40 LOWER THAN THE SPACER RATIO PUTS IT — NOT IN FIGMA.
-   Requested directly. It is a nudge to the ORB AND BUBBLES ONLY: the CTA and
-   disclaimer keep their measured position, because the space above the floating
-   nav is separately tuned (see .spacerBottom). The offset is therefore paid for
-   twice — added here and subtracted from .actions' margin-top — so the group's
-   total height is unchanged and neither spacer moves. Change one and you must
-   change the other, or the button drifts. */
 .hero {
   display: flex;
   flex-direction: column;
   align-items: center;
   gap: var(--space-xl); /* Figma 19 — orb to the bubble stack */
   width: 100%;
-  margin-top: var(--space-4xl);
+  /* the shift moves the group without changing the space it takes */
+  margin-block: var(--hero-shift) calc(-1 * var(--hero-shift));
 }
 
 /* the question and reply bubbles share this one grid cell so they overlap
-   instead of stacking — see the swap animation on each ChatBubble above.
-   ⚠️ align-items is required: grid's default `stretch` would force the
-   shorter (question) bubble's row to fill the taller (reply) bubble's
-   height, which then stretches the bubble div itself (flex default
-   cross-axis stretch) — changing its rendered height from the design. */
+   instead of stacking — see the swap animation on each ChatBubble above. */
 .bubbles {
   display: grid;
   grid-template-areas: "stack";
@@ -98,34 +65,10 @@
   grid-area: stack;
 }
 
-/* ⚠️ NOT IN FIGMA. The reply bubble is narrower on MOBILE too, 264 against the
-   322 ceiling every other mobile bubble gets — requested directly, matching the
-   desktop rule below. The box is not the text: a bubble is a flex item whose
-   max-content is one unbroken line, so it always renders AT its ceiling and the
-   slack sits inside as dead space on the right. At 322 the longest line
-   measured 256 against 286 of content box — 30px of it. 264 keeps the same
-   THREE lines and the same 106px height (measured: the wrap moves from
-   226/256/70 to 226/225/101), so nothing below it shifts, while the longest
-   line now lands 2px off the padding edge. Below 240 it breaks to four lines.
-   The question bubble is shorter than the ceiling and is unaffected.
-   Same [data-from] specificity bump as the desktop rule below:
-   ChatBubble.module.css's own .bubble is one class, and CSS Modules load in
-   bundle order, so a bare .bubbleReply could silently lose. */
 .bubbleReply[data-from="ai"] {
   max-width: min(100%, 264px);
 }
 
-/* ⚠️ THE MOBILE LINES ARE WRITTEN, NOT MEASURED — 17 Sep 2026, asked for
-   directly from a real iPhone, where the reply bubble still showed ~30px of
-   empty fill down its right after `hug` (ChatBubble.tsx) was tried on it.
-   A wrapped box keeps the width it wrapped AT, and the 264 ceiling above was
-   tuned against Chrome's metrics; Safari breaks the same sentence at
-   different words, so the slack comes back on a device the preview cannot
-   reproduce. With each line its own block, the bubble's max-content IS its
-   longest line, so the flex item shrink-wraps to it in every engine with no
-   JS and no measuring. The ceiling is lifted to the base 322 on mobile, so
-   it never re-breaks a written line; a line still wraps if the viewport or a
-   user's text spacing leaves less room than it needs. */
 .line {
   display: block;
 }
@@ -148,40 +91,21 @@
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: 13px; /* matches desktop's button-to-disclaimer gap, tighter than the Figma-literal 24 (--space-2xl) */
+  gap: 0.8125rem; /* matches desktop's button-to-disclaimer gap, tighter than the Figma-literal 24 (--space-2xl) */
   width: 100%;
-  /* bubble bottom to button top is 163 at the 957 design height, and shrinks
-     first on short viewports — less the 40 .hero now takes above it, so the
-     button lands exactly where it did */
-  margin-top: clamp(0px, 17vh - var(--space-4xl), 123px);
+  position: relative;
 }
 
-/* ⚠️ lux-v3 KEEPS v2's WELCOME, asked for directly on the canvas, 1 Oct 2026
-   ("the welcome page design doesn't work. we will keep the v2 version just
-   replace the nav bar"). The VidGen layer re-sized two things under it — the
-   button to 56 and the bubble's body to 16/22 — and both are put back here,
-   on this screen only, so the orb, the reply and the action sit where v2 had
-   them: the 62 `Button` (`--button-height` is its own hook) and the bubble at
-   v2's 16/26 (18/28 desktop). The face is Figtree, as the whole app is (Urbanist from 1 to 4 Oct 2026). */
 .cta {
-  --button-height: var(--size-control-lg); /* 62 */
   width: 100%;
-  max-width: 338px; /* the Welcome CTA is narrower than the content column */
+  max-width: var(--width-button-primary); /* 288 */
 }
 
-/* (0,2,0), so it outranks `.t-body2-body1` on the same element whichever
-   stylesheet loads last */
-.bubbleReply[data-from] {
-  line-height: 26px;
-}
 
-@media (min-width: 1024px) {
-  .bubbleReply[data-from] {
-    line-height: 28px;
-  }
-}
-
+/* under the button, out of flow, so the button is the group's foot */
 .disclaimer {
+  position: absolute;
+  top: calc(100% + 0.8125rem); /* the actions' gap */
   color: var(--color-text-secondary);
   text-align: center;
   max-width: 376px;
@@ -194,46 +118,17 @@
 
   /* the second bubble ("I can help identify...") narrows on desktop so it
      wraps to a tighter measure instead of running the full 586px ceiling
-     every other desktop bubble gets; it still follows the question bubble.
-     ⚠️ Needs the [data-from] bump: ChatBubble.module.css's own .bubble rule
-     in this same media query is equal-specificity (one class each) and can
-     win the cascade by load order alone, silently overriding this max-width. */
+     every other desktop bubble gets; it still follows the question bubble. */
   .bubbleReply[data-from="ai"] {
     max-width: 380px;
   }
 
-  /* ⚠️ 160/185 REPLACE THE FIGMA-LITERAL 209/136. The desktop frame (476:2670)
-     draws the nav floating only 37px below the disclaimer at the 900 canvas
-     height — mobile's reservation (see spacerBottom above, `space-lg` closest
-     to content) leaves 86px above the nav instead. Desktop had no separate nav
-     reservation to match it with, so the two breakpoints read as different
-     amounts of breathing room above the nav. 160/185 kept the same total free
-     space (345) but repointed it so the gap above the nav matched mobile's
-     86px exactly at the design height, at the cost of 49px off the top
-     spacer.
-
-     130/215 goes past that match on purpose — an extra ~30px of clearance
-     above the nav was requested directly, same total free space (345). */
-  .spacerTop {
-    flex-grow: 130;
-  }
-  .spacerBottom {
-    flex-grow: 215;
-  }
-
   .hero {
-    gap: 23px;
+    gap: 1.4375rem;
   }
 
   .actions {
-    gap: 13px;
-    /* 23 gap + 94 spacer + 23 gap between the bubble and the CTA group,
-       less .hero's 40 offset */
-    margin-top: 100px;
-  }
-
-  .cta {
-    max-width: var(--width-action);
+    gap: 0.8125rem;
   }
 
   .disclaimer {

@@ -6,7 +6,7 @@ Status: DRAFTED BY CLAUDE FROM PROJECT DOCS, 2 Oct 2026. Lines marked *Unconfirm
 LUX is a portfolio project, not a company: an AI-guided skincare **investigation** app (lux-v3, Next.js) that helps someone work out which products they already use may be associated with a skin reaction. Source docs: `docs/product-brief.md`, `../lux-scope-decision.md`, `AGENTS.md`.
 
 ## My role
-Yeon Ji Lee: product designer and design engineer. In 2024 they did LUX's visual identity and interface for a company. In 2026 they took the concept back, made the product decisions, redesigned it, built it and tested it. Content written as "me" is Yeon Ji's case study voice.
+Yeon Ji Lee (confirmed 6 Oct 2026; site handle Yonz Lee): product designer and design engineer. In 2024 they did LUX's visual identity and interface for a company. In 2026 they took the concept back, made the product decisions, redesigned it, and built it (directing Claude Code). No outside user testing yet. Content written as "me" is Yeon Ji's case study voice.
 
 ## What we sell / make
 Judgement, shown through one well-made product. Artefacts include the live prototype, the design system (`docs/design.md` / `design.html`), the Figma file and motion pieces (`../videos/`).

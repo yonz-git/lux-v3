@@ -14,6 +14,10 @@
 
 .month {
   color: var(--color-text-on-data);
+  font-weight: var(--font-weight-bold); /* 700 */
+  /* trimmed to its capitals and baseline, as the cards' overlines, so it
+     centres on the arrows by its letters */
+  text-box: trim-both cap alphabetic;
 }
 
 .arrows {
@@ -22,59 +26,9 @@
   gap: var(--space-group); /* 4 */
 }
 
-/* The glyph is 20 in the comp, but a 20 tap target is not one. The button
-   measures 44 and absorbs the difference with a negative margin on all four
-   sides, exactly as HubScreen's back chevron does — the 26-tall header row must
-   not grow to fit it. */
-.arrow {
-  /* lux-v3 (Calendar A, canvas): a 44 glass circle with the glyph in indigo */
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  width: var(--size-touch-target);
-  height: var(--size-touch-target);
-  padding: 0;
-  border-radius: var(--radius-full);
-  border: var(--border-width-hairline) solid var(--color-border-glass);
-  background-color: var(--color-glass);
-  box-shadow: var(--shadow-glass);
-  color: var(--color-bg-brand);
-  transition: background-color var(--duration-fast) var(--ease-hover);
-}
-
 .arrowIcon {
   width: var(--size-icon-sm); /* 20 */
   height: var(--size-icon-sm);
-}
-
-.arrow:hover {
-  background-color: var(--color-glass-strong);
-}
-
-@media (hover: none) {
-  .arrow:hover {
-    opacity: 1;
-  }
-}
-
-/* ⚠️ ONLY › EVER TAKES THIS, and it takes the DS's disabled recipe rather than
-   one of its own: the whole control at opacity/disabled (non-negotiable 5),
-   nothing recoloured. See the component for why forward paging clamps at
-   today's month and backward paging does not.
-
-   Written AFTER `.arrow:hover` on purpose. `:hover` still MATCHES a disabled
-   button — it is the click that is swallowed, not the pointer — and the two
-   selectors are the same specificity, so at any earlier position the 0.7 hover
-   would repaint a disabled arrow to look live under the cursor. The guard
-   below covers the same collision for the pointer that is already resting on
-   the arrow when it goes disabled. */
-.arrow:disabled {
-  opacity: var(--opacity-disabled);
-  cursor: not-allowed;
-}
-
-.arrow:disabled:hover {
-  opacity: var(--opacity-disabled);
 }
 
 /* table-layout: fixed is what makes the seven columns equal (352/7 = 50.2857 in
@@ -115,72 +69,27 @@
   width: 36px;
   height: 36px;
   border-radius: var(--radius-full);
-  /* ⚠️ A REAL BORDER, TRANSPARENT UNTIL A STATE COLOURS IT — 4 Oct 2026, asked
-     for directly ("fix these to a normal circle border"). Today's ring was an
-     inset box-shadow at 1.5px, which the browser antialiases per edge rather
-     than snapping, so the ring rendered heavier along one side and lighter on
-     the other. A border is snapped to whole device pixels all the way round.
-     Every day carries it so the disc stays 36 in every state. */
   border: var(--border-width-thin) solid transparent;
-  /* ⚠️ LINING FIGURES, OR THE GRID WOBBLES. Figtree's default figures are
-     proportional, so `1` is narrower than `0` and a 7-column month does not
-     line up down its own columns — most visible on the 11/21 column against
-     the 30 below it. The disc is a fixed 32 either way; this is about where
-     the numeral sits inside it. See the note in globals.css. */
   font-variant-numeric: tabular-nums;
-  /* the unremarkable days sit back at 85% so the checked-in discs carry the
-     card; on-data-muted would drop them below the weekday header */
-  color: var(--color-text-secondary);
+  /* every plain day, past or to come, is the ink; the discs carry the card */
+  color: var(--color-text-primary);
 }
 
 /* the accent on a data card is indigo bg/brand — the handoff's rule for
-   check-ins, timeline dots and meter fills alike.
-
-   ⚠️ THE NUMERAL IS `text/on-brand`, NOT `text/on-data`. It used to read
-   on-data, which was fine while that token was white — but on-data was
-   darkened globally to clear AA on the light sage card, and a checked-in day
-   is not on the sage card, it is on an indigo disc. Dark ink on bg/brand made
-   the numerals unreadable: exactly the days the card exists to show. on-brand
-   is white on indigo and passes, which is why the CHECK section already lists
-   the check-in discs as deliberately still white. */
+   check-ins, timeline dots and meter fills alike. */
 .day[data-checked-in] {
   background: var(--color-bg-brand);
   color: var(--color-text-on-brand);
 }
 
-/* a day still to come steps back to the muted ink (Calendar A) */
-.day[data-future] {
-  color: var(--color-text-muted);
-}
-
-/* ⚠️ TODAY IS AN INDIGO RING ON STRONGER GLASS, lux-v3 (Calendar A, canvas,
-   1 Oct 2026). It was a white ring at 15% then 50% on the sage card; on the
-   30% panel a white ring has nothing to stand against. Indigo is the one
-   colour that means "this one" here, and the legend names the ring too, so
-   the state is not carried by the ring alone. The key below draws the same. */
 .day[data-today] {
   /* today: the glass a step stronger, ringed and inked in indigo */
   background: var(--color-glass-strong);
   border-color: var(--color-bg-brand); /* 1.5 */
   color: var(--color-bg-brand);
-  font-weight: var(--font-weight-semibold);
+  font-weight: var(--font-weight-medium);
 }
 
-/* ⚠️ CHECKED IN **AND** TODAY — a state that could not happen until the daily
-   check-in shipped, and it rendered a blank disc.
-
-   The seeded series is clipped at today and its offsets never landed ON today,
-   so the comp has a ring on one day and discs on others and never both on one.
-   `/progress/check-in` writes a check-in dated today, which is the whole point
-   of the button, so the two states now collide on the same square. They are
-   equal-specificity single-attribute rules and `[data-today]` is written second,
-   so it won and repainted the numeral `text/on-data` — the DARK ink, on an
-   indigo disc. The day the user just recorded was the one day whose number you
-   could not read.
-
-   Two attributes outrank one, so this restores the indigo fill and the
-   on-brand white it requires, and swaps today's indigo ring for a white one
-   that still reads against bg/brand. */
 .day[data-today][data-checked-in] {
   background: var(--color-bg-brand);
   /* the indigo ring would vanish on the indigo disc — a white one inside it */
@@ -188,12 +97,6 @@
   color: var(--color-text-on-brand);
 }
 
-/* ⚠️ A CHECKED-IN DAY IS AN <a>, AND IT LOOKS EXACTLY THE SAME. The disc is
-   already the loudest mark on the card; giving the link its own fill, ring or
-   underline would add a second way of saying "this day has a record" on top of
-   the one the legend explains. Only the hover feedback is new, and it is the
-   0.7 fade every other control in this file uses rather than a colour of its
-   own. The focus ring is the global outline. */
 .day[data-checked-in] {
   cursor: pointer;
   /* the UA underlines an <a>, and a rule under a numeral inside a 32 disc
@@ -211,14 +114,6 @@
     scale var(--duration-slow) var(--ease-standard) var(--duration-base);
 }
 
-/* ⚠️ TODAY'S DISC LANDS — NOT IN FIGMA, added 13 Sep 2026. Submitting the
-   check-in saved the day and closed the overlay in one handler, so the disc
-   was already filled by the time the overlay had faded: the one change a
-   check-in makes was never seen happening. A day checked in while the
-   calendar is on screen swaps from a <span> to a new <Link>, so it can start
-   empty and slightly small and settle into the disc. Three attribute
-   selectors so the start colour outranks `.day[data-today][data-checked-in]`
-   (a new check-in is almost always today). No overshoot. */
 @starting-style {
   .day[data-checked-in][data-just-checked] {
     background-color: transparent;
@@ -272,17 +167,6 @@
   color: var(--color-text-muted);
 }
 
-/* the `Day 16` pill that sat at the legend's right end for an hour on 15 Sep
-   2026 is `SymptomTrend`'s now */
-
-/* ============================================================================
-   THE ENTRANCE — 1 Oct 2026, asked for directly (see MotionObserver.tsx).
-   The first time the card is in view the month fills in row by row: each day
-   fades up 6px, 12ms after the one before it, and a checked-in day's cell
-   also grows from 0.7 so the discs arrive as marks rather than as text.
-   On the CELL, not the `.day` — the disc carries its own hover and
-   just-checked-in landing transitions, which this must not override.
-   ========================================================================== */
 .cell {
   transition-property: opacity, translate, scale;
   transition-duration: var(--duration-slow);

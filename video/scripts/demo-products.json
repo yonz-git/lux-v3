@@ -1,0 +1,57 @@
+[
+ {
+  "id": "the-ordinary-niacinamide",
+  "name": "Niacinamide 10% + Zinc 1%",
+  "brand": "The Ordinary",
+  "size": "1 fl oz",
+  "description": "High-strength blemish formula",
+  "ingredients": "Aqua (Water), Niacinamide, Pentylene Glycol, Zinc PCA, Dimethyl Isosorbide, Tamarindus Indica Seed Gum, Xanthan Gum, Isoceteth-20, Ethoxydiglycol, Phenoxyethanol, Chlorphenesin",
+  "duration": "4+ weeks",
+  "bucket": "long-term",
+  "addedOn": "2026-07-02"
+ },
+ {
+  "id": "cerave-moisturizing-cream-16",
+  "name": "Moisturizing Cream",
+  "brand": "CeraVe",
+  "size": "16 oz tub",
+  "description": "Moisturizing cream with hyaluronic acid and ceramides",
+  "ingredients": "Aqua/Water, Glycerin, Cetearyl Alcohol, Caprylic/Capric Triglyceride, Cetyl Alcohol, Ceteareth-20, Petrolatum, Potassium Phosphate, Ceramide NP, Ceramide AP, Ceramide EOP, Carbomer, Dimethicone, Behentrimonium Methosulfate, Sodium Lauroyl Lactylate, Sodium Hyaluronate, Cholesterol, Phenoxyethanol, Disodium EDTA, Dipotassium Phosphate, Tocopherol, Phytosphingosine, Xanthan Gum, Ethylhexylglycerin",
+  "duration": "4+ weeks",
+  "bucket": "long-term",
+  "addedOn": "2026-06-14"
+ },
+ {
+  "id": "cerave-foaming-cleanser",
+  "name": "Foaming Cleanser",
+  "brand": "CeraVe",
+  "size": "12 fl oz",
+  "description": "Foaming facial cleanser for normal to oily skin",
+  "ingredients": "Aqua/Water, Cocamidopropyl Hydroxysultaine, Glycerin, Sodium Lauroyl Sarcosinate, Sodium Laureth Sulfate, Niacinamide, Ceramide NP, Ceramide AP, Ceramide EOP, Sodium Hyaluronate, Cholesterol, Phenoxyethanol, Disodium EDTA, Tocopherol, Phytosphingosine, Parfum",
+  "duration": "1–4 weeks",
+  "bucket": "recent",
+  "addedOn": "2026-08-04"
+ },
+ {
+  "id": "lrp-retinol-b3-serum",
+  "name": "Retinol B3 Serum",
+  "brand": "La Roche-Posay",
+  "size": "1 fl oz",
+  "description": "Pure retinol serum with vitamin B3",
+  "ingredients": "Aqua/Water, Dimethicone, Glycerin, Alcohol Denat., Niacinamide, Propanediol, Bis-PEG-18 Methyl Ether Dimethyl Silane, Retinol, Hydroxyethylpiperazine Ethane Sulfonic Acid, Adenosine, Sodium Hyaluronate, Tocopherol, Caprylyl Glycol, Disodium EDTA, Xanthan Gum, Phenoxyethanol",
+  "duration": "1–4 weeks",
+  "bucket": "recent",
+  "addedOn": "2026-08-08"
+ },
+ {
+  "id": "paulas-choice-bha-exfoliant",
+  "name": "BHA Exfoliant",
+  "brand": "Paula's Choice",
+  "size": "4 fl oz",
+  "description": "Skin Perfecting 2% BHA liquid exfoliant",
+  "ingredients": "Water, Methylpropanediol, Alcohol Denat., Butylene Glycol, Salicylic Acid, Polysorbate 20, Camellia Oleifera Leaf Extract, Sodium Hydroxide, Tetrasodium EDTA, Parfum",
+  "duration": "Less than 1 week",
+  "bucket": "new-addition",
+  "addedOn": "2026-08-15"
+ }
+]

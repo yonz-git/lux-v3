@@ -1,4 +1,4 @@
-/* The question panel — see QuestionPanel.tsx. The surface is `.vg-panel`. */
+/* The question panel — see QuestionPanel.tsx. The surface is `.panel`. */
 
 .panel {
   position: relative;
@@ -6,12 +6,7 @@
   display: flex;
   flex-direction: column;
   gap: var(--space-xl); /* 20, question to answers */
-  padding: var(--space-panel) var(--space-gutter) var(--space-gutter); /* 32 / 24 / 24 */
-  /* ⚠️ THE FROST MOVES TO `::before`. An element with `backdrop-filter` is a
-     backdrop root, so every frosted thing inside it — the chips, the date
-     picker's popover — could only blur the panel's own contents, never the
-     page (QuestionScreen's old desktop card found this on 14 Sep 2026). A
-     pseudo-element is a sibling of the content, not its ancestor. */
+  padding: var(--space-panel) var(--space-gutter); /* 32 top and bottom, 24 sides */
   -webkit-backdrop-filter: none;
   backdrop-filter: none;
 }
@@ -45,51 +40,17 @@
   gap: var(--space-sm);
 }
 
-.question {
-  margin: 0;
-  display: flex;
-  align-items: flex-start;
-  /* ⚠️ CENTRED, orb and words together, 4 Oct 2026, asked for directly: the
-     answer chips under it were centred the same day, and a left-set question
-     over a centred row read as two different alignments in one card */
-  justify-content: center;
-  text-align: center;
-  gap: var(--space-md);
-  color: var(--color-text-primary);
-}
-
-/* the 26 orb centred on the first 22 line: 2 above it */
-.orb {
-  flex: none;
-  display: inline-flex;
-  margin-top: -2px;
-}
-
 .hint {
   margin: 0;
   color: var(--color-text-secondary);
 }
 
-/* the answer chips — a wrapping row, CENTRED, 8 apart.
-   ⚠️ CENTRED AND LOOSENED, 4 Oct 2026, asked for directly ("the arrangements
-   are a bit messy, place them in a more balanced way"). Left-packed, a short
-   last row hung off the left edge with a ragged gap at the right, so two
-   rows of different lengths read as an accident; centred, every row sits on
-   the panel's axis, as step 1's symptom chips already do. The gap went from
-   the 4 a cluster takes to `space/sm` (8), since these are separate answers
-   rather than one control. Steps 2, 3 and 4 all draw it. */
+/* the answer chips — a wrapping row, CENTRED, 8 apart. */
 .chips {
   display: flex;
   flex-wrap: wrap;
   justify-content: center;
-  gap: var(--space-sm);
-}
-
-/* the answer rows — a column, 8 apart */
-.rows {
-  display: flex;
-  flex-direction: column;
-  gap: var(--space-sm);
+  gap: var(--space-pill-gap);
 }
 
 /* a field an answer opens (`Other`) grows in with `Collapse`; the panel's 20

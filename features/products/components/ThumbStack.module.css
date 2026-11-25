@@ -1,12 +1,3 @@
-/* ⚠️ NOT IN FIGMA — a deck of up to three product pictures (photographs
-   since 26 Sep 2026, drawings before). See `ThumbStack`
-   for what it draws and why its size is a literal.
-   ⚠️ 56, NOT 28, as of 15 Sep 2026, asked for directly with the category row
-   doubling to 112: every measure below doubled with it — the well, the
-   overlap (−10 → −20) and the radius one step (`sm` 8 → `md` 12).
-   ⚠️ THEN 30% SMALLER, the same day, asked for directly: 56 → 40 (39.2,
-   rounded to a whole pixel), the overlap −20 → −14 and the radius back to
-   `sm` 8. The row stays 112. */
 .stack {
   flex: none;
   display: flex;
@@ -17,13 +8,7 @@
    show the canvas gradient through the "photograph". `border/highlight` is the
    rim that separates each well from the one behind it: the token the nav
    already uses for a lit edge, and the only thing making a pile of overlapping
-   wells read as a pile rather than as one smeared shape.
-
-   ⚠️ THE RIM IS A HAIRLINE AND THE DEPTH IS A SHADOW. It was a 2px ring, which
-   at 28 is a fourteenth of the well — a drawn white frame around each picture
-   rather than the edge of one. Both are one `box-shadow` — the ring is a
-   spread with no blur, so the two compose in one declaration and the drop
-   shadow sits outside the rim. */
+   wells read as a pile rather than as one smeared shape. */
 .thumb {
   position: relative;
   flex: none;
@@ -31,8 +16,8 @@
   align-items: center;
   justify-content: center;
   overflow: hidden;
-  width: 40px;
-  height: 40px;
+  width: var(--size-thumb-sm);
+  height: var(--size-thumb-sm);
   border-radius: var(--radius-sm);
   background: var(--color-bg-surface-frost);
   box-shadow:
@@ -40,15 +25,11 @@
     var(--shadow-sm);
 }
 
+/* 12 of each 40 well tucked under the one before (14 until */
 .thumb + .thumb {
-  margin-left: -14px;
+  margin-left: calc(-1 * var(--space-md));
 }
 
-/* ⚠️ FRONT TO BACK, AND CAPPED AT THREE — paired with `PREVIEW_MAX`. Later
-   siblings paint on top by default, which would put the LAST well over the
-   first and read as a pile receding to the left while the list runs right.
-   These three invert it. A fourth product would render behind the third with
-   no rule of its own; change both or neither. */
 .thumb:nth-child(1) {
   z-index: 3;
 }

@@ -1,22 +1,7 @@
-import type { ButtonHTMLAttributes, ReactNode } from "react";
+import type { ButtonHTMLAttributes, ReactNode, Ref } from "react";
 import Link from "next/link";
 import styles from "./IconButton.module.css";
 
-/**
- * IconButton — VidGen's round control, the most-used control in both
- * references (1 Oct 2026). A 56 circle holding one glyph from `icons.tsx`.
- *
- *   glass    white @50% + glass edge + rim, brand-indigo glyph — `+`, mic,
- *            the Storyboard's tool rail
- *   primary  lux-v2's brand gradient + brand shadow, white glyph — `Generate`
- *   outline  no fill, a 1px ink hairline at 18% — Welcome's back arrow
- *   soft     `#eeecf5` lilac with a brand glyph — the Moodboard's `+`, for a
- *            round button on a WHITE card, where glass would not show
- *
- * `label` is REQUIRED and becomes the accessible name: a glyph alone says
- * nothing to a screen reader. `size="sm"` is 44, the HIG floor, for rows
- * where 56 is too much; 56 is the default because every VidGen circle is.
- */
 export function IconButton({
   label,
   children,
@@ -28,14 +13,21 @@ export function IconButton({
 }: Omit<ButtonHTMLAttributes<HTMLButtonElement>, "children"> & {
   label: string;
   children: ReactNode;
-  variant?: "glass" | "primary" | "outline" | "soft";
-  size?: "lg" | "sm";
+  variant?: "glass" | "ring" | "primary" | "outline" | "soft" | "plain";
+  size?: "lg" | "md" | "sm" | "xs";
   href?: string;
+  /** React 19 passes `ref` as a prop; it lands on the <button> */
+  ref?: Ref<HTMLButtonElement>;
 }) {
   const cls = [
     styles.button,
-    styles[variant],
+    /* `ring` is the glass disc that clears when pressed, for a filled glyph */
+    variant === "ring" ? `${styles.glass} ${styles.ring}` : styles[variant],
+    size === "md" && styles.md,
     size === "sm" && styles.sm,
+    size === "xs" && styles.xs,
+    /* the small discs keep a 44 hit area round them */
+    size !== "lg" && "tap-target",
     "pressable",
     className,
   ]

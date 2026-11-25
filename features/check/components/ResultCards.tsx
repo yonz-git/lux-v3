@@ -17,18 +17,6 @@ import { fullName } from "@/features/products/products";
 /**
  * The three synthesis cards `06 — Results` (548:1134) is built from, and which
  * `Check results` now opens with too.
- *
- * ⚠️ THEY ARE SAGE ON BOTH SCREENS, AND THAT IS THE POINT OF THE TWO SURFACE
- * SYSTEMS. `06 — Results` is System B throughout; CHECK is System A with, per
- * its handoff, "a sage card inside a light screen is correct". So on
- * `Check results` the split carries meaning rather than being a mix: SAGE IS
- * LUX'S ANALYSIS, LIGHT IS YOUR PRODUCTS. The verdict, the numbers, the
- * ingredients and the plan are the app talking; the per-product cards below are
- * your things, listed.
- *
- * Kept in one file because they are one recipe — an Overline label on a sage
- * data card — and splitting three small blocks across three files hides how
- * consistent they are meant to be. Same call `ProductList.tsx` makes.
  */
 
 /** `card · investigation summary` (548:1165) — three Metric 2 figures. */
@@ -45,17 +33,9 @@ export function SummaryCard({
       <dl className={styles.stats}>
         {stats.map((s) => (
           <div key={s.label} className={styles.stat}>
-            {/* ⚠️ <dt> BEFORE <dd> IN THE DOM, REVERSED BY CSS. A description
-                list requires the term before its description, but the comp puts
-                the figure on top and the label under it. Source order stays
-                correct for assistive tech; `column-reverse` does the visual
-                swap. Writing dd first AND reversing cancels out — which is
-                exactly the bug this replaced. */}
             <dt className={`${styles.statLabel} t-label-sm`}>{s.label}</dt>
             {/* Metric 2 — Light 40/44. The one place in either results screen
                 the Light weight is used, and the only one in the ramp. */}
-            {/* the figures count up the first time they are in view
-                (1 Oct 2026, asked for directly) — see `CountUp` */}
             <dd className={`${styles.statValue} t-metric2`}>
               {typeof s.value === "number" ? <CountUp value={s.value} /> : s.value}
             </dd>
@@ -66,17 +46,7 @@ export function SummaryCard({
   );
 }
 
-/**
- * `card · ingredients of concern` (549:1139) — the ingredient-major view.
- *
- * ⚠️ THE ACCENT BAR IS A SECOND CARRIER, NOT DECORATION. High likelihood is
- * the rose of `bg/symptom` at full strength, moderate the same rose as a
- * tint (indigo until 5 Oct 2026) — each bar carrying its own pill's colour,
- * see the CSS. But two weights
- * of one hue are only distinguishable if you can compare them, so the
- * likelihood is ALSO a Tag with words in it, and the entry's accessible name
- * says it too. Same rule the compatibility pills follow.
- */
+/** `card · ingredients of concern` (549:1139) — the ingredient-major view. */
 export function IngredientsCard({
   concerns,
   label = "Ingredients of concern",
@@ -96,23 +66,9 @@ export function IngredientsCard({
             className={styles.concernItem}
             style={{ "--i": i } as CSSProperties}
           >
-            {/* a 1px border/glass divider between entries, as on every data
-                card — see SkinProfile */}
-            {i > 0 && <div className={styles.divider} />}
-            <div className={styles.concern}>
-              <span
-                className={styles.accent}
-                data-likelihood={c.likelihood}
-                aria-hidden="true"
-              />
-              <div className={styles.concernBody}>
-                <p className={`${styles.concernName} t-h6`}>{c.name}</p>
-                <p className={`${styles.foundIn} t-label-sm`}>
-                  Found in: {c.foundIn.map(fullName).join(", ")}
-                </p>
-                <p className={`${styles.concernText} t-body3`}>
-                  {c.description}
-                </p>
+            {/* pill, name, where, why: the likelihood leads, as the verdict
+                pill does in the box below */}
+            <div className={styles.concernBody}>
                 <Tag
                   className={`${styles.likelihood} ${
                     c.likelihood === "high"
@@ -122,7 +78,13 @@ export function IngredientsCard({
                 >
                   {LIKELIHOOD_LABEL[c.likelihood]}
                 </Tag>
-              </div>
+                <p className={`${styles.concernName} t-h6`}>{c.name}</p>
+                <p className={`${styles.foundIn} t-label-sm`}>
+                  Found in: {c.foundIn.map(fullName).join(", ")}
+                </p>
+                <p className={`${styles.concernText} t-body2`}>
+                  {c.description}
+                </p>
             </div>
           </li>
         ))}
@@ -137,42 +99,6 @@ export function IngredientsCard({
  * The emphasis block is `surface/data-strong` — the handoff's rule for a nested
  * block on a data card, NOT a light card. A sage card inside a light card is a
  * LUX pattern; the reverse is not.
- *
- * ⚠️ `badgeBand` DRESSES THE BLOCK, NOT ONLY THE PILL — NOT IN FIGMA. It lands
- * as `data-band` on the emphasis div, where the module turns it into a `--band`
- * custom property; the 2px stroke around the block and the pill's fill both
- * read that one value, so the verdict outlines the product it is about. It stays
- * optional, and a block with no band gets a transparent border rather than none,
- * so the geometry does not move between the two states.
- *
- * `schedule` and `actions` are optional because the two screens want different
- * halves of this: the investigation prescribes an elimination period and offers
- * to remind you, a compatibility check just tells you how to sequence what you
- * already own.
- *
- * ⚠️ THE EMPHASIS BLOCK IS A ROW NOW, NOT A STACK — NOT IN FIGMA. 549:1163
- * stacks title, badge and description down the block, each on its own line at
- * `align-items: flex-start`. That gives the band pill a full line of its own,
- * where it reads as a heading rather than as a label on the product above it —
- * and on a check whose worst product is in the Avoid band, the loudest thing in
- * the card is a red word floating on its own row. In the row it stays a small
- * pill ON the title it qualifies, which is what it is, and the block loses a
- * line. `art` is the same move: the product the block names is drawn beside it,
- * so the block leads with the thing rather than with a sentence about it.
- *
- * ⚠️ THE TITLE MUST BE ALLOWED TO WRAP UNDER THE PILL. Measured at 440 the
- * emphasis block is 312 inside its padding; "Pause Paula's Choice BHA
- * Exfoliant" plus a 48 thumb, a 26 pill and two 12 gaps does not fit on one
- * line, and the pill is what would be pushed out. `.emphasisTitle` takes
- * `flex-grow: 1; min-width: 0` and the pill `flex: none`, so the title takes
- * the two lines it needs and the pill keeps its size.
- *
- * ⚠️ THE STEPS ARE NUMBERED, AND THE NUMBER IS NOT DECORATION. They used to be
- * `notes: string[]`, rendered as bare `t-body3` paragraphs — see the note on
- * `routineAdvice`, which now returns the steps themselves. The disc gives each
- * one a visible start, so three actions read as three actions; it is
- * `bg/brand` + `text/on-brand`, the pairing the check-in discs on `/progress`
- * already use, rather than a new treatment.
  */
 export function NextStepsCard({
   label = "What to do next",
@@ -205,17 +131,21 @@ export function NextStepsCard({
       <p className={`${styles.sectionLabel} t-overline`}>{label}</p>
 
       <div className={styles.emphasis} data-band={badgeBand}>
+        {/* the verdict pill first, then the title on the full width beside
+            the thumb — read top-down, the box says how bad before what */}
         <div className={styles.emphasisHead}>
           {art}
-          <p className={`${styles.emphasisTitle} t-h6`}>{title}</p>
-          {badge && (
-            <Tag className={styles.badge} data-band={badgeBand}>
-              {badge}
-            </Tag>
-          )}
+          <div className={styles.emphasisCopy}>
+            {badge && (
+              <Tag className={styles.badge} data-band={badgeBand}>
+                {badge}
+              </Tag>
+            )}
+            <p className={`${styles.emphasisTitle} t-h6`}>{title}</p>
+          </div>
         </div>
         {description && (
-          <p className={`${styles.emphasisText} t-body3`}>{description}</p>
+          <p className={`${styles.emphasisText} t-body2`}>{description}</p>
         )}
       </div>
 
@@ -227,9 +157,6 @@ export function NextStepsCard({
               className={styles.step}
               style={{ "--i": i } as CSSProperties}
             >
-              {/* ⚠️ aria-hidden, and the <ol> carries the semantics. A screen
-                  reader already numbers a list item; reading the disc too
-                  announces "1 1 Keep …". */}
               <span className={`${styles.num} t-label-sm`} aria-hidden="true">
                 {i + 1}
               </span>
@@ -250,7 +177,7 @@ export function NextStepsCard({
                     ))}
                   </div>
                 )}
-                <p className={`${styles.stepText} t-body3`}>{step.body}</p>
+                <p className={`${styles.stepText} t-body2`}>{step.body}</p>
               </div>
             </li>
           ))}

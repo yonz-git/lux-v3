@@ -9,26 +9,16 @@
 
 /* Check-in detail — Figma 556:1330 (mobile) / 557:1353 (desktop).
 
-   MOBILE — one column, and every gap between the cards is 16:
-     header -> 24 -> date -> symptoms -> 16 -> severity -> 16 -> notes
-             -> 16 -> photos -> 16 -> products
-   (the 24 belongs to HubScreen's grid body. The mobile frame's own spacer is
-   20 and its heading carries no subtitle; page-level whitespace adapts, and
-   every other hub screen in the app opens on 24.)
+MOBILE — one column, and every gap between the cards is 16:
+header -> 24 -> date -> symptoms -> 16 -> severity -> 16 -> notes
+-> 16 -> photos -> 16 -> products
+(the 24 belongs to HubScreen's grid body. The mobile frame's own spacer is
+20 and its heading carries no subtitle; page-level whitespace adapts, and
+every other hub screen in the app opens on 24.)
 
-   DESKTOP — the same 1280 dashboard grid /progress uses, NOT a page card:
-     col-1  640 fixed   photos, notes
-     col-2  616 fill    symptoms, severity, products
-
-   ⚠️ col-1 IS ONE GRID ITEM, col-2 IS THREE. A grid's row tracks are shared
-   across its columns, so five flat cards would tie the two columns' heights
-   together: the photos card is taller than the symptoms card beside it, and
-   the severity card would start below the BOTTOM of the photos card instead of
-   below its own neighbour. Both frames flow the columns independently. Wrapping
-   col-1 and spanning it across the rows is how /progress solves the same
-   problem with its calendar, and it is the only structure this screen adds —
-   the mobile order runs straight through the wrapper, so nothing is reordered
-   at the small breakpoint and the DOM order stays the reading order. */
+DESKTOP — the same 1280 dashboard grid /myskin uses, NOT a page card:
+col-1  640 fixed   photos, notes
+col-2  616 fill    symptoms, severity, products */
 
 /* 16 between every block on mobile — written as three sibling rules because
    the col-1 wrapper sits in the middle of the stack, so `.card + .card` alone
@@ -64,27 +54,20 @@
 .tags {
   display: flex;
   flex-wrap: wrap;
-  gap: var(--space-sm); /* 8 */
+  gap: var(--space-pill-gap); /* the app's one pill gap */
   margin: 0;
   padding: 0;
   list-style: none;
 }
 
-/* ⚠️ NOT IN FIGMA — CompatCard's `Risky ingredients` pill, asked for directly
-   13 Sep 2026; these were `Tag`s. 28 tall: 6 + 16 + 6, warning-subtle behind
-   `feedback/warning`. */
 .tag {
-  padding: 6px var(--space-md); /* 6 / 12 */
+  padding: 0.375rem var(--space-md); /* 6 / 12 */
   border-radius: var(--radius-full);
   background: var(--color-feedback-warning-subtle);
   color: var(--color-feedback-warning);
   white-space: nowrap;
 }
 
-/* ⚠️ A WORSE DAY TAKES THE PROFILE'S DARK PILL — `bg/symptom` with white ink,
-   asked for directly 13 Sep 2026. Better and about-the-same stay light, so
-   "More itching" under "About the same" is light too: the colour follows
-   turn 1's answer, not the word on the pill. */
 .tag[data-direction="worse"] {
   background: var(--color-bg-symptom);
   color: var(--color-text-on-brand);
@@ -143,13 +126,6 @@
   color: var(--color-text-on-data-secondary);
 }
 
-/* ⚠️ A TEXT BUTTON, WHICH IS A SHAPE THIS CARD DID NOT HAVE. `Button` and
-   `SmallButton` are both gradient pills — a sage pill on a sage card is the
-   nesting rule inverted, and either would outweigh the record it sits on. The
-   DS has no tertiary/text button and no edit glyph, so this is the smallest
-   honest thing: the label in `text/on-data`, underlined so it reads as a
-   control rather than a caption, and the hover step every other row on this
-   screen uses. **Raise a Text Button in Figma.** */
 .noteEdit {
   flex: none;
   padding: 0;
@@ -175,25 +151,10 @@
   gap: var(--space-md); /* 12 */
 }
 
-/* ⚠️ `Save` / `Cancel` ARE `SegmentedToggle` NOW — asked for directly 13 Sep
-   2026, replacing two outlined `border/glass` buttons. The pill carries its own
-   recipe; the one thing this screen decides is WHERE it sits. The toggle
-   centres itself (`align-self: center`, built for the tray), and under a
-   left-aligned field on a left-aligned card it keeps the editor's left edge
-   instead. Two classes deep so it outranks the toggle's own single-class rule
-   regardless of which module loads first. The pair is still not carried by
-   colour alone: Save leads in DOM and reading order and Cancel says what it
-   does. */
 .noteEditor > .noteToggle {
   align-self: flex-start;
 }
 
-/* ⚠️ THE NOTE FIELD DROPS ITS TOP LIGHT AND SINKS DEEPER, asked for directly
-   15 Sep 2026 ("remove this border on this state and add more inner shadow
-   15%"): `TextField`'s `inset 0 1px 0 #fff9` read as a white rim along the
-   top, and the frosted-row shadow goes 10% → 15%. The focus ring (`.wrap`'s
-   `::after`) is untouched — it is the field's only focus indicator. (0,1,1)
-   over `TextField`'s `.field` (0,1,0). */
 .noteEditor input {
   box-shadow: inset 2px 4px 9px rgba(0, 0, 0, 0.15);
 }
@@ -212,10 +173,6 @@
   width: 100%;
 }
 
-/* ⚠️ `surface/data-strong`, the nested emphasis fill — a well inside a data
-   card is the one place the stronger sage is used, and a LIGHT well here would
-   invert the nesting rule (a sage card inside a light card is a LUX pattern,
-   the reverse is not). */
 .photo {
   flex: 1 0 0;
   margin: 0;
@@ -223,10 +180,6 @@
   align-items: center;
   justify-content: center;
   min-width: 0;
-  /* ⚠️ SQUARE, NOT THE COMP'S 120-TALL STRIP — asked for directly on 13 Sep
-     2026, once the well held a photograph: a 592×120 crop showed a thin band
-     of it. Capped at the 392 the recap's photo well uses, so it is not a
-     592-square on desktop. */
   aspect-ratio: 1 / 1;
   max-width: 392px;
   overflow: hidden;
@@ -261,20 +214,14 @@
 .product {
   display: flex;
   align-items: center;
-  /* ⚠️ 16, NOT 12, BETWEEN THE THUMB AND THE WORDS — 4 Oct 2026, asked for
-     directly ("give a bit of space here") */
   gap: var(--space-lg);
-  padding: 10px 0;
+  padding: 0.625rem 0;
 }
 
 .product + .product {
   border-top: var(--border-width-hairline) solid var(--color-border-glass);
 }
 
-/* ⚠️ `flex: 1 1 auto` IS THE REMOVE BUTTON'S DOING. The row was a thumb and a
-   text block; the ✕ is a third child, and without the text taking what is left
-   the button sits against the name in the middle of the row rather than at the
-   card's edge where every other trailing control in the app is. */
 .productText {
   display: flex;
   flex-direction: column;
@@ -283,22 +230,12 @@
   min-width: 0;
 }
 
-/* the name and its group pill share the first line, wrapping under a long name */
-.productHead {
-  display: flex;
-  flex-wrap: wrap;
-  align-items: center;
-  gap: var(--space-xs) var(--space-sm); /* 4 / 8 */
+/* the group pill closes the row, right-aligned and centred on it */
+.productGroup {
+  flex: none;
 }
 
-/* ⚠️ NOT IN FIGMA — the group pill wears `bg/brand-soft` at 38% (#8284c061)
-   with `text/primary` ink, one step darker than Tag's own `text/secondary`,
-   asked for 13 Sep 2026. Scoped two classes plus the attribute deep so it
-   outranks `.tag[data-variant="neutral"]` whichever module loads last. */
-.productHead .productGroup[data-variant] {
-  /* ⚠️ A DEEP BLUE AT 38% WITH A WHITE LABEL, supplied directly 15 Sep 2026
-     from DevTools: `#000e71` where it was `bg/brand-soft`, and `text/on-brand`
-     white where it was `text/primary`. No token holds `#000e71`. */
+.product .productGroup[data-variant] {
   background: color-mix(in srgb, #000e71 38%, transparent);
   color: var(--color-text-on-brand);
 }
@@ -311,24 +248,6 @@
   color: var(--color-text-on-data-muted);
 }
 
-/* ⚠️ NOT IN FIGMA — THE SMALL TYPE STEPS UP ON DESKTOP, asked for directly
-   15 Sep 2026: every `Label Small` and `Caption` on this record's cards (the
-   meta lines, the group and symptom pills, the results title, the note hint)
-   takes `--font-size-xs` (14) at 1024+, where both styles are
-   `--font-size-3xs` (12). The line steps with it to `--line-height-xs` (22),
-   the scale's own partner for the 14 size (`Body 3`'s pairing), so a 14 is
-   not jammed into a 16 line. Weights stay each style's own. The phone is
-   untouched. The header's `Day <n>` tag sits outside every card, so it is
-   named on its own, doubled to match. (0,2,0) over the global single class. */
-@media (min-width: 1024px) {
-  .card :global(.t-label-sm),
-  .card :global(.t-caption),
-  .dayTag.dayTag {
-    font-size: var(--font-size-xs);
-    line-height: var(--line-height-xs);
-  }
-}
-
 @media (min-width: 1024px) {
   /* the 16s become the grid's own 24 gutter */
   .card + .card,
@@ -337,10 +256,6 @@
     margin-top: 0;
   }
 
-  /* ⚠️ NOT IN FIGMA — symptoms and severity share row 1 as two halves, and
-     products spans both under them (the screen passes `440px 1fr 1fr`). The
-     pair stretches to one height so the row reads as a row. Asked for 13 Sep
-     2026; the comp stacks all three in one column. */
   .symptoms {
     grid-column: 2;
     grid-row: 1;
@@ -353,17 +268,12 @@
     align-self: stretch;
   }
 
-  /* ⚠️ BOTH SIDES STRETCH TO ONE BOTTOM LINE, asked for 13 Sep 2026: products
-     fills row 2, col-1 fills both rows, and the notes card — col-1's last —
-     takes whatever is left, so whichever column is taller the other meets it. */
   .products {
     grid-column: 2 / span 2;
     grid-row: 2;
     align-self: stretch;
   }
 
-  /* ⚠️ SPANNING BOTH ROWS — the half-width pair defines row 1 and products
-     row 2. A record missing a card simply leaves its cell empty. */
   .col1 {
     grid-column: 1;
     grid-row: 1 / span 2;

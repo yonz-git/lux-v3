@@ -1,38 +1,3 @@
-/* ⚠️ PROTOTYPE — dark directions for 00 Welcome. NOT IN FIGMA.
-
-   ROUND 2, asked for directly: "more indigo like ours palette, a bit more
-   mysterious, not as dark, nice gradient as we have". Round 1 (Figma Night,
-   Deep Teal, Moonlit) was near-black and read as not LUX. All three below are
-   MID-VALUE indigo grounds built from LUX's own figure family —
-   `gradient/brand` #657792 -> #39386f, `bg/brand-soft` #8284c0, `bg/brand`
-   #39386f, the orb mark's #3F326D -> #5C5E9E — with a five-stop sweep the
-   living canvas moves, the way the light canvas does.
-
-   Every rule is scoped to `:root[data-proto-theme="…"]`, which only the harness
-   sets (and removes on unmount). Next keeps a page's global CSS loaded after
-   navigating away, so the scope is what keeps this inert on every other route.
-
-   The overrides sit ON :root, not on a wrapper, for two reasons:
-   - the composites (`--gradient-canvas-mobile`, …) are declared on :root as
-     var() of the leaf colours, so the leaves have to change on the same element
-     for the composites to follow;
-   - the living canvas reads its five ramp tokens from
-     getComputedStyle(document.documentElement).
-
-   ⚠️ THE RAMP IS LIGHTEST FIRST. CanvasShader clamps every pixel to
-   `max(col, ramp[4])`, so `canvas-end-mobile` must be the DARKEST stop.
-
-   ⚠️ A LIGHTER GROUND IS A CONTRAST BUDGET, NOT A FREE CHOICE. The disclaimer
-   is light ink on bare canvas, and the film shader can put its lightest
-   reachable colour (about halfway between ramp[1] and ramp[2]) under it.
-   Measured there: Dusk 4.68:1, Amethyst 4.87:1, Indigo Mist 4.85:1 — which is
-   why none of the three goes lighter than it does. ramp[0] only ever reaches
-   the rare highlight cores.
-
-   ⚠️ THE ORB IS RE-TOKENED LOCALLY, on `.lux-orb`. Its body and wedges bind the
-   canvas tokens, and `SiriOrb` resolves them in an inline style on its own
-   element, so a declaration on the orb's wrapper reaches it and nothing else. */
-
 /* ---------------------------------------------------------------------------
    1 · DUSK — the primary button's own sweep, slate-blue #657792 into indigo,
    turned into the sky. Blue-leaning. The figures are pale indigo glass: a
@@ -157,13 +122,6 @@
   --color-text-primary: #2e2a3f;
 }
 
-/* ---------------------------------------------------------------------------
-   4 · INDIGO — asked for directly: "the indigo with dark chat bubble and the
-   nav bar original color". Dusk's ground (the primary button's own sweep),
-   Amethyst's dark bubble with white ink, and the nav bar left on its light-mode
-   tokens — `--color-surface-nav-bar`, `--color-bg-nav-bar` and
-   `--color-state-pressed-overlay` are deliberately NOT overridden here.
-   ------------------------------------------------------------------------- */
 :root[data-proto-theme="indigo"] {
   /* background supplied directly as a three-stop gradient: 0% #7D96AA,
      50% #4C6F7F, 100% #2A4051. The two stops above it are the shader's
@@ -188,10 +146,7 @@
   --shadow-button: 0 10px 24px -8px rgba(30, 28, 70, 0.45);
 }
 
-/* the bubble's gradient supplied directly from DevTools. ⚠️ TRANSLUCENT
-   (both stops at 52%), which non-negotiable 8 forbids for a shipped bubble —
-   kept here as asked, for evaluation. Two colours rather than one fill, so it
-   overrides the background outright instead of `--color-bg-bubble-ai`. */
+/* the bubble's gradient supplied directly from DevTools. */
 :root[data-proto-theme="indigo"] .edit-bubble[data-from] {
   background: linear-gradient(
     135deg,

@@ -1,24 +1,4 @@
-/**
- * SiriOrb — a blurred, slowly turning sphere of three colours.
- *
- * ⚠️ NOT IN FIGMA. Ported 12 Sep 2026 from the 21st.dev community component
- * `siri-orb` (Umair Waheed) as a design trial for the LUX orb; `Orb.tsx`
- * switches between it and the Figma export.
- *
- * Five conic gradients and a radial one, each anchored off-centre and each
- * turning at its own multiple of one registered `--siri-orb-angle`, under a
- * blur and a contrast boost that melt them into soft blobs. Pure CSS: no canvas,
- * no dependency, and it renders on the server.
- *
- * ⚠️ THE CSS LIVES IN globals.css, NOT HERE. The original shipped a
- * `<style jsx>` block; this app has no styled-jsx, and the `@property` and the
- * `@keyframes` it needs must be global anyway — a CSS Module localizes a
- * keyframes name and it resolves to nothing. See `.siri-orb` there.
- *
- * ⚠️ `size` MUST BE A PIXEL VALUE. The blur (8% of the size, min 8) and the
- * contrast (0.3%, min 1.8) are computed from it, and a token string such as
- * `var(--size-orb-lg)` parses to NaN.
- */
+/** SiriOrb — a blurred, slowly turning sphere of three colours. */
 
 export type SiriOrbColors = {
   /** @default "transparent" */

@@ -2,45 +2,7 @@
  * THE ANALYSIS — the retrospective one, the thing LUX is named for.
  *
  * Source: `docs/product-brief.md` §§ 05–12, "Analysis model to communicate
- * through the UI". Nothing in Figma covers it — page `06. Screen Designs` has
- * no analysis frames outside CHECK — so every screen built on this module
- * carries a `⚠️ NOT IN FIGMA` comment and a line in `docs/archive/figma-catchup.md`.
- *
- * ⚠️ THIS IS NOT `features/check/check.ts` AND THE TWO MUST NOT CONVERGE. CHECK
- * asks "is this product right for my skin?" — prospective, one product at a
- * time, scored. This asks "which of the things I already use is associated with
- * the reaction I recorded?" — retrospective, over a timeline, and the answer is
- * an argument rather than a number. They share `lib/actives.ts` and nothing
- * else. In particular this file cannot see `SCORING`, which is deliberate:
- * those weights are tuned to reproduce a comp's five scores and have no
- * business behind a sentence about what caused someone's reaction.
- *
- * ⚠️ AND IT IS NOT A SIXTH INVESTIGATION STEP. The five steps COLLECT; this
- * REPORTS on what they collected, so it lives off `/investigation` as a pushed
- * result view — the standing `/check/results` has to `/check/new`. `flow.ts` is
- * untouched and `TOTAL_STEPS` is still 5.
- *
- * ---------------------------------------------------------------------------
- * THE SHAPE OF THE ARGUMENT
- *
- *   1. Every product gets an EVIDENCE STATE from the timeline — associated with
- *      the reaction, used without problems, or not enough history. Derived, and
- *      confirmed by the user only where the derivation is genuinely ambiguous.
- *   2. GATES decide whether an answer is possible at all. They are structural,
- *      not a product count: see `MIN_CHECK_PRODUCTS` below.
- *   3. The SUBTRACTION runs once and produces both halves of the case — the
- *      candidates the tolerated set fails to clear are the evidence FOR, the
- *      ones it clears are the evidence AGAINST. Same pass.
- *   4. The PAIR pass asks the narrower same-routine question of `CONFLICTS`.
- *   5. The OUTCOME is one of the brief's three, and one of them is a refusal.
- *
- * ⚠️ NO NUMBER EVER LEAVES THIS FILE AS A CONFIDENCE. The brief: "Do not show a
- * scientific-looking percentage." A percentage dresses a judgement up as a
- * measurement, and this judgement is made from four coarse duration buckets and
- * an ingredient list of unknown concentration. `Confidence` is a word, and it is
- * derived from the SHAPE of the subtraction — how much of the associated set
- * carries the candidate, and how much tolerated evidence was available to clear
- * it with. Counts of products are facts and may be shown; a score may not.
+ * through the UI". Nothing in Figma covers it — page `06.
  */
 import type { Answers } from "@/lib/store/answers";
 import type { SavedProduct } from "@/features/products/products";
@@ -53,7 +15,7 @@ import {
   hasReadableIngredients,
 } from "@/lib/actives";
 import { daysBetween, fromIso } from "@/lib/date";
-import { ownedProducts } from "@/lib/demo";
+import { ownedProducts } from "@/features/products/library";
 
 /* ---------------------------------------------------------------------------
    The timeline
@@ -74,25 +36,12 @@ const INTRO_WINDOW: Record<SavedProduct["bucket"], IntroWindow | null> = {
   "long-term": { min: 28, max: null },
   recent: { min: 7, max: 28 },
   "new-addition": { min: 0, max: 7 },
-  /* ⚠️ `Not sure` HAS NO WINDOW AND IS NOT BINNED INTO ONE. That is the whole
-     reason it is kept out of `BUCKETS` as its own group rather than filed under
-     Long term — see `UNSORTED_BUCKET` in `products.ts`. A product with no
-     timeline cannot be placed against the flare date, and pretending otherwise
-     is how an analysis invents evidence. */
   "not-sure": null,
 };
 
 /**
  * How long before the reaction started a product could have been introduced and
  * still be a plausible suspect.
- *
- * ⚠️ 14 DAYS IS A JUDGEMENT, NOT A MEASUREMENT, AND THE UI MUST NOT IMPLY
- * OTHERWISE. Irritant and allergic reactions can surface anywhere from hours to
- * weeks after a product enters a routine; two weeks is a commonly used
- * observation window and is the same length as half the four-week elimination
- * period `ELIMINATION_WEEKS` already uses. It is here as one named constant
- * precisely so it can be argued with, rather than being spread across three
- * comparisons nobody can find.
  */
 export const LEAD_IN_DAYS = 14;
 
@@ -102,16 +51,6 @@ export const LEAD_IN_DAYS = 14;
  * § "UX vocabulary". Do not rename these to anything stronger.
  */
 export type EvidenceState = "associated" | "tolerated" | "unclear";
-
-/* ⚠️ THE THREE STATES HAVE NO LABELS ANY MORE, AND THAT IS THE POINT. They had
-   one each — the brief's "Associated with this reaction" / "Used without
-   problems" / "Not enough history" — for a read-only list on the deleted
-   evidence screen that showed the user every product filed under its state.
-   That list was the clearest single example of the "too much reading" problem:
-   it restated the timeline the user had just entered, in the app's vocabulary,
-   before it would say anything useful. If a screen ever needs to name a state
-   again, take the strings from `docs/product-brief.md` § "UX vocabulary" rather
-   than inventing near-misses. */
 
 /**
  * The evidence state the timeline implies, before the user confirms anything.
@@ -149,20 +88,6 @@ export type ProductEvidence = {
   actives: ActiveId[];
 };
 
-/**
- * ⚠️ IT READS `ownedProducts`, NOT `a.products`, AND READING THE RAW KEY WAS A
- * BUG — fixed 8 Sep 2026. Everything else that shows the user's products goes
- * through `lib/demo.ts`, which falls back to the seeded library when the user
- * has never touched the list. This function did not, so on a cold store
- * `/products` counted five products and the analysis compared none: it answered
- * "Nothing in your list is new" and pointed at the very screen already showing
- * five. That is the hub-says-2/list-says-0 failure `ownedProducts`' own comment
- * describes, landed on the screen the product is named for.
- *
- * The seeded products carry a `duration` like any other, and the evidence state
- * is derived from the BUCKET rather than from `addedOn`, so the demo library
- * places against whatever flare date the user gives.
- */
 export function evidenceFor(a: Answers): ProductEvidence[] {
   const flare = a.timing?.date ? fromIso(a.timing.date) : null;
   if (!flare) return [];
@@ -184,19 +109,7 @@ export function evidenceFor(a: Answers): ProductEvidence[] {
    § 06 — what the analysing state says it is doing
    -------------------------------------------------------------------------- */
 
-/**
- * The six passes, in the brief's own words — § 06, verbatim.
- *
- * ⚠️ THEY ARE NOT DECORATION AND THEY ARE NOT INVENTED. Each line names a pass
- * THIS FILE actually runs, in the order it runs them: `deriveEvidence` (1),
- * `subtract` (2 and 3), `pairs` (4), the skin profile `reasoningFor` reads (5),
- * and `hasReadableIngredients` (6). They live here rather than in the component
- * precisely so that they sit beside the functions they describe — if a pass is
- * ever removed, its line is in the same file and goes with it.
- *
- * A progress list narrating work the app is not doing is exactly what the brief
- * means by "do not imply laboratory-level certainty".
- */
+/** The six passes, in the brief's own words — § 06, verbatim. */
 export const ANALYSIS_PASSES = [
   "Comparing when each product was introduced",
   "Finding ingredients shared by the newer ones",
@@ -206,32 +119,7 @@ export const ANALYSIS_PASSES = [
   "Checking what the ingredient data cannot tell us",
 ] as const;
 
-/* ---------------------------------------------------------------------------
-   § 05 — the two gates, and everything that is NOT one
-
-   ⚠️ ONLY TWO THINGS STOP THE ANALYSIS, AND NEITHER IS ABOUT COMPLETENESS.
-   It gated on five things once — a cleanser, a sunscreen, two tolerated
-   products carrying ingredient lists, ingredient data on the majority — and the
-   result was a screen that lectured the user about what they had not typed in
-   before it would tell them anything. That is the wrong trade. A thin
-   comparison is still a comparison, and it already has a way to say it is thin:
-   the CONFIDENCE WORD.
-
-   So the rule is: **refuse only when there is nothing to compare.** Everything
-   else lowers the confidence and is said on the card rather than in the way.
-
-     GATE       no flare date        nothing to compare products against
-     GATE       nothing new, or no ingredient list anywhere
-                                     no suspect at all, or nothing to read
-
-     NOT a gate — a missing cleanser or sunscreen (a REMINDER, see
-       `forgottenRoles`); a thin tolerated set (caps confidence at `weak`);
-       most products lacking ingredient lists (named in the reasoning).
-
-   ⚠️ **DO NOT PUT THE OLD GATES BACK.** Requiring a cleanser before LUX will
-   say anything is the app deciding the user's routine is incomplete, which is
-   not its call — decided 6 Sep 2026, after the first build did exactly that.
-   -------------------------------------------------------------------------- */
+/* § 05 — the two gates, and everything that is NOT one */
 
 export type GapId =
   | "no-flare-date"
@@ -244,37 +132,17 @@ export type Gap = {
   title: string;
   /** why it is needed — ONE short sentence, never a paragraph */
   body: string;
-  /**
-   * Where the user goes to fix it — ABSENT when the fix is on this screen.
-   *
-   * ⚠️ `unresolved-timeline` has no href and no action, because the answer is
-   * the confirmation strip rendered directly under it. Sending someone to
-   * another screen to resolve a question this one is already asking is the
-   * shape the deleted evidence screen had.
-   */
+  /** Where the user goes to fix it — ABSENT when the fix is on this screen. */
   href?: string;
   action?: string;
 };
 
-/**
- * Tolerated products carrying an ingredient list.
- *
- * ⚠️ NOT A GATE ANY MORE. A comparison with fewer than this still runs; it just
- * cannot come out better than `weak`, which is the honest way to say the same
- * thing without withholding the answer.
- */
+/** Tolerated products carrying an ingredient list. */
 const MIN_TOLERATED = 2;
 
 export type RoutineRole = "cleanser" | "sunscreen";
 
-/**
- * The two routine roles worth reminding someone about.
- *
- * ⚠️ MATCHED ON THE NAME, WHICH IS A PROTOTYPE-GRADE HEURISTIC AND SAYS SO.
- * Open Beauty Facts has a category field this should read instead; it is not
- * requested by `openBeautyFacts.ts` today. Getting it wrong is now harmless in
- * both directions, because nothing depends on the answer.
- */
+/** The two routine roles worth reminding someone about. */
 const ROUTINE_ROLES: { id: RoutineRole; label: string; re: RegExp }[] = [
   { id: "cleanser", label: "cleanser", re: /cleans|wash|foaming|micellar|makeup remover/i },
   { id: "sunscreen", label: "sunscreen", re: /spf|sunscreen|sun cream|uv\b|fluid uv/i },
@@ -284,16 +152,7 @@ function hasRole(products: SavedProduct[], re: RegExp): boolean {
   return products.some((p) => re.test(`${p.brand} ${p.name} ${p.description ?? ""}`));
 }
 
-/**
- * Roles the user has not added — for a REMINDER, not a requirement.
- *
- * ⚠️ THIS IS A QUESTION, NOT A GATE, AND THE DIFFERENCE IS THE WHOLE POINT.
- * A cleanser and a sunscreen touch the whole face every day, so it is worth
- * asking whether one was forgotten. It is not worth refusing to analyse over:
- * plenty of people use neither, and an app that will not answer until they say
- * so out loud has decided their routine is wrong. The analysis runs either way
- * and this produces one line of copy.
- */
+/** Roles the user has not added — for a REMINDER, not a requirement. */
 export function forgottenRoles(a: Answers): string[] {
   /* the same list the comparison ran on — see `evidenceFor` */
   const products = ownedProducts(a);
@@ -324,18 +183,6 @@ export function gaps(a: Answers): Gap[] {
   const readable = evidence.filter((e) => e.readable);
   const straddling = evidence.filter((e) => e.state === "unclear");
 
-  /* ⚠️ AMBIGUITY IS NOT ABSENCE, AND SAYING "NOTHING IS NEW" WHEN SOMETHING
-     MIGHT BE WAS WRONG — fixed 8 Sep 2026. `deriveEvidence` returns `unclear`
-     when a product's introduction range STRADDLES the reaction, and § 05's
-     confirmation list exists to resolve exactly that. With no `associated`
-     product the gate below used to fire anyway, so the screen said "Nothing in
-     your list is new" and sent the user off to add more products — while the
-     one question that would settle it sat unasked. That is the likeliest real
-     walk through the flow: a product started in the last month, and a reaction
-     that started inside the same fortnight.
-
-     So this gap carries no destination. The screen renders the confirmation
-     strip under it, and answering one chip re-runs the comparison in place. */
   if (suspects.length === 0 && straddling.length > 0) {
     const one = straddling.length === 1;
     return [
@@ -382,12 +229,6 @@ export function gaps(a: Answers): Gap[] {
 /**
  * The products whose timeline straddles the boundary. Exactly these get a
  * question, and no others.
- *
- * ⚠️ ANSWERING ONE DOES NOT REMOVE IT FROM THE LIST — `confirmed` products stay,
- * carrying the user's answer. A card that vanishes the moment it is tapped
- * gives no confirmation that the tap landed and no way to change the answer,
- * and on a screen whose whole job is "check what I worked out", that is the
- * wrong direction to fail in.
  */
 export function needsConfirmation(a: Answers): ProductEvidence[] {
   return evidenceFor(a).filter((e) => e.state === "unclear" || e.confirmed);
@@ -437,16 +278,7 @@ export type PairHypothesis = {
 
 export type Hypothesis = IngredientHypothesis | PairHypothesis;
 
-/**
- * The confidence word, from the shape of the subtraction and nothing else.
- *
- * ⚠️ IT IS NOT A THRESHOLD ON A SCORE, AND THERE IS NO SCORE. Three things
- * decide it: how much of the associated set carries the candidate, whether any
- * tolerated product carries it too, and — the one people forget — how much
- * tolerated evidence there was to be absent from. A candidate absent from an
- * empty tolerated set has not been cleared of anything, and calling that
- * "stronger" would be the analysis crediting itself for evidence it never had.
- */
+/** The confidence word, from the shape of the subtraction and nothing else. */
 function confidenceFor(h: {
   inAssociated: unknown[];
   inTolerated: unknown[];
@@ -459,10 +291,6 @@ function confidenceFor(h: {
   if (h.inTolerated.length > 0) return "weak";
   /* One product is a coincidence, not a pattern. */
   if (h.inAssociated.length < 2) return "weak";
-  /* ⚠️ NOTHING TO BE ABSENT FROM IS NOT THE SAME AS BEING ABSENT. With no
-     readable tolerated product, the candidate has not been cleared of
-     anything — it has never been tested. This is the case that used to REFUSE
-     to answer; it answers now, and says `weak`. */
   if (h.toleratedReadable === 0) return "weak";
   if (
     h.inAssociated.length === h.associatedTotal &&
@@ -473,16 +301,7 @@ function confidenceFor(h: {
   return "possible";
 }
 
-/**
- * Both halves of the case, from one pass.
- *
- * ⚠️ THE CLEARED CANDIDATES ARE NOT WASTE — THEY ARE § 08's "EVIDENCE AGAINST"
- * ACCORDION, which no screen in LUX has a pattern for and which the brief
- * requires on every hypothesis. An ingredient the user's own tolerated history
- * argues against is the most useful thing this analysis produces, and it is
- * free: it is the same subtraction, read from the other side. Returning only
- * the survivors is how a reasoning screen turns into advocacy.
- */
+/** Both halves of the case, from one pass. */
 export function subtract(evidence: ProductEvidence[]): {
   candidates: IngredientHypothesis[];
   cleared: IngredientHypothesis[];
@@ -539,16 +358,7 @@ export function subtract(evidence: ProductEvidence[]): {
    possibilities, not universal incompatibilities."
    -------------------------------------------------------------------------- */
 
-/**
- * `CONFLICTS` pairs whose halves were both in the routine during the window.
- *
- * ⚠️ A NARROWER QUESTION THAN CHECK ASKS OF THE SAME LIST. CHECK asks whether
- * both are in a basket the user is considering. This asks whether both were
- * actually in use in the same period, AND requires at least one half to be new:
- * a pair the user has been running for months without trouble did not start
- * anything, and reporting it here would be CHECK's advice wearing the
- * analysis's clothes.
- */
+/** `CONFLICTS` pairs whose halves were both in the routine during the window. */
 export function pairs(evidence: ProductEvidence[]): PairHypothesis[] {
   const inRoutine = evidence.filter((e) => e.state !== "unclear" && e.readable);
   const out: PairHypothesis[] = [];
@@ -570,11 +380,6 @@ export function pairs(evidence: ProductEvidence[]): PairHypothesis[] {
           actives: [x, y],
           products: [cx.product, cy.product],
           bothNew: cx.state === "associated" && cy.state === "associated",
-          /* ⚠️ NEVER "stronger". A pair is a context-dependent possibility that
-             depends on concentration, formulation and how often the two were
-             actually layered — none of which the app knows. The brief is
-             explicit: never infer an interaction from ingredient names alone
-             without showing uncertainty. */
           confidence: cx.state === "associated" && cy.state === "associated"
             ? "possible"
             : "weak",
@@ -605,17 +410,7 @@ export type Analysis = {
 
 const RANK: Record<Confidence, number> = { stronger: 2, possible: 1, weak: 0 };
 
-/**
- * The hypotheses the screen argues, and the ones it merely lists.
- *
- * ⚠️ EVERY SURVIVING CANDIDATE IS REPORTED, BUT NOT EVERY ONE GETS A CARD. A
- * real routine produces four or five weak candidates — an ingredient in exactly
- * one product, with nothing tolerated to test it against — and giving each of
- * them a full reasoning card buries the leading hypothesis under things the
- * analysis has already said it cannot support. § 07 shows ONE hypothesis for
- * outcome 1; the rest still appear, named and labelled, in a compact list, so
- * nothing is hidden and nothing is dressed up.
- */
+/** The hypotheses the screen argues, and the ones it merely lists. */
 export function splitHypotheses(a: Analysis): {
   leading: Hypothesis[];
   alsoConsidered: Hypothesis[];
@@ -632,13 +427,6 @@ export function splitHypotheses(a: Analysis): {
 /**
  * The verdict sentence for outcome `several` — two or more explanations that
  * the subtraction cannot separate.
- *
- * ⚠️ IT SAYS WHEN THEY ALL COME OUT OF ONE BOTTLE, added 8 Sep 2026. The
- * leading pair is very often two ingredients of the SAME product — a BHA
- * exfoliant carrying both salicylic acid and denatured alcohol is the seeded
- * example — and drawn as two numbered cards that reads as two suspects. They
- * are two mechanisms, which is worth keeping separate, but the reader is owed
- * the fact that pausing one thing tests both of them.
  */
 export function severalVerdict(analysis: Analysis): string {
   const { leading } = splitHypotheses(analysis);
@@ -671,10 +459,6 @@ export function analyseInvestigation(a: Answers): Analysis {
   );
 
   if (hypotheses.length === 0) {
-    /* ⚠️ THE GATES PASSED AND THERE IS STILL NO ANSWER, WHICH IS A REAL
-       OUTCOME AND NOT A BUG. Everything the associated products share was
-       cleared by the tolerated ones, or they share nothing at all. That is
-       information — it is just not a culprit. */
     return {
       outcome: "none",
       gaps: [
@@ -711,29 +495,7 @@ export function analyseInvestigation(a: Answers): Analysis {
   };
 }
 
-/* ---------------------------------------------------------------------------
-   § 07 / § 08 — the sentences
-
-   ⚠️ THE COPY IS HERE AND NOT IN THE SCREENS, WHICH IS THE HOUSE RULE ("a
-   screen states nothing it could compute from one of these") AND ALSO THE ONLY
-   WAY THE VOCABULARY STAYS ENFORCEABLE. These screens add more product-effect
-   copy than the rest of the app combined, and the brief's controlled vocabulary
-   is a REGULATORY constraint rather than a tone preference — see
-   `docs/decisions.md`, "Claim language". Every sentence below is hedged on
-   purpose:
-
-     SAY                                   NEVER SAY
-     Associated with this reaction         This caused your reaction
-     Used without problems                 Safe for you
-     Possible contributor / interaction    Toxic ingredient, dangerous product
-     Fits your recorded pattern            Guaranteed result
-     Not enough evidence yet               Allergy diagnosis
-     May have increased irritation when    These two ingredients clashed
-       used in the same period
-
-   Keeping it in one module means the forbidden list can be checked by a script
-   over this file rather than trusted to whoever writes the next screen.
-   -------------------------------------------------------------------------- */
+/* § 07 / § 08 — the sentences */
 
 /** The one-line headline § 07 asks for: "This currently fits your recorded
  *  pattern best." Hedged, and never naming a cause. */
@@ -742,12 +504,6 @@ export function headline(h: Hypothesis): string {
     return `A possible contributor: ${h.name}`;
   }
   const [x, y] = h.actives;
-  /* ⚠️ `name`, NOT `label`. `ACTIVES.label` is CHECK's ingredient-tag string and
-     one of them carries a concentration — "Salicylic Acid 2%" — which this
-     screen has just finished saying it does not know. A sentence that names a
-     percentage two lines above "concentration and formulation are unknown"
-     undoes the hedge. Same reason every other sentence in this file uses
-     `name`. */
   return `${ACTIVES[x].name} and ${ACTIVES[y].name}, used in the same period`;
 }
 
@@ -762,29 +518,14 @@ export function subject(h: Hypothesis): string {
   return `${ACTIVES[x].name} with ${ACTIVES[y].name}`;
 }
 
-/**
- * The type label § 07 asks to show beside the headline.
- *
- * ⚠️ THE SHORT FORMS, AND THEY ARE THE BRIEF'S OWN. "Possible contributor" and
- * "Possible interaction" are both on the approved vocabulary list verbatim;
- * "Possible ingredient contributor" was a longer thing I had made up out of
- * them, and at 13px with tracking it wrapped to two lines and crowded the
- * confidence pill beside it. Shorter and more correct at once.
- */
+/** The type label § 07 asks to show beside the headline. */
 export function hypothesisKind(h: Hypothesis): string {
   return h.kind === "ingredient"
     ? "Possible contributor"
     : "Possible interaction";
 }
 
-/**
- * The whole answer in one line, for the verdict card.
- *
- * ⚠️ IT MUST NOT REPEAT `headline()`. The verdict card and the hypothesis card
- * below it sat one above the other saying the same six words, which is reading
- * for no gain. The verdict says WHAT and WHY IN SHORT; the card says it again
- * with the evidence attached, which is the only reason to have both.
- */
+/** The whole answer in one line, for the verdict card. */
 export function verdictLine(analysis: Analysis): string {
   const top = analysis.hypotheses[0];
   if (!top) return "Nothing survived the comparison.";
@@ -845,10 +586,6 @@ export function reasoningFor(
       );
     }
 
-    /* ⚠️ THE CASE AGAINST IS BUILT EVEN WHEN THE CANDIDATE SURVIVED, and this
-       is the accordion the brief cares most about. A surviving candidate has no
-       tolerated product carrying it — by construction — so the honest counter-
-       evidence is what the comparison could NOT rule out. */
     const without = associated.length - h.inAssociated.length;
     if (without > 0) {
       against.push(
@@ -895,8 +632,6 @@ export function reasoningFor(
     );
   }
 
-  /* ⚠️ THE PROFILE IS CONTEXT, NEVER PROOF — the brief says so in as many
-     words: "explain relevance ... without treating them as proof". */
   const profile: string[] = [];
   const skinType = a["skin-type"];
   const tendencies = a.tendencies ?? [];
@@ -1039,18 +774,6 @@ export function investigationPriority(a: Answers): PriorityEntry[] {
    § 10 — the cautious next action
    -------------------------------------------------------------------------- */
 
-/**
- * ⚠️ TWO PRODUCTS CAN NEVER BE PROPOSED FOR A PAUSE, AND THIS IS AN EXCLUSION
- * IN CODE RATHER THAN A LINE OF COPY. The brief: "Do not recommend pausing
- * prescribed treatment. Do not recommend stopping sunscreen without an
- * appropriate protection plan."
- *
- * The app cannot know what is prescribed — nothing asks — so the honest
- * position is that the pause suggestion is a suggestion the user overrides, and
- * the screen says as much. Sunscreen it CAN recognise, and it is excluded
- * outright: a four-week observation that removes daily UV protection trades one
- * skin problem for a worse one.
- */
 export function pausableProducts(entries: PriorityEntry[]): PriorityEntry[] {
   const sunscreen = ROUTINE_ROLES.find((r) => r.id === "sunscreen");
   if (!sunscreen) return entries;
@@ -1059,27 +782,10 @@ export function pausableProducts(entries: PriorityEntry[]): PriorityEntry[] {
   );
 }
 
-/**
- * How long an observation runs.
- *
- * ⚠️ THE SAME FOUR WEEKS AS `ELIMINATION_WEEKS` IN `check.ts`, AND NOT IMPORTED
- * FROM IT. Both come from the brief ("suggested four-week observation period")
- * rather than from each other, and they are different things: CHECK builds a
- * schedule for reintroducing products it scored, this is a single pause on a
- * product the analysis is arguing about. If one moves, the other should be
- * looked at and may well stay — which is not true of a shared constant.
- */
+/** How long an observation runs. */
 export const OBSERVATION_WEEKS = 4;
 
-/**
- * The one sentence the PROGRESS record carries.
- *
- * ⚠️ IT IS BUILT HERE AND STORED AS A STRING, SO `progress.ts` NEVER IMPORTS
- * THIS MODULE. PROGRESS shows what the investigation concluded; it has no
- * business re-deriving it, and a record that recomputed itself would silently
- * change after the user edited their products — which is the opposite of what a
- * record is for.
- */
+/** The one sentence the PROGRESS record carries. */
 export function recordSummary(analysis: Analysis): string {
   const top = analysis.hypotheses[0];
   if (!top) return "No conclusion yet, not enough evidence to point at anything.";

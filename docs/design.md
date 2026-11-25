@@ -1,7 +1,7 @@
 ---
 version: alpha
 name: LUX v3
-description: Glass over a pale sage canvas, one indigo, Urbanist, round controls — the system every lux-v3 screen is built from.
+description: Glass over a pale sage canvas, one indigo, Figtree with Manrope headings, round controls — the system every lux-v3 screen is built from.
 colors:
   primary: "#313560"
   primary-start: "#485780"
@@ -36,115 +36,126 @@ colors:
   symptom: "#D3858A"
 typography:
   headline:
-    fontFamily: Urbanist
+    fontFamily: Manrope
     fontSize: 36px
-    fontWeight: 300
-    lineHeight: 44px
+    fontWeight: 500
+    lineHeight: 1.2
     letterSpacing: -0.005em
   headline-emphasis:
-    fontFamily: Urbanist
+    fontFamily: Manrope
     fontSize: 36px
     fontWeight: 700
-    lineHeight: 44px
+    lineHeight: 1.2
     letterSpacing: -0.005em
   kicker:
-    fontFamily: Urbanist
+    fontFamily: Figtree
     fontSize: 16px
     fontWeight: 400
-    lineHeight: 20px
+    lineHeight: 1.4
   wordmark:
-    fontFamily: Urbanist
+    fontFamily: Figtree
     fontSize: 20px
     fontWeight: 700
-    lineHeight: 24px
+    lineHeight: 1.2
     letterSpacing: 0.005em
   h2:
-    fontFamily: Urbanist
+    fontFamily: Manrope
     fontSize: 28px
-    fontWeight: 400
-    lineHeight: 34px
+    fontWeight: 500
+    lineHeight: 1.2
   page-title:
-    fontFamily: Urbanist
+    fontFamily: Manrope
     fontSize: 22px
-    fontWeight: 400
-    lineHeight: 28px
+    fontWeight: 500
+    lineHeight: 1.2
   h4:
-    fontFamily: Urbanist
+    fontFamily: Manrope
     fontSize: 20px
-    fontWeight: 400
-    lineHeight: 24px
+    fontWeight: 500
+    lineHeight: 1.2
   panel-label:
-    fontFamily: Urbanist
+    fontFamily: Figtree
     fontSize: 18px
     fontWeight: 400
-    lineHeight: 22px
+    lineHeight: 1.2
   row-title:
-    fontFamily: Urbanist
+    fontFamily: Figtree
     fontSize: 16px
     fontWeight: 500
-    lineHeight: 20px
+    lineHeight: 1.2
   body-lg:
-    fontFamily: Urbanist
+    fontFamily: Figtree
     fontSize: 18px
     fontWeight: 400
-    lineHeight: 24px
+    lineHeight: 1.4
   body:
-    fontFamily: Urbanist
+    fontFamily: Figtree
     fontSize: 16px
     fontWeight: 400
-    lineHeight: 22px
+    lineHeight: 1.4
   body-sm:
-    fontFamily: Urbanist
+    fontFamily: Figtree
     fontSize: 14px
     fontWeight: 400
-    lineHeight: 20px
+    lineHeight: 1.4
   chip:
-    fontFamily: Urbanist
+    fontFamily: Figtree
     fontSize: 16px
     fontWeight: 400
-    lineHeight: 20px
+    lineHeight: 1.4
   label:
-    fontFamily: Urbanist
+    fontFamily: Figtree
     fontSize: 14px
     fontWeight: 500
-    lineHeight: 20px
+    lineHeight: 1.4
   button:
-    fontFamily: Urbanist
+    fontFamily: Figtree
     fontSize: 15px
     fontWeight: 500
-    lineHeight: 20px
+    lineHeight: 1.4
   button-sm:
-    fontFamily: Urbanist
+    fontFamily: Figtree
     fontSize: 14px
     fontWeight: 500
-    lineHeight: 20px
+    lineHeight: 1.4
+  label-h6:
+    fontFamily: Figtree
+    fontSize: 14px → 16px from 1024
+    fontWeight: 500
+    lineHeight: 1.4
   label-sm:
-    fontFamily: Urbanist
+    fontFamily: Figtree
     fontSize: 12px
     fontWeight: 500
-    lineHeight: 16px
+    lineHeight: 1.4
   caption:
-    fontFamily: Urbanist
+    fontFamily: Figtree
     fontSize: 12px
     fontWeight: 400
-    lineHeight: 16px
+    lineHeight: 1.4
   overline:
-    fontFamily: Urbanist
-    fontSize: 12px
-    fontWeight: 600
-    lineHeight: 16px
+    fontFamily: Manrope
+    fontSize: 14.4px
+    fontWeight: 800
+    lineHeight: 1.4
     letterSpacing: 0.12em
   metric-lg:
-    fontFamily: Urbanist
+    fontFamily: Figtree
     fontSize: 56px
     fontWeight: 300
-    lineHeight: 60px
+    lineHeight: 1.2
     fontFeature: '"tnum"'
   metric-md:
-    fontFamily: Urbanist
+    fontFamily: Figtree
     fontSize: 40px
     fontWeight: 300
-    lineHeight: 40px
+    lineHeight: 1.2
+    fontFeature: '"tnum"'
+  metric-sm:
+    fontFamily: Figtree
+    fontSize: 20px
+    fontWeight: 300
+    lineHeight: 1.2
     fontFeature: '"tnum"'
 rounded:
   none: 0px
@@ -317,7 +328,7 @@ components:
     backgroundColor: "{colors.sheet}"
     textColor: "{colors.on-surface}"
     rounded: "{rounded.sheet}"
-    padding: 8px 8px 24px
+    padding: 20px
   sheet-close:
     backgroundColor: "{colors.glass}"
     textColor: "{colors.on-surface}"
@@ -339,8 +350,9 @@ components:
     rounded: "{rounded.full}"
     size: 56px
   nav-item-active:
-    backgroundColor: "{colors.primary}"
-    textColor: "{colors.on-primary}"
+    backgroundColor: "#40456B12"
+    borderColor: "{colors.nav-edge}"
+    textColor: "#5962A3"
     typography: "{typography.label}"
     rounded: "{rounded.full}"
     padding: 0 20px 0 18px
@@ -414,7 +426,7 @@ LUX is an AI-guided skincare investigation app: people record what their skin
 is doing, list the products they use, and get a careful, non-diagnostic
 reading of what might be associated with a reaction. They use it on a phone,
 briefly, often daily, sometimes while their skin is uncomfortable, so it has to
-feel **calm, clear and trustworthy**. The look comes from the VidGen
+feel **calm, clear and trustworthy**. The look comes from the
 references (`~/Claude/vidgen/index.html`, `~/Claude/vidgen-studio/index.html`):
 glass controls over a pale sage canvas, round buttons, light headlines with the
 key words in bold. The canvas gradient and the indigo are lux-v2's own; the
@@ -422,8 +434,8 @@ references' glows and dark ground were tried and dropped.
 It must never look clinical (white, grey, cold), never look like a video tool
 (lilac glows, dark editor chrome), and never shout (more than one primary
 action, bright fills).
-The values here are mirrored in code: `app/tokens.css`, `app/globals.css`, and
-`app/vidgen.css` (loaded last, so it wins), plus the components in
+The values here are mirrored in code: `app/tokens.css` (every value, declared
+once) and `app/globals.css` (every rule), plus the components in
 `components/ui/` and `components/layout/`. `docs/design.html` shows this file
 rendered; `/styleguide` shows the real components live. If the code and this
 file disagree, fix whichever is wrong in the same change, never one alone.
@@ -459,29 +471,65 @@ The compatibility bands map to them: Compatible = `success`, Risky =
 
 ## Typography
 
-Urbanist is the only typeface: a geometric sans that stays soft at light
-weights, which is what lets a 36px Light headline feel calm rather than thin.
-Five weights are loaded (300–700). The hierarchy is carried by size and weight,
-not colour.
-`headline` (36/44 Light) opens a welcome or empty state, with its key words in
-`headline-emphasis` (Bold, in `primary`), under a `kicker` (16/20). Every page
-`<h1>` is `page-title` (22/28 Regular), on every page and both breakpoints;
-sheet titles use it too. Inside panels, `panel-label` (18/22) names the panel,
-`overline` (12/16 SemiBold, tracked, capitals) labels a readout, and
-`metric-lg` / `metric-md` (Light, tabular figures) carry the number.
-Body copy is `body` (16/22); `body-sm` (14/20) supports it. Controls have
-their own styles so their widths stay stable: `chip` (16/20 Regular), `label`
-(14/20 Medium) for tabs, nav and row labels, `button` (15/20 Medium) and
-`button-sm` (14/20 Medium). `label-sm` and `caption` (12/16) are the floor —
-nothing smaller, ever.
+Two typefaces. Headings (`headline`, `h2`, `page-title`, `h4`) are Manrope
+Medium; everything else, from panel labels and row titles down to body,
+labels and data, is Figtree, a friendly sans that holds up at 12px. Figtree
+loads five weights (300–700), Manrope is one variable file. The hierarchy is
+carried by size, weight and the change of face, not colour.
+
+**Two line heights.** Headings, titles and figures, item names (`t-h6`) and
+card overlines (`t-overline`) sit on `--line-height-heading` (1.2); running
+text, labels and controls on `--line-height-text` (1.4). A heading never takes
+the text leading. The trend card's one-line title is the single exception,
+closed up to 0.5 from 430.
+
+**One job, one role.** Each kind of text has one style everywhere:
+
+| Job | Role |
+| --- | --- |
+| Welcome's line | `headline` 36 → 44, key words `headline-emphasis` |
+| Every page `<h1>`, a wait state's title | `page-title` (`t-h4-h3`) 22 |
+| Sheet and tray titles | `h4` 20 |
+| A card's headline, an empty state's title | `panel-label` (`t-h5`) 18 |
+| A card's section label | `overline` 14.4 ExtraBold caps, trimmed to the capitals, same size at every width |
+| A list's or sub-section's heading ("Your products", "Recommendation") | `label` 14 Medium, secondary |
+| A product or item name, wherever it appears | `row-title` (`t-h6`) 16 Medium |
+| The brand or meta line under a name | `label-sm` 12 Medium, muted |
+| Reading text: summaries, advice, card bodies, empty-state bodies | `body` (`t-body2`) 16 |
+| Supporting text: hints, notes, empty notes inside a card | `body-sm` (`t-body3`) 14 |
+| A read-only key over its value | `body-sm` muted over `label` |
+| Form labels | `label` 14 Medium |
+| Pills, tags, chart axes | `label-sm` / `caption` 12 |
+| Figures | `metric-lg` 56, `metric-md` 40, `metric-sm` 20 (a score in a ring), Light, tabular |
+
+Controls have their own styles so their widths stay stable: `chip` (16
+Regular), `label` (14 Medium) for tabs and nav, `label-h6` (14 → 16) for an
+option row, `button` (15 Medium) and `button-sm` (14 Medium). `label-sm` and
+`caption` (12) are the floor; FaceDiagram's labels, which scale with the
+diagram, stop at `--font-size-floor` (11).
 In code each style is a `t-*` class (`t-headline`, `t-h4-h3`, `t-body2`,
-`t-chip`…); a screen never writes a font-size. Headings balance their lines
-and prose avoids orphans automatically.
+`t-chip`…); a screen never writes a font-size, weight or line height, and
+never resizes a role at a breakpoint. A size that has to change with the
+width is its own `t-a-b` role. Headings balance their lines and prose avoids
+orphans automatically.
+**Units (31 Oct 2026):** every size is rem (16px = 1rem), so the whole ramp
+follows the reader's browser text size. The px sizes above are at the
+default 16px root. Five roles are FLUID — they slide between 375 and 1440
+wide with `clamp(min, rem + vw, max)`: `headline` 36 → 44, `t-h2` 28 → 32,
+`t-h3-h2` 22 → 24, `t-body2-body1` 16 → 18, `t-body3-body2` 14 → 16. Every
+other role, page titles included, stays one size.
 
 ## Layout
 
+**Safe area.** The page runs edge to edge (`viewport-fit=cover`). Screen
+side margins are `--margin-screen-left/right` (24, or the device's safe area
+where wider), the top padding adds `env(safe-area-inset-top)`, and the nav's
+gap to the bottom edge, `--nav-inset-bottom`, never falls inside the home
+indicator's area. On a device without insets nothing changes.
+
 The spacing scale runs 2 · 4 · 8 · 12 · 16 · 20 · 24 · 32 · 40 · 48 · 64 · 80 ·
-96 · 120. Reach for the five roles first; they are the gaps the references
+96 · 120, written in rem (0.125rem … 7.5rem) so spacing grows with the
+reader's text size. Pills in a row sit `--space-pill-gap` (4) apart, app-wide. Reach for the five roles first; they are the gaps the references
 actually use: `group` (4) between controls in one cluster, `inset` (8) from a
 sheet's edge to the panel inside it and from the screen edge to a floating
 sheet, `gutter` (24) for screen side margins and a panel's side padding,
@@ -519,7 +567,7 @@ Every translucent surface has a solid fallback under
 Everything a finger touches is round. Buttons, chips, tags, fields and the nav
 are full pills (`full`); round buttons are circles. Boxes are generously
 rounded and step down as they nest: the sheet is `sheet` (36) at the top and
-`sheet-foot` (44) at the bottom, following a phone's own corners; a panel
+`sheet-foot` (44) at the bottom; a panel
 inside it is `panel` (28); score cards are `2xl` (24); photos are `media`
 (22); option rows are `lg` (16). Nothing is square, and no corner is
 sharper than its container's.
@@ -549,13 +597,18 @@ radiogroup. `option-row` is for longer answers; selected firms the edge to
 optional hint in `body-sm`, then its answers 20 below — chips in a wrapping
 row 4 apart, or option rows 8 apart. Two questions on one step are two panels.
 **Sheet and panel.** Every overlay is the `sheet`: sage frost, 36/44 corners,
-floating `inset` in from the screen on mobile, a title row of the LUX orb
+a dialog centred in the screen at every width (`inset` from its sides on
+mobile, 640 wide at most), a title row of the LUX orb
 (50px) + `page-title` + a `sheet-close` glass circle, and a `panel` inside it.
 `panel` is also every card and readout.
 **Bottom nav (built).** `nav-bar` is a glass pill holding four `nav-item`
 glass circles (My skin, Progress, Analysis, Products); the current section is
-`nav-item-active`, which stretches into an indigo pill with its glyph and
-`label`. The others show the glyph only and carry the section name as their
+`nav-item-active`, which stretches into a pill with its glyph and `label`.
+It is a tint on glass (`--color-nav-item-active`, #40456b at 7%, the
+circles' own white edge and rim, indigo ink `--color-nav-item-active-ink`
+(`--color-text-ink`, #5962a3), label SemiBold), never the solid brand: the solid
+indigo pill belongs to the screen's one main action, and the nav must not
+compete with it. The others show the glyph only and carry the section name as their
 accessible name. With a section active the bar runs the phone's width, 8 in
 from each side; with none (Welcome) it hugs its circles, centred. Desktop
 always hugs.
@@ -595,7 +648,7 @@ canvas board were moved onto this vocabulary, with no new shape:
   gallery cards, the recap's blocks (`canvas-card` is the panel now), the
   calendar (its sheet-sage override is gone);
 - every row that is a box is the `panel` at 24 — the Products hub's groups,
-  `/check/new`'s product rows, `/check/history`'s rows; a card inside one of
+  `/analyses/new`'s product rows, `/analyses/history`'s rows; a card inside one of
   those boxes is `glass` at 16;
 - the skin profile's answers are read-only `glass` pills, 32 tall (a control
   is 44), dark ink; card overlines are `overline` at its own size;
@@ -611,7 +664,7 @@ the empty states — reskinned only by the tokens they already read.
 
 **Do**
 - Do take every value from a token, a role or a component; a new look means a
-  new token here and in `app/vidgen.css` first.
+  new token here and in `app/tokens.css` first.
 - Do keep one primary action per screen, and make "selected" the primary
   colour every time.
 - Do use glass for controls and panels for boxes, each with its edge and top

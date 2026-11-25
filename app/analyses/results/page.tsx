@@ -1,0 +1,25 @@
+import { CheckResults } from "@/features/check/components/CheckResults";
+import type { Metadata } from "next";
+import { metadataTitleFor } from "@/lib/pageTitles";
+
+/* The route's own `<title>`, product name included — see `metadataTitleFor`.
+   Shared with `RouteAnnouncer`, so the tab label and the sentence a screen
+   reader hears on navigation cannot drift apart. */
+export const metadata: Metadata = { title: metadataTitleFor("/analyses/results") };
+
+export const dynamic = "force-dynamic";
+
+export default async function Page({
+  searchParams,
+}: {
+  searchParams: Promise<{ [key: string]: string | string[] | undefined }>;
+}) {
+  /* opened from the history list, back returns to it */
+  const { from } = await searchParams;
+  return (
+    <CheckResults
+      now={Date.now()}
+      backHref={from === "history" ? "/analyses/history" : "/analyses"}
+    />
+  );
+}

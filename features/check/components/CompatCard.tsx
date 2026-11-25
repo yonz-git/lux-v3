@@ -5,35 +5,11 @@ import styles from "./CompatCard.module.css";
 import { Sheet } from "@/components/ui/Sheet";
 import { Tag } from "@/components/ui/Tag";
 import { CountUp } from "@/components/ui/CountUp";
-import { CloseIcon } from "@/components/ui/icons";
+import { CloseButton } from "@/components/ui/CloseButton";
 import { BAND_LABEL, type CheckAnalysis } from "@/features/check/check";
 import { type CatalogProduct, fullName } from "@/features/products/products";
 import { ProductThumb } from "@/features/products/components/ProductThumb";
 
-/**
- * One product's score on `Check results` — SCORES B, lux-v3 (1 Oct 2026), picked
- * on the design canvas ("Scores B — Rings"). The results lay these out two to a
- * row: a 64 ring drawn to the score in its band's colour with the number in
- * the middle, the product's name over its brand, and a pill naming the band.
- *
- * ⚠️ THE BAND IS NAMED IN WORDS ON EVERY CARD. `feedback/warning` and
- * `feedback/error` share a hue and differ only in lightness, so "Risky" and
- * "Avoid" are NOT distinguishable by colour — the pill's word is what separates
- * them, and the ring and dot only repeat it. Compatible gets a pill too now: in
- * a grid, the one card without a pill reads as missing one.
- *
- * ⚠️ THE DETAIL OPENS IN A SHEET. It was an accordion row, which a grid cannot
- * host — a card opening inside a two-column row pushes its neighbour down and
- * leaves a hole beside itself. The whole card is the button; the bar, the
- * ingredients that cost the score and the recommendation open over the screen
- * in the app's one overlay, `Sheet`, and close back onto the grid. The board
- * drew the card, not what tapping it does; this is decided here.
- *
- * ⚠️ `onRemove` IS THE EDIT MODE'S GLYPH — passed only while the results box is
- * editing (see `CheckResults`), so the resting grid has no destructive
- * control on it. It is a SIBLING of the card's button, not a child: a
- * `<button>` may not contain another.
- */
 export function CompatCard({
   analysis,
   onRemove,
@@ -82,15 +58,7 @@ export function CompatCard({
   );
 }
 
-/**
- * A product added since the check ran — the card's shape with nothing scored.
- *
- * ⚠️ NOT A BUTTON, AND NO ARC. There is no detail to open and no number to
- * draw, so the ring is its empty track and the pill slot holds the one true
- * thing available: it is in the set, and the scores beside it do not include
- * it. Neutral, deliberately not a band colour — "no result yet" is not a
- * fourth value on a three-value scale.
- */
+/** A product added since the check ran — the card's shape with nothing scored. */
 export function PendingCompatCard({
   product,
   onRemove,
@@ -136,7 +104,7 @@ function ScoreRing({ score, countDelay }: { score?: number; countDelay?: number 
         )}
       </svg>
       {score !== undefined && (
-        <span className={`${styles.score} t-h4`}>
+        <span className={`${styles.score} t-metric3`}>
           {countDelay === undefined ? score : <CountUp value={score} delay={countDelay} />}
         </span>
       )}
@@ -147,24 +115,19 @@ function ScoreRing({ score, countDelay }: { score?: number; countDelay?: number 
 function Names({ product }: { product: CatalogProduct }) {
   return (
     <span className={styles.names}>
-      <span className={`${styles.name} t-label`}>{product.name}</span>
-      <span className={`${styles.brand} t-caption`}>{product.brand}</span>
+      <span className={`${styles.name} t-h6`}>{product.name}</span>
+      <span className={`${styles.brand} t-label-sm`}>{product.brand}</span>
     </span>
   );
 }
 
 function RemoveButton({ name, onRemove }: { name: string; onRemove: () => void }) {
   return (
-    <button
-      type="button"
+    <CloseButton
+      label={`Remove ${name} from this analysis`}
       className={styles.remove}
-      /* the glyph is the whole control, so the name has to carry both the
-         action and which product it acts on */
-      aria-label={`Remove ${name} from this analysis`}
       onClick={onRemove}
-    >
-      <CloseIcon className={styles.removeIcon} />
-    </button>
+    />
   );
 }
 
@@ -184,7 +147,7 @@ function CompatDetail({ analysis }: { analysis: CheckAnalysis }) {
         <ScoreRing score={score} />
         <span className={styles.detailNames}>
           <h2 className={`${styles.detailName} t-h5`}>{product.name}</h2>
-          <span className={`${styles.brand} t-caption`}>{product.brand}</span>
+          <span className={`${styles.brand} t-label-sm`}>{product.brand}</span>
         </span>
       </div>
 
@@ -211,7 +174,7 @@ function CompatDetail({ analysis }: { analysis: CheckAnalysis }) {
 
       <div className={styles.recommendation}>
         <p className={`${styles.recTitle} t-label`}>Recommendation</p>
-        <p className={`${styles.recBody} t-body3`}>{recommendation}</p>
+        <p className={`${styles.recBody} t-body2`}>{recommendation}</p>
       </div>
     </div>
   );

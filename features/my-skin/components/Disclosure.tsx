@@ -8,25 +8,6 @@ import { ChevronDownIcon } from "@/components/ui/icons";
 /**
  * One expandable row — the § 08 reasoning accordions and the § 11 priority
  * cards both open with this.
- *
- * ⚠️ NOT IN FIGMA, AND THE DESIGN SYSTEM HAS NO ACCORDION. `components/ui/`
- * ships nothing that discloses, so the recipe here is lifted from
- * `features/products/components/ProductAccordionCard` — the one disclosure the
- * app already had, built the same way for the same reason. Reusing its shape
- * rather than inventing a second one keeps the app to ONE opening gesture; if
- * an Accordion component is ever drawn, both callers change together. Raised in
- * `docs/archive/figma-catchup.md`.
- *
- * ⚠️ `useState` AND `aria-expanded`, NOT `<details>`. Same call
- * `ProductAccordionCard` makes: `<details>` cannot be styled consistently
- * across browsers for the marker, and the open state has to be readable from
- * React anyway — the reasoning accordions report how many items they hold in
- * their own header.
- *
- * ⚠️ THE CONTENT IS NOT MOUNTED WHILE CLOSED. A screen reader must not be able
- * to reach the body of a collapsed section, and the evidence blocks below carry
- * headings — an off-screen heading tree is worse than none. `Collapse` holds it
- * for the 200ms it takes to close, `inert`, and then lets it go.
  */
 export function Disclosure({
   label,

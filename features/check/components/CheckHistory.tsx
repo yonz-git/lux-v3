@@ -3,13 +3,11 @@
 import { useRouter } from "next/navigation";
 import styles from "./CheckHistory.module.css";
 import { HubScreen } from "@/components/layout/HubScreen";
-import { Button } from "@/components/ui/Button";
-import { Orb } from "@/components/ui/Orb";
+import { EmptyState } from "@/components/ui/EmptyState";
 import { ChevronRightIcon } from "@/components/ui/icons";
 import { useInvestigation } from "@/lib/store/InvestigationProvider";
 import {
   BAND_LABEL,
-  DEMO_CHECKS,
   analyseCheck,
   formatCheckDate,
   productsOf,
@@ -18,30 +16,22 @@ import {
 } from "@/features/check/check";
 
 /**
- * `Check — previous checks` (652:2554) at `/check/history`.
+ * `Check — previous checks` (652:2554) at `/analyses/history`.
  *
  * The destination for "View previous analyses" on the Analysis landing — the handoff
  * added this screen precisely so that link was no longer dangling.
- *
- * ⚠️ A ROW'S PILL IS THE CHECK'S WORST BAND, and no pill means every product in
- * it scored ≥ 80. Same rule as a card: the band is stated in the row's
- * accessible name too, because Risky and Avoid are not separable by colour.
- *
- * ⚠️ THE EMPTY STATE IS NOT DRAWN — the handoff says to reuse the
- * `Check — no profile` empty-state block with "No checks yet", which is what
- * this does.
  */
 export function CheckHistory() {
   const router = useRouter();
   const { answers, setAnswer } = useInvestigation();
 
-  /* What the user actually ran, then the seeded rows below — never merged and
-     never re-sorted together, so a real check always sits above the demo. */
-  const checks: SavedCheck[] = [...(answers.checks ?? []), ...DEMO_CHECKS];
+  /* what the user ran this visit, newest first */
+  const checks: SavedCheck[] = answers.checks ?? [];
 
   function open(check: SavedCheck) {
     setAnswer("viewingCheck", check.id);
-    router.push("/check/results");
+    /* back on the results then returns here, not to the hub */
+    router.push("/analyses/results?from=history");
   }
 
   if (checks.length === 0) {
@@ -49,21 +39,17 @@ export function CheckHistory() {
       <HubScreen
         title="Previous analyses"
         nav="check"
-        backHref="/check"
+        backHref="/analyses"
         layout="plain"
-        center
+        center="empty"
         tightTop
       >
-        <div className={styles.empty}>
-          <Orb animateIn />
-          <h2 className="t-h4-h3">No analyses yet</h2>
-          <p className={`${styles.emptyText} t-body3-body2`}>
-            Run a compatibility check and it will appear here.
-          </p>
-          <Button href="/check/new" className={styles.emptyCta}>
-            Start a check
-          </Button>
-        </div>
+        <EmptyState
+          title="No analyses yet"
+          action={{ label: "Start a check", href: "/analyses/new" }}
+        >
+          Run a compatibility check and it will appear here.
+        </EmptyState>
       </HubScreen>
     );
   }
@@ -72,7 +58,7 @@ export function CheckHistory() {
     <HubScreen
       title="Previous analyses"
       nav="check"
-      backHref="/check"
+      backHref="/analyses"
       layout="card"
       tightTop
     >

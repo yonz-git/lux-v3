@@ -1,17 +1,3 @@
-/* ============================================================================
-   LUX design tokens — HAND-OWNED since 1 Oct 2026.
-   This file was generated from Figma file wIftBhzkn8E4wjZwgdH71n until Figma
-   was retired; nothing generates it now, and it is the design system's source
-   of truth. Edit values here (or as overrides on `:root` in globals.css), never
-   on a screen. `/styleguide` renders every token.
-
-   Light mode only. Figma defines a Dark mode but it has never been visually
-   reviewed, so it is deliberately not emitted yet.
-
-   Do NOT reference the 01 Primitives block from a component. Bind to the
-   semantic tokens underneath it.
-   ========================================================================== */
-
 :root {
   /* ---- 01 Primitives — raw ramps, semantic tokens alias these -------------- */
   --color-indigo-50: #eeecf5;
@@ -50,51 +36,56 @@
   --color-rose-500: #c9918e;
   --color-red-100: #f5e7e6;
   --color-red-500: #a86561;
-
   /* ---- 02 Color — semantic (Light) ---------------------------------------- */
   --color-bg-canvas: var(--color-sage-300);
   --color-bg-surface: var(--color-neutral-0);
   --color-bg-surface-frost: var(--color-neutral-100);
-  --color-bg-brand: var(--color-indigo-700);
-  --color-bg-brand-hover: var(--color-indigo-800);
-  /* ⚠️ A DIRECT VALUE, NOT `var(--color-blue-50)`. Changed to #dbeded on
-     22 Aug 2026. It pairs with --color-bg-bubble-user (#cadfdf) on the same
-     hue — both G == B — differing only in lightness, so the two are held the
-     same way rather than one aliasing a ramp. `blue/50` (#edf8fb) existed only
-     for this bubble and is now unreferenced; retune, repurpose or delete it. */
+  --color-bg-brand: #313560;
+  --color-bg-brand-hover: #242750;
+  /* the routine card's dark teal base; the products hub's count badge too */
+  --color-bg-routine: #005461;
+  /* the routine card and the symptom trend card: five soft lights over the
+     dark teal, 5% darker overall */
+  --gradient-routine: linear-gradient(#0000000d, #0000000d),
+    radial-gradient(45% 45% at 100% 100%, #00303c3d, #0000 70%),
+    radial-gradient(60% 55% at 0 0, #d0b4b81f, #a0353500 70%),
+    radial-gradient(110% 90% at 0 35%, #567e88, #0000 60%),
+    radial-gradient(90% 80% at 90% 105%, #60a8ba52, #0000 65%),
+    radial-gradient(70% 60% at 80% -10%, #37617547, #0000 70%),
+    var(--color-bg-routine);
   --color-bg-bubble-ai: #dbeded;
-  /* ⚠️ A DIRECT VALUE, NOT `var(--color-sage-300)`. Changed to #cadfdf on
-     22 Aug 2026. It used to alias sage/300, which `bg/canvas` ALSO uses — so
-     retuning the primitive would have moved the app background with the bubble.
-     Nearest ramp value is sage/200 (#cddddb), distance 5: the same step,
-     slightly cooler, so this is not a new ramp step either. Matches the Figma
-     variable, which holds the value directly for the same reason. */
   --color-bg-bubble-user: #cadfdf;
-  --color-text-primary: var(--color-neutral-800);
-  --color-text-secondary: var(--color-neutral-600);
-  --color-text-muted: var(--color-neutral-400);
+  /* the dark text, primary and muted alike, is one indigo ink — the light
+     cards' overlines too */
+  --color-text-ink: #25294a;
+  --color-text-primary: var(--color-text-ink);
+  --color-text-secondary: var(--color-text-ink); /* one text colour across the app */
+  --color-text-muted: var(--color-text-ink);
   --color-text-on-brand: var(--color-neutral-0);
-  --color-text-brand: var(--color-indigo-700);
+  --color-text-brand: var(--color-text-ink);
   --color-text-disabled: #8b9698;
   --color-text-success: var(--color-green-500);
-  --color-text-warning: var(--color-rose-500);
-  --color-text-error: var(--color-red-500);
-  --color-text-on-data: #ffffff;
-  --color-text-on-data-secondary: rgba(255, 255, 255, 0.85);
-  --color-text-on-data-muted: rgba(255, 255, 255, 0.62);
-  --color-icon-default: var(--color-neutral-800);
+  --color-text-warning: #c24e47;
+  --color-text-error: #82302b;
+  --color-text-on-data: var(--color-text-primary);
+  /* one text colour: secondary text on a coloured surface is the ink too */
+  --color-text-on-data-secondary: var(--color-text-ink);
+  --color-text-on-data-muted: var(--color-text-ink);
+  --color-icon-default: var(--color-text-ink);
   --color-icon-secondary: var(--color-neutral-600);
   --color-icon-muted: var(--color-neutral-400);
   --color-icon-brand: var(--color-indigo-700);
   --color-icon-on-brand: var(--color-neutral-0);
-  --color-icon-on-data: #ffffff;
+  --color-icon-on-data: var(--color-text-primary);
   --color-border-subtle: var(--color-neutral-200);
   --color-border-default: var(--color-neutral-300);
   --color-border-brand: var(--color-indigo-600);
   --color-border-focus: var(--color-indigo-600);
-  --color-border-error: var(--color-red-500);
-  --color-border-glass: rgba(255, 255, 255, 0.55);
+  --color-border-error: #82302b;
+  --color-border-glass: rgb(255 255 255 / 0.3);
   --color-border-highlight: rgba(255, 255, 255, 0.9);
+  --color-border-button-secondary: var(--color-bg-brand);
+  --color-border-small-button: #35396a6b; /* the small pill's edge: the brand indigo at 42% */
   --color-bg-glass: rgba(255, 255, 255, 0.5);
   --color-bg-glass-strong: rgba(255, 255, 255, 0.72);
   /* SOLID nav background — the prefers-reduced-transparency fallback for
@@ -102,26 +93,15 @@
      translucent. Was #9caeaf @55%, a different hue AND translucent. */
   --color-bg-nav: #dbeded;
   /* bg/frost-light — the OPAQUE counterpart of surface/frost-light
-     (#f4feff @55%), the same relationship bg/nav has to surface/frost-nav.
-     Added 22 Aug 2026 for the face-diagram region chips, which sit ON a
-     frost-light card and dissolved into it at 55%. Also the correct
-     prefers-reduced-transparency fallback for frost-light surfaces, which until
-     now fell back to bg/surface-frost (#eef6f7) — a different colour. */
+     (#f4feff @55%), the same relationship bg/nav has to surface/frost-nav. */
   --color-bg-frost-light: #f4feff;
-  /* bg/progress-track — the UNFILLED part of the step-progress track.
-     Added 22 Aug 2026. It used to borrow border/subtle: a hairline colour doing
-     duty as a fill, which meant the track could not be tuned without moving
-     every frosted-row border with it. The filled part is still bg/brand. */
+  /* bg/progress-track — the UNFILLED part of the step-progress track. */
   --color-bg-progress-track: #ecf8f9;
-  --color-surface-frost-light: rgba(244, 254, 255, 0.55);
+  --color-surface-frost-light: #f4feff47;
   /* The nav pill. 83% — NOT the old 17%, which let the Continue button read
      straight through the bar. */
-  /* #dbedede0 — set 22 Aug 2026 (was #dde8eb @83%). Shares its colour with
-     bg/bubble-ai, so the nav sits on the same hue as the AI bubble.
-     ⚠️ THE SEARCH FIELD BINDS THIS TOO, in Figma and here — the frosted pill is
-     one surface used by two components, so they move together by design. */
-  --color-surface-frost-nav: rgba(219, 237, 237, 0.878);
-  --color-surface-card-desktop: rgba(237, 248, 251, 0.55);
+  --color-surface-frost-nav: #dbeded7a;
+  --color-surface-card-desktop: #edf8fb30;
   --color-surface-data: rgba(125, 167, 169, 0.44);
   --color-surface-data-strong: rgba(125, 167, 169, 0.62);
   --color-effect-rim-highlight: rgba(255, 255, 255, 0.9);
@@ -134,14 +114,15 @@
   --color-state-disabled-bg: rgba(238, 246, 247, 0.51);
   --color-feedback-success: var(--color-green-500);
   --color-feedback-success-subtle: var(--color-green-100);
-  --color-feedback-warning: var(--color-rose-500);
+  --color-feedback-warning: #c24e47;
   --color-feedback-warning-subtle: var(--color-rose-100);
-  --color-feedback-error: var(--color-red-500);
+  --color-feedback-error: #82302b;
   --color-feedback-error-subtle: var(--color-red-100);
   --color-feedback-info: var(--color-indigo-600);
   --color-feedback-info-subtle: var(--color-indigo-50);
-  --color-button-bg-default-start: #bbd3d9;
-  --color-button-bg-default-end: #637073;
+  /* the mirrors of the two lines above — these are the ones `Button` reads */
+  --color-button-bg-default-start: #485780;
+  --color-button-bg-default-end: #313560;
   --color-button-bg-hover-start: #a9c3ca;
   --color-button-bg-hover-end: #556164;
   --color-button-bg-pressed-start: #96b1b9;
@@ -150,142 +131,185 @@
   --color-button-label-default: #ffffff;
   --color-button-label-disabled: #8b9698;
   --color-button-border-focused: var(--color-indigo-600);
-  /* The Secondary button surface. Added to `02 Color` on 21 Aug 2026 while
-     building PRODUCTS: `Style=Secondary, State=Default` (37:11) painted a loose
-     #ffffffdb and was the last unbound fill in the Button set. */
-  /* ⚠️ ORPHANED 22 Aug 2026. Secondary was a flat white until it was given
-     gradient/secondary; nothing binds this any more. Kept only so the next
-     re-export does not silently resurrect it — retune, repurpose or delete. */
+  /* The Secondary button surface. */
   --color-button-bg-secondary: rgba(255, 255, 255, 0.86);
   /* The Secondary gradient, mirroring button/bg-default-start / -end for
      Primary. Taken from Small Button / Secondary, which already used it, so
      Secondary now reads the same at both sizes. Hover swaps the two ends. */
-  --color-button-bg-secondary-start: #deeff3;
-  --color-button-bg-secondary-end: #b7c6ca;
-  --color-gradient-canvas-start: #dce7ea;
-  --color-gradient-canvas-mid: #cedee2;
-  --color-gradient-canvas-end-mobile: #acc5cc;
-  --color-gradient-canvas-end-desktop: #b9d1d7;
-  --color-gradient-brand-start: #bbd3d9;
-  --color-gradient-brand-end: #637073;
-
+  --color-button-bg-secondary-start: #deeff338;
+  --color-button-bg-secondary-end: #b9c8cd82;
+  --color-gradient-canvas-start: #e2edf1; /* Figma #dce7ea; #c6d0d3 on */
+  --color-gradient-canvas-mid: #d3e4e7; /* Figma #cedee2; #b9c8cb on */
+  --color-gradient-canvas-end-mobile: #b1cad2; /* Figma #acc5cc; #9bb1b8 on */
+  --color-gradient-canvas-end-desktop: #bdd6dd; /* Figma #b9d1d7; #a6bcc2 on */
+  --color-gradient-brand-start: #485780;
+  --color-gradient-brand-end: #313560;
   /* ---- 03 Spacing --------------------------------------------------------- */
-  --space-2xs: 2px;
-  --space-xs: 4px;
-  --space-sm: 8px;
-  --space-md: 12px;
-  --space-lg: 16px;
-  --space-xl: 20px;
-  --space-2xl: 24px;
-  --space-3xl: 32px;
-  --space-4xl: 40px;
-  --space-5xl: 48px;
-  --space-6xl: 64px;
-  --space-7xl: 80px;
-  --space-8xl: 96px;
-  --space-9xl: 120px;
-
+  --space-2xs: 0.125rem; /* 2px */
+  --space-xs: 0.25rem; /* 4px */
+  --space-sm: 0.5rem; /* 8px */
+  --space-md: 0.75rem; /* 12px */
+  --space-lg: 1rem; /* 16px */
+  --space-xl: 1.25rem; /* 20px */
+  --space-2xl: 1.5rem; /* 24px */
+  --space-3xl: 2rem; /* 32px */
+  --space-4xl: 2.5rem; /* 40px */
+  --space-5xl: 3rem; /* 48px */
+  --space-6xl: 4rem; /* 64px */
+  --space-7xl: 5rem; /* 80px */
+  --space-8xl: 6rem; /* 96px */
+  --space-9xl: 7.5rem; /* 120px */
   /* ---- 04 Radius ---------------------------------------------------------- */
   --radius-none: 0px;
-  --radius-xs: 4px;
-  --radius-sm: 8px;
-  --radius-md: 12px;
-  --radius-lg: 16px;
-  --radius-xl: 20px;
-  --radius-2xl: 24px;
-  --radius-3xl: 32px;
+  --radius-xs: 0.25rem; /* 4px */
+  --radius-sm: 0.5rem; /* 8px */
+  --radius-md: 0.75rem; /* 12px */
+  --radius-lg: 1rem; /* 16px */
+  --radius-xl: 1.25rem; /* 20px */
+  --radius-2xl: 1.5rem; /* 24px */
+  --radius-3xl: 2rem; /* 32px */
   --radius-full: 999px;
   /* chat bubbles: three corners at --radius-bubble, the sender-side corner at
      --radius-bubble-tail. See Spec/Chat Bubble (47:12) on board 06 · Core. */
-  --radius-bubble: 30px;
+  --radius-bubble: 1.875rem; /* 30px */
   --radius-bubble-tail: 1px;
-
+  /* a chat bubble's top and bottom padding (14) */
+  --space-bubble-block: 0.875rem;
   /* ---- 05 Layout ---------------------------------------------------------- */
   --bp-mobile: 440px;
   --bp-tablet: 1024px;
   --bp-desktop: 1440px;
   --container-max: 1280px;
-  --margin-mobile: 24px;
-  --margin-tablet: 40px;
-  --margin-desktop: 80px;
+  --margin-mobile: 1.5rem; /* 24px */
+  --margin-tablet: 2.5rem; /* 40px */
+  --margin-desktop: 5rem; /* 80px */
+  /* a screen's side margins: the mobile margin, or the device's safe area
+     where that is wider (an iPhone on its side) */
+  --margin-screen-left: max(var(--margin-mobile), env(safe-area-inset-left));
+  --margin-screen-right: max(var(--margin-mobile), env(safe-area-inset-right));
   --columns-mobile: 4;
   --columns-tablet: 8;
   --columns-desktop: 12;
-  --gutter-mobile: 16px;
-  --gutter-tablet: 24px;
-  --gutter-desktop: 24px;
-  --width-card-focus: 640px;
-  --width-card-form: 920px;
-  --width-card-detail: 1040px;
-  --width-content-max: 1280px;
-
+  --gutter-mobile: 1rem; /* 16px */
+  --gutter-tablet: 1.5rem; /* 24px */
+  --gutter-desktop: 1.5rem; /* 24px */
+  --width-card-focus: 40rem; /* 640px */
+  --width-symptom-placer: 30rem; /* 480px */
+  --width-symptom-chip: 4.5rem; /* 72px */
+  --width-card-form: 57.5rem; /* 920px */
+  --width-card-detail: 65rem; /* 1040px */
+  --width-content-max: 80rem; /* 1280px */
   /* ---- 06 Typography ------------------------------------------------------ */
-  --font-family-sans: var(--font-urbanist), "Urbanist", system-ui, sans-serif;
+  --font-family-sans: var(--font-figtree), "Figtree", system-ui, sans-serif;
+  /* headings only: the headline, page, screen and sheet titles (t-h4 and up) */
+  --font-family-display: var(--font-manrope), "Manrope", system-ui, sans-serif;
   --font-family-mono: ui-monospace, SFMono-Regular, Menlo, monospace;
   --font-weight-light: 300;
-  --font-weight-regular: 400;
+  --font-weight-regular: 500; /* the body weight: 400 read too faint on the glass */
   --font-weight-medium: 500;
   /* 600/700 exist as tokens but are NOT in the LUX type ramp — do not use them.
      If you see SemiBold or Bold rendering anywhere, that is drift. */
   --font-weight-semibold: 600;
   --font-weight-bold: 700;
-  --font-size-3xs: 12px;
-  --font-size-2xs: 13px;
-  --font-size-xs: 14px;
-  --font-size-sm: 16px;
-  --font-size-md: 18px;
-  --font-size-lg: 20px;
-  --font-size-xl: 24px;
-  --font-size-2xl: 32px;
-  --font-size-3xl: 40px;
-  --font-size-4xl: 56px;
-  --font-size-5xl: 64px;
-  --font-size-6xl: 84px;
-  --line-height-3xs: 16px;
-  --line-height-2xs: 18px;
-  --line-height-xs: 22px;
-  --line-height-sm: 26px;
-  --line-height-md: 28px;
-  --line-height-lg: 28px;
-  --line-height-xl: 32px;
-  --line-height-2xl: 40px;
-  --line-height-3xl: 48px;
-  --line-height-4xl: 60px;
-  --line-height-5xl: 76px;
-  --line-height-6xl: 96px;
-  --tracking-tight: -1.25px;
-  --tracking-snug: -1px;
-  --tracking-normal: 0px;
-  --tracking-wide: 0.71px;
-  --tracking-wider: 1.67px;
-  --tracking-widest: 14px;
-
+  /* card overlines only (`t-overline`) */
+  --font-weight-extrabold: 800;
+  --font-size-3xs: 0.75rem; /* 12px */
+  --font-size-2xs: 0.8125rem; /* 13px */
+  --font-size-xs: 0.875rem; /* 14px */
+  --font-size-overline: 0.9rem; /* 14.4px, card overlines only */
+  --font-size-sm: 1rem; /* 16px */
+  --font-size-md: 1.125rem; /* 18px */
+  --font-size-lg: 1.25rem; /* 20px */
+  --font-size-xl: 1.5rem; /* 24px */
+  --font-size-2xl: 2rem; /* 32px */
+  --font-size-3xl: 2.5rem; /* 40px */
+  --font-size-4xl: 3.5rem; /* 56px */
+  --font-size-5xl: 4rem; /* 64px */
+  --font-size-6xl: 5.25rem; /* 84px */
+  --line-height-3xs: 1rem; /* 16px */
+  --line-height-2xs: 1.125rem; /* 18px */
+  --line-height-xs: 1.375rem; /* 22px */
+  --line-height-sm: 1.625rem; /* 26px */
+  --line-height-md: 1.75rem; /* 28px */
+  --line-height-lg: 1.75rem; /* 28px */
+  --line-height-xl: 2rem; /* 32px */
+  --line-height-2xl: 2.5rem; /* 40px */
+  --line-height-3xl: 3rem; /* 48px */
+  --line-height-4xl: 3.75rem; /* 60px */
+  --line-height-5xl: 4.75rem; /* 76px */
+  --line-height-6xl: 6rem; /* 96px */
+  /* The type roles' sizes that sit between the steps above; `a-b` roles grow
+     from a at 375 to b at 1440. */
+  --font-size-headline: clamp(2.25rem, 2.0739rem + 0.7512vw, 2.75rem); /* 36 → 44 */
+  --font-size-h2: clamp(1.75rem, 1.662rem + 0.3756vw, 2rem); /* 28 → 32 */
+  --font-size-h3: 1.375rem; /* 22 */
+  --font-size-h3-h2: clamp(1.375rem, 1.331rem + 0.1878vw, 1.5rem); /* 22 → 24 */
+  --font-size-body2-body1: clamp(1rem, 0.956rem + 0.1878vw, 1.125rem); /* 16 → 18 */
+  --font-size-body3-body2: clamp(0.875rem, 0.831rem + 0.1878vw, 1rem); /* 14 → 16 */
+  --font-size-bubble: 1rem; /* 16 on a phone, 19.2 from 1024 — every chat bubble's words */
+  --font-size-button: 0.9375rem; /* 15 */
+  /* the large primary's label: `--font-size-button` (15) at every width */
+  --font-size-button-primary: var(--font-size-button);
+  /* the smallest any label may shrink to (HIG): FaceDiagram's labels scale
+     with the diagram down to this */
+  --font-size-floor: 0.6875rem; /* 11 */
+  /* Two line heights for every role: headings, titles and figures share one,
+     running text, labels and controls the other. */
+  --line-height-heading: 1.2;
+  --line-height-text: 1.4;
+  /* the orb's hero bubble (`ChatBubble size="hero"`): 26 on 16 at every
+     width */
+  --line-height-bubble-hero: 1.625;
+  --line-height-overline-tight: 0.5; /* the trend card's one-line title */
+  --tracking-tight: -0.0781rem; /* -1.25px */
+  --tracking-snug: -0.0625rem; /* -1px */
+  --tracking-normal: 0rem; /* 0px */
+  --tracking-wide: 0.0444rem; /* 0.71px */
+  --tracking-wider: 0.1044rem; /* 1.67px */
+  --tracking-widest: 0.875rem; /* 14px */
+  --tracking-headline: -0.005em;
+  --tracking-brand: 0.005em;
+  --tracking-overline: 0.12em;
   /* ---- 07 Size ------------------------------------------------------------ */
-  --size-icon-xs: 16px;
-  --size-icon-sm: 20px;
-  --size-icon-md: 24px;
-  --size-icon-lg: 32px;
-  --size-icon-xl: 48px;
-  --size-touch-target: 44px;
-  --size-control-sm: 36px;
-  --size-control-md: 48px;
-  --size-control-lg: 62px;
-  --size-nav-height: 75px;
-  --size-nav-width-mobile: 380px;
-  --size-nav-width-desktop: 598px;
+  --size-icon-2xs: 0.75rem; /* 12px — the glyph in the 20 and 26 `IconButton` discs */
+  --size-icon-xs: 1rem; /* 16px */
+  --size-icon-sm: 1.25rem; /* 20px */
+  --size-icon-md: 1.5rem; /* 24px */
+  --size-icon-lg: 2rem; /* 32px */
+  --size-icon-xl: 3rem; /* 48px */
+  --size-touch-target: 2.75rem; /* 44px */
+  --size-control-sm: 2.25rem; /* 36px */
+  --size-control-md: 3rem; /* 48px */
+  --size-round-md: 2rem; /* 32px */
+  --size-round-sm: 1.625rem; /* 26px — `IconButton size="sm"` */
+  /* the segmented toggle's pill and `Button size="sm"`: one indigo `Add product` */
+  --size-button-sm: 2.625rem; /* 42px */
+  --size-small-button: 2.8rem; /* 44.8px — `SmallButton`'s height */
+  --size-button-lg: 3.5rem; /* 56px — `Button`'s default height */
+  /* the large primary button: its height and widest, the same at every width */
+  --size-button-primary: 3.6rem; /* 57.6px */
+  --width-button-primary: 18rem; /* 288px at every width */
+  --space-button-sm-inline: 1.375rem; /* 22px */
+  --size-control-lg: 3.875rem; /* 62px */
+  /* the bar is 56 circles in 6 of padding and a 1px edge: 70 tall. Every
+     `.screen` reservation reads these two, so they move together. */
+  --size-nav-height: 4.375rem; /* 70px */
+  --size-nav-width-mobile: 23.75rem; /* 380px */
+  --size-nav-width-desktop: 37.375rem; /* 598px */
   --size-progress-track: 4px;
-  --size-avatar: 40px;
-  --size-logo-mobile: 62px;
-  --size-logo-desktop: 82px;
-  --size-orb-sm: 48px;
-  --size-orb-md: 80px;
-  --size-orb-lg: 129px;
-  --size-orb-xl: 140px;
+  --size-avatar: 2.5rem; /* 40px */
+  --size-logo-mobile: 3.875rem; /* 62px */
+  --size-logo-desktop: 5.125rem; /* 82px */
+  --size-orb-coach: 2.5rem; /* 40px, beside a chat bubble (CoachBubble) */
+  --size-orb-sm: 3rem; /* 48px */
+  --size-orb-md: 5rem; /* 80px */
+  --size-orb-lg: 8.0625rem; /* 129px */
+  --size-orb-xl: 8.75rem; /* 140px */
   --border-width-hairline: 1px;
   --border-width-thin: 1.5px;
   --border-width-thick: 2px;
   --border-width-focus: 2px;
-
+  --stroke-icon-bold: 2px; /* a glyph that marks a state (the pick tick); icons draw at 1.4 */
   /* ---- 08 Elevation ------------------------------------------------------- */
   --blur-sm: 8px;
   --blur-md: 10px;
@@ -308,26 +332,19 @@
   --z-overlay: 300;
   --z-sheet: 400;
   --z-toast: 500;
-
   /* ---- 09 Motion ---------------------------------------------------------- */
   --duration-instant: 0ms;
   --duration-fast: 120ms;
-  --duration-base: 200ms;
+  --duration-base: 300ms;
   --duration-slow: 320ms;
   --duration-slower: 480ms;
-  /* duration/hover — added to `09 Motion` on 22 Aug 2026 with the new button
-     hover. 400 sits deliberately between slow (320) and slower (480): the
-     gradient reversing end for end needs longer to read than a colour tweak,
-     and shorter than a hero entrance. */
   --duration-hover: 400ms;
   --duration-breath-phase: 4000ms;
   --ease-standard: cubic-bezier(0.2, 0, 0, 1);
   --ease-decelerate: cubic-bezier(0, 0, 0, 1);
   --ease-accelerate: cubic-bezier(0.3, 0, 1, 1);
   --ease-breathe: cubic-bezier(0.37, 0, 0.63, 1);
-
   /* ---- Composed recipes (Figma paint + effect styles) --------------------- */
-
   /* paint style gradient/canvas-mobile — Figma gradient handles run from
      (0.2, 0) to (0.8, 1) of the frame, which is 165deg at the 440x957 mobile
      frame and 136deg at the 1440x900 desktop frame. Because a CSS angle
@@ -338,21 +355,20 @@
     var(--color-gradient-canvas-start) 0%,
     var(--color-gradient-canvas-mid) 50%,
     var(--color-gradient-canvas-end-mobile) 100%
-  );
+    );
   --gradient-canvas-desktop: linear-gradient(
     136deg,
     var(--color-gradient-canvas-start) 0%,
     var(--color-gradient-canvas-mid) 50%,
     var(--color-gradient-canvas-end-desktop) 100%
-  );
+    );
   /* paint style gradient/brand — identity transform in Figma, i.e. left to
      right, light start to dark end. This is the SAGE button gradient. */
   --gradient-brand: linear-gradient(
     90deg,
     var(--color-gradient-brand-start) 0%,
     var(--color-gradient-brand-end) 100%
-  );
-
+    );
   /* effect style surface/chat-bubble */
   --shadow-chat-bubble: 0 4px 12px rgba(24, 32, 42, 0.04),
     inset 2px 4px 8px rgba(0, 0, 0, 0.1);
@@ -371,21 +387,345 @@
     inset 0 2px 12px rgba(255, 255, 255, 0.25);
   /* effect style surface/frosted-row — inner shadow only. A frosted row
      without this reads flat. */
-  --shadow-frosted-row: inset 2px 4px 9px rgba(0, 0, 0, 0.2);
+  --shadow-frosted-row: inset 2px 4px 9px rgba(0, 0, 0, 0.1);
   /* effect styles surface/sheet-mobile · surface/sheet-desktop — the modal tray
-     shadows. Added to Figma on 21 Aug 2026: every tray in the file carried raw
-     effects and there was no style to point at. The BACKGROUND_BLUR 28 that the
-     styles also carry is applied here as --blur-card, since backdrop-filter is
-     a separate CSS property from box-shadow.
-     A mobile sheet docks to the bottom edge, so its shadow lifts UPWARD. */
+     shadows. */
   --shadow-sheet-mobile: 0 -8px 32px rgba(0, 0, 0, 0.12);
   --shadow-sheet-desktop: 0 12px 40px -8px rgba(0, 0, 0, 0.18);
   /* the Bottom-Nav-Bar's own effects */
-  --shadow-nav: 0 2px 12px rgba(0, 0, 0, 0.08),
-    inset 0 0 12px rgba(0, 0, 0, 0.2);
+  --shadow-nav:
+    inset 0 1px 2px
+    color-mix(in srgb, var(--color-border-highlight) 60%, transparent),
+    inset 0 -1px 2px rgba(46, 42, 63, 0.1), 0 2px 6px rgba(28, 27, 36, 0.1),
+    0 12px 28px -10px rgba(28, 27, 36, 0.16);
   /* the Button component's two stacked drop shadows */
   --shadow-button: 0 4px 12px -2px rgba(46, 36, 71, 0.22),
     0 1px 2px rgba(46, 36, 71, 0.1);
   /* effect style focus/ring */
   --shadow-focus-ring: 0 0 0 var(--border-width-focus) var(--color-border-focus);
+}
+
+:root {
+  /* THE WHITE INK OF SYSTEM B's SECOND TIER. Non-negotiable 17 says System B's
+     text is dark, and that is still right for `surface/data` — this is the ink
+     for the surface that rule does not cover. */
+  --color-text-on-data-inverse: #ffffff;
+  --color-surface-data-deep: #4f838fd9;
+  --color-surface-data-deep-hover: #588c98d9;
+  --color-bg-brand-soft: #7980af;
+  /* `effect/shine` — the bright lilac every light effect in the build wears:
+     the text shine's band and the specular rim's streaks. */
+  --color-effect-shine: #b4aad3;
+  --color-effect-specular: #a1b2d0;
+  --color-bg-frost-light-muted: #dbeded;
+  --color-border-chip: #6b8b8d;
+}
+
+:root {
+  --color-logo-light: #587095;
+}
+
+:root {
+  --color-text-success-ink: #46664f;
+}
+
+:root {
+  --ease-hover: cubic-bezier(0.25, 0.1, 0.25, 1);
+}
+
+:root {
+  --ease-in-out: cubic-bezier(0.65, 0, 0.35, 1);
+  --duration-move: 500ms;
+  --duration-fade: 350ms;
+}
+
+:root {
+  --color-bg-symptom: #b44148;
+  /* the symptom red as text: 80% of it in the ink, 5.3:1 on the data panel
+     (solid #b44148 measures 4.1–4.3, under AA) */
+  --color-text-symptom: color-mix(in srgb, var(--color-bg-symptom) 80%, var(--color-neutral-800));
+  /* the soft symptom pill: a red tint on the pale glass, a red hairline and
+     red ink — step 1's muted symptom chip and the profile's symptom state */
+  /* a picked symptom's pill: the symptom red, deepening toward the ink at the
+     far corner, a little translucent so the glass behind shows */
+  --gradient-symptom-pill: linear-gradient(
+    135deg,
+    color-mix(in srgb, var(--color-bg-symptom) 88%, transparent) 35%,
+    color-mix(
+        in srgb,
+        color-mix(in srgb, var(--color-bg-symptom) 80%, var(--color-text-primary)) 92%,
+        transparent
+      )
+      100%
+  );
+  --color-bg-symptom-soft: color-mix(in srgb, var(--color-bg-symptom) 16%, #dbeded57);
+  --color-border-symptom-soft: color-mix(in srgb, var(--color-bg-symptom) 45%, transparent);
+  --color-text-symptom-soft: color-mix(in srgb, var(--color-bg-symptom) 75%, var(--color-neutral-800));
+
+  /* the teal of the filled answer pills, and its soft pill in the same mix
+     as the symptom's: the profile's answers */
+  --color-bg-answer: #106a7f;
+  --color-bg-answer-soft: color-mix(in srgb, var(--color-bg-answer) 16%, #dbeded57);
+  --color-border-answer-soft: color-mix(in srgb, var(--color-bg-answer) 45%, transparent);
+  --color-text-answer-soft: color-mix(in srgb, var(--color-bg-answer) 75%, var(--color-neutral-800));
+
+  /* a card's overline on the light panels, in the ink's indigo — the skin
+     profile, symptoms and location, and the progress gallery. The dark trend
+     card keeps its white overline. */
+  --color-text-overline-indigo: var(--color-text-ink);
+}
+
+:root {
+  --color-bg-field-action: #c0d5da;
+}
+
+:root {
+  --color-surface-face-pill-base: #d3ffff66;
+  --color-surface-face-pill: #ffffff4d;
+  --color-surface-face-pill-end: #919ebd6e;
+  --color-surface-face-pill-glow: #ffffff00;
+  --color-surface-face-pill-rim: #d2d9c747;
+  --color-surface-face-pill-tint: #d3e7e845;
+  --color-surface-face-pill-wash: #ffffff24;
+  --color-effect-face-pill-light: #4143ad00;
+  --color-effect-face-pill-shade: #484d4e4a;
+}
+
+:root {
+  --color-face-reset-bg: #e2edf094;
+  --color-face-pill-selected-core: #1c2b30;
+  --color-face-pill-selected-hue: color-mix(
+    in srgb,
+    #597f8c 85%,
+    var(--color-face-pill-selected-core)
+    );
+  --color-face-pill-selected-light: color-mix(
+    in srgb,
+    var(--color-face-pill-selected-hue) 70%,
+    #ffffff
+    );
+  --color-face-pill-selected-deep: color-mix(
+    in srgb,
+    var(--color-face-pill-selected-hue) 65%,
+    var(--color-face-pill-selected-core)
+    );
+  --color-surface-face-pill-selected-base: color-mix(
+    in srgb,
+    var(--color-face-pill-selected-hue) 72%,
+    transparent
+    );
+  --color-surface-face-pill-selected: color-mix(
+    in srgb,
+    var(--color-face-pill-selected-light) 22%,
+    transparent
+    );
+  --color-surface-face-pill-selected-end: color-mix(
+    in srgb,
+    var(--color-face-pill-selected-deep) 60%,
+    transparent
+    );
+  --color-surface-face-pill-selected-glow: color-mix(
+    in srgb,
+    var(--color-face-pill-selected-light) 8%,
+    transparent
+    );
+  /* the radial's outer stop — clear, so the lilac pools at the top-left and
+     fades out, the reverse of the unselected glass's sage rim */
+  --color-surface-face-pill-selected-rim: transparent;
+  --color-surface-face-pill-selected-tint: color-mix(
+    in srgb,
+    var(--color-face-pill-selected-hue) 15%,
+    transparent
+    );
+  --color-effect-face-pill-selected-light: color-mix(
+    in srgb,
+    var(--color-face-pill-selected-light) 14%,
+    transparent
+    );
+  --color-effect-face-pill-selected-shade: color-mix(
+    in srgb,
+    var(--color-face-pill-selected-deep) 90%,
+    transparent
+    );
+}
+
+:root {
+  /* the nav's gap to the bottom edge, never inside the home indicator's
+     safe area */
+  --nav-inset-bottom: max(var(--space-sm), env(safe-area-inset-bottom));
+  /* where a screen's main button rests: its bottom edge 120 above the nav, at
+     every width and height. A screen reserves this under its content and lets
+     a spacer push the button down to it; taller content pushes past it. */
+  --cta-bottom: calc(
+    var(--nav-inset-bottom) + var(--size-nav-height) + var(--space-9xl)
+  );
+  /* Welcome, the flow steps and `/analyses` rest their button lower: 64 above
+     the nav, not 120 */
+  --cta-bottom-flow: calc(
+    var(--nav-inset-bottom) + var(--size-nav-height) + var(--space-6xl)
+  );
+  /* moves the orb + bubble group of Welcome and `/analyses` off the centre of the
+     space above the button: positive is down. Tuned at `/tweak/welcome`. */
+  --hero-shift: 0rem;
+}
+
+:root {
+  --color-surface-nav-bar: var(--color-surface-frost-nav);
+  --color-bg-nav-bar: var(--color-bg-nav);
+  --color-bg-photo-pill: #5c7178;
+}
+
+:root {
+  --width-action: 23.5rem; /* 376px */
+  --width-action-mobile: var(--size-nav-width-mobile);
+}
+
+:root {
+  --edge-ring-all-round: linear-gradient(
+    135deg,
+    rgba(255, 255, 255, 0.85),
+    rgba(255, 255, 255, 0.15) 40%,
+    rgba(255, 255, 255, 0.15) 60%,
+    rgba(255, 255, 255, 0.45)
+    );
+}
+
+:root {
+  /* above `--z-toast` (500), the previous ceiling: the entrance covers the app
+     entire, including anything that managed to raise a snackbar on load */
+  --z-entrance: 900;
+}
+
+@media (prefers-reduced-transparency: reduce) {
+  :root {
+    --color-button-bg-secondary-start: #deeff3;
+    --color-button-bg-secondary-end: #b7c6ca;
+  }
+}
+
+:root {
+  /* ---- glass — the material every control and box is made of ------- */
+  --color-glass: rgb(255 255 255 / 0.25); /* chip, round button      */
+  --color-glass-strong: rgb(255 255 255 / 0.4); /* hover, selected row     */
+  --color-rim: rgb(255 255 255 / 0.9); /* inset top highlight     */
+  --color-rim-soft: rgb(255 255 255 / 0.8); /* the chips' and fabs' rim */
+  /* the panel's fill is `surface/frost-light`, already rgba(244 254 255 / .55) */
+  /* ---- gradients: lux-v2's, NOT the reference's ------------------------------- */
+  --surface-sheet: rgb(
+    from var(--color-surface-data) calc(r + (255 - r) * 0.1)
+    calc(g + (255 - g) * 0.1) calc(b + (255 - b) * 0.1) / 0.3
+    );
+  /* ---- shadows ------------------------------------------------------------ */
+  --shadow-pill-light: inset 0 1px 4px #ffffff61;
+  --shadow-inset-well: inset -33px -33px 46px rgb(255 255 255 / 0.64),
+    inset 28px 28px 54px rgb(13 39 80 / 0.16);
+  --shadow-brand-pill: 0 8px 18px rgb(49 53 96 / 0.3), var(--shadow-pill-light);
+  --shadow-float: 0 4px 14px rgb(46 42 63 / 0.1); /* the white ✕ circle  */
+  --shadow-lift: 0 10px 24px rgb(46 42 63 / 0.16); /* the image card      */
+  --shadow-sheet: inset 0 1px 0 rgb(255 255 255 / 0.7);
+  --shadow-glass: inset 0 1px 0 var(--color-rim-soft);
+  --shadow-panel: inset 0 1px 0 var(--color-rim);
+  /* ---- radius ------------------------------------------------------------- */
+  --radius-sheet: 2.25rem; /* top corners of the sheet                   */
+  --radius-sheet-foot: 2.75rem; /* bottom corners — follows the phone's 46    */
+  --radius-panel: 1.75rem; /* the frost panel inside the sheet           */
+  --radius-media: 1.375rem; /* the image card                             */
+  /* ---- spacing ROLES — every gap lands on an existing step ---------- */
+  --space-group: var(--space-xs); /* 4 — between controls in one cluster   */
+  /* 4 — between pills in a row: chips, tags, place pills. */
+  --space-pill-gap: var(--space-xs);
+  --space-inset: var(--space-sm); /* 8 — sheet edge to the panel inside it */
+  --space-gutter: var(--space-2xl); /* 24 — screen edge; panel's side padding */
+  --space-panel: var(--space-3xl); /* 32 — panel's top padding to its label  */
+  --space-section: var(--space-5xl); /* 48 — headline block to the next block  */
+  --space-sheet-float: 3vw; /* a phone modal's clearance from every screen edge */
+  /* ---- control sizes ------------------------------------------------------ */
+  --size-round: 3.5rem; /* every round button: back, ✕, +, mic, send  */
+  --size-chip: 2.75rem; /* 44px */
+  --space-chip-inline: 1.125rem; /* the 44 chip's side padding, off-scale      */
+  --size-chip-sm: 2rem; /* 32px */
+  --size-field: 3.5rem; /* text and search fields, the radio rows     */
+  --size-tab: 3.5rem; /* pill tabs (57 in the ref)                  */
+  --size-slider: 4rem; /* slide-to-start track                       */
+  --size-pill: 2.25rem; /* the small time pill (17.7 × 1.745 ≈ 31, raised to the control floor) */
+  --size-tag: 1.75rem; /* 28 — read-only tags: a count badge, an age or total pill */
+  --size-thumb-sm: 2.5rem; /* 40 — the small product well (ThumbStack) */
+  --size-health-chart: 7.5rem; /* 120 — the line on Skin health's reading card */
+  --size-chart-dot: 0.75rem; /* 12 — a chart's latest-reading dot */
+  --size-chat-photo: 10rem; /* 160 — a photo sent in a chat, as the user's message */
+  /* Optical lift for a title-case label: half the capital over the x-height,
+     added as bottom padding, raises a centred line by a quarter of it, to the
+     midpoint of the capital and lowercase bands. Resolves in the label's font. */
+  --space-optical-lift: calc((1cap - 1ex) / 2);
+}
+
+:root {
+  /* the question panel — "this is also too white and bright": fill 55% -> 30%,
+     a softer edge and rim, so the canvas shows through as frost */
+  --color-panel: rgb(244 254 255 / 0.3);
+  --color-panel-data: #e6f0f04d; /* every card: pale sage at 30% */
+  /* the face diagram's card: a teal halo with a dark pool in its middle, a
+     darker foot and a light lift over it */
+  --face-card-rim: radial-gradient(65% 55% at 88% 6%, #7ca0b400, #c4deec00 72%),
+    radial-gradient(60% 45% at 8% 100%, #51778738, #6c939259 70%),
+    radial-gradient(45% 40% at 0% 40%, #6ea0c800, #6ea0c800 70%);
+  --face-card-tint: linear-gradient(165deg, #34566824 0%, #26333e00 100%);
+  --face-card-halo: var(--face-card-rim),
+    radial-gradient(70% 60% at 45% 52%, #122a369e, #06101a00 78%),
+    var(--face-card-tint);
+  --face-card-foot: linear-gradient(transparent 58%, #060e1617 100%);
+  --face-card-lift: linear-gradient(#98c7cf47, #98c7cf47);
+  --gradient-face-card: var(--face-card-lift), var(--face-card-foot),
+    var(--face-card-halo);
+  /* the check-in calendar: the face card with its middle pool faint, so the
+     dates read across the whole grid */
+  --gradient-calendar-card: var(--face-card-lift), var(--face-card-foot),
+    var(--face-card-rim),
+    radial-gradient(70% 60% at 45% 52%, #122a3626, #06101a00 78%),
+    var(--face-card-tint);
+  --color-border-panel: rgb(255 255 255 / 0.45);
+  --color-rim-panel: rgb(255 255 255 / 0.6);
+  /* NAV B, the round-button bar — "the nav bar needs to be more transparent
+     too": bar 10% / edge 40% / rim 50%, its circles 12% */
+  --color-nav-bar: rgb(255 255 255 / 0.1);
+  --color-border-nav: rgb(255 255 255 / 0.4);
+  --color-rim-nav: rgb(255 255 255 / 0.5);
+  --color-nav-item: rgb(255 255 255 / 0.12);
+  /* a selection that is not an action: the brand as a tint on glass, with a
+     half-strength brand edge. The current nav item and a muted selected chip;
+     only the screen's main button is solid brand. */
+  --color-surface-brand-tint: color-mix(in srgb, var(--color-bg-brand) 14%, var(--color-glass));
+  --color-border-brand-tint: color-mix(in srgb, var(--color-bg-brand) 45%, transparent);
+  /* the current nav item: a faint indigo wash under the text's indigo ink,
+     as the cards' overlines */
+  --color-nav-item-active: #40456b12;
+  --color-nav-item-active-ink: var(--color-text-ink);
+  --shadow-nav-bar: inset 0 1px 0 var(--color-rim-nav), 0 8px 24px rgb(46 42 63 / 0.06);
+  --nav-inset-inline: var(--space-sm); /* "50% less side paddings": 16 -> 8 */
+  /* a hero's text to its main button (Welcome, the empty states): 118 at the
+     932 phone height, shrinking first on short screens; 100 from 1024 */
+  --space-hero-action: clamp(0px, 17vh - var(--space-4xl), 7.6875rem);
+}
+
+@media (min-width: 1024px) {
+  :root {
+    --font-size-bubble: 1.2rem; /* 19.2 */
+    --nav-inset-bottom: max(var(--space-md), env(safe-area-inset-bottom)); /* 12, half the Welcome board's 24 */
+    --space-hero-action: 6.25rem; /* 100 */
+  }
+}
+
+@media (prefers-reduced-transparency: reduce) {
+  :root {
+    --color-panel: #e3eef0;
+    --color-nav-bar: #dbeded;
+    --color-nav-item: #e8f3f3;
+  }
+}
+
+@media (prefers-reduced-transparency: reduce) {
+  :root {
+    --color-glass: #f4f6f9;
+    --color-glass-strong: #f8fafb;
+  }
 }

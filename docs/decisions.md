@@ -1,14 +1,13 @@
 # LUX — decision record
 
 Why this build diverges from Figma, and what earlier versions got wrong. Every
-entry here is history plus rationale: the RULES themselves live in `AGENTS.md`,
-and each screen's own reasoning is repeated in the doc comment at the top of its
-component, where it cannot drift from the code it describes.
+entry here is history plus rationale: the RULES themselves live in `AGENTS.md`.
+Code comments say what a thing is, and only why when the code can't show it.
+History stays here and in git, never in the code.
 
 **Read a section here before you change the flow, the surfaces or the copy of
 that nav section** — the ⚠️ blocks record decisions that a comp will contradict,
-so "fixing" the code to match Figma is how they get undone. For ordinary work,
-the component's own doc comment is enough.
+so "fixing" the code to match Figma is how they get undone.
 
 **Figma file:** `wIftBhzkn8E4wjZwgdH71n` · **Screens page:** `06. Screen
 Designs` (`453:2252`). Each section has a `HANDOFF — *` annotation panel beside
@@ -1637,6 +1636,26 @@ risk. All are on the missing-from-the-DS list.
 
 ---
 
+## The Product library is one module (7 Nov 2026)
+
+`features/products/library.ts` holds the rules and `useProductLibrary` the store
+and the undo. The seeded-or-theirs rule had lived in every caller, and it failed
+five ways: an emptied list came back seeded on reload, a first add from
+`/check/new` cut the seeded five down to one, a product added from that tray
+never joined the check, a timestamped `addedOn` missed its add day and the trend,
+and Analysis's reminder read the raw store.
+
+- **`LibraryStart` is required, never defaulted.** The optional `base = []` is how
+  `CheckBuilder` got it wrong without anything saying so.
+- **Step 5 stays `empty`.** The open question in `lib/demo.ts` is still open; this
+  did not decide it.
+- **`CheckBuilder` keeps diffing rather than being told what was added.** Holding
+  the ids from when the tray opened keeps "removed in the tray again" correct for
+  free, which a report from the tray would have to handle.
+- **`npm test` is `node --test`, with no framework.** Node strips the types and
+  `scripts/test-resolve.mjs` resolves `@/`. It runs pure modules only, so anything
+  importing JSX, such as `progress.ts`, needs its rules moved out to be tested.
+
 ## PERSISTENCE — the store is SPLIT, and only completed records are written
 
 **6 Sep 2026.** Everything the user did lived in RAM and died on refresh. That
@@ -3189,3 +3208,78 @@ reduced-motion collapse sets `animation-duration: 0.01ms` and leaves
 from delays would still take 2.5 real seconds for a user who asked for no
 motion, holding them on a static logo. Built from keyframe percentages, the
 whole thing collapses with the duration and is over in a frame.
+
+## Every sheet is a centred dialog, on mobile too (19 Nov 2026)
+
+Asked for directly: on mobile the add-product sheet sat docked to the bottom
+edge, and searching in it felt uncomfortable. `Sheet` now has one shape at
+every width, the desktop dialog, centred in the viewport and inset from the
+screen's sides on mobile. The drag handle and its pull-to-close are gone with
+the dock; a sheet closes with its ✕ or label, the scrim, or Escape. Don't bring
+the bottom sheet back for mobile.
+
+## The prototype starts fresh on every visit (19 Nov 2026)
+
+Asked for directly: "always start as empty and fresh without previous profile
+for prototype". Two things went:
+
+- **Saving.** Nothing is written to the browser. Answers live in memory for one
+  page load, so a reload is a fresh start. `lib/store/persistence.ts` (the
+  forever slice and the 24h flow slice) is deleted; it is in git at `5bf8ba3`
+  if saving comes back. Every key an earlier build saved is deleted on load
+  (`RETIRED_STORAGE_KEYS`).
+- **The demo.** `lib/demo.ts` (the seeded skin profile and five products), the
+  seeded check-ins on Progress and the seeded analyses in CHECK's history are
+  gone. This supersedes "The Product library is one module": there is no
+  seeded or untouched library and no `LibraryStart`, and the library starts
+  empty.
+
+One rule decides whether there is anything to show: `hasInvestigation()` in
+`progress.ts`, true once step 4's date is answered. Until then `/progress` and
+the check-in screens show `ProgressEmpty`, and `/check`, `/check/new` and
+`/check/results` show `CheckNoProfile`.
+
+
+## Progress moves into My skin (19 Nov 2026)
+
+Progress showed the same skin profile as the My skin recap and used the same
+`hasInvestigation()` gate, so the two tabs were one section split in two. Step
+one: the Progress tab is gone from `BottomNav` (three tabs: My skin, Analysis,
+Products) and `/progress*` screens light My skin. The My skin tab opens the
+questionnaire until there is a profile, then `/progress`.
+
+## Answers are saved between visits again (20 Nov 2026)
+
+A finished skin profile vanished on every reload, which made the prototype
+feel broken. `InvestigationProvider` now saves the answers to `localStorage`
+under `lux.answers.v3` and loads them on mount. Mid-task state
+(`TRANSIENT_KEYS`: product draft, scan, queries, check basket, the check being
+viewed) is not saved. This supersedes "The prototype starts fresh on every
+visit" for persistence; there is still no demo data.
+
+## One text colour on data surfaces (21 Nov 2026)
+
+`--color-text-on-data-secondary` and `-muted` were `#354446`, a sage-tinted
+grey. They now point at `--color-text-ink` (`#5962a3`), so body text and labels
+on data cards match the rest of the app. This supersedes the `#354446` choice
+in "the on-data text tiers" above.
+`--color-text-secondary` (was the grey `#4b4b57`) points at the ink too, so
+plain text across the app is one colour.
+
+## The symptom trend card goes light (21 Nov 2026)
+
+The trend card on Progress was the deep teal `--gradient-routine` with white
+text. It is now the plain `DataCard` glass, like the other Progress cards. Its
+one-line reading under the title ("From moderate to mild in 2 days") is gone;
+Skin health still shows it. The Day pill no longer adds height to the heading
+row, so the overline sits on the same line as the cards beside it.
+Its text, line, dot and pills are the light-surface styles the chart already
+had; the bands are the ink at 5% and 10% (`--color-trend-band*`). The routine
+card on Products keeps the deep teal.
+
+## Regular text draws at 500 (21 Nov 2026)
+
+Text at 400 read too faint on the glass surfaces. `--font-weight-regular` is
+now 500, so every role and the body that used Regular draws at Medium. Light
+(300, the metric figures) is unchanged.
+

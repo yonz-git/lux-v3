@@ -1,24 +1,17 @@
 import styles from "./Tag.module.css";
 
-/**
- * Tag — Figma component set 256:85. `Style=Neutral | Brand`.
- *
- * ⚠️ A TAG IS READ-ONLY BY CONTRACT. It is not a Chip: a Chip is a selectable
- * multi-select control with `role="checkbox"`, a Tag is a label. PRODUCTS uses
- * it for the duration badge on a saved product, the "92% match" score and the
- * "Added to: …" confirmation — none of which the user can click.
- *
- * Label style is `Label Small` (Medium 12/16), set on the component so every
- * instance inherits it.
- */
+/** Tag — Figma component set 256:85. `Style=Neutral | Brand`, plus the soft
+ *  `answer` (teal) and `symptom` (red) pills the skin profile uses. */
 export function Tag({
   children,
   variant = "neutral",
+  size = "default",
   className,
   ...rest
 }: {
   children: React.ReactNode;
-  variant?: "neutral" | "brand";
+  variant?: "neutral" | "brand" | "answer" | "symptom";
+  size?: "default" | "sm";
   className?: string;
 } & React.ComponentPropsWithoutRef<"span">) {
   return (
@@ -26,6 +19,7 @@ export function Tag({
       {...rest}
       className={[styles.tag, "t-label-sm", className].filter(Boolean).join(" ")}
       data-variant={variant}
+      data-size={size === "sm" ? "sm" : undefined}
     >
       {children}
     </span>

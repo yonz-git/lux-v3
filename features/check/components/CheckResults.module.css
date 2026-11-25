@@ -1,33 +1,25 @@
 /* Check results (476:2841), reordered to 06 — Results (548:1134).
 
-   title -> 24 (HubScreen) -> AI bubble -> 24 -> skin-profile -> 16 -> summary
-   -> 16 -> ingredients -> 16 -> what to do next -> 16 -> the compared-products
-   box, whose 56 header is followed by its cards 8 apart.
+title -> 24 (HubScreen) -> AI bubble -> 24 -> skin-profile -> 16 -> summary
+-> 16 -> ingredients -> 16 -> what to do next -> 16 -> the compared-products
+box, whose 56 header is followed by its cards 8 apart.
 
-   The 16 between the sage cards is `06 — Results`' own spacing; the 8s inside
-   the product box are the box's own padding. ⚠️ The cards used to be siblings
-   of the header row at 14 and 12 — see `.group`. */
+The 16 between the sage cards is `06 — Results`' own spacing; the 8s inside
+the product box are the box's own padding. */
 
-/* ⚠️ THE BUBBLE HUGS ITS SENTENCE — NOT IN FIGMA. 548:1141 draws a full-width
-   ai-bubble-row, and the bubble used to be built that way: width 100% with a
-   52ch cap on the text inside it. That left the verdict sitting in a box far
-   wider than the sentence it holds — a band of empty fill to the right of the
-   last line at every width. A chat bubble reads as speech, and speech is the
-   shape of what was said, so the bubble now hugs.
-
-   `ChatBubble`'s own two hooks do it: --bubble-width `fit-content` replaces
-   the full-width span, --bubble-max keeps the hug from growing past a readable
-   measure on desktop. 52ch is the cap the text carried before and measures ~71
-   characters in this face (a `ch` is the width of a zero, which is wider than
-   an average letter); it lands on the bubble now, and the padding is inside
-   it, so the text measure is a shade narrower than before — the same intent.
-   Mobile is a 392 column and never reaches the cap, so the hug is what shows
-   there: a short verdict gets a short bubble. */
 /* the orb at the bubble's tail corner, 12 apart; the bubble takes the rest */
 .speaker {
   display: flex;
   align-items: flex-start;
+  justify-content: center;
   gap: var(--space-md); /* 12 */
+}
+
+/* the bubble's row hugs its bubble, so the pair has a width to centre */
+.speaker > :last-child {
+  flex: 0 1 auto;
+  width: auto;
+  min-width: 0;
 }
 
 .orb {
@@ -53,12 +45,7 @@
    summary card and `SkinProfileStrip` has no margin of its own, so the strip sat
    flush against the bubble at 0 while every other gap on the screen was 16 or
    24 — the verdict and the profile read as one fused block. Same idiom
-   `CheckScreen` uses for its own strip.
-
-   ⚠️ IT IS 24 AND THE CARDS BELOW ARE 16, DELIBERATELY. The bubble is the AI's
-   voice and everything under it is the data; the wider interval is the seam
-   between them, and 476:2841 draws it that way. Flattening this to 16 for
-   tidiness would remove the only cadence change on the screen. */
+   `CheckScreen` uses for its own strip. */
 .profile {
   margin-top: var(--space-2xl); /* 24 */
 }
@@ -68,37 +55,9 @@
   margin-top: var(--space-lg); /* 16 */
 }
 
-/* --- block 5, the compared-products box -------------------------------------
-
-   ⚠️ ONE BOX, NOT A ROW AND A STACK — NOT IN FIGMA, 6 Sep 2026. The header row
-   and the five cards used to be siblings on the canvas, 14 apart, with the
-   cards 12 from each other; the only thing saying the row owned them was that
-   they followed it. `MyProducts` made exactly this move for its category groups
-   the day before and the reasoning is the same, so the recipe is the same one:
-   the frosted fill moves off the header onto the container, the header keeps
-   its 56 and its 18 padding but declares no surface of its own, and the cards
-   become the box's contents inset 8 from three sides.
-
-   ⚠️ THE FILL IS `surface/frost-nav`, NOT `frost-light`. 476:2851 draws the row
-   on frost-light, which was right while the row was a row. It is the header of
-   a container now, holding cards that are themselves frost-light's opaque
-   counterpart — a frost-light box around them would have no edge at all.
-   frost-nav (#dbeded @88%) is the app's existing darker frosted fill, already
-   the pill the nav and the search field share, and `bg/nav` is its opaque
-   reduced-transparency counterpart. A token swap inside one family, not a new
-   surface. */
-/* ⚠️ NO BOX ANY MORE — lux-v3 (Scores B, canvas, 1 Oct 2026). The compared
-   products were rows inside a frosted box; they are score cards now, each
-   its own panel, and a panel inside a frosted box is frost on frost. The
-   group is the overline, the grid and the blocks under it, on the canvas.
-   The ask, picker and re-run blocks already carry their own surfaces. */
-.group {
-  display: flex;
-  flex-direction: column;
-  gap: var(--space-lg); /* 16 — overline to grid, as the board draws it */
-}
-
-/* the overline and `Edit`, level, over the grid */
+/* --- block 5, the compared-products box ------------------------------------- */
+/* the box (`DataCard`, 16 to the grid) opens with the overline and its
+   `EditToggle`, level */
 .compared {
   display: flex;
   align-items: center;
@@ -110,29 +69,7 @@
   flex: 1;
   min-width: 0;
   margin: 0;
-  color: var(--color-text-primary);
-}
-
-/* ⚠️ NO CHEVRON. 476:2851 draws one beside `Edit` because the control opened a
-   tray; it toggles this box's own edit affordances now, and a disclosure glyph
-   on a control that discloses nothing was the thing that made the row look like
-   it collapsed the list. `aria-pressed` is what says it is a toggle. */
-.edit {
-  flex: none;
-  padding: 0;
-  color: var(--color-text-primary);
-  border-radius: var(--radius-sm);
-  transition: opacity var(--duration-fast) var(--ease-hover);
-}
-
-.edit:hover {
-  opacity: 0.7;
-}
-
-@media (hover: none) {
-  .edit:hover {
-    opacity: 1;
-  }
+  color: var(--color-text-on-data-muted); /* the other boxes' overline */
 }
 
 /* the grid and the blocks under it, 8 apart */
@@ -169,42 +106,20 @@
 
 /* --- the picker, and the question it can raise ------------------------------
 
-   Both are nested blocks on the cards' own surface: opaque, 8 radius, the same
-   12 padding. Neither is a card — a card inside a box inside a box is three
-   surfaces doing one job.
-
-   ⚠️ AND BOTH CARRY `shadow/frosted-row`, LIKE EVERY OTHER SURFACE IN THIS BOX.
-   They shipped without it and it showed: the group, the compact cards and the
-   add row all have the inset edge, so a flat block between them read as a hole
-   in the stack rather than as another surface. It is the recipe's second half —
-   "a translucent fill always needs its inner shadow or it reads flat"
-   (non-negotiable 11) — and it applies to the opaque counterparts too, since
-   what the shadow draws is the EDGE, not the transparency. Same call
-   `CompatCard`'s own `.recommendation` makes for the same kind of nested
-   block. */
+Both are nested blocks on the cards' own surface: opaque, 8 radius, the same
+12 padding. Neither is a card — a card inside a box inside a box is three
+surfaces doing one job. */
 .picker {
   display: flex;
   flex-direction: column;
   /* 12 between the head, the field and what the field returns — 8 read as the
      field being part of the head row rather than the thing the panel is for */
   gap: var(--space-md);
-  /* ⚠️ 20 ABOVE, 12 EVERYWHERE ELSE. The panel opens with the field as its one
-     live control and the search is the whole panel now that nothing is listed
-     until you type; at an even 12 the field sat tight under the title and read
-     as a caption to it. The extra 8 is the only asymmetry in the box and it is
-     doing the work a heading margin usually does. */
   padding: var(--space-xl) var(--space-xl) var(--space-lg);
 
-  /* ⚠️ THE CARDS' GLASS, NOT AN OPAQUE FROST ROW, SINCE 5 Oct 2026 — asked
-     for directly ("more rounded like other boxes and less opacity of the
-     white"). It was radius/sm on `bg/surface-frost`, a near-white slab under
-     a grid of 24-radius glass cards. It takes `CompatCard`'s recipe now: 24,
-     the panel fill and hairline, the rim light and the blur; the sides move
-     to 20 so the bigger corner has room. */
   border-radius: var(--radius-2xl); /* 24 */
-  border: var(--border-width-hairline) solid var(--color-border-panel);
-  background: var(--color-panel);
-  box-shadow: inset 0 1px 0 var(--color-rim-panel);
+  background: var(--color-panel-data);
+  box-shadow: var(--shadow-frosted-row);
   -webkit-backdrop-filter: blur(12px);
   backdrop-filter: blur(12px);
 }
@@ -228,26 +143,6 @@
   color: var(--color-text-secondary);
 }
 
-.cancel {
-  padding: 0;
-  color: var(--color-text-primary);
-  border-radius: var(--radius-sm);
-  transition: opacity var(--duration-fast) var(--ease-hover);
-}
-
-.cancel:hover {
-  opacity: 0.7;
-}
-
-@media (hover: none) {
-  .cancel:hover {
-    opacity: 1;
-  }
-}
-
-/* ⚠️ CAPPED AND SCROLLING. Eight rows at 52 is 416, which on a 440 frame pushes
-   the re-run action off the bottom of the screen. 4.5 rows shows that the list
-   continues without the panel taking the page over. */
 .pickerList {
   margin: 0;
   padding: 0;
@@ -299,10 +194,6 @@
   white-space: nowrap;
 }
 
-.pickMeta {
-  color: var(--color-text-muted);
-}
-
 .pickPlus {
   flex: none;
   --icon-size: var(--size-icon-sm); /* 20 */
@@ -313,14 +204,11 @@
   color: var(--color-text-secondary);
 }
 
-/* the question. ⚠️ `bg/nav` rather than the cards' near-white `bg/surface-frost`
-   — it is the one block in the box the user has to answer, and on the same fill
-   as the rows above it there was nothing saying a question had appeared. Same
-   opaque teal the nav and the AI bubble share, so it reads as LUX asking. */
+/* the question. */
 .ask {
   display: flex;
   flex-direction: column;
-  gap: 6px;
+  gap: 0.375rem;
   padding: var(--space-md);
 
   border-radius: var(--radius-sm);
@@ -336,9 +224,7 @@
   color: var(--color-text-secondary);
 }
 
-/* the four duration radios — `OptionRow`'s own 12 gap, as the add tray sets it.
-   ⚠️ 8 above them rather than the block's 6: the question and its explanation
-   are one paragraph, the options are the answer to it. */
+/* the four duration radios — `OptionRow`'s own 12 gap, as the add tray sets it. */
 .askOptions {
   display: flex;
   flex-direction: column;
@@ -346,94 +232,14 @@
   margin-top: var(--space-sm);
 }
 
-/* the question's actions — ONE segmented pill, the same frosted-glass +
-   gradient-segment recipe as `SegmentedToggle` (the add-product tray's own
-   "Add product" / "Search again"), asked for directly so the two places the
-   app asks "keep this or not" read as one design.
-   ⚠️ NOT A TOGGLE: `askConfirm` and `decline` are two distinct actions, not
-   two states of one control — plain buttons, neither carries `role="tab"`.
-   `askConfirm` sits LEFT, the way the tray's own confirm segment does. */
+/* the `SegmentedToggle` under the question: 6 more air above it */
 .askActions {
-  display: flex;
-  gap: 4px;
-  padding: 5px;
-  margin-top: 6px;
-  align-self: center;
-
-  border-radius: var(--radius-full);
-  background: var(--color-surface-frost-nav);
-  border: 1px solid var(--color-border-glass);
-  -webkit-backdrop-filter: blur(16px);
-  backdrop-filter: blur(16px);
-}
-
-@media (prefers-reduced-transparency: reduce) {
-  .askActions {
-    background: var(--color-bg-nav);
-    -webkit-backdrop-filter: none;
-    backdrop-filter: none;
-  }
-}
-
-/* the confirm segment — filled, like `SegmentedToggle`'s selected segment.
-   Buttons: one rule for every style (non-negotiable 5) — hover runs the
-   gradient end for end at full strength via the same registered --grad-start /
-   --grad-end properties (globals.css), disabled fades to `opacity/disabled`. */
-.askConfirm {
-  --grad-start: var(--color-gradient-brand-start);
-  --grad-end: var(--color-gradient-brand-end);
-
-  /* the anchor for its `.edge-light` span (globals.css), added 14 Sep 2026,
-     at the primary `Button`'s brighter strengths since this is indigo too */
-  position: relative;
-  --edge-glow: 0.4;
-  --edge-catch: 0.55;
-  --edge-ring-lit: 0.54;
-  --edge-ring-dim: 0.45;
-  flex: none;
-  padding: 11px 22px;
-  border: none;
-  border-radius: var(--radius-full);
-  background: linear-gradient(90deg, var(--grad-start) 0%, var(--grad-end) 100%);
-  color: var(--color-text-on-brand);
-  /* ⚠️ NOT IN FIGMA — the label shines on hover (globals.css `.shine-text`),
-     asked for directly 13 Sep 2026: "same as add buttons", i.e. `SmallButton`'s
-     gradient reversal plus its label glint, and NOT `Button`'s specular rim.
-     The ink MUST be this label's own token. Kept in step with
-     `SegmentedToggle`, whose recipe this block copies. */
-  --shine-ink: var(--color-text-on-brand);
-  transition:
-    opacity var(--duration-hover) var(--ease-standard),
-    --grad-start var(--duration-hover) var(--ease-hover),
-    --grad-end var(--duration-hover) var(--ease-hover);
-}
-
-@media (hover: hover) {
-  .askConfirm:hover:not(:disabled) {
-    --grad-start: var(--color-gradient-brand-end);
-    --grad-end: var(--color-gradient-brand-start);
-  }
-}
-
-.askConfirm:disabled {
-  opacity: var(--opacity-disabled);
-  cursor: not-allowed;
+  margin-top: 0.375rem;
 }
 
 /* The re-run block, revealed by the first removal. `reveal-quick` is not used
    here because a module may not name an animation (motion section); the block
-   arrives with the box's own layout change instead.
-
-   ⚠️ NO SURFACE — IT IS THE BOX'S FOOTER, NOT ANOTHER CARD. It had the nested
-   recipe every other block in here has (opaque fill, 8 radius, 12 padding, the
-   frosted-row edge) and that was one card too many: the products are cards, the
-   picker and the question are cards, and a fourth one holding a line of copy
-   and a button made the box read as a stack of five things rather than as a
-   list with an action under it. A footer is the one thing in a container that
-   should NOT have its own edge — it belongs to the box, so it sits on the box.
-
-   Centred, both of them: with no surface there is no left edge for the note to
-   start from, and the button was already centred under it. */
+   arrives with the box's own layout change instead. */
 .rerun {
   display: flex;
   flex-direction: column;
@@ -447,50 +253,8 @@
   color: var(--color-text-secondary);
 }
 
-/* ⚠️ 15% SHORTER THAN A `Button`, AND 53 IS AN OFF-SCALE LITERAL ON PURPOSE.
-   `size/control-*` has 48 and 62 and nothing between, so binding either token
-   would name this as a size it is not; the app already carries two deliberate
-   off-scale literals for the same reason (`--nav-inset-bottom` at 5, the 28
-   preview well on the PRODUCTS hub). It is set through `--button-height`, the
-   hook `Button` exposes — never as a `min-height` from this module, which
-   would be decided by CSS-Module load order rather than by intent.
-
-   It applies to THIS button and no other: the re-run action sits inside the
-   compared-products box under a single line of copy, beside a row of 36-tall
-   controls, so
-   a full 62 pill made the box's own action the tallest thing on a screen whose
-   real actions are all above it. Every page-level `Button` keeps its 62. Raise
-   a shorter Button size in Figma and this becomes a token. */
 .rerunButton {
   --button-height: 53px;
-}
-
-/* the decline segment — unfilled, `SegmentedToggle`'s unselected segment.
-   ⚠️ IT WAS `.undo` AND IS THE ONLY CALLER LEFT — the re-run block's `Undo` is
-   gone, so the name now describes what it does rather than the control it was
-   shared with. */
-.decline {
-  flex: none;
-  padding: 11px 22px;
-  border: none;
-  border-radius: var(--radius-full);
-  background: transparent;
-  color: var(--color-text-secondary);
-  /* the hover shine's ink — see `.askConfirm` */
-  --shine-ink: var(--color-text-secondary);
-  transition: background-color var(--duration-fast) var(--ease-hover);
-}
-
-@media (hover: hover) {
-  .decline:hover {
-    background: var(--color-state-hover-overlay);
-  }
-}
-
-@media (hover: none) {
-  .decline:hover {
-    background: transparent;
-  }
 }
 
 @media (prefers-reduced-transparency: reduce) {
@@ -501,24 +265,13 @@
   }
 }
 
-/* ⚠️ NOT IN FIGMA — `Add another product` under the compared products is the
-   secondary `Button` at `size="md"` (48) with a plus, hugging its label and
-   centred: the one add-product recipe, asked for directly 13 Sep 2026. It was
-   the full-width `AddProductRow`. */
 .addAnother {
   display: flex;
   justify-content: center;
-  /* ⚠️ 16 above and below ON TOP OF `.panel`'s own gap, asked for directly
-     13 Sep 2026 — it sat tight against the last card and the box's edge */
   margin-block: var(--space-lg);
 }
 
-/* --- the way back to the history ---------------------------------------------
-
-   ⚠️ NOT IN FIGMA — asked for directly 13 Sep 2026. The same bare link `/check`
-   ends on (`CheckScreen.module.css` `.link`, chevron and all), repeated rather
-   than shared for the reason `CheckHistory`'s pill gives: a component whose
-   only job is one link's colour. Centred under the last block, 32 below it. */
+/* --- the way back to the history --------------------------------------------- */
 .historyLink {
   align-self: center;
   display: inline-flex;

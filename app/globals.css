@@ -23,11 +23,6 @@
    they are the plumbing that makes the button/bg-* tokens animatable.
    ========================================================================== */
 
-/* ⚠️ KEEP THIS IN STEP WITH `--color-button-bg-default-start` BELOW. A
-   registered property's `initial-value` must be a literal — `var()` is not
-   allowed in it — so it cannot read the token and has to be updated by hand.
-   It is only the value used before any rule sets the property, but leaving the
-   old one here flashes the previous colour for a frame. */
 @property --grad-start {
   syntax: "<color>";
   inherits: false;
@@ -43,17 +38,11 @@
 /* `--shine-ink` IS REGISTERED so a label's ink can cross-fade. `.shine-text`
    paints its glyphs from this property, not from `color`, and an unregistered
    custom property never interpolates, so `SegmentedToggle`'s hover swapped the
-   label from dark to white in one frame while the pill faded over 200ms.
-   ⚠️ `inherits: true`: it is SET on the button and READ by the label span inside
-   it. `--collapse-gap` is the opposite case.
-   ⚠️ THE INITIAL-VALUE IS `text/primary` (`neutral-800`, #2e2a3f) AND MUST MOVE
-   WITH IT. A registered property always has a value, so `.shine-text`'s
-   `var(--shine-ink, var(--color-text-primary))` fallback can no longer fire,
-   and this initial-value takes its place. */
+   label from dark to white in one frame while the pill faded over 200ms. */
 @property --shine-ink {
   syntax: "<color>";
   inherits: true;
-  initial-value: #2e2a3f;
+  initial-value: #25294a; /* --color-text-ink: a registered default can't read a token */
 }
 
 @property --specular-angle {
@@ -63,886 +52,6 @@
   /* light from the top-left until a pointer says otherwise */
   initial-value: -45deg;
 }
-
-/* ==========================================================================
-   SURFACE SYSTEM B TEXT — dark, not white.
-
-   ⚠️ NOT IN FIGMA, AND WHITE CANNOT BE MADE TO WORK HERE. `surface/data` is
-   `#7da7a9 @44%` and `surface/data-strong` is the same hue at 62%, which
-   composite over the canvas to roughly rgb(170,194,198) and rgb(152,183,187).
-   Measured on `/check/results`, 38 of 59 text nodes failed WCAG AA — the
-   overlines and 12px stat labels at 1.49:1 and the body and metrics at 1.86:1,
-   against a 4.5:1 requirement. The basket bar measured 1.93:1 and the basket
-   sheet 1.64–2.13:1. At 1.5:1 the labels are barely present.
-
-   Even at 100% opacity `#7da7a9` gives white only 2.63:1, so no alpha of white
-   passes on this hue. Darkening the text is the only fix that keeps the sage
-   surface; the alternative is a genuinely dark sage, i.e. redesigning System B.
-
-   ⚠️ REDEFINED GLOBALLY, BECAUSE THERE IS NO DARK SAGE SURFACE TO EXEMPT. This
-   was first scoped to the two card roots on the assumption that the tray sat on
-   a scrim and the camera viewfinders were dark placeholders. Both were wrong:
-   `state/pressed-overlay` is 14%, which barely darkens anything, and BOTH
-   viewfinders (`SelfieCapture`, `AddProductMethodSheet`) are the same light
-   `surface/data`. Every surface in the app that reads these tokens is light
-   sage, so the exception list was empty and the scoping bought nothing.
-
-   ⚠️ THE THREE TIERS CANNOT BE BUILT FROM ALPHA. Every tier has to clear 4.5:1
-   because the muted tier styles 12–13px LABELS, and the ink at 82% already
-   fails (4.43:1). So `-secondary` and `-muted` share one value and the
-   hierarchy is carried by size, weight and the overline's tracking, which is
-   where it was already doing most of the work. Worst case measured across both
-   surface alphas and the full gradient range:
-
-     ink        #2e2a3f   6.28:1 – 8.12:1
-     sage ink   #354446   4.61:1 – 5.97:1
-
-   ⚠️ DECLARED HERE, NOT IN `tokens.css` — that file is generated from the Figma
-   variables and this is a correction to them. Raise it in Figma; it is a token
-   bug there too, not a code-side preference.
-
-   Still white on purpose: the `border/glass` divider inside a data card, and
-   `text/on-brand` on the indigo check-in discs (which passes). `SymptomTrend`'s
-   white line is a graphical object at ~2.6:1 against the card — the one open
-   System B contrast question.
-   ========================================================================== */
-
-:root {
-  --color-text-on-data: var(--color-text-primary);
-  /* sage-tinted rather than gray: secondary text on a coloured surface takes
-     that surface's hue, and a neutral gray reads as dirt on this one. */
-  --color-text-on-data-secondary: #354446;
-  --color-text-on-data-muted: #354446;
-  --color-icon-on-data: var(--color-text-primary);
-
-  /* THE WHITE INK OF SYSTEM B's SECOND TIER. Non-negotiable 17 says System B's
-     text is dark, and that is still right for `surface/data` — this is the ink
-     for the surface that rule does not cover.
-
-     ⚠️ IT IS STILL THE APP'S STANDING EXCEPTION, AND IT STILL DOES NOT MEET AA.
-     On `surface/data-deep` (`#4f838f @85%`) white composites to 3.42–3.77:1
-     depending on the backdrop, against 4.5:1 — better than the 1.64–2.32:1 the
-     callers measured before that surface existed, and short of the bar. The
-     full measurement table and the reason no ink fixes it are on
-     `--color-surface-data-deep` above.
-
-     ⚠️ IT IS ONLY EVER FOR `surface/data-deep`. On `surface/data` white measures
-     1.87:1, which is the failure non-negotiable 17 was written to stop. The
-     pairing is the contract; the token is not portable.
-
-     Named rather than left as a raw `#fff` in the modules so the pairing is
-     greppable, and so no module reaches into the primitives block, which
-     non-negotiable 2 forbids. */
-  --color-text-on-data-inverse: #ffffff;
-
-  /* surface/data-deep — ⚠️ DECLARED HERE, NOT IN `tokens.css`, and NOT IN
-     FIGMA. It is the `sage/700` System B never had: the third step, the one a
-     nested emphasis block and a white-ink card both need.
-
-     `#4f838f @85%` — L 0.578, C 0.0585, hue 214.1 in OKLCH. ⚠️ IT IS NOT ON THE
-     SAGE HUE LINE: `surface/data` is 199.8 and `bg/nav` 196.8, so this sits
-     ~15° bluer than the tier below it and reads cooler than the card it nests
-     in. That is a chosen value, asked for directly on 8 Sep 2026 — do not
-     "correct" it onto the sage line without asking.
-
-     ⚠️ WHERE IT LEAVES THE WHITE, measured by compositing at 85% over each
-     backdrop it actually lands on:
-
-       backdrop                          composites to   white     ink #2e2a3f
-       surface/data-strong tray            #5a8b96       3.77:1      3.67:1
-       surface/data card                   #5d8c97       3.71:1      3.73:1
-       canvas, mid                         #62919b       3.48:1      3.98:1
-
-     against 4.5:1. So it clears the 3:1 large-text bar and fails AA for the
-     12px overlines, axis ticks and meta lines its four callers put on it.
-
-     ⚠️ AND NEITHER INK PASSES, WHICH IS THE THING TO KNOW ABOUT THIS VALUE.
-     White and the app ink land within 0.06 of each other on the card backdrop —
-     3.71 against 3.73 — because the surface sits almost exactly at the
-     lightness where the two cross over. There is no ink colour that fixes it;
-     only the SURFACE can move, and it has to move meaningfully in one direction
-     or the other. Darker (`#407375`, opaque) gives white 5.35:1; lighter gives
-     the ink its usual 4.6:1+. This is the same shape of problem `gradient/brand`
-     documents further down, and the same answer applies: it is a design
-     decision, not a token correction.
-
-     ⚠️ THE ALPHA IS ALSO WHY THE RATIO IS A RANGE RATHER THAN A NUMBER. A
-     translucent surface takes its contrast from whatever it is sitting on, so
-     the same card measures differently at the top and the bottom of a scrolling
-     page — which is why `SymptomTrend`'s note has to measure "at this card's
-     own position". Only an opaque fill makes the ratio a property of the token.
-
-     Four callers: `SymptomTrend`'s card, `ResultCards`' "what to do next"
-     emphasis block, `CheckBasket`'s product rows, and
-     `AddProductMethodSheet`'s method tiles. Still to raise in Figma as a real
-     `sage/700` surface role. */
-  --color-surface-data-deep: #4f838fd9;
-
-  /* surface/data-deep · HOVER — ⚠️ DECLARED HERE, NOT IN `tokens.css`, and NOT
-     IN FIGMA. The method tiles lighten on hover, and they used to lighten to
-     `surface/data-strong` — a real step while `-deep` was `#538b8d @62%`, and
-     not one at any other value, since `-strong` is a different hue at a
-     different alpha and the "step" was a coincidence of those two numbers.
-
-     This is the same colour and alpha as the base, one lightness step up
-     (L 0.578 -> 0.608), so hover is a step BY CONSTRUCTION rather than by
-     coincidence. It costs contrast in the direction hover always does on a
-     white label — 3.43:1 on the tray against the base's 3.77:1 — which is the
-     lesser problem while the base itself is at 3.77. */
-  --color-surface-data-deep-hover: #588c98d9;
-
-  /* ==========================================================================
-     THE INDIGO FAMILY — moved to hue 282 on 8 Sep 2026.
-
-     ⚠️ NOT IN FIGMA. `bg/brand` was `indigo/700` `#3b305c` (hue 293.5) and is
-     now `#39386f` (hue 281.7), asked for directly. It is the same value as
-     `gradient/brand`'s dark end, which is the point: the primary button and the
-     accent that marks a selection are the same indigo now, rather than two
-     violets eleven degrees apart appearing side by side on `/progress` (the
-     button beside the checked-in calendar discs). That was written up as the
-     one open question left by the button reassignment; this closes it.
-
-     ⚠️ ALL THREE STEPS MOVE TOGETHER, AND ONLY `bg/brand` WAS ASKED FOR. The
-     other two are defined relative to it and would have been left stranded on
-     the old hue:
-
-       bg/brand        #3b305c -> #39386f   L 0.343->0.371  H 293.5->281.7
-       bg/brand-hover  #2e2447 -> #2c2a5f   the same lightness delta, new hue
-       bg/brand-soft   #8e80bc -> #8284c0   the same L and C, new hue
-
-     `-soft` in particular HAS to follow: it is the moderate-likelihood pill on
-     `ResultCards` and its whole job is to read as one scale with `bg/brand`,
-     which two different hues would break. Reverting the two dependents is three
-     lines if that is wanted; `bg/brand` itself is the asked-for change.
-
-     ⚠️ WHITE STILL PASSES EVERYWHERE IT WAS PASSING. `text/on-brand` on
-     `bg/brand` goes 11.91:1 -> **10.66:1**, and on `-hover` 14.39:1 ->
-     13.10:1 — both far clear of AA. The roles are the checked-in calendar
-     discs, selected chips and option rows, `StepProgress`' fill, the face
-     diagram's picked regions, the "High likelihood" pill and `::selection`.
-
-     ⚠️ `bg/brand-soft` STILL FAILS, AS IT DID BEFORE. White on it goes 3.52:1
-     -> 3.49:1 — a 0.03 change, i.e. the same open question it already carried,
-     not a new one. It is indigo/300's job to be the lighter half of a
-     two-point scale, and a fill light enough to read as "less" is a fill white
-     struggles on. Listed with `CompatCard`'s band pills in AGENTS.md
-     non-negotiable 17.
-
-     ⚠️ DECLARED HERE, NOT IN `tokens.css` — that file is generated from the
-     Figma variables and Figma still holds `indigo/700`. Raise all three there;
-     see `docs/archive/figma-catchup.md`. ⚠️ AND DO NOT REPOINT THE PRIMITIVE
-     `--color-indigo-700` INSTEAD: non-negotiable 2 forbids a component binding
-     a primitive, and moving the ramp step would drag anything else aliasing it.
-     ========================================================================== */
-  /* ⚠️ `#39386f` → `#313560` AND `-hover` `#2c2a5f` → `#242750`, 14 Sep 2026,
-     asked for directly ("one indigo"): the button gradient was retuned by hand
-     to end on `#313560`, and `bg/brand` follows it so the action and every
-     selected mark stay one value. Both siblings took the same OKLCH step
-     (L −0.024, C −0.018, H −4°). White: 11.61:1 here, 14.18:1 on hover. The
-     notes above still quote the old values. */
-  --color-bg-brand: #313560;
-  --color-bg-brand-hover: #242750;
-
-  /* ⚠️ NOT IN FIGMA, BY EXPLICIT REQUEST — the moderate-likelihood pill on
-     `ResultCards`' ingredients card. `02 Color` has no semantic role for it, so
-     it is named here rather than left as a raw hex (or as a reach into the
-     primitives block, which non-negotiable 2 forbids) — declared, greppable,
-     and to be raised in Figma.
-
-     It is `indigo/300` re-hued to match `bg/brand` above: the high-likelihood
-     pill is `bg/brand` and the two have to read as one scale, which a neutral
-     frost pill did not and which two different hues would not either. White on
-     it measures 3.49:1 — under AA for a 12px label, the same open question
-     `CompatCard`'s band pills already carry. */
-  /* `#8284c0` → `#7980af` with `bg/brand`, 14 Sep 2026 (same step). White is
-     3.49 → 3.80:1 — still the known failure, marginally less so. */
-  --color-bg-brand-soft: #7980af;
-  /* `effect/shine` — the bright lilac every light effect in the build wears:
-     the text shine's band and the specular rim's streaks. ⚠️ NOT IN FIGMA —
-     added 13 Sep 2026, asked for in those words. It is `indigo/200`
-     (#b4aad3) bound here as a semantic token so no component reaches into
-     the primitives (non-negotiable 2). Raise it in Figma as `effect/shine`. */
-  --color-effect-shine: #b4aad3;
-  /* `effect/specular` — the rim's own colour, split from the text shine on
-     13 Sep 2026, asked for directly: the lilac read too purple on the pill's
-     edge. Same lightness (OKLCH L 0.76), hue turned from 296 to 262 — onto the
-     button gradient's own start hue (258) — and chroma cut 20% (0.059 to
-     0.047). A pale steel blue, #a1b2d0. Not in Figma; raise with the above. */
-  --color-effect-specular: #a1b2d0;
-
-  /* ==========================================================================
-     feedback/error + feedback/warning — THE COMPATIBILITY BANDS, RETUNED
-     8 Sep 2026, ASKED FOR DIRECTLY.
-
-     ⚠️ DECLARED HERE, NOT IN `tokens.css` — that file is generated from the
-     Figma variables and Figma still holds `rose/500` (#c9918e) and `red/500`
-     (#a86561). Raise both there; see `docs/archive/figma-catchup.md`.
-
-     ⚠️ AND STILL DO NOT REPOINT THE PRIMITIVES `--color-rose-500` /
-     `--color-red-500`, EVEN THOUGH EVERY ROLE THAT ALIASES THEM NOW MOVES.
-     Five semantic roles read those two steps and all five are declared below,
-     so repointing the ramp would be equivalent today and two lines shorter —
-     and it would still be wrong, for the reason the `bg/brand` block above
-     gives: a primitive is not a role, non-negotiable 2 forbids a component
-     binding one, and the next role that wants to stay behind would have
-     nowhere to stand. The roles are named so that divergence stays possible.
-
-     Both moved together because Avoid and Risky are one scale: #a86561 and
-     #c9918e are a dusty red and a dusty rose four steps of chroma apart, and
-     the two bands read as different families rather than as two rungs. The
-     new pair is one hue with a real step between them.
-
-     Measured, white on the fill (the pill in `CompatCard` and `CheckHistory`,
-     and the badge on `ResultCards`' emphasis block):
-
-       Avoid  #a86561 -> #c65953   4.47:1 -> 4.24:1
-       Risky  #c9918e -> #d47873   2.65:1 -> 3.12:1
-
-     Risky gains 0.47 and still fails AA — it is the known-failing band pill
-     already listed under non-negotiable 17, unchanged in substance. Avoid
-     gives up 0.23 and drops just under AA with it, which is a WIDENING of that
-     same open question rather than a new one; the band pills are on the
-     Figma-decision list either way. ⚠️ Do not "fix" either by putting the app
-     ink on the fill — `HypothesisCard` does that deliberately and the note on
-     its `--band-ink` is why it cannot be lifted here. */
-  /* ⚠️ 29 Oct 2026: DARKER, AS THE NOTE ABOVE SAID THE FIX WOULD BE. Avoid
-     #82302b (white 8.7:1, and 4.8:1 as `text/error` on frost at the bottom of
-     the gradient), Risky #c24e47 (white 4.7:1). Still one hue, two rungs. */
-  --color-feedback-error: #82302b;
-  --color-feedback-warning: #c24e47;
-
-  /* text/error + text/warning + border/error — THE SAME TWO VALUES, ASKED FOR
-     8 Sep 2026, A TURN AFTER THE BANDS.
-
-     ⚠️ THEY WERE DELIBERATELY LEFT BEHIND FIRST AND THAT WAS REVERSED, WHICH
-     IS WHY THIS IS A SECOND BLOCK RATHER THAN THREE MORE LINES ABOVE. The
-     first pass moved only `feedback/*`, on the argument that a destructive
-     control is not a compatibility band; the answer was that LUX gets ONE red,
-     not a band red and a control red six points of saturation apart. It is the
-     same reasoning that collapsed `bg/brand` onto the button gradient's dark
-     end.
-
-     ⚠️ ONE OF THE THREE HAS A CALLER, AND IT IS NOT WHAT THE FIRST PASS SAID.
-     `text/error` is the **Remove** action on `ProductAccordionCard` — a
-     `t-label` (14/20) destructive control, not an inline validation message.
-     Measured on `surface/frost-light` composited over the canvas gradient at
-     three positions:
-
-       start #dce7ea   3.98:1 -> 3.77:1
-       mid   #cedee2   3.82:1 -> 3.62:1
-       end   #acc5cc   3.42:1 -> 3.25:1
-
-     ⚠️ IT FAILED 1.4.3 BEFORE AND FAILS BY ~0.2 MORE NOW — a 14px label needs
-     4.5:1 and the old red never reached it at any position on the gradient.
-     A pre-existing failure widened, not a new one; logged with the band pills
-     in `docs/archive/figma-catchup.md` § 2. ⚠️ Do not close it by exempting this one
-     token from the red: the fix is a DARKER red for all of them, or the Remove
-     action stops carrying its meaning in colour — it is the only destructive
-     control on these screens and the word already says what it does.
-
-     `text/warning` and `border/error` have NO callers in the build. They move
-     anyway, so that a first caller inherits the red the app actually uses
-     rather than the one Figma still holds. ⚠️ The `-subtle` tints (`rose/100`,
-     `red/100`) did NOT move — nothing asked them to, they are near-neutral
-     either way, and `CompatCard`'s tinted tag is the only thing reading
-     them. */
-  --color-text-error: #82302b;
-  --color-text-warning: #c24e47;
-  --color-border-error: #82302b;
-
-  /* bg/frost-light-muted — ⚠️ DECLARED HERE, NOT IN `tokens.css`, and NOT IN
-     FIGMA. It was the face-diagram region pills' OPAQUE fill (the old dome's
-     outline passed behind them, and a translucent pill showed the ellipse
-     through itself); ⚠️ since 14 Sep 2026 those pills are glass
-     (`surface/face-pill`) and this is only their reduced-transparency
-     fallback. `bg/frost-light` (#f4feff) is the brightest light value in the
-     app and on the sage `surface/data` card it reads as a white sticker. This
-     is the same near-white one step down — literally the value `bg/nav` and
-     `bg/bubble-ai` already carry, i.e. the LUX opaque light mint, written out
-     rather than aliased to either of them so that retuning the nav or the AI
-     bubble does not silently move the pills. Raise it in Figma as a real
-     frost-light-muted role; the DS has the colour three times and no name for
-     it. */
-  --color-bg-frost-light-muted: #dbeded;
-
-  /* border/chip — ⚠️ DECLARED HERE, NOT IN `tokens.css`, and NOT IN FIGMA. The
-     Chip component has no stroke in Figma, which works only while the chip is
-     the brightest thing on its surface. It is not: measured on 01, the chip
-     fill (#dbeded) against the composited question card (#e3eff2) is
-     **1.03:1**, so the pill had no boundary at all and the row read as floating
-     labels. A chip is a CONTROL, so its boundary is what WCAG 1.4.11 asks 3:1
-     of — nothing else here can carry it, since the fill cannot get darker
-     without becoming the loudest element again.
-
-     #6b8b8d is the sage ramp continued past its last step (400, #a7c0c1) rather
-     than a new hue: it measures **3.14:1** on the light card and 2.20:1 on the
-     sage `FaceDiagram` card, where the fill is already doing most of the work
-     (1.38:1 there, and the surface is saturated enough to separate). The
-     neutral border tokens cannot reach it — border/subtle is 1.08:1 and
-     border/default 1.35:1 against that card, i.e. both invisible — and going
-     darker (#577476, a true 3:1 on BOTH surfaces) stops reading as a hairline
-     and starts reading as an outlined pill, which is louder than the calm the
-     motion board asks for. Raise it in Figma as a real border role; the ramp
-     wants a sage/500 anyway. */
-  --color-border-chip: #6b8b8d;
-
-  /* ⚠️ `gradient/face-form`, `effect/face-form`, `surface/face-tier` and
-     `effect/face-tier` WERE DECLARED HERE until 13 Sep 2026 — the CSS dome
-     the face diagram used to be. The face is a contour drawing now and its
-     shading lives with it in FaceDiagram.module.css; the four tokens had no
-     other caller and went with the dome. */
-}
-
-/* ==========================================================================
-   `gradient/brand` — INDIGO since 8 Sep 2026, and AA from end to end.
-
-   ⚠️ NOT IN FIGMA, AND A REASSIGNMENT RATHER THAN A RETUNE. Figma holds the
-   sage `#bbd3d9` → `#637073`; the build runs `#657792` → `#39386f`. Plotted in
-   OKLCH, LUX draws a sage GROUND (canvas 215, `surface/data` 199.8, `bg/nav`
-   196.8) and an indigo FIGURE (selection, chips, checked days, the orb's
-   mark). The sage button sat in the ground family at hue 213–215 with chroma
-   0.016–0.027 — the colour drained out of it — and read on ten routes as a
-   disabled steel pill. The indigo runs hue 258 → 282 and GAINS chroma as it
-   darkens, 0.047 → 0.092.
-
-   WHERE IT LEAVES THE LABEL. `Button` draws `text/on-brand` — white — centred,
-   so the ink sits across the middle of the sweep. Measured:
-
-     left edge   first glyph   centre   last glyph   right edge
-       4.56         5.62        6.90       8.59        10.66
-
-   against 4.5:1 for 17px Regular — AA across the whole sweep, on the primary
-   call to action on every screen. The sage ran 2.05:1 at the left edge and
-   was the app's widest contrast failure. Every channel darkens from left to
-   right, so the left edge is the floor and nothing between the stops
-   measures lower.
-
-   ⚠️ THIS BLOCK STILL TOLD THE SAGE STORY UNTIL 13 Sep 2026, five days after
-   the values under it had moved: `#a2b9bf` as a start darkened "NOT to a
-   passing value", a chosen value not to be improved. That instruction is
-   retired with the value.
-
-   ⚠️ NO INK COLOUR COULD FIX THE SAGE — the SURFACE had to move, which is why
-   this is a design decision and not a token correction. It was tried DOWN the
-   sage ramp twice: `#5f7275` → `#3c4b4e` passed (5.06:1 and 9.10:1 at its
-   edges) and was rejected as a flat dark slab rather than a sweep, then the
-   start alone went `#bbd3d9` → `#a2b9bf` and still failed. The axis nobody had
-   tried was HUE. The slab rejection STANDS and this does not reopen it: the
-   indigo keeps a 24° hue rotation and nearly doubles its chroma, so it still
-   reads as a sweep.
-
-   ⚠️ ITS DARK END IS `bg/brand`, ON PURPOSE. `bg/brand` moved to `#39386f` the
-   same day (THE INDIGO FAMILY, above), so the primary action and every mark
-   that says "selected" are one indigo. Move this end alone and the button and
-   the checked-in discs on `/progress` are two violets side by side again.
-
-   ⚠️ AXE CANNOT SEE ANY OF THIS. `color-contrast` degrades to INCOMPLETE, never
-   to a violation, the moment a background is a gradient — a clean run proved
-   nothing while this failed and proves nothing now that it passes. Measure it
-   by sampling the gradient at the label's own x-range.
-
-   ⚠️ IT TAKES FOUR LINES HERE PLUS THE TWO `@property` INITIAL-VALUES AT THE
-   TOP OF THIS FILE. Figma holds this paint twice — `gradient/brand` and
-   `button/bg-default-*`, the same colours under two names — and `Button`
-   reads the second. A registered property takes no `var()`, so its
-   initial-value is a hand-written copy, and a stale one flashes the previous
-   colour for a frame. All six move together.
-
-   ⚠️ DECLARED HERE, NOT IN `tokens.css`: that file is generated from the Figma
-   variables, and Figma still holds the sage. **Raise it there** — both stops,
-   the `button/bg-default-*` mirrors and `gradient/brand-hover`; see
-   `docs/archive/figma-catchup.md` §2 and §6.
-   ========================================================================== */
-
-:root {
-  /* ⚠️ RETUNED 14 Sep 2026, by hand: `#657792` → `#546982` and `#39386f` →
-     `#313560`, a step darker. The notes above still quote the old pair. The
-     `@property --grad-*` initial-values moved with it, and so did `bg/brand`
-     (to `#313560`, its siblings by the same step), so the button's dark end and
-     the selection indigo are still one value. White measures 5.65:1 and
-     11.61:1 at the ends.
-     ⚠️ The START retuned again 15 Sep 2026, asked for directly: `#546982` →
-     `#485780`, darker and bluer. The end and `bg/brand` did not move. */
-  --color-gradient-brand-start: #485780;
-  --color-gradient-brand-end: #313560;
-
-  /* the mirrors of the two lines above — these are the ones `Button` reads */
-  --color-button-bg-default-start: #485780;
-  --color-button-bg-default-end: #313560;
-
-  /* ⚠️ NOT IN FIGMA — `gradient/secondary` made TRANSLUCENT, 14 Sep 2026,
-     asked for directly: `#deeff3` → `#deeff391` and `#b7c6ca` → `#b9c8cddb`
-     (the end also nudged lighter). Every caller of these two — `Button
-     variant="secondary"` and `SmallButton` — now carries a backdrop blur so the
-     pill reads as frost rather than a thin wash. Opaque fallback below. Figma
-     still holds the opaque pair; raise it there. */
-  --color-button-bg-secondary-start: #deeff391;
-  --color-button-bg-secondary-end: #b9c8cddb;
-
-
-  /* ⚠️ NOT IN FIGMA. The highlight of the light that sweeps the lockup in the
-     entrance (components/ui/LuxLogo.tsx, `LightStops`) — asked for as this
-     value on 12 Sep 2026, replacing `bg/brand-soft`. It is between the ramp's
-     two ends, a touch bluer than `gradient/brand`'s start, so the pass reads as
-     light through the indigo rather than a colour laid over it. Raise it in
-     Figma as a token of the gradient group. */
-  --color-logo-light: #587095;
-}
-
-/* ==========================================================================
-   THE MUTED TEXT TIER — dark enough to be text.
-
-   ⚠️ NOT IN FIGMA. `text/muted` aliased `neutral/400` (`#9a9aa5`), which on the
-   surfaces it actually lands on measured **2.13:1 – 2.57:1** against a 4.5:1
-   requirement — and it styles 12–16px text, so the large-text allowance never
-   applies to it. Measured live on every muted node in the app: every
-   `ProductRow` meta line (brand · size), `ProductList`'s empty label,
-   `DateField`'s "Select a date" value, the PRODUCTS hub's `4+ weeks` windows
-   and product counts, and `CheckHistory`'s counts. That is the tier carrying
-   the one field that tells two near-identical products apart — the catalogue
-   holds a 16 oz and a 12 oz CeraVe Moisturizing Cream, and the size was the
-   least legible text on the row.
-
-   `#63636f` is the LIGHTEST value that clears 4.5:1 on every surface the tier
-   lands on. It stays clearly a step below `text/secondary` (`#4b4b57`, which
-   measures 7.4:1 – 7.9:1 on the same rows), so the three tiers still read as
-   three.
-
-   ⚠️ THE THREE SURFACES ARE NOT EQUALLY LIGHT, AND THE DARKEST ONE SETS THE
-   VALUE. A frosted row inside the desktop page card stacks two translucent
-   fills over the canvas and composites lightest; a row sitting DIRECTLY on the
-   canvas gets only one, and the canvas itself runs to `#9bb1b8` (`#acc5cc`
-   before 14 Sep 2026, which is what the table was measured on) at the bottom
-   of the mobile gradient. Worst case per surface, across the full gradient
-   range:
-
-     ProductList row, over the page card   #9a9aa5 2.41–2.57   #63636f 5.13–5.47
-     MyProducts category row               #9a9aa5 2.20–2.29   #63636f 4.68–4.87
-     DateField trigger, on the canvas      #9a9aa5 2.13–2.48   #63636f 4.54–5.27
-
-   ⚠️ THE LAST TWO ROWS FAIL SINCE THE CANVAS WAS DARKENED 10% (14 Sep 2026).
-   The DateField trigger is 4.18–4.81, short of AA at the bottom of the
-   gradient. The MyProducts category row is 3.61–4.28, short everywhere — and
-   re-measured at today's `surface/frost-nav` alpha it was already 4.00–4.79
-   before the darkening, so the row above is stale too. Deferred with the
-   darkening; see the canvas override on `:root` below. Not retuned here.
-
-   An earlier pass put this at `#6a6a76` on a single estimated row colour. That
-   value is 4.62–4.93 on the first surface and only **4.09–4.39** on the other
-   two — it clears the row it was measured against and fails the two it was not.
-   Measure a token like this against the DARKEST surface it can land on, not a
-   representative one.
-
-   ⚠️ NOTHING PUTS MUTED TEXT ON BARE CANVAS, and this value would not be enough
-   if anything did (2.95:1 at the bottom of the mobile gradient). Verified by
-   sweeping every route for nodes at this colour: all of them sit on a frosted
-   row, a card or a panel. A new screen that sets muted text straight on the
-   gradient needs a darker value, not this one.
-
-   Same standing as the block above: declared here rather than in the generated
-   `tokens.css`, and to be raised in Figma as a token bug.
-   ========================================================================== */
-
-:root {
-  /* ⚠️ #575763 SINCE 29 Oct 2026 — #63636f measured 4.12–4.34:1 on the
-     calendar, the profile tiles' labels and CompatCard's brand line by
-     `npm run contrast`. 4.95:1 on the darkest of those surfaces. */
-  --color-text-muted: #575763;
-}
-
-/* ==========================================================================
-   GREEN AS INK — `feedback/success` IS A FILL COLOUR AND FAILS AS TEXT.
-
-   ⚠️ NOT IN FIGMA, AND THE SAME BUG AS THE TWO BLOCKS ABOVE. `02 Color` ships
-   one green, `feedback/success` #5f8a6e (`green/500`), and it is right where it
-   is used as a fill or a stripe — the analysis screen's cleared block draws a
-   4px rule in it. Set as TEXT on a light frosted card it measures 3.28:1 at 440
-   and 3.63:1 at 1440 under the analysis screen's `Evidence against this
-   explanation` count, i.e. under AA at 12px either way.
-
-   #46664f is the same hue at ink weight: 5.36 / 5.93:1 on those two backdrops
-   and 4.94:1 on the darkest frosted card the app puts a disclosure on. Measured
-   by compositing the fill stack, the way non-negotiable 17's values were.
-
-   ⚠️ IT IS A SECOND TOKEN, NOT A REPLACEMENT. `--color-feedback-success` keeps
-   its Figma value and every fill keeps using it; this is the text tier, the
-   same split `text/on-data` vs `surface/data` already draws. Raise the pair in
-   Figma rather than darkening the fill.
-   ========================================================================== */
-
-:root {
-  --color-text-success-ink: #46664f;
-}
-
-/* ⚠️ NOT IN FIGMA — `ease/hover`, THE CURVE FOR A HOVER, 15 Sep 2026, asked for
-   directly ("the hover effect is not smooth"). It is CSS `ease`, written out.
-
-   `09 Motion` holds one UI curve, `ease/standard` (0.2, 0, 0, 1), and every
-   hover in the app rode it. It is a strong decelerate, right for a block that
-   ARRIVES and settles and wrong for a hover: it lands half its change in the
-   first fifth of the duration (50% at 20%, 88% at 50%). On `duration/fast`
-   that is half a dim in 24ms, a snap with an invisible tail, and lengthening
-   the duration only stretches the tail (the selfie shutter went 120 → 320 and
-   still snapped). This curve is 30% done at 20% and 80% at 50%, so the change
-   is spread across the time the transition says it takes.
-
-   ONLY FOR TRANSITIONS WHOSE SOLE JOB IS A HOVER. Selection, press, entrance
-   and exit keep `ease/standard`. Raise `ease/hover` in `09 Motion`. */
-:root {
-  --ease-hover: cubic-bezier(0.25, 0.1, 0.25, 1);
-}
-
-/* ⚠️ NOT IN FIGMA — `bg/symptom`, THE PROFILE SYMPTOM PILL FILL, asked for
-   directly 13 Sep 2026. Those pills wore `feedback/warning` (#c9918e); they now
-   take their own value so the Risky band keeps its own. Callers: PROGRESS's
-   `SkinProfile` `.symptom` and the recap's `SkinProfileSummary` pills, both
-   with `text/on-brand` ink — and, since 14 Sep 2026 (asked for directly),
-   step 1's SELECTED symptom chips (`StartInvestigation.module.css`), also
-   white. White on it measures 2.8:1, short of AA; the app ink would be 4.9:1. */
-:root {
-  /* ⚠️ #b44148 SINCE 29 Oct 2026 (was #d3858a): white on the callouts, the
-     `Ongoing` pill and `High likelihood` measured 2.5–2.8:1; this clears
-     4.5:1 at the recipe's 88% stop on the lightest canvas (`npm run contrast`). */
-  --color-bg-symptom: #b44148;
-}
-
-/* ⚠️ NOT IN FIGMA — `bg/field-action`, THE FILL OF A TEXT FIELD'S ROUND ✓ / ✎ /
-   ✕ BUTTONS, asked for directly 14 Sep 2026. One caller: step 1's `Other`
-   description (`StartInvestigation`'s `.otherAction`). */
-:root {
-  --color-bg-field-action: #c0d5da;
-}
-
-/* ⚠️ NOT IN FIGMA — `surface/face-pill`, THE FACE DIAGRAM'S REGION PILLS AS
-   LIGHT FROSTED GLASS, asked for directly 14 Sep 2026 ("soft … frosted glass
-   button, gentle lighting, blurred background for depth", then "not lines,
-   just shades", with less fill and less blur), and then TUNED BY HAND in the
-   browser the same day, TWICE — every value below except the top stop, the
-   bottom stop and the hover wash is from the second pass, and the base from
-   later asks. Glass is never one fill, so it is nine: a pale aqua base
-   (#d3ffff 40%; before it, #c9e7e7 at 23% and a faint grey #9da7a7 at 7%), a
-   fill running from
-   white 30% at the top to a cool indigo-grey (#919ebd 43%) at the bottom, a
-   radial light that is CLEAR at the top-left (`glow`, white 0%) and gathers a
-   pale sage toward the far edges (`rim`, #d2d9c7 28%, full from 65% out), a
-   pale sage tint washed over all of it (#d3e7e8 27%), and the edges drawn as
-   SHADES, never lines — the top-left light slot left clear (#4143ad 0%) and a
-   soft grey shade (#484d4e 29%) blurred inside the bottom-right. Hover swaps
-   the tint for a white wash (14%).
-   ⚠️ FOUR VERSIONS CAME FIRST THE SAME DAY. Near-white at 75% read as ONE FLAT
-   COLOUR; a 45% → 22% white fill with a hairline and 1px highlight crescents
-   read as OUTLINED; an all-white 30% → 26% fill with soft edges was the base
-   the hand tuning started from; the first hand-tuned pass (a sage-white base
-   at 33%, white light pooled at the top-left, an indigo edge light and a deep
-   sage shade at 56%) was heavier than this second one.
-   ⚠️ THE LABEL HOLDS WITH ROOM TO SPARE. `text/primary` measures 6.33:1 at the
-   thinnest point of the worst pill (`Chin / jaw`, upper left of the label),
-   6.5:1 at every label's centre and 5.96:1 on hover — composited by hand
-   over the card's halo, the face's shading and no line glow, the darkest
-   case. The edge shade fades out about 4px inside the pill and does not reach
-   the glyphs. These were measured on the 7% grey base; each lighter base
-   that replaced it only adds light under a dark label, so they are floors.
-   ⚠️ THE LOCATION CHIPS UNDER THE FACE WEAR IT TOO (`Whole face`, `Neck`,
-   `Other`, unselected), asked for directly the same day. They sit off the
-   head, on the card's lighter rim, so they measure higher: 7.63:1 at the
-   worst point, 7.84:1 at the label's centre, 7.44:1 on hover.
-   ⚠️ THE RADIAL'S TWO STOPS ARE BOTH TOKENS because the two states run it in
-   opposite directions — see `surface/face-pill-selected-rim` below.
-   Callers: `FaceDiagram.module.css` `.region` and `.chips button`. */
-:root {
-  --color-surface-face-pill-base: #d3ffff66;
-  --color-surface-face-pill: #ffffff4d;
-  --color-surface-face-pill-end: #919ebd6e;
-  --color-surface-face-pill-glow: #ffffff00;
-  --color-surface-face-pill-rim: #d2d9c747;
-  --color-surface-face-pill-tint: #d3e7e845;
-  --color-surface-face-pill-wash: #ffffff24;
-  --color-effect-face-pill-light: #4143ad00;
-  --color-effect-face-pill-shade: #484d4e4a;
-}
-
-/* ⚠️ NOT IN FIGMA — `surface/face-pill-selected`, THE SAME GLASS IN INDIGO for
-   a picked region or location chip on the face card, asked for directly 14 Sep
-   2026 ("using the indigo shades"). It was flat `bg/brand`. Every value is the
-   brand family the app already has, at an alpha — written as `color-mix` of
-   the brand tokens so that retuning the indigo carries the glass with it (it
-   was retuned the same day, #39386f → #313560): a `bg/brand` base (60%), a
-   fill from `gradient/brand`'s light end (40%) at the top to `bg/brand-hover`
-   (60%) at the bottom, `bg/brand-soft` light pooled at the top-left (20%), a
-   `bg/brand` tint over it (15%), and the
-   edges as shades — a `bg/brand-soft` light (35%) inside the top-left and a
-   `bg/brand-hover` shade (90%) inside the bottom-right. Chosen as the
-   lightest of four measured sets that still clears AA with margin.
-   ⚠️ THEN MADE LESS SHINY, asked for directly the same day: the top stop
-   50% → 40%, the pooled light 45% → 20% and the edge light 80% → 35%. Each
-   of those takes light away from under a WHITE label, so the contrast below
-   was measured before them and is a floor.
-   ⚠️ THE WHITE LABEL MEASURES 5.67:1 AT WORST — `Forehead`, top-left of the
-   label, with the card's brightest line glow behind it — 6.79:1 at every
-   label's centre, and 5.70:1 on the chips; the diagonal selected shade only
-   raises it. Hover lifts and does not wash, so it holds the same. A denser
-   set measured 7.47:1 and read as the flat pill again; flat `bg/brand` is
-   11.61:1. All of these were measured on the earlier, lighter indigo; the
-   darker retune only adds contrast under a white label.
-   ⚠️ AND IT IS NOT INDIGO ANY MORE — a slate teal, `#597f8c`, asked for
-   directly 14 Sep 2026 ("the indigo selected pills color looks so bad"). The
-   brand tokens above are no longer read here: every stop is built from
-   `face-pill-selected-hue` in the same roles — the hue for base and tint, the
-   hue lifted toward white for the top, glow and edge light, and deepened
-   toward the card's dark core for the end, the shade and the diagonal. The
-   rest of the app's selection stays `bg/brand`. ⚠️ The contrast numbers above
-   were measured on indigo and no longer hold: flat `#597f8c` under white is
-   about 4.3:1, short of AA for 12px. Sampled off the rendered glass at 440
-   (Chrome, 2x) after the darker, less shiny pass below, white measures 4.23:1
-   at the lightest top-left of `Forehead`, 4.56–4.61:1 across `Cheeks (L)` and
-   the `Neck` chip, and 5.2–6.3:1 toward the bottom edges. The first pass
-   measured 2.99–5.49:1. Only that top-left corner is still short of AA. */
-:root {
-  /* ⚠️ A LITTLE DARKER AND LESS SHINY, asked for directly the same day: the
-     hue now pulls 15% toward the deep end (`-hue` is what the pill is TINTED
-     from, `#597f8c` as supplied), the base goes 60% → 72%, the top light
-     40% → 22%, the pooled glow 20% → 8% and the edge light 35% → 14%. */
-  /* ⚠️ THE DEEP CORE, NAMED — 25 Sep 2026. It was the bare `#1c2b30` written
-     twice below, the colour every selected stop is deepened TOWARD, i.e. the
-     darkest tone this glass has. `SkinProfileTiles`' outlined answer pills
-     bind it as their ink and ring ("use the active tone of this, the
-     darkest"), so the readout's pills and the face's picked pills are one
-     family. NOT IN FIGMA, like the rest of this block. */
-  --color-face-pill-selected-core: #1c2b30;
-  --color-face-pill-selected-hue: color-mix(
-    in srgb,
-    #597f8c 85%,
-    var(--color-face-pill-selected-core)
-  );
-  --color-face-pill-selected-light: color-mix(
-    in srgb,
-    var(--color-face-pill-selected-hue) 70%,
-    #ffffff
-  );
-  --color-face-pill-selected-deep: color-mix(
-    in srgb,
-    var(--color-face-pill-selected-hue) 65%,
-    var(--color-face-pill-selected-core)
-  );
-  --color-surface-face-pill-selected-base: color-mix(
-    in srgb,
-    var(--color-face-pill-selected-hue) 72%,
-    transparent
-  );
-  --color-surface-face-pill-selected: color-mix(
-    in srgb,
-    var(--color-face-pill-selected-light) 22%,
-    transparent
-  );
-  --color-surface-face-pill-selected-end: color-mix(
-    in srgb,
-    var(--color-face-pill-selected-deep) 60%,
-    transparent
-  );
-  --color-surface-face-pill-selected-glow: color-mix(
-    in srgb,
-    var(--color-face-pill-selected-light) 8%,
-    transparent
-  );
-  /* the radial's outer stop — clear, so the lilac pools at the top-left and
-     fades out, the reverse of the unselected glass's sage rim */
-  --color-surface-face-pill-selected-rim: transparent;
-  --color-surface-face-pill-selected-tint: color-mix(
-    in srgb,
-    var(--color-face-pill-selected-hue) 15%,
-    transparent
-  );
-  --color-effect-face-pill-selected-light: color-mix(
-    in srgb,
-    var(--color-face-pill-selected-light) 14%,
-    transparent
-  );
-  --color-effect-face-pill-selected-shade: color-mix(
-    in srgb,
-    var(--color-face-pill-selected-deep) 90%,
-    transparent
-  );
-}
-
-/* ⚠️ NOT IN FIGMA — THE IN-PAGE DESKTOP CARD IS MORE TRANSPARENT, asked for
-   directly 12 Sep 2026. Figma's `surface/card-desktop` is `#edf8fb @55%`; the
-   build runs the same hue at ~19% (`#edf8fb30`), matched to a value picked live
-   on `/investigation/products`. It is overridden HERE, as the token, because
-   its only two callers are exactly the cards the request named — `HubScreen`'s
-   `card` layout and `QuestionScreen`'s desktop card — so every hub and every
-   flow step moves together.
-   ⚠️ FLOATING SURFACES ARE DELIBERATELY UNTOUCHED. `Sheet`'s desktop tray takes
-   its own literal (`#edf8fb3d`) and never read this token; do not point it
-   here. Raise the new alpha in Figma; see `docs/archive/figma-catchup.md`. */
-:root {
-  --color-surface-card-desktop: #edf8fb30;
-}
-
-/* ⚠️ THE NAV'S OFFSET FROM THE BOTTOM EDGE, AS ONE TOKEN — asked for at 5,
-   against non-negotiable 6's 24 and off the spacing scale (the nearest step is
-   `--space-xs`, 4). It was `--space-2xl` written out at six sites: the nav
-   itself, four `.screen` bottom reservations, the focus scroll-margin, the
-   desktop sheet's max-height guard and CHECK's basket bar. Those are all the
-   SAME number, so they get one name; a literal 5px in a module would drift the
-   moment this moves again. Raise the value in Figma rather than assuming the
-   rule still says 24. */
-:root {
-  --nav-inset-bottom: 5px;
-}
-
-/* ==========================================================================
-   THE NAV'S GLASS — one lit edge and one shaded edge, not four dark ones.
-
-   ⚠️ NOT IN FIGMA. `Bottom-Nav-Bar` (410:258) carries
-   `inset 0 0 12px rgba(0, 0, 0, 0.2)`: a dark glow on all four edges at once.
-   Light does not arrive from four directions, so it reads as a vignette rather
-   than a bevel and the pill sits flat on the canvas. Split in two —
-   `border/highlight` along the top rim where the light lands, ink at 12% along
-   the lower lip — and the same element reads as a slab with a thickness.
-
-   The single drop shadow becomes two. The nav floats 24px off the bottom edge
-   and one shadow carries one distance cue; a tight contact shadow plus a wide
-   ambient one is what actually says "above the canvas, not printed on it".
-
-   ⚠️ THE LOWER-LIP INK HAS NO TOKEN. `border/highlight` is the real white the
-   top rim wants, but `02 Color` has no matching dark counterpart, so
-   `rgba(46, 42, 63, 0.12)` — `text/primary` at 12% — is literal here. Raise
-   the pair in Figma; a bevel needs both halves or it is not a bevel.
-
-   ⚠️ THE FILL IS `#dbeded7a` — 47.8%, NOT THE 88% NON-NEGOTIABLE 7 DESCRIBES.
-   That rule says "frosted does not mean see-through" and pins the nav at 88%;
-   this is a deliberate, asked-for departure from it and the rule is now stale.
-   Raise it in Figma rather than "fixing" the code back — see docs/decisions.md.
-
-   It moves BOTH components binding this token, which is on purpose: the same
-   rule pairs the nav and `SearchField` as one frosted-pill surface, and they
-   appear together on `/products`, so letting them drift apart would read as a
-   bug. If the search field should stay dense, it needs its own token, not a
-   local override.
-
-   ⚠️ BOTH BEVEL LINES ARE BLURRED, AS OF 13 Sep 2026 — asked for directly
-   ("smoothen this border light"). They were 0-blur 1px bands, the top one at
-   90% white, which drew a hard wire along the rim that pinched off where the
-   pill curves (an inset shadow offset by 1px thins to nothing along the ends).
-   A 2px blur turns each into a soft falloff, and the top light drops to 60% of
-   `border/highlight` so the glow does not bloom past the hairline rim it
-   sits under. It still reaches every caller: the nav, `Snackbar`, `ChatPanel`
-   and the check-in tiles — one material, one edge.
-   ========================================================================== */
-
-/* ⚠️ THE CANVAS GRADIENT IS 10% DARKER THAN FIGMA'S, AS OF 14 Sep 2026 — asked
-   for directly, NOT IN FIGMA: "darken the bg colors 10%". Each stop is its
-   generated value x0.9 per sRGB channel. Overridden here, not in tokens.css
-   (non-negotiable 1), and as HEX LITERALS rather than `color-mix()`, because
-   CanvasShader.tsx parses these as `#rrggbb` and stays off on anything else.
-   Moving them moves `.screen`'s fallback, the logo veil, `body`, the shader's
-   three canvas stops and its floor clamp together — and `Orb`'s two large
-   wedges, which mix `canvas-end-mobile`. The shader's other two stops borrow
-   `bg/nav` and `bg/progress-track`, which fill other components, so those two
-   are darkened inside the shader and not here.
-
-   ⚠️ IT BREAKS AA ON BARE CANVAS, AND THAT WAS DEFERRED, NOT MISSED. On the
-   new floor: `text/secondary` 4.75 -> 3.84:1 (Welcome's disclaimer, `/check`'s
-   subtitle), `text/on-data-muted` on CHECK's 14px strip labels 4.79 -> 4.22:1,
-   `text/muted` in a DateField trigger at the bottom 4.54 -> 4.18:1, and
-   `text/muted` in a MyProducts category row 4.00–4.79 -> 3.61–4.28:1. The
-   floor reasoning lives on CanvasShader.tsx. `bg/nav-bar` below moved with it.
-
-   ⚠️ EVERY OTHER HAND-COMPOSITED FIGURE IN THIS FILE THAT SAMPLES THE CANVAS
-   PREDATES THIS AND READS LOWER NOW — the `Remove` action's red, the
-   `text/muted` table, the ring table. They were not re-measured; treat them as
-   upper bounds, and re-measure before closing any of them. */
-/* ⚠️ AND THEN 14% BRIGHTER, 15 Sep 2026 — asked for directly, "make the bg 14%
-   brighter". Each darkened stop x1.14 per sRGB channel, which lands at x1.026
-   of Figma: a touch LIGHTER than the generated gradient, not back on it. The
-   floor is `#b1cad2` and `text/secondary` measures 5.01:1 on it, so the
-   bare-canvas failures listed above are figures for the darker canvas, which
-   no longer ships; they were not re-measured one by one. */
-:root {
-  --color-gradient-canvas-start: #e2edf1; /* Figma #dce7ea; #c6d0d3 on 14 Sep */
-  --color-gradient-canvas-mid: #d3e4e7; /* Figma #cedee2; #b9c8cb on 14 Sep */
-  --color-gradient-canvas-end-mobile: #b1cad2; /* Figma #acc5cc; #9bb1b8 on 14 Sep */
-  --color-gradient-canvas-end-desktop: #bdd6dd; /* Figma #b9d1d7; #a6bcc2 on 14 Sep */
-}
-
-/* ⚠️ THE NAV BAR IS BACK ON `surface/frost-nav`, AS OF 27 Sep 2026 — asked for
-   directly, with the undo snackbar held up beside it: "make the nav bar
-   transparent like the undo bar and use dark font". `Snackbar` was always
-   drawn as a SIBLING OF THE NAV — same fill, same rim, same shadow, same blur
-   (see Snackbar.module.css) — so for the fourteen days the bar spent on its
-   own deep teal, the two floating pills the app stacks one above the other
-   were two different materials. They are one again, and the ink went with the
-   material: the bar's labels are `text/primary`, the snackbar's own ink.
-
-   ⚠️ THE PAIR STAYS AS THE NAV'S OWN INDIRECTION, NOW ALIASING THE SHARED
-   FROSTED-PILL PAIR. Pointing `.nav` straight at `surface/frost-nav` would
-   have been the same pixels and would have broken the dark-welcome prototype,
-   whose four themes re-colour the bar by overriding exactly these two names
-   (app/prototypes/dark-welcome/themes.css). An alias keeps one source of truth
-   for the value AND keeps that seam.
-
-   ⚠️ WHAT THE DEEP TEAL WAS, SO NOBODY RE-DERIVES IT: `#17292f` at 69%
-   (`#356472b0`) for a few hours on 13 Sep 2026 — a dark slab laid on the
-   canvas — then 26% (`#17292f42`), then 55% (`#17292f8c`) on 26 Sep, tried
-   because 26% failed its own labels. `bg/nav-bar` was never that hex made
-   opaque but the fill COMPOSITED over the canvas's bottom stop, which is why
-   it moved with the canvas: `#859ca3` over `#acc5cc`, `#798e95` over `#9bb1b8`
-   (14 Sep), `#89a0a8` over `#b1cad2` (15 Sep), `#5c7178` at 55%.
-
-   ⚠️ AND THE INK QUESTION IS CLOSED THE OTHER WAY. On the 26% bar white read
-   2.74:1 and the dark app ink ~4.0:1, with a note here saying white was kept
-   pending a decision; the 55% bar put white at 5.14:1 and the ink at ~1.9:1.
-   On THIS bar — `#dbeded` at 48% compositing to `#c5dbdf` over the canvas
-   floor — `text/primary` measures 9.60:1, and 6.50:1 through the inactive
-   item's 0.85 opacity. Both clear AA at 16px, which neither ink ever did on
-   the teal. White here would be 1.4:1, so the ink is not optional.
-
-   ⚠️ `bg/photo-pill` IS THE LEFTOVER, AND IT IS DELIBERATE. PROGRESS's gallery
-   pills borrowed `bg/nav-bar` for their reduced-transparency fallback because
-   they needed a DARK opaque fill under a white label; following the bar back
-   to `#dbeded` would carry that white at about 1.1:1. It keeps the value the
-   bar had, under its own name, and no longer tracks the nav. */
-/* ⚠️ THE BAR IS 58.5 TALL, NOT FIGMA's 75 — it went to 65 on 13 Sep 2026 when
-   it became text-only (labels, no icons), and down another 10% on 27 Sep,
-   asked for directly. An override of the generated `size/nav-height` rather
-   than a literal on the nav, because eleven rules reserve clearance FROM this
-   token — `.screen`'s bottom padding, `Sheet`'s max-height, `Snackbar`,
-   `CheckBasket`, `CheckInOverlay` — and a literal at the nav alone would leave
-   dead reservation under every screen.
-   ⚠️ THE FRACTION IS EXACT, NOT ROUNDED: 65 x 0.9. Rounding to 58 or 59 would
-   make "10% shorter" a number nobody can re-derive, and the bar is already on
-   subpixel positions (`translateX(-50%)` on an odd width).
-   ⚠️ THE FLOOR IS 56 AND THIS CLEARS IT BY 2.5. An item is `min-height: 44`,
-   the touch-target minimum, inside the nav's own 6 of vertical padding — so
-   anything under 56 either clips the target or is reservation the bar cannot
-   use. Do not take the next 10% off without moving one of those two. */
-:root {
-  --color-surface-nav-bar: var(--color-surface-frost-nav);
-  --color-bg-nav-bar: var(--color-bg-nav);
-  /* the deep teal's last composite, kept for PROGRESS's gallery pills — see
-     the note above and `.date`/`.day` in PhotoGallery.module.css */
-  --color-bg-photo-pill: #5c7178;
-  --size-nav-height: 58.5px;
-}
-
-:root {
-  --color-surface-frost-nav: #dbeded7a;
-
-  --shadow-nav:
-    inset 0 1px 2px
-      color-mix(in srgb, var(--color-border-highlight) 60%, transparent),
-    inset 0 -1px 2px rgba(46, 42, 63, 0.1), 0 2px 6px rgba(28, 27, 36, 0.1),
-    0 12px 28px -10px rgba(28, 27, 36, 0.16);
-
-  /* ⚠️ THE BOXES' INNER SHADOW AT HALF STRENGTH, asked for directly 14 Sep
-     2026 ("less opacity to all the inner shadows of the boxes"). tokens.css
-     generates `shadow/frosted-row` as `inset 2px 4px 9px` black at 20%; every
-     frosted row and card, `DataCard` and the face card bind it (43 uses), and
-     the dark top-left edge it drew read heavy. Same geometry, 10%. Raise the
-     new alpha in Figma. */
-  --shadow-frosted-row: inset 2px 4px 9px rgba(0, 0, 0, 0.1);
-}
-
 html,
 body {
   margin: 0;
@@ -966,54 +75,13 @@ body {
   font-family: var(--font-family-sans);
   font-weight: var(--font-weight-regular);
   color: var(--color-text-primary);
-  /* ⚠️ WCAG 1.4.12, AND IT IS THE ONE PROPERTY THAT HAS TO BE INHERITED RATHER
-     THAN APPLIED BY ROLE. A user's own text-spacing overrides (line-height 1.5,
-     letter-spacing 0.12em, word-spacing 0.16em) widen every word, and measured
-     over all 18 routes at 320/440/1440 that pushed text out of five boxes:
-     `ProductList`'s name and meta in a `/check/new` row, `ResultCards`'
-     `.statLabel` and `.emphasisTitle`, and `CompatCard`'s name — all of them a
-     flex column that has already collapsed to 56–75px at 320, where one long
-     product word no longer fits. `break-word` breaks that word instead of
-     letting it spill.
-
-     ⚠️ IT CHANGES NOTHING UNLESS A WORD CANNOT FIT, which is why it is safe as
-     an inherited default where `text-wrap` and `tabular-nums` are not: those
-     restyle text that was already fitting, this one only acts at the point
-     where the alternative is overflow. `break-word`, NOT `anywhere` — `anywhere`
-     also shrinks a flex item's min-content width, which would let these columns
-     collapse further than the layout intends. */
   overflow-wrap: break-word;
   background: var(--color-gradient-canvas-mid);
   -webkit-font-smoothing: antialiased;
   text-rendering: optimizeLegibility;
 }
 
-/* ==========================================================================
-   THE SURFACES LUX DOES NOT DRAW — selection, caret, native control accents.
-
-   ⚠️ NOT IN FIGMA, AND FIGMA CANNOT HOLD THEM. A comp has no text selection, no
-   text cursor and no OS date picker, so these three shipped at the browser
-   default: a flat #0078d7-ish blue highlight, a black caret and a blue
-   checkbox, on a page where nothing else is blue. They are the parts of the
-   product a user reaches by dragging, typing or opening a native picker, i.e.
-   the parts they touch most deliberately, and until now none of them belonged
-   to the design system.
-
-   All three take `bg/brand` — the indigo LUX already uses for exactly this
-   job everywhere it DOES draw the control: a selected chip, a checked option
-   row, a checked-in calendar disc. Selection is a selection.
-
-   ⚠️ SELECTION TAKES `text/on-brand`, NOT THE INHERITED INK. `bg/brand` is
-   opaque indigo, so a selection has one ground wherever it lands — the light
-   frosted rows of System A and the sage cards of System B alike — and the ink
-   has to be the one that passes on THAT ground, not on the surface underneath.
-   White on `#39386f` measures 10.66:1. Letting the ink inherit would put
-   `text/on-data` (#2e2a3f) on indigo at 1.29:1 on every System B card.
-
-   `::selection` does not inherit and does not accept a shorthand, so it is
-   written once against the universal selector rather than on `body`. The
-   `-moz-` prefix is still required in Firefox.
-   ========================================================================== */
+/* THE SURFACES LUX DOES NOT DRAW — selection, caret, native control accents. */
 
 ::selection {
   background: var(--color-bg-brand);
@@ -1030,26 +98,6 @@ body {
      not drawn itself */
   accent-color: var(--color-bg-brand);
 
-  /* ⚠️ THE FOURTH SURFACE, AND THE ONE THAT ONLY EXISTS ON THE DEVICE THIS APP
-     IS DRAWN FOR — added 12 Sep 2026. Tapping anything on a touch device paints
-     a translucent grey-black box over it for ~150ms, before and underneath
-     whatever the app does about the press. LUX does something very specific
-     about the press: board 04b's `state/pressed-overlay` at 14%, shaped to the
-     control by `border-radius: inherit` (see `.pressable`). The UA highlight
-     lands on the element's BORDER BOX — so on every pill in the app, a
-     rectangle flashed across a shape drawn at `radius/full`, in a colour from
-     no LUX token, for the exact duration the app was drawing its own answer.
-     Two press treatments at once, one of them nobody chose.
-
-     It is the same argument as `::selection` and `accent-color` above and it
-     belongs in the same rule: a surface the design system did not draw is still
-     a surface the user sees, and Figma cannot hold any of them.
-
-     ⚠️ REMOVING IT REMOVES NO FEEDBACK. `.pressable` and `Button`'s own overlay
-     cover every control whose result arrives later, which is the set board 04b
-     specifies; the highlight was duplicating them, not standing in for them.
-     ⚠️ It is `-webkit-` only and has no standard counterpart — that is the
-     property, not an omission. */
   -webkit-tap-highlight-color: transparent;
 }
 
@@ -1063,22 +111,11 @@ textarea {
   caret-color: var(--color-bg-brand);
 }
 
-/* ==========================================================================
-   LINING FIGURES WHERE DIGITS STACK.
-
-   ⚠️ Figtree's default figures are PROPORTIONAL, which is right for running
-   prose and wrong for every place in LUX where numbers form a column or change
-   in place. A proportional `1` is narrower than a `0`, so a calendar grid
-   wobbles column to column, a metric that counts up jitters as it changes, and
-   two scores in a list do not line up on their own decimal.
-
-   Applied by ROLE, not globally: prose keeps the proportional figures it should
-   have. The four roles that stack are the metric ramp (the big figures on data
-   cards), the calendar grid, the chart's axis labels and the compat score.
-   ========================================================================== */
+/* LINING FIGURES WHERE DIGITS STACK. */
 
 .t-metric1,
-.t-metric2 {
+.t-metric2,
+.t-metric3 {
   font-variant-numeric: tabular-nums;
 }
 
@@ -1086,45 +123,13 @@ button {
   font: inherit;
   color: inherit;
   border: 0;
-  /* ⚠️ THE UA DEFAULT IS `1px 6px`, AND IT IS NOT ZERO. A text-only button
-     styled to a Figma height then renders 2px too tall for no visible reason —
-     the sheet's "Cancel" measured 22 against a 20-tall `Label` line box. Every
-     button in LUX declares whatever padding it needs, so zeroing it here is a
-     reset, not a restriction. */
   padding: 0;
   background: none;
   cursor: pointer;
 }
 
-/* ⚠️ AN ICON'S SIZE IS A ZERO-SPECIFICITY DEFAULT, AND IT LIVES HERE BECAUSE IT
-   CANNOT LIVE INLINE. Every glyph in `components/ui/icons.tsx` used to write
-   `width`/`height: var(--size-icon-md)` into its own `style` object, and an
-   inline style beats an external stylesheet rule at EVERY specificity — so a
-   module class asking for a different size did nothing at all. It failed
-   silently, which is why it survived: the rule is right there in the file, it
-   just never applied. Eleven such rules were live across nine components, all
-   rendering 24:
-
-     CheckBasket .barChevron .removeIcon .plus · CheckHistory .chevron ·
-     CheckResults .editIcon · CompatCard .chevron · MyProducts .chevron ·
-     ProductAccordionCard .chevron · ProductDetails .inciChevron ·
-     ProductList .chevron · CheckInCalendar .arrowIcon
-
-   Three more had already hit the wall and reached for `!important`
-   (`CheckScreen .linkArrow`, `StartInvestigation .otherClearIcon`,
-   `AddProductMethodSheet .removeIcon`); all three drop it now.
-
-   ⚠️ `:where()` IS LOAD-BEARING — a plain `svg[data-lux-icon]` would be (0,1,1)
-   and would BEAT the single class it is meant to yield to, turning one trap
-   into another. `:where()` contributes nothing to specificity, so any class
-   wins on its own, and CSS Modules loading after this file never even comes
-   into it.
-
-   An icon whose default is not `md` sets `--icon-size` inline. That is a
-   custom property, not `width`, so it feeds this rule instead of outranking
-   it and a class still overrides it. */
 :where(svg[data-lux-icon]) {
-  /* `--icon-default` is the glyph's own VidGen size, set inline by icons.tsx;
+  /* `--icon-default` is the glyph's own the reference size, set inline by icons.tsx;
      a caller's `--icon-size` (on the svg or inherited) still wins over it */
   width: var(--icon-size, var(--icon-default, var(--size-icon-md)));
   height: var(--icon-size, var(--icon-default, var(--size-icon-md)));
@@ -1132,41 +137,41 @@ button {
   flex: none;
 }
 
-/* ⚠️ THE RING IS AN `outline`, NOT A `box-shadow` — and it has to be.
-   `focus/ring` is a 2px stroke, so a 0-spread box-shadow renders it exactly...
-   until the focused element sets a box-shadow of its own. CSS Modules load AFTER
-   globals.css, so `.button`'s `--shadow-button` and every frosted row's
-   `--shadow-frosted-row` simply won the cascade at equal specificity and the ring
-   vanished — measured on the PRODUCTS "Add more products" row: `:focus-visible`
-   matched, and the computed shadow was the inner shadow alone.
-   An outline is a separate property, so it composes with any shadow and cannot be
-   clobbered by one. Modern browsers follow border-radius, so it renders
-   identically to the effect style. `--shadow-focus-ring` stays exported — it is a
-   real Figma effect style — but nothing should need it now.
-   NEVER put this back as a box-shadow. */
 :focus-visible {
   outline: var(--border-width-focus) solid var(--color-border-focus);
   outline-offset: 0;
 }
 
-/* ⚠️ THE ONE EXEMPTION, AND IT IS A CONTAINER, NOT A CONTROL. `RouteAnnouncer`
-   focuses the new screen's `<main>` after a client-side navigation so the next
-   Tab continues from the top of what just replaced the page. That focus is
-   programmatic and the target is a whole screen, so a ring would draw a 2px
-   box around the entire viewport for no action the user took. Scoped to the
-   `tabindex="-1"` the announcer sets — nothing else in the app carries it, and
-   no interactive control ever gets this rule. */
 main[tabindex="-1"]:focus,
 main[tabindex="-1"]:focus-visible {
   outline: none;
 }
 
 /* ============================================================================
-   Type ramp — one class per Figma text style.
-   Every piece of text in the app uses one of these, mirroring the design-system
-   rule that every text node carries a text style.
-   Weights: Light (Metric only), Regular (Body 1/2/3, Button, Button Small),
-   Medium (everything else). SemiBold and Bold are not in the ramp.
+   TYPE RAMP — one class per job; values live in tokens.css.
+
+   Two families: Manrope for headings (`t-h4` and up, the headline) and card
+   overlines; Figtree for everything else. Two line heights: headings, titles
+   and figures on `--line-height-heading`; running text, item names, labels
+   and controls on `--line-height-text`. An item name (`t-h6`) is body-sized
+   and wraps beside body text, so it shares the body's leading.
+
+     headline    36 → 44 Medium        Welcome's line
+     h2          28 → 32 Medium        a section heading on a wide screen
+     h4-h3       22 Medium             every page <h1>
+     h4          20 Medium             sheet and tray titles
+     h5          18 Regular            a card's headline, an empty state's title
+     h6          16 Medium             a row or item title: product names
+     body1       18 Regular            the chat panel's lead
+     body2       16 Regular            reading text: summaries, advice, notes
+     body3       14 Regular            supporting text: hints, empty notes,
+                                       read-only labels
+     label       14 Medium             form labels, list headings, small actions
+     label-h6    14 → 16 Medium        an option row's label
+     label-sm    12 Medium             meta under a title, pills and tags
+     caption     12 Regular            fine print
+     overline    14.4 ExtraBold caps   a card's section label
+     metric1/2/3 56 / 40 / 20 Light    figures
    ========================================================================== */
 
 .t-h1,
@@ -1183,264 +188,228 @@ main[tabindex="-1"]:focus-visible {
 .t-caption,
 .t-overline,
 .t-button,
+.t-button-primary,
 .t-button-md,
 .t-button-sm,
 .t-nav,
 .t-metric1,
 .t-metric2,
+.t-metric3,
 .t-display1,
-.t-display2 {
+.t-display2,
+.t-h4-h3,
+.t-h3-h2,
+.t-body2-body1,
+.t-body3-body2,
+.t-label-h6,
+.t-kicker,
+.t-headline,
+.t-brand,
+.t-chip {
   margin: 0;
 }
 
-.t-h1 {
-  font-size: var(--font-size-3xl);
-  line-height: var(--line-height-3xl);
-  font-weight: var(--font-weight-medium);
+/* Headings and card overlines are set in the display font (Manrope); t-h5
+   and t-h6 label data (names, counts, dates) and stay in the body font. */
+.t-display1,
+.t-display2,
+.t-h1,
+.t-headline,
+.t-h2,
+.t-h3,
+.t-h3-h2,
+.t-h4,
+.t-h4-h3,
+.t-overline {
+  font-family: var(--font-family-display);
 }
+
+/* the heading line height — every heading role, the item name and the card
+   overline included */
+.t-display1,
+.t-display2,
+.t-h1,
+.t-headline,
+.t-brand,
+.t-h2,
+.t-h3,
+.t-h4-h3,
+.t-h3-h2,
+.t-h4,
+.t-h5,
+.t-h6,
+.t-overline,
+.t-metric1,
+.t-metric2,
+.t-metric3 {
+  line-height: var(--line-height-heading);
+}
+
+/* the text line height — text, labels and controls, never a heading */
+.t-body1,
+.t-body2,
+.t-body2-body1,
+.t-body3,
+.t-body3-body2,
+.t-kicker,
+.t-chip,
+.t-label,
+.t-label-h6,
+.t-nav,
+.t-label-sm,
+.t-caption,
+.t-button,
+.t-button-primary,
+.t-button-md,
+.t-button-sm {
+  line-height: var(--line-height-text);
+}
+
+.t-display1,
+.t-display2,
+.t-h1,
+.t-headline {
+  font-size: var(--font-size-headline);
+  font-weight: var(--font-weight-medium);
+  letter-spacing: var(--tracking-headline);
+}
+.t-headline b,
+.t-headline strong {
+  font-weight: var(--font-weight-bold);
+  color: var(--color-bg-brand);
+}
+.t-kicker {
+  font-size: var(--font-size-sm); /* 16 */
+  font-weight: var(--font-weight-regular);
+  color: var(--color-text-secondary);
+}
+.t-brand {
+  font-size: var(--font-size-lg); /* 20 */
+  font-weight: var(--font-weight-bold);
+  letter-spacing: var(--tracking-brand);
+}
+
 .t-h2 {
-  font-size: var(--font-size-2xl);
-  line-height: var(--line-height-2xl);
+  font-size: var(--font-size-h2);
   font-weight: var(--font-weight-medium);
 }
-.t-h3 {
-  font-size: var(--font-size-xl);
-  line-height: var(--line-height-xl);
+.t-h3,
+.t-h4-h3 {
+  font-size: var(--font-size-h3);
+  font-weight: var(--font-weight-medium);
+}
+.t-h3-h2 {
+  font-size: var(--font-size-h3-h2);
   font-weight: var(--font-weight-medium);
 }
 .t-h4 {
-  font-size: var(--font-size-lg);
-  line-height: var(--line-height-md);
+  font-size: var(--font-size-lg); /* 20 */
   font-weight: var(--font-weight-medium);
 }
 .t-h5 {
-  font-size: var(--font-size-md);
-  line-height: var(--line-height-sm);
-  font-weight: var(--font-weight-medium);
+  font-size: var(--font-size-md); /* 18 */
+  font-weight: var(--font-weight-regular);
 }
 .t-h6 {
-  font-size: var(--font-size-sm);
-  line-height: var(--line-height-xl);
+  font-size: var(--font-size-sm); /* 16 */
   font-weight: var(--font-weight-medium);
 }
 
 .t-body1 {
-  font-size: var(--font-size-md);
-  line-height: var(--line-height-md);
+  font-size: var(--font-size-md); /* 18 */
   font-weight: var(--font-weight-regular);
 }
 .t-body2 {
-  font-size: var(--font-size-sm);
-  line-height: var(--line-height-sm);
+  font-size: var(--font-size-sm); /* 16 */
+  font-weight: var(--font-weight-regular);
+}
+.t-body2-body1 {
+  font-size: var(--font-size-body2-body1);
   font-weight: var(--font-weight-regular);
 }
 .t-body3 {
-  font-size: var(--font-size-xs);
-  line-height: var(--line-height-xs);
+  font-size: var(--font-size-xs); /* 14 */
+  font-weight: var(--font-weight-regular);
+}
+.t-body3-body2 {
+  font-size: var(--font-size-body3-body2);
   font-weight: var(--font-weight-regular);
 }
 
-.t-label {
-  font-size: var(--font-size-xs);
-  line-height: var(--line-height-xl);
+.t-label,
+.t-nav {
+  font-size: var(--font-size-xs); /* 14 */
+  font-weight: var(--font-weight-semibold);
+}
+/* an option row's label: `t-label` on a phone, `t-h6`'s size from 1024 */
+.t-label-h6 {
+  font-size: var(--font-size-xs); /* 14 */
   font-weight: var(--font-weight-medium);
 }
+@media (min-width: 1024px) {
+  .t-label-h6 {
+    font-size: var(--font-size-sm); /* 16 */
+  }
+}
 .t-label-sm {
-  font-size: var(--font-size-3xs);
-  line-height: var(--line-height-3xs);
+  font-size: var(--font-size-3xs); /* 12 */
   font-weight: var(--font-weight-medium);
 }
 .t-caption {
-  font-size: var(--font-size-3xs);
-  line-height: var(--line-height-3xs);
+  font-size: var(--font-size-3xs); /* 12 */
   font-weight: var(--font-weight-regular);
 }
 .t-overline {
-  font-size: var(--font-size-2xs);
-  line-height: var(--line-height-2xs);
-  font-weight: var(--font-weight-medium);
-  /* ⚠️ 1.82px, NOT `--tracking-wide` (0.71px). Figma's Overline style carries
-     letterSpacing 14 as a PERCENTAGE of the 13px size — 1.82px — and the token
-     export wrote the raw number into `--tracking-widest: 14px`, which is
-     nonsense at this size, so the class reached for the nearest plausible token
-     instead. Measured against the frame: "YOUR SKIN PROFILE" is 152 wide, which
-     is 1.82 tracking, not 0.71.
-
-     Written as a literal because there is no correct token to bind to: a
-     percentage tracking resolves to a different px value at every font size, so
-     `--tracking-widest` cannot serve both this and anything else. The same
-     export bug is in `--tracking-tight`/`--tracking-wider` and left alone —
-     .t-h3 and .t-label-sm come out within 0.3px either way, and every shipped
-     screen already renders with them. Fix it properly when tokens.css is next
-     regenerated, by emitting percentages as px per style.
-
-     Safe to correct here: PROGRESS's data-card section labels are the first
-     thing in the app to use .t-overline at all. */
-  letter-spacing: 1.82px;
+  font-size: var(--font-size-overline); /* 14.4 */
+  font-weight: var(--font-weight-extrabold); /* 800 */
+  letter-spacing: var(--tracking-overline);
   text-transform: uppercase;
+  /* all capitals, so the box is trimmed to them: the card's padding reaches
+     the letters, not the line height's leading above them */
+  text-box: trim-both cap alphabetic;
 }
 
+/* the chip label */
+.t-chip {
+  font-size: var(--font-size-sm); /* 16 */
+  font-weight: var(--font-weight-regular);
+}
+
+/* buttons — the full-width pill takes one step more than the small ones so
+   the flow's `Continue` still leads its screen */
 .t-button {
-  font-size: 17px;
-  line-height: var(--line-height-xs);
-  font-weight: var(--font-weight-regular);
+  font-size: var(--font-size-button); /* 15 */
+  font-weight: var(--font-weight-medium);
 }
-/* ⚠️ `Button size="md"`'s label, added 13 Sep 2026 — and it is Figma's own
-   `Button` style, Regular 15/22 (docs/archive/design-figma.md). `.t-button` above went to 17
-   in f3edc75 with no note, and the 48-tall pill kept it, so a pill one control
-   step SHORTER carried the same type and read as the bigger button of the two.
-   Label steps down with height now: 17 / 15 / 14 over 62 / 48 / 36. A literal
-   for the reason 17 is — the size scale has 14 and 16 and nothing between. */
-.t-button-md {
-  font-size: 15px;
-  line-height: var(--line-height-xs);
-  font-weight: var(--font-weight-regular);
+/* the large primary's label: 16 on a phone, 15 from 1024 */
+.t-button-primary {
+  font-size: var(--font-size-button-primary);
+  font-weight: var(--font-weight-medium);
 }
-/* ⚠️ NOT IN FIGMA — the nav bar's labels, 13 Sep 2026, asked for directly when
-   the bar went text-only: 16 Light. `Bottom-Nav-Bar` draws `Label Small` (12
-   Medium) under an icon; with no icon the word IS the control, so it takes
-   body size, and Light keeps four words in a row from reading as four buttons.
-   A control class, so it stays out of `text-wrap: balance` with the others. */
-/* ⚠️ REGULAR (400), NOT LIGHT, AS OF 14 Sep 2026 — asked for directly. The
-   note above predates it: every label is Regular now, so weight no longer
-   marks the active item; the recessed pill and full opacity do. */
-/* ⚠️ MOBILE STEPS DOWN TO 14/22 AS OF 16 Sep 2026, asked for directly —
-   desktop keeps 16/22. `--line-height-xs` (22) is unchanged at both sizes:
-   it is already the exact pairing `--font-size-xs` uses on `.t-body3`, so
-   this introduces no new line-height value, only a narrower one on mobile. */
-.t-nav {
-  font-size: var(--font-size-xs);
-  line-height: var(--line-height-xs);
-  font-weight: var(--font-weight-regular);
-}
-@media (min-width: 1024px) {
-  .t-nav {
-    font-size: var(--font-size-sm);
-  }
-}
+.t-button-md,
 .t-button-sm {
-  font-size: var(--font-size-xs);
-  line-height: var(--line-height-xs);
-  font-weight: var(--font-weight-regular);
+  font-size: var(--font-size-xs); /* 14 */
+  font-weight: var(--font-weight-medium);
 }
 
-.t-metric1 {
-  font-size: var(--font-size-4xl);
-  line-height: var(--line-height-4xl);
+/* the metric ramp — figures on data cards, in the body font */
+.t-metric1,
+.t-metric2,
+.t-metric3 {
+  font-family: var(--font-family-sans);
   font-weight: var(--font-weight-light);
+}
+.t-metric1 {
+  font-size: var(--font-size-4xl); /* 56 */
 }
 .t-metric2 {
-  font-size: var(--font-size-3xl);
-  line-height: var(--line-height-2xl);
-  font-weight: var(--font-weight-light);
+  font-size: var(--font-size-3xl); /* 40 */
 }
-.t-display1 {
-  font-size: var(--font-size-6xl);
-  line-height: var(--line-height-6xl);
-  font-weight: var(--font-weight-medium);
-}
-.t-display2 {
-  font-size: var(--font-size-5xl);
-  line-height: var(--line-height-5xl);
-  font-weight: var(--font-weight-medium);
+.t-metric3 {
+  font-size: var(--font-size-lg); /* 20 */
 }
 
-/* Responsive heading steps — the mobile→desktop translation table on board
-   02 steps a title up one ramp entry at 1024. Declared here with the rest of
-   the ramp so a screen never writes a raw font-size of its own.
-
-   ⚠️ `t-h4-h3` NO LONGER STEPS UP — asked for directly 15 Sep 2026, "use
-   --font-size-lg: 20px for desktop … for all the pages". It is `H4` (20/28)
-   at every width now; the desktop block that took it to `H3` (24/32) is gone.
-   The NAME is kept because every page title, flow question and empty-state
-   title in the app carries it, and renaming eleven callers would be churn for
-   a size — read it as "the page-title style", not as a promise of H3 on
-   desktop. NOT IN FIGMA, whose desktop comps draw the titles at H3; see
-   non-negotiable 16 in AGENTS.md, which this supersedes. */
-.t-h4-h3 {
-  font-size: var(--font-size-lg);
-  line-height: var(--line-height-md);
-  font-weight: var(--font-weight-medium);
-  margin: 0;
-}
-
-.t-h3-h2 {
-  font-size: var(--font-size-xl);
-  line-height: var(--line-height-xl);
-  font-weight: var(--font-weight-medium);
-  margin: 0;
-}
-
-@media (min-width: 1024px) {
-  .t-h3-h2 {
-    font-size: var(--font-size-2xl);
-    line-height: var(--line-height-2xl);
-  }
-}
-
-.t-body2-body1 {
-  font-size: var(--font-size-sm);
-  line-height: var(--line-height-sm);
-  font-weight: var(--font-weight-regular);
-  margin: 0;
-}
-
-@media (min-width: 1024px) {
-  .t-body2-body1 {
-    font-size: var(--font-size-md);
-    line-height: var(--line-height-md);
-  }
-}
-
-.t-body3-body2 {
-  font-size: var(--font-size-xs);
-  line-height: var(--line-height-xs);
-  font-weight: var(--font-weight-regular);
-  margin: 0;
-}
-
-@media (min-width: 1024px) {
-  .t-body3-body2 {
-    font-size: var(--font-size-sm);
-    line-height: var(--line-height-sm);
-  }
-}
-
-/* --- .t-label uses --line-height-xl (20px is not in the line-height scale;
-       Figma's Label style is Medium 14/20). Kept explicit here so the value
-       is not silently wrong. */
-.t-label {
-  line-height: 20px;
-}
-.t-h6 {
-  line-height: 24px;
-}
-
-/* ============================================================================
-   Typographic wrapping — applied BY ROLE, the same way tabular figures are.
-
-   ⚠️ NOT IN FIGMA, AND FIGMA CANNOT DRAW IT. A comp breaks a heading wherever
-   its fixed 440 or 1440 canvas happens to break it; the build breaks it at
-   whatever width the reader's device is. `text-wrap: balance` evens the lines
-   of a heading so a title never strands one word alone on its last line, and
-   `pretty` keeps a paragraph off an orphan. Neither moves a font-size, a
-   line-height or a measured width — only where the break lands, which is the
-   one typographic decision the comp was never able to make.
-
-   ⚠️ DECLARED ON THE RAMP, NOT PER SCREEN, BECAUSE IT WAS ALREADY BEING
-   WRITTEN BY HAND. `HypothesisCard`, `Analysis` (twice) and
-   `SkinProfileSummary` each reached for it locally; a heading that balances on
-   the analysis and not on the recap is the kind of inconsistency nobody can
-   name and everybody sees. Those local declarations are now redundant rather
-   than wrong, and they are removed.
-
-   ⚠️ `balance` IS FOR HEADINGS ONLY — deliberately NOT `.t-label`,
-   `.t-label-sm`, `.t-button`, `.t-button-md`, `.t-button-sm`, `.t-nav` or `.t-overline`. Those style
-   CONTROLS — chips, buttons, section labels — whose widths are measured against
-   Figma, and balancing a two-line chip label would move the pill. The browser
-   also caps `balance` at a handful of lines, so it is a heading tool by
-   construction.
-   ========================================================================== */
+/* Typographic wrapping — applied BY ROLE, the same way tabular figures are. */
 
 .t-h1,
 .t-h2,
@@ -1450,6 +419,7 @@ main[tabindex="-1"]:focus-visible {
 .t-h6,
 .t-h4-h3,
 .t-h3-h2,
+.t-headline,
 .t-display1,
 .t-display2 {
   text-wrap: balance;
@@ -1464,43 +434,14 @@ main[tabindex="-1"]:focus-visible {
   text-wrap: pretty;
 }
 
-/* ⚠️ THE APP-WIDE CANVAS SHOWS THROUGH `.screen` ONLY ONCE IT HAS DRAWN.
-   `AppCanvas` (mounted once in app/layout.tsx) sits BEHIND every screen at
-   z-index -1, and `.screen` is positioned, so its token gradient would paint
-   straight over it. The canvas stamps `data-canvas-ready` on <html> after its
-   first real draw and removes it on a lost context — so no WebGL, a failed
-   compile or a lost context leaves this rule unmatched and the Figma gradient
-   is what you see. Never make `.screen` transparent unconditionally. */
 :root[data-canvas-ready] .screen {
   background: transparent;
 }
 
-/* ⚠️ A SCREEN'S CONTENT WAITS FOR THE ANSWER STORE — 15 Sep 2026, asked for
-   directly. The store reads localStorage in an effect (it cannot be earlier
-   without a hydration mismatch), so on a reload the first paint was the EMPTY
-   screen — step 1 with nothing ticked, `/products` on the demo library — and a
-   frame later the saved answers snapped in. `InvestigationProvider` stamps
-   `data-store-ready` on <html> in the commit that holds the saved answers;
-   until then everything in `.screen` except the nav is `visibility: hidden`.
-   The canvas behind and the fixed nav stay on screen, so a reload reads as the
-   content arriving, not as the page blinking. `visibility`, not `display` or
-   `opacity`: the layout is already in place, nothing reflows when it shows,
-   and it creates no stacking context (see the reveal notes under Motion).
-   ⚠️ NEVER REMOVED ONCE SET, so a client-side navigation is never hidden. */
 :root:not([data-store-ready]) .screen > :not(nav) {
   visibility: hidden;
 }
 
-/* ⚠️ THE CAPTURE TICK DRAWS ITSELF ON — NOT IN FIGMA, asked for directly
-   15 Sep 2026 ("add check icon next to photo captured with animation
-   smooth"). `SuccessCheckIcon`'s one stroke is about 23 units long, so a
-   24-unit dash hidden by a 24 offset and run to 0 traces it left to right.
-   `duration/slower` (480, the hero clock) after a 120 beat, so the label's own
-   200 fade has begun before the stroke starts. Named HERE, not in a module:
-   a module localizes the keyframes and the animation resolves to nothing.
-   `backwards`, so the hidden stroke holds through the delay and the drawn one
-   is simply the rule's own resting state afterwards. `prefers-reduced-motion`
-   collapses the duration globally, which leaves the tick drawn. */
 @keyframes lux-tick-draw {
   from {
     stroke-dashoffset: 24;
@@ -1530,92 +471,31 @@ main[tabindex="-1"]:focus-visible {
 
   /* THE TOP PAD IS A VARIABLE so the `data-tight-top` override below can move
      it in one place and both the shorthand here and the desktop `padding-top`
-     follow. The default is unchanged: 40, "everywhere", per AGENTS.md. */
-  --content-top: var(--space-4xl);
+     follow. The default is 20, the same as `data-tight-top`. */
+  --content-top: var(--space-xl); /* 20 */
 
   /* the fixed nav sits `--nav-inset-bottom` off the bottom and is 75 tall;
      16 of clearance above it is the same reservation the Figma screens make. */
-  padding: var(--content-top) var(--margin-mobile)
-    calc(var(--nav-inset-bottom) + var(--size-nav-height) + var(--space-lg));
+  padding: calc(var(--content-top) + env(safe-area-inset-top))
+    var(--margin-screen-right)
+    calc(var(--nav-inset-bottom) + var(--size-nav-height) + var(--space-lg))
+    var(--margin-screen-left);
 }
 
-/* ⚠️ NOT IN FIGMA, AND OPT-IN ONE SCREEN AT A TIME. One step down the spacing scale (40 -> 32) rather than a
-   hand-written 30: the scale has no 30, and this is the kind of value that
-   becomes the app's first off-scale spacing if it is written literally.
-
-   Most screens pass it, so if the tighter top wins everywhere it belongs on
-   `.screen` outright and this attribute goes away — a Figma decision, not a
-   cleanup. */
 .screen[data-tight-top] {
-  --content-top: var(--space-3xl); /* 32 */
+  --content-top: var(--space-xl); /* 20 */
 }
-
-/* ⚠️ ONE DESKTOP WIDTH FOR EVERY PRIMARY ACTION — 376, RESOLVED 5 Sep 2026.
-   The app had two: 376 on Welcome, `/check`, `/check/history` and `/progress`,
-   and 280 on the flow's Continue, the PRODUCTS hub footer and
-   `/progress/empty`. That split was not a decision, it was two comps
-   disagreeing — `CheckScreen.module.css` said so in as many words and asked for
-   it to be resolved in Figma. It is resolved here, toward the value five of the
-   eight sites already used, so a button does not change size because you walked
-   into a different section.
-
-   ⚠️ IT IS A HAND-AUTHORED TOKEN AND BELONGS ON `:root` HERE, NOT IN
-   `tokens.css`, which is generated from the Figma variables (non-negotiable 1).
-   Raise `width/action` in Figma and this moves.
-
-   ⚠️ MOBILE HAS ITS OWN CEILING AS OF 13 Sep 2026: `--width-action-mobile`,
-   the NAV PILL's 380, asked for directly. A full-width action ran the 392
-   column and overhung the nav under it by 6 each side, so the two pills that
-   close every screen did not share an edge. It is a MAX-WIDTH, never a width:
-   callers keep `width: 100%`, so on a phone narrower than 428 the action fills
-   its column exactly as the nav's own `max-width: 100vw - 48` fills the same
-   span. Bound to the nav's token, so if the nav moves this moves with it.
-   Welcome's 338 and the check-in panel's 340 are already narrower and are
-   deliberately not callers. */
-:root {
-  --width-action: 376px;
-  --width-action-mobile: var(--size-nav-width-mobile);
+/* a hub with no visible heading opens lower, so its first card has air above */
+.screen[data-title-hidden] {
+  --content-top: var(--space-4xl); /* 40 */
 }
-
-/* ⚠️ NOT IN FIGMA — THE PANEL SCREENS SIT 24 HIGHER THAN EVERY OTHER SCREEN,
-   asked for directly: 60% off the 40 top space, leaving 16.
-
-   ⚠️ BOTH NUMBERS ARE SCALE STEPS, WHICH IS WHY 60% WAS TAKEN AT ITS WORD. The
-   amount removed is 24 (`2xl`) and what remains is 16 (`lg`), so this is one of
-   the rare percentage asks that does not have to be rounded to fit the system.
-
-   It is `--content-top` rather than a negative margin on the panel, because the
-   space being closed is the SCREEN's padding and this is the mechanism that
-   already owns it — the same one `data-tight-top` above uses. A negative margin
-   would have worked and would have left the padding lying about what it does.
-
-   ⚠️ IT APPLIES ON DESKTOP TOO, where `.screen` otherwise pads 120 at the top —
-   see the `min-width: 1024px` block below, which now lists `panel` alongside
-   `flow` and `hub` for exactly that reason, and gives it the nav reservation
-   the floating desktop nav would otherwise deny it. */
+/* the flow screens open 12 from the top */
+.screen[data-layout="flow"] {
+  --content-top: var(--space-md); /* 12 */
+}
 .screen[data-layout="panel"] {
-  --content-top: var(--space-lg); /* 16 */
+  --content-top: var(--space-sm); /* 8 */
 
-  /* ⚠️ A HEIGHT, NOT JUST A MIN-HEIGHT, AND THIS IS WHAT MAKES THE PANEL'S BODY
-     SCROLL INSTEAD OF THE PAGE. `.screen`'s `min-height: 100dvh` is a FLOOR: it
-     stops a short screen collapsing and does nothing to stop a tall one growing.
-     `ChatPanel` is a fixed-chrome layout — header and footer pinned, one
-     scrolling body between them — and that only holds if something bounds the
-     whole thing to the viewport. Nothing did.
-
-     Measured at 1024x600 before this line, on the check-in at turn 3: the
-     screen was 794 tall in a 600 viewport, so the panel grew to 658 to fit its
-     content, `.body` never had to scroll (`overflow-y: auto` with nothing to
-     overflow), and the page scrolled instead — putting `Submit check-in` below
-     the fold and `Add a note` / `Take a photo` under the fixed nav, which
-     `document.elementFromPoint` returned in their place.
-
-     ⚠️ IT IS `dvh`, NOT `vh`, for the reason the unit exists: a mobile toolbar
-     that hides and shows changes the viewport, and `vh` would leave the footer
-     under the browser chrome for as long as it is expanded.
-
-     ⚠️ THIS IS SAFE ONLY BECAUSE THE PANEL'S BODY SCROLLS. Do not put this
-     layout on a screen whose content just flows — it would clip it. */
   height: 100dvh;
 }
 
@@ -1631,6 +511,21 @@ main[tabindex="-1"]:focus-visible {
   );
 }
 
+/* a screen whose main button closes it rests that button on `--cta-bottom`;
+   `data-cta-foot` is the same for a screen with no layout of its own (Welcome) */
+.screen[data-layout="flow"],
+.screen[data-layout="hub"][data-low],
+.screen[data-cta-foot] {
+  padding-bottom: var(--cta-bottom);
+}
+
+/* Welcome, the flow steps and `/analyses` rest it lower, on their own token */
+.screen[data-layout="flow"],
+.screen[data-layout="hub"][data-hero],
+.screen[data-cta-foot] {
+  --cta-bottom: var(--cta-bottom-flow);
+}
+
 @media (min-width: 1024px) {
   .screen[data-layout="flow"],
   .screen[data-layout="hub"],
@@ -1638,53 +533,12 @@ main[tabindex="-1"]:focus-visible {
     padding-top: var(--content-top);
   }
 
-  /* ⚠️ THE PANEL SCREENS RESERVE THE NAV AT EVERY DESKTOP HEIGHT, WITH NO
-     `max-height` ESCAPE. `.screen`'s desktop padding-bottom is 0 — the nav
-     floats over the content region — and a CENTRED hub can live with that
-     because its body sits in the middle and only walks into the pill on a short
-     viewport, which is what the height query below handles.
-
-     `ChatPanel` cannot: it is `flex: 1`, so it always grows to the bottom of
-     whatever space it is given, and with 0 reservation that bottom is the
-     viewport's. Measured at 1280x720 before this rule: `Add a note` and `Take a
-     photo` returned the NAV from `document.elementFromPoint`, and `Submit
-     check-in` sat at y 723 in a 720 viewport — off-screen entirely. Same
-     failure the `[data-center]` note above records on `/check`, reached by a
-     different route.
-
-     ⚠️ 16 OF CLEARANCE, WHICH IS MOBILE'S NUMBER AND NOT THE DESKTOP HUB'S 40 —
-     asked for directly: the panel should reach as close to the nav on desktop
-     as it does on a phone. The hub screens keep 40 because their content ENDS
-     wherever it ends and the gap is the composition's own breathing room; the
-     panel's bottom edge is a drawn edge with a footer against it, so the same
-     40 read as the panel stopping short. This is the mobile reservation
-     verbatim, which is the point — one panel, one bottom gap. */
   .screen[data-layout="panel"] {
     padding-bottom: calc(
       var(--nav-inset-bottom) + var(--size-nav-height) + var(--space-lg)
     );
   }
 
-  /* ⚠️ NO BOTTOM RESERVATION FOR A **CENTRED** HUB SCREEN ON DESKTOP. The desktop
-     frames let the nav float over the content region rather than sitting in the
-     layout flow, so a screen that CENTRES its body must centre it in the whole
-     column — reserving 115 for the nav pushed `My Products — empty`'s hero 46px
-     above where the comp puts it. Mobile keeps the reservation: there the nav
-     really does sit in the flow.
-
-     ⚠️ A HUB SCREEN WHOSE BODY *FLOWS* STILL HAS TO CLEAR THE NAV. This rule
-     used to apply to every hub screen, which is wrong for the ones that are
-     lists: their last row lands wherever the content ends, and with no
-     reservation it renders behind the nav pill. Measured on `Check results` —
-     the 94% card and the nav were on top of each other — and latent on
-     `My Products — filled` for any list long enough to reach the bottom.
-     `data-center` is set by HubScreen for exactly the screens the 0 is for.
-
-     the nav's offset from the bottom + 75 (the nav) + 40 of clearance.
-
-     ⚠️ THIS CANNOT LIVE IN HubScreen.module.css. `.screen` is a global class, so
-     a module would hash the selector and it would match nothing — the same trap
-     that hides a module's @keyframes. */
   .screen[data-layout="hub"] {
     padding-bottom: calc(
       var(--nav-inset-bottom) + var(--size-nav-height) + var(--space-4xl)
@@ -1695,31 +549,10 @@ main[tabindex="-1"]:focus-visible {
     padding-bottom: 0;
   }
 
-  /* ⚠️ `center="low"` RESERVES NOTHING ON DESKTOP AT ANY HEIGHT — 16 Sep 2026,
-     `/check`, which is placed the way 00 Welcome is (see `center` in
-     HubScreen.tsx). Welcome's column runs to the bottom of the window and its
-     weights keep the group off the floating nav, so a reservation here would
-     be a different column and every weight would land somewhere else. The
-     guard the height query below gives `[data-center]` is the lower spacer's
-     floor instead — see `.below` in HubScreen.module.css. `data-low` is set by
-     HubScreen, and deliberately not `data-center`, so that query cannot reach
-     it. */
   .screen[data-layout="hub"][data-low] {
-    padding-bottom: 0;
+    padding-bottom: var(--cta-bottom);
   }
 
-  /* ⚠️ A SHORT DESKTOP VIEWPORT TAKES THE RESERVATION BACK. The 0 above is
-     right for the 1440x900 canvas, where a centred hero clears the floating
-     nav with room to spare — and wrong for a laptop or a split window, where
-     the same centring walks the bottom of the composition straight into the
-     pill. Measured at 1024x768 on `/check`: `document.elementFromPoint` at the
-     centre of `View previous checks` returned the NAV, so the link could not be
-     clicked at all and the only route to check history was gone.
-
-     A height query rather than a width one, because height is what actually
-     runs out: 900 is fine, 800 and 768 are not. 860 is the first round number
-     above the tallest measured failure. Above it nothing changes, so both
-     Figma canvases render exactly as before. */
   @media (max-height: 860px) {
     .screen[data-layout="hub"][data-center] {
       padding-bottom: calc(
@@ -1730,12 +563,11 @@ main[tabindex="-1"]:focus-visible {
 
   .screen {
     background: var(--gradient-canvas-desktop);
-    /* 120 top = 40 page padding + the 40 empty header row + the 40 spacer that
-       every desktop screen carries above its content.
+    /* 64 top, half the 120 it was.
        No bottom reservation: on desktop the nav floats over the content region
        rather than sitting in the layout flow, which is how the Figma frame is
        built, and it is what puts the hero at the right height. */
-    padding: var(--space-9xl) var(--margin-desktop) 0; /* 120 */
+    padding: var(--space-6xl) var(--margin-desktop) 0; /* 64 */
   }
 }
 
@@ -1745,7 +577,7 @@ main[tabindex="-1"]:focus-visible {
    behind it reads as washed-out, and some users disable transparency.
    ========================================================================== */
 
-/* lux-v3: the frosted row is VidGen's panel material — frost, glass edge, rim */
+/* lux-v3: the frosted row is the reference's panel material — frost, glass edge, rim */
 .frosted-row {
   background: var(--color-surface-frost-light);
   border: var(--border-width-hairline) solid var(--color-border-glass);
@@ -1763,85 +595,38 @@ main[tabindex="-1"]:focus-visible {
   }
 }
 
-/* ⚠️ THE BARE-CANVAS CARD — NOT IN FIGMA, lifted here 14 Sep 2026. It was
-   `SkinProfileTiles`' own surface (tuned by hand in DevTools that day: no fill,
-   no frost, held by its shadows), copied onto PROGRESS's face and gallery cards
-   with a note to lift it "if a third card wants it" — and the profile recap's
-   blocks were cards three and four ("fix /investigation/profile accordingly to
-   /progress"). The shadow stack and a 5% grain on `::after` (the lit edge ring
-   that sat on `::before` went 16 Sep 2026).
-   ⚠️ DOUBLED CLASS: `DataCard`'s `.card` is a single class, and which of two
-   single-class rules wins would otherwise be bundle order. It switches the
-   card's fill and backdrop blur OFF — a caller that wants a fill does not want
-   this class. ⚠️ `::after` IS TAKEN. */
 .canvas-card.canvas-card {
   position: relative;
   isolation: isolate;
-  /* ⚠️ A FAINT TINT, NOT `none` — supplied directly from DevTools 15 Sep 2026:
-     a pale aqua `#c6e1e8` at 17%. Still no backdrop blur, so this is a tint
-     over the canvas rather than a frosted surface, and it needs no
-     reduced-transparency fallback of its own (non-negotiable 11 is about
-     frost). Every card carrying this class takes it — PROGRESS's face and
-     gallery cards, the recap's blocks and every `SkinProfileTiles` card. */
-  background: #c6e1e82b;
+  background: var(--color-panel-data);
+  box-shadow: var(--shadow-frosted-row);
+  -webkit-backdrop-filter: blur(12px);
+  backdrop-filter: blur(12px);
+}
+
+/* A card's own backdrop-filter cuts off the blur of a dropdown inside it, so
+   a calendar hanging past the card's edge showed what was behind it
+   unblurred. While a dropdown is open the card drops its blur (the tint
+   stays) and the dropdown blurs the page itself. A pseudo-element frost
+   instead rendered some cards greyer than others. */
+.canvas-card.canvas-card:has(.drop) {
   -webkit-backdrop-filter: none;
   backdrop-filter: none;
-  /* ⚠️ THE INSET SHADOWS AT HALF STRENGTH — 16 Sep 2026, asked for directly
-     ("lower the inner shadow"): 40% → 20%, 14% → 7%, 20% → 10%. Then the two
-     DROP shadows at half strength too, asked for directly the same day
-     ("lower the drop shadow"): 12% → 6%, 22% → 11%. */
-  box-shadow:
-    inset 0 2px 12px #afc5cb33,
-    inset 0 2px 6px #547c7a12,
-    0 2px 6px #0000000f,
-    0 12px 32px -8px #0000001c,
-    inset 0 0 12px #0000001a,
-    inset 0 0 0 0.5px #1d1c2000;
 }
 
-/* ⚠️ NO LIT EDGE RING — removed 16 Sep 2026, asked for directly ("remove the
-   hairline border on these boxes"). It was a 1px white gradient ring on
-   `::before`; the card is held by its shadows alone now, and `::before` is
-   free. */
-.canvas-card.canvas-card::after {
-  content: "";
-  position: absolute;
-  inset: 0;
-  z-index: -1;
-  border-radius: inherit;
-  pointer-events: none;
-  opacity: 0.05;
-  mix-blend-mode: overlay;
-  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='120' height='120'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='2'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
-}
-
-/* non-negotiable 11: no fill or frost, so nothing to make opaque — only the
-   grain goes */
 @media (prefers-reduced-transparency: reduce) {
-  .canvas-card.canvas-card::after {
-    display: none;
+  .canvas-card.canvas-card {
+    -webkit-backdrop-filter: none;
+    backdrop-filter: none;
   }
 }
 
-/* ============================================================================
-   Entrance reveal
+/* Entrance reveal
 
    Board 04b: "LUX motion is calm. Nothing snaps." Content arrives with a fade
    rather than appearing instantly — duration/slow (320ms) is the board's value
-   for page-level reveals, duration/base (200ms) for something revealed inside a
-   screen the user just acted on (the "Other" field, a capture confirmation).
-
-   ⚠️ `backwards`, NOT `both`. Backwards holds the from-state during the delay so
-   a staggered child never flashes at full opacity first — which is the only
-   part we need. `both` adds `forwards`, which keeps the animation in effect
-   after it ends, and an opacity animation that is still in effect leaves a
-   PERSISTENT STACKING CONTEXT on the element. Every revealed block then painted
-   in DOM order regardless of z-index, so a popover inside an early block
-   rendered underneath the blocks below it. Opacity 1 is the natural state, so
-   forwards buys nothing and costs that.
-
-   prefers-reduced-motion is handled globally below — do not special-case it.
-   ========================================================================== */
+   for page-level reveals, duration/base (300ms) for something revealed inside a
+   screen the user just acted on (the "Other" field, a capture confirmation). */
 
 @keyframes lux-fade-in {
   from {
@@ -1877,41 +662,35 @@ main[tabindex="-1"]:focus-visible {
   animation: lux-fade-in var(--duration-slower) var(--ease-standard) backwards;
 }
 
-/* ============================================================================
-   Orb entrance — the "Spiral Assemble" timeline (Figma 670:31, Brand page)
+/* Orb entrance — the "Spiral Assemble" timeline (Figma 670:31, Brand page)
 
    The timeline has THREE tracks (wordmark-L / -U / -X), and the orb's mark is
    three paths, so each track drives one part. The sphere gets the same treatment
    underneath so the whole orb assembles at once.
 
    Per track, read from get_motion_context (timeline is 1500ms):
-     L  starts 0ms    rotate +90 over the move   travel x -60, y -40
-     U  starts 120ms  rotate -90                 travel x +60, y +40
-     X  starts 240ms  rotate +180                travel y -50
+   L  starts 0ms    rotate +90 over the move   travel x -60, y -40
+   U  starts 120ms  rotate -90                 travel x +60, y +40
+   X  starts 240ms  rotate +180                travel y -50
    all: scale 0.5 -> 1, opacity over 150ms, transform over 700ms,
    easing cubic-bezier(0.16, 1, 0.3, 1).
 
    THREE DELIBERATE DEVIATIONS, each for a reason:
 
    1. ROTATIONS ARE NORMALISED TO END AT 0. Figma's L ends at 2.11deg and U at
-      -177.1deg because those glyph vectors are authored pre-rotated. Our paths
-      are not, so the END state must be identity or the mark settles crooked.
-      The DELTA of each track is preserved (+90, -90, +180), which is what gives
-      each part its own direction of travel.
+   -177.1deg because those glyph vectors are authored pre-rotated. Our paths
+   are not, so the END state must be identity or the mark settles crooked.
+   The DELTA of each track is preserved (+90, -90, +180), which is what gives
+   each part its own direction of travel.
    2. NEGATIVE scaleY IS DROPPED. L and U animate scaleY -0.5 -> -1; the sign is
-      an authoring artefact of those glyphs and would flip our paths. Magnitude
-      is kept.
+   an authoring artefact of those glyphs and would flip our paths. Magnitude
+   is kept.
    3. TRAVEL IS SCALED TO THE ORB. The wordmark frame is 174 wide; the orb's mark
-      spans ~58, so distances are scaled by ~0.33 (-60 -> -20, and so on). At
-      full size the parts would fly outside the 129x129 SVG, which clips.
+   spans ~58, so distances are scaled by ~0.33 (-60 -> -20, and so on). At
+   full size the parts would fly outside the 129x129 SVG, which clips.
 
    Figma reports repeat: Infinity because it loops timelines for preview. This is
-   an ENTRANCE, so everything plays once.
-
-   ⚠️ 700ms exceeds `duration/slower` (480), the motion board's value for orb and
-   hero entrances. The authored timing is kept; if the board wins, scale by
-   480/700.
-   ========================================================================== */
+   an ENTRANCE, so everything plays once. */
 
 @keyframes lux-orb-appear {
   from {
@@ -1998,30 +777,7 @@ main[tabindex="-1"]:focus-visible {
     lux-mark-x 700ms cubic-bezier(0.16, 1, 0.3, 1) 240ms backwards;
 }
 
-/* ============================================================================
-   The orb THINKING — Check — analyzing (605:2163).
-
-   ⚠️ NOT IN FIGMA. The handoff calls this screen the section's brand moment,
-   "the orb visibly doing the work", and clones it from `05 — Investigating` —
-   but the orb it clones is STATIC. A still avatar over a moving progress bar
-   says the bar is working and the AI is not, which is backwards: the bar is the
-   only part of this screen that is a literal countdown.
-
-   ⚠️ IT IS THE MARK, NOT A SPINNER. The entrance already treats L, U and X as
-   three tracks on a 0 / 120 / 240ms stagger; thinking is that same wave, held
-   and looped instead of resolved once. A ring or a spinner around the orb would
-   be a second, unrelated motion idea competing with the progress bar for the
-   same job — and the orb is the one thing on this screen that is LUX.
-
-   ⚠️ THE SPHERE MAY NOT TRAVEL. Orb.tsx: the sphere sits in a filter with a
-   fixed region and the group is clipped to 129x129. The breath is scale(1.02)
-   about the sphere's own centre — 1.1px on a 57px radius, well inside the 8px
-   margin — and no translation at all.
-
-   `prefers-reduced-motion` is handled globally below: it collapses the duration
-   and forces one iteration, so both animations must END on their resting value.
-   They do — opacity 1 and scale 1 — and the screen simply shows a still orb.
-   ========================================================================== */
+/* The orb THINKING — Check — analyzing (605:2163). */
 
 @keyframes lux-orb-breathe {
   from {
@@ -2072,34 +828,7 @@ main[tabindex="-1"]:focus-visible {
   animation-delay: 240ms;
 }
 
-/* ============================================================================
-   The SIRI ORB — `components/ui/siri-orb.tsx`. ⚠️ DESIGN TRIAL, NOT IN FIGMA.
-
-   Ported 12 Sep 2026 from the 21st.dev community component `siri-orb`; Orb.tsx
-   renders it in place of the Figma export while `ORB_RENDERER` is "siri". The
-   recipe is the original's, unchanged except for three things:
-
-   1. IT LIVES HERE. The original was a `<style jsx>` block. The `@property`
-      and the keyframes must be global — a module localizes the keyframes name
-      and it resolves to nothing — so the whole recipe sits beside the orb's
-      other animations rather than splitting across two files.
-   2. EVERY CUSTOM PROPERTY IS NAMESPACED (`--siri-orb-*`). The original's
-      `--bg`, `--c1` and `--angle` are one collision away from a silent bug.
-   3. The demo's `drop-shadow-2xl` (0 25 25 @15% black) is folded in, tinted to
-      the LUX shadow ink rgba(46, 36, 71) that every `--shadow-*` token uses.
-   4. ⚠️ THE LOOP IS SEAMLESS, AND THE ORIGINAL'S WAS NOT. Each gradient turns
-      at a multiple of one angle, and the original's multiples (1.2, 0.8, -1.5,
-      2.1, -0.7) are not whole numbers: when the keyframes wrapped 360deg → 0,
-      a 1.2× gradient jumped from 432deg back to 0 — a visible cut every lap.
-      The fix is that every multiple × the keyframes' range must be a whole
-      number of turns. The range is now 720deg, the multiples are the nearest
-      HALF steps (1.5, 1, -1.5, 2, -0.5 — all × 720 land on multiples of 360),
-      and the duration is doubled so the pace is the one chosen. Keep both
-      rules if you retune a multiple: HALF steps only, or widen the range.
-
-   The component computes `--siri-orb-blur` and `--siri-orb-contrast` from its
-   pixel size; the colours arrive inline from Orb.tsx.
-   ========================================================================== */
+/* The SIRI ORB — `components/ui/siri-orb.tsx`. */
 
 @property --siri-orb-angle {
   syntax: "<angle>";
@@ -2248,25 +977,6 @@ main[tabindex="-1"]:focus-visible {
     inset -2px -2px 4px rgba(255, 255, 255, 0.376);
 }
 
-/* The FLOAT — ⚠️ DESIGN TRIAL, asked for directly: the drift the WebGL trial's
-   shader had (a breathing radius and a noise-wobbled edge), kept far calmer.
-   Two animations on two elements, at periods that share no small multiple
-   (9s, 14s), so the combined motion never visibly repeats:
-
-   - `.lux-orb-float` — the layer Orb.tsx puts INSIDE `.lux-orb`, holding the
-     sphere, the mark and (on `halo` routes) the rim light, so all three drift
-     together and the light stays on the rim. It rises 3.45% of its own height
-     — ~4.5px at 130, ~1.7px in the 50px chat header — and breathes to 1.0138.
-     Both were 3% / 1.012 and were raised 15%, asked for directly.
-     ⚠️ It is an inner layer, not `.lux-orb` itself, because `.lux-orb` carries
-     `.reveal-hero` and a second `animation` there would replace the entrance.
-   - `.siri-orb--lux` — the OUTLINE eases between near-circles, never more than
-     2.5% off round (it was 1.5%, and was made more visible, asked for
-     directly — every offset from 50% scaled ~1.7×). Its pseudo-elements inherit the radius so the inner shadow
-     follows the shape rather than drawing a circle inside it.
-
-   `--ease-breathe` on both (it was the built-in `ease-in-out` until 13 Sep
-   2026), no overshoot: calm, and LUX does not bounce. */
 @keyframes lux-orb-float {
   0%,
   100% {
@@ -2317,55 +1027,7 @@ main[tabindex="-1"]:focus-visible {
   }
 }
 
-/* ============================================================================
-   The hero orb's MOBILE SIZE — 10% smaller than the desktop/default 130.
-
-   ⚠️ NOT IN FIGMA, AND ON THE SAME TWO ROUTES AS THE HALO BELOW: 00 Welcome and
-   the CHECK landing — the identical composition, asked for directly 16 Sep
-   2026 ("reduce the orb size 10% on mobile"). Every other orb in the app is
-   unaffected; this class is opt-in on the two callers that wrap `<Orb>` with
-   it, the same way `halo` is opt-in on the prop.
-
-   ⚠️ IT IS A WRAPPER BECAUSE THE SIZE CANNOT BE. `Orb`'s siri renderer sets its
-   own width/height as an INLINE style (`SiriOrb`'s blur and contrast are
-   computed FROM the pixel size in JS — see siri-orb.tsx — so it can never take
-   a CSS var; a token string parses to NaN there), and an inline style beats
-   any external rule short of `!important`. `transform` is a different
-   property: it composes with `.lux-orb`'s own entrance (`lux-orb-grow`) and
-   float (`lux-orb-float`) animations instead of fighting them, because each
-   runs on its own element — the entrance on `.lux-orb` itself, the float on
-   the inner `.lux-orb-float`, this scale on their ANCESTOR — and nested
-   transforms multiply rather than override. The entrance hand-off in
-   LogoEntrance.tsx measures both ends with `getBoundingClientRect`, which is
-   transform-aware, so the travelling symbol still lands exactly on the
-   shrunk mark.
-
-   ⚠️ `transform-origin: top`, NOT A CENTRED SCALE, AND `margin-bottom: -13px`
-   PAYS FOR IT. 130 × 0.9 = 117, a 13px difference. Scaling from the centre
-   would inset the orb 6.5px from BOTH edges, opening the gap below it (a
-   `gap` on the flex parent, on both callers) to 26.5 instead of 20. Anchoring
-   the scale at the top keeps the visual top edge exactly where an unscaled
-   orb's was — nothing sits above the orb on either screen, so that edge needs
-   no compensation — and the negative margin takes the 13px the box no longer
-   needs back out of the flow, so the gap below reads as the intended 20
-   again. `flex: none` carries over `.lux-orb`'s own inline copy, since the
-   wrapper is the flex item now, not the orb.
-
-   ⚠️ DOES NOT NEED A `.heroChat`-SCOPED OVERRIDE ON `/check` — see
-   CheckScreen.module.css. That screen zeroes `.lux-orb`'s own margin-bottom
-   because the visible gap there comes from `.heroChat`'s `gap` instead, but
-   that rule only ever matched a DIRECT child; this wrapper sits between
-   `.heroChat` and `.lux-orb` now, so neither it nor the base `.hero > svg`
-   rule reaches `.lux-orb` any more. This class's own -13px already nets to
-   zero extra gap by itself — adding it to that zero-out list would double up
-   and OPEN a 33px gap instead of closing one.
-
-   The group is 13px shorter on mobile as a result. Both callers place it with
-   flex-grow spacers rather than a fixed offset, so the freed space
-   redistributes instead of the group simply losing 13px off its bottom: the
-   orb sits a little lower and the actions a little higher than before, the
-   same as any other change to the group's content height — see Welcome's own
-   40px nudge for the identical mechanism. */
+/* The hero orb's MOBILE SIZE — 10% smaller than the desktop/default 130. */
 .orb-hero {
   flex: none;
   transform-origin: top center;
@@ -2379,61 +1041,7 @@ main[tabindex="-1"]:focus-visible {
     margin-bottom: 0;
   }
 }
-/* ============================================================================
-   The orb HALO — an ambient line of light travelling around the sphere's rim.
-
-   ⚠️ NOT IN FIGMA, AND ON TWO ROUTES ONLY (`<Orb halo />`): 00 Welcome and the
-   CHECK landing. Both were asked for directly, and both are the same
-   composition — orb, centred AI bubble, one CTA, floating on bare canvas with
-   no card to interrupt it — so the orb is the same brand object doing the same
-   job on both. That is the identical argument the living canvas makes for
-   those same two routes, and it carries the identical limit: a THIRD route
-   wants a Figma decision, not another opt-in. Every other orb in the app sits
-   in an empty state or over a progress bar and takes none of this.
-
-   ⚠️ IT IS OUTSIDE THE SVG BECAUSE IT HAS TO BE. The sphere fills its 129x129
-   viewBox to within 8px and the whole group is clipped to that box, so a light
-   running the rim has nowhere to go inside the export. Hence the wrapper in
-   Orb.tsx and this ::after, which is free to straddle the edge.
-
-   ⚠️ IT IS AN ARC ON THE RIM, AND THAT WAS ASKED FOR DIRECTLY. The note on the
-   thinking orb above argues a travelling ring is a progress idiom and keeps one
-   off THAT screen, where it would compete with a literal progress bar. Welcome
-   has no progress to confuse it with, and it takes 8 seconds to go round — far
-   too slow to read as a spinner. The argument still stands where it was made;
-   it does not reach this screen.
-
-   THE GEOMETRY, since the numbers look arbitrary — every one is a ratio, so the
-   line lands on the rim at any orb size:
-     · the layer is inset 4%, so its radius is 0.46 of the orb box;
-     · the sphere's own rim is at 0.442 (r=57 in a 129 box);
-     · the mask keeps 94%..100% of the layer's radius, i.e. 0.432..0.46.
-   The band therefore STRADDLES the rim rather than sitting inside or outside
-   it, which is what makes the light read as being ON the edge. The mask's inner
-   stops feather it, so the line has a soft bleed onto the sphere and no
-   second, hard border of its own.
-
-   The conic gradient is a COMET, not a segment: transparent at 0deg, full by
-   60deg, gone by 78deg. Rotating clockwise puts the short end forward, so the
-   light has a bright head and a long tail — a line travelling, rather than a
-   block of arc sliding round.
-
-   ⚠️ IT IS ON AT REST — IT IS NOT A HOVER RESPONSE, AND IT WAS ONE UNTIL
-   5 Sep 2026. The light used to sit at opacity 0 and fade in under the pointer;
-   it now runs in the DEFAULT state on both routes and hover changes nothing.
-   The orb is the brand object and the light is what makes it feel alive, so it
-   should not depend on a pointer the screen may never see: on touch — where
-   most of this prototype gets walked — `(hover: hover)` never matched and the
-   light simply never existed. One transform on one element, so the cost of
-   leaving it running is nothing next to the canvas shader Welcome already runs.
-
-   8s is deliberately far slower than any motion token: those size transitions
-   the user CAUSED, and this is ambient.
-
-   `prefers-reduced-motion` is handled globally: it collapses the duration and
-   forces one iteration, so the rotation lands back at 0deg (its resting value)
-   and the screen shows a still arc across the top-right of the rim.
-   ========================================================================== */
+/* The orb HALO — an ambient line of light travelling around the sphere's rim. */
 
 @keyframes lux-orb-halo {
   from {
@@ -2453,16 +1061,6 @@ main[tabindex="-1"]:focus-visible {
   /* the wrapper must measure exactly the orb and nothing more, or it changes
      the flex gap above the bubbles */
   line-height: 0;
-  /* ⚠️ THE WRAPPER PAINTS NOTHING AND ANSWERS NOTHING. It was once the hover
-     REGION as well — rounded, so the square box's live corners could not switch
-     the light on with the pointer clear of the sphere — and that job went with
-     the hover state on 5 Sep 2026. What is left is the positioning parent the
-     ::after hangs off, which the clipped SVG cannot provide itself.
-     ⚠️ THE ORB DOES NOT CHANGE SIZE ON HOVER — REMOVED, DO NOT PUT IT BACK
-     WITHOUT ASKING. It scaled to 1.06 briefly and came out again: the motion
-     board leans against it ("LUX does not bounce"), it was the only size change
-     anywhere in the app, and the orb is the one object the system treats as
-     untouchable. */
 }
 
 .orb-halo::after {
@@ -2514,19 +1112,6 @@ main[tabindex="-1"]:focus-visible {
     lux-fade-in var(--duration-slower) var(--ease-standard) 700ms backwards;
 }
 
-/* ⚠️ DESIGN TRIAL — the halo around the SIRI ORB (Orb.tsx, `ORB_RENDERER`).
-   That orb fills its whole box, so its rim is at 0.5 of the box, not the
-   export's 0.442, and at `inset: 4%` the light ran ~4px INSIDE the edge. Same
-   ratio as above, re-solved: the rim sat at 96% of the layer's radius, so the
-   layer needs a radius of 0.5 / 0.96 = 0.52 — `inset: -2%`, and the band
-   (94–100% of it, 0.489–0.52) straddles the new rim the way it straddled the
-   old one.
-   It is also 20% SLOWER (8s → 10s a lap) and 20% DIMMER, asked for directly.
-   The dimming scales the light's own stops (55% → 44%, 100% → 80% of
-   `effect/rim-highlight`) rather than the layer's opacity, because the entrance
-   `lux-fade-in` animates opacity and a declared 0.8 would snap down from 1 the
-   moment that entrance ended. The animation list is restated whole — a
-   shorthand cannot override one of two comma-separated animations. */
 .orb-halo--siri::after {
   inset: -2%;
   background: conic-gradient(
@@ -2575,28 +1160,12 @@ main[tabindex="-1"]:focus-visible {
   animation: lux-bubble-ask 800ms var(--ease-standard) 1000ms backwards;
 }
 
-/* EVERY bubble in the app arrives this way — `ChatBubble` applies this class
-   itself, so a new screen cannot forget it and no screen can invent a second
-   bubble entrance. Same keyframes and same 800ms as Welcome's opening bubble;
-   only the delay differs, because Welcome's 1000ms is it waiting for the orb to
-   finish assembling and nothing else in the app has an orb to wait for. A
-   screen retunes the beat with --bubble-enter-delay (see YourProducts, where
-   two briefing bubbles arrive one after the other rather than together).
-
-   `backwards`, never `both` — see the reveal block above for why an opacity
-   animation left in effect breaks z-index on the whole screen. */
 .bubble-enter {
   transform-origin: top center;
   animation: lux-bubble-ask 800ms var(--ease-standard)
     var(--bubble-enter-delay, 0ms) backwards;
 }
 
-/* ⚠️ A BUBBLE GROWS FROM ITS TAIL — added 13 Sep 2026. `top center` above is
-   right for a centred bubble and wrong for every other: scaling from 0.94
-   about the middle slid a left-hand AI bubble's tail corner ~11–17px
-   sideways as it landed. The row's `data-align` is where the bubble sits and
-   so which top corner carries the tail (ChatBubble.tsx). Centred rows keep
-   the base rule's `top center`. */
 [data-align="left"] > .bubble-enter {
   transform-origin: top left;
 }
@@ -2632,13 +1201,6 @@ main[tabindex="-1"]:focus-visible {
   }
 }
 
-/* the question bubble: plays its normal entrance, holds, then is pushed up
-   and out. The push-out fills `forwards` because this end state must persist —
-   the bubble stays gone — but never `both`; see the note on the track. */
-/* ⚠️ NOT IN FIGMA — asked for directly. Welcome's question RISES from below,
-   and waits until the orb has fully arrived (assembly ends 940ms, the halo's
-   fade ends 1180ms) instead of dropping from the orb at 1000ms, which read as
-   arriving together with it. The shared `.bubble-enter` is untouched. */
 @keyframes lux-bubble-rise {
   from {
     opacity: 0;
@@ -2650,12 +1212,6 @@ main[tabindex="-1"]:focus-visible {
   }
 }
 
-/* ⚠️ NOT IN FIGMA — asked for directly. Welcome's CTA, disclaimer and nav
-   arrive AFTER the question, each fading up on the same curve. Animates the
-   standalone `translate` property, NOT `transform`, because the nav centres
-   itself with `transform: translateX(-50%)` and a transform keyframe would
-   throw it off-centre for the length of the animation. Each caller sets
-   `--rise-delay` inline; an inline custom property cannot lose the cascade. */
 @keyframes lux-rise-in {
   from {
     opacity: 0;
@@ -2676,50 +1232,19 @@ main[tabindex="-1"]:focus-visible {
   transform-origin: bottom center;
   animation:
     lux-bubble-rise 800ms var(--ease-standard) 1200ms backwards,
-    /* ⚠️ `forwards`, NOT `both`. This track is listed second, so it wins —
-       and `both` held its 0% keyframe (opacity 1) through the whole 3300ms
-       delay, painting the question fully visible over the rise's opacity 0 from
-       the first frame. The question was on screen at opening because of this. */
     lux-bubble-push-out var(--duration-slower) var(--ease-standard) 3300ms
       forwards;
 }
 
 /* the reply bubble: `backwards` holds the 0% keyframe (opacity 0) for the
    full delay, so it is invisible on landing without needing display:none —
-   then rises into the question bubble's spot as the question is pushed out.
-
-   ⚠️ THE TWO DELAYS MUST STAY EQUAL. Both bubbles sit in ONE grid cell
-   (Welcome.module.css `.bubbles`) and bubbles are OPAQUE, so the reply — later
-   in the DOM, no z-index — paints ON TOP of the question. Starting it early to
-   "overlap" does not blend the two, it stacks a second bubble over a
-   still-fully-visible first one for the length of the offset. Retune the swap
-   by moving BOTH delays together. */
+   then rises into the question bubble's spot as the question is pushed out. */
 .bubble-swap-in {
   transform-origin: top center;
   animation: lux-bubble-push-in var(--duration-slower) var(--ease-standard)
     3300ms backwards;
 }
 
-/* ⚠️ THESE RULES MUST LIVE HERE, NOT IN A CSS MODULE. CSS Modules localize
-   @keyframes names, so `animation: lux-fade-in ...` written inside a module
-   compiles to a SCOPED name that does not match the global keyframes above —
-   the declaration then resolves to nothing and no animation runs at all, while
-   still reporting a duration in getComputedStyle. Verified: the module asked
-   for `QuestionScreen-module__…__lux-fade-in` and only `lux-fade-in` existed.
-   Keep any rule that NAMES an animation global; a module may safely set
-   animation-delay, which carries no name. */
-
-/* ⚠️ A FADE UP, NOT A FADE — asked for directly 15 Sep 2026 ("add for all
-   the elements on the whole [app] a smooth appearing animation … things to
-   appear in order, top to bottom … in general slight fade up"). Every block a
-   screen shell reveals (HubScreen's body, QuestionScreen's content, PROGRESS's
-   two columns) rises 8px as it fades, on `duration/slow` — the welcome page's
-   own rises run 800ms and this must read as quicker. `transform` and `opacity`
-   only; `backwards` so a delayed block holds its start state and nothing
-   flashes (see the fill-mode note above). ⚠️ THE FIXED NAV IS NOT A
-   DESCENDANT of any revealed block (both shells render it beside the shell),
-   which matters: a transform, even a moving one, makes its element the
-   containing block of a fixed descendant for as long as it lasts. */
 @keyframes lux-fade-up {
   from {
     opacity: 0;
@@ -2735,14 +1260,6 @@ main[tabindex="-1"]:focus-visible {
   animation: lux-fade-up var(--duration-slow) var(--ease-standard) backwards;
 }
 
-/* ⚠️ THE SAME FADE UP FOR AN ELEMENT THAT OWNS ITS `transform` — 16 Sep 2026,
-   for CHECK's basket bar ("add appearing animation fade up"). `lux-fade-up`
-   animates `transform`, which would wipe the bar's `translateX(-50%)`
-   centring for the length of the rise. This moves the individual `translate`
-   property instead, which composes with `transform` rather than replacing
-   it. Same 8px, same clock. ⚠️ ITS OWN KEYFRAME NAME — `lux-rise-in` is
-   Welcome's 24px rise (`.welcome-rise`, above), and a second `@keyframes` of
-   the same name silently replaces the first for the whole document. */
 @keyframes lux-rise-in-sm {
   from {
     opacity: 0;
@@ -2758,13 +1275,6 @@ main[tabindex="-1"]:focus-visible {
   animation: lux-rise-in-sm var(--duration-slow) var(--ease-standard) backwards;
 }
 
-/* ⚠️ A REVEALED CONTAINER INSIDE A REVEALED CONTAINER DOES NOT FADE ITSELF —
-   its children do, one step later. HubScreen's shell reveals its header,
-   body and footer; the body reveals its blocks. Without this the body faded
-   as a whole AND its blocks staggered inside the fade, so the first block
-   arrived twice. The nested container's children instead start one step
-   after the outer sequence (`--reveal-base`), which is what puts the header
-   before the first card. */
 [data-reveal] > [data-reveal] {
   animation: none;
   --reveal-base: var(--reveal-step);
@@ -2774,10 +1284,7 @@ main[tabindex="-1"]:focus-visible {
    step over eight children — a five-card dashboard finishes its sequence
    inside 600ms; past the eighth the delay holds, so a long list never takes
    a second to complete. Applied to DIRECT children only, so a ten-row option
-   list arrives as one block rather than ten cascading rows.
-   ⚠️ 40ms capped at the fifth child until 15 Sep 2026 — "in order, top to
-   bottom" wanted every block on a screen in the sequence, not the first
-   five. */
+   list arrives as one block rather than ten cascading rows. */
 [data-reveal-stagger] {
   --reveal-step: 50ms;
   --reveal-base: 0ms;
@@ -2807,12 +1314,6 @@ main[tabindex="-1"]:focus-visible {
   animation-delay: calc(var(--reveal-base, 0ms) + 7 * var(--reveal-step, 50ms));
 }
 
-/* ⚠️ THE ONLY `!important` IN THE APP, AND IT HAS TO BE. This is the global
-   reduced-motion collapse: it overrides durations declared by every component
-   module, and a module's own rule loads after globals.css and wins at equal
-   specificity — the same load-order trap that cost the focus ring its outline
-   (non-negotiable 13). Without the flag this rule silently does nothing for the
-   users who need it most. */
 @media (prefers-reduced-motion: reduce) {
   *,
   *::before,
@@ -2827,14 +1328,6 @@ main[tabindex="-1"]:focus-visible {
   }
 }
 
-/* ⚠️ THE COLLAPSE ABOVE SHORTENS DURATIONS, NOT DELAYS — and an entrance that
-   fills `backwards` holds its first keyframe, opacity 0, for its whole delay.
-   Under reduced motion Welcome's CTA, disclaimer and nav sat invisible — and
-   reachable by Tab — for 1.7–2.0s, and the question was a blank until 1.2s.
-   Decorative entrances drop their wait here. Welcome's question → reply swap
-   is CONTENT rather than decoration, so it keeps its 3300ms beat and becomes
-   a short crossfade with no movement; both delays stay equal (see
-   `.bubble-swap-in`). Added 13 Sep 2026. */
 @media (prefers-reduced-motion: reduce) {
   .welcome-rise,
   .bubble-enter,
@@ -2856,69 +1349,29 @@ main[tabindex="-1"]:focus-visible {
       backwards !important;
   }
 
-  /* ⚠️ AND A TRANSITION'S DELAY SURVIVES THE COLLAPSE TOO — added after review,
-     13 Sep 2026. Today's calendar disc (CheckInCalendar.module.css) waits out
-     the check-in overlay's exit on a 200ms `transition-delay`; with the overlay
-     already gone under reduced motion, the disc sat empty and small for that
-     long and then snapped. An attribute selector, because a module's class is
-     not reachable from here. */
   [data-checked-in][data-just-checked] {
     /* biome-ignore lint/complexity/noImportantStyles: must beat the module's transition shorthand */
     transition-delay: 0ms !important;
   }
 }
 
-/* ============================================================================
-   The modal tray's entrance — Sheet.tsx.
+/* The modal tray's entrance — Sheet.tsx.
 
    Board 04b puts sheets and overlays on duration/slow (320ms). The mobile sheet
    rises the last 16px into place as it fades; the desktop dialog only fades,
    because it is centred with a translate() of its own and an animated transform
-   would fight it.
-
-   ⚠️ NAMED HERE, NOT IN Sheet.module.css. A module would localize the keyframes
-   name and the declaration would resolve to nothing.
-   ========================================================================== */
-
-@keyframes lux-sheet-in {
-  from {
-    opacity: 0;
-    transform: translateY(16px);
-  }
-  to {
-    opacity: 1;
-    transform: translateY(0);
-  }
-}
+   would fight it. */
 
 [data-tray="scrim"] {
   animation: lux-fade-in var(--duration-slow) var(--ease-standard) backwards;
 }
 
+/* the tray is centred by its transform, so it fades in place: a keyframe
+   that moved it would set `transform` and pull it off centre */
 [data-tray="tray"] {
-  animation: lux-sheet-in var(--duration-slow) var(--ease-standard) backwards;
+  animation: lux-fade-in var(--duration-slow) var(--ease-standard) backwards;
 }
 
-@media (min-width: 1024px) {
-  [data-tray="tray"] {
-    animation-name: lux-fade-in;
-  }
-}
-
-/* ⚠️ A TRAY THAT GROWS FROM ITS BOTTOM EDGE — `.sheet-grow`, 16 Sep 2026,
-   asked for directly on CHECK's basket ("animate this better, grow from bottom
-   to top smooth"). The basket opens from the bar pinned at the bottom of the
-   screen, so the tray unrolls upward out of that edge rather than fading in
-   the middle of nowhere: a `clip-path` reveal from the bottom, with a 24px
-   rise and the fade under it, on `duration/slower` so the growth is legible.
-   ⚠️ `translate`, NOT `transform` — the desktop dialog is centred by
-   `transform: translate(-50%, -50%)`, which a transform keyframe would wipe
-   for the length of the entrance; the individual property composes with it.
-   ⚠️ `clip-path` ONLY WHILE ANIMATING: `backwards` fill drops it at the end,
-   so the settled tray's drop shadow is not clipped. The exit is the shared
-   one below — a quick fade down; closing is the app getting out of the way.
-   Opt-in by class on the `Sheet` (`className`), so the other trays keep their
-   own entrance. */
 @keyframes lux-sheet-grow {
   from {
     opacity: 0;
@@ -2936,53 +1389,11 @@ main[tabindex="-1"]:focus-visible {
 }
 
 [data-tray="tray"].sheet-grow {
-  /* the mobile tray's own corners — rounded on top, square where it docks */
-  --sheet-grow-radius: 28px 28px 0 0;
+  --sheet-grow-radius: var(--radius-3xl);
   animation: lux-sheet-grow var(--duration-slower) var(--ease-standard)
     backwards;
 }
 
-@media (min-width: 1024px) {
-  [data-tray="tray"].sheet-grow {
-    --sheet-grow-radius: var(--radius-3xl);
-    animation-name: lux-sheet-grow;
-  }
-}
-
-/* ⚠️ AND IT LEAVES — ADDED 12 Sep 2026, AND THE ENTRANCE ABOVE IS WHY IT HAD
-   TO BE. `Sheet` returned `null` the instant `open` went false, so a tray that
-   rose and faded in over 320ms disappeared in a single frame. Something that
-   arrives with motion and vanishes without it does not read as dismissed, it
-   reads as a render fault — which is the one thing board 04b's "nothing snaps"
-   is actually about.
-
-   ⚠️ IT IS A TRANSITION AND THE ENTRANCE IS AN ANIMATION, DELIBERATELY. The
-   entrance has to run on mount, which only a keyframes animation can do from
-   markup alone; the exit runs on an attribute flip, which is what a transition
-   is for. `useDialogPresence` holds the node mounted for `EXIT_MS` and that
-   number and `duration/base` below are one value in two places — keep them in
-   step.
-
-   ⚠️ `animation: none` IS LOAD-BEARING, NOT TIDINESS. Close the tray inside the
-   320ms entrance and the still-running animation outranks these declarations in
-   the cascade, so the exit would not paint at all until the entrance finished.
-   Cancelling it hands the transition a start value of wherever the entrance had
-   got to, which is exactly the interruption behaviour wanted.
-
-   ⚠️ THE EXIT IS FASTER THAN THE ENTRANCE — `duration/base` (200) against
-   `duration/slow` (320). Arriving is where the user registers a new surface;
-   leaving is the app getting out of the way of the screen underneath, and at
-   320 it reads as reluctant. The tray also leaves the way it came — DOWN the
-   same 16px it rose — so the gesture is one movement reversed rather than two
-   unrelated fades. Desktop had no rise and gets none on the way out.
-
-   ⚠️ DESKTOP HOLDS ITS CENTRING TRANSFORM, IT DOES NOT CLEAR IT — fixed 13 Sep
-   2026, asked for as "fade out". This rule used to say `transform: none`,
-   which reads as "no movement" and is the opposite: the dialog is centred by
-   `translate(-50%, -50%)` in `Sheet.module.css`, and this selector outranks
-   it, so every desktop dialog slid half its own width right and half its
-   height down (320 / 281px on the basket) while it faded. The value below is
-   that module's centring repeated — keep the two in step. */
 [data-tray="scrim"][data-state="leaving"],
 [data-tray="tray"][data-state="leaving"] {
   animation: none;
@@ -2993,29 +1404,9 @@ main[tabindex="-1"]:focus-visible {
 }
 
 [data-tray="tray"][data-state="leaving"] {
-  transform: translateY(16px);
+  transform: translate(-50%, -50%);
 }
 
-@media (min-width: 1024px) {
-  [data-tray="tray"][data-state="leaving"] {
-    transform: translate(-50%, -50%);
-  }
-}
-
-/* ⚠️ `.sheet-dialog-tablet` — A SHEET THAT IS A DOCKED TRAY ON A PHONE ONLY.
-   NOT IN FIGMA, 16 Sep 2026, asked for directly on PROGRESS's photo gallery
-   ("this size of the gallery should only be used on mobile size; use the 4
-   images modal for bigger size than mobile"). Between 480 and 1023 the tray
-   takes the desktop dialog recipe from `Sheet.module.css` — centred, 640 wide,
-   48 padding, `radius/3xl`, no grabber, the ✕ 16 in — so a tablet gets the
-   four-photo modal instead of a full-width strip of three giant tiles.
-   ⚠️ 480, NOT 768 — moved the same day, asked for directly on a ~527-wide
-   window. 480 clears every phone (the 440 comp canvas included). Narrower
-   than the 640 dialog, it keeps 16 of the page's own edge each side.
-   ⚠️ 480 IS NOT A NEW APP BREAKPOINT: desktop is still 1024 (non-negotiable
-   12). It is this opt-in's own floor, and only the gallery opts in. It lives
-   here, not in a module, because it renames the tray's animation. Doubled
-   class for specificity over `Sheet`'s module rule, which may load later. */
 @media (min-width: 480px) and (max-width: 1023.98px) {
   [data-tray="tray"].sheet-dialog-tablet.sheet-dialog-tablet {
     left: 50%;
@@ -3035,69 +1426,14 @@ main[tabindex="-1"]:focus-visible {
     animation-name: lux-fade-in;
   }
 
-  [data-tray="tray"].sheet-dialog-tablet > span[aria-hidden="true"]:first-child {
-    display: none; /* the grabber */
-  }
-
   [data-tray="tray"].sheet-dialog-tablet > button[aria-label="Close"] {
     top: var(--space-lg);
     right: var(--space-lg);
   }
 }
 
-/* ============================================================================
-   Dropdowns open DOWN and close back UP — `components/ui/Collapse.tsx` and
-   `.drop`.
-
-   ⚠️ NOT IN FIGMA — asked for directly 13 Sep 2026 ("we can improve the drop
-   downs and up", on `/check/new`). Every expanding row and every dropdown panel
-   in the app arrived on `.reveal-quick`, a 200ms fade on mount, and left by
-   unmounting in one frame — the arrives-with-motion, vanishes-without-it fault
-   the trays had until their exit landed above. The fade was the smaller half
-   of it: an expanding row shoved everything under it down by the panel's full
-   height in its first frame and pulled it back up in its last, so the list
-   jumped twice and only the panel's opacity moved.
-
-   TWO RECIPES, because there are two kinds of dropdown.
-
-   `.collapse` — a panel IN FLOW, which moves what is under it: the builder's
-   product rows, the accordion cards, the category groups, the ingredient list,
-   the compat cards and the analysis disclosures. It animates the SPACE (its
-   grid row, 0fr to 1fr) so the rows below slide instead of jumping, and fades
-   the panel on the same curve. `duration/base` BOTH ways: the list is morphing
-   in place, not a surface arriving and leaving, and a faster close would drag
-   the rows up more abruptly than they came down.
-
-   `.drop` — a panel FLOATING under its trigger: the builder's search results,
-   the calendar, and the add-product tray's results (in flow, but hung from the
-   pill like a menu and re-sized by every keystroke, so animating its height
-   would fight the results arriving). Nothing under it moves, so only the panel
-   does: it falls the last 4px from its trigger and settles from 0.98, and goes
-   back up the same way on `duration/fast` — the exit is the app getting out of
-   the way, the same asymmetry the trays keep.
-
-   ⚠️ BOTH ARE TRANSITIONS ENTERED WITH `@starting-style` — the mount-time half
-   of a transition, the move `StepProgress`'s fill makes. A panel closed while
-   it is still opening turns round from wherever it had got to. It names no
-   animation, so modules may override a value (the calendar moves its
-   `transform-origin`). `useDialogPresence` holds the node for the exit, exactly
-   as it does for `Sheet`, and `inert` takes it out of reach while it goes.
-
-   ⚠️ `--collapse-gap` IS THE PARENT'S FLEX GAP, DECLARED ON THE COLLAPSE
-   ITSELF — `.parent > :global(.collapse) { --collapse-gap: … }`. A gap exists
-   the moment a second child does, so a panel mounting at 0fr still sat one
-   gap under its header: an 8–16px jump before anything animated, and another
-   at the end of the exit. The collapse starts that far up and eases down, so
-   the gap opens with the panel. ⚠️ NOT ON THE PARENT, AND IT DOES NOT
-   INHERIT (`@property` below): declared on a parent it reached every Collapse
-   nested anywhere under it, and a compat card's body inside the results box
-   started opening 8px high. A parent with no gap sets nothing.
-
-   ⚠️ THE CLIP IS ON ONLY WHILE IT MOVES (`[data-state]`). A permanent
-   `overflow: hidden` would cut every focus ring and `.tap-target` at the
-   panel's edge — `Remove` on a product card is both — so it is on for the
-   200ms of travel and off at rest.
-   ========================================================================== */
+/* Dropdowns open DOWN and close back UP — `components/ui/Collapse.tsx` and
+   `.drop`. */
 
 /* declared ON the Collapse, never inherited — see "`--collapse-gap`" above */
 @property --collapse-gap {
@@ -3115,6 +1451,13 @@ main[tabindex="-1"]:focus-visible {
     grid-template-rows var(--duration-base) var(--ease-standard),
     margin-top var(--duration-base) var(--ease-standard),
     opacity var(--duration-base) var(--ease-standard);
+}
+
+.collapse[data-smooth] {
+  transition:
+    grid-template-rows var(--duration-move) var(--ease-in-out),
+    margin-top var(--duration-move) var(--ease-in-out),
+    opacity var(--duration-fade) var(--ease-in-out);
 }
 
 @starting-style {
@@ -3163,6 +1506,15 @@ main[tabindex="-1"]:focus-visible {
   transition-duration: var(--duration-fast);
 }
 
+/* A card is its own stacking context (`isolation: isolate`), so a dropdown's
+   z-index only counts inside it, and the cards and buttons after it paint over
+   the part that hangs out. While a card holds an open dropdown, the card itself
+   rises above its neighbours. */
+.canvas-card.canvas-card:has(.drop),
+.panel:has(.drop) {
+  z-index: 1;
+}
+
 /* ============================================================================
    Target size — WCAG 2.5.8 (AA): an interactive target is at least 24x24.
 
@@ -3187,42 +1539,16 @@ main[tabindex="-1"]:focus-visible {
   top: 50%;
   left: 50%;
   transform: translate(-50%, -50%);
-  /* 44, not 2.5.8's 24 — Apple's HIG default control size, 27 Sep 2026 */
+  /* 44, not 2.5.8's 24 — Apple's HIG default control size */
   min-width: var(--size-touch-target);
   min-height: var(--size-touch-target);
   width: 100%;
   height: 100%;
 }
 
-/* ============================================================================
-   PRESSED — board 04b's own recipe, as a utility so every control can wear it.
+/* PRESSED — board 04b's own recipe, as a utility so every control can wear it.
 
-   "LUX motion is calm. Nothing snaps." The board answers what a pressed control
-   looks like — `state/pressed-overlay` at 14%, and no scale transform, because
-   LUX does not bounce — and `Button` has drawn it since 22 Aug 2026. Nothing
-   else in the app did: the nav items, the back chevron, `SmallButton`, the
-   accordion headers, the history rows and the calendar days all shipped with
-   hover and focus and NO press.
-
-   ⚠️ THAT GAP IS A TOUCH GAP, WHICH IS WHERE THE APP ACTUALLY LIVES. Hover does
-   not exist on a phone, so on every one of those controls a tap produced no
-   feedback at all until the thing it did finished — a route change, a sheet, a
-   detail view. A control that navigates is exactly the one that cannot afford
-   to stay silent for the 100ms before the next screen paints.
-
-   ⚠️ `::before`, NOT `::after` — `.tap-target` above owns `::after`, and the
-   two classes land on the same element wherever a small text control both
-   grows its hit area and takes a press (`Remove` on a product card is both).
-   Same reason `Button` keeps its own `::after`: it is not a `.pressable`, it
-   already carries this recipe inline, and moving it here would be churn.
-
-   ⚠️ AN OPT-IN CLASS, NOT A BARE `button:active` RULE. Half the app's controls
-   are already instant — a chip fills, a row ticks, a toggle opens — and
-   darkening those adds a second signal to a state change the user can already
-   see. It goes on the controls whose result arrives LATER. Applied via a class
-   for the same reason `.tap-target` is: it stays a decision, and it stays
-   greppable.
-   ========================================================================== */
+   "LUX motion is calm. */
 
 .pressable {
   position: relative;
@@ -3245,49 +1571,7 @@ main[tabindex="-1"]:focus-visible {
   opacity: 1;
 }
 
-/* ============================================================================
-   Shine — a band of light sweeping once across a run of text.
-   ⚠️ NOT IN FIGMA — asked for directly, 12 Sep 2026, after reactbits'
-   "Shiny Text" (reactbits.dev/text-animations/shiny-text).
-
-   The reference paints the text with a gradient — ink, a pale band, ink —
-   clipped to the glyphs, and slides that gradient's position so the band
-   crosses the letters. Same mechanism here, two differences from the source:
-
-   1. It runs ONCE, not on a 5s loop. LUX motion is calm; a looping glint on
-      every bubble is a screen that never settles. A bubble shines as it
-      ARRIVES (`.shine-on-enter`) and a button label shines on HOVER
-      (`.shine-on-hover`), and both come to rest as plain ink.
-   2. The band is a TOKEN, not white. On dark ink white reads as the text
-      vanishing; `bg/brand-soft` is the lighter indigo the selection accents
-      already use, so the glint is the brand catching the light. On the primary
-      button's white label there is no lighter colour to sweep, so the band is
-      white mixed with that same soft indigo — a tint passing over the label
-      rather than a highlight, and the only mix in the recipe.
-
-   The wrapper (`.shine-text`) reads two inherited properties from the surface
-   it sits on: `--shine-ink`, which MUST be the surface's own text token,
-   because `color` on the span is transparent and `currentColor` inside the
-   gradient would resolve to that; and `--shine-highlight`, the band. Both
-   ends of the gradient are the ink, so at rest — and for the whole delay
-   before an entrance, since the animation fills `backwards` — the text is
-   exactly the colour it would be without this, and the contrast measured on
-   every surface still holds. The band is 10% of a 300%-wide image, and the
-   two positions (100% / 0%) each park it fully OUTSIDE the box. ⚠️ THREE
-   WIDTHS, NOT THE REFERENCE'S TWO: a 200% image slid past 150% uncovers the
-   box's near edge, and text with no gradient under it is transparent — the
-   first word of every bubble vanished for the length of the sweep. At 300%
-   the image covers the box across the whole travel.
-
-   `.shine-on-hover` is a TRANSITION, not an animation: an animation attached
-   to `:hover` is removed the instant the pointer leaves, and a band cut off
-   mid-word is a snap. A transition sweeps the band back the way it came, the
-   same way the pill's own gradient reversal unwinds on leave, and on the same
-   `duration/hover` clock stretched by half so the band's crossing is legible.
-   `hover: none` restores the rest state so it does not stick after a tap.
-
-   `prefers-reduced-motion` collapses both globally and both END on rest.
-   ========================================================================== */
+/* Shine — a band of light sweeping once across a run of text. */
 
 @keyframes lux-shine {
   from {
@@ -3302,11 +1586,6 @@ main[tabindex="-1"]:focus-visible {
   --shine-ink-resolved: var(--shine-ink, var(--color-text-primary));
   --shine-highlight-resolved: var(--shine-highlight, var(--color-effect-shine));
   color: transparent;
-  /* ⚠️ A GLOW, NOT A LINE — retuned 13 Sep 2026. The first cut was a 10% band
-     of `bg/brand-soft` and read as a hairline crossing the words. The band is
-     now 36% of the image with a soft shoulder either side of a near-white
-     core, so it reads as light catching the letters. Core is the lilac mixed
-     toward the label white; shoulders are the lilac itself. */
   background-image: linear-gradient(
     115deg,
     var(--shine-ink-resolved) 32%,
@@ -3323,12 +1602,7 @@ main[tabindex="-1"]:focus-visible {
   background-clip: text;
 }
 
-/* a bubble's text: the band starts moving THE MOMENT THE BUBBLE DOES. ⚠️ It
-   used to wait 400ms into the 800ms entrance, so a bubble arrived as plain
-   text and glinted afterwards — two events. Asked for directly 13 Sep 2026:
-   the shine is part of the arrival, so it shares the bubble's start. Follows
-   the bubble's own beat through --bubble-enter-delay; a caller with its own
-   entrance sets --shine-delay directly (Welcome, below). */
+/* a bubble's text: the band starts moving THE MOMENT THE BUBBLE DOES. */
 .shine-on-enter {
   animation: lux-shine 1200ms var(--ease-standard)
     var(--shine-delay, var(--bubble-enter-delay, 0ms)) backwards;
@@ -3363,49 +1637,12 @@ main[tabindex="-1"]:focus-visible {
   --shine-delay: 3300ms;
 }
 
-/* ============================================================================
-   Specular edge — a light streak along a button's rim that faces the pointer.
-   ⚠️ NOT IN FIGMA — asked for directly, 12 Sep 2026, after reactbits'
-   "Specular Button" (reactbits.dev/components/specular-button).
-
-   The reference renders its rim on a canvas. This is the same picture in CSS:
-   a real `<span class="specular">` (a pseudo would collide — `Button` owns its
-   `::after`, `.pressable` owns `::before`) filling the control, masked down to
-   a `border-width/hairline` ring, painted with a conic gradient of two streaks
-   180° apart. `--specular-angle` turns the whole gradient so the first streak
-   faces the pointer; `components/ui/specular.ts` writes that angle on every
-   pointer move. It is a registered <angle> (top of this file), so the turn
-   between two moves interpolates on `duration/fast` rather than jumping.
-
-   Each streak plateaus for 10° and fades over 40° either side — the
-   reference's `shineSize` and `shineFade` defaults. ⚠️ THE STREAKS ARE THE
-   BUTTON'S OWN TWO GRADIENT ENDS, 30% BRIGHTER — asked for in those words.
-   Each control sets `--specular-a` / `--specular-b` from its own endpoint
-   tokens mixed 30% toward white in OKLab (`Button.module.css`,
-   `SmallButton.module.css`); the streak facing the pointer wears the START
-   colour and the one opposite wears the END, so the ring reads as the pill's
-   gradient caught on its rim.
-
-   Hidden at rest and faded in with the hover on `duration/hover`, so it
-   arrives with the gradient reversal rather than snapping on. `hover: none`
-   keeps it hidden — a phone has no pointer for it to face.
-   ========================================================================== */
+/* Specular edge — a light streak along a button's rim that faces the pointer. */
 
 .specular {
   position: absolute;
   inset: 0;
   border-radius: inherit;
-  /* ⚠️ 2px, NOT THE HAIRLINE — retuned 13 Sep 2026. A 1px ring of the
-     pill's own colours 30% brighter could not be seen on either pill: the
-     brightened indigo sat on indigo, the brightened sage on sage. The
-     streaks now wear `effect/specular` (pale steel blue, see :root) with a
-     near-white core, the ring is 2px, and each streak plateaus 20° and fades
-     50° either side. The per-pill `--specular-a/-b` still tint the streak's
-     shoulders, so the two pills' rims are not identical. */
-  /* ⚠️ `--specular-width` and `--specular-core` are OPTIONAL per-control
-     overrides, added 14 Sep 2026 so the primary `Button` could take a louder
-     rim (Button.module.css) without touching the secondary pills. The
-     fallbacks are the values this rule always had: 2px, and a core 60% white. */
   padding: var(--specular-width, calc(var(--border-width-hairline) * 2));
   pointer-events: none;
   opacity: 0;
@@ -3463,31 +1700,8 @@ main[tabindex="-1"]:focus-visible {
   }
 }
 
-/* ============================================================================
-   Edge light — a fixed catch of light on a button's rim.
-   ⚠️ NOT IN FIGMA — asked for directly, 14 Sep 2026, "like the nav bar": the
-   bottom nav's lit ring (`BottomNav.module.css` `.nav::before`), lifted onto
-   `Button` (every variant, so `Continue` too) and `SmallButton`.
+/* Edge light — a fixed catch of light on a button's rim. */
 
-   A 1px ring lit at the top-left (48% white) and dim at the bottom-right (20%),
-   masked so only the ring paints. Unlike `.specular` it does NOT move and is
-   there at rest — it is the light the pill sits under, and `.specular` is the
-   pointer's. A real span for the same reason `.specular` is one: `Button` owns
-   `::after`, `.pressable` owns `::before`.
-
-   ⚠️ THE NAV KEEPS ITS OWN COPY. The values are duplicated, not shared; if one
-   is retuned the other does not follow.
-   ========================================================================== */
-
-/* ⚠️ BRIGHTER AND SOFTER AS OF 14 Sep 2026, asked for directly — "like we have
-   on the boxes". The page card's light edge is not a drawn line: it is
-   `shadow/frosted-card-desktop`'s `inset 0 2px 12px rgba(255,255,255,0.25)`, a
-   white glow falling inward from the top. The span now carries that exact glow
-   plus a 1px top catch, and the ring moved to its `::before` with its streaks
-   raised (top-left 0.48 → 0.7, bottom-right 0.2 → 0.3).
-   ⚠️ THE RING HAS TO BE THE PSEUDO, NOT THE SPAN. A mask clips the element AND
-   everything it paints, so masking the span down to a ring would cut the inner
-   glow away with the interior. */
 .edge-light {
   position: absolute;
   inset: 0;
@@ -3502,9 +1716,6 @@ main[tabindex="-1"]:focus-visible {
     inset 0 1px 1px rgba(255, 255, 255, var(--edge-catch, 0.35));
 }
 
-/* ⚠️ `--edge-ring` REPLACES THE WHOLE SWEEP — 16 Sep 2026. A span that wants
-   another ring sets it (the all-round one below is the only other so far);
-   everything else keeps this four-stop sweep, tuned by its two strengths. */
 .edge-light::before {
   content: "";
   position: absolute;
@@ -3530,25 +1741,6 @@ main[tabindex="-1"]:focus-visible {
     linear-gradient(#000 0 0);
   mask-composite: exclude;
 }
-
-/* ⚠️ THE ALL-ROUND RING — the `Reset` pills' (StartInvestigation), shared as
-   of 16 Sep 2026, when the gallery's photo frames and date pills took it,
-   asked for directly ("u can reuse the border we made for the reset button").
-   The sweep above with its lit corners a touch brighter (0.7 → 0.85,
-   0.3 → 0.45) and its quiet middle lifted off zero to 0.15, so it still
-   travels round the shape but never vanishes along a long edge. A span takes
-   it with `--edge-ring: var(--edge-ring-all-round)`; retune it HERE and every
-   caller follows. */
-:root {
-  --edge-ring-all-round: linear-gradient(
-    135deg,
-    rgba(255, 255, 255, 0.85),
-    rgba(255, 255, 255, 0.15) 40%,
-    rgba(255, 255, 255, 0.15) 60%,
-    rgba(255, 255, 255, 0.45)
-  );
-}
-
 /* ============================================================================
    Focus not obscured — WCAG 2.4.11 (AA)
 
@@ -3558,10 +1750,6 @@ main[tabindex="-1"]:focus-visible {
    it — and of the top edge, for symmetry.
    ========================================================================== */
 
-/* ⚠️ NOT SCOPED TO :focus-visible. scroll-margin has to be in effect at the
-   moment the browser scrolls the element into view, and tying it to a state
-   that is resolved around the same time is a race worth not having. It only
-   affects scroll-into-view, so carrying it unconditionally costs nothing. */
 button,
 a,
 input,
@@ -3585,191 +1773,6 @@ textarea,
   white-space: nowrap;
   border: 0;
 }
-
-/* ============================================================================
-   The entrance — components/layout/LogoEntrance.tsx
-
-   ⚠️ NOT IN FIGMA. The brand lockup appears over the whole viewport before
-   Welcome is handed the screen: the symbol and the wordmark fade in TOGETHER,
-   each drifting a short way inwards — the symbol from its left, the wordmark
-   from its right — settling from a hair larger and sharpening from a blur, and
-   hold as the finished lockup. Then, as of 12 Sep 2026, THE SYMBOL STAYS: the
-   wordmark recedes, the symbol travels to where Welcome's orb carries the same
-   mark, and the orb grows from almost nothing behind it and carries it up into
-   place. The two screens are one object handed over, not a cut. Requested
-   directly.
-
-   ⚠️ IT WAS A PUSH UNTIL 12 Sep 2026, AND IT WAS REPLACED, NOT RETUNED. The
-   wordmark used to fly in from beyond the right edge, hold alone, and be shoved
-   into its slot by a symbol arriving from beyond the left. Asked to change
-   because it read as jumping. Everything that coupled the two halves went with
-   it — the viewport-relative runs, the contact keyframe, the second wrapper on
-   the wordmark and the orb's expo curve. Do not bring any of it back to
-   "restore" the push; see `docs/decisions.md`.
-
-   ⚠️ AND IT WAS A DISSOLVE UNTIL LATER THE SAME DAY. The whole overlay used to
-   fade at 2000 with the lockup blooming to 1.03 inside it, and Welcome's orb
-   assembled from scratch underneath. The bloom is gone with the dissolve — the
-   stage no longer animates at all, because an ancestor transform would move
-   the symbol off the point the hand-off below is aimed at.
-
-   ⚠️ IT IS AN OVERLAY ON `/`, NOT A TWENTIETH ROUTE. The route map is nineteen
-   routes and every one of them is in a nav section; an entrance is in none, it
-   has no title worth announcing, it must not become a back-button destination,
-   and it must not take `/` away from Welcome (`metadataTitleFor("/")`, the
-   CTA's deep link, `BottomNav active="none"`). So it renders as a sibling
-   before `<Welcome>` in `app/page.tsx` and removes itself. See LogoEntrance.tsx.
-
-   THE TIMELINE — every phase is a keyframe PERCENTAGE, never an
-   `animation-delay`. TWO CLOCKS, AND THE SECOND STARTS ON AN EVENT: the
-   ASSEMBLY tracks run 2300 from the un-pause; the HAND-OFF tracks run from the
-   release, which is the assembly's `animationend`, and their times below are
-   R + ms.
-
-     0 ...... 1600   both halves fade in, drift inwards, settle and sharpen
-     1600 ... 2300   held, complete  <- the assembly tracks END here = R.
-                     LogoEntrance.tsx aims the hand-off, sets `data-handoff`
-                     on the overlay and lifts the hold, in ONE style change
-     R ...... +500   the wordmark recedes (fades, softens, blooms to 1.03)
-     R ...... +600   the scrim fades (the no-WebGL gradient only)
-     R ...... +700   the symbol TRAVELS to the orb's mark, shrinking to its
-                     size; the orb grows from 0.04 at the symbol's position to
-                     1 at its own, on the same curve, over the same 700; the
-                     light on the symbol fades out on the way; and the orb's
-                     own mark — the SAME three paths — Spiral-Assembles into
-                     the spot the symbol is arriving at (Welcome's `animateIn`,
-                     0 / 120 / 240 stagger, done by R+940)
-     R+350 .. +630   the symbol fades out over the assembling mark, still
-                     moving with it  <- at R+700 the overlay hides itself and
-                     the node goes
-
-   ⚠️ THE HAND-OFF RUNS FROM THE RELEASE, NOT FROM A PERCENTAGE OF A 3200
-   TRACK — and it was the latter for about an hour. The orb's tracks can only
-   start at the release, and a CSS animation's clock starts at the FIRST FRAME
-   PAINTED after the style change that creates it. That frame is late by
-   exactly as long as the page takes to paint Welcome for the first time —
-   measured 400ms in `next dev` with the canvas and the orb's blurred layers
-   rasterising at once. A travel already running on the entrance's clock
-   arrived, held, and began to fade while the orb behind it was still at 0.7
-   with its mark hidden. Now every hand-off track is created by the SAME
-   attribute change, in the SAME task, as the release: one style recalc, one
-   first frame, one start time for the symbol, the orb and the orb's mark.
-   However late that frame is, nothing is out of step.
-
-   ⚠️ THE HOLD IS 700, NOT 400 — asked for "300ms longer" on 12 Sep 2026. It is
-   the `69.5652%` stop (1600 / 2300) on the two assembly tracks; move it and
-   the release moves with it, because the release IS the end of that track.
-
-   ⚠️ "TOGETHER" IS STRUCTURAL, NOT A COINCIDENCE OF NUMBERS. The two halves run
-   separate keyframes only because they drift in opposite directions. Their
-   duration, their stops and their curve are identical, so they cannot fall out
-   of step — give one a stop the other lacks and they will.
-
-   THE DRIFT IS 15% OF THE LOCKUP'S WIDTH, EXPRESSED AGAINST EACH HALF'S OWN.
-   Measured against the half itself so it scales with the LOGO, not the
-   viewport: this is the lockup settling, not a journey across the screen. 0.15
-   of the 538-wide master is 24.53% of the wordmark's 329 and 38.61% of the
-   symbol's 209 — one distance for both, ~34px at 440 and ~42px at 1440. Much
-   more than that starts to read as travel again, which is what was asked away.
-
-   THE SETTLE — added 12 Sep 2026, asked for directly ("something with sizing,
-   smooth and sophisticated"). Each half also arrives a hair LARGER than life
-   and soft — `scale(1.06)` and a 5px blur at 0% — and condenses to its true
-   size and sharpens over the same 1600ms as the drift. It reads as the lockup
-   coming into focus rather than sliding into place. Three things are
-   deliberate about the numbers:
-
-     - LARGER, not smaller. Growing from 0.9 is the stock "pop in"; settling
-       from just above 1 is the same move a lens makes.
-     - 1.06 is MONOTONIC. It passes through 1 exactly once, at the end. There
-       is no overshoot and no spring — "LUX does not bounce".
-     - THE BLUR IS ON THE HALF, NOT THE STAGE, and it ends at 0 rather than
-       `none` so the whole track interpolates. 5px on a lockup that is at most
-       283 wide is enough to soften the letterforms without dissolving the
-       symbol's mark into a smear at 0%, where it is invisible anyway.
-
-   The scale and the blur ride on the SAME keyframe stops as the drift and the
-   fade. Adding them as a separate track with its own timing is how the two
-   halves would drift out of step; see "TOGETHER" above.
-
-   THE HAND-OFF — the symbol becomes the orb's mark. It is a FLIP: at release,
-   LogoEntrance.tsx measures the symbol's three paths on screen and the orb
-   mark's three paths on screen (Welcome is laid out under the hold, merely at
-   opacity 0) and writes four custom properties on the overlay — the translate
-   and the x/y scale that map the one box onto the other — plus two on the orb:
-   the offset from the orb's resting centre back to the symbol's. The keyframes
-   below read them. The JS holds NO duration and NO curve; it holds two
-   rectangles.
-
-     ⚠️ THE TRAVEL IS ON THE SYMBOL'S `<svg>`, NOT ON `.lux-entrance-mark`. The
-     wrapper's own track ends at identity and, on a `both` fill, KEEPS
-     asserting it; a second transform track on the same element would win the
-     property for its whole life and erase the drift. Same reason the
-     wordmark's recede is on ITS `<svg>`. Two elements, two tracks, no fight —
-     and `transform-origin: 0 0` on the travelling svg is what the FLIP maths in
-     LogoEntrance.tsx assumes.
-
-     ⚠️ THE ORB GROWS FROM THE SYMBOL, NOT IN PLACE — that is "from behind the
-     symbol". `lux-orb-grow` starts the orb at 0.04 with its centre on the
-     symbol's, and it and the symbol move on the SAME curve for the SAME 700
-     from the SAME frame (see the clock note above), so the symbol rides on
-     the orb the whole way. The orb's mark is centred in its box to within
-     0.5px, which is the whole of the error.
-
-     ⚠️ THE ORB'S MARK IS THE SAME GEOMETRY, AS OF 13 Sep 2026. Orb.tsx draws
-     `LUX_SYMBOL`'s three paths through one transform onto its grid, so the
-     FLIP's target is the symbol itself at another scale and the landing is
-     exact — measured within 0.3px on every stroke. Until then the orb carried
-     the chat-ball export's copy, whose centre stroke was ~12% flatter; the
-     FLIP mapped the union box and faded across a 2px difference. Asked for
-     directly, with the orb's own entrance back.
-
-     ⚠️ SO THE HAND-OFF IS THE MARK'S OWN SPIRAL ASSEMBLE, UNDER THE SYMBOL.
-     Welcome's orb `animateIn`s again: from the release its three strokes
-     Spiral-Assemble (the Figma timeline — rotate, scale from 0.5, a short
-     travel, 0/120/240 stagger) into exactly the spot the symbol is arriving
-     at, and the symbol fades R+350 → R+630 over them while still moving. It
-     was a step-then-fade (mark hidden until arrival, then shown under a
-     holding symbol) for a day; a mark that assembles cannot be hidden until
-     it is done, and hiding it defeats the entrance that was asked back. The
-     orb is still small for the first third of the grow, so the strokes'
-     early spin happens behind the symbol at a few pixels' size.
-     (⚠️ The paths are in a different ORDER in the two files — the master's
-     first stroke is the orb's second — so compare by position, never by
-     index.)
-
-   ⚠️ THE CURVE IS `--ease-standard`, AND THAT CHOICE IS MOST OF THE FIX. The
-   push ran on the orb's expo curve, `cubic-bezier(0.16, 1, 0.3, 1)`, which
-   LEAVES AT FULL SPEED — that first-frame lurch is most of what "jumping" was.
-   `--ease-standard` (0.2, 0, 0, 1) leaves from rest and spends most of its time
-   settling; it is the board's default for anything that enters and settles.
-   1600ms is past `duration/slower` on purpose: "slowly, elegantly" was the ask,
-   and this plays once per cold start.
-
-   ⚠️ THE RELEASE IS AN `animationend`, NOT A TIMER. The two assembly tracks
-   run 2300 and finish at the exact moment Welcome has to be released and the
-   hand-off begun; LogoEntrance.tsx listens for `lux-entrance-mark-in` ending,
-   and for `lux-entrance-done` ending 700 later to remove the node. It holds no
-   copy of either number — the two cannot drift, and the reduced-motion
-   collapse shortens everything together. `lux-entrance-veil` (3200 from the
-   un-pause, `visibility` only) is the FAIL-SAFE: it hides the overlay if the
-   script that would start the hand-off never runs, and `data-handoff` replaces
-   it the moment the hand-off does.
-
-   ⚠️ THE "NO DELAYS" RULE IS THE REDUCED-MOTION CONTRACT, NOT A STYLE CHOICE.
-   The global collapse sets `animation-duration: 0.01ms` and leaves
-   `animation-delay` alone — correctly, since a delay is not motion. A timeline
-   built from delays would still take 3.2 real seconds for a user who asked for
-   no motion (2.3 to the release, 0.7 after). Built from percentages, the whole thing collapses with the
-   duration and is over in a frame. Do not "tidy" these into delays.
-   ========================================================================== */
-
-:root {
-  /* above `--z-toast` (500), the previous ceiling: the entrance covers the app
-     entire, including anything that managed to raise a snackbar on load */
-  --z-entrance: 900;
-}
-
 /* THE LIFETIME, twice. The overlay itself no longer fades — the symbol has to
    stay drawn on it to the end — so these only say when the node is done:
    `visibility` is visible for the whole run and hidden at exactly 100%, which
@@ -3810,10 +1813,7 @@ textarea,
 
 /* the symbol: 15% of the lockup to its LEFT, drifting right into place — and
    settling from 1.06 and a 5px blur to its true size, sharp (see "THE SETTLE"
-   above). ⚠️ The transform list is ORDER-SENSITIVE: `translateX() scale()`
-   scales the box first and then moves it by a percentage of the UNSCALED box,
-   so the drift stays the 15% documented above. Swapping them scales the drift
-   too. */
+   above). */
 @keyframes lux-entrance-mark-in {
   0% {
     transform: translateX(-38.61%) scale(1.06);
@@ -3893,22 +1893,7 @@ textarea,
 }
 
 /* THE LIGHT — the gradient sweep through the lockup (components/ui/LuxLogo.tsx,
-   "THE LIGHT"). Asked for directly, 12 Sep 2026, after reactbits' gradient-text.
-   One period of the gradient is the master's 538 user units, and the rect is
-   two periods wide, so sliding it exactly one period lands on an identical
-   frame: the loop is seamless and the sweep can run for as long as the logo
-   is on screen. ⚠️ 538 IS A USER UNIT, NOT A PIXEL. A CSS transform on an SVG
-   element moves it in the SVG's own coordinate system, which is what lets one
-   keyframe drive both halves at one speed whatever the stage is scaled to.
-
-   ⚠️ `linear`, AND THAT IS THE ONE PLACE THE BOARD'S CURVE IS WRONG. Light
-   passing across a surface has no rest to leave from or settle into; eased,
-   it would visibly slow at every loop and read as a pulse. 2600ms is one pass
-   over the lockup in roughly the time it is whole — the highlight crosses the
-   letters once while they sharpen.
-
-   Reduced motion collapses it to one 0.01ms iteration that ends one period
-   on, i.e. on the frame it started from: a still gradient, no sweep. */
+   "THE LIGHT"). */
 @keyframes lux-logo-light {
   from {
     transform: translateX(0);
@@ -3923,11 +1908,7 @@ textarea,
   will-change: transform;
 }
 
-/* the skip: any tap or any key cuts to the assembled lockup and clears it.
-   ⚠️ NO `from`. The tracks above are REPLACED when this one starts, so each
-   element falls back to its static style — which IS the finished lockup,
-   because every track ends at identity. Naming a `from` here would snap a
-   half-faded logo to full opacity before fading it. */
+/* the skip: any tap or any key cuts to the assembled lockup and clears it. */
 @keyframes lux-entrance-skip {
   to {
     opacity: 0;
@@ -3935,36 +1916,6 @@ textarea,
   }
 }
 
-/* ⚠️ THESE RULES MUST LIVE HERE, NOT IN LogoEntrance.module.css. A module
-   localizes `@keyframes` names, so `animation: lux-entrance-veil` written in a
-   module resolves to nothing while still reporting a duration in
-   `getComputedStyle`. The module carries the LAYOUT; this carries the names.
-
-   ⚠️ THE CURVE IS ON THE SHORTHAND BECAUSE A KEYFRAME CANNOT READ A TOKEN, AND
-   IT FAILS SILENTLY WHEN IT TRIES. `animation-timing-function: var(--ease-*)`
-   written INSIDE a `@keyframes` block is dropped — `var()` is not substituted
-   there — and the segment falls back to the default `ease` with no warning.
-   Measured on this entrance: the same keyframe moved 51.3px by 300ms with a
-   token and 87.7px with the cubic-bezier written out, and 51.3px is exactly
-   what declaring nothing gives. Every track here is one move between holds, and
-   easing a constant gives a constant, so one curve on the shorthand lands on
-   exactly the segment that moves. If a track ever needs two curves, write the
-   `cubic-bezier()` out LITERALLY in the keyframe; do not reach for `var()`.
-   (⚠️ `var()` in a keyframe VALUE — the travel's four properties — is fine;
-   it is only the timing function that is dropped.)
-
-   ⚠️ `both`, AND THE REVEAL BLOCK'S WARNING ABOUT IT DOES NOT APPLY HERE. A
-   `forwards` opacity animation leaves a persistent stacking context — a defect
-   on a revealed block inside a screen, and exactly what is wanted on an overlay
-   that must STAY gone if the script that removes it never runs. It is also what
-   makes `visibility: hidden` stick, and a hidden element takes no pointer.
-   Nothing is left in effect over Welcome: the node is removed.
-
-   ⚠️ EVERYTHING UNDER `[data-handoff]` STARTS TOGETHER, ON THE RELEASE — see
-   the clock note in the timeline. The attribute is set by LogoEntrance.tsx in
-   the same task that lifts the hold. It also REPLACES the overlay's fail-safe
-   lifetime with the 700 one, by a different name, because a retimed animation
-   keeps its old start. */
 .lux-entrance {
   animation: lux-entrance-veil 3200ms linear both;
 }
@@ -4003,39 +1954,19 @@ textarea,
   animation: lux-entrance-skip var(--duration-base) var(--ease-standard) both;
 }
 
-/* the two assembly tracks stop dead on a skip and their elements fall back to
-   the finished lockup — see the `lux-entrance-skip` note above. The inner
-   tracks (travel, recede, light) are left running: cancelling a travel
-   mid-flight would snap the symbol back to the lockup for the 200ms fade. */
 .lux-entrance[data-skip] .lux-entrance-mark,
 .lux-entrance[data-skip] .lux-entrance-word {
   animation: none;
 }
 
-/* ----------------------------------------------------------------------------
-   The orb's side of the hand-off — Welcome's
+/* The orb's side of the hand-off — Welcome's
    `<Orb animateIn halo className="orb-from-entrance">`
 
    The orb GROWS from 0.04 with its centre on the symbol's (the two offsets are
    written by LogoEntrance.tsx at release; unset, it grows in place) to 1 at
    its own resting centre, over the same 700 and curve as the symbol's travel.
    Its mark Spiral-Assembles meanwhile, from `animateIn` as on every other orb
-   — see "THE HAND-OFF" above.
-
-   ⚠️ THE GROW REPLACES `.reveal-hero`'s FADE BY SPECIFICITY (0-2-0 over
-   0-1-0), on the same element, deliberately: the grow carries its own opacity
-   and a second `animation` on `.lux-orb` would otherwise be the one that won.
-   The mark's own tracks are on the strokes and untouched. Written for the
-   siri renderer's structure; under `ORB_RENDERER = "svg"` the class lands on
-   the svg and the grow still runs.
-
-   ⚠️ `backwards`, NEVER `both` — nothing may be left in effect on the orb, or
-   `.lux-orb-float`'s drift underneath would be fighting a held transform.
-
-   ⚠️ AND THE HOLD CANCELS IT, LIKE EVERYTHING IN `.screen`, so the orb sits
-   at rest while it is measured. A skip during the hold never aims, so the orb
-   grows in place with its mark assembling — Welcome's ordinary entrance.
-   ------------------------------------------------------------------------- */
+   — see "THE HAND-OFF" above. */
 @keyframes lux-orb-grow {
   0% {
     transform: translate(var(--orb-from-x, 0px), var(--orb-from-y, 0px))
@@ -4055,8 +1986,7 @@ textarea,
   animation: lux-orb-grow 700ms var(--ease-standard) backwards;
 }
 
-/* ----------------------------------------------------------------------------
-   The hand-off — why Welcome's own entrance has to be held
+/* The hand-off — why Welcome's own entrance has to be held
 
    Welcome runs a 3.8s narrative of its own: the orb grows (700ms) and takes
    its mark from the entrance (900ms), the CTA reveals, the question arrives
@@ -4070,60 +2000,199 @@ textarea,
    screen, dropping each element onto its STATIC style — for the reveals that is
    opacity 1, i.e. visible. Releasing the attribute re-applies the names, and a
    newly applied animation starts from the beginning. Welcome gets its entrance
-   back, in full, at the moment the veil starts to lift.
-
-   ⚠️ IT CANCELS RATHER THAN PAUSES, AND THAT IS THE SAFE DIRECTION.
-   `animation-play-state: paused` would freeze the reveals at their `backwards`
-   0% keyframe — opacity 0 — so a script that never released the hold would
-   leave the CTA and the disclaimer INVISIBLE on an otherwise working page.
-   Cancelling fails the other way: the worst case is a screen that is fully
-   visible and never animated.
-
-   ⚠️ THE HOLD IS SET AFTER HYDRATION AND THAT IS FINE. Welcome's animations do
-   run for the frames between first paint and the effect, and are then cut back
-   to their start. Every one of those frames is behind an opaque veil.
-
-   ⚠️ IT IS RELEASED AT 2300, WHEN THE ASSEMBLY TRACKS END — NOT WHEN THE NODE
-   GOES AT 3200. Welcome's orb has to be growing behind the symbol WHILE the
-   symbol travels, and the symbol only travels after the hold; releasing on the
-   overlay's own `animationend` would mean Welcome sat fully formed and
-   unanimated under the hand-off, then blinked out and restarted.
-
-   Specificity: 0-2-1 against the 0-1-0 of `.reveal-hero`, `.bubble-ask-exit`
-   and every module rule — it wins the cascade without an `!important`, which
-   this file has exactly one of and it is not this.
-   ------------------------------------------------------------------------- */
+   back, in full, at the moment the veil starts to lift. */
 html[data-entrance-hold] .screen * {
   animation-name: none;
 }
 
-/* ⚠️ AND WELCOME IS INVISIBLE WHILE HELD — added 12 Sep 2026, when the veil
-   stopped being opaque. The logo now draws straight on the living canvas (see
-   LogoEntrance.module.css), so nothing but this keeps Welcome's held — and
-   therefore fully visible — content from showing behind it. Opacity is also
-   what lets the hand-off MEASURE Welcome's orb while held: an element at
-   opacity 0 is laid out; a hidden one is too, but `display: none` would not be. Opacity, NOT
-   `visibility`: a screen reader and the first Tab still reach Welcome
-   underneath, as the entrance's accessibility notes require. Every visible
-   element on Welcome restarts from opacity 0 when the hold lifts, so nothing
-   pops as this returns to 1.
-
-   ⚠️ THIS REVERSES THE "SAFE DIRECTION" ABOVE for one case, a hold that is
-   never released: that used to leave Welcome visible and unanimated, and now
-   leaves it hidden. So `LogoEntrance` also releases on a backstop timer
-   (HOLD_BACKSTOP_MS), not only on `animationend`. */
 html[data-entrance-hold] .screen {
   opacity: 0;
 }
 
-/* the translucent secondary endpoints (see :root above) made opaque again —
-   `tokens.css`'s own pair — for a reader who asked for less transparency */
 @media (prefers-reduced-transparency: reduce) {
-  :root {
-    --color-button-bg-secondary-start: #deeff3;
-    --color-button-bg-secondary-end: #b7c6ca;
-  }
+  
   .edge-light {
     display: none;
   }
+}
+
+/* ============================================================================
+   THE TWO BOXES — `.sheet` and `.panel`, as classes so a component and
+   a one-off layout draw the same thing.
+
+   SHEET  the AI Assistant's shape — 36 top / 44 bottom, a white rim along
+          the top, no border — on lux-v2's sage frost (`--surface-sheet`, the
+          v2 tray's fill and blur). It holds a title row and a panel.
+   PANEL  the frost box inside it (and the Storyboard's description card):
+          `--color-panel` (30% — toned down on the canvas from
+          `surface/frost-light`'s 55%), a 1px glass edge, a white inset rim,
+          12 blur, radius 28. Ink on it is the app's dark ink. Every
+          investigation question sits in one.
+   ========================================================================== */
+
+.sheet {
+  border-radius: var(--radius-sheet) var(--radius-sheet) var(--radius-sheet-foot) var(--radius-sheet-foot);
+  background: var(--surface-sheet);
+  box-shadow: var(--shadow-sheet);
+  -webkit-backdrop-filter: blur(var(--blur-card)) saturate(1.4);
+  backdrop-filter: blur(var(--blur-card)) saturate(1.4);
+  color: var(--color-text-primary);
+}
+
+.panel {
+  border-radius: var(--radius-panel);
+  background: var(--color-panel-data);
+  box-shadow: var(--shadow-frosted-row);
+  -webkit-backdrop-filter: blur(12px);
+  backdrop-filter: blur(12px);
+  color: var(--color-text-primary);
+}
+
+/* glass — the chip and round-button material, as a utility */
+.glass {
+  background: var(--color-glass);
+  border: var(--border-width-hairline) solid var(--color-border-glass);
+  box-shadow: var(--shadow-glass);
+}
+
+@media (prefers-reduced-transparency: reduce) {
+  .sheet {
+    background: linear-gradient(var(--color-surface-data), var(--color-surface-data)),
+      var(--color-bg-canvas);
+    -webkit-backdrop-filter: none;
+    backdrop-filter: none;
+  }
+  .panel {
+    background: #eef6f7;
+    -webkit-backdrop-filter: none;
+    backdrop-filter: none;
+  }
+}
+
+svg[data-lux-icon="close"],
+svg[data-lux-icon="chevron"] {
+  scale: 0.6;
+}
+
+svg[data-lux-icon="glyph"] {
+  scale: 0.85;
+}
+
+@keyframes lux-face-art {
+  from {
+    opacity: 0;
+    scale: 0.96;
+  }
+}
+
+@keyframes lux-face-pop {
+  from {
+    opacity: 0;
+    scale: 0.85;
+  }
+}
+
+@keyframes lux-face-draw {
+  from {
+    stroke-dashoffset: 1;
+  }
+}
+
+@keyframes lux-face-fade {
+  from {
+    opacity: 0;
+  }
+}
+
+/* (0,5,0) — doubled attributes, so the hold outranks the parts' own
+   opacity rules (a read-only face dims unpicked pills at (0,4,0)) */
+[data-motion="face"][data-motion]:not([data-inview]) [data-part][data-part] {
+  opacity: 0;
+}
+
+[data-motion="face"][data-inview]:not([data-settled]) [data-part="art"] {
+  animation: lux-face-art var(--duration-slower) var(--ease-standard) backwards;
+}
+
+[data-motion="face"][data-inview]:not([data-settled]) [data-part="region"] {
+  animation: lux-face-pop var(--duration-slow) var(--ease-standard) backwards;
+  animation-delay: calc(250ms + var(--i, 0) * 45ms);
+}
+
+[data-motion="face"][data-inview]:not([data-settled]) [data-part="leader"] {
+  animation: lux-face-draw var(--duration-slower) var(--ease-standard) 700ms backwards;
+}
+
+[data-motion="face"][data-inview]:not([data-settled]) [data-part="anchor"] {
+  animation: lux-face-fade var(--duration-slow) var(--ease-standard) 800ms backwards;
+}
+
+[data-motion="face"][data-inview]:not([data-settled]) [data-part="callout"] {
+  animation: lux-face-pop var(--duration-slow) var(--ease-standard) 950ms backwards;
+}
+
+@keyframes lux-specular-orbit {
+  from {
+    --specular-angle: 0deg;
+  }
+  to {
+    --specular-angle: 360deg;
+  }
+}
+
+:is(a, button):hover:not(:disabled) > .specular {
+  animation: lux-specular-orbit 4.5s linear infinite;
+}
+
+@keyframes lux-rise {
+  from {
+    opacity: 0;
+    translate: 0 10px;
+    scale: 0.96;
+  }
+}
+
+[data-motion="rise"][data-motion]:not([data-inview]) > * {
+  opacity: 0;
+}
+
+[data-motion="rise-self"][data-motion]:not([data-inview]) {
+  opacity: 0;
+}
+
+[data-motion="rise"][data-inview]:not([data-settled]) > * {
+  animation: lux-rise var(--duration-slow) var(--ease-standard) backwards;
+  animation-delay: calc(var(--rise-delay, 0ms) + var(--rise-i, 0) * 40ms);
+}
+
+[data-motion="rise-self"][data-inview]:not([data-settled]) {
+  animation: lux-rise var(--duration-slow) var(--ease-standard) backwards;
+  animation-delay: var(--rise-delay, 0ms);
+}
+
+[data-motion="rise"] > :nth-child(2) { --rise-i: 1; }
+[data-motion="rise"] > :nth-child(3) { --rise-i: 2; }
+[data-motion="rise"] > :nth-child(4) { --rise-i: 3; }
+[data-motion="rise"] > :nth-child(5) { --rise-i: 4; }
+[data-motion="rise"] > :nth-child(6) { --rise-i: 5; }
+[data-motion="rise"] > :nth-child(7) { --rise-i: 6; }
+[data-motion="rise"] > :nth-child(8) { --rise-i: 7; }
+[data-motion="rise"] > :nth-child(9) { --rise-i: 8; }
+[data-motion="rise"] > :nth-child(10) { --rise-i: 9; }
+[data-motion="rise"] > :nth-child(11) { --rise-i: 10; }
+[data-motion="rise"] > :nth-child(n + 12) { --rise-i: 11; }
+
+/* The film grain on the routine and symptom trend cards and the face
+   diagram: fractal noise at 8%, overlaid. On `::after`, under the content, so
+   the card must be `position: relative` and isolate its stacking. */
+.grain::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  border-radius: inherit;
+  pointer-events: none;
+  opacity: 0.08;
+  mix-blend-mode: overlay;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='120' height='120'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='2'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
 }

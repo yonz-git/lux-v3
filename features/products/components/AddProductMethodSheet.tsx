@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useLayoutEffect, useRef, useState } from "react";
 import styles from "./AddProductMethodSheet.module.css";
 import { Sheet } from "@/components/ui/Sheet";
 import { CameraCapture } from "@/components/ui/CameraCapture";
@@ -8,15 +8,22 @@ import { ChatBubble } from "@/components/ui/ChatBubble";
 import { ProductCard } from "./ProductCard";
 import { ProductAccordionCard } from "./ProductAccordionCard";
 import { Button } from "@/components/ui/Button";
+import { IconButton } from "@/components/ui/IconButton";
 import { OptionRow } from "@/components/ui/OptionRow";
 import SegmentedToggle from "./SegmentedToggle";
+import {
+  SearchDropdown,
+  SearchDropdownList,
+  SearchDropdownNote,
+  SearchDropdownRow,
+} from "@/components/ui/SearchDropdown";
 import { SearchField } from "@/components/ui/SearchField";
 import { ProductRow } from "./ProductList";
 import { ProductThumb } from "./ProductThumb";
 import { useInvestigation } from "@/lib/store/InvestigationProvider";
-import { useSnackbar } from "@/components/layout/Snackbar";
 import { DROP_EXIT_MS, useDialogPresence, useHeldWhileClosing } from "@/lib/useModalDialog";
-import { SearchIcon, CameraIcon, ChevronRightIcon, CloseIcon, PlusIcon } from "@/components/ui/icons";
+import { SearchIcon, CameraIcon, ChevronRightIcon } from "@/components/ui/icons";
+import { CloseButton } from "@/components/ui/CloseButton";
 import {
   BUCKET_LIST_TITLE,
   DURATIONS,
@@ -29,28 +36,13 @@ import {
   type ProductDraft,
   type SavedProduct,
 } from "@/features/products/products";
+import { useProductLibrary } from "@/features/products/useProductLibrary";
 import { useOpenBeautyFactsSearch } from "@/features/products/useOpenBeautyFactsSearch";
 import { useEnrichedProduct } from "@/features/products/useEnrichedProduct";
 
 /**
  * The "Add a product" tray — Figma mobile 576:1376, desktop dialog 583:1786.
  * The one way into step 5's add flow, opened from `Your products`.
- *
- * ⚠️ CHANGE OF FLOW, NOT IN FIGMA. The comps treat search and scan as two
- * routed screens (`576:1428`, `577:1498`) handing off to a third (`577:1430` /
- * `578:1482`) and then to `Product added` (`579:1540`). Here the ENTIRE add
- * flow — method, search-or-scan, confirm, duration, added — plays out inside
- * this one tray, which grows to fit whichever view is showing. Nothing in the
- * add flow navigates; the four routed screens have been deleted.
- *
- * ⚠️ THE PERIOD IS NOT CHOSEN BEFORE THE PRODUCT ANY MORE — that reordering is
- * what this step was rebuilt for. The tray used to open already committed to a
- * period (`targetBucket`), decided by which bucket row the user tapped on a
- * screen BEFORE they had searched for anything, and it then ran that backwards
- * through `durationForBucket()` to invent a duration. The three rows that were
- * supposed to set it never did, so everything filed under Long term regardless.
- * Now the tray asks "how long have you used it?" once, with the product on
- * screen, and `bucketFor()` derives the group from that answer alone.
  */
 type View = "method" | "search" | "scan" | "confirm";
 type ConfirmSource = "search" | "scan";
@@ -60,7 +52,8 @@ type ConfirmSource = "search" | "scan";
  * the draft holds the answers (see `ProductDraft`), this holds what is on
  * screen, and it resets with the tray.
  *
- *   verify    is this the right product?         -> duration | rejected
+ *   verify    is this the right product?         -> duration | added | rejected
+ *             (straight to added when the tray was opened from a group)
  *   duration  how long have you used it?         -> added
  *   added     it went into <group>; add another  -> verify
  *   rejected  wrong product; search again        -> verify
@@ -70,27 +63,81 @@ type ConfirmStage = "verify" | "duration" | "added" | "rejected";
 export function AddProductMethodSheet({
   open,
   onClose,
-  base = [],
+  duration,
+  startOn = "method",
+  onAdded,
 }: {
   open: boolean;
   onClose: () => void;
-  /**
-   * ⚠️ WHAT AN EMPTY STORE MEANS DEPENDS ON WHO OPENED THE TRAY. In step 5 it
-   * means the user has added nothing, so a first add starts from `[]`. On the
-   * PRODUCTS hub it means the seeded library is still showing
-   * (`ownedProducts`), and starting from `[]` there would materialise the store
-   * as that ONE new product and wipe the list the user was looking at. The
-   * caller passes what it is currently displaying; the same fallback
-   * `MyProducts`' remove path already uses.
-   */
-  base?: SavedProduct[];
+  /** the view it opens on, and returns to: `scan` for a photo button */
+  startOn?: "method" | "scan";
+  /** told about each product it saves, e.g. to put it in an analysis */
+  onAdded?: (product: SavedProduct) => void;
+  /** already answered — the tray was opened from a group, which IS the
+   *  answer — so the duration question is skipped */
+  duration?: Duration;
 }) {
   const { answers, setAnswer } = useInvestigation();
-  const { show } = useSnackbar();
-  const [view, setView] = useState<View>("method");
+  const { add, remove: removeProduct } = useProductLibrary();
+  const [view, setView] = useState<View>(startOn);
   const [confirmSource, setConfirmSource] = useState<ConfirmSource>("search");
   const [stage, setStage] = useState<ConfirmStage>("verify");
-  const [subject, setSubject] = useState<"front" | "ingredients">("front");
+  /* what the search's results panel is showing; the tray eases its height
+     when it changes, as it does between views */
+  const [searchShape, setSearchShape] = useState("closed");
+
+  /* Every view change goes through `go`: the current view fades out, then
+     the next one mounts and fades in while the tray eases to its height
+     (`Sheet`'s `contentKey`). */
+  const viewRef = useRef<HTMLDivElement>(null);
+  const leavingView = useRef<Animation | null>(null);
+  const goingTo = useRef<View | null>(null);
+  const shownView = useRef(view);
+
+  function go(next: View) {
+    const el = viewRef.current;
+    /* already on its way there, or already there with nothing leaving */
+    if (goingTo.current === next || (goingTo.current === null && next === view)) return;
+    const opacity = el ? getComputedStyle(el).opacity : "1";
+    leavingView.current?.cancel();
+    leavingView.current = null;
+    goingTo.current = null;
+    if (!el || reducedMotion()) {
+      setView(next);
+      return;
+    }
+    const timing = { duration: token(el, "--duration-fade"), easing: tokenText(el, "--ease-in-out") };
+    /* turned back to the view that was leaving: it fades back in from where it is */
+    if (next === view) {
+      el.animate({ opacity: [opacity, "1"] }, timing);
+      return;
+    }
+    const out = el.animate({ opacity: [opacity, "0"] }, { ...timing, fill: "forwards" });
+    leavingView.current = out;
+    goingTo.current = next;
+    out.finished.then(
+      () => {
+        if (leavingView.current !== out) return;
+        leavingView.current = null;
+        goingTo.current = null;
+        setView(next);
+      },
+      () => {},
+    );
+  }
+
+  useLayoutEffect(() => {
+    const el = viewRef.current;
+    const prev = shownView.current;
+    shownView.current = view;
+    if (!el || prev === view) return;
+    for (const a of el.getAnimations()) a.cancel();
+    if (!open || reducedMotion()) return;
+    el.animate(
+      { opacity: ["0", "1"] },
+      { duration: token(el, "--duration-fade"), easing: tokenText(el, "--ease-in-out") },
+    );
+  }, [view, open]);
 
   const draft = answers.productDraft;
   const products = answers.products ?? [];
@@ -106,10 +153,12 @@ export function AddProductMethodSheet({
    *  the tray always reopens on the method chooser, with no draft left over
    *  from whichever branch was in progress. */
   function resetAndClose() {
-    setView("method");
+    leavingView.current?.cancel();
+    leavingView.current = null;
+    goingTo.current = null;
+    setView(startOn);
     setConfirmSource("search");
     setStage("verify");
-    setSubject("front");
     setAnswer("productQuery", "");
     setAnswer("scan", undefined);
     setAnswer("productDraft", undefined);
@@ -123,7 +172,7 @@ export function AddProductMethodSheet({
     setAnswer("productDraft", { product });
     setConfirmSource("search");
     setStage("verify");
-    setView("confirm");
+    go("confirm");
   }
 
   function toggleCapture() {
@@ -142,6 +191,10 @@ export function AddProductMethodSheet({
    *  commit it. The duration question comes next, and it is the answer that
    *  decides the group, so there is nothing to save until it exists. */
   function acceptDraft() {
+    if (duration) {
+      commit(duration);
+      return;
+    }
     setStage("duration");
   }
 
@@ -160,42 +213,18 @@ export function AddProductMethodSheet({
    */
   function addProduct() {
     if (!draft?.duration) return;
-    const saved: SavedProduct = {
-      // the ENRICHED product, not the bare draft, so a saved product carries
-      // whatever photo/ingredients Open Beauty Facts found and the hub's
-      // thumbs and accordion cards show it too
-      ...enrichedProduct,
-      duration: draft.duration,
-      bucket: bucketFor(draft.duration),
-      addedOn: new Date().toISOString(),
-    };
-    setAnswer("products", (prev) => [
-      ...(prev ?? base).filter((p) => p.id !== saved.id),
-      saved,
-    ]);
-    // ⚠️ THE QUERY IS CLEARED HERE, and it matters now the results are a
-    // dropdown. `Add another product` reuses the same `productQuery`, so a
-    // query left standing meant the added stage opened with a full panel of
-    // results for a search the user had already finished — a dropdown open
-    // without anyone having typed into the field under it. `rejectDraft`
-    // deliberately does NOT do this: "No, search again" means search again
-    // for the same thing.
-    setAnswer("productQuery", "");
-    setStage("added");
+    commit(draft.duration);
   }
 
-  /** ⚠️ THE SAME UNDO THE HUB'S `Remove` GETS, AND FOR THE SAME REASON: this
-   *  removes from `answers.products`, the library that persists forever, not
-   *  from anything local to the tray. The snapshot is the store's own value so
-   *  a seeded library comes back seeded — see `MyProducts.removeProduct`. */
-  function removeProduct(id: string) {
-    const before = answers.products;
-    const removed = (answers.products ?? base).find((p) => p.id === id);
-    setAnswer("products", (prev) => (prev ?? base).filter((p) => p.id !== id));
-    show({
-      message: removed ? `Removed ${fullName(removed)}` : "Product removed",
-      onAction: () => setAnswer("products", before),
-    });
+  function commit(answer: Duration) {
+    // the ENRICHED product, not the bare draft, so a saved product carries
+    // whatever photo/ingredients Open Beauty Facts found and the hub's
+    // thumbs and accordion cards show it too
+    const saved = add(enrichedProduct, answer);
+    onAdded?.(saved);
+    setAnswer("productDraft", (prev) => (prev ? { ...prev, duration: answer } : prev));
+    setAnswer("productQuery", "");
+    setStage("added");
   }
 
   const title =
@@ -212,11 +241,16 @@ export function AddProductMethodSheet({
               : "Confirm product";
 
   return (
-    <Sheet open={open} onClose={resetAndClose} title={title}>
+    <Sheet open={open} onClose={resetAndClose} title={title}
+      dismiss="corner"
+      className={styles.cornerRoom}
+      contentKey={`${view}|${searchShape}`}
+    >
+      <div ref={viewRef} className={styles.view}>
       {view === "method" && (
         <MethodView
-          onSearch={() => setView("search")}
-          onScan={() => setView("scan")}
+          onSearch={() => go("search")}
+          onScan={() => go("scan")}
         />
       )}
 
@@ -225,21 +259,20 @@ export function AddProductMethodSheet({
           query={answers.productQuery ?? ""}
           onQueryChange={(v) => setAnswer("productQuery", v)}
           onChoose={chooseProduct}
+          onScan={() => go("scan")}
+          onShapeChange={setSearchShape}
         />
       )}
 
       {view === "scan" && (
         <ScanView
           captured={Boolean(answers.scan)}
-          subject={subject}
-          onToggleSubject={() =>
-            setSubject(subject === "front" ? "ingredients" : "front")
-          }
           onCapture={toggleCapture}
+          onSearch={() => go("search")}
           onContinue={() => {
             setConfirmSource("scan");
             setStage("verify");
-            setView("confirm");
+            go("confirm");
           }}
         />
       )}
@@ -263,18 +296,19 @@ export function AddProductMethodSheet({
           query={answers.productQuery ?? ""}
           onQueryChange={(v) => setAnswer("productQuery", v)}
           onChooseMore={chooseProduct}
+          onShapeChange={setSearchShape}
+          onDone={resetAndClose}
         />
       )}
+      </div>
     </Sheet>
   );
 }
 
-/** The two-card chooser — the tray's default view. Search and scan set the
+/**
+ * The two-card chooser — the tray's default view. Search and scan set the
  *  view directly; nothing here navigates.
- *
- *  ⚠️ NO `Cancel` HERE ANY MORE. It was this view's own button, which is why
- *  every other view had no visible way out; `Sheet` renders one under whatever
- *  view is showing instead. */
+ */
 function MethodView({
   onSearch,
   onScan,
@@ -304,15 +338,7 @@ function MethodView({
   );
 }
 
-/**
- * A method card inside the tray.
- *
- * ⚠️ THE CARD IS SAGE, AND SO IS ITS ICON. `surface/data-strong` takes WHITE
- * text, and an icon instance carries its own dark default — a dark glyph beside
- * white text is the single most-repeated bug in this file. Both the fill and the
- * stroke have to change, because most LUX icons are stroke-drawn and a
- * fills-only recolour silently does nothing. `currentColor` does both here.
- */
+/** A method card inside the tray. */
 function MethodCard({
   icon,
   title,
@@ -338,38 +364,26 @@ function MethodCard({
   );
 }
 
-/** Was `04 — Search by name` (576:1428) as its own routed screen; now the
+/**
+ * Was `04 — Search by name` (576:1428) as its own routed screen; now the
  *  tray's search view. Same field-starts-empty rule — only the destination on
  *  picking a result changed.
- *
- * ⚠️ NOT IN FIGMA: THE RESULTS ARE A DROPDOWN HANGING OFF THE SEARCH BAR, not
- * a list on the tray. They used to be free-standing `ProductRow` cards in a
- * capped `.searchResultsScroll` region, which put a second column of frosted
- * cards on a surface that already had them and read as "more content" rather
- * than "what you just typed matched". One panel tucked under the pill reads as
- * the bar's own output. Consequences worth knowing:
- *
- *   - NOTHING SHOWS UNTIL SOMETHING IS TYPED. The old "Search for a product by
- *     brand or name" `EmptyBox` is gone: a dropdown with nothing in the field
- *     is not a state a dropdown has, and the field's own placeholder already
- *     says it.
- *   - THE PANEL IS IN FLOW, not absolutely positioned. On mobile the tray is
- *     DOCKED TO THE BOTTOM EDGE and hugs its content, so an overlaid dropdown
- *     would open straight off the bottom of the viewport with nowhere to go.
- *     In flow the tray grows upward to hold it, which is the whole point of a
- *     bottom sheet. It still overlays in the sense that matters — see
- *     `.dropdown`'s negative top margin tucking it under the pill — and the
- *     panel caps its own height and scrolls internally, so a long result list
- *     can never push the search field itself out of reach.
  */
 function SearchView({
   query,
   onQueryChange,
   onChoose,
+  onScan,
+  onShapeChange,
 }: {
   query: string;
   onQueryChange: (v: string) => void;
   onChoose: (product: CatalogProduct) => void;
+  /** switch to the camera; the typed query is kept for coming back. Absent
+   *  inside the confirm view, which has no camera to switch to. */
+  onScan?: () => void;
+  /** told each time the results panel opens, closes or changes what it shows */
+  onShapeChange?: (shape: string) => void;
 }) {
   const { results, loading } = useOpenBeautyFactsSearch(query);
   const typed = query.trim() !== "";
@@ -379,12 +393,29 @@ function SearchView({
   const dropdown = useDialogPresence(typed, DROP_EXIT_MS);
   const shown = useHeldWhileClosing(typed, { results, loading, query });
 
+  const shape = !dropdown.present
+    ? "closed"
+    : dropdown.leaving
+      ? "leaving"
+      : shown.loading
+        ? "loading"
+        : `results:${shown.results.length}`;
+  useLayoutEffect(() => onShapeChange?.(shape), [shape, onShapeChange]);
+  useLayoutEffect(() => () => onShapeChange?.("closed"), [onShapeChange]);
+
   return (
     <div className={styles.searchView}>
       <SearchField
         value={query}
         onChange={onQueryChange}
         label="Search products by brand or name"
+        action={
+          onScan && {
+            label: "Take a photo instead",
+            icon: <CameraIcon />,
+            onClick: onScan,
+          }
+        }
       />
 
       <p role="status" aria-live="polite" className="visually-hidden">
@@ -396,43 +427,24 @@ function SearchView({
       </p>
 
       {dropdown.present && (
-        <div
-          className={`${styles.dropdown} drop`}
-          data-state={dropdown.leaving ? "leaving" : undefined}
-          inert={dropdown.leaving}
-        >
+        <SearchDropdown placement="flow" leaving={dropdown.leaving}>
           {shown.loading ? (
-            <p className={`${styles.dropdownNote} t-body3`}>Searching…</p>
+            <SearchDropdownNote>Searching…</SearchDropdownNote>
           ) : shown.results.length === 0 ? (
-            <p className={`${styles.dropdownNote} t-body3`}>
-              No products match “{shown.query.trim()}”
-            </p>
+            <SearchDropdownNote>No products match “{shown.query.trim()}”</SearchDropdownNote>
           ) : (
-            <ul className={styles.results}>
+            <SearchDropdownList>
               {shown.results.map((p) => (
-                <li key={p.id}>
-                  {/* deliberately NOT `ProductRow` — that is the frosted CARD
-                      recipe, and a card inside a panel is two surfaces doing
-                      one job. A dropdown row is a hover target on the panel's
-                      own fill. */}
-                  <button
-                    type="button"
-                    className={styles.result}
-                    onClick={() => onChoose(p)}
-                  >
-                    <ProductThumb product={p} />
-                    <span className={styles.resultCopy}>
-                      {/* brand-led title, no size under it — 15 Sep 2026 */}
-                      <span className={`${styles.resultName} t-h6`}>
-                        {fullName(p)}
-                      </span>
-                    </span>
-                  </button>
-                </li>
+                <SearchDropdownRow
+                  key={p.id}
+                  leading={<ProductThumb product={p} />}
+                  title={fullName(p)}
+                  onSelect={() => onChoose(p)}
+                />
               ))}
-            </ul>
+            </SearchDropdownList>
           )}
-        </div>
+        </SearchDropdown>
       )}
     </div>
   );
@@ -443,15 +455,14 @@ function SearchView({
  *  been "taken", and moves to the tray's confirm view. */
 function ScanView({
   captured,
-  subject,
-  onToggleSubject,
   onCapture,
+  onSearch,
   onContinue,
 }: {
   captured: boolean;
-  subject: "front" | "ingredients";
-  onToggleSubject: () => void;
   onCapture: () => void;
+  /** switch to search; a captured photo is kept for coming back */
+  onSearch: () => void;
   onContinue: () => void;
 }) {
   return (
@@ -461,32 +472,20 @@ function ScanView({
           make it a component once a second appeared */}
       <CameraCapture
         captured={captured}
-        title={
-          subject === "front"
-            ? "Take a photo of the front of the product."
-            : "Take a photo of the ingredient list."
-        }
         helper={
           captured
             ? "Tap the shutter again to retake."
-            : subject === "front"
-              ? "Make sure the product name and brand are visible."
-              : "Make sure the whole list is in frame and in focus."
+            : "Make sure the product name and brand are visible."
         }
         onCapture={onCapture}
+        aside={
+          <IconButton size="md" label="Search by name instead" onClick={onSearch}>
+            <SearchIcon />
+          </IconButton>
+        }
       />
 
-      <button
-        type="button"
-        className={`${styles.scanAlt} t-label`}
-        onClick={onToggleSubject}
-      >
-        {subject === "front"
-          ? "Take photo of ingredient list instead"
-          : "Take photo of the front instead"}
-      </button>
-
-      <Button
+      <Button width="action"
         className={styles.trayAction}
         disabled={!captured}
         onClick={onContinue}
@@ -501,13 +500,6 @@ function ScanView({
  * Was `04 — Confirm product` (577:1430) / `04 — Product match` (578:1482) as
  * two routed screens sharing one body — plus, now, the duration question that
  * screen asked and the `Product added` screen (579:1540) that followed it.
- *
- * ⚠️ THE DURATION QUESTION IS THE POINT OF THIS VIEW. It sits here, after the
- * product is identified and with the product on screen, because "how long have
- * you used it" is a fact about the thing in front of the user rather than a
- * mode they had to enter before searching. Its answer is the only input to
- * `bucketFor()`, so this is the single place in the app where a product's group
- * is decided.
  */
 function ConfirmView({
   source,
@@ -523,6 +515,8 @@ function ConfirmView({
   query,
   onQueryChange,
   onChooseMore,
+  onShapeChange,
+  onDone,
 }: {
   source: ConfirmSource;
   stage: ConfirmStage;
@@ -545,6 +539,9 @@ function ConfirmView({
   query: string;
   onQueryChange: (v: string) => void;
   onChooseMore: (product: CatalogProduct) => void;
+  onShapeChange: (shape: string) => void;
+  /** closes the tray once the user has added what they came to add */
+  onDone: () => void;
 }) {
   const isScan = source === "scan";
   const showsCard =
@@ -558,13 +555,6 @@ function ConfirmView({
         </ChatBubble>
       )}
 
-      {/* ⚠️ A SEARCHED PRODUCT IS A DROPDOWN ROW, NOT THE BIG CARD — 16 Sep
-          2026, asked for directly ("make it as a dropdown like here", pointing
-          at the PRODUCTS hub's compact card). The same `ProductAccordionCard`
-          the hub draws, closed by default, opening onto the same
-          `ProductDetails`; no Remove, because nothing is added yet. A SCAN
-          keeps `ProductCard`: its "92% match" tag and big picture are the
-          answer to "is this what the camera saw?". */}
       {showsCard &&
         (isScan ? (
           <ProductCard
@@ -578,7 +568,7 @@ function ConfirmView({
       {stage === "verify" && draft && (
         <div className={styles.confirmBlock}>
           <p
-            className={`${styles.confirmLabel} t-h5`}
+            className={`${styles.confirmLabel} t-body2-body1`}
             id="add-product-confirm"
           >
             {isScan ? "Is this correct?" : "Is this the right product?"}
@@ -614,15 +604,12 @@ function ConfirmView({
               />
             ))}
           </div>
-          {/* the tray's own primary action. Disabled until the question is
+          {/* the tray's own action. Disabled until the question is
               answered, for the same reason Continue is on every step: there is
               no group to file the product under until it is. */}
-          {/* ⚠️ NOT IN FIGMA — the small secondary pill, asked for directly
-              13 Sep 2026; it was the full primary `Button` */}
           <Button
             variant="secondary"
-            size="md"
-            icon={<PlusIcon />}
+            size="sm"
             className={`${styles.trayAction} ${styles.trayActionSmall}`}
             disabled={!draft.duration}
             onClick={onAdd}
@@ -633,14 +620,6 @@ function ConfirmView({
       )}
 
       {stage === "added" && draft?.duration && (
-        // ⚠️ THE VISIBLE "Added to <group>" TAG IS GONE, and only the
-        // announcement is left. The tray's own title already reads `Product
-        // added` and the block below already reads `Add another product`, so
-        // the tag was a third thing saying the same thing on a stage the user
-        // reaches by pressing a button labelled `Add product`. A screen reader
-        // gets none of that for free, though — the title never changes focus
-        // and neither heading is a live region — so the group is still said
-        // out loud here, read back off the same answer that put it there.
         <p role="status" className="visually-hidden">
           Added to {BUCKET_LIST_TITLE[bucketFor(draft.duration)]}
         </p>
@@ -648,26 +627,23 @@ function ConfirmView({
 
       {(stage === "added" || stage === "rejected") && (
         <div className={styles.confirmBlock}>
-          {/* `t-label`, one step over `t-label-sm` — asked for directly 16 Sep
-              2026, with `Added products` below */}
-          <p className={`${styles.confirmLabel} t-label`}>
+          <h2 className={`${styles.trayHeading} t-h4`}>
             {stage === "added"
               ? "Add another product"
               : "Search for a different product"}
-          </p>
+          </h2>
           <SearchView
             query={query}
             onQueryChange={onQueryChange}
             onChoose={onChooseMore}
+            onShapeChange={onShapeChange}
           />
         </div>
       )}
 
       {addedProducts.length > 0 && stage !== "verify" && (
         <div className={styles.confirmBlock}>
-          {/* `t-label`, one step over `t-label-sm` — asked for directly 16 Sep
-              2026, as the check basket's "and" took the same day */}
-          <p className={`${styles.confirmLabel} t-label`}>Added products</p>
+          <p className={`${styles.listLabel} t-label`}>Added products</p>
           <ul className={styles.addedList}>
             {addedProducts.map((p) => (
               <li key={p.id}>
@@ -675,14 +651,10 @@ function ConfirmView({
                   name={fullName(p)}
                   product={p}
                   trailing={
-                    <button
-                      type="button"
-                      className={styles.removeButton}
+                    <CloseButton
+                      label={`Remove ${fullName(p)}`}
                       onClick={() => onRemove(p.id)}
-                      aria-label={`Remove ${fullName(p)}`}
-                    >
-                      <CloseIcon className={styles.removeIcon} />
-                    </button>
+                    />
                   }
                 />
               </li>
@@ -690,6 +662,32 @@ function ConfirmView({
           </ul>
         </div>
       )}
+
+      {stage === "added" && (
+        <Button
+          variant="text"
+          width="action"
+          className={styles.trayAction}
+          onClick={onDone}
+        >
+          Done
+        </Button>
+      )}
     </div>
   );
+}
+
+function reducedMotion() {
+  return window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+}
+
+function tokenText(el: Element, name: string) {
+  return getComputedStyle(el).getPropertyValue(name).trim();
+}
+
+/** a duration token in ms; the browser may report it in seconds */
+function token(el: Element, name: string) {
+  const v = tokenText(el, name);
+  const n = Number.parseFloat(v);
+  return v.endsWith("ms") ? n : n * 1000;
 }

@@ -6,31 +6,7 @@ import { IngredientTerms } from "./IngredientTerms";
 import { Collapse } from "@/components/ui/Collapse";
 import { ChevronDownIcon } from "@/components/ui/icons";
 
-/**
- * A product's INCI list behind an `Ingredients ⌄` toggle, closed by default.
- *
- * ⚠️ LIFTED OUT OF `ProductDetails` on 16 Sep 2026, when the add tray's
- * confirm card (`ProductCard`) was asked to show its ingredients "this way".
- * The card ended up rendering all of `ProductDetails`, so today this has one
- * caller; it stays its own file so the dropdown can be reused as it stands.
- *
- * ⚠️ NOT IN FIGMA. An INCI list is 15–25 comma-separated terms; open by
- * default it would push everything under it off the screen. Its chevron is
- * `icon-xs` against a card's `icon-sm`: that one step is what says this
- * disclosure belongs TO the card rather than being a second card. The chevron
- * sits right after its label, not at the far edge.
- *
- * ⚠️ THE NAMES IN THE LIST EXPLAIN THEMSELVES, AS OF 16 Sep 2026 — also NOT IN
- * FIGMA. Hover one, or tap it on a phone, and a small panel says what it is.
- * Only names the glossary knows are dotted; the rest stay plain text. The
- * reasoning is on `IngredientTerms`, and the lines are in
- * `features/products/ingredients.ts`.
- *
- * ⚠️ EVERY CALLER GETS IT — there is no switch. It was opt-in for an afternoon
- * ("do it on /products first"), with only the hub's cards passing `explain`,
- * and went to every list the same day ("apply to all the elements that contain
- * ingredients part"): the hub, the add tray's cards and `/check/new`'s rows.
- */
+/** A product's INCI list behind an `Ingredients ⌄` toggle, closed by default. */
 export function IngredientsDisclosure({
   ingredients,
   className,
